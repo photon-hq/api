@@ -35,27 +35,49 @@ export interface SdkConfig {
  * test and the reproducibility checks stay enforced. Remove it once the
  * production contract passes the naming gate; the derived names then change
  * to the contract's (a breaking release).
+ *
+ * The internal production configuration records who approved the waiver and
+ * when (`approvedBy`, `approvedOn`; see `requireNamingApproval`). The public
+ * repository's copy leaves that record out (publicNamingWaiver): `reason` and
+ * `until` are public, customer-facing text.
  */
 export interface NamingWaiver {
+  /** Customer-facing: printed by the public repository's naming check. */
   reason: string;
-  approvedBy: string;
-  /** YYYY-MM-DD */
-  approvedOn: string;
   /** The release that is expected to lift the waiver, for example "0.2.0". */
   until: string;
+  /** Internal approval record; left out of the public copy. */
+  approvedBy?: string;
+  /** Internal approval record, YYYY-MM-DD; left out of the public copy. */
+  approvedOn?: string;
 }
 
-const NAMING_WAIVER_FIELDS = ["reason", "approvedBy", "approvedOn", "until"];
+const NAMING_WAIVER_REQUIRED = ["reason", "until"];
+const NAMING_WAIVER_APPROVAL = ["approvedBy", "approvedOn"];
 
-function validateNamingWaiver(value: unknown): void {
+function validateNamingWaiver(value: unknown, requireApproval: boolean): void {
   assert(isObject(value), "namingWaiver must be an object");
+  const fields = [...NAMING_WAIVER_REQUIRED, ...NAMING_WAIVER_APPROVAL];
+  const required = requireApproval ? fields : NAMING_WAIVER_REQUIRED;
   assert(
-    Object.keys(value).length === NAMING_WAIVER_FIELDS.length &&
-      NAMING_WAIVER_FIELDS.every((field) => typeof value[field] === "string" && (value[field] as string).trim().length > 0),
-    `namingWaiver needs exactly these non-empty fields: ${NAMING_WAIVER_FIELDS.join(", ")}`,
+    Object.keys(value).every((field) => fields.includes(field)) &&
+      required.every((field) => Object.hasOwn(value, field)) &&
+      Object.values(value).every((field) => typeof field === "string" && field.trim().length > 0),
+    `namingWaiver needs non-empty ${required.join(", ")}${requireApproval ? "" : ` (and optionally ${NAMING_WAIVER_APPROVAL.join(", ")})`}`,
   );
-  assert(/^\d{4}-\d{2}-\d{2}$/.test(value.approvedOn as string), "namingWaiver.approvedOn must be a YYYY-MM-DD date");
+  assert(
+    NAMING_WAIVER_APPROVAL.every((field) => Object.hasOwn(value, field)) || NAMING_WAIVER_APPROVAL.every((field) => !Object.hasOwn(value, field)),
+    "namingWaiver.approvedBy and namingWaiver.approvedOn go together",
+  );
+  if (Object.hasOwn(value, "approvedOn")) {
+    assert(/^\d{4}-\d{2}-\d{2}$/.test(value.approvedOn as string), "namingWaiver.approvedOn must be a YYYY-MM-DD date");
+  }
   assert(/^\d+\.\d+\.\d+$/.test(value.until as string), "namingWaiver.until must be a version such as 0.2.0");
+}
+
+/** The public repository's copy of a naming waiver: without the internal approval record. */
+export function publicNamingWaiver(waiver: NamingWaiver): NamingWaiver {
+  return { reason: waiver.reason, until: waiver.until };
 }
 
 const flowFields = {
@@ -99,6 +121,8 @@ export function httpsUrl(value: unknown, field: string): URL {
 export function validateSdkConfig(
   value: unknown,
   expectedEnvironment?: string,
+  /** The internal production configuration: a naming waiver must record its approval. */
+  { requireNamingApproval = false }: { requireNamingApproval?: boolean } = {},
 ): SdkConfig {
   assert(isObject(value), "SDK config must be an object");
   const fields = [
@@ -122,7 +146,7 @@ export function validateSdkConfig(
   );
   if (Object.hasOwn(value, "namingWaiver")) {
     assert(value.environment === "production", "namingWaiver applies only to the production (public) configuration");
-    validateNamingWaiver(value.namingWaiver);
+    validateNamingWaiver(value.namingWaiver, requireNamingApproval);
   }
   const base = httpsUrl(value.defaultBaseUrl, "defaultBaseUrl");
   assert(base.pathname === "/", "defaultBaseUrl must be an origin");

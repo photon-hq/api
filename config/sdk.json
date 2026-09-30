@@ -13,9 +13,7 @@
     }
   },
   "namingWaiver": {
-    "reason": "Preview release from the current production contract, whose schemas are not yet named. Type names for unnamed schemas are derived from operations and change when the production contract is named.",
-    "approvedBy": "Ryan",
-    "approvedOn": "2026-09-29",
+    "reason": "Type names for unnamed schemas are generated and change in 0.2.0, when the production contract names them.",
     "until": "0.2.0"
   }
 }

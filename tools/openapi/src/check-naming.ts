@@ -71,10 +71,16 @@ export function namingWaiverOf(configPath: string): NamingWaiver | undefined {
   return validateSdkConfig(JSON.parse(readFileSync(configPath, "utf8"))).namingWaiver;
 }
 
+/**
+ * The waiver's report line. The approval record appears only when the
+ * configuration has one (the internal production configuration); the public
+ * repository's copy has none, so its CI prints `until` and `reason` only.
+ */
 export function waiverNotice(waiver: NamingWaiver, violations: number): string {
+  const approval = waiver.approvedBy ? ` Waiver approved by ${waiver.approvedBy} on ${waiver.approvedOn}.` : "";
   return violations
-    ? `Naming not enforced: ${violations} violations reported, not failed. Waiver approved by ${waiver.approvedBy} on ${waiver.approvedOn} until ${waiver.until}: ${waiver.reason}`
-    : `The contract and SDK names pass the naming gate; remove the naming waiver (approved by ${waiver.approvedBy} on ${waiver.approvedOn}, until ${waiver.until}) so the gate is enforced again.`;
+    ? `Naming not enforced until ${waiver.until}: ${violations} violations reported, not failed.${approval} ${waiver.reason}`
+    : `The contract and SDK names pass the naming gate; remove the naming waiver (until ${waiver.until}) so the gate is enforced again.${approval}`;
 }
 
 function main(): void {

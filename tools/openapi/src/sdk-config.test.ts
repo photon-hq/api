@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { runtimeFiles } from "./generate-runtime.js";
-import { authOrigins, bindSchemaTarget, validateSdkConfig, validateSchemaTarget } from "./sdk-config.js";
+import { authOrigins, bindSchemaTarget, publicNamingWaiver, validateSdkConfig, validateSchemaTarget } from "./sdk-config.js";
 import type { JsonObject } from "./shared.js";
 
 const config = {
@@ -54,17 +54,31 @@ test("the internal contract is openapi/staging.json; the public repository's is 
   assert.throws(() => validateSdkConfig({ ...config, schemaPath: "openapi/production.json" }), /schemaPath/);
 });
 
-test("a naming waiver is a complete record, and only for production", () => {
-  const namingWaiver = { reason: "Preview release", approvedBy: "API owner", approvedOn: "2026-09-29", until: "0.2.0" };
+test("a naming waiver: public shape without, internal shape with its approval record, only for production", () => {
+  const namingWaiver = { reason: "Preview release", until: "0.2.0" };
+  const approved = { ...namingWaiver, approvedBy: "API owner", approvedOn: "2026-01-15" };
+  const internal = { requireNamingApproval: true };
+  // The public repository's copy: reason and until only.
   assert.deepEqual(validateSdkConfig({ ...config, namingWaiver }, "production").namingWaiver, namingWaiver);
+  assert.deepEqual(validateSdkConfig({ ...config, namingWaiver: approved }, "production").namingWaiver, approved);
+  // The internal production configuration must record who approved it and when.
+  assert.deepEqual(validateSdkConfig({ ...config, namingWaiver: approved }, "production", internal).namingWaiver, approved);
+  assert.throws(() => validateSdkConfig({ ...config, namingWaiver }, "production", internal), /approvedBy, approvedOn/);
+  assert.throws(() => validateSdkConfig({ ...config, namingWaiver: { ...approved, approvedOn: undefined } }, "production", internal), /namingWaiver/);
+  assert.deepEqual(publicNamingWaiver(approved), namingWaiver);
   assert.equal(validateSdkConfig(config).namingWaiver, undefined);
-  for (const patch of [
-    { reason: "" },
-    { approvedBy: undefined },
-    { approvedOn: "29 September 2026" },
-    { until: "next" },
-    { expires: "2026-10-31" },
-  ]) assert.throws(() => validateSdkConfig({ ...config, namingWaiver: { ...namingWaiver, ...patch } }), /namingWaiver/);
+  for (const waiver of [namingWaiver, approved]) {
+    for (const patch of [
+      { reason: "" },
+      { until: undefined },
+      { until: "next" },
+      { expires: "2026-10-31" },
+    ]) assert.throws(() => validateSdkConfig({ ...config, namingWaiver: { ...waiver, ...patch } }), /namingWaiver/);
+  }
+  for (const patch of [{ approvedBy: undefined }, { approvedOn: "29 September 2026" }]) {
+    assert.throws(() => validateSdkConfig({ ...config, namingWaiver: { ...approved, ...patch } }), /namingWaiver/);
+  }
+  assert.throws(() => validateSdkConfig({ ...config, namingWaiver: { ...namingWaiver, approvedBy: "API owner" } }), /go together/);
   assert.throws(() => validateSdkConfig({ ...config, namingWaiver: true }), /namingWaiver/);
   const staging = { ...config, environment: "staging", defaultBaseUrl: "https://api.staging.example.test", authEndpoints: {} };
   assert.throws(() => validateSdkConfig({ ...staging, namingWaiver }), /only to the production/);
