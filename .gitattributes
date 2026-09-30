@@ -1,0 +1,13 @@
+openapi/*.json linguist-generated=true
+postman/collection.json linguist-generated=true
+packages/typescript/src/generated/** linguist-generated=true
+packages/typescript/src/rpc.generated.ts linguist-generated=true
+packages/typescript/src/schemas.ts linguist-generated=true
+packages/typescript/src/config.generated.ts linguist-generated=true
+packages/python/src/photon_api/generated/** linguist-generated=true
+packages/python/src/photon_api/rpc_generated.py linguist-generated=true
+packages/python/src/photon_api/config_generated.py linguist-generated=true
+packages/rust/src/generated.rs linguist-generated=true
+packages/rust/src/config_generated.rs linguist-generated=true
+# Vendored specification files must stay byte-identical to their source.
+tools/openapi/spec/** -text linguist-vendored=true

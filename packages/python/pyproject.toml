@@ -1,0 +1,42 @@
+[build-system]
+requires = ["hatchling==1.31.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "photonhq-api"
+version = "0.1.0"
+description = "Generated Photon API RPC client"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{ name = "Photon" }]
+dependencies = [
+  "email-validator>=2.3.0,<3",
+  "httpx>=0.28.1,<1",
+  # Generated models use Pydantic's experimental MISSING sentinel, which may
+  # change in a minor release.
+  "pydantic>=2.13.5,<2.14",
+]
+
+[project.urls]
+Repository = "https://github.com/photon-hq/api"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/photon_api"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.ruff.lint.per-file-ignores]
+"src/photon_api/generated/__init__.py" = ["F403"]
+"src/photon_api/generated/models.py" = ["E501", "UP007", "UP037", "UP045"]
+# Preserve authored OpenAPI prose in generated method docstrings.
+"src/photon_api/rpc_generated.py" = ["E501"]

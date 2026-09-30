@@ -1,0 +1,10 @@
+extends:
+  - recommended
+rules:
+  no-empty-servers: error
+  operation-operationId: error
+  operation-operationId-unique: error
+  path-not-include-query: error
+  security-defined: off
+  no-server-example.com: off
+

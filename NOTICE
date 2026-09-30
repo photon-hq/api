@@ -1,0 +1,7 @@
+Photon API clients
+Copyright (c) Photon
+
+This repository contains code generated from the Photon API OpenAPI contract.
+Generation uses Hey API, datamodel-code-generator, Spargen and Postman's
+openapi-to-postman converter; they are installed separately under their own
+licenses. The pinned dependency manifests and lockfiles list the versions used.

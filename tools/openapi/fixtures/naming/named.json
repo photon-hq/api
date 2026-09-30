@@ -1,0 +1,772 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Photon API",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.photon.codes"
+    }
+  ],
+  "security": [
+    {
+      "projectApiKey": []
+    }
+  ],
+  "paths": {
+    "/v1/widgets": {
+      "get": {
+        "operationId": "listWidgets",
+        "summary": "List widgets",
+        "description": "Lists widgets in creation order.",
+        "parameters": [
+          {
+            "name": "order",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/SortOrder"
+            }
+          },
+          {
+            "name": "pageToken",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "One page of widgets.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WidgetPage"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Request identifier.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The credential is missing or invalid.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotAuthenticatedProblem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createWidget",
+        "summary": "Create a widget",
+        "description": "Creates a widget.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWidgetRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The created widget.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Widget"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The credential is missing or invalid.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotAuthenticatedProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The widget conflicts with an existing one or the quota.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateWidgetConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request is invalid.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationFailedProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/widgets/count": {
+      "get": {
+        "operationId": "countWidgets",
+        "summary": "Count widgets",
+        "description": "Counts widgets.",
+        "responses": {
+          "200": {
+            "description": "The widget count.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CountWidgetsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The credential is missing or invalid.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotAuthenticatedProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/widgets/{widgetId}": {
+      "parameters": [
+        {
+          "name": "widgetId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "getWidget",
+        "summary": "Get a widget",
+        "description": "Returns one widget.",
+        "responses": {
+          "200": {
+            "description": "The widget.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Widget"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The credential is missing or invalid.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotAuthenticatedProblem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such widget.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteWidget",
+        "summary": "Delete a widget",
+        "description": "Deletes one widget.",
+        "responses": {
+          "204": {
+            "description": "Deleted."
+          },
+          "401": {
+            "description": "The credential is missing or invalid.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotAuthenticatedProblem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such widget.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/widgets/{widgetId}/events": {
+      "parameters": [
+        {
+          "name": "widgetId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "listWidgetEvents",
+        "summary": "List widget events",
+        "description": "Lists the events of one widget.",
+        "responses": {
+          "200": {
+            "description": "One page of events.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WidgetEventPage"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The credential is missing or invalid.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotAuthenticatedProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/widgets/{widgetId}/file": {
+      "parameters": [
+        {
+          "name": "widgetId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "downloadWidgetFile",
+        "summary": "Download a widget file",
+        "description": "Returns the widget's file.",
+        "responses": {
+          "200": {
+            "description": "The file bytes.",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The credential is missing or invalid.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotAuthenticatedProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Widget": {
+        "type": "object",
+        "description": "A widget.",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/WidgetStatus"
+          },
+          "labels": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "owner": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/WidgetOwner"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "parts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WidgetPart"
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "status",
+          "labels",
+          "owner",
+          "parts",
+          "createdAt"
+        ],
+        "additionalProperties": false
+      },
+      "WidgetStatus": {
+        "type": "string",
+        "description": "Widget lifecycle state.",
+        "enum": [
+          "active",
+          "archived"
+        ]
+      },
+      "WidgetOwner": {
+        "type": "object",
+        "description": "The widget owner.",
+        "properties": {
+          "userId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "userId"
+        ],
+        "additionalProperties": false
+      },
+      "WidgetPart": {
+        "type": "object",
+        "description": "One part of a widget.",
+        "properties": {
+          "sku": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "sku",
+          "quantity"
+        ],
+        "additionalProperties": false
+      },
+      "WidgetPage": {
+        "type": "object",
+        "description": "One page of widgets.",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Widget"
+            }
+          },
+          "nextPageToken": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "items",
+          "nextPageToken"
+        ],
+        "additionalProperties": false
+      },
+      "CreateWidgetRequest": {
+        "type": "object",
+        "description": "A new widget.",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "labels": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "additionalProperties": false
+      },
+      "CountWidgetsResponse": {
+        "type": "object",
+        "description": "A widget count.",
+        "properties": {
+          "count": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "count"
+        ],
+        "additionalProperties": false
+      },
+      "SortOrder": {
+        "type": "string",
+        "description": "Sort direction.",
+        "enum": [
+          "asc",
+          "desc"
+        ]
+      },
+      "WidgetEvent": {
+        "description": "A widget event.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/WidgetCreatedEvent"
+          },
+          {
+            "$ref": "#/components/schemas/WidgetDeletedEvent"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "widget.created": "#/components/schemas/WidgetCreatedEvent",
+            "widget.deleted": "#/components/schemas/WidgetDeletedEvent"
+          }
+        }
+      },
+      "WidgetCreatedEvent": {
+        "type": "object",
+        "description": "A widget was created.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "widget.created"
+          },
+          "widget": {
+            "$ref": "#/components/schemas/Widget"
+          }
+        },
+        "required": [
+          "type",
+          "widget"
+        ],
+        "additionalProperties": false
+      },
+      "WidgetDeletedEvent": {
+        "type": "object",
+        "description": "A widget was deleted.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "widget.deleted"
+          },
+          "widgetId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "widgetId"
+        ],
+        "additionalProperties": false
+      },
+      "WidgetEventPage": {
+        "type": "object",
+        "description": "One page of widget events.",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WidgetEvent"
+            }
+          },
+          "nextPageToken": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "items",
+          "nextPageToken"
+        ],
+        "additionalProperties": false
+      },
+      "NotAuthenticatedProblem": {
+        "type": "object",
+        "description": "Problem details for NOT_AUTHENTICATED.",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "const": 401
+          },
+          "code": {
+            "type": "string",
+            "const": "NOT_AUTHENTICATED"
+          },
+          "detail": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "title",
+          "status",
+          "code"
+        ],
+        "additionalProperties": false
+      },
+      "NotFoundProblem": {
+        "type": "object",
+        "description": "Problem details for NOT_FOUND.",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "const": 404
+          },
+          "code": {
+            "type": "string",
+            "const": "NOT_FOUND"
+          },
+          "detail": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "title",
+          "status",
+          "code"
+        ],
+        "additionalProperties": false
+      },
+      "WidgetExistsProblem": {
+        "type": "object",
+        "description": "Problem details for WIDGET_EXISTS.",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "const": 409
+          },
+          "code": {
+            "type": "string",
+            "const": "WIDGET_EXISTS"
+          },
+          "detail": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "title",
+          "status",
+          "code"
+        ],
+        "additionalProperties": false
+      },
+      "WidgetQuotaExceededProblem": {
+        "type": "object",
+        "description": "Problem details for WIDGET_QUOTA_EXCEEDED.",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "const": 409
+          },
+          "code": {
+            "type": "string",
+            "const": "WIDGET_QUOTA_EXCEEDED"
+          },
+          "detail": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "title",
+          "status",
+          "code"
+        ],
+        "additionalProperties": false
+      },
+      "CreateWidgetConflictProblem": {
+        "description": "A conflict while creating a widget.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/WidgetExistsProblem"
+          },
+          {
+            "$ref": "#/components/schemas/WidgetQuotaExceededProblem"
+          }
+        ]
+      },
+      "ValidationFailedProblem": {
+        "type": "object",
+        "description": "Problem details for VALIDATION_FAILED.",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "const": 422
+          },
+          "code": {
+            "type": "string",
+            "const": "VALIDATION_FAILED"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ValidationIssue"
+            }
+          }
+        },
+        "required": [
+          "type",
+          "title",
+          "status",
+          "code"
+        ],
+        "additionalProperties": false
+      },
+      "ValidationIssue": {
+        "type": "object",
+        "description": "One invalid input.",
+        "properties": {
+          "location": {
+            "$ref": "#/components/schemas/ValidationIssueLocation"
+          },
+          "path": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "location",
+          "path",
+          "message"
+        ],
+        "additionalProperties": false
+      },
+      "ValidationIssueLocation": {
+        "type": "string",
+        "description": "Where the invalid input is.",
+        "enum": [
+          "body",
+          "path",
+          "query",
+          "header"
+        ]
+      }
+    },
+    "securitySchemes": {
+      "projectApiKey": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Project API key."
+      },
+      "oauth2": {
+        "type": "oauth2",
+        "description": "OAuth grant.",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://auth.photon.codes/oauth2/authorize",
+            "tokenUrl": "https://auth.photon.codes/oauth2/token",
+            "scopes": {
+              "widgets:read": "Read widgets."
+            }
+          }
+        }
+      }
+    }
+  }
+}

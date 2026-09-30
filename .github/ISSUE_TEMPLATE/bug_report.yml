@@ -1,0 +1,26 @@
+name: Bug report
+description: Something in this repository does not work as documented.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Do not include credentials, authorization headers or private response data.
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Package version or release tag.
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: The call you made, what you expected and what happened instead. Include the error type and the request ID if there is one.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Runtime and operating system versions.

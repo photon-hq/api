@@ -1,0 +1,7 @@
+datamodel-code-generator==0.76.2
+# Keep SDK runtime dependencies at the minimum versions allowed by
+# packages/python/pyproject.toml so CI tests the published floor.
+email-validator==2.3.0
+httpx==0.28.1
+pydantic==2.13.5
+ruff==0.16.2

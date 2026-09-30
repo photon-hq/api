@@ -1,0 +1,57 @@
+{
+  "name": "api-workspace",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "packageManager": "npm@11.16.0",
+  "workspaces": [
+    "packages/typescript"
+  ],
+  "engines": {
+    "node": ">=26 <27"
+  },
+  "scripts": {
+    "build:tools": "node tools/openapi/build.mjs",
+    "prepare:sdk": "npm run build:tools && node tools/openapi/dist/prepare-sdk.js",
+    "generate:runtime": "npm run build:tools && node tools/openapi/dist/generate-runtime.js",
+    "generate:typescript": "npm --prefix tools/openapi-generator run generate && node tools/openapi-generator/bound-zod-types.mjs",
+    "generate:facades": "npm run build:tools && node tools/openapi/dist/generate-facades.js",
+    "generate:python": "tools/python-codegen/generate.sh",
+    "generate:rust": "cargo run --locked -p photon-rust-codegen",
+    "generate:postman": "node tools/postman/run.mjs",
+    "regenerate:typescript": "npm run prepare:sdk && npm run generate:runtime && npm run generate:typescript && npm run generate:facades -- --only typescript",
+    "regenerate:python": "npm run prepare:sdk && npm run generate:runtime && npm run generate:facades -- --only python && npm run generate:python",
+    "regenerate:rust": "npm run prepare:sdk && npm run generate:runtime && npm run generate:rust && cargo fmt --all",
+    "generate": "npm run prepare:sdk && npm run generate:runtime && npm run generate:typescript && npm run generate:facades && npm run generate:python && npm run generate:rust && cargo fmt --all && npm run generate:postman",
+    "check:openapi": "redocly lint openapi/openapi.json openapi/sdk.json --config redocly.yaml",
+    "check:oas31": "python tools/openapi/check_oas31.py openapi/openapi.json openapi/sdk.json",
+    "check:postman:source": "node tools/postman/check-collection.mjs --source-only",
+    "check:postman": "node tools/postman/check-collection.mjs",
+    "check:rust-codegen": "cargo run --locked -p photon-rust-codegen -- --check",
+    "check:naming": "npm run build:tools && node tools/openapi/dist/check-naming.js",
+    "check:public": "node tools/public-content/check.mjs",
+    "build:typescript": "npm --workspace @photon-ai/api run build",
+    "test:tools": "npm run build:tools && npm --prefix tools/openapi-generator run typecheck && node --test tools/openapi/dist/*.test.js tools/openapi-generator/*.test.mjs",
+    "test:typescript": "npm --workspace @photon-ai/api test",
+    "test:python-codegen": "python -m unittest discover -s tools/python-codegen -p 'test_*.py' -v",
+    "test:python": "python -m pytest packages/python",
+    "test:rust": "cargo test --locked --workspace",
+    "test:postman": "node --test tools/postman/*.test.mjs",
+    "test:oas31": "python -m unittest discover -s tools/openapi -p 'test_*.py'",
+    "test:publish": "node --test tools/publish/*.test.mjs",
+    "test": "npm run test:tools && npm run test:publish && npm run test:postman && npm run test:oas31 && npm run test:typescript && npm run test:python-codegen && npm run test:python && npm run test:rust"
+  },
+  "devDependencies": {
+    "@redocly/cli": "2.49.0",
+    "@types/node": "26.4.0",
+    "esbuild": "0.28.1",
+    "handlebars": "4.7.9",
+    "json-canonicalize": "2.0.0",
+    "typescript": "7.0.2",
+    "yaml": "2.9.0"
+  },
+  "overrides": {
+    "js-yaml": "5.4.2"
+  }
+}

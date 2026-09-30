@@ -1,0 +1,17 @@
+{
+  "name": "photon-openapi-generator",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "generate": "openapi-ts -f openapi-ts.config.ts",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@hey-api/openapi-ts": "0.99.0",
+    "typescript": "6.0.3"
+  },
+  "overrides": {
+    "js-yaml": "5.4.2"
+  }
+}

@@ -1,0 +1,15 @@
+-r requirements.txt
+# Audit installer tooling too; runner images may include vulnerable older versions.
+pip==26.2.1
+setuptools==83.0.0
+hatchling==1.31.0
+pip-audit==2.10.1
+pytest==9.1.1
+# OpenAPI 3.1 conformance check (tools/openapi/check_oas31.py). The JSON Schema
+# 2020-12 meta-schemas come from jsonschema-specifications, so pin it too.
+jsonschema==4.26.0
+jsonschema-specifications==2025.9.1
+referencing==0.37.0
+# Gate B reference (tools/conformance/reference.py): ECMA-262 patterns, as
+# JSON Schema 2020-12 specifies, so generated values are contract-valid.
+regress==2026.9.1

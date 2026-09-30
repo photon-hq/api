@@ -1,0 +1,213 @@
+name: Release
+
+# Publishes a GitHub release that Photon's release app created. The release
+# carries the four files that were built from the release candidate and passed
+# the production smoke test, with their SHA-256s in the release body. This
+# workflow publishes exactly those files: npm, PyPI and crates.io in three
+# jobs, each in its own protected environment with trusted publishing. A
+# version a registry already has is verified byte-for-byte and never
+# overwritten.
+#
+# Retry one registry by running this workflow on the release tag (not a
+# branch) with that target: gh workflow run release.yml --ref v0.1.0 -f target=npm
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Registry to publish again (run on the release tag)
+        required: true
+        type: choice
+        options: [npm, pypi, crates-io, all]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  RELEASE_APP: "photon-action-bot[bot]"
+  RUST_TOOLCHAIN: 1.88.0
+
+jobs:
+  # Accepts only a v<version> tag whose release and files come from
+  # the release app, and whose files match the SHA-256s in the release body.
+  verify:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.plan.outputs.tag }}
+      version: ${{ steps.plan.outputs.version }}
+      npm: ${{ steps.plan.outputs.npm }}
+      pypi: ${{ steps.plan.outputs.pypi }}
+      crates-io: ${{ steps.plan.outputs.crates-io }}
+    steps:
+      - id: plan
+        env:
+          TARGET: ${{ github.event_name == 'workflow_dispatch' && inputs.target || 'all' }}
+        run: |
+          [[ "$GITHUB_REF" =~ ^refs/tags/v([0-9]+\.[0-9]+\.[0-9]+)$ ]] || { echo "::error::Run this workflow on a v<version> tag, not $GITHUB_REF"; exit 1; }
+          {
+            echo "tag=${GITHUB_REF#refs/tags/}"
+            echo "version=${BASH_REMATCH[1]}"
+            for target in npm pypi crates-io; do
+              if test "$TARGET" = all || test "$TARGET" = "$target"; then echo "$target=true"; else echo "$target=false"; fi
+            done
+          } >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.ref }}
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 26
+      - name: Check the release, its files and the tagged source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.plan.outputs.tag }}
+          VERSION: ${{ steps.plan.outputs.version }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/releases/tags/$TAG" > "$RUNNER_TEMP/release.json"
+          test "$(jq -r .author.login "$RUNNER_TEMP/release.json")" = "$RELEASE_APP" || { echo "::error::$TAG was not released by $RELEASE_APP"; exit 1; }
+          test "$(jq -r .draft "$RUNNER_TEMP/release.json")" = false
+          jq -e --arg app "$RELEASE_APP" 'all(.assets[]; .uploader.login == $app)' "$RUNNER_TEMP/release.json" >/dev/null || { echo "::error::A release file was not uploaded by $RELEASE_APP"; exit 1; }
+          jq -r .body "$RUNNER_TEMP/release.json" > "$RUNNER_TEMP/body.md"
+          gh release download "$TAG" --dir "$RUNNER_TEMP/files"
+          node tools/publish/release-assets.mjs verify "$RUNNER_TEMP/files" "$VERSION" "$RUNNER_TEMP/body.md"
+          test "$(jq -r .version packages/typescript/package.json)" = "$VERSION"
+          grep -qx "version = \"$VERSION\"" packages/python/pyproject.toml
+          grep -qx "version = \"$VERSION\"" packages/rust/Cargo.toml
+
+  # Only this job publishes to npm: protected environment, trusted publishing
+  # (OIDC), npm provenance. No dependency code runs here. npm trusts only an
+  # existing package, so the first 0.1.0 uses the one-time
+  # NPM_BOOTSTRAP_TOKEN, which is revoked afterwards.
+  npm:
+    needs: verify
+    if: needs.verify.outputs.npm == 'true'
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.ref }}
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 26
+          registry-url: https://registry.npmjs.org
+      - name: Download and verify the release files
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.verify.outputs.tag }}
+        run: |
+          gh release view "$TAG" --json body --jq .body > "$RUNNER_TEMP/body.md"
+          gh release download "$TAG" --dir "$RUNNER_TEMP/files"
+          node tools/publish/release-assets.mjs verify "$RUNNER_TEMP/files" "${{ needs.verify.outputs.version }}" "$RUNNER_TEMP/body.md"
+          mkdir -p dist && cp "$RUNNER_TEMP"/files/*.tgz dist/
+      - id: registry
+        run: node tools/publish/registry-check.mjs plan npm @photon-ai/api "${{ needs.verify.outputs.version }}" dist
+      - name: Publish to npm
+        if: steps.registry.outputs.publish == 'true'
+        env:
+          # Empty after the first release: npm then uses trusted publishing.
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_BOOTSTRAP_TOKEN }}
+        run: npm publish ./dist/*.tgz --access public --provenance --ignore-scripts
+      - name: Verify the registry bytes
+        run: node tools/publish/registry-check.mjs verify npm @photon-ai/api "${{ needs.verify.outputs.version }}" dist
+
+  # Only this job publishes to PyPI: protected environment, PyPI trusted
+  # publishing (a pending publisher for the first release), PyPI attestations.
+  pypi:
+    needs: verify
+    if: needs.verify.outputs.pypi == 'true'
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.ref }}
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 26
+      - name: Download and verify the release files
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.verify.outputs.tag }}
+        run: |
+          gh release view "$TAG" --json body --jq .body > "$RUNNER_TEMP/body.md"
+          gh release download "$TAG" --dir "$RUNNER_TEMP/files"
+          node tools/publish/release-assets.mjs verify "$RUNNER_TEMP/files" "${{ needs.verify.outputs.version }}" "$RUNNER_TEMP/body.md"
+          mkdir -p dist && cp "$RUNNER_TEMP"/files/*.whl "$RUNNER_TEMP"/files/*.tar.gz dist/
+      - id: registry
+        run: node tools/publish/registry-check.mjs plan pypi photonhq-api "${{ needs.verify.outputs.version }}" dist
+      - name: Publish the missing files to PyPI
+        if: steps.registry.outputs.publish == 'true'
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # release/v1
+        with:
+          packages-dir: dist/pending/
+          attestations: true
+      - name: Verify the registry bytes
+        run: node tools/publish/registry-check.mjs verify pypi photonhq-api "${{ needs.verify.outputs.version }}" dist
+
+  # Only this job publishes to crates.io: protected environment and crates.io
+  # trusted publishing. cargo publish packages the tagged source itself, so the
+  # job packages it first and requires the same bytes as the tested crate.
+  # crates.io trusts only an existing crate, so the first 0.1.0 uses the
+  # one-time CRATES_IO_BOOTSTRAP_TOKEN, which is revoked afterwards.
+  crates-io:
+    needs: verify
+    if: needs.verify.outputs.crates-io == 'true'
+    runs-on: ubuntu-latest
+    environment: crates-io
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.ref }}
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 26
+      - name: Download and verify the release files
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.verify.outputs.tag }}
+        run: |
+          gh release view "$TAG" --json body --jq .body > "$RUNNER_TEMP/body.md"
+          gh release download "$TAG" --dir "$RUNNER_TEMP/files"
+          node tools/publish/release-assets.mjs verify "$RUNNER_TEMP/files" "${{ needs.verify.outputs.version }}" "$RUNNER_TEMP/body.md"
+          mkdir -p dist && cp "$RUNNER_TEMP"/files/*.crate dist/
+      - name: Package the tagged source and compare with the tested crate
+        env:
+          VERSION: ${{ needs.verify.outputs.version }}
+        run: |
+          rustup toolchain install "$RUST_TOOLCHAIN" --profile minimal
+          rustup default "$RUST_TOOLCHAIN"
+          cargo package --locked --no-verify -p photonhq-api
+          built="$(sha256sum "target/package/photonhq-api-$VERSION.crate" | cut -d' ' -f1)"
+          tested="$(sha256sum "dist/photonhq-api-$VERSION.crate" | cut -d' ' -f1)"
+          test "$built" = "$tested" || { echo "::error::cargo package produced $built, the tested crate is $tested; refusing to publish"; exit 1; }
+      - id: registry
+        run: node tools/publish/registry-check.mjs plan crates photonhq-api "${{ needs.verify.outputs.version }}" dist
+      - id: crates-io
+        if: steps.registry.outputs.publish == 'true' && steps.registry.outputs.bootstrap == 'false'
+        uses: rust-lang/crates-io-auth-action@c6f97d42243bad5fab37ca0427f495c86d5b1a18 # v1.0.5
+      - name: Publish to crates.io
+        if: steps.registry.outputs.publish == 'true'
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ steps.crates-io.outputs.token || secrets.CRATES_IO_BOOTSTRAP_TOKEN }}
+        run: cargo publish --locked --no-verify -p photonhq-api
+      - name: Verify the registry bytes
+        run: node tools/publish/registry-check.mjs verify crates photonhq-api "${{ needs.verify.outputs.version }}" dist
