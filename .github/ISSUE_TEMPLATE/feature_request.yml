@@ -1,0 +1,11 @@
+name: Feature request
+description: Suggest an improvement to the API client or contract.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: request
+    attributes:
+      label: What would you like
+      description: The problem you are trying to solve and the change you propose.
+    validations:
+      required: true

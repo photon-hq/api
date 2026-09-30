@@ -1,0 +1,21 @@
+{
+  "environment": "production",
+  "schemaPath": "openapi/openapi.json",
+  "defaultBaseUrl": "https://api.photon.codes",
+  "authEndpoints": {
+    "oauth2": {
+      "flows": {
+        "authorizationCode": {
+          "authorizationUrl": "https://auth.photon.codes/oauth2/authorize",
+          "tokenUrl": "https://auth.photon.codes/oauth2/token"
+        }
+      }
+    }
+  },
+  "namingWaiver": {
+    "reason": "Preview release from the current production contract, whose schemas are not yet named. Type names for unnamed schemas are derived from operations and change when the production contract is named.",
+    "approvedBy": "Ryan",
+    "approvedOn": "2026-09-29",
+    "until": "0.2.0"
+  }
+}

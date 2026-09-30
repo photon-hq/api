@@ -1,0 +1,269 @@
+name: CI
+
+# One job per part of the repository. Each client job installs, regenerates
+# its package from the committed contract and compares, checks type names,
+# tests, and installs the packaged client in a clean consumer. It runs on
+# every release candidate before the release is approved, and on main.
+on:
+  pull_request:
+  push:
+    branches: [main, release-candidate]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  RUST_TOOLCHAIN: 1.88.0
+
+jobs:
+  contract:
+    name: Contract and Postman collection
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 26
+          cache: npm
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: tools/python-codegen/requirements*.txt
+      - name: Install locked dependencies
+        run: |
+          npm ci
+          npm ci --prefix tools/postman --ignore-scripts
+          python -m pip install --requirement tools/python-codegen/requirements-dev.txt
+      - name: Validate the contract against the OpenAPI 3.1 specification
+        run: |
+          npm run check:oas31
+          npm run check:openapi
+          npm run test:oas31
+      - name: Regenerate the Postman collection and compare
+        run: |
+          npm run generate:postman
+          git diff --exit-code
+          test -z "$(git ls-files --others --exclude-standard)"
+      - name: Validate every request and response example
+        run: |
+          npm run check:postman:source
+          npm run build:typescript
+          npm run check:postman
+      - name: Test the Postman and release tooling
+        run: |
+          npm run test:postman
+          npm run test:publish
+      - name: Check public content
+        run: node tools/public-content/check.mjs --commit-message
+
+  typescript:
+    name: TypeScript client
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 26
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            tools/openapi-generator/package-lock.json
+      - name: Install locked dependencies
+        run: |
+          npm ci
+          npm ci --prefix tools/openapi-generator
+      - name: Regenerate from the committed contract and compare
+        run: |
+          npm run regenerate:typescript
+          git diff --exit-code
+          test -z "$(git ls-files --others --exclude-standard)"
+      # Every schema and SDK type name comes from the contract; generation
+      # already fails on an unnamed schema, this also checks the generated types.
+      # Under a recorded naming waiver (config/sdk.json `namingWaiver`) the
+      # check reports the violations as a warning instead of failing.
+      - name: Check schema and SDK type names
+        run: npm run check:naming -- --sdk typescript
+      - name: Test
+        run: |
+          npm run test:tools
+          npm run test:typescript
+      - name: Pack and test clean consumers
+        run: |
+          mkdir -p "$RUNNER_TEMP/package"
+          npm pack --workspace @photon-ai/api --pack-destination "$RUNNER_TEMP/package"
+          mkdir "$RUNNER_TEMP/extracted" && tar -xzf "$RUNNER_TEMP"/package/*.tgz -C "$RUNNER_TEMP/extracted"
+          node tools/public-content/check.mjs --tree "$RUNNER_TEMP/extracted"
+          consumer="$(mktemp -d)"
+          (cd "$consumer" && npm init --yes >/dev/null && npm install "$RUNNER_TEMP"/package/*.tgz \
+            && printf 'import { Photon } from "@photon-ai/api";\nif (typeof Photon !== "function") throw new Error("missing export");\n' > smoke.mjs && node smoke.mjs)
+          node_modules/.bin/esbuild "$consumer/smoke.mjs" --bundle --format=esm --platform=browser --outfile="$consumer/browser.js"
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+      - name: Test on the minimum supported Node.js
+        run: npm run test:typescript
+      - name: Test with the newest compatible dependencies
+        run: |
+          npm install --no-save --ignore-scripts "zod@$(node -p "require('./packages/typescript/package.json').dependencies.zod")"
+          npm run test:typescript
+      - name: Audit dependencies
+        run: |
+          npm audit --audit-level=moderate
+          npm audit --prefix tools/openapi-generator --audit-level=moderate
+
+  python:
+    name: Python client
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 26
+          cache: npm
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: tools/python-codegen/requirements*.txt
+      - name: Install locked dependencies
+        run: |
+          npm ci
+          python -m pip install --requirement tools/python-codegen/requirements-dev.txt
+      - name: Regenerate from the committed contract and compare
+        env:
+          PYTHON_BIN: python
+          RUFF_BIN: ruff
+        run: |
+          npm run regenerate:python
+          git diff --exit-code
+          test -z "$(git ls-files --others --exclude-standard)"
+      # Every schema and SDK type name comes from the contract; generation
+      # already fails on an unnamed schema, this also checks the generated types.
+      # Under a recorded naming waiver (config/sdk.json `namingWaiver`) the
+      # check reports the violations as a warning instead of failing.
+      - name: Check schema and SDK type names
+        env:
+          PYTHON_BIN: python
+        run: npm run check:naming -- --sdk python
+      - name: Lint and test
+        run: |
+          python -m pip install --editable packages/python
+          python -m ruff format --check packages/python
+          python -m ruff check packages/python
+          python -m ruff format --check --config packages/python/pyproject.toml tools/python-codegen
+          python -m ruff check --config packages/python/pyproject.toml tools/python-codegen
+          npm run test:python-codegen
+          npm run test:python
+      - name: Build and test a clean consumer
+        run: |
+          (cd packages/python && python -m hatchling build -d "$RUNNER_TEMP/package")
+          mkdir "$RUNNER_TEMP/extracted"
+          for archive in "$RUNNER_TEMP"/package/*.tar.gz; do tar -xzf "$archive" -C "$RUNNER_TEMP/extracted"; done
+          node tools/public-content/check.mjs --tree "$RUNNER_TEMP/extracted"
+          python -m venv "$RUNNER_TEMP/consumer"
+          "$RUNNER_TEMP/consumer/bin/python" -m pip install "$RUNNER_TEMP"/package/*.whl
+          "$RUNNER_TEMP/consumer/bin/python" -c "from photon_api import AsyncPhoton, Photon; assert Photon and AsyncPhoton"
+      - name: Audit dependencies
+        run: python -m pip_audit
+
+  python-versions:
+    name: Python ${{ matrix.python }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Test with the newest compatible dependencies
+        run: |
+          python -m pip install pytest --upgrade --editable packages/python
+          python -m pip check
+          python -m pytest packages/python
+
+  rust:
+    name: Rust client
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      CARGO_TERM_COLOR: always
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 26
+          cache: npm
+      - name: Set up Rust
+        run: |
+          rustup toolchain install "$RUST_TOOLCHAIN" --profile minimal --component clippy,rustfmt
+          rustup default "$RUST_TOOLCHAIN"
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+            ~/.cargo/git/db
+            target/debug
+          key: cargo-${{ runner.os }}-${{ env.RUST_TOOLCHAIN }}-${{ hashFiles('Cargo.lock') }}-${{ github.sha }}
+          restore-keys: cargo-${{ runner.os }}-${{ env.RUST_TOOLCHAIN }}-${{ hashFiles('Cargo.lock') }}-
+      - name: Install locked dependencies
+        run: npm ci
+      # The generator is the pinned public Spargen fork (Cargo.toml), built from source.
+      - name: Regenerate from the committed contract and compare
+        run: |
+          npm run regenerate:rust
+          npm run check:rust-codegen
+          git diff --exit-code
+          test -z "$(git ls-files --others --exclude-standard)"
+      # Every schema and SDK type name comes from the contract; generation
+      # already fails on an unnamed schema, this also checks the generated types.
+      # Under a recorded naming waiver (config/sdk.json `namingWaiver`) the
+      # check reports the violations as a warning instead of failing.
+      - name: Check schema and SDK type names
+        run: npm run check:naming -- --sdk rust
+      - name: Lint and test
+        run: |
+          cargo fmt --all --check
+          cargo clippy --locked --workspace --all-targets -- -D warnings
+          cargo check --locked -p photonhq-api --features blocking --all-targets
+          npm run test:rust
+      - name: Package and build a clean consumer
+        run: |
+          cargo package --locked --no-verify -p photonhq-api
+          mkdir "$RUNNER_TEMP/extracted"
+          tar -xzf target/package/photonhq-api-*.crate -C "$RUNNER_TEMP/extracted"
+          node tools/public-content/check.mjs --tree "$RUNNER_TEMP/extracted"
+          consumer="$RUNNER_TEMP/consumer"
+          cargo new --quiet --lib --name photon-ci-consumer "$consumer"
+          printf '\nphotonhq-api = { path = "%s" }\n' "$RUNNER_TEMP"/extracted/photonhq-api-* >> "$consumer/Cargo.toml"
+          printf 'use photon_ai_api::PhotonClientBuilder;\npub fn builds() { let _ = PhotonClientBuilder::new(); }\n' > "$consumer/src/lib.rs"
+          cargo build --manifest-path "$consumer/Cargo.toml"
+      - name: Audit dependencies
+        run: |
+          cargo install cargo-audit --version 0.22.2 --locked
+          cargo audit

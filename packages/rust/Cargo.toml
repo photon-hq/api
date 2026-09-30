@@ -1,0 +1,29 @@
+[package]
+name = "photonhq-api"
+version = "0.1.0"
+description = "Spargen-generated Photon OpenAPI 3.1 client"
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+include = ["src/**", "Cargo.toml", "README.md", "LICENSE"]
+
+[lib]
+name = "photon_ai_api"
+doctest = false
+
+[features]
+# Synchronous `BlockingClient`: wraps the async client with a current-thread
+# tokio runtime (tokio is already a dependency), so no extra crates are needed.
+blocking = []
+
+[dependencies]
+bytes.workspace = true
+httpdate.workspace = true
+rand.workspace = true
+reqwest.workspace = true
+secrecy.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+time.workspace = true
+tokio.workspace = true

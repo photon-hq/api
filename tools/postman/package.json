@@ -1,0 +1,19 @@
+{
+  "name": "photon-postman-generator",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=26 <27"
+  },
+  "devDependencies": {
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
+    "openapi-to-postmanv2": "6.3.3"
+  },
+  "overrides": {
+    "@faker-js/faker": "5.5.3",
+    "js-yaml": "4.3.2",
+    "yaml": "1.10.3",
+    "uuid": "11.1.1"
+  }
+}
