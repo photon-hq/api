@@ -1,6 +1,6 @@
 {
   "name": "@photon-ai/api",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Generated Photon API RPC client for Node.js and browsers",
   "license": "MIT",
   "type": "module",

@@ -10,7 +10,8 @@ import { repositoryRoot } from "./shared.js";
 
 const script = fileURLToPath(new URL("./check-naming.js", import.meta.url));
 const unnamed = resolve(repositoryRoot, "tools/openapi/fixtures/naming/unnamed.json");
-const namingWaiver = { reason: "Preview release", approvedBy: "API owner", approvedOn: "2026-09-29", until: "0.2.0" };
+const namingWaiver = { reason: "Preview release", until: "0.2.0" };
+const approvedWaiver = { ...namingWaiver, approvedBy: "API owner", approvedOn: "2026-01-15" };
 // A production configuration (the public repository has no config/sdk.production.json).
 const production = {
   environment: "production",
@@ -42,12 +43,19 @@ test("the naming gate fails without a waiver and reports without failing under o
   // The same violations are reported either way.
   assert.ok(waived.report.violations.length > 0);
   assert.deepEqual(waived.report.violations, strict.report.violations);
-  assert.match(waived.stdout, /Naming not enforced: \d+ violations reported, not failed\. Waiver approved by API owner on 2026-09-29 until 0\.2\.0/);
+  assert.match(waived.stdout, /Naming not enforced until 0\.2\.0: \d+ violations reported, not failed\. Preview release/);
+  assert.doesNotMatch(waived.stdout, /approved/);
 });
 
 test("the waiver notice asks for removal once nothing is waived", () => {
   assert.match(waiverNotice(namingWaiver, 0), /remove the naming waiver/);
-  assert.match(waiverNotice(namingWaiver, 3), /3 violations reported/);
+  assert.equal(waiverNotice(namingWaiver, 3), "Naming not enforced until 0.2.0: 3 violations reported, not failed. Preview release");
+  assert.equal(
+    waiverNotice(approvedWaiver, 3),
+    "Naming not enforced until 0.2.0: 3 violations reported, not failed. Waiver approved by API owner on 2026-01-15. Preview release",
+  );
+  assert.doesNotMatch(waiverNotice(namingWaiver, 0), /approved/);
+  assert.match(waiverNotice(approvedWaiver, 0), /approved by API owner on 2026-01-15/);
   const scratch = mkdtempSync(join(tmpdir(), "photon-check-naming-test-"));
   try {
     const path = join(scratch, "sdk.json");
