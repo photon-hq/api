@@ -21,11 +21,11 @@ export type AssignSmsLineCampaignInput = {
     };
 };
 
-export const AssignSmsLineCampaignOutputSchema = /* @__PURE__ */ (() => z.union([GeneratedZod.zAssignSmsLineCampaignResponse200ApplicationJson, GeneratedZod.zAssignSmsLineCampaignResponse202ApplicationJson]))();
+export const AssignSmsLineCampaignOutputSchema = GeneratedZod.zOperation;
 export type AssignSmsLineCampaignOutput = z.output<typeof AssignSmsLineCampaignOutputSchema>;
 export const AssignSmsLineCampaignOutputSchemas: OutputSchemas<AssignSmsLineCampaignOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zAssignSmsLineCampaignResponse200ApplicationJson,
-    "202": GeneratedZod.zAssignSmsLineCampaignResponse202ApplicationJson,
+    "200": GeneratedZod.zOperation,
+    "202": GeneratedZod.zOperation,
 }))();
 
 export const AssignVoiceLineProfileInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -37,10 +37,10 @@ export type AssignVoiceLineProfileInput = {
     path: NonNullable<WireTypes.AssignVoiceLineProfileData["path"]>;
 };
 
-export const AssignVoiceLineProfileOutputSchema = GeneratedZod.zAssignVoiceLineProfileResponse200ApplicationJson;
+export const AssignVoiceLineProfileOutputSchema = GeneratedZod.zVoiceLineProfileAssignment;
 export type AssignVoiceLineProfileOutput = z.output<typeof AssignVoiceLineProfileOutputSchema>;
 export const AssignVoiceLineProfileOutputSchemas: OutputSchemas<AssignVoiceLineProfileOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zAssignVoiceLineProfileResponse200ApplicationJson,
+    "200": GeneratedZod.zVoiceLineProfileAssignment,
 }))();
 
 export const BatchUpdateVoiceLineProfileAssignmentsInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -52,10 +52,10 @@ export type BatchUpdateVoiceLineProfileAssignmentsInput = {
     path: NonNullable<WireTypes.BatchUpdateVoiceLineProfileAssignmentsData["path"]>;
 };
 
-export const BatchUpdateVoiceLineProfileAssignmentsOutputSchema = GeneratedZod.zBatchUpdateVoiceLineProfileAssignmentsResponse200ApplicationJson;
+export const BatchUpdateVoiceLineProfileAssignmentsOutputSchema = GeneratedZod.zBatchUpdateVoiceLineProfileAssignmentsResponse;
 export type BatchUpdateVoiceLineProfileAssignmentsOutput = z.output<typeof BatchUpdateVoiceLineProfileAssignmentsOutputSchema>;
 export const BatchUpdateVoiceLineProfileAssignmentsOutputSchemas: OutputSchemas<BatchUpdateVoiceLineProfileAssignmentsOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zBatchUpdateVoiceLineProfileAssignmentsResponse200ApplicationJson,
+    "200": GeneratedZod.zBatchUpdateVoiceLineProfileAssignmentsResponse,
 }))();
 
 export const BeginInvitationSsoInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -67,10 +67,10 @@ export type BeginInvitationSsoInput = {
     path: NonNullable<WireTypes.BeginInvitationSsoData["path"]>;
 };
 
-export const BeginInvitationSsoOutputSchema = GeneratedZod.zBeginInvitationSsoResponse200ApplicationJson;
+export const BeginInvitationSsoOutputSchema = GeneratedZod.zOrganizationAuthenticationRedirect;
 export type BeginInvitationSsoOutput = z.output<typeof BeginInvitationSsoOutputSchema>;
 export const BeginInvitationSsoOutputSchemas: OutputSchemas<BeginInvitationSsoOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zBeginInvitationSsoResponse200ApplicationJson,
+    "200": GeneratedZod.zOrganizationAuthenticationRedirect,
 }))();
 
 export const BeginOrganizationAuthenticationInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -82,10 +82,10 @@ export type BeginOrganizationAuthenticationInput = {
     path: NonNullable<WireTypes.BeginOrganizationAuthenticationData["path"]>;
 };
 
-export const BeginOrganizationAuthenticationOutputSchema = GeneratedZod.zBeginOrganizationAuthenticationResponse200ApplicationJson;
+export const BeginOrganizationAuthenticationOutputSchema = GeneratedZod.zOrganizationAuthenticationRedirect;
 export type BeginOrganizationAuthenticationOutput = z.output<typeof BeginOrganizationAuthenticationOutputSchema>;
 export const BeginOrganizationAuthenticationOutputSchemas: OutputSchemas<BeginOrganizationAuthenticationOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zBeginOrganizationAuthenticationResponse200ApplicationJson,
+    "200": GeneratedZod.zOrganizationAuthenticationRedirect,
 }))();
 
 export const BeginOrganizationClosureAuthenticationInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -97,10 +97,10 @@ export type BeginOrganizationClosureAuthenticationInput = {
     path: NonNullable<WireTypes.BeginOrganizationClosureAuthenticationData["path"]>;
 };
 
-export const BeginOrganizationClosureAuthenticationOutputSchema = GeneratedZod.zBeginOrganizationClosureAuthenticationResponse200ApplicationJson;
+export const BeginOrganizationClosureAuthenticationOutputSchema = GeneratedZod.zOrganizationAuthenticationRedirect;
 export type BeginOrganizationClosureAuthenticationOutput = z.output<typeof BeginOrganizationClosureAuthenticationOutputSchema>;
 export const BeginOrganizationClosureAuthenticationOutputSchemas: OutputSchemas<BeginOrganizationClosureAuthenticationOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zBeginOrganizationClosureAuthenticationResponse200ApplicationJson,
+    "200": GeneratedZod.zOrganizationAuthenticationRedirect,
 }))();
 
 export const BeginOrganizationSsoAdmissionInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -112,10 +112,10 @@ export type BeginOrganizationSsoAdmissionInput = {
     path: NonNullable<WireTypes.BeginOrganizationSsoAdmissionData["path"]>;
 };
 
-export const BeginOrganizationSsoAdmissionOutputSchema = GeneratedZod.zBeginOrganizationSsoAdmissionResponse200ApplicationJson;
+export const BeginOrganizationSsoAdmissionOutputSchema = GeneratedZod.zOrganizationAuthenticationRedirect;
 export type BeginOrganizationSsoAdmissionOutput = z.output<typeof BeginOrganizationSsoAdmissionOutputSchema>;
 export const BeginOrganizationSsoAdmissionOutputSchemas: OutputSchemas<BeginOrganizationSsoAdmissionOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zBeginOrganizationSsoAdmissionResponse200ApplicationJson,
+    "200": GeneratedZod.zOrganizationAuthenticationRedirect,
 }))();
 
 export const CancelOperationInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -125,10 +125,10 @@ export type CancelOperationInput = {
     path: NonNullable<WireTypes.CancelOperationData["path"]>;
 };
 
-export const CancelOperationOutputSchema = GeneratedZod.zCancelOperationResponse200ApplicationJson;
+export const CancelOperationOutputSchema = GeneratedZod.zOperation;
 export type CancelOperationOutput = z.output<typeof CancelOperationOutputSchema>;
 export const CancelOperationOutputSchemas: OutputSchemas<CancelOperationOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zCancelOperationResponse200ApplicationJson,
+    "200": GeneratedZod.zOperation,
 }))();
 
 export const CancelSubscriptionInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -146,10 +146,10 @@ export type CancelSubscriptionInput = {
     };
 };
 
-export const CancelSubscriptionOutputSchema = GeneratedZod.zCancelSubscriptionResponse200ApplicationJson;
+export const CancelSubscriptionOutputSchema = GeneratedZod.zCancelSubscriptionResponse;
 export type CancelSubscriptionOutput = z.output<typeof CancelSubscriptionOutputSchema>;
 export const CancelSubscriptionOutputSchemas: OutputSchemas<CancelSubscriptionOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zCancelSubscriptionResponse200ApplicationJson,
+    "200": GeneratedZod.zCancelSubscriptionResponse,
 }))();
 
 export const ChangePlanInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -167,11 +167,11 @@ export type ChangePlanInput = {
     };
 };
 
-export const ChangePlanOutputSchema = /* @__PURE__ */ (() => z.union([GeneratedZod.zChangePlanResponse200ApplicationJson, GeneratedZod.zChangePlanResponse202ApplicationJson]))();
+export const ChangePlanOutputSchema = /* @__PURE__ */ (() => z.union([GeneratedZod.zTerminalBillingOperation, GeneratedZod.zPendingBillingOperation]))();
 export type ChangePlanOutput = z.output<typeof ChangePlanOutputSchema>;
 export const ChangePlanOutputSchemas: OutputSchemas<ChangePlanOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zChangePlanResponse200ApplicationJson,
-    "202": GeneratedZod.zChangePlanResponse202ApplicationJson,
+    "200": GeneratedZod.zTerminalBillingOperation,
+    "202": GeneratedZod.zPendingBillingOperation,
 }))();
 
 export const CheckProjectSlugAvailabilityInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -183,10 +183,10 @@ export type CheckProjectSlugAvailabilityInput = {
     query: NonNullable<WireTypes.CheckProjectSlugAvailabilityData["query"]>;
 };
 
-export const CheckProjectSlugAvailabilityOutputSchema = GeneratedZod.zCheckProjectSlugAvailabilityResponse200ApplicationJson;
+export const CheckProjectSlugAvailabilityOutputSchema = GeneratedZod.zCheckProjectSlugAvailabilityResponse;
 export type CheckProjectSlugAvailabilityOutput = z.output<typeof CheckProjectSlugAvailabilityOutputSchema>;
 export const CheckProjectSlugAvailabilityOutputSchemas: OutputSchemas<CheckProjectSlugAvailabilityOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zCheckProjectSlugAvailabilityResponse200ApplicationJson,
+    "200": GeneratedZod.zCheckProjectSlugAvailabilityResponse,
 }))();
 
 export const CommitAccountProfilePictureInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -202,10 +202,10 @@ export type CommitAccountProfilePictureInput = {
     };
 };
 
-export const CommitAccountProfilePictureOutputSchema = GeneratedZod.zCommitAccountProfilePictureResponse200ApplicationJson;
+export const CommitAccountProfilePictureOutputSchema = GeneratedZod.zAccount;
 export type CommitAccountProfilePictureOutput = z.output<typeof CommitAccountProfilePictureOutputSchema>;
 export const CommitAccountProfilePictureOutputSchemas: OutputSchemas<CommitAccountProfilePictureOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zCommitAccountProfilePictureResponse200ApplicationJson,
+    "200": GeneratedZod.zAccount,
 }))();
 
 export const CommitAgentProfileAvatarInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -223,10 +223,10 @@ export type CommitAgentProfileAvatarInput = {
     };
 };
 
-export const CommitAgentProfileAvatarOutputSchema = GeneratedZod.zCommitAgentProfileAvatarResponse200ApplicationJson;
+export const CommitAgentProfileAvatarOutputSchema = GeneratedZod.zAgentProfile;
 export type CommitAgentProfileAvatarOutput = z.output<typeof CommitAgentProfileAvatarOutputSchema>;
 export const CommitAgentProfileAvatarOutputSchemas: OutputSchemas<CommitAgentProfileAvatarOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zCommitAgentProfileAvatarResponse200ApplicationJson,
+    "200": GeneratedZod.zAgentProfile,
 }))();
 
 export const ConfigureVoiceProfileOutboundInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -244,11 +244,11 @@ export type ConfigureVoiceProfileOutboundInput = {
     };
 };
 
-export const ConfigureVoiceProfileOutboundOutputSchema = /* @__PURE__ */ (() => z.union([GeneratedZod.zConfigureVoiceProfileOutboundResponse200ApplicationJson, GeneratedZod.zConfigureVoiceProfileOutboundResponse201ApplicationJson]))();
+export const ConfigureVoiceProfileOutboundOutputSchema = GeneratedZod.zConfigureVoiceProfileOutboundResponse;
 export type ConfigureVoiceProfileOutboundOutput = z.output<typeof ConfigureVoiceProfileOutboundOutputSchema>;
 export const ConfigureVoiceProfileOutboundOutputSchemas: OutputSchemas<ConfigureVoiceProfileOutboundOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zConfigureVoiceProfileOutboundResponse200ApplicationJson,
-    "201": GeneratedZod.zConfigureVoiceProfileOutboundResponse201ApplicationJson,
+    "200": GeneratedZod.zConfigureVoiceProfileOutboundResponse,
+    "201": GeneratedZod.zConfigureVoiceProfileOutboundResponse,
 }))();
 
 export const ConfirmAccountPhoneVerificationInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -258,10 +258,10 @@ export type ConfirmAccountPhoneVerificationInput = {
     body: WireTypes.ConfirmAccountPhoneVerificationData["body"];
 };
 
-export const ConfirmAccountPhoneVerificationOutputSchema = GeneratedZod.zConfirmAccountPhoneVerificationResponse200ApplicationJson;
+export const ConfirmAccountPhoneVerificationOutputSchema = GeneratedZod.zAccount;
 export type ConfirmAccountPhoneVerificationOutput = z.output<typeof ConfirmAccountPhoneVerificationOutputSchema>;
 export const ConfirmAccountPhoneVerificationOutputSchemas: OutputSchemas<ConfirmAccountPhoneVerificationOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zConfirmAccountPhoneVerificationResponse200ApplicationJson,
+    "200": GeneratedZod.zAccount,
 }))();
 
 export const ConnectEmailDomainInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -279,10 +279,10 @@ export type ConnectEmailDomainInput = {
     };
 };
 
-export const ConnectEmailDomainOutputSchema = GeneratedZod.zConnectEmailDomainResponse202ApplicationJson;
+export const ConnectEmailDomainOutputSchema = GeneratedZod.zOperation;
 export type ConnectEmailDomainOutput = z.output<typeof ConnectEmailDomainOutputSchema>;
 export const ConnectEmailDomainOutputSchemas: OutputSchemas<ConnectEmailDomainOutput> = /* @__PURE__ */ (() => ({
-    "202": GeneratedZod.zConnectEmailDomainResponse202ApplicationJson,
+    "202": GeneratedZod.zOperation,
 }))();
 
 export const ConnectTelegramBotInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -300,10 +300,10 @@ export type ConnectTelegramBotInput = {
     };
 };
 
-export const ConnectTelegramBotOutputSchema = GeneratedZod.zConnectTelegramBotResponse202ApplicationJson;
+export const ConnectTelegramBotOutputSchema = GeneratedZod.zOperation;
 export type ConnectTelegramBotOutput = z.output<typeof ConnectTelegramBotOutputSchema>;
 export const ConnectTelegramBotOutputSchemas: OutputSchemas<ConnectTelegramBotOutput> = /* @__PURE__ */ (() => ({
-    "202": GeneratedZod.zConnectTelegramBotResponse202ApplicationJson,
+    "202": GeneratedZod.zOperation,
 }))();
 
 export const ConnectWhatsappBusinessInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -321,10 +321,10 @@ export type ConnectWhatsappBusinessInput = {
     };
 };
 
-export const ConnectWhatsappBusinessOutputSchema = GeneratedZod.zConnectWhatsappBusinessResponse202ApplicationJson;
+export const ConnectWhatsappBusinessOutputSchema = GeneratedZod.zOperation;
 export type ConnectWhatsappBusinessOutput = z.output<typeof ConnectWhatsappBusinessOutputSchema>;
 export const ConnectWhatsappBusinessOutputSchemas: OutputSchemas<ConnectWhatsappBusinessOutput> = /* @__PURE__ */ (() => ({
-    "202": GeneratedZod.zConnectWhatsappBusinessResponse202ApplicationJson,
+    "202": GeneratedZod.zOperation,
 }))();
 
 export const CountProjectsInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -336,10 +336,10 @@ export type CountProjectsInput = {
     query?: NonNullable<WireTypes.CountProjectsData["query"]>;
 };
 
-export const CountProjectsOutputSchema = GeneratedZod.zCountProjectsResponse200ApplicationJson;
+export const CountProjectsOutputSchema = GeneratedZod.zProjectCount;
 export type CountProjectsOutput = z.output<typeof CountProjectsOutputSchema>;
 export const CountProjectsOutputSchemas: OutputSchemas<CountProjectsOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zCountProjectsResponse200ApplicationJson,
+    "200": GeneratedZod.zProjectCount,
 }))();
 
 export const CreateAccountProfilePictureUploadInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -349,10 +349,10 @@ export type CreateAccountProfilePictureUploadInput = {
     body: WireTypes.CreateAccountProfilePictureUploadData["body"];
 };
 
-export const CreateAccountProfilePictureUploadOutputSchema = GeneratedZod.zCreateAccountProfilePictureUploadResponse201ApplicationJson;
+export const CreateAccountProfilePictureUploadOutputSchema = GeneratedZod.zProfilePictureUpload;
 export type CreateAccountProfilePictureUploadOutput = z.output<typeof CreateAccountProfilePictureUploadOutputSchema>;
 export const CreateAccountProfilePictureUploadOutputSchemas: OutputSchemas<CreateAccountProfilePictureUploadOutput> = /* @__PURE__ */ (() => ({
-    "201": GeneratedZod.zCreateAccountProfilePictureUploadResponse201ApplicationJson,
+    "201": GeneratedZod.zProfilePictureUpload,
 }))();
 
 export const CreateAccountServiceKeyInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -368,10 +368,10 @@ export type CreateAccountServiceKeyInput = {
     };
 };
 
-export const CreateAccountServiceKeyOutputSchema = GeneratedZod.zCreateAccountServiceKeyResponse201ApplicationJson;
+export const CreateAccountServiceKeyOutputSchema = GeneratedZod.zCreateAccountServiceKeyResponse;
 export type CreateAccountServiceKeyOutput = z.output<typeof CreateAccountServiceKeyOutputSchema>;
 export const CreateAccountServiceKeyOutputSchemas: OutputSchemas<CreateAccountServiceKeyOutput> = /* @__PURE__ */ (() => ({
-    "201": GeneratedZod.zCreateAccountServiceKeyResponse201ApplicationJson,
+    "201": GeneratedZod.zCreateAccountServiceKeyResponse,
 }))();
 
 export const CreateAgentProfileAvatarUploadInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -383,10 +383,10 @@ export type CreateAgentProfileAvatarUploadInput = {
     path: NonNullable<WireTypes.CreateAgentProfileAvatarUploadData["path"]>;
 };
 
-export const CreateAgentProfileAvatarUploadOutputSchema = GeneratedZod.zCreateAgentProfileAvatarUploadResponse201ApplicationJson;
+export const CreateAgentProfileAvatarUploadOutputSchema = GeneratedZod.zAgentProfileAvatarUpload;
 export type CreateAgentProfileAvatarUploadOutput = z.output<typeof CreateAgentProfileAvatarUploadOutputSchema>;
 export const CreateAgentProfileAvatarUploadOutputSchemas: OutputSchemas<CreateAgentProfileAvatarUploadOutput> = /* @__PURE__ */ (() => ({
-    "201": GeneratedZod.zCreateAgentProfileAvatarUploadResponse201ApplicationJson,
+    "201": GeneratedZod.zAgentProfileAvatarUpload,
 }))();
 
 export const CreateAppInstallationRequestInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -396,10 +396,10 @@ export type CreateAppInstallationRequestInput = {
     body: WireTypes.CreateAppInstallationRequestData["body"];
 };
 
-export const CreateAppInstallationRequestOutputSchema = GeneratedZod.zCreateAppInstallationRequestResponse201ApplicationJson;
+export const CreateAppInstallationRequestOutputSchema = GeneratedZod.zCreateAppInstallationRequestResponse;
 export type CreateAppInstallationRequestOutput = z.output<typeof CreateAppInstallationRequestOutputSchema>;
 export const CreateAppInstallationRequestOutputSchemas: OutputSchemas<CreateAppInstallationRequestOutput> = /* @__PURE__ */ (() => ({
-    "201": GeneratedZod.zCreateAppInstallationRequestResponse201ApplicationJson,
+    "201": GeneratedZod.zCreateAppInstallationRequestResponse,
 }))();
 
 export const CreateDefaultVoiceProfileInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -411,11 +411,11 @@ export type CreateDefaultVoiceProfileInput = {
     path: NonNullable<WireTypes.CreateDefaultVoiceProfileData["path"]>;
 };
 
-export const CreateDefaultVoiceProfileOutputSchema = /* @__PURE__ */ (() => z.union([GeneratedZod.zCreateDefaultVoiceProfileResponse200ApplicationJson, GeneratedZod.zCreateDefaultVoiceProfileResponse201ApplicationJson]))();
+export const CreateDefaultVoiceProfileOutputSchema = GeneratedZod.zVoiceProfile;
 export type CreateDefaultVoiceProfileOutput = z.output<typeof CreateDefaultVoiceProfileOutputSchema>;
 export const CreateDefaultVoiceProfileOutputSchemas: OutputSchemas<CreateDefaultVoiceProfileOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zCreateDefaultVoiceProfileResponse200ApplicationJson,
-    "201": GeneratedZod.zCreateDefaultVoiceProfileResponse201ApplicationJson,
+    "200": GeneratedZod.zVoiceProfile,
+    "201": GeneratedZod.zVoiceProfile,
 }))();
 
 export const CreateOrganizationPaymentMethodCheckoutInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -431,10 +431,10 @@ export type CreateOrganizationPaymentMethodCheckoutInput = {
     };
 };
 
-export const CreateOrganizationPaymentMethodCheckoutOutputSchema = GeneratedZod.zCreateOrganizationPaymentMethodCheckoutResponse200ApplicationJson;
+export const CreateOrganizationPaymentMethodCheckoutOutputSchema = GeneratedZod.zCreateOrganizationPaymentMethodCheckoutResponse;
 export type CreateOrganizationPaymentMethodCheckoutOutput = z.output<typeof CreateOrganizationPaymentMethodCheckoutOutputSchema>;
 export const CreateOrganizationPaymentMethodCheckoutOutputSchemas: OutputSchemas<CreateOrganizationPaymentMethodCheckoutOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zCreateOrganizationPaymentMethodCheckoutResponse200ApplicationJson,
+    "200": GeneratedZod.zCreateOrganizationPaymentMethodCheckoutResponse,
 }))();
 
 export const CreateOrganizationSetupIntentInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -450,10 +450,10 @@ export type CreateOrganizationSetupIntentInput = {
     };
 };
 
-export const CreateOrganizationSetupIntentOutputSchema = GeneratedZod.zCreateOrganizationSetupIntentResponse200ApplicationJson;
+export const CreateOrganizationSetupIntentOutputSchema = GeneratedZod.zCreateOrganizationSetupIntentResponse;
 export type CreateOrganizationSetupIntentOutput = z.output<typeof CreateOrganizationSetupIntentOutputSchema>;
 export const CreateOrganizationSetupIntentOutputSchemas: OutputSchemas<CreateOrganizationSetupIntentOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zCreateOrganizationSetupIntentResponse200ApplicationJson,
+    "200": GeneratedZod.zCreateOrganizationSetupIntentResponse,
 }))();
 
 export const CreateOrganizationSsoPortalLinkInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -465,10 +465,10 @@ export type CreateOrganizationSsoPortalLinkInput = {
     path: NonNullable<WireTypes.CreateOrganizationSsoPortalLinkData["path"]>;
 };
 
-export const CreateOrganizationSsoPortalLinkOutputSchema = GeneratedZod.zCreateOrganizationSsoPortalLinkResponse200ApplicationJson;
+export const CreateOrganizationSsoPortalLinkOutputSchema = GeneratedZod.zCreateOrganizationSsoPortalLinkResponse;
 export type CreateOrganizationSsoPortalLinkOutput = z.output<typeof CreateOrganizationSsoPortalLinkOutputSchema>;
 export const CreateOrganizationSsoPortalLinkOutputSchemas: OutputSchemas<CreateOrganizationSsoPortalLinkOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zCreateOrganizationSsoPortalLinkResponse200ApplicationJson,
+    "200": GeneratedZod.zCreateOrganizationSsoPortalLinkResponse,
 }))();
 
 export const CreateProjectInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -486,10 +486,10 @@ export type CreateProjectInput = {
     };
 };
 
-export const CreateProjectOutputSchema = GeneratedZod.zCreateProjectResponse201ApplicationJson;
+export const CreateProjectOutputSchema = GeneratedZod.zProject;
 export type CreateProjectOutput = z.output<typeof CreateProjectOutputSchema>;
 export const CreateProjectOutputSchemas: OutputSchemas<CreateProjectOutput> = /* @__PURE__ */ (() => ({
-    "201": GeneratedZod.zCreateProjectResponse201ApplicationJson,
+    "201": GeneratedZod.zProject,
 }))();
 
 export const CreateProjectApiKeyInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -507,10 +507,10 @@ export type CreateProjectApiKeyInput = {
     };
 };
 
-export const CreateProjectApiKeyOutputSchema = GeneratedZod.zCreateProjectApiKeyResponse201ApplicationJson;
+export const CreateProjectApiKeyOutputSchema = GeneratedZod.zCreateProjectApiKeyResponse;
 export type CreateProjectApiKeyOutput = z.output<typeof CreateProjectApiKeyOutputSchema>;
 export const CreateProjectApiKeyOutputSchemas: OutputSchemas<CreateProjectApiKeyOutput> = /* @__PURE__ */ (() => ({
-    "201": GeneratedZod.zCreateProjectApiKeyResponse201ApplicationJson,
+    "201": GeneratedZod.zCreateProjectApiKeyResponse,
 }))();
 
 export const CreateSharedLineAssignmentInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -528,10 +528,10 @@ export type CreateSharedLineAssignmentInput = {
     };
 };
 
-export const CreateSharedLineAssignmentOutputSchema = GeneratedZod.zCreateSharedLineAssignmentResponse201ApplicationJson;
+export const CreateSharedLineAssignmentOutputSchema = GeneratedZod.zSharedLineAssignment;
 export type CreateSharedLineAssignmentOutput = z.output<typeof CreateSharedLineAssignmentOutputSchema>;
 export const CreateSharedLineAssignmentOutputSchemas: OutputSchemas<CreateSharedLineAssignmentOutput> = /* @__PURE__ */ (() => ({
-    "201": GeneratedZod.zCreateSharedLineAssignmentResponse201ApplicationJson,
+    "201": GeneratedZod.zSharedLineAssignment,
 }))();
 
 export const CreateVoiceProfileInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -543,10 +543,10 @@ export type CreateVoiceProfileInput = {
     path: NonNullable<WireTypes.CreateVoiceProfileData["path"]>;
 };
 
-export const CreateVoiceProfileOutputSchema = GeneratedZod.zCreateVoiceProfileResponse201ApplicationJson;
+export const CreateVoiceProfileOutputSchema = GeneratedZod.zVoiceProfile;
 export type CreateVoiceProfileOutput = z.output<typeof CreateVoiceProfileOutputSchema>;
 export const CreateVoiceProfileOutputSchemas: OutputSchemas<CreateVoiceProfileOutput> = /* @__PURE__ */ (() => ({
-    "201": GeneratedZod.zCreateVoiceProfileResponse201ApplicationJson,
+    "201": GeneratedZod.zVoiceProfile,
 }))();
 
 export const CreateWebhookDestinationInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -564,10 +564,10 @@ export type CreateWebhookDestinationInput = {
     };
 };
 
-export const CreateWebhookDestinationOutputSchema = GeneratedZod.zCreateWebhookDestinationResponse201ApplicationJson;
+export const CreateWebhookDestinationOutputSchema = GeneratedZod.zCreateWebhookDestinationResponse;
 export type CreateWebhookDestinationOutput = z.output<typeof CreateWebhookDestinationOutputSchema>;
 export const CreateWebhookDestinationOutputSchemas: OutputSchemas<CreateWebhookDestinationOutput> = /* @__PURE__ */ (() => ({
-    "201": GeneratedZod.zCreateWebhookDestinationResponse201ApplicationJson,
+    "201": GeneratedZod.zCreateWebhookDestinationResponse,
 }))();
 
 export const CreateWhatsappSharedLineAssignmentInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -585,10 +585,10 @@ export type CreateWhatsappSharedLineAssignmentInput = {
     };
 };
 
-export const CreateWhatsappSharedLineAssignmentOutputSchema = GeneratedZod.zCreateWhatsappSharedLineAssignmentResponse201ApplicationJson;
+export const CreateWhatsappSharedLineAssignmentOutputSchema = GeneratedZod.zSharedLineAssignment;
 export type CreateWhatsappSharedLineAssignmentOutput = z.output<typeof CreateWhatsappSharedLineAssignmentOutputSchema>;
 export const CreateWhatsappSharedLineAssignmentOutputSchemas: OutputSchemas<CreateWhatsappSharedLineAssignmentOutput> = /* @__PURE__ */ (() => ({
-    "201": GeneratedZod.zCreateWhatsappSharedLineAssignmentResponse201ApplicationJson,
+    "201": GeneratedZod.zSharedLineAssignment,
 }))();
 
 export const CreateWhatsappVoipSenderInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -606,10 +606,10 @@ export type CreateWhatsappVoipSenderInput = {
     };
 };
 
-export const CreateWhatsappVoipSenderOutputSchema = GeneratedZod.zCreateWhatsappVoipSenderResponse202ApplicationJson;
+export const CreateWhatsappVoipSenderOutputSchema = GeneratedZod.zOperation;
 export type CreateWhatsappVoipSenderOutput = z.output<typeof CreateWhatsappVoipSenderOutputSchema>;
 export const CreateWhatsappVoipSenderOutputSchemas: OutputSchemas<CreateWhatsappVoipSenderOutput> = /* @__PURE__ */ (() => ({
-    "202": GeneratedZod.zCreateWhatsappVoipSenderResponse202ApplicationJson,
+    "202": GeneratedZod.zOperation,
 }))();
 
 export const DeleteAccountInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -617,10 +617,10 @@ export const DeleteAccountInputSchema = /* @__PURE__ */ (() => z.strictObject({
 }))();
 export type DeleteAccountInput = Record<string, never>;
 
-export const DeleteAccountOutputSchema = GeneratedZod.zDeleteAccountResponse200ApplicationJson;
+export const DeleteAccountOutputSchema = GeneratedZod.zAccount;
 export type DeleteAccountOutput = z.output<typeof DeleteAccountOutputSchema>;
 export const DeleteAccountOutputSchemas: OutputSchemas<DeleteAccountOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zDeleteAccountResponse200ApplicationJson,
+    "200": GeneratedZod.zAccount,
 }))();
 
 export const DeleteProjectInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -636,10 +636,10 @@ export type DeleteProjectInput = {
     };
 };
 
-export const DeleteProjectOutputSchema = GeneratedZod.zDeleteProjectResponse200ApplicationJson;
+export const DeleteProjectOutputSchema = GeneratedZod.zProject;
 export type DeleteProjectOutput = z.output<typeof DeleteProjectOutputSchema>;
 export const DeleteProjectOutputSchemas: OutputSchemas<DeleteProjectOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zDeleteProjectResponse200ApplicationJson,
+    "200": GeneratedZod.zProject,
 }))();
 
 export const DeleteVoiceProfileInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -666,10 +666,10 @@ export type DeleteVoiceProfileInboundInput = {
     query: NonNullable<WireTypes.DeleteVoiceProfileInboundData["query"]>;
 };
 
-export const DeleteVoiceProfileInboundOutputSchema = GeneratedZod.zDeleteVoiceProfileInboundResponse200ApplicationJson;
+export const DeleteVoiceProfileInboundOutputSchema = GeneratedZod.zVoiceProfileInboundConfiguration;
 export type DeleteVoiceProfileInboundOutput = z.output<typeof DeleteVoiceProfileInboundOutputSchema>;
 export const DeleteVoiceProfileInboundOutputSchemas: OutputSchemas<DeleteVoiceProfileInboundOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zDeleteVoiceProfileInboundResponse200ApplicationJson,
+    "200": GeneratedZod.zVoiceProfileInboundConfiguration,
 }))();
 
 export const DeleteVoiceProfileOutboundInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -681,10 +681,10 @@ export type DeleteVoiceProfileOutboundInput = {
     query: NonNullable<WireTypes.DeleteVoiceProfileOutboundData["query"]>;
 };
 
-export const DeleteVoiceProfileOutboundOutputSchema = GeneratedZod.zDeleteVoiceProfileOutboundResponse200ApplicationJson;
+export const DeleteVoiceProfileOutboundOutputSchema = GeneratedZod.zDeleteVoiceProfileOutboundResponse;
 export type DeleteVoiceProfileOutboundOutput = z.output<typeof DeleteVoiceProfileOutboundOutputSchema>;
 export const DeleteVoiceProfileOutboundOutputSchemas: OutputSchemas<DeleteVoiceProfileOutboundOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zDeleteVoiceProfileOutboundResponse200ApplicationJson,
+    "200": GeneratedZod.zDeleteVoiceProfileOutboundResponse,
 }))();
 
 export const DeleteWebhookDestinationInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -694,10 +694,10 @@ export type DeleteWebhookDestinationInput = {
     path: NonNullable<WireTypes.DeleteWebhookDestinationData["path"]>;
 };
 
-export const DeleteWebhookDestinationOutputSchema = GeneratedZod.zDeleteWebhookDestinationResponse200ApplicationJson;
+export const DeleteWebhookDestinationOutputSchema = GeneratedZod.zWebhookDestination;
 export type DeleteWebhookDestinationOutput = z.output<typeof DeleteWebhookDestinationOutputSchema>;
 export const DeleteWebhookDestinationOutputSchemas: OutputSchemas<DeleteWebhookDestinationOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zDeleteWebhookDestinationResponse200ApplicationJson,
+    "200": GeneratedZod.zWebhookDestination,
 }))();
 
 export const DeviceAuthorizeInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -705,10 +705,10 @@ export const DeviceAuthorizeInputSchema = /* @__PURE__ */ (() => z.strictObject(
 }))();
 export type DeviceAuthorizeInput = Record<string, never>;
 
-export const DeviceAuthorizeOutputSchema = GeneratedZod.zDeviceAuthorizeResponse200ApplicationJson;
+export const DeviceAuthorizeOutputSchema = GeneratedZod.zDeviceAuthorizeResponse;
 export type DeviceAuthorizeOutput = z.output<typeof DeviceAuthorizeOutputSchema>;
 export const DeviceAuthorizeOutputSchemas: OutputSchemas<DeviceAuthorizeOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zDeviceAuthorizeResponse200ApplicationJson,
+    "200": GeneratedZod.zDeviceAuthorizeResponse,
 }))();
 
 export const DeviceTokenInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -718,10 +718,31 @@ export type DeviceTokenInput = {
     body: WireTypes.DeviceTokenData["body"];
 };
 
-export const DeviceTokenOutputSchema = GeneratedZod.zDeviceTokenResponse200ApplicationJson;
+export const DeviceTokenOutputSchema = GeneratedZod.zDeviceTokenResponse;
 export type DeviceTokenOutput = z.output<typeof DeviceTokenOutputSchema>;
 export const DeviceTokenOutputSchemas: OutputSchemas<DeviceTokenOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zDeviceTokenResponse200ApplicationJson,
+    "200": GeneratedZod.zDeviceTokenResponse,
+}))();
+
+export const DisableOrganizationSsoInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    body: GeneratedZod.zDisableOrganizationSsoBody,
+    path: GeneratedZod.zDisableOrganizationSsoPath.strict(),
+    headers: z.strictObject({
+        idempotencyKey: GeneratedZod.zDisableOrganizationSsoHeaders.shape["Idempotency-Key"],
+    }),
+}))();
+export type DisableOrganizationSsoInput = {
+    body: WireTypes.DisableOrganizationSsoData["body"];
+    path: NonNullable<WireTypes.DisableOrganizationSsoData["path"]>;
+    headers: {
+        idempotencyKey: NonNullable<WireTypes.DisableOrganizationSsoData["headers"]>["Idempotency-Key"];
+    };
+};
+
+export const DisableOrganizationSsoOutputSchema = GeneratedZod.zOrganizationSsoConfiguration;
+export type DisableOrganizationSsoOutput = z.output<typeof DisableOrganizationSsoOutputSchema>;
+export const DisableOrganizationSsoOutputSchemas: OutputSchemas<DisableOrganizationSsoOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zOrganizationSsoConfiguration,
 }))();
 
 export const DisconnectWhatsappBusinessAccountInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -737,11 +758,11 @@ export type DisconnectWhatsappBusinessAccountInput = {
     };
 };
 
-export const DisconnectWhatsappBusinessAccountOutputSchema = /* @__PURE__ */ (() => z.union([GeneratedZod.zDisconnectWhatsappBusinessAccountResponse200ApplicationJson, GeneratedZod.zDisconnectWhatsappBusinessAccountResponse202ApplicationJson]))();
+export const DisconnectWhatsappBusinessAccountOutputSchema = GeneratedZod.zOperation;
 export type DisconnectWhatsappBusinessAccountOutput = z.output<typeof DisconnectWhatsappBusinessAccountOutputSchema>;
 export const DisconnectWhatsappBusinessAccountOutputSchemas: OutputSchemas<DisconnectWhatsappBusinessAccountOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zDisconnectWhatsappBusinessAccountResponse200ApplicationJson,
-    "202": GeneratedZod.zDisconnectWhatsappBusinessAccountResponse202ApplicationJson,
+    "200": GeneratedZod.zOperation,
+    "202": GeneratedZod.zOperation,
 }))();
 
 export const DownloadAttachmentInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -762,10 +783,10 @@ export const GetAccountInputSchema = /* @__PURE__ */ (() => z.strictObject({
 }))();
 export type GetAccountInput = Record<string, never>;
 
-export const GetAccountOutputSchema = GeneratedZod.zGetAccountResponse200ApplicationJson;
+export const GetAccountOutputSchema = GeneratedZod.zAccount;
 export type GetAccountOutput = z.output<typeof GetAccountOutputSchema>;
 export const GetAccountOutputSchemas: OutputSchemas<GetAccountOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zGetAccountResponse200ApplicationJson,
+    "200": GeneratedZod.zAccount,
 }))();
 
 export const GetAgentProfileInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -775,10 +796,10 @@ export type GetAgentProfileInput = {
     path: NonNullable<WireTypes.GetAgentProfileData["path"]>;
 };
 
-export const GetAgentProfileOutputSchema = GeneratedZod.zGetAgentProfileResponse200ApplicationJson;
+export const GetAgentProfileOutputSchema = GeneratedZod.zAgentProfile;
 export type GetAgentProfileOutput = z.output<typeof GetAgentProfileOutputSchema>;
 export const GetAgentProfileOutputSchemas: OutputSchemas<GetAgentProfileOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zGetAgentProfileResponse200ApplicationJson,
+    "200": GeneratedZod.zAgentProfile,
 }))();
 
 export const GetAttachmentInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -788,10 +809,10 @@ export type GetAttachmentInput = {
     path: NonNullable<WireTypes.GetAttachmentData["path"]>;
 };
 
-export const GetAttachmentOutputSchema = GeneratedZod.zGetAttachmentResponse200ApplicationJson;
+export const GetAttachmentOutputSchema = GeneratedZod.zAttachment;
 export type GetAttachmentOutput = z.output<typeof GetAttachmentOutputSchema>;
 export const GetAttachmentOutputSchemas: OutputSchemas<GetAttachmentOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zGetAttachmentResponse200ApplicationJson,
+    "200": GeneratedZod.zAttachment,
 }))();
 
 export const GetBillingOperationInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -801,10 +822,10 @@ export type GetBillingOperationInput = {
     path: NonNullable<WireTypes.GetBillingOperationData["path"]>;
 };
 
-export const GetBillingOperationOutputSchema = GeneratedZod.zGetBillingOperationResponse200ApplicationJson;
+export const GetBillingOperationOutputSchema = GeneratedZod.zBillingOperation;
 export type GetBillingOperationOutput = z.output<typeof GetBillingOperationOutputSchema>;
 export const GetBillingOperationOutputSchemas: OutputSchemas<GetBillingOperationOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zGetBillingOperationResponse200ApplicationJson,
+    "200": GeneratedZod.zBillingOperation,
 }))();
 
 export const GetBillingOverviewInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -814,10 +835,10 @@ export type GetBillingOverviewInput = {
     path: NonNullable<WireTypes.GetBillingOverviewData["path"]>;
 };
 
-export const GetBillingOverviewOutputSchema = GeneratedZod.zGetBillingOverviewResponse200ApplicationJson;
+export const GetBillingOverviewOutputSchema = GeneratedZod.zGetBillingOverviewResponse;
 export type GetBillingOverviewOutput = z.output<typeof GetBillingOverviewOutputSchema>;
 export const GetBillingOverviewOutputSchemas: OutputSchemas<GetBillingOverviewOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zGetBillingOverviewResponse200ApplicationJson,
+    "200": GeneratedZod.zGetBillingOverviewResponse,
 }))();
 
 export const GetDefaultVoiceProfileInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -827,10 +848,10 @@ export type GetDefaultVoiceProfileInput = {
     path: NonNullable<WireTypes.GetDefaultVoiceProfileData["path"]>;
 };
 
-export const GetDefaultVoiceProfileOutputSchema = GeneratedZod.zGetDefaultVoiceProfileResponse200ApplicationJson;
+export const GetDefaultVoiceProfileOutputSchema = GeneratedZod.zVoiceProfile;
 export type GetDefaultVoiceProfileOutput = z.output<typeof GetDefaultVoiceProfileOutputSchema>;
 export const GetDefaultVoiceProfileOutputSchemas: OutputSchemas<GetDefaultVoiceProfileOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zGetDefaultVoiceProfileResponse200ApplicationJson,
+    "200": GeneratedZod.zVoiceProfile,
 }))();
 
 export const GetMessageMetricsBackfillInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -846,10 +867,10 @@ export type GetMessageMetricsBackfillInput = {
     };
 };
 
-export const GetMessageMetricsBackfillOutputSchema = GeneratedZod.zGetMessageMetricsBackfillResponse200ApplicationJson;
+export const GetMessageMetricsBackfillOutputSchema = GeneratedZod.zGetMessageMetricsBackfillResponse;
 export type GetMessageMetricsBackfillOutput = z.output<typeof GetMessageMetricsBackfillOutputSchema>;
 export const GetMessageMetricsBackfillOutputSchemas: OutputSchemas<GetMessageMetricsBackfillOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zGetMessageMetricsBackfillResponse200ApplicationJson,
+    "200": GeneratedZod.zGetMessageMetricsBackfillResponse,
 }))();
 
 export const GetMessageMetricsSqlSchemaInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -865,10 +886,10 @@ export type GetMessageMetricsSqlSchemaInput = {
     };
 };
 
-export const GetMessageMetricsSqlSchemaOutputSchema = GeneratedZod.zGetMessageMetricsSqlSchemaResponse200ApplicationJson;
+export const GetMessageMetricsSqlSchemaOutputSchema = GeneratedZod.zGetMessageMetricsSqlSchemaResponse;
 export type GetMessageMetricsSqlSchemaOutput = z.output<typeof GetMessageMetricsSqlSchemaOutputSchema>;
 export const GetMessageMetricsSqlSchemaOutputSchemas: OutputSchemas<GetMessageMetricsSqlSchemaOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zGetMessageMetricsSqlSchemaResponse200ApplicationJson,
+    "200": GeneratedZod.zGetMessageMetricsSqlSchemaResponse,
 }))();
 
 export const GetOperationInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -878,10 +899,10 @@ export type GetOperationInput = {
     path: NonNullable<WireTypes.GetOperationData["path"]>;
 };
 
-export const GetOperationOutputSchema = GeneratedZod.zGetOperationResponse200ApplicationJson;
+export const GetOperationOutputSchema = GeneratedZod.zGetOperationResponse;
 export type GetOperationOutput = z.output<typeof GetOperationOutputSchema>;
 export const GetOperationOutputSchemas: OutputSchemas<GetOperationOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zGetOperationResponse200ApplicationJson,
+    "200": GeneratedZod.zGetOperationResponse,
 }))();
 
 export const GetOrganizationBillingOverviewInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -891,10 +912,10 @@ export type GetOrganizationBillingOverviewInput = {
     path: NonNullable<WireTypes.GetOrganizationBillingOverviewData["path"]>;
 };
 
-export const GetOrganizationBillingOverviewOutputSchema = GeneratedZod.zGetOrganizationBillingOverviewResponse200ApplicationJson;
+export const GetOrganizationBillingOverviewOutputSchema = GeneratedZod.zGetOrganizationBillingOverviewResponse;
 export type GetOrganizationBillingOverviewOutput = z.output<typeof GetOrganizationBillingOverviewOutputSchema>;
 export const GetOrganizationBillingOverviewOutputSchemas: OutputSchemas<GetOrganizationBillingOverviewOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zGetOrganizationBillingOverviewResponse200ApplicationJson,
+    "200": GeneratedZod.zGetOrganizationBillingOverviewResponse,
 }))();
 
 export const GetOrganizationConnectionStatusInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -904,10 +925,10 @@ export type GetOrganizationConnectionStatusInput = {
     path: NonNullable<WireTypes.GetOrganizationConnectionStatusData["path"]>;
 };
 
-export const GetOrganizationConnectionStatusOutputSchema = GeneratedZod.zGetOrganizationConnectionStatusResponse200ApplicationJson;
+export const GetOrganizationConnectionStatusOutputSchema = GeneratedZod.zOrganizationConnectionStatus;
 export type GetOrganizationConnectionStatusOutput = z.output<typeof GetOrganizationConnectionStatusOutputSchema>;
 export const GetOrganizationConnectionStatusOutputSchemas: OutputSchemas<GetOrganizationConnectionStatusOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zGetOrganizationConnectionStatusResponse200ApplicationJson,
+    "200": GeneratedZod.zOrganizationConnectionStatus,
 }))();
 
 export const GetOrganizationPaymentMethodInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -917,10 +938,10 @@ export type GetOrganizationPaymentMethodInput = {
     path: NonNullable<WireTypes.GetOrganizationPaymentMethodData["path"]>;
 };
 
-export const GetOrganizationPaymentMethodOutputSchema = GeneratedZod.zGetOrganizationPaymentMethodResponse200ApplicationJson;
+export const GetOrganizationPaymentMethodOutputSchema = GeneratedZod.zGetOrganizationPaymentMethodResponse;
 export type GetOrganizationPaymentMethodOutput = z.output<typeof GetOrganizationPaymentMethodOutputSchema>;
 export const GetOrganizationPaymentMethodOutputSchemas: OutputSchemas<GetOrganizationPaymentMethodOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zGetOrganizationPaymentMethodResponse200ApplicationJson,
+    "200": GeneratedZod.zGetOrganizationPaymentMethodResponse,
 }))();
 
 export const GetOrganizationSsoConfigurationInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -930,10 +951,10 @@ export type GetOrganizationSsoConfigurationInput = {
     path: NonNullable<WireTypes.GetOrganizationSsoConfigurationData["path"]>;
 };
 
-export const GetOrganizationSsoConfigurationOutputSchema = GeneratedZod.zGetOrganizationSsoConfigurationResponse200ApplicationJson;
+export const GetOrganizationSsoConfigurationOutputSchema = GeneratedZod.zOrganizationSsoConfiguration;
 export type GetOrganizationSsoConfigurationOutput = z.output<typeof GetOrganizationSsoConfigurationOutputSchema>;
 export const GetOrganizationSsoConfigurationOutputSchemas: OutputSchemas<GetOrganizationSsoConfigurationOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zGetOrganizationSsoConfigurationResponse200ApplicationJson,
+    "200": GeneratedZod.zOrganizationSsoConfiguration,
 }))();
 
 export const GetProjectInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -943,10 +964,10 @@ export type GetProjectInput = {
     path: NonNullable<WireTypes.GetProjectData["path"]>;
 };
 
-export const GetProjectOutputSchema = GeneratedZod.zGetProjectResponse200ApplicationJson;
+export const GetProjectOutputSchema = GeneratedZod.zProject;
 export type GetProjectOutput = z.output<typeof GetProjectOutputSchema>;
 export const GetProjectOutputSchemas: OutputSchemas<GetProjectOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zGetProjectResponse200ApplicationJson,
+    "200": GeneratedZod.zProject,
 }))();
 
 export const GetProjectClosureStatusInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -958,10 +979,10 @@ export type GetProjectClosureStatusInput = {
     query: NonNullable<WireTypes.GetProjectClosureStatusData["query"]>;
 };
 
-export const GetProjectClosureStatusOutputSchema = GeneratedZod.zGetProjectClosureStatusResponse200ApplicationJson;
+export const GetProjectClosureStatusOutputSchema = GeneratedZod.zGetProjectClosureStatusResponse;
 export type GetProjectClosureStatusOutput = z.output<typeof GetProjectClosureStatusOutputSchema>;
 export const GetProjectClosureStatusOutputSchemas: OutputSchemas<GetProjectClosureStatusOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zGetProjectClosureStatusResponse200ApplicationJson,
+    "200": GeneratedZod.zGetProjectClosureStatusResponse,
 }))();
 
 export const GetProjectImessagePlatformInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -971,10 +992,10 @@ export type GetProjectImessagePlatformInput = {
     path: NonNullable<WireTypes.GetProjectImessagePlatformData["path"]>;
 };
 
-export const GetProjectImessagePlatformOutputSchema = GeneratedZod.zGetProjectImessagePlatformResponse200ApplicationJson;
+export const GetProjectImessagePlatformOutputSchema = GeneratedZod.zProjectPlatformSettings;
 export type GetProjectImessagePlatformOutput = z.output<typeof GetProjectImessagePlatformOutputSchema>;
 export const GetProjectImessagePlatformOutputSchemas: OutputSchemas<GetProjectImessagePlatformOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zGetProjectImessagePlatformResponse200ApplicationJson,
+    "200": GeneratedZod.zProjectPlatformSettings,
 }))();
 
 export const GetProjectWhatsappPlatformInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -984,10 +1005,10 @@ export type GetProjectWhatsappPlatformInput = {
     path: NonNullable<WireTypes.GetProjectWhatsappPlatformData["path"]>;
 };
 
-export const GetProjectWhatsappPlatformOutputSchema = GeneratedZod.zGetProjectWhatsappPlatformResponse200ApplicationJson;
+export const GetProjectWhatsappPlatformOutputSchema = GeneratedZod.zProjectPlatformSettings;
 export type GetProjectWhatsappPlatformOutput = z.output<typeof GetProjectWhatsappPlatformOutputSchema>;
 export const GetProjectWhatsappPlatformOutputSchemas: OutputSchemas<GetProjectWhatsappPlatformOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zGetProjectWhatsappPlatformResponse200ApplicationJson,
+    "200": GeneratedZod.zProjectPlatformSettings,
 }))();
 
 export const GetResourceInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -997,10 +1018,10 @@ export type GetResourceInput = {
     path: NonNullable<WireTypes.GetResourceData["path"]>;
 };
 
-export const GetResourceOutputSchema = GeneratedZod.zGetResourceResponse200ApplicationJson;
+export const GetResourceOutputSchema = GeneratedZod.zResource;
 export type GetResourceOutput = z.output<typeof GetResourceOutputSchema>;
 export const GetResourceOutputSchemas: OutputSchemas<GetResourceOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zGetResourceResponse200ApplicationJson,
+    "200": GeneratedZod.zResource,
 }))();
 
 export const GetSharedLineAssignmentInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1010,10 +1031,10 @@ export type GetSharedLineAssignmentInput = {
     path: NonNullable<WireTypes.GetSharedLineAssignmentData["path"]>;
 };
 
-export const GetSharedLineAssignmentOutputSchema = GeneratedZod.zGetSharedLineAssignmentResponse200ApplicationJson;
+export const GetSharedLineAssignmentOutputSchema = GeneratedZod.zSharedLineAssignment;
 export type GetSharedLineAssignmentOutput = z.output<typeof GetSharedLineAssignmentOutputSchema>;
 export const GetSharedLineAssignmentOutputSchemas: OutputSchemas<GetSharedLineAssignmentOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zGetSharedLineAssignmentResponse200ApplicationJson,
+    "200": GeneratedZod.zSharedLineAssignment,
 }))();
 
 export const GetSmsLineCampaignAssignmentInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1023,10 +1044,10 @@ export type GetSmsLineCampaignAssignmentInput = {
     path: NonNullable<WireTypes.GetSmsLineCampaignAssignmentData["path"]>;
 };
 
-export const GetSmsLineCampaignAssignmentOutputSchema = GeneratedZod.zGetSmsLineCampaignAssignmentResponse200ApplicationJson;
+export const GetSmsLineCampaignAssignmentOutputSchema = GeneratedZod.zGetSmsLineCampaignAssignmentResponse;
 export type GetSmsLineCampaignAssignmentOutput = z.output<typeof GetSmsLineCampaignAssignmentOutputSchema>;
 export const GetSmsLineCampaignAssignmentOutputSchemas: OutputSchemas<GetSmsLineCampaignAssignmentOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zGetSmsLineCampaignAssignmentResponse200ApplicationJson,
+    "200": GeneratedZod.zGetSmsLineCampaignAssignmentResponse,
 }))();
 
 export const GetVoiceLineProfileAssignmentInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1036,10 +1057,10 @@ export type GetVoiceLineProfileAssignmentInput = {
     path: NonNullable<WireTypes.GetVoiceLineProfileAssignmentData["path"]>;
 };
 
-export const GetVoiceLineProfileAssignmentOutputSchema = GeneratedZod.zGetVoiceLineProfileAssignmentResponse200ApplicationJson;
+export const GetVoiceLineProfileAssignmentOutputSchema = GeneratedZod.zVoiceLineProfileAssignment;
 export type GetVoiceLineProfileAssignmentOutput = z.output<typeof GetVoiceLineProfileAssignmentOutputSchema>;
 export const GetVoiceLineProfileAssignmentOutputSchemas: OutputSchemas<GetVoiceLineProfileAssignmentOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zGetVoiceLineProfileAssignmentResponse200ApplicationJson,
+    "200": GeneratedZod.zVoiceLineProfileAssignment,
 }))();
 
 export const GetVoiceProfileInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1049,10 +1070,10 @@ export type GetVoiceProfileInput = {
     path: NonNullable<WireTypes.GetVoiceProfileData["path"]>;
 };
 
-export const GetVoiceProfileOutputSchema = GeneratedZod.zGetVoiceProfileResponse200ApplicationJson;
+export const GetVoiceProfileOutputSchema = GeneratedZod.zVoiceProfile;
 export type GetVoiceProfileOutput = z.output<typeof GetVoiceProfileOutputSchema>;
 export const GetVoiceProfileOutputSchemas: OutputSchemas<GetVoiceProfileOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zGetVoiceProfileResponse200ApplicationJson,
+    "200": GeneratedZod.zVoiceProfile,
 }))();
 
 export const GetWebhookDestinationInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1062,10 +1083,10 @@ export type GetWebhookDestinationInput = {
     path: NonNullable<WireTypes.GetWebhookDestinationData["path"]>;
 };
 
-export const GetWebhookDestinationOutputSchema = GeneratedZod.zGetWebhookDestinationResponse200ApplicationJson;
+export const GetWebhookDestinationOutputSchema = GeneratedZod.zWebhookDestination;
 export type GetWebhookDestinationOutput = z.output<typeof GetWebhookDestinationOutputSchema>;
 export const GetWebhookDestinationOutputSchemas: OutputSchemas<GetWebhookDestinationOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zGetWebhookDestinationResponse200ApplicationJson,
+    "200": GeneratedZod.zWebhookDestination,
 }))();
 
 export const GetWebhookEventSchemaInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1077,10 +1098,10 @@ export type GetWebhookEventSchemaInput = {
     query: NonNullable<WireTypes.GetWebhookEventSchemaData["query"]>;
 };
 
-export const GetWebhookEventSchemaOutputSchema = /* @__PURE__ */ (() => z.union([GeneratedZod.zGetWebhookEventSchemaResponse200ApplicationSchemaPlusJson, z.undefined()]))();
+export const GetWebhookEventSchemaOutputSchema = /* @__PURE__ */ (() => z.union([GeneratedZod.zWebhookEventSchema, z.undefined()]))();
 export type GetWebhookEventSchemaOutput = z.output<typeof GetWebhookEventSchemaOutputSchema>;
 export const GetWebhookEventSchemaOutputSchemas: OutputSchemas<GetWebhookEventSchemaOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zGetWebhookEventSchemaResponse200ApplicationSchemaPlusJson,
+    "200": GeneratedZod.zWebhookEventSchema,
     "304": z.undefined(),
 }))();
 
@@ -1091,10 +1112,10 @@ export type GetWhatsappBusinessAccountInput = {
     path: NonNullable<WireTypes.GetWhatsappBusinessAccountData["path"]>;
 };
 
-export const GetWhatsappBusinessAccountOutputSchema = GeneratedZod.zGetWhatsappBusinessAccountResponse200ApplicationJson;
+export const GetWhatsappBusinessAccountOutputSchema = GeneratedZod.zWhatsappBusinessAccount;
 export type GetWhatsappBusinessAccountOutput = z.output<typeof GetWhatsappBusinessAccountOutputSchema>;
 export const GetWhatsappBusinessAccountOutputSchemas: OutputSchemas<GetWhatsappBusinessAccountOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zGetWhatsappBusinessAccountResponse200ApplicationJson,
+    "200": GeneratedZod.zWhatsappBusinessAccount,
 }))();
 
 export const GetWhatsappBusinessVerificationCodeInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1106,10 +1127,10 @@ export type GetWhatsappBusinessVerificationCodeInput = {
     query: NonNullable<WireTypes.GetWhatsappBusinessVerificationCodeData["query"]>;
 };
 
-export const GetWhatsappBusinessVerificationCodeOutputSchema = GeneratedZod.zGetWhatsappBusinessVerificationCodeResponse200ApplicationJson;
+export const GetWhatsappBusinessVerificationCodeOutputSchema = GeneratedZod.zGetWhatsappBusinessVerificationCodeResponse;
 export type GetWhatsappBusinessVerificationCodeOutput = z.output<typeof GetWhatsappBusinessVerificationCodeOutputSchema>;
 export const GetWhatsappBusinessVerificationCodeOutputSchemas: OutputSchemas<GetWhatsappBusinessVerificationCodeOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zGetWhatsappBusinessVerificationCodeResponse200ApplicationJson,
+    "200": GeneratedZod.zGetWhatsappBusinessVerificationCodeResponse,
 }))();
 
 export const GetWhatsappSharedLineAssignmentInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1119,10 +1140,10 @@ export type GetWhatsappSharedLineAssignmentInput = {
     path: NonNullable<WireTypes.GetWhatsappSharedLineAssignmentData["path"]>;
 };
 
-export const GetWhatsappSharedLineAssignmentOutputSchema = GeneratedZod.zGetWhatsappSharedLineAssignmentResponse200ApplicationJson;
+export const GetWhatsappSharedLineAssignmentOutputSchema = GeneratedZod.zSharedLineAssignment;
 export type GetWhatsappSharedLineAssignmentOutput = z.output<typeof GetWhatsappSharedLineAssignmentOutputSchema>;
 export const GetWhatsappSharedLineAssignmentOutputSchemas: OutputSchemas<GetWhatsappSharedLineAssignmentOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zGetWhatsappSharedLineAssignmentResponse200ApplicationJson,
+    "200": GeneratedZod.zSharedLineAssignment,
 }))();
 
 export const GetWhatsappSignupConfigInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1132,10 +1153,10 @@ export type GetWhatsappSignupConfigInput = {
     path: NonNullable<WireTypes.GetWhatsappSignupConfigData["path"]>;
 };
 
-export const GetWhatsappSignupConfigOutputSchema = GeneratedZod.zGetWhatsappSignupConfigResponse200ApplicationJson;
+export const GetWhatsappSignupConfigOutputSchema = GeneratedZod.zGetWhatsappSignupConfigResponse;
 export type GetWhatsappSignupConfigOutput = z.output<typeof GetWhatsappSignupConfigOutputSchema>;
 export const GetWhatsappSignupConfigOutputSchemas: OutputSchemas<GetWhatsappSignupConfigOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zGetWhatsappSignupConfigResponse200ApplicationJson,
+    "200": GeneratedZod.zGetWhatsappSignupConfigResponse,
 }))();
 
 export const ListAccountServiceKeysInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1143,10 +1164,10 @@ export const ListAccountServiceKeysInputSchema = /* @__PURE__ */ (() => z.strict
 }))();
 export type ListAccountServiceKeysInput = Record<string, never>;
 
-export const ListAccountServiceKeysOutputSchema = GeneratedZod.zListAccountServiceKeysResponse200ApplicationJson;
+export const ListAccountServiceKeysOutputSchema = GeneratedZod.zListAccountServiceKeysResponse;
 export type ListAccountServiceKeysOutput = z.output<typeof ListAccountServiceKeysOutputSchema>;
 export const ListAccountServiceKeysOutputSchemas: OutputSchemas<ListAccountServiceKeysOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zListAccountServiceKeysResponse200ApplicationJson,
+    "200": GeneratedZod.zListAccountServiceKeysResponse,
 }))();
 
 export const ListAttachmentsInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1158,10 +1179,10 @@ export type ListAttachmentsInput = {
     query?: NonNullable<WireTypes.ListAttachmentsData["query"]>;
 };
 
-export const ListAttachmentsOutputSchema = GeneratedZod.zListAttachmentsResponse200ApplicationJson;
+export const ListAttachmentsOutputSchema = GeneratedZod.zAttachmentPage;
 export type ListAttachmentsOutput = z.output<typeof ListAttachmentsOutputSchema>;
 export const ListAttachmentsOutputSchemas: OutputSchemas<ListAttachmentsOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zListAttachmentsResponse200ApplicationJson,
+    "200": GeneratedZod.zAttachmentPage,
 }))();
 
 export const ListAuthorizedApplicationsInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1171,10 +1192,10 @@ export type ListAuthorizedApplicationsInput = {
     query?: NonNullable<WireTypes.ListAuthorizedApplicationsData["query"]>;
 };
 
-export const ListAuthorizedApplicationsOutputSchema = GeneratedZod.zListAuthorizedApplicationsResponse200ApplicationJson;
+export const ListAuthorizedApplicationsOutputSchema = GeneratedZod.zListAuthorizedApplicationsResponse;
 export type ListAuthorizedApplicationsOutput = z.output<typeof ListAuthorizedApplicationsOutputSchema>;
 export const ListAuthorizedApplicationsOutputSchemas: OutputSchemas<ListAuthorizedApplicationsOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zListAuthorizedApplicationsResponse200ApplicationJson,
+    "200": GeneratedZod.zListAuthorizedApplicationsResponse,
 }))();
 
 export const ListBillingPlansInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1184,10 +1205,10 @@ export type ListBillingPlansInput = {
     path: NonNullable<WireTypes.ListBillingPlansData["path"]>;
 };
 
-export const ListBillingPlansOutputSchema = GeneratedZod.zListBillingPlansResponse200ApplicationJson;
+export const ListBillingPlansOutputSchema = GeneratedZod.zListBillingPlansResponse;
 export type ListBillingPlansOutput = z.output<typeof ListBillingPlansOutputSchema>;
 export const ListBillingPlansOutputSchemas: OutputSchemas<ListBillingPlansOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zListBillingPlansResponse200ApplicationJson,
+    "200": GeneratedZod.zListBillingPlansResponse,
 }))();
 
 export const ListInvoicesInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1197,10 +1218,10 @@ export type ListInvoicesInput = {
     path: NonNullable<WireTypes.ListInvoicesData["path"]>;
 };
 
-export const ListInvoicesOutputSchema = GeneratedZod.zListInvoicesResponse200ApplicationJson;
+export const ListInvoicesOutputSchema = GeneratedZod.zListInvoicesResponse;
 export type ListInvoicesOutput = z.output<typeof ListInvoicesOutputSchema>;
 export const ListInvoicesOutputSchemas: OutputSchemas<ListInvoicesOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zListInvoicesResponse200ApplicationJson,
+    "200": GeneratedZod.zListInvoicesResponse,
 }))();
 
 export const ListNumberAreaCodesInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1212,10 +1233,10 @@ export type ListNumberAreaCodesInput = {
     query: NonNullable<WireTypes.ListNumberAreaCodesData["query"]>;
 };
 
-export const ListNumberAreaCodesOutputSchema = GeneratedZod.zListNumberAreaCodesResponse200ApplicationJson;
+export const ListNumberAreaCodesOutputSchema = GeneratedZod.zListNumberAreaCodesResponse;
 export type ListNumberAreaCodesOutput = z.output<typeof ListNumberAreaCodesOutputSchema>;
 export const ListNumberAreaCodesOutputSchemas: OutputSchemas<ListNumberAreaCodesOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zListNumberAreaCodesResponse200ApplicationJson,
+    "200": GeneratedZod.zListNumberAreaCodesResponse,
 }))();
 
 export const ListNumberCountriesInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1225,10 +1246,10 @@ export type ListNumberCountriesInput = {
     path: NonNullable<WireTypes.ListNumberCountriesData["path"]>;
 };
 
-export const ListNumberCountriesOutputSchema = GeneratedZod.zListNumberCountriesResponse200ApplicationJson;
+export const ListNumberCountriesOutputSchema = GeneratedZod.zListNumberCountriesResponse;
 export type ListNumberCountriesOutput = z.output<typeof ListNumberCountriesOutputSchema>;
 export const ListNumberCountriesOutputSchemas: OutputSchemas<ListNumberCountriesOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zListNumberCountriesResponse200ApplicationJson,
+    "200": GeneratedZod.zListNumberCountriesResponse,
 }))();
 
 export const ListOauthScopesInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1236,10 +1257,10 @@ export const ListOauthScopesInputSchema = /* @__PURE__ */ (() => z.strictObject(
 }))();
 export type ListOauthScopesInput = Record<string, never>;
 
-export const ListOauthScopesOutputSchema = GeneratedZod.zListOauthScopesResponse200ApplicationJson;
+export const ListOauthScopesOutputSchema = GeneratedZod.zListOauthScopesResponse;
 export type ListOauthScopesOutput = z.output<typeof ListOauthScopesOutputSchema>;
 export const ListOauthScopesOutputSchemas: OutputSchemas<ListOauthScopesOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zListOauthScopesResponse200ApplicationJson,
+    "200": GeneratedZod.zListOauthScopesResponse,
 }))();
 
 export const ListOperationsInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1251,10 +1272,10 @@ export type ListOperationsInput = {
     query?: NonNullable<WireTypes.ListOperationsData["query"]>;
 };
 
-export const ListOperationsOutputSchema = GeneratedZod.zListOperationsResponse200ApplicationJson;
+export const ListOperationsOutputSchema = GeneratedZod.zOperationPage;
 export type ListOperationsOutput = z.output<typeof ListOperationsOutputSchema>;
 export const ListOperationsOutputSchemas: OutputSchemas<ListOperationsOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zListOperationsResponse200ApplicationJson,
+    "200": GeneratedZod.zOperationPage,
 }))();
 
 export const ListProjectApiKeysInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1264,10 +1285,10 @@ export type ListProjectApiKeysInput = {
     path: NonNullable<WireTypes.ListProjectApiKeysData["path"]>;
 };
 
-export const ListProjectApiKeysOutputSchema = GeneratedZod.zListProjectApiKeysResponse200ApplicationJson;
+export const ListProjectApiKeysOutputSchema = GeneratedZod.zListProjectApiKeysResponse;
 export type ListProjectApiKeysOutput = z.output<typeof ListProjectApiKeysOutputSchema>;
 export const ListProjectApiKeysOutputSchemas: OutputSchemas<ListProjectApiKeysOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zListProjectApiKeysResponse200ApplicationJson,
+    "200": GeneratedZod.zListProjectApiKeysResponse,
 }))();
 
 export const ListProjectPlatformsInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1277,10 +1298,10 @@ export type ListProjectPlatformsInput = {
     path: NonNullable<WireTypes.ListProjectPlatformsData["path"]>;
 };
 
-export const ListProjectPlatformsOutputSchema = GeneratedZod.zListProjectPlatformsResponse200ApplicationJson;
+export const ListProjectPlatformsOutputSchema = GeneratedZod.zListProjectPlatformsResponse;
 export type ListProjectPlatformsOutput = z.output<typeof ListProjectPlatformsOutputSchema>;
 export const ListProjectPlatformsOutputSchemas: OutputSchemas<ListProjectPlatformsOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zListProjectPlatformsResponse200ApplicationJson,
+    "200": GeneratedZod.zListProjectPlatformsResponse,
 }))();
 
 export const ListProjectsInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1292,10 +1313,10 @@ export type ListProjectsInput = {
     query?: NonNullable<WireTypes.ListProjectsData["query"]>;
 };
 
-export const ListProjectsOutputSchema = GeneratedZod.zListProjectsResponse200ApplicationJson;
+export const ListProjectsOutputSchema = GeneratedZod.zProjectPage;
 export type ListProjectsOutput = z.output<typeof ListProjectsOutputSchema>;
 export const ListProjectsOutputSchemas: OutputSchemas<ListProjectsOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zListProjectsResponse200ApplicationJson,
+    "200": GeneratedZod.zProjectPage,
 }))();
 
 export const ListResourcesInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1307,10 +1328,10 @@ export type ListResourcesInput = {
     query?: NonNullable<WireTypes.ListResourcesData["query"]>;
 };
 
-export const ListResourcesOutputSchema = GeneratedZod.zListResourcesResponse200ApplicationJson;
+export const ListResourcesOutputSchema = GeneratedZod.zResourcePage;
 export type ListResourcesOutput = z.output<typeof ListResourcesOutputSchema>;
 export const ListResourcesOutputSchemas: OutputSchemas<ListResourcesOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zListResourcesResponse200ApplicationJson,
+    "200": GeneratedZod.zResourcePage,
 }))();
 
 export const ListSharedLineAssignmentsInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1322,10 +1343,10 @@ export type ListSharedLineAssignmentsInput = {
     query?: NonNullable<WireTypes.ListSharedLineAssignmentsData["query"]>;
 };
 
-export const ListSharedLineAssignmentsOutputSchema = GeneratedZod.zListSharedLineAssignmentsResponse200ApplicationJson;
+export const ListSharedLineAssignmentsOutputSchema = GeneratedZod.zSharedLineAssignmentPage;
 export type ListSharedLineAssignmentsOutput = z.output<typeof ListSharedLineAssignmentsOutputSchema>;
 export const ListSharedLineAssignmentsOutputSchemas: OutputSchemas<ListSharedLineAssignmentsOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zListSharedLineAssignmentsResponse200ApplicationJson,
+    "200": GeneratedZod.zSharedLineAssignmentPage,
 }))();
 
 export const ListVoiceProfilesInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1337,10 +1358,10 @@ export type ListVoiceProfilesInput = {
     query?: NonNullable<WireTypes.ListVoiceProfilesData["query"]>;
 };
 
-export const ListVoiceProfilesOutputSchema = GeneratedZod.zListVoiceProfilesResponse200ApplicationJson;
+export const ListVoiceProfilesOutputSchema = GeneratedZod.zVoiceProfilePage;
 export type ListVoiceProfilesOutput = z.output<typeof ListVoiceProfilesOutputSchema>;
 export const ListVoiceProfilesOutputSchemas: OutputSchemas<ListVoiceProfilesOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zListVoiceProfilesResponse200ApplicationJson,
+    "200": GeneratedZod.zVoiceProfilePage,
 }))();
 
 export const ListWebhookApiVersionsInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1350,10 +1371,10 @@ export type ListWebhookApiVersionsInput = {
     path: NonNullable<WireTypes.ListWebhookApiVersionsData["path"]>;
 };
 
-export const ListWebhookApiVersionsOutputSchema = /* @__PURE__ */ (() => z.union([GeneratedZod.zListWebhookApiVersionsResponse200ApplicationJson, z.undefined()]))();
+export const ListWebhookApiVersionsOutputSchema = /* @__PURE__ */ (() => z.union([GeneratedZod.zListWebhookApiVersionsResponse, z.undefined()]))();
 export type ListWebhookApiVersionsOutput = z.output<typeof ListWebhookApiVersionsOutputSchema>;
 export const ListWebhookApiVersionsOutputSchemas: OutputSchemas<ListWebhookApiVersionsOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zListWebhookApiVersionsResponse200ApplicationJson,
+    "200": GeneratedZod.zListWebhookApiVersionsResponse,
     "304": z.undefined(),
 }))();
 
@@ -1366,10 +1387,10 @@ export type ListWebhookDestinationsInput = {
     query?: NonNullable<WireTypes.ListWebhookDestinationsData["query"]>;
 };
 
-export const ListWebhookDestinationsOutputSchema = GeneratedZod.zListWebhookDestinationsResponse200ApplicationJson;
+export const ListWebhookDestinationsOutputSchema = GeneratedZod.zWebhookDestinationPage;
 export type ListWebhookDestinationsOutput = z.output<typeof ListWebhookDestinationsOutputSchema>;
 export const ListWebhookDestinationsOutputSchemas: OutputSchemas<ListWebhookDestinationsOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zListWebhookDestinationsResponse200ApplicationJson,
+    "200": GeneratedZod.zWebhookDestinationPage,
 }))();
 
 export const ListWebhookEgressAddressesInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1379,10 +1400,10 @@ export type ListWebhookEgressAddressesInput = {
     path: NonNullable<WireTypes.ListWebhookEgressAddressesData["path"]>;
 };
 
-export const ListWebhookEgressAddressesOutputSchema = /* @__PURE__ */ (() => z.union([GeneratedZod.zListWebhookEgressAddressesResponse200ApplicationJson, z.undefined()]))();
+export const ListWebhookEgressAddressesOutputSchema = /* @__PURE__ */ (() => z.union([GeneratedZod.zListWebhookEgressAddressesResponse, z.undefined()]))();
 export type ListWebhookEgressAddressesOutput = z.output<typeof ListWebhookEgressAddressesOutputSchema>;
 export const ListWebhookEgressAddressesOutputSchemas: OutputSchemas<ListWebhookEgressAddressesOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zListWebhookEgressAddressesResponse200ApplicationJson,
+    "200": GeneratedZod.zListWebhookEgressAddressesResponse,
     "304": z.undefined(),
 }))();
 
@@ -1395,10 +1416,10 @@ export type ListWebhookEventTypesInput = {
     query: NonNullable<WireTypes.ListWebhookEventTypesData["query"]>;
 };
 
-export const ListWebhookEventTypesOutputSchema = /* @__PURE__ */ (() => z.union([GeneratedZod.zListWebhookEventTypesResponse200ApplicationJson, z.undefined()]))();
+export const ListWebhookEventTypesOutputSchema = /* @__PURE__ */ (() => z.union([GeneratedZod.zListWebhookEventTypesResponse, z.undefined()]))();
 export type ListWebhookEventTypesOutput = z.output<typeof ListWebhookEventTypesOutputSchema>;
 export const ListWebhookEventTypesOutputSchemas: OutputSchemas<ListWebhookEventTypesOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zListWebhookEventTypesResponse200ApplicationJson,
+    "200": GeneratedZod.zListWebhookEventTypesResponse,
     "304": z.undefined(),
 }))();
 
@@ -1409,10 +1430,10 @@ export type ListWhatsappAccountPhoneNumbersInput = {
     path: NonNullable<WireTypes.ListWhatsappAccountPhoneNumbersData["path"]>;
 };
 
-export const ListWhatsappAccountPhoneNumbersOutputSchema = GeneratedZod.zListWhatsappAccountPhoneNumbersResponse200ApplicationJson;
+export const ListWhatsappAccountPhoneNumbersOutputSchema = GeneratedZod.zListWhatsappAccountPhoneNumbersResponse;
 export type ListWhatsappAccountPhoneNumbersOutput = z.output<typeof ListWhatsappAccountPhoneNumbersOutputSchema>;
 export const ListWhatsappAccountPhoneNumbersOutputSchemas: OutputSchemas<ListWhatsappAccountPhoneNumbersOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zListWhatsappAccountPhoneNumbersResponse200ApplicationJson,
+    "200": GeneratedZod.zListWhatsappAccountPhoneNumbersResponse,
 }))();
 
 export const ListWhatsappSharedLineAssignmentsInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1424,10 +1445,10 @@ export type ListWhatsappSharedLineAssignmentsInput = {
     query?: NonNullable<WireTypes.ListWhatsappSharedLineAssignmentsData["query"]>;
 };
 
-export const ListWhatsappSharedLineAssignmentsOutputSchema = GeneratedZod.zListWhatsappSharedLineAssignmentsResponse200ApplicationJson;
+export const ListWhatsappSharedLineAssignmentsOutputSchema = GeneratedZod.zSharedLineAssignmentPage;
 export type ListWhatsappSharedLineAssignmentsOutput = z.output<typeof ListWhatsappSharedLineAssignmentsOutputSchema>;
 export const ListWhatsappSharedLineAssignmentsOutputSchemas: OutputSchemas<ListWhatsappSharedLineAssignmentsOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zListWhatsappSharedLineAssignmentsResponse200ApplicationJson,
+    "200": GeneratedZod.zSharedLineAssignmentPage,
 }))();
 
 export const ProvisionImessageDedicatedLineInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1443,10 +1464,10 @@ export type ProvisionImessageDedicatedLineInput = {
     };
 };
 
-export const ProvisionImessageDedicatedLineOutputSchema = GeneratedZod.zProvisionImessageDedicatedLineResponse202ApplicationJson;
+export const ProvisionImessageDedicatedLineOutputSchema = GeneratedZod.zOperation;
 export type ProvisionImessageDedicatedLineOutput = z.output<typeof ProvisionImessageDedicatedLineOutputSchema>;
 export const ProvisionImessageDedicatedLineOutputSchemas: OutputSchemas<ProvisionImessageDedicatedLineOutput> = /* @__PURE__ */ (() => ({
-    "202": GeneratedZod.zProvisionImessageDedicatedLineResponse202ApplicationJson,
+    "202": GeneratedZod.zOperation,
 }))();
 
 export const ProvisionWhatsappDedicatedLineInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1462,10 +1483,10 @@ export type ProvisionWhatsappDedicatedLineInput = {
     };
 };
 
-export const ProvisionWhatsappDedicatedLineOutputSchema = GeneratedZod.zProvisionWhatsappDedicatedLineResponse202ApplicationJson;
+export const ProvisionWhatsappDedicatedLineOutputSchema = GeneratedZod.zOperation;
 export type ProvisionWhatsappDedicatedLineOutput = z.output<typeof ProvisionWhatsappDedicatedLineOutputSchema>;
 export const ProvisionWhatsappDedicatedLineOutputSchemas: OutputSchemas<ProvisionWhatsappDedicatedLineOutput> = /* @__PURE__ */ (() => ({
-    "202": GeneratedZod.zProvisionWhatsappDedicatedLineResponse202ApplicationJson,
+    "202": GeneratedZod.zOperation,
 }))();
 
 export const PurchaseSmsNumberInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1483,10 +1504,10 @@ export type PurchaseSmsNumberInput = {
     };
 };
 
-export const PurchaseSmsNumberOutputSchema = GeneratedZod.zPurchaseSmsNumberResponse202ApplicationJson;
+export const PurchaseSmsNumberOutputSchema = GeneratedZod.zOperation;
 export type PurchaseSmsNumberOutput = z.output<typeof PurchaseSmsNumberOutputSchema>;
 export const PurchaseSmsNumberOutputSchemas: OutputSchemas<PurchaseSmsNumberOutput> = /* @__PURE__ */ (() => ({
-    "202": GeneratedZod.zPurchaseSmsNumberResponse202ApplicationJson,
+    "202": GeneratedZod.zOperation,
 }))();
 
 export const QueryMessageMetricsInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1504,10 +1525,10 @@ export type QueryMessageMetricsInput = {
     };
 };
 
-export const QueryMessageMetricsOutputSchema = GeneratedZod.zQueryMessageMetricsResponse200ApplicationJson;
+export const QueryMessageMetricsOutputSchema = GeneratedZod.zQueryMessageMetricsResponse;
 export type QueryMessageMetricsOutput = z.output<typeof QueryMessageMetricsOutputSchema>;
 export const QueryMessageMetricsOutputSchemas: OutputSchemas<QueryMessageMetricsOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zQueryMessageMetricsResponse200ApplicationJson,
+    "200": GeneratedZod.zQueryMessageMetricsResponse,
 }))();
 
 export const RedeemAppInstallationDeliveryInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1517,10 +1538,10 @@ export type RedeemAppInstallationDeliveryInput = {
     body: WireTypes.RedeemAppInstallationDeliveryData["body"];
 };
 
-export const RedeemAppInstallationDeliveryOutputSchema = GeneratedZod.zRedeemAppInstallationDeliveryResponse200ApplicationJson;
+export const RedeemAppInstallationDeliveryOutputSchema = GeneratedZod.zRedeemAppInstallationDeliveryResponse;
 export type RedeemAppInstallationDeliveryOutput = z.output<typeof RedeemAppInstallationDeliveryOutputSchema>;
 export const RedeemAppInstallationDeliveryOutputSchemas: OutputSchemas<RedeemAppInstallationDeliveryOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zRedeemAppInstallationDeliveryResponse200ApplicationJson,
+    "200": GeneratedZod.zRedeemAppInstallationDeliveryResponse,
 }))();
 
 export const RefreshOrganizationSsoConnectionInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1530,10 +1551,10 @@ export type RefreshOrganizationSsoConnectionInput = {
     path: NonNullable<WireTypes.RefreshOrganizationSsoConnectionData["path"]>;
 };
 
-export const RefreshOrganizationSsoConnectionOutputSchema = GeneratedZod.zRefreshOrganizationSsoConnectionResponse200ApplicationJson;
+export const RefreshOrganizationSsoConnectionOutputSchema = GeneratedZod.zOrganizationSsoConfiguration;
 export type RefreshOrganizationSsoConnectionOutput = z.output<typeof RefreshOrganizationSsoConnectionOutputSchema>;
 export const RefreshOrganizationSsoConnectionOutputSchemas: OutputSchemas<RefreshOrganizationSsoConnectionOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zRefreshOrganizationSsoConnectionResponse200ApplicationJson,
+    "200": GeneratedZod.zOrganizationSsoConfiguration,
 }))();
 
 export const ReleaseImessageDedicatedLineInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1543,11 +1564,11 @@ export type ReleaseImessageDedicatedLineInput = {
     path: NonNullable<WireTypes.ReleaseImessageDedicatedLineData["path"]>;
 };
 
-export const ReleaseImessageDedicatedLineOutputSchema = /* @__PURE__ */ (() => z.union([GeneratedZod.zReleaseImessageDedicatedLineResponse200ApplicationJson, GeneratedZod.zReleaseImessageDedicatedLineResponse202ApplicationJson]))();
+export const ReleaseImessageDedicatedLineOutputSchema = GeneratedZod.zOperation;
 export type ReleaseImessageDedicatedLineOutput = z.output<typeof ReleaseImessageDedicatedLineOutputSchema>;
 export const ReleaseImessageDedicatedLineOutputSchemas: OutputSchemas<ReleaseImessageDedicatedLineOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zReleaseImessageDedicatedLineResponse200ApplicationJson,
-    "202": GeneratedZod.zReleaseImessageDedicatedLineResponse202ApplicationJson,
+    "200": GeneratedZod.zOperation,
+    "202": GeneratedZod.zOperation,
 }))();
 
 export const ReleaseResourceInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1557,11 +1578,11 @@ export type ReleaseResourceInput = {
     path: NonNullable<WireTypes.ReleaseResourceData["path"]>;
 };
 
-export const ReleaseResourceOutputSchema = /* @__PURE__ */ (() => z.union([GeneratedZod.zReleaseResourceResponse200ApplicationJson, GeneratedZod.zReleaseResourceResponse202ApplicationJson]))();
+export const ReleaseResourceOutputSchema = GeneratedZod.zOperation;
 export type ReleaseResourceOutput = z.output<typeof ReleaseResourceOutputSchema>;
 export const ReleaseResourceOutputSchemas: OutputSchemas<ReleaseResourceOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zReleaseResourceResponse200ApplicationJson,
-    "202": GeneratedZod.zReleaseResourceResponse202ApplicationJson,
+    "200": GeneratedZod.zOperation,
+    "202": GeneratedZod.zOperation,
 }))();
 
 export const ReleaseSharedLineAssignmentInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1571,10 +1592,10 @@ export type ReleaseSharedLineAssignmentInput = {
     path: NonNullable<WireTypes.ReleaseSharedLineAssignmentData["path"]>;
 };
 
-export const ReleaseSharedLineAssignmentOutputSchema = GeneratedZod.zReleaseSharedLineAssignmentResponse200ApplicationJson;
+export const ReleaseSharedLineAssignmentOutputSchema = GeneratedZod.zSharedLineAssignment;
 export type ReleaseSharedLineAssignmentOutput = z.output<typeof ReleaseSharedLineAssignmentOutputSchema>;
 export const ReleaseSharedLineAssignmentOutputSchemas: OutputSchemas<ReleaseSharedLineAssignmentOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zReleaseSharedLineAssignmentResponse200ApplicationJson,
+    "200": GeneratedZod.zSharedLineAssignment,
 }))();
 
 export const ReleaseWhatsappDedicatedLineInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1584,11 +1605,11 @@ export type ReleaseWhatsappDedicatedLineInput = {
     path: NonNullable<WireTypes.ReleaseWhatsappDedicatedLineData["path"]>;
 };
 
-export const ReleaseWhatsappDedicatedLineOutputSchema = /* @__PURE__ */ (() => z.union([GeneratedZod.zReleaseWhatsappDedicatedLineResponse200ApplicationJson, GeneratedZod.zReleaseWhatsappDedicatedLineResponse202ApplicationJson]))();
+export const ReleaseWhatsappDedicatedLineOutputSchema = GeneratedZod.zOperation;
 export type ReleaseWhatsappDedicatedLineOutput = z.output<typeof ReleaseWhatsappDedicatedLineOutputSchema>;
 export const ReleaseWhatsappDedicatedLineOutputSchemas: OutputSchemas<ReleaseWhatsappDedicatedLineOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zReleaseWhatsappDedicatedLineResponse200ApplicationJson,
-    "202": GeneratedZod.zReleaseWhatsappDedicatedLineResponse202ApplicationJson,
+    "200": GeneratedZod.zOperation,
+    "202": GeneratedZod.zOperation,
 }))();
 
 export const ReleaseWhatsappSharedLineAssignmentInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1598,10 +1619,10 @@ export type ReleaseWhatsappSharedLineAssignmentInput = {
     path: NonNullable<WireTypes.ReleaseWhatsappSharedLineAssignmentData["path"]>;
 };
 
-export const ReleaseWhatsappSharedLineAssignmentOutputSchema = GeneratedZod.zReleaseWhatsappSharedLineAssignmentResponse200ApplicationJson;
+export const ReleaseWhatsappSharedLineAssignmentOutputSchema = GeneratedZod.zSharedLineAssignment;
 export type ReleaseWhatsappSharedLineAssignmentOutput = z.output<typeof ReleaseWhatsappSharedLineAssignmentOutputSchema>;
 export const ReleaseWhatsappSharedLineAssignmentOutputSchemas: OutputSchemas<ReleaseWhatsappSharedLineAssignmentOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zReleaseWhatsappSharedLineAssignmentResponse200ApplicationJson,
+    "200": GeneratedZod.zSharedLineAssignment,
 }))();
 
 export const ReplaceVoiceProfileInboundInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1613,11 +1634,11 @@ export type ReplaceVoiceProfileInboundInput = {
     path: NonNullable<WireTypes.ReplaceVoiceProfileInboundData["path"]>;
 };
 
-export const ReplaceVoiceProfileInboundOutputSchema = /* @__PURE__ */ (() => z.union([GeneratedZod.zReplaceVoiceProfileInboundResponse200ApplicationJson, GeneratedZod.zReplaceVoiceProfileInboundResponse201ApplicationJson]))();
+export const ReplaceVoiceProfileInboundOutputSchema = GeneratedZod.zVoiceProfileInboundConfiguration;
 export type ReplaceVoiceProfileInboundOutput = z.output<typeof ReplaceVoiceProfileInboundOutputSchema>;
 export const ReplaceVoiceProfileInboundOutputSchemas: OutputSchemas<ReplaceVoiceProfileInboundOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zReplaceVoiceProfileInboundResponse200ApplicationJson,
-    "201": GeneratedZod.zReplaceVoiceProfileInboundResponse201ApplicationJson,
+    "200": GeneratedZod.zVoiceProfileInboundConfiguration,
+    "201": GeneratedZod.zVoiceProfileInboundConfiguration,
 }))();
 
 export const ResetAccountProfilePictureInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1631,10 +1652,10 @@ export type ResetAccountProfilePictureInput = {
     };
 };
 
-export const ResetAccountProfilePictureOutputSchema = GeneratedZod.zResetAccountProfilePictureResponse200ApplicationJson;
+export const ResetAccountProfilePictureOutputSchema = GeneratedZod.zAccount;
 export type ResetAccountProfilePictureOutput = z.output<typeof ResetAccountProfilePictureOutputSchema>;
 export const ResetAccountProfilePictureOutputSchemas: OutputSchemas<ResetAccountProfilePictureOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zResetAccountProfilePictureResponse200ApplicationJson,
+    "200": GeneratedZod.zAccount,
 }))();
 
 export const ResetAgentProfileAvatarInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1650,10 +1671,10 @@ export type ResetAgentProfileAvatarInput = {
     };
 };
 
-export const ResetAgentProfileAvatarOutputSchema = GeneratedZod.zResetAgentProfileAvatarResponse200ApplicationJson;
+export const ResetAgentProfileAvatarOutputSchema = GeneratedZod.zAgentProfile;
 export type ResetAgentProfileAvatarOutput = z.output<typeof ResetAgentProfileAvatarOutputSchema>;
 export const ResetAgentProfileAvatarOutputSchemas: OutputSchemas<ResetAgentProfileAvatarOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zResetAgentProfileAvatarResponse200ApplicationJson,
+    "200": GeneratedZod.zAgentProfile,
 }))();
 
 export const ResumeSubscriptionInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1671,10 +1692,10 @@ export type ResumeSubscriptionInput = {
     };
 };
 
-export const ResumeSubscriptionOutputSchema = GeneratedZod.zResumeSubscriptionResponse200ApplicationJson;
+export const ResumeSubscriptionOutputSchema = GeneratedZod.zResumeSubscriptionResponse;
 export type ResumeSubscriptionOutput = z.output<typeof ResumeSubscriptionOutputSchema>;
 export const ResumeSubscriptionOutputSchemas: OutputSchemas<ResumeSubscriptionOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zResumeSubscriptionResponse200ApplicationJson,
+    "200": GeneratedZod.zResumeSubscriptionResponse,
 }))();
 
 export const RetryOrganizationConnectionSyncInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1684,10 +1705,10 @@ export type RetryOrganizationConnectionSyncInput = {
     path: NonNullable<WireTypes.RetryOrganizationConnectionSyncData["path"]>;
 };
 
-export const RetryOrganizationConnectionSyncOutputSchema = GeneratedZod.zRetryOrganizationConnectionSyncResponse200ApplicationJson;
+export const RetryOrganizationConnectionSyncOutputSchema = GeneratedZod.zOrganizationConnectionStatus;
 export type RetryOrganizationConnectionSyncOutput = z.output<typeof RetryOrganizationConnectionSyncOutputSchema>;
 export const RetryOrganizationConnectionSyncOutputSchemas: OutputSchemas<RetryOrganizationConnectionSyncOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zRetryOrganizationConnectionSyncResponse200ApplicationJson,
+    "200": GeneratedZod.zOrganizationConnectionStatus,
 }))();
 
 export const RevokeAccountServiceKeyInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1703,10 +1724,10 @@ export type RevokeAccountServiceKeyInput = {
     };
 };
 
-export const RevokeAccountServiceKeyOutputSchema = GeneratedZod.zRevokeAccountServiceKeyResponse200ApplicationJson;
+export const RevokeAccountServiceKeyOutputSchema = GeneratedZod.zRevokeAccountServiceKeyResponse;
 export type RevokeAccountServiceKeyOutput = z.output<typeof RevokeAccountServiceKeyOutputSchema>;
 export const RevokeAccountServiceKeyOutputSchemas: OutputSchemas<RevokeAccountServiceKeyOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zRevokeAccountServiceKeyResponse200ApplicationJson,
+    "200": GeneratedZod.zRevokeAccountServiceKeyResponse,
 }))();
 
 export const RevokeAuthorizedApplicationInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1735,10 +1756,10 @@ export type RevokeProjectApiKeyInput = {
     };
 };
 
-export const RevokeProjectApiKeyOutputSchema = GeneratedZod.zRevokeProjectApiKeyResponse200ApplicationJson;
+export const RevokeProjectApiKeyOutputSchema = GeneratedZod.zProjectApiKeyResponse;
 export type RevokeProjectApiKeyOutput = z.output<typeof RevokeProjectApiKeyOutputSchema>;
 export const RevokeProjectApiKeyOutputSchemas: OutputSchemas<RevokeProjectApiKeyOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zRevokeProjectApiKeyResponse200ApplicationJson,
+    "200": GeneratedZod.zProjectApiKeyResponse,
 }))();
 
 export const RotateVoiceProfileOutboundCredentialInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1756,10 +1777,10 @@ export type RotateVoiceProfileOutboundCredentialInput = {
     };
 };
 
-export const RotateVoiceProfileOutboundCredentialOutputSchema = GeneratedZod.zRotateVoiceProfileOutboundCredentialResponse200ApplicationJson;
+export const RotateVoiceProfileOutboundCredentialOutputSchema = GeneratedZod.zRotateVoiceProfileOutboundCredentialResponse;
 export type RotateVoiceProfileOutboundCredentialOutput = z.output<typeof RotateVoiceProfileOutboundCredentialOutputSchema>;
 export const RotateVoiceProfileOutboundCredentialOutputSchemas: OutputSchemas<RotateVoiceProfileOutboundCredentialOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zRotateVoiceProfileOutboundCredentialResponse200ApplicationJson,
+    "200": GeneratedZod.zRotateVoiceProfileOutboundCredentialResponse,
 }))();
 
 export const RotateWebhookSigningSecretInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1777,10 +1798,10 @@ export type RotateWebhookSigningSecretInput = {
     };
 };
 
-export const RotateWebhookSigningSecretOutputSchema = GeneratedZod.zRotateWebhookSigningSecretResponse200ApplicationJson;
+export const RotateWebhookSigningSecretOutputSchema = GeneratedZod.zRotateWebhookSigningSecretResponse;
 export type RotateWebhookSigningSecretOutput = z.output<typeof RotateWebhookSigningSecretOutputSchema>;
 export const RotateWebhookSigningSecretOutputSchemas: OutputSchemas<RotateWebhookSigningSecretOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zRotateWebhookSigningSecretResponse200ApplicationJson,
+    "200": GeneratedZod.zRotateWebhookSigningSecretResponse,
 }))();
 
 export const StartAccountPhoneVerificationInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1790,10 +1811,10 @@ export type StartAccountPhoneVerificationInput = {
     body: WireTypes.StartAccountPhoneVerificationData["body"];
 };
 
-export const StartAccountPhoneVerificationOutputSchema = GeneratedZod.zStartAccountPhoneVerificationResponse201ApplicationJson;
+export const StartAccountPhoneVerificationOutputSchema = GeneratedZod.zStartAccountPhoneVerificationResponse;
 export type StartAccountPhoneVerificationOutput = z.output<typeof StartAccountPhoneVerificationOutputSchema>;
 export const StartAccountPhoneVerificationOutputSchemas: OutputSchemas<StartAccountPhoneVerificationOutput> = /* @__PURE__ */ (() => ({
-    "201": GeneratedZod.zStartAccountPhoneVerificationResponse201ApplicationJson,
+    "201": GeneratedZod.zStartAccountPhoneVerificationResponse,
 }))();
 
 export const StartEnterpriseLoginInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1803,10 +1824,10 @@ export type StartEnterpriseLoginInput = {
     body: WireTypes.StartEnterpriseLoginData["body"];
 };
 
-export const StartEnterpriseLoginOutputSchema = GeneratedZod.zStartEnterpriseLoginResponse200ApplicationJson;
+export const StartEnterpriseLoginOutputSchema = GeneratedZod.zStartEnterpriseLoginResponse;
 export type StartEnterpriseLoginOutput = z.output<typeof StartEnterpriseLoginOutputSchema>;
 export const StartEnterpriseLoginOutputSchemas: OutputSchemas<StartEnterpriseLoginOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zStartEnterpriseLoginResponse200ApplicationJson,
+    "200": GeneratedZod.zStartEnterpriseLoginResponse,
 }))();
 
 export const UnassignSmsLineCampaignInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1824,11 +1845,11 @@ export type UnassignSmsLineCampaignInput = {
     };
 };
 
-export const UnassignSmsLineCampaignOutputSchema = /* @__PURE__ */ (() => z.union([GeneratedZod.zUnassignSmsLineCampaignResponse200ApplicationJson, GeneratedZod.zUnassignSmsLineCampaignResponse202ApplicationJson]))();
+export const UnassignSmsLineCampaignOutputSchema = GeneratedZod.zOperation;
 export type UnassignSmsLineCampaignOutput = z.output<typeof UnassignSmsLineCampaignOutputSchema>;
 export const UnassignSmsLineCampaignOutputSchemas: OutputSchemas<UnassignSmsLineCampaignOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zUnassignSmsLineCampaignResponse200ApplicationJson,
-    "202": GeneratedZod.zUnassignSmsLineCampaignResponse202ApplicationJson,
+    "200": GeneratedZod.zOperation,
+    "202": GeneratedZod.zOperation,
 }))();
 
 export const UnassignVoiceLineProfileInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1859,10 +1880,10 @@ export type UpdateAccountInput = {
     };
 };
 
-export const UpdateAccountOutputSchema = GeneratedZod.zUpdateAccountResponse200ApplicationJson;
+export const UpdateAccountOutputSchema = GeneratedZod.zAccount;
 export type UpdateAccountOutput = z.output<typeof UpdateAccountOutputSchema>;
 export const UpdateAccountOutputSchemas: OutputSchemas<UpdateAccountOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zUpdateAccountResponse200ApplicationJson,
+    "200": GeneratedZod.zAccount,
 }))();
 
 export const UpdateAgentProfileInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1880,10 +1901,10 @@ export type UpdateAgentProfileInput = {
     };
 };
 
-export const UpdateAgentProfileOutputSchema = GeneratedZod.zUpdateAgentProfileResponse200ApplicationJson;
+export const UpdateAgentProfileOutputSchema = GeneratedZod.zAgentProfile;
 export type UpdateAgentProfileOutput = z.output<typeof UpdateAgentProfileOutputSchema>;
 export const UpdateAgentProfileOutputSchemas: OutputSchemas<UpdateAgentProfileOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zUpdateAgentProfileResponse200ApplicationJson,
+    "200": GeneratedZod.zAgentProfile,
 }))();
 
 export const UpdateDefaultVoiceProfileInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1895,10 +1916,10 @@ export type UpdateDefaultVoiceProfileInput = {
     path: NonNullable<WireTypes.UpdateDefaultVoiceProfileData["path"]>;
 };
 
-export const UpdateDefaultVoiceProfileOutputSchema = GeneratedZod.zUpdateDefaultVoiceProfileResponse200ApplicationJson;
+export const UpdateDefaultVoiceProfileOutputSchema = GeneratedZod.zVoiceProfile;
 export type UpdateDefaultVoiceProfileOutput = z.output<typeof UpdateDefaultVoiceProfileOutputSchema>;
 export const UpdateDefaultVoiceProfileOutputSchemas: OutputSchemas<UpdateDefaultVoiceProfileOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zUpdateDefaultVoiceProfileResponse200ApplicationJson,
+    "200": GeneratedZod.zVoiceProfile,
 }))();
 
 export const UpdateOrganizationSsoPolicyInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1910,10 +1931,10 @@ export type UpdateOrganizationSsoPolicyInput = {
     path: NonNullable<WireTypes.UpdateOrganizationSsoPolicyData["path"]>;
 };
 
-export const UpdateOrganizationSsoPolicyOutputSchema = GeneratedZod.zUpdateOrganizationSsoPolicyResponse200ApplicationJson;
+export const UpdateOrganizationSsoPolicyOutputSchema = GeneratedZod.zOrganizationSsoConfiguration;
 export type UpdateOrganizationSsoPolicyOutput = z.output<typeof UpdateOrganizationSsoPolicyOutputSchema>;
 export const UpdateOrganizationSsoPolicyOutputSchemas: OutputSchemas<UpdateOrganizationSsoPolicyOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zUpdateOrganizationSsoPolicyResponse200ApplicationJson,
+    "200": GeneratedZod.zOrganizationSsoConfiguration,
 }))();
 
 export const UpdateProjectInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1931,10 +1952,10 @@ export type UpdateProjectInput = {
     };
 };
 
-export const UpdateProjectOutputSchema = GeneratedZod.zUpdateProjectResponse200ApplicationJson;
+export const UpdateProjectOutputSchema = GeneratedZod.zProject;
 export type UpdateProjectOutput = z.output<typeof UpdateProjectOutputSchema>;
 export const UpdateProjectOutputSchemas: OutputSchemas<UpdateProjectOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zUpdateProjectResponse200ApplicationJson,
+    "200": GeneratedZod.zProject,
 }))();
 
 export const UpdateProjectApiKeyInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1952,10 +1973,10 @@ export type UpdateProjectApiKeyInput = {
     };
 };
 
-export const UpdateProjectApiKeyOutputSchema = GeneratedZod.zUpdateProjectApiKeyResponse200ApplicationJson;
+export const UpdateProjectApiKeyOutputSchema = GeneratedZod.zProjectApiKeyResponse;
 export type UpdateProjectApiKeyOutput = z.output<typeof UpdateProjectApiKeyOutputSchema>;
 export const UpdateProjectApiKeyOutputSchemas: OutputSchemas<UpdateProjectApiKeyOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zUpdateProjectApiKeyResponse200ApplicationJson,
+    "200": GeneratedZod.zProjectApiKeyResponse,
 }))();
 
 export const UpdateVoiceProfileInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1967,10 +1988,10 @@ export type UpdateVoiceProfileInput = {
     path: NonNullable<WireTypes.UpdateVoiceProfileData["path"]>;
 };
 
-export const UpdateVoiceProfileOutputSchema = GeneratedZod.zUpdateVoiceProfileResponse200ApplicationJson;
+export const UpdateVoiceProfileOutputSchema = GeneratedZod.zVoiceProfile;
 export type UpdateVoiceProfileOutput = z.output<typeof UpdateVoiceProfileOutputSchema>;
 export const UpdateVoiceProfileOutputSchemas: OutputSchemas<UpdateVoiceProfileOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zUpdateVoiceProfileResponse200ApplicationJson,
+    "200": GeneratedZod.zVoiceProfile,
 }))();
 
 export const UpdateVoiceProfileInboundInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1982,10 +2003,10 @@ export type UpdateVoiceProfileInboundInput = {
     path: NonNullable<WireTypes.UpdateVoiceProfileInboundData["path"]>;
 };
 
-export const UpdateVoiceProfileInboundOutputSchema = GeneratedZod.zUpdateVoiceProfileInboundResponse200ApplicationJson;
+export const UpdateVoiceProfileInboundOutputSchema = GeneratedZod.zVoiceProfileInboundConfiguration;
 export type UpdateVoiceProfileInboundOutput = z.output<typeof UpdateVoiceProfileInboundOutputSchema>;
 export const UpdateVoiceProfileInboundOutputSchemas: OutputSchemas<UpdateVoiceProfileInboundOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zUpdateVoiceProfileInboundResponse200ApplicationJson,
+    "200": GeneratedZod.zVoiceProfileInboundConfiguration,
 }))();
 
 export const UpdateVoiceProfileOutboundAuthenticationInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1997,10 +2018,10 @@ export type UpdateVoiceProfileOutboundAuthenticationInput = {
     path: NonNullable<WireTypes.UpdateVoiceProfileOutboundAuthenticationData["path"]>;
 };
 
-export const UpdateVoiceProfileOutboundAuthenticationOutputSchema = GeneratedZod.zUpdateVoiceProfileOutboundAuthenticationResponse200ApplicationJson;
+export const UpdateVoiceProfileOutboundAuthenticationOutputSchema = GeneratedZod.zUpdateVoiceProfileOutboundAuthenticationResponse;
 export type UpdateVoiceProfileOutboundAuthenticationOutput = z.output<typeof UpdateVoiceProfileOutboundAuthenticationOutputSchema>;
 export const UpdateVoiceProfileOutboundAuthenticationOutputSchemas: OutputSchemas<UpdateVoiceProfileOutboundAuthenticationOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zUpdateVoiceProfileOutboundAuthenticationResponse200ApplicationJson,
+    "200": GeneratedZod.zUpdateVoiceProfileOutboundAuthenticationResponse,
 }))();
 
 export const UpdateWebhookDestinationInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -2018,10 +2039,10 @@ export type UpdateWebhookDestinationInput = {
     };
 };
 
-export const UpdateWebhookDestinationOutputSchema = GeneratedZod.zUpdateWebhookDestinationResponse200ApplicationJson;
+export const UpdateWebhookDestinationOutputSchema = GeneratedZod.zWebhookDestination;
 export type UpdateWebhookDestinationOutput = z.output<typeof UpdateWebhookDestinationOutputSchema>;
 export const UpdateWebhookDestinationOutputSchemas: OutputSchemas<UpdateWebhookDestinationOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zUpdateWebhookDestinationResponse200ApplicationJson,
+    "200": GeneratedZod.zWebhookDestination,
 }))();
 
 export const UploadAttachmentInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -2043,9 +2064,9 @@ export type UploadAttachmentInput = {
     };
 };
 
-export const UploadAttachmentOutputSchema = /* @__PURE__ */ (() => z.union([GeneratedZod.zUploadAttachmentResponse200ApplicationJson, GeneratedZod.zUploadAttachmentResponse201ApplicationJson]))();
+export const UploadAttachmentOutputSchema = GeneratedZod.zAttachment;
 export type UploadAttachmentOutput = z.output<typeof UploadAttachmentOutputSchema>;
 export const UploadAttachmentOutputSchemas: OutputSchemas<UploadAttachmentOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zUploadAttachmentResponse200ApplicationJson,
-    "201": GeneratedZod.zUploadAttachmentResponse201ApplicationJson,
+    "200": GeneratedZod.zAttachment,
+    "201": GeneratedZod.zAttachment,
 }))();

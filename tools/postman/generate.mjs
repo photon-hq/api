@@ -7,6 +7,26 @@ import { isDeepStrictEqual } from "node:util";
 const credentialValue = /\b(?:pho_(?:ask|sk)_[A-Za-z0-9_-]{20,}|gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{30,}|xox[baprs]-[A-Za-z0-9-]{20,}|AKIA[0-9A-Z]{16})\b|-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/;
 const credentialField = /^(?:password|passwd|secret|client_?secret|api_?key|api_?token|access_?token|refresh_?token|(?:account)?service_?key|token)$/i;
 
+/** Postman stores names of at most this many characters and cuts longer ones. */
+export const maxNameLength = 255;
+
+/**
+ * Postman example name for a response. The converter uses the response
+ * description, which OpenAPI doesn't limit (a status with several problems
+ * lists all of them); shorten it at the last whole "; " entry, or else the
+ * last word, so Postman doesn't cut it mid-word. The description itself is
+ * unchanged in the contract.
+ */
+export function exampleName(name) {
+  if (typeof name !== "string" || name.length <= maxNameLength) return name;
+  // Never end on half of a surrogate pair (a character outside the BMP).
+  const head = name.slice(0, maxNameLength - 1).replace(/[\uD800-\uDBFF]$/, "");
+  const entry = head.lastIndexOf("; ");
+  if (entry > 0) return `${head.slice(0, entry)}; …`;
+  const word = head.lastIndexOf(" ");
+  return `${word > 0 ? head.slice(0, word) : head.replace(/.$/u, "")} …`;
+}
+
 /** Empty credential examples without changing the saved API contract. */
 function emptyCredentials(value, field = "") {
   if (typeof value === "string") {
@@ -284,6 +304,7 @@ export async function generateCollection(schema, converter) {
         request.description = `${description}\n\nThis request uploads the included hello.txt text file. Set your project ID and a fresh Idempotency-Key. The raw body contains JSON metadata followed by the file bytes. If editing it, keep sizeBytes equal to the UTF-8 file byte count and preserve the CRLF boundaries. For a binary file, select a prepared multipart/related payload as a binary body and set its matching boundary in Content-Type. Postman calculates Content-Length.`;
       }
       for (const response of item.response ?? []) {
+        response.name = exampleName(response.name);
         if (response.body) response.body = emptyCredentials(response.body);
         response.header = emptyCredentials((response.header ?? []).filter((header) => !/^(authorization|set-cookie)$/i.test(header.key)));
         if (response.originalRequest) {

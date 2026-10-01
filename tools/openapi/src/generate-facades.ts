@@ -504,8 +504,11 @@ function pythonInputClasses(operation: ManifestOperation): string {
     )?.value;
     const bodyComponent = modelNameFromReference(bodyReference);
     const bodyModel = bodyComponent === undefined ? undefined : pythonModelName(bodyComponent);
+    // An unnamed raw-bytes body (`type: string, format: binary`) is bytes, as a named one is.
+    const rawBytes = isObject(bodyReference) && bodyReference.format === "binary"
+      && (bodyReference.type === undefined || bodyReference.type === "string");
     fields.push(
-      `    body: models.${bodyModel ?? "RootModel[Any]"}${operation.requestBody.required ? "" : " | None = None"}`,
+      `    body: models.${bodyModel ?? (rawBytes ? "RootModel[bytes]" : "RootModel[Any]")}${operation.requestBody.required ? "" : " | None = None"}`,
     );
   }
   for (const location of ["path", "query", "header"] as const) {

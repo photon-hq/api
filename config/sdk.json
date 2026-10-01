@@ -11,9 +11,5 @@
         }
       }
     }
-  },
-  "namingWaiver": {
-    "reason": "Type names for unnamed schemas are generated and change in 0.2.0, when the production contract names them.",
-    "until": "0.2.0"
   }
 }

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { generateCollection } from "./generate.mjs";
+import { exampleName, generateCollection, maxNameLength } from "./generate.mjs";
 const schema = {
   openapi: "3.1.0", info: { title: "Fixture", version: "1.0.0" },
   servers: [{ url: "https://api.example.test" }],
@@ -291,4 +291,22 @@ test("isolated CLI reproduces patterned examples", async (t) => {
   run();
   assert.equal(await readFile(join(root, "postman/collection.json"), "utf8"), first);
   assert.ok(!first.includes("not-for-generation"));
+});
+
+test("example names fit Postman's limit and end at a whole entry, word or character", () => {
+  const problems = Array.from({ length: 12 }, (_, index) => `CONFLICT_${index}: Conflict number ${index}`).join("; ");
+  const listed = exampleName(problems);
+  assert.ok(listed.length <= maxNameLength);
+  assert.match(listed, /^CONFLICT_0: Conflict number 0; .*CONFLICT_\d+: Conflict number \d+; …$/);
+  const prose = exampleName(`${"word ".repeat(60)}end`);
+  assert.ok(prose.length <= maxNameLength);
+  assert.match(prose, /^(word )+…$/);
+  for (const unbroken of ["x".repeat(300), "😀".repeat(200), `x${"😀".repeat(200)}`]) {
+    const name = exampleName(unbroken);
+    assert.ok(name.length <= maxNameLength);
+    assert.match(name, / …$/);
+    assert.ok(name.isWellFormed(), "no half of a surrogate pair");
+  }
+  assert.equal(exampleName("OK"), "OK");
+  assert.equal(exampleName(undefined), undefined);
 });

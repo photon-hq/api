@@ -421,3 +421,11 @@ test("Python resources are snake_case while TypeScript keeps camelCase", () => {
   assert.doesNotMatch(python, /self\.agentProfile/);
   assert.match(renderTypeScript(fixture), /agentProfile: \{/);
 });
+
+test("Python types an unnamed binary request body as bytes", () => {
+  const upload = operation("upload", { "204": {} });
+  upload.requestBody = { required: true, content: { "multipart/related": { type: "string", format: "binary" } } };
+  assert.match(renderPython({ operations: [upload] }), /body: models\.RootModel\[bytes\]\n/);
+  upload.requestBody = { required: true, content: { "application/json": { type: "object" } } };
+  assert.match(renderPython({ operations: [upload] }), /body: models\.RootModel\[Any\]\n/);
+});

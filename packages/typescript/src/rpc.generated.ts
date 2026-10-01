@@ -519,7 +519,8 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "application/json"
     ],
     "accept": [
-      "application/json"
+      "application/json",
+      "application/problem+json"
     ],
     "responseKinds": {
       "200": "json"
@@ -531,7 +532,21 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "application/json"
     ],
     "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
+  "disableOrganizationSso": {
+    "request": "application/json",
+    "responses": [
       "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
     ],
     "responseKinds": {
       "200": "json"
@@ -1892,6 +1907,18 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
+         * Turn organization SSO off
+         *
+         * Deletes the provider connection, releases the SSO requirement once the connection is gone, then unbinds the chosen domains. Retry with the same Idempotency-Key to resume or await the same run.
+         */
+        disableOrganizationSso: (input: Schemas.DisableOrganizationSsoInput, options?: RequestOptions) => invokers.data<Schemas.DisableOrganizationSsoInput, Schemas.DisableOrganizationSsoOutput>(
+            "disableOrganizationSso",
+            Sdk.disableOrganizationSso,
+            Schemas.DisableOrganizationSsoOutputSchemas,
+            input,
+            options,
+        ),
+        /**
          * Read organization and own membership synchronization
          *
          * Requires current human organization membership. Synchronization status does not attest SSO configuration or completed authorization.
@@ -2227,7 +2254,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * List billing plans available to a project
+             * List available billing plans
              *
              * Lists the billing plan catalog, grouped by their public plan-metadata type. Use the returned plan information when choosing the category and planCode for a plan change. The catalog is the same for every project, and reading it does not purchase a plan.
              */
@@ -2331,7 +2358,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Cancel operation
              *
-             * Withdraws a provision that has not been fulfilled yet. This is an operations action rather than a DELETE, because there is nothing to delete: no resource exists until the work commits. Whether it is accepted depends on the resource type — a dedicated iMessage line may sit waiting on inventory for hours and withdrawing costs nothing, while an SMS number is cancellable during inventory waiting and answers 409 once the workflow commits to its first provider order. The output-only `cancellable` field is a snapshot; the cancellation transaction always checks the current phase under a row lock. A cancel that loses the race against the work finishing also answers 409: the resource exists and is billed for, so what you want then is to release it. Nothing is charged for a cancelled provision — billing runs after the work, so there is never anything to refund. Requires the platforms:write permission bound to the project resource in the path.
+             * Withdraws a provision that has not been fulfilled yet. This is an operations action rather than a DELETE, because there is nothing to delete: no resource exists until the work commits. Whether it is accepted depends on the resource type — a dedicated iMessage line may sit waiting on inventory for hours and withdrawing costs nothing, while an SMS number is cancellable during inventory waiting and answers 409 once the workflow commits to its first provider order. Campaign assignment and detachment operations cannot be cancelled in any state. Wait for completion before requesting another change; that new change is not a guaranteed rollback. The output-only `cancellable` field is a snapshot; the cancellation transaction always checks the current phase under a row lock. A cancel that loses the race against the work finishing also answers 409: the resource exists and is billed for, so what you want then is to release it. Nothing is charged for a cancelled provision — billing runs after the work, so there is never anything to refund. Requires the platforms:write permission bound to the project resource in the path.
              */
             cancelOperation: (input: Schemas.CancelOperationInput, options?: RequestOptions) => invokers.data<Schemas.CancelOperationInput, Schemas.CancelOperationOutput>(
                 "cancelOperation",
@@ -2367,7 +2394,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Connect Telegram bot
              *
-             * Starts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to connect an existing managed bot or create a new one with the project's default agent name or a custom display name, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The BFF includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged.
+             * Starts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to connect an existing managed bot or create a new one with the project's default agent name or a custom display name, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged.
              */
             connectTelegramBot: (input: Schemas.ConnectTelegramBotInput, options?: RequestOptions) => invokers.data<Schemas.ConnectTelegramBotInput, Schemas.ConnectTelegramBotOutput>(
                 "connectTelegramBot",
@@ -2511,7 +2538,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Get operation
              *
-             * Reads one operation using the same operation representation as creation and list. The BFF includes detail.setupUrl only with platforms:write for this project. This is the polling endpoint every asynchronous request here points its Location at, and it resolves from the moment that request is accepted — an operation is committed before its work is dispatched, so there is no window in which the URL 404s. Poll until `state` is one of `succeeded`, `failed` or `cancelled`, pacing from the Retry-After the accepting response returned. While an email domain waits for DNS, `detail` always contains the manual records and may additionally contain `automaticSetup` with a signed provider URL to open separately. Once the operation has produced a resource, the response carries that resource too, so the poll that finishes is also the one that tells you what you got. `succeeded` means the work is done; billing runs behind it and is not something the caller waits on. Operations are never purged, so a 404 means the id was never this project's. Requires the platforms:read permission bound to the project resource in the path.
+             * Reads one operation using the same operation representation as creation and list. The API includes detail.setupUrl only with platforms:write for this project. This is the polling endpoint every asynchronous request here points its Location at, and it resolves from the moment that request is accepted — an operation is committed before its work is dispatched, so there is no window in which the URL 404s. Poll until `state` is one of `succeeded`, `failed` or `cancelled`, pacing from the Retry-After the accepting response returned. While an email domain waits for DNS, `detail` always contains the manual records and may additionally contain `automaticSetup` with a signed provider URL to open separately. Once the operation has produced a resource, the response carries that resource too, so the poll that finishes is also the one that tells you what you got. `succeeded` means the work is done; billing runs behind it and is not something the caller waits on. Operations are never purged, so a 404 means the id was never this project's. Requires the platforms:read permission bound to the project resource in the path.
              */
             getOperation: (input: Schemas.GetOperationInput, options?: RequestOptions) => invokers.data<Schemas.GetOperationInput, Schemas.GetOperationOutput>(
                 "getOperation",
@@ -2547,7 +2574,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Read SMS line campaign assignment
              *
-             * Read requested and observed campaign state. Eligibility is a control-plane assessment, not a delivery or recipient-consent guarantee.
+             * Read the last confirmed campaign and current eligibility. Follow changes through their operations. Eligibility is a control-plane assessment, not a delivery or recipient-consent guarantee.
              */
             getSmsLineCampaignAssignment: (input: Schemas.GetSmsLineCampaignAssignmentInput, options?: RequestOptions) => invokers.data<Schemas.GetSmsLineCampaignAssignmentInput, Schemas.GetSmsLineCampaignAssignmentOutput>(
                 "getSmsLineCampaignAssignment",
@@ -2655,7 +2682,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * List operations
              *
-             * Lists the project's operations using the same operation representation as creation and GET. The BFF includes detail.setupUrl only with platforms:write for this project. Results are oldest first — every provision and release it has ever asked for, including the ones still running. This is the entire in-flight view: a resource only appears once it is real, so nothing half-built shows up in the resource list and nothing in flight is missing from this one. Filter by `resourceId` to get one resource's whole history, which for a pooled line is every tenure this project has had on it. `state` and `type` are comma-separated and an absent filter means everything, including failed and cancelled operations. Requires the platforms:read permission bound to the project resource in the path.
+             * Lists the project's operations using the same operation representation as creation and GET. The API includes detail.setupUrl only with platforms:write for this project. Results are oldest first — every provision and release it has ever asked for, including the ones still running. This is the entire in-flight view: a resource only appears once it is real, so nothing half-built shows up in the resource list and nothing in flight is missing from this one. Filter by `resourceId` to get one resource's whole history, which for a pooled line is every tenure this project has had on it. `state` is comma-separated; `type` accepts one operation type and an absent filter means everything, including failed and cancelled operations. Requires the platforms:read permission bound to the project resource in the path.
              */
             listOperations: (input: Schemas.ListOperationsInput, options?: RequestOptions) => invokers.data<Schemas.ListOperationsInput, Schemas.ListOperationsOutput>(
                 "listOperations",
@@ -2727,7 +2754,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Provision dedicated iMessage line
              *
-             * Claims one dedicated iMessage line for the project and enables iMessage on it. Always answers 202 with an operation: lines come from a pool of provisioned Macs, and an empty pool is a wait rather than a failure — this can legitimately stay `running` for hours, which is exactly why the response is a handle to poll rather than a number. Only business plans may hold one, and that is checked BEFORE any Mac is taken out of the pool; nothing is charged until a line is actually claimed. If you no longer want to wait, POST to the operation's cancel endpoint, which costs nothing. The Idempotency-Key is required and permanent: repeating it returns the same operation forever. A further line always needs a NEW key, including while others are still waiting. Requires the platforms:write permission bound to the project resource in the path.
+             * Claims one dedicated iMessage line for the project and enables iMessage on it. Always answers 202 with an operation: dedicated lines are allocated from available capacity, and unavailable capacity causes a wait rather than a failure — this can legitimately stay `running` for hours, which is exactly why the response is a handle to poll rather than a number. The project's messaging subscription must grant the dedicated iMessage lines entitlement (`imessage_dedicated_lines.can_purchase`), and that is checked before capacity is reserved; nothing is charged until a line is actually claimed. If you no longer want to wait, POST to the operation's cancel endpoint, which costs nothing. The Idempotency-Key is required and permanent: repeating it returns the same operation forever. A further line always needs a NEW key, including while others are still waiting. Requires the platforms:write permission bound to the project resource in the path.
              */
             provisionImessageDedicatedLine: (input: Schemas.ProvisionImessageDedicatedLineInput, options?: RequestOptions) => invokers.data<Schemas.ProvisionImessageDedicatedLineInput, Schemas.ProvisionImessageDedicatedLineOutput>(
                 "provisionImessageDedicatedLine",
@@ -2739,7 +2766,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Provision dedicated WhatsApp line
              *
-             * Provisions one dedicated WhatsApp line with WhatsApp and shared Voice enabled. It attaches to an eligible iMessage line the project already owns when possible so both products keep the same number; otherwise it claims healthy WhatsApp-capable Cosmos inventory. Always answers 202 because an empty pool is a wait rather than a failure. The product opens its own charge period after the abilities are enabled; Voice has no separate charge. Cancel the returned operation to stop waiting. The Idempotency-Key is required and permanent.
+             * Provisions one dedicated WhatsApp line with WhatsApp and shared Voice enabled. It attaches to an eligible iMessage line the project already owns when possible so both products keep the same number; otherwise it claims healthy, available WhatsApp-capable dedicated-line inventory. Always answers 202, because waiting when no inventory is available is not a failure. The product opens its own charge period after the abilities are enabled; Voice has no separate charge. Cancel the returned operation to stop waiting. The Idempotency-Key is required and permanent.
              */
             provisionWhatsappDedicatedLine: (input: Schemas.ProvisionWhatsappDedicatedLineInput, options?: RequestOptions) => invokers.data<Schemas.ProvisionWhatsappDedicatedLineInput, Schemas.ProvisionWhatsappDedicatedLineOutput>(
                 "provisionWhatsappDedicatedLine",
@@ -2763,7 +2790,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Release dedicated iMessage line
              *
-             * Removes only iMessage from one dedicated Cosmos line. Shared Voice is removed only when WhatsApp is absent; if WhatsApp remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open iMessage charge period identifies this product tenure.
+             * Removes only iMessage from one dedicated line. Shared Voice is removed only when WhatsApp is absent; if WhatsApp remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open iMessage charge period identifies this product tenure.
              */
             releaseImessageDedicatedLine: (input: Schemas.ReleaseImessageDedicatedLineInput, options?: RequestOptions) => invokers.data<Schemas.ReleaseImessageDedicatedLineInput, Schemas.ReleaseImessageDedicatedLineOutput>(
                 "releaseImessageDedicatedLine",
@@ -2787,7 +2814,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Release dedicated WhatsApp line
              *
-             * Removes only WhatsApp from one dedicated Cosmos line. Shared Voice is removed only when iMessage is absent; if iMessage remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open WhatsApp charge period identifies this product tenure.
+             * Removes only WhatsApp from one dedicated line. Shared Voice is removed only when iMessage is absent; if iMessage remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open WhatsApp charge period identifies this product tenure.
              */
             releaseWhatsappDedicatedLine: (input: Schemas.ReleaseWhatsappDedicatedLineInput, options?: RequestOptions) => invokers.data<Schemas.ReleaseWhatsappDedicatedLineInput, Schemas.ReleaseWhatsappDedicatedLineOutput>(
                 "releaseWhatsappDedicatedLine",
@@ -3051,6 +3078,8 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
         ),
         /**
          * List project API keys
+         *
+         * Lists the API keys on the selected project, ordered newest first. Revoked keys are not listed; expired keys stay listed until they are revoked. Entries contain key metadata and permissions, never secret values. Use the returned identifiers to manage an existing key; lost secrets cannot be recovered through this operation.
          */
         listProjectApiKeys: (input: Schemas.ListProjectApiKeysInput, options?: RequestOptions) => invokers.data<Schemas.ListProjectApiKeysInput, Schemas.ListProjectApiKeysOutput>(
             "listProjectApiKeys",
@@ -3468,6 +3497,18 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
+         * Turn organization SSO off
+         *
+         * Deletes the provider connection, releases the SSO requirement once the connection is gone, then unbinds the chosen domains. Retry with the same Idempotency-Key to resume or await the same run.
+         */
+        disableOrganizationSso: (input: Schemas.DisableOrganizationSsoInput, options?: RequestOptions) => invokers.raw<Schemas.DisableOrganizationSsoInput, Schemas.DisableOrganizationSsoOutput>(
+            "disableOrganizationSso",
+            Sdk.disableOrganizationSso,
+            Schemas.DisableOrganizationSsoOutputSchemas,
+            input,
+            options,
+        ),
+        /**
          * Read organization and own membership synchronization
          *
          * Requires current human organization membership. Synchronization status does not attest SSO configuration or completed authorization.
@@ -3803,7 +3844,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * List billing plans available to a project
+             * List available billing plans
              *
              * Lists the billing plan catalog, grouped by their public plan-metadata type. Use the returned plan information when choosing the category and planCode for a plan change. The catalog is the same for every project, and reading it does not purchase a plan.
              */
@@ -3907,7 +3948,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Cancel operation
              *
-             * Withdraws a provision that has not been fulfilled yet. This is an operations action rather than a DELETE, because there is nothing to delete: no resource exists until the work commits. Whether it is accepted depends on the resource type — a dedicated iMessage line may sit waiting on inventory for hours and withdrawing costs nothing, while an SMS number is cancellable during inventory waiting and answers 409 once the workflow commits to its first provider order. The output-only `cancellable` field is a snapshot; the cancellation transaction always checks the current phase under a row lock. A cancel that loses the race against the work finishing also answers 409: the resource exists and is billed for, so what you want then is to release it. Nothing is charged for a cancelled provision — billing runs after the work, so there is never anything to refund. Requires the platforms:write permission bound to the project resource in the path.
+             * Withdraws a provision that has not been fulfilled yet. This is an operations action rather than a DELETE, because there is nothing to delete: no resource exists until the work commits. Whether it is accepted depends on the resource type — a dedicated iMessage line may sit waiting on inventory for hours and withdrawing costs nothing, while an SMS number is cancellable during inventory waiting and answers 409 once the workflow commits to its first provider order. Campaign assignment and detachment operations cannot be cancelled in any state. Wait for completion before requesting another change; that new change is not a guaranteed rollback. The output-only `cancellable` field is a snapshot; the cancellation transaction always checks the current phase under a row lock. A cancel that loses the race against the work finishing also answers 409: the resource exists and is billed for, so what you want then is to release it. Nothing is charged for a cancelled provision — billing runs after the work, so there is never anything to refund. Requires the platforms:write permission bound to the project resource in the path.
              */
             cancelOperation: (input: Schemas.CancelOperationInput, options?: RequestOptions) => invokers.raw<Schemas.CancelOperationInput, Schemas.CancelOperationOutput>(
                 "cancelOperation",
@@ -3943,7 +3984,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Connect Telegram bot
              *
-             * Starts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to connect an existing managed bot or create a new one with the project's default agent name or a custom display name, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The BFF includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged.
+             * Starts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to connect an existing managed bot or create a new one with the project's default agent name or a custom display name, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged.
              */
             connectTelegramBot: (input: Schemas.ConnectTelegramBotInput, options?: RequestOptions) => invokers.raw<Schemas.ConnectTelegramBotInput, Schemas.ConnectTelegramBotOutput>(
                 "connectTelegramBot",
@@ -4087,7 +4128,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Get operation
              *
-             * Reads one operation using the same operation representation as creation and list. The BFF includes detail.setupUrl only with platforms:write for this project. This is the polling endpoint every asynchronous request here points its Location at, and it resolves from the moment that request is accepted — an operation is committed before its work is dispatched, so there is no window in which the URL 404s. Poll until `state` is one of `succeeded`, `failed` or `cancelled`, pacing from the Retry-After the accepting response returned. While an email domain waits for DNS, `detail` always contains the manual records and may additionally contain `automaticSetup` with a signed provider URL to open separately. Once the operation has produced a resource, the response carries that resource too, so the poll that finishes is also the one that tells you what you got. `succeeded` means the work is done; billing runs behind it and is not something the caller waits on. Operations are never purged, so a 404 means the id was never this project's. Requires the platforms:read permission bound to the project resource in the path.
+             * Reads one operation using the same operation representation as creation and list. The API includes detail.setupUrl only with platforms:write for this project. This is the polling endpoint every asynchronous request here points its Location at, and it resolves from the moment that request is accepted — an operation is committed before its work is dispatched, so there is no window in which the URL 404s. Poll until `state` is one of `succeeded`, `failed` or `cancelled`, pacing from the Retry-After the accepting response returned. While an email domain waits for DNS, `detail` always contains the manual records and may additionally contain `automaticSetup` with a signed provider URL to open separately. Once the operation has produced a resource, the response carries that resource too, so the poll that finishes is also the one that tells you what you got. `succeeded` means the work is done; billing runs behind it and is not something the caller waits on. Operations are never purged, so a 404 means the id was never this project's. Requires the platforms:read permission bound to the project resource in the path.
              */
             getOperation: (input: Schemas.GetOperationInput, options?: RequestOptions) => invokers.raw<Schemas.GetOperationInput, Schemas.GetOperationOutput>(
                 "getOperation",
@@ -4123,7 +4164,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Read SMS line campaign assignment
              *
-             * Read requested and observed campaign state. Eligibility is a control-plane assessment, not a delivery or recipient-consent guarantee.
+             * Read the last confirmed campaign and current eligibility. Follow changes through their operations. Eligibility is a control-plane assessment, not a delivery or recipient-consent guarantee.
              */
             getSmsLineCampaignAssignment: (input: Schemas.GetSmsLineCampaignAssignmentInput, options?: RequestOptions) => invokers.raw<Schemas.GetSmsLineCampaignAssignmentInput, Schemas.GetSmsLineCampaignAssignmentOutput>(
                 "getSmsLineCampaignAssignment",
@@ -4231,7 +4272,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * List operations
              *
-             * Lists the project's operations using the same operation representation as creation and GET. The BFF includes detail.setupUrl only with platforms:write for this project. Results are oldest first — every provision and release it has ever asked for, including the ones still running. This is the entire in-flight view: a resource only appears once it is real, so nothing half-built shows up in the resource list and nothing in flight is missing from this one. Filter by `resourceId` to get one resource's whole history, which for a pooled line is every tenure this project has had on it. `state` and `type` are comma-separated and an absent filter means everything, including failed and cancelled operations. Requires the platforms:read permission bound to the project resource in the path.
+             * Lists the project's operations using the same operation representation as creation and GET. The API includes detail.setupUrl only with platforms:write for this project. Results are oldest first — every provision and release it has ever asked for, including the ones still running. This is the entire in-flight view: a resource only appears once it is real, so nothing half-built shows up in the resource list and nothing in flight is missing from this one. Filter by `resourceId` to get one resource's whole history, which for a pooled line is every tenure this project has had on it. `state` is comma-separated; `type` accepts one operation type and an absent filter means everything, including failed and cancelled operations. Requires the platforms:read permission bound to the project resource in the path.
              */
             listOperations: (input: Schemas.ListOperationsInput, options?: RequestOptions) => invokers.raw<Schemas.ListOperationsInput, Schemas.ListOperationsOutput>(
                 "listOperations",
@@ -4303,7 +4344,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Provision dedicated iMessage line
              *
-             * Claims one dedicated iMessage line for the project and enables iMessage on it. Always answers 202 with an operation: lines come from a pool of provisioned Macs, and an empty pool is a wait rather than a failure — this can legitimately stay `running` for hours, which is exactly why the response is a handle to poll rather than a number. Only business plans may hold one, and that is checked BEFORE any Mac is taken out of the pool; nothing is charged until a line is actually claimed. If you no longer want to wait, POST to the operation's cancel endpoint, which costs nothing. The Idempotency-Key is required and permanent: repeating it returns the same operation forever. A further line always needs a NEW key, including while others are still waiting. Requires the platforms:write permission bound to the project resource in the path.
+             * Claims one dedicated iMessage line for the project and enables iMessage on it. Always answers 202 with an operation: dedicated lines are allocated from available capacity, and unavailable capacity causes a wait rather than a failure — this can legitimately stay `running` for hours, which is exactly why the response is a handle to poll rather than a number. The project's messaging subscription must grant the dedicated iMessage lines entitlement (`imessage_dedicated_lines.can_purchase`), and that is checked before capacity is reserved; nothing is charged until a line is actually claimed. If you no longer want to wait, POST to the operation's cancel endpoint, which costs nothing. The Idempotency-Key is required and permanent: repeating it returns the same operation forever. A further line always needs a NEW key, including while others are still waiting. Requires the platforms:write permission bound to the project resource in the path.
              */
             provisionImessageDedicatedLine: (input: Schemas.ProvisionImessageDedicatedLineInput, options?: RequestOptions) => invokers.raw<Schemas.ProvisionImessageDedicatedLineInput, Schemas.ProvisionImessageDedicatedLineOutput>(
                 "provisionImessageDedicatedLine",
@@ -4315,7 +4356,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Provision dedicated WhatsApp line
              *
-             * Provisions one dedicated WhatsApp line with WhatsApp and shared Voice enabled. It attaches to an eligible iMessage line the project already owns when possible so both products keep the same number; otherwise it claims healthy WhatsApp-capable Cosmos inventory. Always answers 202 because an empty pool is a wait rather than a failure. The product opens its own charge period after the abilities are enabled; Voice has no separate charge. Cancel the returned operation to stop waiting. The Idempotency-Key is required and permanent.
+             * Provisions one dedicated WhatsApp line with WhatsApp and shared Voice enabled. It attaches to an eligible iMessage line the project already owns when possible so both products keep the same number; otherwise it claims healthy, available WhatsApp-capable dedicated-line inventory. Always answers 202, because waiting when no inventory is available is not a failure. The product opens its own charge period after the abilities are enabled; Voice has no separate charge. Cancel the returned operation to stop waiting. The Idempotency-Key is required and permanent.
              */
             provisionWhatsappDedicatedLine: (input: Schemas.ProvisionWhatsappDedicatedLineInput, options?: RequestOptions) => invokers.raw<Schemas.ProvisionWhatsappDedicatedLineInput, Schemas.ProvisionWhatsappDedicatedLineOutput>(
                 "provisionWhatsappDedicatedLine",
@@ -4339,7 +4380,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Release dedicated iMessage line
              *
-             * Removes only iMessage from one dedicated Cosmos line. Shared Voice is removed only when WhatsApp is absent; if WhatsApp remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open iMessage charge period identifies this product tenure.
+             * Removes only iMessage from one dedicated line. Shared Voice is removed only when WhatsApp is absent; if WhatsApp remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open iMessage charge period identifies this product tenure.
              */
             releaseImessageDedicatedLine: (input: Schemas.ReleaseImessageDedicatedLineInput, options?: RequestOptions) => invokers.raw<Schemas.ReleaseImessageDedicatedLineInput, Schemas.ReleaseImessageDedicatedLineOutput>(
                 "releaseImessageDedicatedLine",
@@ -4363,7 +4404,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Release dedicated WhatsApp line
              *
-             * Removes only WhatsApp from one dedicated Cosmos line. Shared Voice is removed only when iMessage is absent; if iMessage remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open WhatsApp charge period identifies this product tenure.
+             * Removes only WhatsApp from one dedicated line. Shared Voice is removed only when iMessage is absent; if iMessage remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open WhatsApp charge period identifies this product tenure.
              */
             releaseWhatsappDedicatedLine: (input: Schemas.ReleaseWhatsappDedicatedLineInput, options?: RequestOptions) => invokers.raw<Schemas.ReleaseWhatsappDedicatedLineInput, Schemas.ReleaseWhatsappDedicatedLineOutput>(
                 "releaseWhatsappDedicatedLine",
@@ -4627,6 +4668,8 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
         ),
         /**
          * List project API keys
+         *
+         * Lists the API keys on the selected project, ordered newest first. Revoked keys are not listed; expired keys stay listed until they are revoked. Entries contain key metadata and permissions, never secret values. Use the returned identifiers to manage an existing key; lost secrets cannot be recovered through this operation.
          */
         listProjectApiKeys: (input: Schemas.ListProjectApiKeysInput, options?: RequestOptions) => invokers.raw<Schemas.ListProjectApiKeysInput, Schemas.ListProjectApiKeysOutput>(
             "listProjectApiKeys",
