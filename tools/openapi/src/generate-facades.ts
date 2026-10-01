@@ -553,6 +553,7 @@ function pythonMethod(
   operation: ManifestOperation,
   asynchronous: boolean,
   methodName: string,
+  raw: boolean,
 ): string {
   const typeName = pascalCase(operation.operationId);
   const required =
@@ -561,19 +562,25 @@ function pythonMethod(
   const input = required
     ? `input: ${typeName}Input`
     : `input: ${typeName}Input | None = None`;
-  const parsedInput = required ? "input" : `(input or ${typeName}Input())`;
   const outputType = pythonSuccessType(operation);
   const awaitPrefix = asynchronous ? "await " : "";
   const asyncPrefix = asynchronous ? "async " : "";
+  if (!raw) {
+    // The client's method returns the decoded result; its raw counterpart
+    // (photon.raw) holds the request and returns the whole response.
+    return `    ${asyncPrefix}def ${methodName}(self, ${input}) -> ${outputType}:\n` +
+      pythonDocumentation(operation) +
+      `        return (${awaitPrefix}self._raw_resource.${methodName}(input)).data\n`;
+  }
+  const parsedInput = required ? "input" : `(input or ${typeName}Input())`;
   const rawRequest = operationMedia(operation).rawRequest;
-  return `    ${asyncPrefix}def ${methodName}(self, ${input}) -> ${outputType} | RawResponse[${outputType}]:\n` +
+  return `    ${asyncPrefix}def ${methodName}(self, ${input}) -> RawResponse[${outputType}]:\n` +
     pythonDocumentation(operation) +
     `        payload = ${parsedInput}.model_dump(mode="json", by_alias=True, exclude_unset=True${rawRequest ? ', exclude={"body"}' : ""})\n` +
     (rawRequest ? `        payload["body"] = ${parsedInput}.body.root if ${parsedInput}.body is not None else None\n` : "") +
-    `        response = ${awaitPrefix}self._transport.request(\n` +
+    `        return ${awaitPrefix}self._transport.request(\n` +
     `            _OP_${snakeCase(operation.operationId).toUpperCase()}, payload\n` +
-    `        )\n` +
-    `        return response if self._raw else response.data\n`;
+    `        )\n`;
 }
 
 function allNodes(
@@ -590,27 +597,32 @@ function allNodes(
   return result;
 }
 
+/** Python class name of a resource; the raw variant returns RawResponse[T]. */
+function pythonResourceName(path: string[], asynchronous: boolean, raw: boolean): string {
+  return `${asynchronous ? "Async" : "Sync"}${raw ? "Raw" : ""}${path.map(pascalCase).join("")}Resource`;
+}
+
 function pythonResourceClass(
   node: TreeNode,
   path: string[],
   asynchronous: boolean,
+  raw: boolean,
 ): string {
-  const prefix = asynchronous ? "Async" : "Sync";
-  const className = `${prefix}${path.map(pascalCase).join("")}Resource`;
   const transportType = asynchronous ? "AsyncTransport" : "SyncTransport";
   const lines = [
-    `class ${className}:`,
-    `    def __init__(self, transport: ${transportType}, raw: bool = False) -> None:`,
-    "        self._transport = transport",
-    "        self._raw = raw",
+    `class ${pythonResourceName(path, asynchronous, raw)}:`,
+    `    def __init__(self, transport: ${transportType}) -> None:`,
+    raw
+      ? "        self._transport = transport"
+      : `        self._raw_resource = ${pythonResourceName(path, asynchronous, true)}(transport)`,
   ];
-  const memberNames = new Set(["__init__", "_raw", "_transport"]);
+  // Both variants reserve the same names, so members are named identically.
+  const memberNames = new Set(["__init__", "_raw_resource", "_transport"]);
   for (const [name] of [...node.children].sort(([a], [b]) =>
     a.localeCompare(b),
   )) {
-    const childClass = `${prefix}${[...path, name].map(pascalCase).join("")}Resource`;
     const memberName = allocatePythonIdentifier(name, memberNames, "resource");
-    lines.push(`        self.${memberName} = ${childClass}(transport, raw)`);
+    lines.push(`        self.${memberName} = ${pythonResourceName([...path, name], asynchronous, raw)}(transport)`);
   }
   for (const operation of node.operations.sort((a, b) =>
     a.rpcMethod.localeCompare(b.rpcMethod),
@@ -622,18 +634,18 @@ function pythonResourceClass(
     );
     lines.push(
       "",
-      pythonMethod(operation, asynchronous, methodName).trimEnd(),
+      pythonMethod(operation, asynchronous, methodName, raw).trimEnd(),
     );
   }
   return `${lines.join("\n")}\n`;
 }
 
-function pythonRoot(root: TreeNode, asynchronous: boolean): string {
+function pythonRoot(root: TreeNode, asynchronous: boolean, raw: boolean): string {
   const prefix = asynchronous ? "Async" : "Sync";
   const transportType = asynchronous ? "AsyncTransport" : "SyncTransport";
   const lines = [
-    `class ${prefix}Root:`,
-    `    def __init__(self, transport: ${transportType}, raw: bool = False) -> None:`,
+    `class ${prefix}${raw ? "Raw" : ""}Root:`,
+    `    def __init__(self, transport: ${transportType}) -> None:`,
   ];
   const memberNames = new Set(["__init__"]);
   for (const [name] of [...root.children].sort(([a], [b]) =>
@@ -641,7 +653,7 @@ function pythonRoot(root: TreeNode, asynchronous: boolean): string {
   )) {
     const memberName = allocatePythonIdentifier(name, memberNames, "resource");
     lines.push(
-      `        self.${memberName} = ${prefix}${pascalCase(name)}Resource(transport, raw)`,
+      `        self.${memberName} = ${pythonResourceName([name], asynchronous, raw)}(transport)`,
     );
   }
   return `${lines.join("\n")}\n`;
@@ -666,12 +678,11 @@ from .transport import AsyncTransport, OperationSpec, RawResponse, SyncTransport
 `;
   const inputClasses = operations.map(pythonInputClasses).join("\n");
   const constants = operations.map(pythonOperationConstant).join("\n\n");
-  const syncClasses = nodes
-    .map(({ node, path }) => pythonResourceClass(node, path, false))
+  const classes = (asynchronous: boolean) => [true, false]
+    .flatMap((raw) => nodes.map(({ node, path }) => pythonResourceClass(node, path, asynchronous, raw)))
     .join("\n");
-  const asyncClasses = nodes
-    .map(({ node, path }) => pythonResourceClass(node, path, true))
-    .join("\n");
+  const syncClasses = classes(false);
+  const asyncClasses = classes(true);
   return (
     PYTHON_GENERATED_HEADER +
     imports +
@@ -684,9 +695,13 @@ from .transport import AsyncTransport, OperationSpec, RawResponse, SyncTransport
     "\n" +
     asyncClasses +
     "\n" +
-    pythonRoot(tree, false) +
+    pythonRoot(tree, false, true) +
     "\n" +
-    pythonRoot(tree, true)
+    pythonRoot(tree, false, false) +
+    "\n" +
+    pythonRoot(tree, true, true) +
+    "\n" +
+    pythonRoot(tree, true, false)
   );
 }
 

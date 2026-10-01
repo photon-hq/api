@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.1 (2026-10-01)
+
+
+### Bug Fixes
+
+* **python:** type client methods as their decoded results
+* **python:** type client methods as their decoded results
+
 ## 0.2.0 (2026-10-01)
 
 

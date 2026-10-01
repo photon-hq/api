@@ -187,9 +187,10 @@ def test_clients_expose_every_generated_namespace(asynchronous: bool) -> None:
             if name.startswith("_"):
                 continue
             resource = getattr(photon, name)
-            assert type(resource) is type(raw_resource)
-            assert resource._raw is False
-            assert raw_resource._raw is True
+            # The client's resource returns decoded results through its raw
+            # counterpart, which returns whole responses (photon.raw).
+            assert type(resource._raw_resource) is type(raw_resource)
+            assert type(resource) is not type(raw_resource)
 
     if asynchronous:
 

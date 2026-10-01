@@ -5,7 +5,7 @@ from typing import Any
 import httpx
 
 from .config_generated import DEFAULT_BASE_URL
-from .rpc_generated import AsyncRoot, SyncRoot
+from .rpc_generated import AsyncRawRoot, AsyncRoot, SyncRawRoot, SyncRoot
 from .transport import (
     DEFAULT_MAX_RETRY_AFTER,
     AsyncHeaderProvider,
@@ -35,7 +35,7 @@ class Photon(SyncRoot):
             max_retry_after=max_retry_after,
         )
         super().__init__(self._transport)
-        self.raw = SyncRoot(self._transport, raw=True)
+        self.raw = SyncRawRoot(self._transport)
 
     def close(self) -> None:
         self._transport.close()
@@ -67,7 +67,7 @@ class AsyncPhoton(AsyncRoot):
             max_retry_after=max_retry_after,
         )
         super().__init__(self._transport)
-        self.raw = AsyncRoot(self._transport, raw=True)
+        self.raw = AsyncRawRoot(self._transport)
 
     async def close(self) -> None:
         await self._transport.close()
