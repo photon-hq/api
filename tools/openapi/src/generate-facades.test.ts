@@ -87,10 +87,11 @@ test("all convenience methods retain summaries and descriptions safely", () => {
   const docstrings = [...python.matchAll(
     /^    (?:async )?def get_example\([^\n]+\n([^\n]+)/gm,
   )];
-  assert.deepEqual(docstrings.map((match) => JSON.parse(match[1]!.trim())), [
-    `${documented.summary}\n\n${documented.description}`,
-    `${documented.summary}\n\n${documented.description}`,
-  ]);
+  // Sync and async, each in the client and its raw counterpart (photon.raw).
+  assert.deepEqual(
+    docstrings.map((match) => JSON.parse(match[1]!.trim())),
+    Array(4).fill(`${documented.summary}\n\n${documented.description}`),
+  );
 });
 
 test("legacy manifests without documentation still generate valid method bodies", () => {
@@ -137,7 +138,8 @@ test("Python binary methods expose bytes while retaining empty response handling
   })] });
   assert.match(source, /"200": bytes/);
   assert.match(source, /"204": None/);
-  assert.match(source, /bytes \| None \| RawResponse\[bytes \| None\]/);
+  assert.match(source, /def download\(self[^\n]*\) -> bytes \| None:/);
+  assert.match(source, /def download\(self[^\n]*\) -> RawResponse\[bytes \| None\]:/);
   assert.doesNotMatch(source, /TypeAdapter\(models.DownloadBody\)/);
 });
 
@@ -154,10 +156,10 @@ test("Python facade validates and returns every successful response model", () =
     source.match(/TypeAdapter\(models\.SharedResponse\)/g)?.length,
     2,
   );
-  assert.match(
-    source,
-    /models\.CompletedResponse \| models\.PendingResponse \| RawResponse\[models\.CompletedResponse \| models\.PendingResponse\]/,
-  );
+  // The client returns the decoded result; photon.raw returns the whole response.
+  assert.match(source, /\) -> models\.CompletedResponse \| models\.PendingResponse:/);
+  assert.match(source, /\) -> RawResponse\[models\.CompletedResponse \| models\.PendingResponse\]:/);
+  assert.doesNotMatch(source, /models\.PendingResponse \| RawResponse/);
 });
 
 test("TypeScript facade validates each success status against its own component", () => {
@@ -248,9 +250,10 @@ test("Python facade escapes reserved identifiers while preserving wire names", (
     source,
     /field_2fa_code: str \| MISSING = Field\(default=MISSING, alias="2fa-code"\)/,
   );
-  assert.equal(source.match(/def async_\(self,/g)?.length, 2);
-  assert.match(source, /self\.from_ = SyncFromResource\(transport, raw\)/);
-  assert.match(source, /self\.from_ = AsyncFromResource\(transport, raw\)/);
+  assert.equal(source.match(/def async_\(self,/g)?.length, 4);
+  for (const prefix of ["Sync", "SyncRaw", "Async", "AsyncRaw"]) {
+    assert.match(source, new RegExp(`self\\.from_ = ${prefix}FromResource\\(transport\\)`));
+  }
 });
 
 
@@ -416,8 +419,9 @@ test("Python resources are snake_case while TypeScript keeps camelCase", () => {
   nested.namespace = ["projects", "agentProfile"];
   const fixture = { operations: [nested] };
   const python = renderPython(fixture);
-  assert.match(python, /self\.agent_profile = SyncProjectsAgentProfileResource\(transport, raw\)/);
-  assert.match(python, /self\.agent_profile = AsyncProjectsAgentProfileResource\(transport, raw\)/);
+  for (const prefix of ["Sync", "SyncRaw", "Async", "AsyncRaw"]) {
+    assert.match(python, new RegExp(`self\\.agent_profile = ${prefix}ProjectsAgentProfileResource\\(transport\\)`));
+  }
   assert.doesNotMatch(python, /self\.agentProfile/);
   assert.match(renderTypeScript(fixture), /agentProfile: \{/);
 });
