@@ -3,13 +3,6 @@
 Synchronous and asynchronous Python client for the Photon API, generated from the
 public OpenAPI contract. Requires Python 3.11+ and imports as `photon_api`.
 
-> **Preview release.** This version is generated from the current production
-> contract before all of its schemas have stable names. Types the contract
-> does not name yet have names derived from their operation (for example
-> `ListProjectsResponse200ApplicationJson`) or carry a version prefix such as
-> `Photon20260701_`. These type names change in 0.2.0, when the contract
-> names them; the rename does not change requests, responses or method names.
-
 ## Installation
 
 ```sh

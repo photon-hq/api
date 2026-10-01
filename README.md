@@ -4,13 +4,6 @@ The public OpenAPI contract of the Photon API, a Postman collection generated
 from it, and TypeScript, Python and Rust clients generated from the same
 contract.
 
-> **Preview release.** This version is generated from the current production
-> contract before all of its schemas have stable names. Types the contract
-> does not name yet have names derived from their operation (for example
-> `ListProjectsResponse200ApplicationJson`) or carry a version prefix such as
-> `Photon20260701_`. These type names change in 0.2.0, when the contract
-> names them; the rename does not change requests, responses or method names.
-
 | Language | Package | Install | Documentation |
 | --- | --- | --- | --- |
 | TypeScript / JavaScript | [`@photon-ai/api`](https://www.npmjs.com/package/@photon-ai/api) | `npm install @photon-ai/api` | [packages/typescript](packages/typescript/README.md) |
@@ -24,10 +17,11 @@ contract.
 
 ## Try it in Postman
 
-Every release also updates the hosted collection in Photon's public Postman
-workspace. You can instead download
-[`postman/collection.json`](postman/collection.json) and import it into your own
-workspace.
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/58645896-f0273a59-bd8f-4c08-8f76-62b74a7cbdd1?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D58645896-f0273a59-bd8f-4c08-8f76-62b74a7cbdd1%26entityType%3Dcollection%26workspaceId%3D4c8fb23d-a1e6-4292-9475-6696a2618aa8)
+
+The button forks the hosted collection into your own Postman workspace. Every
+release updates it in [Photon's public Postman workspace](https://www.postman.com/photonhq/photon-api). You can instead
+download [`postman/collection.json`](postman/collection.json) and import it.
 
 1. Set the empty `apiToken` variable to a supported API key or token. Keep it
    private.

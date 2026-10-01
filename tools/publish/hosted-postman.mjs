@@ -22,24 +22,56 @@ export function compareVersions(a, b) {
   return 0;
 }
 
+/** First line of the hosted collection's description; Postman keeps the description but not info.version. */
+const releaseLine = (version) => `Photon API ${version}. Generated from the OpenAPI contract in https://github.com/photon-hq/api.`;
+const releaseLinePattern = /^Photon API (\d+\.\d+\.\d+)\. /;
+
+const descriptionText = (description) => typeof description === "string" ? description : description?.content ?? "";
+
 /** The release collection: the committed collection labelled with the release version. */
 export function releaseCollection(collection, version) {
   assert.match(version, semver, `Not a release version: ${version}`);
-  return { ...collection, info: { ...collection.info, version } };
+  const text = descriptionText(collection.info?.description);
+  const description = text ? `${releaseLine(version)}\n\n${text}` : releaseLine(version);
+  return { ...collection, info: { ...collection.info, version, description } };
 }
 
-export function comparableCollection(value) {
-  const copy = structuredClone(value);
-  for (const key of ["_postman_id", "_exporter_id", "uid", "createdAt", "updatedAt"]) delete copy.info[key];
-  const items = (list) => {
-    for (const item of list ?? []) {
-      delete item.id;
-      if (item.item) items(item.item);
-      for (const response of item.response ?? []) delete response.id;
+/** The release version recorded in a hosted collection, if any. */
+export function hostedVersion(collection) {
+  if (semver.test(collection.info?.version ?? "")) return collection.info.version;
+  return releaseLinePattern.exec(descriptionText(collection.info?.description))?.[1];
+}
+
+// Fields Postman adds to a stored collection, or that it drops (info.version).
+const serverFields = new Set(["_postman_id", "_exporter_id", "uid", "id", "createdAt", "updatedAt", "lastUpdatedBy", "owner", "version"]);
+
+/**
+ * A collection as Postman stores it, so a stored copy compares with what was
+ * sent: Postman adds IDs and timestamps, a raw URL beside its parts and
+ * `responseTime: null`; drops empty values, `disabled: false`, a request's
+ * own name, the default `type: "any"` of URL variables and info.version; and
+ * stores a plain-text `{ content, type }` description as its text.
+ */
+export function comparableCollection(value, key = null) {
+  if (Array.isArray(value)) {
+    const items = value.map((item) => comparableCollection(item, key)).filter((item) => item !== undefined);
+    return items.length ? items : undefined;
+  }
+  if (value !== null && typeof value === "object") {
+    if (key === "description" && Object.keys(value).every((name) => name === "content" || name === "type")
+      && (value.type ?? "text/plain") === "text/plain") return comparableCollection(value.content);
+    const result = {};
+    for (const [name, child] of Object.entries(value)) {
+      if (serverFields.has(name) || (name === "disabled" && child === false) || (name === "responseTime" && child === null)) continue;
+      if (key === "url" && name === "raw") continue;
+      if ((key === "request" || key === "originalRequest") && name === "name") continue;
+      if (key === "variable" && name === "type" && child === "any") continue;
+      const comparable = comparableCollection(child, name);
+      if (comparable !== undefined) result[name] = comparable;
     }
-  };
-  items(copy.item);
-  return copy;
+    return Object.keys(result).length ? result : undefined;
+  }
+  return value === "" || value === null ? undefined : value;
 }
 
 export async function updateCollection({ desired, uid, workspaceId, api }) {
@@ -51,7 +83,7 @@ export async function updateCollection({ desired, uid, workspaceId, api }) {
   assert.ok(workspace.collections.some((collection) => collection.id === id || collection.uid === uid), "Collection is outside the configured workspace");
   const current = (await api(`/collections/${uid}`)).collection;
   assert.equal(current.info._postman_id, id);
-  const currentVersion = semver.test(current.info.version ?? "") ? current.info.version : undefined;
+  const currentVersion = hostedVersion(current);
   if (currentVersion && compareVersions(currentVersion, desired.info.version) > 0) return "newer-release-preserved";
   if (isDeepStrictEqual(comparableCollection(current), comparableCollection(desired))) return "already-current";
   if (currentVersion === desired.info.version) throw new Error("Hosted collection has unexpected edits to this release; refusing to overwrite it");

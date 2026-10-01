@@ -4,13 +4,6 @@ Rust client for the Photon API, generated from the public OpenAPI contract.
 Requires Rust 1.88+. The Cargo package is `photonhq-api`; the library is
 `photon_ai_api`.
 
-> **Preview release.** This version is generated from the current production
-> contract before all of its schemas have stable names. Types the contract
-> does not name yet have names derived from their operation (for example
-> `ListProjectsResponse200ApplicationJson`) or carry a version prefix such as
-> `Photon20260701_`. These type names change in 0.2.0, when the contract
-> names them; the rename does not change requests, responses or method names.
-
 ## Installation
 
 ```sh
