@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.2.2 (2026-10-02)
+
+
+### Features
+
+* publish the contract with SDK code samples for the docs site
+* update the public API from production
+
+
+### Bug Fixes
+
+* **typescript:** report body-read timeouts and aborts as transport errors
+
+
+### Documentation
+
+* add the API Client guide for the documentation site
+
 ## 0.2.1 (2026-10-01)
 
 

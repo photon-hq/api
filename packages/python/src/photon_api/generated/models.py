@@ -1553,6 +1553,22 @@ class RetryEnterpriseLoginRequest(BaseModel):
     retryToken: str
 
 
+class RetryWebhookDeliveryRequest(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    eventId: str
+    eventType: str
+    expectedAttemptCount: int
+
+
+class RetryWebhookDeliveryResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    status: Literal["accepted"]
+
+
 class RevokeAccountServiceKeyResponse(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -5505,6 +5521,28 @@ class RetryOrganizationConnectionSyncInternalServerErrorProblem(
     RootModel[InternalErrorProblem | InvalidAuthContextProblem]
 ):
     root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class RetryWebhookDeliveryBadRequestProblem(
+    RootModel[IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+):
+    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+
+
+class RetryWebhookDeliveryForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
 
 
 class RevokeAccountServiceKeyBadRequestProblem(

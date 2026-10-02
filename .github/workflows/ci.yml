@@ -48,9 +48,10 @@ jobs:
           npm run check:oas31
           npm run check:openapi
           npm run test:oas31
-      - name: Regenerate the Postman collection and compare
+      - name: Regenerate the Postman collection and code samples and compare
         run: |
           npm run generate:postman
+          npm run generate:code-samples
           git diff --exit-code
           test -z "$(git ls-files --others --exclude-standard)"
       - name: Validate every request and response example
@@ -99,6 +100,14 @@ jobs:
         run: |
           npm run test:tools
           npm run test:typescript
+      # Every documentation sample compiles and sends a valid request.
+      - name: Check the code samples
+        run: |
+          npm run build:typescript
+          node tools/openapi/check-code-samples.mjs typescript
+      # Every code example in the guide pages (docs/) compiles and runs against a mock API.
+      - name: Check the guide's code examples
+        run: node tools/openapi/check-docs-examples.mjs typescript
       - name: Pack and test clean consumers
         run: |
           mkdir -p "$RUNNER_TEMP/package"
@@ -169,6 +178,10 @@ jobs:
           python -m ruff check --config packages/python/pyproject.toml tools/python-codegen
           npm run test:python-codegen
           npm run test:python
+      - name: Check the code samples
+        run: node tools/openapi/check-code-samples.mjs python
+      - name: Check the guide's code examples
+        run: node tools/openapi/check-docs-examples.mjs python
       - name: Build and test a clean consumer
         run: |
           (cd packages/python && python -m hatchling build -d "$RUNNER_TEMP/package")
@@ -252,6 +265,10 @@ jobs:
           cargo clippy --locked --workspace --all-targets -- -D warnings
           cargo check --locked -p photonhq-api --features blocking --all-targets
           npm run test:rust
+      - name: Check the code samples
+        run: node tools/openapi/check-code-samples.mjs rust
+      - name: Check the guide's code examples
+        run: node tools/openapi/check-docs-examples.mjs rust
       - name: Package and build a clean consumer
         run: |
           cargo package --locked --no-verify -p photonhq-api

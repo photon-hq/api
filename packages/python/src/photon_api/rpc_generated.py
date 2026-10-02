@@ -1671,6 +1671,27 @@ class RetryOrganizationConnectionSyncInput(BaseModel):
     path: RetryOrganizationConnectionSyncPath
 
 
+class RetryWebhookDeliveryPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    destination_id: str = Field(alias="destinationId")
+    project_id: str = Field(alias="projectId")
+
+
+class RetryWebhookDeliveryHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    idempotency_key: str = Field(alias="Idempotency-Key")
+
+
+class RetryWebhookDeliveryInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    body: models.RetryWebhookDeliveryRequest
+    path: RetryWebhookDeliveryPath
+    headers: RetryWebhookDeliveryHeader
+
+
 class RevokeAccountServiceKeyPath(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
@@ -3704,6 +3725,22 @@ _OP_RETRY_ORGANIZATION_CONNECTION_SYNC = OperationSpec(
     },
 )
 
+_OP_RETRY_WEBHOOK_DELIVERY = OperationSpec(
+    operation_id="retryWebhookDelivery",
+    method="POST",
+    path="/v1/projects/{projectId}/webhooks/destinations/{destinationId}/retries",
+    safe=False,
+    idempotency_key_required=True,
+    request_media_type="application/json",
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "202": TypeAdapter(models.RetryWebhookDeliveryResponse),
+    },
+)
+
 _OP_REVOKE_ACCOUNT_SERVICE_KEY = OperationSpec(
     operation_id="revokeAccountServiceKey",
     method="DELETE",
@@ -4577,6 +4614,13 @@ class SyncRawProjectsResource:
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_QUERY_MESSAGE_METRICS, payload)
 
+    def retry_webhook_delivery(
+        self, input: RetryWebhookDeliveryInput
+    ) -> RawResponse[models.RetryWebhookDeliveryResponse]:
+        "Retry a waiting webhook delivery\n\nRequests an immediate attempt of the selected delivery if it is still the waiting head for its destination and event type. expectedAttemptCount is the failed-attempt counter recorded on the delivery and fences stale requests. This overrides the current backoff, including Retry-After, once. It preserves event identity and the retry budget. Delivered, active, disabled and dead-lettered deliveries cannot be retried. A 202 acknowledges the wake-up, not successful delivery. Supply an Idempotency-Key and retain it when retrying an ambiguous failure."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_RETRY_WEBHOOK_DELIVERY, payload)
+
     def revoke_project_api_key(
         self, input: RevokeProjectApiKeyInput
     ) -> RawResponse[models.ProjectApiKeyResponse]:
@@ -5399,6 +5443,12 @@ class SyncProjectsResource:
     ) -> models.QueryMessageMetricsResponse:
         "Query messaging and voice metrics with SQL\n\nRuns read-only SQL over the Project's message_events table. Get the SQL schema for supported columns, capabilities, and limits."
         return (self._raw_resource.query_message_metrics(input)).data
+
+    def retry_webhook_delivery(
+        self, input: RetryWebhookDeliveryInput
+    ) -> models.RetryWebhookDeliveryResponse:
+        "Retry a waiting webhook delivery\n\nRequests an immediate attempt of the selected delivery if it is still the waiting head for its destination and event type. expectedAttemptCount is the failed-attempt counter recorded on the delivery and fences stale requests. This overrides the current backoff, including Retry-After, once. It preserves event identity and the retry budget. Delivered, active, disabled and dead-lettered deliveries cannot be retried. A 202 acknowledges the wake-up, not successful delivery. Supply an Idempotency-Key and retain it when retrying an ambiguous failure."
+        return (self._raw_resource.retry_webhook_delivery(input)).data
 
     def revoke_project_api_key(
         self, input: RevokeProjectApiKeyInput
@@ -6290,6 +6340,13 @@ class AsyncRawProjectsResource:
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_QUERY_MESSAGE_METRICS, payload)
 
+    async def retry_webhook_delivery(
+        self, input: RetryWebhookDeliveryInput
+    ) -> RawResponse[models.RetryWebhookDeliveryResponse]:
+        "Retry a waiting webhook delivery\n\nRequests an immediate attempt of the selected delivery if it is still the waiting head for its destination and event type. expectedAttemptCount is the failed-attempt counter recorded on the delivery and fences stale requests. This overrides the current backoff, including Retry-After, once. It preserves event identity and the retry budget. Delivered, active, disabled and dead-lettered deliveries cannot be retried. A 202 acknowledges the wake-up, not successful delivery. Supply an Idempotency-Key and retain it when retrying an ambiguous failure."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_RETRY_WEBHOOK_DELIVERY, payload)
+
     async def revoke_project_api_key(
         self, input: RevokeProjectApiKeyInput
     ) -> RawResponse[models.ProjectApiKeyResponse]:
@@ -7130,6 +7187,12 @@ class AsyncProjectsResource:
     ) -> models.QueryMessageMetricsResponse:
         "Query messaging and voice metrics with SQL\n\nRuns read-only SQL over the Project's message_events table. Get the SQL schema for supported columns, capabilities, and limits."
         return (await self._raw_resource.query_message_metrics(input)).data
+
+    async def retry_webhook_delivery(
+        self, input: RetryWebhookDeliveryInput
+    ) -> models.RetryWebhookDeliveryResponse:
+        "Retry a waiting webhook delivery\n\nRequests an immediate attempt of the selected delivery if it is still the waiting head for its destination and event type. expectedAttemptCount is the failed-attempt counter recorded on the delivery and fences stale requests. This overrides the current backoff, including Retry-After, once. It preserves event identity and the retry budget. Delivered, active, disabled and dead-lettered deliveries cannot be retried. A 202 acknowledges the wake-up, not successful delivery. Supply an Idempotency-Key and retain it when retrying an ambiguous failure."
+        return (await self._raw_resource.retry_webhook_delivery(input)).data
 
     async def revoke_project_api_key(
         self, input: RevokeProjectApiKeyInput
