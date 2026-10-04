@@ -4729,6 +4729,44 @@ export type RetryOrganizationConnectionSyncInternalServerErrorProblemZodInput = 
 
 export type RetryOrganizationConnectionSyncInternalServerErrorProblemZodOutput = z.output<typeof zRetryOrganizationConnectionSyncInternalServerErrorProblem>;
 
+export const zRetryWebhookDeliveryBadRequestProblem: z.ZodType<PhotonWireTypes.RetryWebhookDeliveryBadRequestProblem, PhotonWireTypes.RetryWebhookDeliveryBadRequestProblem> = /* @__PURE__ */ (() => z.union([
+    zIdempotencyKeyRequiredProblem,
+    zIdempotencyKeyInvalidProblem
+]))();
+
+export type RetryWebhookDeliveryBadRequestProblemZodInput = z.input<typeof zRetryWebhookDeliveryBadRequestProblem>;
+
+export type RetryWebhookDeliveryBadRequestProblemZodOutput = z.output<typeof zRetryWebhookDeliveryBadRequestProblem>;
+
+export const zRetryWebhookDeliveryForbiddenProblem: z.ZodType<PhotonWireTypes.RetryWebhookDeliveryForbiddenProblem, PhotonWireTypes.RetryWebhookDeliveryForbiddenProblem> = /* @__PURE__ */ (() => z.union([
+    zForbiddenProblem,
+    zInsufficientScopeProblem,
+    zOrganizationSsoRequiredProblem,
+    zResourceMismatchProblem
+]))();
+
+export type RetryWebhookDeliveryForbiddenProblemZodInput = z.input<typeof zRetryWebhookDeliveryForbiddenProblem>;
+
+export type RetryWebhookDeliveryForbiddenProblemZodOutput = z.output<typeof zRetryWebhookDeliveryForbiddenProblem>;
+
+export const zRetryWebhookDeliveryRequest = z.looseObject({
+    eventId: z.string(),
+    eventType: z.string(),
+    expectedAttemptCount: z.number().refine(Number.isInteger, { message: 'Expected an integer' })
+});
+
+export type RetryWebhookDeliveryRequestZodInput = z.input<typeof zRetryWebhookDeliveryRequest>;
+
+export type RetryWebhookDeliveryRequestZodOutput = z.output<typeof zRetryWebhookDeliveryRequest>;
+
+export const zRetryWebhookDeliveryResponse = /* @__PURE__ */ (() => z.looseObject({
+    status: z.literal('accepted')
+}))();
+
+export type RetryWebhookDeliveryResponseZodInput = z.input<typeof zRetryWebhookDeliveryResponse>;
+
+export type RetryWebhookDeliveryResponseZodOutput = z.output<typeof zRetryWebhookDeliveryResponse>;
+
 export const zRevokeAccountServiceKeyBadRequestProblem: z.ZodType<PhotonWireTypes.RevokeAccountServiceKeyBadRequestProblem, PhotonWireTypes.RevokeAccountServiceKeyBadRequestProblem> = /* @__PURE__ */ (() => z.union([
     zInvalidArgumentProblem,
     zIdempotencyKeyInvalidProblem,
@@ -10715,6 +10753,24 @@ export const zUpdateWebhookDestinationPath = /* @__PURE__ */ (() => z.looseObjec
 export const zUpdateWebhookDestinationResult = zWebhookDestination;
 
 export type updateWebhookDestinationResultZodOutput = z.output<typeof zUpdateWebhookDestinationResult>;
+
+export const zRetryWebhookDeliveryBody = zRetryWebhookDeliveryRequest;
+
+export const zRetryWebhookDeliveryHeaders = /* @__PURE__ */ (() => z.looseObject({
+    'Idempotency-Key': z.string()
+}))();
+
+export const zRetryWebhookDeliveryPath = /* @__PURE__ */ (() => z.looseObject({
+    destinationId: z.string(),
+    projectId: z.string()
+}))();
+
+/**
+ * The waiting delivery was made eligible for an immediate attempt.
+ */
+export const zRetryWebhookDeliveryResult = zRetryWebhookDeliveryResponse;
+
+export type retryWebhookDeliveryResultZodOutput = z.output<typeof zRetryWebhookDeliveryResult>;
 
 export const zRotateWebhookSigningSecretBody = zRotateWebhookSigningSecretRequest;
 

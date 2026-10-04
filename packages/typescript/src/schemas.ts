@@ -1711,6 +1711,27 @@ export const RetryOrganizationConnectionSyncOutputSchemas: OutputSchemas<RetryOr
     "200": GeneratedZod.zOrganizationConnectionStatus,
 }))();
 
+export const RetryWebhookDeliveryInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    body: GeneratedZod.zRetryWebhookDeliveryBody,
+    path: GeneratedZod.zRetryWebhookDeliveryPath.strict(),
+    headers: z.strictObject({
+        idempotencyKey: GeneratedZod.zRetryWebhookDeliveryHeaders.shape["Idempotency-Key"],
+    }),
+}))();
+export type RetryWebhookDeliveryInput = {
+    body: WireTypes.RetryWebhookDeliveryData["body"];
+    path: NonNullable<WireTypes.RetryWebhookDeliveryData["path"]>;
+    headers: {
+        idempotencyKey: NonNullable<WireTypes.RetryWebhookDeliveryData["headers"]>["Idempotency-Key"];
+    };
+};
+
+export const RetryWebhookDeliveryOutputSchema = GeneratedZod.zRetryWebhookDeliveryResponse;
+export type RetryWebhookDeliveryOutput = z.output<typeof RetryWebhookDeliveryOutputSchema>;
+export const RetryWebhookDeliveryOutputSchemas: OutputSchemas<RetryWebhookDeliveryOutput> = /* @__PURE__ */ (() => ({
+    "202": GeneratedZod.zRetryWebhookDeliveryResponse,
+}))();
+
 export const RevokeAccountServiceKeyInputSchema = /* @__PURE__ */ (() => z.strictObject({
     path: GeneratedZod.zRevokeAccountServiceKeyPath.strict(),
     headers: z.strictObject({

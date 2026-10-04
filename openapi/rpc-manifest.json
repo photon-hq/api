@@ -1,6 +1,6 @@
 {
-  "sourceSha256": "ed1960f10a2c598cbeaf85fddca8fac53aa81668e33730573e5a53414b2b9250",
-  "operationCount": 130,
+  "sourceSha256": "c7cd43818b938a0dd2ec370e49d67878a6c691171ff3765644affb638f5881ca",
+  "operationCount": 131,
   "operations": [
     {
       "operationId": "assignSmsLineCampaign",
@@ -7546,6 +7546,91 @@
       },
       "summary": "Retry own organization connection synchronization",
       "description": "Reconciles existing local intent. Takes no body and cannot change membership, roles or authentication policy."
+    },
+    {
+      "operationId": "retryWebhookDelivery",
+      "rpcMethod": "retryWebhookDelivery",
+      "namespace": [
+        "projects"
+      ],
+      "httpMethod": "POST",
+      "path": "/v1/projects/{projectId}/webhooks/destinations/{destinationId}/retries",
+      "safe": false,
+      "idempotencyKeyRequired": true,
+      "parameters": [
+        {
+          "name": "idempotencyKey",
+          "wireName": "Idempotency-Key",
+          "location": "header",
+          "required": true,
+          "schema": {
+            "maxLength": 255,
+            "minLength": 1,
+            "pattern": "^[\\x21-\\x7e]{1,255}$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "destinationId",
+          "wireName": "destinationId",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "pattern": "^pho_whd_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "projectId",
+          "wireName": "projectId",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "pattern": "^pho_prj_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "202": {
+          "application/json": "#/components/schemas/RetryWebhookDeliveryResponse"
+        },
+        "400": {
+          "application/problem+json": "#/components/schemas/RetryWebhookDeliveryBadRequestProblem"
+        },
+        "401": {
+          "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
+        },
+        "403": {
+          "application/problem+json": "#/components/schemas/RetryWebhookDeliveryForbiddenProblem"
+        },
+        "409": {
+          "application/problem+json": "#/components/schemas/FailedPreconditionProblem"
+        },
+        "422": {
+          "application/problem+json": "#/components/schemas/ValidationFailedProblem"
+        },
+        "500": {
+          "application/problem+json": "#/components/schemas/InternalErrorProblem"
+        },
+        "502": {
+          "application/problem+json": "#/components/schemas/UpstreamFailureProblem"
+        },
+        "503": {
+          "application/problem+json": "#/components/schemas/UpstreamUnavailableProblem"
+        },
+        "504": {
+          "application/problem+json": "#/components/schemas/RequestTimeoutProblem"
+        }
+      },
+      "summary": "Retry a waiting webhook delivery",
+      "description": "Requests an immediate attempt of the selected delivery if it is still the waiting head for its destination and event type. expectedAttemptCount is the failed-attempt counter recorded on the delivery and fences stale requests. This overrides the current backoff, including Retry-After, once. It preserves event identity and the retry budget. Delivered, active, disabled and dead-lettered deliveries cannot be retried. A 202 acknowledges the wake-up, not successful delivery. Supply an Idempotency-Key and retain it when retrying an ambiguous failure.",
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": "#/components/schemas/RetryWebhookDeliveryRequest"
+        }
+      }
     },
     {
       "operationId": "revokeAccountServiceKey",

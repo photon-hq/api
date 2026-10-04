@@ -1,0 +1,110 @@
+---
+title: "Pagination"
+description: "Page through list results with page sizes and next-page tokens in the Photon API clients."
+---
+
+List endpoints such as `listProjects` return one page at a time. A page has the
+items and, when more items follow, a `nextPageToken`. To get the next page, send
+that token back as the `pageToken` query parameter. When a page has no
+`nextPageToken`, it is the last one.
+
+`pageSize` sets how many items a page holds, up to the limit the endpoint
+documents; for `listProjects` it is 1 to 100. Each list endpoint's parameters,
+including its own filters, are in the [API reference](/api-reference). The
+clients do not page automatically, so you write the loop.
+
+## List every project
+
+<CodeGroup>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const apiKey = process.env.PHOTON_API_KEY;
+const organizationId = process.env.PHOTON_ORGANIZATION_ID;
+if (!apiKey || !organizationId) {
+  throw new Error("Set PHOTON_API_KEY and PHOTON_ORGANIZATION_ID");
+}
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${apiKey}` },
+});
+
+let pageToken: string | undefined;
+do {
+  const page = await photon.organizations.projects.list({
+    path: { organizationId },
+    query: { pageSize: 100, pageToken },
+  });
+  for (const project of page.projects) {
+    console.log(project.projectId, project.name);
+  }
+  pageToken = page.nextPageToken;
+} while (pageToken);
+```
+
+```python Python
+import os
+from typing import Any
+
+from photon_api import Photon
+from photon_api.rpc_generated import ListProjectsInput
+
+api_key = os.environ["PHOTON_API_KEY"]
+organization_id = os.environ["PHOTON_ORGANIZATION_ID"]
+
+with Photon(headers={"Authorization": f"Bearer {api_key}"}) as photon:
+    query: dict[str, Any] = {"pageSize": 100}
+    while True:
+        page = photon.organizations.projects.list(
+            ListProjectsInput.model_validate(
+                {"path": {"organizationId": organization_id}, "query": query}
+            )
+        )
+        for project in page.projects:
+            print(project.projectId, project.name)
+        # nextPageToken is absent (MISSING, not a string) on the last page.
+        if not isinstance(page.nextPageToken, str):
+            break
+        query["pageToken"] = page.nextPageToken
+```
+
+```rust Rust
+use photon_ai_api::{Credential, ListProjectsParams, PhotonClientBuilder, SecretString};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let api_key = std::env::var("PHOTON_API_KEY")?;
+    let organization_id = std::env::var("PHOTON_ORGANIZATION_ID")?;
+
+    let credential = Credential::Bearer(SecretString::from(api_key));
+    let client = PhotonClientBuilder::new()
+        .credential("accountServiceKey", credential)
+        .build()?;
+
+    let mut page_token: Option<String> = None;
+    loop {
+        let mut params = ListProjectsParams::default().page_size(100);
+        if let Some(token) = page_token.take() {
+            params = params.page_token(token);
+        }
+        let page = client
+            .list_projects(organization_id.clone(), Some(params))
+            .await
+            .map_err(|error| format!("{error:?}"))?
+            .into_inner();
+        for project in &page.projects {
+            println!("{} {}", project.project_id, project.name);
+        }
+        match page.next_page_token {
+            Some(token) => page_token = Some(token),
+            None => break,
+        }
+    }
+    Ok(())
+}
+```
+</CodeGroup>
+
+Each page is a separate request, so each one is retried, and can fail, on its
+own. See [Retries and timeouts](/api-client/retries-and-timeouts) and
+[Errors](/api-client/errors).

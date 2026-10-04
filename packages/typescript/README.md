@@ -103,7 +103,7 @@ known.
 | --- | --- | --- |
 | `ApiError` | The API returns a non-success status. The message is the problem `detail` when present. | `status`, `headers`, `body` (parsed JSON, or text), `rawBody`, `operationId`, `requestId` |
 | `ResponseValidationError` | A successful response has an undocumented status, cannot be decoded, or does not match its schema. | `status`, `issues`, `operationId`, `requestId`, `cause` |
-| `TransportError` | The request could not complete: network failure, timeout, cancellation, or a response body that could not be read. | `cause` (the underlying error) |
+| `TransportError` | The request could not complete: network failure, timeout, cancellation, or a response body that could not be read. | `cause` (the underlying error, or the `signal`'s abort reason) |
 
 ```ts
 import { ApiError } from "@photon-ai/api";
@@ -133,7 +133,7 @@ try {
   `Idempotency-Key` header (from the input or from the `headers` option), are
   retried. Other mutations are sent once.
 - Retryable requests are retried after a retryable status or a network error or
-  timeout.
+  timeout, including one while the response body is read.
 - Without `Retry-After`, the delay is random between 0 and
   `min(maximumDelayMs, baseDelayMs * 2^(attempt - 1))`.
 - `Retry-After` (seconds or an HTTP date) is used as the delay. If it exceeds

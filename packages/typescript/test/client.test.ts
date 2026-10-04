@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import test from "node:test";
+import test, { type TestContext } from "node:test";
 import { DEFAULT_BASE_URL } from "../src/config.generated.js";
 import { operationMediaTypes } from "../src/rpc.generated.js";
 import {
@@ -270,7 +270,9 @@ test("attachment downloads retain JSON API errors and reject undocumented succes
   await assert.rejects(unexpected.projects.downloadAttachment(input), ResponseValidationError);
 });
 
-test("attachment body failures preserve cancellation and distinguish transport errors", async (t) => {
+const countInput = { path: { organizationId: "organization" } };
+
+test("attachment body failures are transport errors and are retried like failures before the headers", async (t) => {
   const input = { path: { id: "pho_prj_00000000000000000000000000", attachmentId: "pho_att_00000000000000000000000000" } };
   for (const mode of ["data", "raw"] as const) {
     for (const cause of [
@@ -281,6 +283,7 @@ test("attachment body failures preserve cancellation and distinguish transport e
       await t.test(`${mode}: ${cause.name}`, async () => {
         let attempts = 0;
         const photon = new Photon({
+          retry: { baseDelayMs: 1, maximumDelayMs: 1 },
           fetch: async () => {
             attempts += 1;
             return new Response(new ReadableStream({
@@ -292,44 +295,105 @@ test("attachment body failures preserve cancellation and distinguish transport e
           ? photon.raw.projects.downloadAttachment(input)
           : photon.projects.downloadAttachment(input);
         await assert.rejects(request, (error: unknown) => {
-          if (cause.name === "AbortError" || cause.name === "TimeoutError") {
-            assert.equal(error, cause);
-          } else {
-            assert.ok(error instanceof TransportError);
-            assert.equal(error.cause, cause);
-            assert.equal(error.operationId, "downloadAttachment");
-            assert.equal(error.requestId, "failed-download");
-          }
+          assert.ok(error instanceof TransportError);
+          assert.equal(error.cause, cause);
+          assert.equal(error.operationId, "downloadAttachment");
+          assert.equal(error.requestId, "failed-download");
           return true;
         });
-        assert.equal(attempts, 1);
+        assert.equal(attempts, 3);
       });
     }
   }
 });
 
-test("attachment downloads preserve a caller's custom cancellation reason during body reads", async () => {
-  const controller = new AbortController();
-  const cause = new Error("Caller cancelled the download");
-  const photon = new Photon({
-    fetch: async (input, init) => {
-      const signal = new Request(input, init).signal;
-      return new Response(new ReadableStream({
-        start(body) {
-          signal.addEventListener("abort", () => body.error(signal.reason), { once: true });
-        },
-        pull() { controller.abort(cause); },
-      }));
-    },
+/**
+ * The fake bodies below end only through a timeout or an abort, and have no
+ * socket to keep Node's event loop running; Node 22 would exit while waiting
+ * for the unreferenced timeout. Keep the loop alive for the test's duration.
+ */
+function keepEventLoopAlive(t: TestContext): void {
+  const timer = setInterval(() => {}, 1_000);
+  t.after(() => clearInterval(timer));
+}
+
+test("a timeout while the body arrives is a transport error, retried for safe requests only", async (t) => {
+  keepEventLoopAlive(t);
+  // The headers arrive at once; the body never does.
+  const stalled = (input: RequestInfo | URL, init?: RequestInit) => {
+    const signal = new Request(input, init).signal;
+    return new Response(new ReadableStream({
+      start(body) { signal.addEventListener("abort", () => body.error(signal.reason), { once: true }); },
+    }), { headers: { "content-type": "application/json" } });
+  };
+  await t.test("GET", async () => {
+    let attempts = 0;
+    const photon = new Photon({ timeoutMs: 20, retry: { baseDelayMs: 1, maximumDelayMs: 1 },
+      fetch: async (input, init) => { attempts += 1; return stalled(input, init); } });
+    await assert.rejects(photon.organizations.projects.count(countInput), (error: unknown) => {
+      assert.ok(error instanceof TransportError);
+      assert.equal((error.cause as Error).name, "TimeoutError");
+      assert.equal(error.operationId, "countProjects");
+      return true;
+    });
+    assert.equal(attempts, 3);
   });
-  await assert.rejects(photon.projects.downloadAttachment({
-    path: { id: "pho_prj_00000000000000000000000000", attachmentId: "pho_att_00000000000000000000000000" },
-  }, { signal: controller.signal }), (error: unknown) => error === cause);
+  await t.test("GET that succeeds on the next attempt", async () => {
+    let attempts = 0;
+    const photon = new Photon({ timeoutMs: 20, retry: { baseDelayMs: 1, maximumDelayMs: 1 },
+      fetch: async (input, init) => (++attempts === 1 ? stalled(input, init) : Response.json({ count: 2 })) });
+    assert.deepEqual(await photon.organizations.projects.count(countInput), { count: 2 });
+    assert.equal(attempts, 2);
+  });
+  await t.test("POST without an Idempotency-Key", async () => {
+    let attempts = 0;
+    const photon = new Photon({ timeoutMs: 20, retry: { baseDelayMs: 1, maximumDelayMs: 1 },
+      fetch: async (input, init) => { attempts += 1; return stalled(input, init); } });
+    await assert.rejects(photon.account.confirmPhoneVerification({ body: { code: "123456", phoneNumber: "+15555550123" } }),
+      (error: unknown) => error instanceof TransportError && (error.cause as Error).name === "TimeoutError");
+    assert.equal(attempts, 1);
+  });
 });
 
-const countInput = { path: { organizationId: "organization" } };
+test("a caller's cancellation is a transport error whose cause is the abort reason, before or during the body", async (t) => {
+  keepEventLoopAlive(t);
+  const input = { path: { id: "pho_prj_00000000000000000000000000", attachmentId: "pho_att_00000000000000000000000000" } };
+  for (const phase of ["before the headers", "during the body"] as const) {
+    await t.test(phase, async () => {
+      const controller = new AbortController();
+      const cause = new Error("Caller cancelled the download");
+      let attempts = 0;
+      const photon = new Photon({
+        fetch: async (input, init) => {
+          attempts += 1;
+          const signal = new Request(input, init).signal;
+          if (phase === "before the headers") {
+            return new Promise<Response>((_, reject) => {
+              signal.addEventListener("abort", () => reject(signal.reason), { once: true });
+              controller.abort(cause);
+            });
+          }
+          return new Response(new ReadableStream({
+            start(body) {
+              signal.addEventListener("abort", () => body.error(signal.reason), { once: true });
+            },
+            pull() { controller.abort(cause); },
+          }));
+        },
+      });
+      await assert.rejects(photon.projects.downloadAttachment(input, { signal: controller.signal }), (error: unknown) => {
+        assert.ok(error instanceof TransportError);
+        assert.equal(error.cause, cause);
+        assert.equal(error.operationId, "downloadAttachment");
+        return true;
+      });
+      assert.equal(attempts, 1);
+    });
+  }
+});
 
 test("deferred JSON and empty responses keep body failures separate from invalid content", async (t) => {
+  keepEventLoopAlive(t);
   // Model a mixed-success operation with a closed response schema that both
   // the internal and the public contract declare.
   const media = operationMediaTypes.countProjects!;

@@ -1,0 +1,88 @@
+---
+title: "Raw responses"
+description: "Read the status, headers, and request ID of a Photon API response."
+---
+
+A normal call returns only the response body. When you also need the HTTP
+status, the response headers, or the request ID, use the raw form of the call:
+
+| Language | Raw call | Result |
+| --- | --- | --- |
+| TypeScript | `photon.raw.<namespace>.<method>(...)` | `{ data, status, headers, requestId }`. `headers` is a `Headers` object; `requestId` is `undefined` when the response has no `X-Request-ID`. |
+| Python | `photon.raw.<namespace>.<method>(...)` | A `RawResponse` with `data`, `status`, `headers`, and `request_id`. `headers` is a `dict` with lowercase names; `request_id` is `None` when the response has no `X-Request-ID`. |
+| Rust | Every call | A `ResponseValue<T>`: `status()`, `headers()` (a `reqwest` `HeaderMap`), `inner()` or `into_inner()` for the body, and `map()` to transform the body while keeping the rest. |
+
+`raw` has the same namespaces and methods as the client, takes the same input,
+and applies the same retries and errors. `data` is the same body the normal call
+returns.
+
+<CodeGroup>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const apiKey = process.env.PHOTON_API_KEY;
+const organizationId = process.env.PHOTON_ORGANIZATION_ID;
+if (!apiKey || !organizationId) {
+  throw new Error("Set PHOTON_API_KEY and PHOTON_ORGANIZATION_ID");
+}
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${apiKey}` },
+});
+
+const response = await photon.raw.organizations.projects.list({
+  path: { organizationId },
+});
+console.log(response.status, response.requestId);
+console.log(response.headers.get("content-type"));
+console.log(`${response.data.projects.length} projects on this page`);
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import ListProjectsInput
+
+api_key = os.environ["PHOTON_API_KEY"]
+organization_id = os.environ["PHOTON_ORGANIZATION_ID"]
+
+with Photon(headers={"Authorization": f"Bearer {api_key}"}) as photon:
+    response = photon.raw.organizations.projects.list(
+        ListProjectsInput.model_validate({"path": {"organizationId": organization_id}})
+    )
+    print(response.status, response.request_id)
+    print(response.headers.get("content-type"))
+    print(f"{len(response.data.projects)} projects on this page")
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let api_key = std::env::var("PHOTON_API_KEY")?;
+    let organization_id = std::env::var("PHOTON_ORGANIZATION_ID")?;
+
+    let credential = Credential::Bearer(SecretString::from(api_key));
+    let client = PhotonClientBuilder::new()
+        .credential("accountServiceKey", credential)
+        .build()?;
+
+    let response = client
+        .list_projects(organization_id, None)
+        .await
+        .map_err(|error| format!("{error:?}"))?;
+    let request_id = response
+        .headers()
+        .get("x-request-id")
+        .and_then(|value| value.to_str().ok())
+        .unwrap_or("none");
+    println!("{} {request_id}", response.status());
+    println!("{} projects on this page", response.inner().projects.len());
+    Ok(())
+}
+```
+</CodeGroup>
+
+Errors carry the same details: see [Errors](/api-client/errors#request-ids).
