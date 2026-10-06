@@ -1,0 +1,180 @@
+---
+title: "Create Voice profile"
+icon: arrow-up-right
+description: "Create Voice profile: createVoiceProfile in the TypeScript, Python and Rust clients."
+---
+
+`POST /v1/projects/{id}/platforms/voice/profiles`
+
+Creates a direction-neutral additional Voice profile. The project default must already exist. Requires platforms:write bound to the path project.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.platforms.createVoiceProfile(input: CreateVoiceProfileInput, options?: RequestOptions): Promise<CreateVoiceProfileOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.platforms.create_voice_profile(input: CreateVoiceProfileInput) -> models.VoiceProfile
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.create_voice_profile(id: String, body: &types::CreateVoiceProfileRequest).await -> Result<ResponseValue<types::VoiceProfile>, Error<CreateVoiceProfileError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.platforms.createVoiceProfile({
+  path: {
+    id: "id",
+  },
+  body: {
+    name: "name",
+    protocol: "sip",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import CreateVoiceProfileInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.platforms.create_voice_profile(
+    CreateVoiceProfileInput.model_validate({
+        "path": {
+            "id": "id",
+        },
+        "body": {
+            "name": "name",
+            "protocol": "sip",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .create_voice_profile(
+        "id".to_owned(),
+        &serde_json::from_value(serde_json::json!({
+            "name": "name",
+            "protocol": "sip",
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 201
+{
+  "configuration": {
+    "inbound": null,
+    "outbound": null
+  },
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "isDefault": true,
+  "lineCount": 0,
+  "mediaEncryption": "auto",
+  "name": "string",
+  "profileId": "string",
+  "projectId": "string",
+  "protocol": "sip",
+  "updatedAt": "2026-01-01T00:00:00.000Z",
+  "version": 1
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+
+## Body
+
+<ParamField body="mediaEncryption" type={"VoiceProfileMediaEncryption"}>
+
+</ParamField>
+
+<ParamField body="name" type={"string"} required>
+
+</ParamField>
+
+<ParamField body="protocol" type={"\"sip\""} required>
+
+</ParamField>
+
+
+## Returns
+
+**`201`** The created Voice profile. VoiceProfile
+
+<ResponseField name="configuration" type={"VoiceProfileConfiguration"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="isDefault" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="lineCount" type={"integer"} required>
+
+</ResponseField>
+
+<ResponseField name="mediaEncryption" type={"VoiceProfileMediaEncryption"} required>
+
+</ResponseField>
+
+<ResponseField name="name" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="profileId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="protocol" type={"\"sip\""} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="version" type={"integer"} required>
+
+</ResponseField>
+

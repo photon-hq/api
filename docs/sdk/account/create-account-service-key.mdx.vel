@@ -1,0 +1,132 @@
+---
+title: "Create an Account Service Key"
+icon: arrow-up-right
+description: "Create an Account Service Key: createAccountServiceKey in the TypeScript, Python and Rust clients."
+---
+
+`POST /v1/account/service-keys`
+
+Creates a service key for the authenticated account with the supplied name and optional expiresAt. Returns key metadata and a one-time credential; store the credential securely because it cannot be retrieved through the listing endpoint. These credentials act as the account and must not be distributed as project-scoped keys. Supply the required Idempotency-Key header.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.account.createAccountServiceKey(input: CreateAccountServiceKeyInput, options?: RequestOptions): Promise<CreateAccountServiceKeyOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.account.create_account_service_key(input: CreateAccountServiceKeyInput) -> models.CreateAccountServiceKeyResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.create_account_service_key(idempotency_key: String, body: &types::CreateAccountServiceKeyRequest).await -> Result<ResponseValue<types::CreateAccountServiceKeyResponse>, Error<CreateAccountServiceKeyError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.account.createAccountServiceKey({
+  headers: {
+    idempotencyKey: "idempotencyKey",
+  },
+  body: {
+    name: "name",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import CreateAccountServiceKeyInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.account.create_account_service_key(
+    CreateAccountServiceKeyInput.model_validate({
+        "headers": {
+            "Idempotency-Key": "idempotencyKey",
+        },
+        "body": {
+            "name": "name",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .create_account_service_key(
+        "idempotencyKey".to_owned(),
+        &serde_json::from_value(serde_json::json!({
+            "name": "name",
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 201
+{
+  "secret": "string",
+  "serviceKey": {
+    "accountId": "string",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "expiresAt": null,
+    "name": "string",
+    "revokedAt": null,
+    "serviceKeyId": "string"
+  }
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField header="Idempotency-Key" type={"string"} required>
+Identifies one logical mutation across retries.
+</ParamField>
+
+
+## Body
+
+<ParamField body="expiresAt" type={"string (date-time)"}>
+
+</ParamField>
+
+<ParamField body="name" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`201`** The created Account Service Key and its one-time credential. CreateAccountServiceKeyResponse
+
+<ResponseField name="secret" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="serviceKey" type={"AccountServiceKey"} required>
+
+</ResponseField>
+

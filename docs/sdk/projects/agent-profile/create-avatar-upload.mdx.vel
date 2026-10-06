@@ -1,0 +1,131 @@
+---
+title: "Create an agent avatar upload"
+icon: arrow-up-right
+description: "Create an agent avatar upload: createAgentProfileAvatarUpload in the TypeScript, Python and Rust clients."
+---
+
+`POST /v1/projects/{projectId}/agent-profile/avatar/uploads`
+
+Creates a ten-minute, Project-bound presigned S3 POST for a JPEG, PNG, or WebP agent avatar up to 5 MiB. Copy every returned formFields entry into a multipart/form-data request to uploadUrl, append the local file as the final form part, and upload it directly without sending Photon credentials. After the upload succeeds, call commitAgentProfileAvatar with the returned uploadId. Do not cache or log the upload URL or form fields.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.agentProfile.createAvatarUpload(input: CreateAgentProfileAvatarUploadInput, options?: RequestOptions): Promise<CreateAgentProfileAvatarUploadOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.agent_profile.create_avatar_upload(input: CreateAgentProfileAvatarUploadInput) -> models.AgentProfileAvatarUpload
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.create_agent_profile_avatar_upload(project_id: String, body: &types::CreateAgentProfileAvatarUploadRequest).await -> Result<ResponseValue<types::AgentProfileAvatarUpload>, Error<CreateAgentProfileAvatarUploadError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.agentProfile.createAvatarUpload({
+  path: {
+    projectId: "projectId",
+  },
+  body: {
+    contentType: "image/jpeg",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import CreateAgentProfileAvatarUploadInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.agent_profile.create_avatar_upload(
+    CreateAgentProfileAvatarUploadInput.model_validate({
+        "path": {
+            "projectId": "projectId",
+        },
+        "body": {
+            "contentType": "image/jpeg",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .create_agent_profile_avatar_upload(
+        "projectId".to_owned(),
+        &serde_json::from_value(serde_json::json!({
+            "contentType": "image/jpeg",
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 201
+{
+  "expiresAt": "2026-01-01T00:00:00.000Z",
+  "formFields": {},
+  "uploadId": "string",
+  "uploadUrl": "https://example.com"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="projectId" type={"string"} required>
+
+</ParamField>
+
+
+## Body
+
+<ParamField body="contentType" type={"AgentProfileAvatarContentType"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`201`** A short-lived, project-bound presigned S3 POST. AgentProfileAvatarUpload
+
+<ResponseField name="expiresAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="formFields" type={"AgentProfileAvatarUploadFormFields"} required>
+
+</ResponseField>
+
+<ResponseField name="uploadId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="uploadUrl" type={"string (uri)"} required>
+
+</ResponseField>
+

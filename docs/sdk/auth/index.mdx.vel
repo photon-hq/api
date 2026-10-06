@@ -1,0 +1,405 @@
+---
+title: "Auth"
+description: "The Auth resource in the TypeScript, Python and Rust clients."
+---
+
+## Methods
+
+<Tabs>
+<Tab title="TypeScript">
+**[List OAuth scopes](/api-client/sdk/auth/list-oauth-scopes)**
+
+```typescript TypeScript
+photon.auth.listOauthScopes(input?: ListOauthScopesInput, options?: RequestOptions): Promise<ListOauthScopesOutput>
+```
+`GET /v1/auth/oauth/scopes`
+
+**[Read organization and own membership synchronization](/api-client/sdk/auth/get-organization-connection-status)**
+
+```typescript TypeScript
+photon.auth.getOrganizationConnectionStatus(input: GetOrganizationConnectionStatusInput, options?: RequestOptions): Promise<GetOrganizationConnectionStatusOutput>
+```
+`GET /v1/auth/organizations/{orgId}/connection-status`
+
+**[Read organization SSO configuration](/api-client/sdk/auth/get-organization-sso-configuration)**
+
+```typescript TypeScript
+photon.auth.getOrganizationSsoConfiguration(input: GetOrganizationSsoConfigurationInput, options?: RequestOptions): Promise<GetOrganizationSsoConfigurationOutput>
+```
+`GET /v1/auth/organizations/{orgId}/sso`
+
+**[Authenticate to an invitation's organization SSO connection](/api-client/sdk/auth/begin-invitation-sso)**
+
+```typescript TypeScript
+photon.auth.beginInvitationSso(input: BeginInvitationSsoInput, options?: RequestOptions): Promise<BeginInvitationSsoOutput>
+```
+`POST /v1/auth/organizations/{orgId}/sso/invitation`
+
+**[Authenticate to the current organization SSO connection](/api-client/sdk/auth/begin-organization-authentication)**
+
+```typescript TypeScript
+photon.auth.beginOrganizationAuthentication(input: BeginOrganizationAuthenticationInput, options?: RequestOptions): Promise<BeginOrganizationAuthenticationOutput>
+```
+`POST /v1/auth/organizations/{orgId}/sso/authenticate`
+
+**[Authenticate the current Owner to inspect organization closure](/api-client/sdk/auth/begin-organization-closure-authentication)**
+
+```typescript TypeScript
+photon.auth.beginOrganizationClosureAuthentication(input: BeginOrganizationClosureAuthenticationInput, options?: RequestOptions): Promise<BeginOrganizationClosureAuthenticationOutput>
+```
+`POST /v1/auth/organizations/{orgId}/sso/closure-authenticate`
+
+**[Begin organization SSO admission for an existing Account](/api-client/sdk/auth/begin-organization-sso-admission)**
+
+```typescript TypeScript
+photon.auth.beginOrganizationSsoAdmission(input: BeginOrganizationSsoAdmissionInput, options?: RequestOptions): Promise<BeginOrganizationSsoAdmissionOutput>
+```
+`POST /v1/auth/organizations/{orgId}/sso/admission`
+
+**[Create organization SSO setup portal](/api-client/sdk/auth/create-organization-sso-portal-link)**
+
+```typescript TypeScript
+photon.auth.createOrganizationSsoPortalLink(input: CreateOrganizationSsoPortalLinkInput, options?: RequestOptions): Promise<CreateOrganizationSsoPortalLinkOutput>
+```
+`POST /v1/auth/organizations/{orgId}/sso/portal`
+
+**[Turn organization SSO off](/api-client/sdk/auth/disable-organization-sso)**
+
+```typescript TypeScript
+photon.auth.disableOrganizationSso(input: DisableOrganizationSsoInput, options?: RequestOptions): Promise<DisableOrganizationSsoOutput>
+```
+`POST /v1/auth/organizations/{orgId}/sso/disable`
+
+**[Refresh organization SSO connection](/api-client/sdk/auth/refresh-organization-sso-connection)**
+
+```typescript TypeScript
+photon.auth.refreshOrganizationSsoConnection(input: RefreshOrganizationSsoConnectionInput, options?: RequestOptions): Promise<RefreshOrganizationSsoConnectionOutput>
+```
+`POST /v1/auth/organizations/{orgId}/sso/refresh`
+
+**[Retry own organization connection synchronization](/api-client/sdk/auth/retry-organization-connection-sync)**
+
+```typescript TypeScript
+photon.auth.retryOrganizationConnectionSync(input: RetryOrganizationConnectionSyncInput, options?: RequestOptions): Promise<RetryOrganizationConnectionSyncOutput>
+```
+`POST /v1/auth/organizations/{orgId}/connection-sync/retry`
+
+**[Start company sign-in without an existing Account](/api-client/sdk/auth/start-enterprise-login)**
+
+```typescript TypeScript
+photon.auth.startEnterpriseLogin(input: StartEnterpriseLoginInput, options?: RequestOptions): Promise<StartEnterpriseLoginOutput>
+```
+`POST /v1/auth/login/enrollment`
+
+**[Update organization SSO policy](/api-client/sdk/auth/update-organization-sso-policy)**
+
+```typescript TypeScript
+photon.auth.updateOrganizationSsoPolicy(input: UpdateOrganizationSsoPolicyInput, options?: RequestOptions): Promise<UpdateOrganizationSsoPolicyOutput>
+```
+`PATCH /v1/auth/organizations/{orgId}/sso`
+
+</Tab>
+<Tab title="Python">
+**[List OAuth scopes](/api-client/sdk/auth/list-oauth-scopes)**
+
+```python Python
+photon.auth.list_oauth_scopes(input: ListOauthScopesInput | None = None) -> models.ListOauthScopesResponse
+```
+`GET /v1/auth/oauth/scopes`
+
+**[Read organization and own membership synchronization](/api-client/sdk/auth/get-organization-connection-status)**
+
+```python Python
+photon.auth.get_organization_connection_status(input: GetOrganizationConnectionStatusInput) -> models.OrganizationConnectionStatus
+```
+`GET /v1/auth/organizations/{orgId}/connection-status`
+
+**[Read organization SSO configuration](/api-client/sdk/auth/get-organization-sso-configuration)**
+
+```python Python
+photon.auth.get_organization_sso_configuration(input: GetOrganizationSsoConfigurationInput) -> models.OrganizationSsoConfiguration
+```
+`GET /v1/auth/organizations/{orgId}/sso`
+
+**[Authenticate to an invitation's organization SSO connection](/api-client/sdk/auth/begin-invitation-sso)**
+
+```python Python
+photon.auth.begin_invitation_sso(input: BeginInvitationSsoInput) -> models.OrganizationAuthenticationRedirect
+```
+`POST /v1/auth/organizations/{orgId}/sso/invitation`
+
+**[Authenticate to the current organization SSO connection](/api-client/sdk/auth/begin-organization-authentication)**
+
+```python Python
+photon.auth.begin_organization_authentication(input: BeginOrganizationAuthenticationInput) -> models.OrganizationAuthenticationRedirect
+```
+`POST /v1/auth/organizations/{orgId}/sso/authenticate`
+
+**[Authenticate the current Owner to inspect organization closure](/api-client/sdk/auth/begin-organization-closure-authentication)**
+
+```python Python
+photon.auth.begin_organization_closure_authentication(input: BeginOrganizationClosureAuthenticationInput) -> models.OrganizationAuthenticationRedirect
+```
+`POST /v1/auth/organizations/{orgId}/sso/closure-authenticate`
+
+**[Begin organization SSO admission for an existing Account](/api-client/sdk/auth/begin-organization-sso-admission)**
+
+```python Python
+photon.auth.begin_organization_sso_admission(input: BeginOrganizationSsoAdmissionInput) -> models.OrganizationAuthenticationRedirect
+```
+`POST /v1/auth/organizations/{orgId}/sso/admission`
+
+**[Create organization SSO setup portal](/api-client/sdk/auth/create-organization-sso-portal-link)**
+
+```python Python
+photon.auth.create_organization_sso_portal_link(input: CreateOrganizationSsoPortalLinkInput) -> models.CreateOrganizationSsoPortalLinkResponse
+```
+`POST /v1/auth/organizations/{orgId}/sso/portal`
+
+**[Turn organization SSO off](/api-client/sdk/auth/disable-organization-sso)**
+
+```python Python
+photon.auth.disable_organization_sso(input: DisableOrganizationSsoInput) -> models.OrganizationSsoConfiguration
+```
+`POST /v1/auth/organizations/{orgId}/sso/disable`
+
+**[Refresh organization SSO connection](/api-client/sdk/auth/refresh-organization-sso-connection)**
+
+```python Python
+photon.auth.refresh_organization_sso_connection(input: RefreshOrganizationSsoConnectionInput) -> models.OrganizationSsoConfiguration
+```
+`POST /v1/auth/organizations/{orgId}/sso/refresh`
+
+**[Retry own organization connection synchronization](/api-client/sdk/auth/retry-organization-connection-sync)**
+
+```python Python
+photon.auth.retry_organization_connection_sync(input: RetryOrganizationConnectionSyncInput) -> models.OrganizationConnectionStatus
+```
+`POST /v1/auth/organizations/{orgId}/connection-sync/retry`
+
+**[Start company sign-in without an existing Account](/api-client/sdk/auth/start-enterprise-login)**
+
+```python Python
+photon.auth.start_enterprise_login(input: StartEnterpriseLoginInput) -> models.StartEnterpriseLoginResponse
+```
+`POST /v1/auth/login/enrollment`
+
+**[Update organization SSO policy](/api-client/sdk/auth/update-organization-sso-policy)**
+
+```python Python
+photon.auth.update_organization_sso_policy(input: UpdateOrganizationSsoPolicyInput) -> models.OrganizationSsoConfiguration
+```
+`PATCH /v1/auth/organizations/{orgId}/sso`
+
+</Tab>
+<Tab title="Rust">
+**[List OAuth scopes](/api-client/sdk/auth/list-oauth-scopes)**
+
+```rust Rust
+client.list_oauth_scopes().await -> Result<ResponseValue<types::ListOauthScopesResponse>, Error<ListOauthScopesError>>
+```
+`GET /v1/auth/oauth/scopes`
+
+**[Read organization and own membership synchronization](/api-client/sdk/auth/get-organization-connection-status)**
+
+```rust Rust
+client.get_organization_connection_status(org_id: String).await -> Result<ResponseValue<types::OrganizationConnectionStatus>, Error<GetOrganizationConnectionStatusError>>
+```
+`GET /v1/auth/organizations/{orgId}/connection-status`
+
+**[Read organization SSO configuration](/api-client/sdk/auth/get-organization-sso-configuration)**
+
+```rust Rust
+client.get_organization_sso_configuration(org_id: String).await -> Result<ResponseValue<types::OrganizationSsoConfiguration>, Error<GetOrganizationSsoConfigurationError>>
+```
+`GET /v1/auth/organizations/{orgId}/sso`
+
+**[Authenticate to an invitation's organization SSO connection](/api-client/sdk/auth/begin-invitation-sso)**
+
+```rust Rust
+client.begin_invitation_sso(org_id: String, body: &types::BeginInvitationSsoRequest).await -> Result<ResponseValue<types::OrganizationAuthenticationRedirect>, Error<BeginInvitationSsoError>>
+```
+`POST /v1/auth/organizations/{orgId}/sso/invitation`
+
+**[Authenticate to the current organization SSO connection](/api-client/sdk/auth/begin-organization-authentication)**
+
+```rust Rust
+client.begin_organization_authentication(org_id: String, body: &types::OrganizationAuthenticationRequest).await -> Result<ResponseValue<types::OrganizationAuthenticationRedirect>, Error<BeginOrganizationAuthenticationError>>
+```
+`POST /v1/auth/organizations/{orgId}/sso/authenticate`
+
+**[Authenticate the current Owner to inspect organization closure](/api-client/sdk/auth/begin-organization-closure-authentication)**
+
+```rust Rust
+client.begin_organization_closure_authentication(org_id: String, body: &types::OrganizationAuthenticationRequest).await -> Result<ResponseValue<types::OrganizationAuthenticationRedirect>, Error<BeginOrganizationClosureAuthenticationError>>
+```
+`POST /v1/auth/organizations/{orgId}/sso/closure-authenticate`
+
+**[Begin organization SSO admission for an existing Account](/api-client/sdk/auth/begin-organization-sso-admission)**
+
+```rust Rust
+client.begin_organization_sso_admission(org_id: String, body: &types::OrganizationAuthenticationRequest).await -> Result<ResponseValue<types::OrganizationAuthenticationRedirect>, Error<BeginOrganizationSsoAdmissionError>>
+```
+`POST /v1/auth/organizations/{orgId}/sso/admission`
+
+**[Create organization SSO setup portal](/api-client/sdk/auth/create-organization-sso-portal-link)**
+
+```rust Rust
+client.create_organization_sso_portal_link(org_id: String, body: &types::CreateOrganizationSsoPortalLinkRequest).await -> Result<ResponseValue<types::CreateOrganizationSsoPortalLinkResponse>, Error<CreateOrganizationSsoPortalLinkError>>
+```
+`POST /v1/auth/organizations/{orgId}/sso/portal`
+
+**[Turn organization SSO off](/api-client/sdk/auth/disable-organization-sso)**
+
+```rust Rust
+client.disable_organization_sso(idempotency_key: String, org_id: String, body: &types::DisableOrganizationSsoRequest).await -> Result<ResponseValue<types::OrganizationSsoConfiguration>, Error<DisableOrganizationSsoError>>
+```
+`POST /v1/auth/organizations/{orgId}/sso/disable`
+
+**[Refresh organization SSO connection](/api-client/sdk/auth/refresh-organization-sso-connection)**
+
+```rust Rust
+client.refresh_organization_sso_connection(org_id: String).await -> Result<ResponseValue<types::OrganizationSsoConfiguration>, Error<RefreshOrganizationSsoConnectionError>>
+```
+`POST /v1/auth/organizations/{orgId}/sso/refresh`
+
+**[Retry own organization connection synchronization](/api-client/sdk/auth/retry-organization-connection-sync)**
+
+```rust Rust
+client.retry_organization_connection_sync(org_id: String).await -> Result<ResponseValue<types::OrganizationConnectionStatus>, Error<RetryOrganizationConnectionSyncError>>
+```
+`POST /v1/auth/organizations/{orgId}/connection-sync/retry`
+
+**[Start company sign-in without an existing Account](/api-client/sdk/auth/start-enterprise-login)**
+
+```rust Rust
+client.start_enterprise_login(body: &types::StartEnterpriseLoginRequest).await -> Result<ResponseValue<types::StartEnterpriseLoginResponse>, Error<StartEnterpriseLoginError>>
+```
+`POST /v1/auth/login/enrollment`
+
+**[Update organization SSO policy](/api-client/sdk/auth/update-organization-sso-policy)**
+
+```rust Rust
+client.update_organization_sso_policy(org_id: String, body: &types::UpdateOrganizationSsoPolicyRequest).await -> Result<ResponseValue<types::OrganizationSsoConfiguration>, Error<UpdateOrganizationSsoPolicyError>>
+```
+`PATCH /v1/auth/organizations/{orgId}/sso`
+
+</Tab>
+</Tabs>
+
+## Resources
+
+- [Device](/api-client/sdk/auth/device)
+
+## Models
+
+### ListOauthScopesResponse
+
+
+
+<ResponseField name="scopes" type={"array of string"} required>
+Business permissions an OAuth application can be configured with. Client creation and scope updates accept only these values. OIDC protocol scopes (openid, profile, email, offline_access) are not included.
+</ResponseField>
+
+
+### OrganizationConnectionStatus
+
+
+
+<ResponseField name="membership" type={"OrganizationConnectionStatusMembership"} required>
+
+</ResponseField>
+
+<ResponseField name="organization" type={"OrganizationConnectionStatusOrganization"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="synchronized" type={"boolean"} required>
+
+</ResponseField>
+
+
+### OrganizationSsoConfiguration
+
+
+
+<ResponseField name="connectionChangedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="connectionGeneration" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="connectionState" type={"OrganizationSsoConfigurationConnectionState"} required>
+
+</ResponseField>
+
+<ResponseField name="connectionType" type={"string"}>
+
+</ResponseField>
+
+<ResponseField name="desiredSsoEnforced" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="domains" type={"array of OrganizationSsoDomain"}>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="policySyncStatus" type={"OrganizationSsoConfigurationPolicySyncStatus"} required>
+
+</ResponseField>
+
+<ResponseField name="providerAvailable" type={"boolean"}>
+
+</ResponseField>
+
+<ResponseField name="ssoEnforced" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="ssoJitEnabled" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="version" type={"string"} required>
+
+</ResponseField>
+
+
+### OrganizationAuthenticationRedirect
+
+
+
+<ResponseField name="url" type={"string"} required>
+
+</ResponseField>
+
+
+### CreateOrganizationSsoPortalLinkResponse
+
+
+
+<ResponseField name="url" type={"string"} required>
+
+</ResponseField>
+
+
+### StartEnterpriseLoginResponse
+
+
+
+<ResponseField name="url" type={"string (uri)"} required>
+
+</ResponseField>
+
+

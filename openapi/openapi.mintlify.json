@@ -41404,17 +41404,17 @@
           {
             "lang": "typescript",
             "label": "TypeScript",
-            "source": "import { Photon } from \"@photon-ai/api\";\n\nconst photon = new Photon({\n  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },\n});\nconst result = await photon.projects.uploadAttachment({\n  path: {\n    id: \"id\",\n  },\n  headers: {\n    \"content-length\": \"18\",\n    \"content-type\": \"content-type\",\n    \"idempotency-key\": \"idempotency-key\",\n  },\n  body: new Blob([\"Hello from Photon.\"]),\n});"
+            "source": "import { Photon } from \"@photon-ai/api\";\n\nconst photon = new Photon({\n  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },\n});\nconst result = await photon.projects.uploadAttachment({\n  path: {\n    id: \"id\",\n  },\n  headers: {\n    \"content-length\": \"18\",\n    \"content-type\": \"text/plain\",\n    \"idempotency-key\": \"idempotency-key\",\n  },\n  body: new Blob([\"Hello from Photon.\"], { type: \"text/plain\" }),\n});"
           },
           {
             "lang": "python",
             "label": "Python",
-            "source": "import os\n\nfrom photon_api import Photon\nfrom photon_api.rpc_generated import UploadAttachmentInput\n\nphoton = Photon(headers={\"Authorization\": f\"Bearer {os.environ['PHOTON_API_TOKEN']}\"})\nresult = photon.projects.upload_attachment(\n    UploadAttachmentInput.model_validate({\n        \"path\": {\n            \"id\": \"id\",\n        },\n        \"headers\": {\n            \"content-length\": \"18\",\n            \"content-type\": \"content-type\",\n            \"idempotency-key\": \"idempotency-key\",\n        },\n        \"body\": b\"Hello from Photon.\",\n    })\n)"
+            "source": "import os\n\nfrom photon_api import Photon\nfrom photon_api.rpc_generated import UploadAttachmentInput\n\nphoton = Photon(headers={\"Authorization\": f\"Bearer {os.environ['PHOTON_API_TOKEN']}\"})\nresult = photon.projects.upload_attachment(\n    UploadAttachmentInput.model_validate({\n        \"path\": {\n            \"id\": \"id\",\n        },\n        \"headers\": {\n            \"content-length\": \"18\",\n            \"content-type\": \"text/plain\",\n            \"idempotency-key\": \"idempotency-key\",\n        },\n        \"body\": b\"Hello from Photon.\",\n    })\n)"
           },
           {
             "lang": "rust",
             "label": "Rust",
-            "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .upload_attachment(\n        \"id\".to_owned(),\n        \"18\".to_owned(),\n        \"content-type\".to_owned(),\n        \"idempotency-key\".to_owned(),\n        &\"Hello from Photon.\".into(),\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+            "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .upload_attachment(\n        \"id\".to_owned(),\n        \"18\".to_owned(),\n        \"text/plain\".to_owned(),\n        \"idempotency-key\".to_owned(),\n        &\"Hello from Photon.\".into(),\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
           }
         ]
       }

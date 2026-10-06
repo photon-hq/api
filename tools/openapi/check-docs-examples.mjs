@@ -7,6 +7,9 @@
 // one request, and only requests the mock knows. Blocks in other languages
 // (`sh`, `json`, ...) are not checked; put `{/* docs-check: skip */}` on the
 // line before a block's opening fence to leave out an intentional fragment.
+// The generated SDK reference (docs/sdk) is not read here: its signatures are
+// copied from the generated clients and its examples are the code samples
+// tools/openapi/check-code-samples.mjs compiles and runs.
 // Nothing reaches the API: TypeScript examples run with a fetch that sends
 // every request to the mock, Python examples with the client's base URL set
 // to it, and Rust examples with `.base_url(...)` added before `.build()`.
@@ -57,11 +60,16 @@ export function extractBlocks(text, language) {
   return blocks;
 }
 
-function pages(directory) {
+/** The generated SDK reference, checked through the code samples it shows. */
+export const GENERATED_REFERENCE = "sdk";
+
+function pages(directory, top = true) {
   const found = [];
   for (const entry of readdirSync(directory, { withFileTypes: true })) {
     const path = join(directory, entry.name);
-    if (entry.isDirectory()) found.push(...pages(path));
+    if (entry.isDirectory()) {
+      if (!(top && entry.name === GENERATED_REFERENCE)) found.push(...pages(path, false));
+    }
     else if (entry.name.endsWith(".mdx.vel") || entry.name.endsWith(".mdx")) found.push(path);
   }
   return found.sort();

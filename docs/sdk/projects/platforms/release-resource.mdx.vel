@@ -1,0 +1,246 @@
+---
+title: "Release resource"
+icon: x
+description: "Release resource: releaseResource in the TypeScript, Python and Rust clients."
+---
+
+`DELETE /v1/projects/{id}/platforms/resources/{resourceId}`
+
+Gives one resource back, whatever it is. What that means is the resource's own business: an SMS number goes back to the provider and is retired, a dedicated iMessage line goes back to the shared pool and stays in existence for someone else to claim. Either way the provider is contacted first where there is one, then a single transaction disables every ability, ends the project's hold and closes the charge period — so a provider that refuses leaves the resource exactly as it was, still owned and still billed. Usually finishes inside this request and answers 200; if the provider is slow it answers 202 and the Location points at the operation to poll. The decrement runs behind the answer either way, so the resource is gone when you are told it is. Takes no Idempotency-Key — releasing the same resource twice is the same request. Releasing one that is already gone answers 404. Requires the platforms:write permission bound to the project resource in the path.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.platforms.releaseResource(input: ReleaseResourceInput, options?: RequestOptions): Promise<ReleaseResourceOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.platforms.release_resource(input: ReleaseResourceInput) -> models.Operation
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.release_resource(id: String, resource_id: String).await -> Result<ResponseValue<ReleaseResourceResponse>, Error<ReleaseResourceError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.platforms.releaseResource({
+  path: {
+    id: "id",
+    resourceId: "resourceId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import ReleaseResourceInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.platforms.release_resource(
+    ReleaseResourceInput.model_validate({
+        "path": {
+            "id": "id",
+            "resourceId": "resourceId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .release_resource("id".to_owned(), "resourceId".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "cancellable": true,
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "detail": {},
+  "endedAt": "2026-01-01T00:00:00.000Z",
+  "error": {
+    "code": "string",
+    "detail": "string"
+  },
+  "operationId": "string",
+  "projectId": "string",
+  "resourceId": "string",
+  "resourceType": "string",
+  "startedAt": "2026-01-01T00:00:00.000Z",
+  "state": "pending",
+  "type": "resource.provision",
+  "updatedAt": "2026-01-01T00:00:00.000Z"
+}
+```
+
+```json 202
+{
+  "cancellable": true,
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "detail": {},
+  "endedAt": "2026-01-01T00:00:00.000Z",
+  "error": {
+    "code": "string",
+    "detail": "string"
+  },
+  "operationId": "string",
+  "projectId": "string",
+  "resourceId": "string",
+  "resourceType": "string",
+  "startedAt": "2026-01-01T00:00:00.000Z",
+  "state": "pending",
+  "type": "resource.provision",
+  "updatedAt": "2026-01-01T00:00:00.000Z"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+<ParamField path="resourceId" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The release finished inside this request. The resource is gone. Operation
+
+Headers: `Location`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
+<ResponseField name="cancellable" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="detail" type={"object"}>
+
+</ResponseField>
+
+<ResponseField name="endedAt" type={"string (date-time)"}>
+
+</ResponseField>
+
+<ResponseField name="error" type={"OperationError"}>
+
+</ResponseField>
+
+<ResponseField name="operationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="resourceId" type={"string"}>
+
+</ResponseField>
+
+<ResponseField name="resourceType" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="startedAt" type={"string (date-time)"}>
+
+</ResponseField>
+
+<ResponseField name="state" type={"OperationState"} required>
+
+</ResponseField>
+
+<ResponseField name="type" type={"OperationType"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+**`202`** The release is still running at the provider. GET the Location after the Retry-After interval; a terminal answer may arrive on any read. Operation
+
+Headers: `Location`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
+<ResponseField name="cancellable" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="detail" type={"object"}>
+
+</ResponseField>
+
+<ResponseField name="endedAt" type={"string (date-time)"}>
+
+</ResponseField>
+
+<ResponseField name="error" type={"OperationError"}>
+
+</ResponseField>
+
+<ResponseField name="operationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="resourceId" type={"string"}>
+
+</ResponseField>
+
+<ResponseField name="resourceType" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="startedAt" type={"string (date-time)"}>
+
+</ResponseField>
+
+<ResponseField name="state" type={"OperationState"} required>
+
+</ResponseField>
+
+<ResponseField name="type" type={"OperationType"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+

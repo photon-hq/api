@@ -1,0 +1,238 @@
+---
+title: "Create default Voice profile"
+icon: pencil
+description: "Create default Voice profile: createDefaultVoiceProfile in the TypeScript, Python and Rust clients."
+---
+
+`PUT /v1/projects/{id}/platforms/voice/profiles/default`
+
+Creates the project default Voice profile when absent. An identical replay returns the existing default without changing its version; a different existing default conflicts. Direction configuration is managed separately. Requires platforms:write bound to the path project.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.platforms.createDefaultVoiceProfile(input: CreateDefaultVoiceProfileInput, options?: RequestOptions): Promise<CreateDefaultVoiceProfileOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.platforms.create_default_voice_profile(input: CreateDefaultVoiceProfileInput) -> models.VoiceProfile
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.create_default_voice_profile(id: String, body: &types::CreateDefaultVoiceProfileRequest).await -> Result<ResponseValue<CreateDefaultVoiceProfileResponse>, Error<CreateDefaultVoiceProfileError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.platforms.createDefaultVoiceProfile({
+  path: {
+    id: "id",
+  },
+  body: {
+    protocol: "sip",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import CreateDefaultVoiceProfileInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.platforms.create_default_voice_profile(
+    CreateDefaultVoiceProfileInput.model_validate({
+        "path": {
+            "id": "id",
+        },
+        "body": {
+            "protocol": "sip",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .create_default_voice_profile(
+        "id".to_owned(),
+        &serde_json::from_value(serde_json::json!({
+            "protocol": "sip",
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "configuration": {
+    "inbound": null,
+    "outbound": null
+  },
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "isDefault": true,
+  "lineCount": 0,
+  "mediaEncryption": "auto",
+  "name": "string",
+  "profileId": "string",
+  "projectId": "string",
+  "protocol": "sip",
+  "updatedAt": "2026-01-01T00:00:00.000Z",
+  "version": 1
+}
+```
+
+```json 201
+{
+  "configuration": {
+    "inbound": null,
+    "outbound": null
+  },
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "isDefault": true,
+  "lineCount": 0,
+  "mediaEncryption": "auto",
+  "name": "string",
+  "profileId": "string",
+  "projectId": "string",
+  "protocol": "sip",
+  "updatedAt": "2026-01-01T00:00:00.000Z",
+  "version": 1
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+
+## Body
+
+<ParamField body="mediaEncryption" type={"VoiceProfileMediaEncryption"}>
+
+</ParamField>
+
+<ParamField body="protocol" type={"\"sip\""} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The identically replayed default Voice profile. VoiceProfile
+
+<ResponseField name="configuration" type={"VoiceProfileConfiguration"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="isDefault" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="lineCount" type={"integer"} required>
+
+</ResponseField>
+
+<ResponseField name="mediaEncryption" type={"VoiceProfileMediaEncryption"} required>
+
+</ResponseField>
+
+<ResponseField name="name" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="profileId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="protocol" type={"\"sip\""} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="version" type={"integer"} required>
+
+</ResponseField>
+
+**`201`** The created default Voice profile. VoiceProfile
+
+<ResponseField name="configuration" type={"VoiceProfileConfiguration"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="isDefault" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="lineCount" type={"integer"} required>
+
+</ResponseField>
+
+<ResponseField name="mediaEncryption" type={"VoiceProfileMediaEncryption"} required>
+
+</ResponseField>
+
+<ResponseField name="name" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="profileId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="protocol" type={"\"sip\""} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="version" type={"integer"} required>
+
+</ResponseField>
+

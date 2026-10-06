@@ -1,0 +1,159 @@
+---
+title: "Update the authenticated account"
+icon: pencil
+description: "Update the authenticated account: updateAccount in the TypeScript, Python and Rust clients."
+---
+
+`PATCH /v1/account`
+
+Updates the supplied firstName and lastName fields on the authenticated account and returns the updated profile. Only the documented profile fields can be changed through this endpoint; profile-picture uploads and phone-number verification use their dedicated operations. Supply the required Idempotency-Key header.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.account.update(input: UpdateAccountInput, options?: RequestOptions): Promise<UpdateAccountOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.account.update(input: UpdateAccountInput) -> models.Account
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.update_account(idempotency_key: String, body: &types::UpdateAccountRequest).await -> Result<ResponseValue<types::Account>, Error<UpdateAccountError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.account.update({
+  headers: {
+    idempotencyKey: "idempotencyKey",
+  },
+  body: {},
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import UpdateAccountInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.account.update(
+    UpdateAccountInput.model_validate({
+        "headers": {
+            "Idempotency-Key": "idempotencyKey",
+        },
+        "body": {},
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .update_account(
+        "idempotencyKey".to_owned(),
+        &serde_json::from_value(serde_json::json!({}))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "accountId": "string",
+  "createdAt": null,
+  "deletedAt": null,
+  "email": "user@example.com",
+  "firstName": null,
+  "lastName": null,
+  "phoneNumber": null,
+  "phoneVerifiedAt": null,
+  "pictureUrl": "https://example.com",
+  "updatedAt": null
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField header="Idempotency-Key" type={"string"} required>
+Identifies one logical mutation across retries.
+</ParamField>
+
+
+## Body
+
+<ParamField body="firstName" type={"string"}>
+
+</ParamField>
+
+<ParamField body="lastName" type={"string | null"}>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The updated account. Account
+
+<ResponseField name="accountId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="deletedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="email" type={"string (email)"} required>
+
+</ResponseField>
+
+<ResponseField name="firstName" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="lastName" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="phoneNumber" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="phoneVerifiedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="pictureUrl" type={"string (uri)"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+

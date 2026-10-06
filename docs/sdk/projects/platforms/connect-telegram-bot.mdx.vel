@@ -1,0 +1,182 @@
+---
+title: "Connect Telegram bot"
+icon: arrow-up-right
+description: "Connect Telegram bot: connectTelegramBot in the TypeScript, Python and Rust clients."
+---
+
+`POST /v1/projects/{id}/platforms/telegram/bots`
+
+Starts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to connect an existing managed bot or create a new one with the project's default agent name or a custom display name, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.platforms.connectTelegramBot(input: ConnectTelegramBotInput, options?: RequestOptions): Promise<ConnectTelegramBotOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.platforms.connect_telegram_bot(input: ConnectTelegramBotInput) -> models.Operation
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.connect_telegram_bot(idempotency_key: String, id: String, body: &types::ConnectTelegramBotRequest).await -> Result<ResponseValue<types::Operation>, Error<ConnectTelegramBotError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.platforms.connectTelegramBot({
+  path: {
+    id: "id",
+  },
+  headers: {
+    idempotencyKey: "idempotencyKey",
+  },
+  body: {},
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import ConnectTelegramBotInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.platforms.connect_telegram_bot(
+    ConnectTelegramBotInput.model_validate({
+        "path": {
+            "id": "id",
+        },
+        "headers": {
+            "Idempotency-Key": "idempotencyKey",
+        },
+        "body": {},
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .connect_telegram_bot(
+        "idempotencyKey".to_owned(),
+        "id".to_owned(),
+        &serde_json::from_value(serde_json::json!({}))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 202
+{
+  "cancellable": true,
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "detail": {},
+  "endedAt": "2026-01-01T00:00:00.000Z",
+  "error": {
+    "code": "string",
+    "detail": "string"
+  },
+  "operationId": "string",
+  "projectId": "string",
+  "resourceId": "string",
+  "resourceType": "string",
+  "startedAt": "2026-01-01T00:00:00.000Z",
+  "state": "pending",
+  "type": "resource.provision",
+  "updatedAt": "2026-01-01T00:00:00.000Z"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField header="Idempotency-Key" type={"string"} required>
+Identifies one logical mutation across retries.
+</ParamField>
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+
+## Body
+
+
+## Returns
+
+**`202`** Setup accepted. Open detail.setupUrl and poll the operation. Operation
+
+Headers: `Location`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
+<ResponseField name="cancellable" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="detail" type={"object"}>
+
+</ResponseField>
+
+<ResponseField name="endedAt" type={"string (date-time)"}>
+
+</ResponseField>
+
+<ResponseField name="error" type={"OperationError"}>
+
+</ResponseField>
+
+<ResponseField name="operationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="resourceId" type={"string"}>
+
+</ResponseField>
+
+<ResponseField name="resourceType" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="startedAt" type={"string (date-time)"}>
+
+</ResponseField>
+
+<ResponseField name="state" type={"OperationState"} required>
+
+</ResponseField>
+
+<ResponseField name="type" type={"OperationType"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+

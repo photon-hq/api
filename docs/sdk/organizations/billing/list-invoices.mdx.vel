@@ -1,0 +1,115 @@
+---
+title: "List invoices"
+icon: arrow-down-left
+description: "List invoices: listInvoices in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/organizations/{organizationId}/billing/invoices`
+
+Returns a single page of the selected organization's invoices; invoices with a zero total are excluded. Use the documented invoice fields to inspect each invoice's billing state. Listing invoices does not make a payment or modify a subscription.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.billing.listInvoices(input: ListInvoicesInput, options?: RequestOptions): Promise<ListInvoicesOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.billing.list_invoices(input: ListInvoicesInput) -> models.ListInvoicesResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.list_invoices(organization_id: String).await -> Result<ResponseValue<types::ListInvoicesResponse>, Error<ListInvoicesError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.billing.listInvoices({
+  path: {
+    organizationId: "organizationId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import ListInvoicesInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.billing.list_invoices(
+    ListInvoicesInput.model_validate({
+        "path": {
+            "organizationId": "organizationId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .list_invoices("organizationId".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "invoices": [
+    {
+      "currency": "string",
+      "invoiceId": "string",
+      "issuedAt": null,
+      "kind": "subscription",
+      "number": "string",
+      "paymentStatus": "pending",
+      "pdfUrl": null,
+      "subjects": [
+        {
+          "projectId": "string",
+          "type": "project"
+        }
+      ],
+      "totalCents": -9007199254740991
+    }
+  ]
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="organizationId" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** A single page of the organization's invoices, excluding invoices with a zero total, in no guaranteed order. ListInvoicesResponse
+
+<ResponseField name="invoices" type={"array of Invoice"} required>
+
+</ResponseField>
+

@@ -1,0 +1,112 @@
+---
+title: "List project API keys"
+icon: arrow-down-left
+description: "List project API keys: listProjectApiKeys in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{projectId}/api-keys`
+
+Lists the API keys on the selected project, ordered newest first. Revoked keys are not listed; expired keys stay listed until they are revoked. Entries contain key metadata and permissions, never secret values. Use the returned identifiers to manage an existing key; lost secrets cannot be recovered through this operation.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.listProjectApiKeys(input: ListProjectApiKeysInput, options?: RequestOptions): Promise<ListProjectApiKeysOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.list_project_api_keys(input: ListProjectApiKeysInput) -> models.ListProjectApiKeysResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.list_project_api_keys(project_id: String).await -> Result<ResponseValue<types::ListProjectApiKeysResponse>, Error<ListProjectApiKeysError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.listProjectApiKeys({
+  path: {
+    projectId: "projectId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import ListProjectApiKeysInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.list_project_api_keys(
+    ListProjectApiKeysInput.model_validate({
+        "path": {
+            "projectId": "projectId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .list_project_api_keys("projectId".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "apiKeys": [
+    {
+      "apiKeyId": "string",
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "createdByAccountId": "string",
+      "expiresAt": null,
+      "name": "string",
+      "permissions": [
+        "string"
+      ],
+      "permissionsUpdatedAt": null,
+      "projectId": "string",
+      "revokedAt": null
+    }
+  ]
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="projectId" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The project's keys that have not been revoked, newest first. Never includes secrets. ListProjectApiKeysResponse
+
+<ResponseField name="apiKeys" type={"array of ApiKey"} required>
+
+</ResponseField>
+

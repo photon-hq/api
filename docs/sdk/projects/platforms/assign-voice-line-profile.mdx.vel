@@ -1,0 +1,155 @@
+---
+title: "Assign Voice line profile"
+icon: pencil
+description: "Assign Voice line profile: assignVoiceLineProfile in the TypeScript, Python and Rust clients."
+---
+
+`PUT /v1/projects/{id}/platforms/voice/lines/{resourceId}/profile`
+
+Assigns or replaces a line's explicit additional-profile override when the resource version matches. The current default cannot be assigned explicitly. The pstn_voice ability remains the admission source of truth. Requires platforms:write bound to the path project.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.platforms.assignVoiceLineProfile(input: AssignVoiceLineProfileInput, options?: RequestOptions): Promise<AssignVoiceLineProfileOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.platforms.assign_voice_line_profile(input: AssignVoiceLineProfileInput) -> models.VoiceLineProfileAssignment
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.assign_voice_line_profile(id: String, resource_id: String, body: &types::AssignVoiceLineProfileRequest).await -> Result<ResponseValue<types::VoiceLineProfileAssignment>, Error<AssignVoiceLineProfileError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.platforms.assignVoiceLineProfile({
+  path: {
+    id: "id",
+    resourceId: "resourceId",
+  },
+  body: {
+    expectedVersion: 1,
+    profileId: "profileId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import AssignVoiceLineProfileInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.platforms.assign_voice_line_profile(
+    AssignVoiceLineProfileInput.model_validate({
+        "path": {
+            "id": "id",
+            "resourceId": "resourceId",
+        },
+        "body": {
+            "expectedVersion": 1,
+            "profileId": "profileId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .assign_voice_line_profile(
+        "id".to_owned(),
+        "resourceId".to_owned(),
+        &serde_json::from_value(serde_json::json!({
+            "expectedVersion": 1,
+            "profileId": "profileId",
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "profileId": "string",
+  "profileVersion": 1,
+  "projectId": "string",
+  "resourceId": "string",
+  "resourceVersion": 1,
+  "updatedAt": "2026-01-01T00:00:00.000Z"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+<ParamField path="resourceId" type={"string"} required>
+
+</ParamField>
+
+
+## Body
+
+<ParamField body="expectedVersion" type={"integer"} required>
+
+</ParamField>
+
+<ParamField body="profileId" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The updated Voice line profile assignment. VoiceLineProfileAssignment
+
+<ResponseField name="profileId" type={"string"}>
+
+</ResponseField>
+
+<ResponseField name="profileVersion" type={"integer"}>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="resourceId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="resourceVersion" type={"integer"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+

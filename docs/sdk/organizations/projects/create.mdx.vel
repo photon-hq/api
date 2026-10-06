@@ -1,0 +1,193 @@
+---
+title: "Create a project"
+icon: arrow-up-right
+description: "Create a project: createProject in the TypeScript, Python and Rust clients."
+---
+
+`POST /v1/organizations/{organizationId}/projects`
+
+Creates in the authorized organization. In addition to account credentials, explicitly granted Service Identity API keys and M2M tokens may create projects. Project API keys cannot create projects. Creator and private credential evidence come only from the trusted authorization context. The caller-selected slug is immutable, must be 3 to 63 lowercase ASCII alphanumerics separated by single hyphens, and cannot be reserved or held by any active or deleted project.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.projects.create(input: CreateProjectInput, options?: RequestOptions): Promise<CreateProjectOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.projects.create(input: CreateProjectInput) -> models.Project
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.create_project(idempotency_key: String, organization_id: String, body: &types::CreateProjectRequest).await -> Result<ResponseValue<types::Project>, Error<CreateProjectError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.projects.create({
+  path: {
+    organizationId: "organizationId",
+  },
+  headers: {
+    idempotencyKey: "idempotencyKey",
+  },
+  body: {
+    name: "name",
+    slug: "slug",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import CreateProjectInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.projects.create(
+    CreateProjectInput.model_validate({
+        "path": {
+            "organizationId": "organizationId",
+        },
+        "headers": {
+            "Idempotency-Key": "idempotencyKey",
+        },
+        "body": {
+            "name": "name",
+            "slug": "slug",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .create_project(
+        "idempotencyKey".to_owned(),
+        "organizationId".to_owned(),
+        &serde_json::from_value(serde_json::json!({
+            "name": "name",
+            "slug": "slug",
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 201
+{
+  "agentProfile": {
+    "avatarUrl": "https://example.com",
+    "firstName": "string",
+    "lastName": null
+  },
+  "billingInitialization": "pending",
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "createdByAccountId": null,
+  "createdByActorId": null,
+  "createdByActorKind": null,
+  "deletedAt": null,
+  "name": "string",
+  "organizationId": "string",
+  "projectId": "string",
+  "slug": "string",
+  "updatedAt": "2026-01-01T00:00:00.000Z"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField header="Idempotency-Key" type={"string"} required>
+Identifies one logical mutation across retries.
+</ParamField>
+
+<ParamField path="organizationId" type={"string"} required>
+
+</ParamField>
+
+
+## Body
+
+<ParamField body="name" type={"string"} required>
+
+</ParamField>
+
+<ParamField body="slug" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`201`** The created project. Project
+
+<ResponseField name="agentProfile" type={"AgentProfile"} required>
+
+</ResponseField>
+
+<ResponseField name="billingInitialization" type={"ProjectBillingInitialization"}>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="createdByAccountId" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="createdByActorId" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="createdByActorKind" type={"ProjectCreatedByActorKind | null"} required>
+
+</ResponseField>
+
+<ResponseField name="deletedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="name" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="slug" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+

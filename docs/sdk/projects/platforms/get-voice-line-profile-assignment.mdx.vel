@@ -1,0 +1,129 @@
+---
+title: "Get Voice line profile assignment"
+icon: arrow-down-left
+description: "Get Voice line profile assignment: getVoiceLineProfileAssignment in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{id}/platforms/voice/lines/{resourceId}/profile`
+
+Gets the explicit additional-profile override for an owned Voice-capable line. A line following the project default returns 200 without profileId. Requires platforms:read bound to the path project.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.platforms.getVoiceLineProfileAssignment(input: GetVoiceLineProfileAssignmentInput, options?: RequestOptions): Promise<GetVoiceLineProfileAssignmentOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.platforms.get_voice_line_profile_assignment(input: GetVoiceLineProfileAssignmentInput) -> models.VoiceLineProfileAssignment
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.get_voice_line_profile_assignment(id: String, resource_id: String).await -> Result<ResponseValue<types::VoiceLineProfileAssignment>, Error<GetVoiceLineProfileAssignmentError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.platforms.getVoiceLineProfileAssignment({
+  path: {
+    id: "id",
+    resourceId: "resourceId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import GetVoiceLineProfileAssignmentInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.platforms.get_voice_line_profile_assignment(
+    GetVoiceLineProfileAssignmentInput.model_validate({
+        "path": {
+            "id": "id",
+            "resourceId": "resourceId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .get_voice_line_profile_assignment("id".to_owned(), "resourceId".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "profileId": "string",
+  "profileVersion": 1,
+  "projectId": "string",
+  "resourceId": "string",
+  "resourceVersion": 1,
+  "updatedAt": "2026-01-01T00:00:00.000Z"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+<ParamField path="resourceId" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The line profile assignment. VoiceLineProfileAssignment
+
+<ResponseField name="profileId" type={"string"}>
+
+</ResponseField>
+
+<ResponseField name="profileVersion" type={"integer"}>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="resourceId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="resourceVersion" type={"integer"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+

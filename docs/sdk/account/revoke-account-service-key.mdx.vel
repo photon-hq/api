@@ -1,0 +1,115 @@
+---
+title: "Revoke an Account Service Key"
+icon: x
+description: "Revoke an Account Service Key: revokeAccountServiceKey in the TypeScript, Python and Rust clients."
+---
+
+`DELETE /v1/account/service-keys/{serviceKeyId}`
+
+Revokes the account-owned service key identified by serviceKeyId and returns its revoked metadata. Repeating the revocation is stable. Revocation changes the credential's validity; it does not create a replacement key. Supply the required Idempotency-Key header.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.account.revokeAccountServiceKey(input: RevokeAccountServiceKeyInput, options?: RequestOptions): Promise<RevokeAccountServiceKeyOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.account.revoke_account_service_key(input: RevokeAccountServiceKeyInput) -> models.RevokeAccountServiceKeyResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.revoke_account_service_key(idempotency_key: String, service_key_id: String).await -> Result<ResponseValue<types::RevokeAccountServiceKeyResponse>, Error<RevokeAccountServiceKeyError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.account.revokeAccountServiceKey({
+  path: {
+    serviceKeyId: "serviceKeyId",
+  },
+  headers: {
+    idempotencyKey: "idempotencyKey",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import RevokeAccountServiceKeyInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.account.revoke_account_service_key(
+    RevokeAccountServiceKeyInput.model_validate({
+        "path": {
+            "serviceKeyId": "serviceKeyId",
+        },
+        "headers": {
+            "Idempotency-Key": "idempotencyKey",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .revoke_account_service_key("idempotencyKey".to_owned(), "serviceKeyId".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "serviceKey": {
+    "accountId": "string",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "expiresAt": null,
+    "name": "string",
+    "revokedAt": null,
+    "serviceKeyId": "string"
+  }
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField header="Idempotency-Key" type={"string"} required>
+Identifies one logical mutation across retries.
+</ParamField>
+
+<ParamField path="serviceKeyId" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The revoked key metadata. Repeated revocation is stable. RevokeAccountServiceKeyResponse
+
+<ResponseField name="serviceKey" type={"AccountServiceKey"} required>
+
+</ResponseField>
+

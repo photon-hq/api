@@ -1,0 +1,144 @@
+---
+title: "Get the project's billing overview"
+icon: arrow-down-left
+description: "Get the project's billing overview: getBillingOverview in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{projectId}/billing`
+
+Returns the selected project's plan information, entitlements and current billing-period usage. This operation reads project billing state; it does not change plans or the payer's payment method. Organization-level plans are available through the organization billing overview.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.billing.getOverview(input: GetBillingOverviewInput, options?: RequestOptions): Promise<GetBillingOverviewOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.billing.get_overview(input: GetBillingOverviewInput) -> models.GetBillingOverviewResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.get_billing_overview(project_id: String).await -> Result<ResponseValue<types::GetBillingOverviewResponse>, Error<GetBillingOverviewError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.billing.getOverview({
+  path: {
+    projectId: "projectId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import GetBillingOverviewInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.billing.get_overview(
+    GetBillingOverviewInput.model_validate({
+        "path": {
+            "projectId": "projectId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .get_billing_overview("projectId".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "entitlementsVersion": 0,
+  "subscriptions": [
+    {
+      "cancelsAt": null,
+      "category": "string",
+      "categoryDisplayName": null,
+      "currentPeriodEnd": null,
+      "entitlements": [
+        {
+          "featureKey": "string",
+          "value": "string"
+        }
+      ],
+      "fixedCharges": [
+        {
+          "chargeModel": "graduated",
+          "displayName": "string",
+          "fixedChargeCode": "string",
+          "payInAdvance": true,
+          "pricing": {},
+          "prorated": true,
+          "quantity": 0
+        }
+      ],
+      "planCode": "string",
+      "status": "active"
+    }
+  ],
+  "usage": [
+    {
+      "amountCents": -9007199254740991,
+      "category": "string",
+      "categoryDisplayName": null,
+      "currency": "string",
+      "displayName": "string",
+      "metricCode": "string",
+      "units": -9007199254740991
+    }
+  ]
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="projectId" type={"string"} required>
+The project being billed.
+</ParamField>
+
+
+## Returns
+
+**`200`** Plan, entitlements, and current-period usage. GetBillingOverviewResponse
+
+<ResponseField name="entitlementsVersion" type={"integer"} required>
+Bumps on every entitlement change in any category.
+</ResponseField>
+
+<ResponseField name="subscriptions" type={"array of ProjectSubscription"} required>
+One entry per category that currently holds a subscription. Empty means none do — cancelled, or never opened.
+</ResponseField>
+
+<ResponseField name="usage" type={"array of MeteredUsage"} required>
+Current-period metered usage, priced.
+</ResponseField>
+

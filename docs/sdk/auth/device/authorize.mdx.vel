@@ -1,0 +1,98 @@
+---
+title: "Start Device Authorization"
+icon: arrow-up-right
+description: "Start Device Authorization: deviceAuthorize in the TypeScript, Python and Rust clients."
+---
+
+`POST /v1/auth/device/code`
+
+Starts the device authorization flow for a CLI or another device without a browser. Show the verification URL and user code, then poll the token endpoint at the returned interval. No request fields are required; any supplied body is ignored.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.auth.device.authorize(input?: DeviceAuthorizeInput, options?: RequestOptions): Promise<DeviceAuthorizeOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.auth.device.authorize(input: DeviceAuthorizeInput | None = None) -> models.DeviceAuthorizeResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.device_authorize().await -> Result<ResponseValue<types::DeviceAuthorizeResponse>, Error<DeviceAuthorizeError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon();
+const result = await photon.auth.device.authorize();
+```
+
+```python Python
+from photon_api import Photon
+
+photon = Photon()
+result = photon.auth.device.authorize()
+```
+
+```rust Rust
+use photon_ai_api::PhotonClientBuilder;
+
+let client = PhotonClientBuilder::new().build()?;
+let result = client
+    .device_authorize()
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "device_code": "string",
+  "expires_in": 0,
+  "interval": 0,
+  "user_code": "string",
+  "verification_uri": "string",
+  "verification_uri_complete": "string"
+}
+```
+
+</ResponseExample>
+
+## Returns
+
+**`200`** Verification details for the RFC 8628 device flow. The optional JSON or form body is ignored; the authorization client is selected by the server. DeviceAuthorizeResponse
+
+<ResponseField name="device_code" type={"string"} required>
+Opaque device code to exchange at POST /v1/auth/device/token while waiting for the user to authorize.
+</ResponseField>
+
+<ResponseField name="expires_in" type={"number"} required>
+Lifetime of the device code and user code, in seconds.
+</ResponseField>
+
+<ResponseField name="interval" type={"number"} required>
+Minimum number of seconds to wait between token polling requests.
+</ResponseField>
+
+<ResponseField name="user_code" type={"string"} required>
+Code the user enters at verification_uri to authorize this device.
+</ResponseField>
+
+<ResponseField name="verification_uri" type={"string"} required>
+Browser URL where the user enters user_code and authorizes the device.
+</ResponseField>
+
+<ResponseField name="verification_uri_complete" type={"string"} required>
+Browser URL with user_code included, ready to open or encode as a QR code.
+</ResponseField>
+

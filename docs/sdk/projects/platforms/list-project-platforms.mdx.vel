@@ -1,0 +1,104 @@
+---
+title: "List project platforms"
+icon: arrow-down-left
+description: "List project platforms: listProjectPlatforms in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{id}/platforms`
+
+Lists the platform types available to this project. Every project currently sees the same fixed public contract, answered in-process rather than forwarded, so the list survives an outage of the private service. The project binding exists so that answer can narrow per project without moving the route. Requires the platforms:read permission bound to the project resource in the path.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.platforms.listProjectPlatforms(input: ListProjectPlatformsInput, options?: RequestOptions): Promise<ListProjectPlatformsOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.platforms.list_project_platforms(input: ListProjectPlatformsInput) -> models.ListProjectPlatformsResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.list_project_platforms(id: String).await -> Result<ResponseValue<types::ListProjectPlatformsResponse>, Error<ListProjectPlatformsError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.platforms.listProjectPlatforms({
+  path: {
+    id: "id",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import ListProjectPlatformsInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.platforms.list_project_platforms(
+    ListProjectPlatformsInput.model_validate({
+        "path": {
+            "id": "id",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .list_project_platforms("id".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "platforms": [
+    {
+      "description": "string",
+      "displayName": "string",
+      "type": "string"
+    }
+  ]
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** Every platform type available to the project. ListProjectPlatformsResponse
+
+<ResponseField name="platforms" type={"array of SupportedPlatform"} required>
+
+</ResponseField>
+

@@ -1,0 +1,117 @@
+---
+title: "Create a profile picture upload"
+icon: arrow-up-right
+description: "Create a profile picture upload: createAccountProfilePictureUpload in the TypeScript, Python and Rust clients."
+---
+
+`POST /v1/account/profile-picture/uploads`
+
+Creates a ten-minute, Account-bound presigned S3 POST for a JPEG, PNG, or WebP profile picture up to 5 MiB. Copy every returned formFields entry into a multipart/form-data request to uploadUrl, append the local file as the final form part, and upload it directly without sending Photon credentials. After the upload succeeds, call commitAccountProfilePicture with the returned uploadId. Do not cache or log the upload URL or form fields.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.account.createProfilePictureUpload(input: CreateAccountProfilePictureUploadInput, options?: RequestOptions): Promise<CreateAccountProfilePictureUploadOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.account.create_profile_picture_upload(input: CreateAccountProfilePictureUploadInput) -> models.ProfilePictureUpload
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.create_account_profile_picture_upload(body: &types::ProfilePictureUploadRequest).await -> Result<ResponseValue<types::ProfilePictureUpload>, Error<CreateAccountProfilePictureUploadError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.account.createProfilePictureUpload({
+  body: {
+    contentType: "image/jpeg",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import CreateAccountProfilePictureUploadInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.account.create_profile_picture_upload(
+    CreateAccountProfilePictureUploadInput.model_validate({
+        "body": {
+            "contentType": "image/jpeg",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .create_account_profile_picture_upload(
+        &serde_json::from_value(serde_json::json!({
+            "contentType": "image/jpeg",
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 201
+{
+  "expiresAt": "2026-01-01T00:00:00.000Z",
+  "formFields": {},
+  "uploadId": "string",
+  "uploadUrl": "https://example.com"
+}
+```
+
+</ResponseExample>
+
+## Body
+
+<ParamField body="contentType" type={"ProfilePictureContentType"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`201`** A short-lived, Account-bound presigned S3 POST. ProfilePictureUpload
+
+<ResponseField name="expiresAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="formFields" type={"ProfilePictureUploadFormFields"} required>
+
+</ResponseField>
+
+<ResponseField name="uploadId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="uploadUrl" type={"string (uri)"} required>
+
+</ResponseField>
+

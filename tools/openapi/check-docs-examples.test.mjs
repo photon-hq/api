@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { answer, ENVIRONMENT, extractBlocks, redirectBuilders, SKIP_MARKER } from "./check-docs-examples.mjs";
+import { answer, collectExamples, ENVIRONMENT, extractBlocks, redirectBuilders, SKIP_MARKER } from "./check-docs-examples.mjs";
 
 const page = `---
 title: "Example"
@@ -67,3 +67,23 @@ test("only PhotonClientBuilder chains are redirected to the mock", () => {
   assert.throws(() => redirectBuilders("let x = 1;", "example"), /no PhotonClientBuilder/);
   assert.throws(() => redirectBuilders("PhotonClientBuilder::new(); PhotonClientBuilder::new().build()", "example"), /has no \.build\(\)/);
 });
+
+test("the generated SDK reference is left to the code-sample check", async () => {
+  const { mkdtempSync, mkdirSync, writeFileSync, rmSync } = await import("node:fs");
+  const { join } = await import("node:path");
+  const { tmpdir } = await import("node:os");
+  const docs = mkdtempSync(join(tmpdir(), "docs-"));
+  try {
+    const block = "```typescript\nconsole.log(1);\n```\n";
+    writeFileSync(join(docs, "guide.mdx.vel"), block);
+    mkdirSync(join(docs, "sdk", "account"), { recursive: true });
+    writeFileSync(join(docs, "sdk", "account", "get.mdx.vel"), "```typescript TypeScript\nphoton.account.get(input?: GetAccountInput): Promise<GetAccountOutput>\n```\n");
+    mkdirSync(join(docs, "guides", "sdk"), { recursive: true });
+    writeFileSync(join(docs, "guides", "sdk", "page.mdx.vel"), block);
+    assert.deepEqual(collectExamples(docs, "typescript").map((example) => example.location),
+      ["docs/guide.mdx.vel:1", "docs/guides/sdk/page.mdx.vel:1"]);
+  } finally {
+    rmSync(docs, { recursive: true, force: true });
+  }
+});
+

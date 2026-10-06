@@ -1,0 +1,196 @@
+---
+title: "Create a VoIP-backed WhatsApp sender"
+icon: arrow-up-right
+description: "Create a VoIP-backed WhatsApp sender: createWhatsappVoipSender in the TypeScript, Python and Rust clients."
+---
+
+`POST /v1/projects/{id}/platforms/whatsapp-business/account/senders`
+
+Registers an active, SMS-capable Photon VoIP line on this project's connected WhatsApp Business Account. The account is resolved server-side; callers never select a WABA. The platform creates or reuses the Meta number, requests and consumes the SMS ownership code internally, verifies it, and registers the sender. displayName is optional; when omitted the project agent profile name is snapshotted before acceptance. The VoIP line remains a separate resource and never receives the whatsapp_business ability.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.platforms.createWhatsappVoipSender(input: CreateWhatsappVoipSenderInput, options?: RequestOptions): Promise<CreateWhatsappVoipSenderOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.platforms.create_whatsapp_voip_sender(input: CreateWhatsappVoipSenderInput) -> models.Operation
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.create_whatsapp_voip_sender(idempotency_key: String, id: String, body: &types::CreateWhatsappVoipSenderRequest).await -> Result<ResponseValue<types::Operation>, Error<CreateWhatsappVoipSenderError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.platforms.createWhatsappVoipSender({
+  path: {
+    id: "id",
+  },
+  headers: {
+    idempotencyKey: "idempotencyKey",
+  },
+  body: {
+    voipResourceId: "voipResourceId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import CreateWhatsappVoipSenderInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.platforms.create_whatsapp_voip_sender(
+    CreateWhatsappVoipSenderInput.model_validate({
+        "path": {
+            "id": "id",
+        },
+        "headers": {
+            "Idempotency-Key": "idempotencyKey",
+        },
+        "body": {
+            "voipResourceId": "voipResourceId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .create_whatsapp_voip_sender(
+        "idempotencyKey".to_owned(),
+        "id".to_owned(),
+        &serde_json::from_value(serde_json::json!({
+            "voipResourceId": "voipResourceId",
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 202
+{
+  "cancellable": true,
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "detail": {},
+  "endedAt": "2026-01-01T00:00:00.000Z",
+  "error": {
+    "code": "string",
+    "detail": "string"
+  },
+  "operationId": "string",
+  "projectId": "string",
+  "resourceId": "string",
+  "resourceType": "string",
+  "startedAt": "2026-01-01T00:00:00.000Z",
+  "state": "pending",
+  "type": "resource.provision",
+  "updatedAt": "2026-01-01T00:00:00.000Z"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField header="Idempotency-Key" type={"string"} required>
+Identifies one logical mutation across retries.
+</ParamField>
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+
+## Body
+
+<ParamField body="displayName" type={"string"}>
+
+</ParamField>
+
+<ParamField body="voipResourceId" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`202`** The sender provision was accepted. Poll the Location after Retry-After until the operation is terminal. Operation
+
+Headers: `Location`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
+<ResponseField name="cancellable" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="detail" type={"object"}>
+
+</ResponseField>
+
+<ResponseField name="endedAt" type={"string (date-time)"}>
+
+</ResponseField>
+
+<ResponseField name="error" type={"OperationError"}>
+
+</ResponseField>
+
+<ResponseField name="operationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="resourceId" type={"string"}>
+
+</ResponseField>
+
+<ResponseField name="resourceType" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="startedAt" type={"string (date-time)"}>
+
+</ResponseField>
+
+<ResponseField name="state" type={"OperationState"} required>
+
+</ResponseField>
+
+<ResponseField name="type" type={"OperationType"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+

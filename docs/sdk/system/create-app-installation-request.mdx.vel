@@ -1,0 +1,141 @@
+---
+title: "Request an app installation"
+icon: arrow-up-right
+description: "Request an app installation: createAppInstallationRequest in the TypeScript, Python and Rust clients."
+---
+
+`POST /v1/installation-requests`
+
+Authenticates a registered app backend using a short-lived signed client assertion. Creates request metadata only; customer approval is still required.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.system.createAppInstallationRequest(input: CreateAppInstallationRequestInput, options?: RequestOptions): Promise<CreateAppInstallationRequestOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.system.create_app_installation_request(input: CreateAppInstallationRequestInput) -> models.CreateAppInstallationRequestResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.create_app_installation_request(body: &types::CreateAppInstallationRequestRequest).await -> Result<ResponseValue<types::CreateAppInstallationRequestResponse>, Error<CreateAppInstallationRequestError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon();
+const result = await photon.system.createAppInstallationRequest({
+  body: {
+    appId: "appId",
+    clientAssertion: "clientAssertion",
+    redirectUri: "redirectUri",
+    state: "state",
+  },
+});
+```
+
+```python Python
+from photon_api import Photon
+from photon_api.rpc_generated import CreateAppInstallationRequestInput
+
+photon = Photon()
+result = photon.system.create_app_installation_request(
+    CreateAppInstallationRequestInput.model_validate({
+        "body": {
+            "appId": "appId",
+            "clientAssertion": "clientAssertion",
+            "redirectUri": "redirectUri",
+            "state": "state",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::PhotonClientBuilder;
+
+let client = PhotonClientBuilder::new().build()?;
+let result = client
+    .create_app_installation_request(
+        &serde_json::from_value(serde_json::json!({
+            "appId": "appId",
+            "clientAssertion": "clientAssertion",
+            "redirectUri": "redirectUri",
+            "state": "state",
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 201
+{
+  "appId": "string",
+  "appVersion": "string",
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "redirectUri": "string",
+  "requestId": "string",
+  "state": "string"
+}
+```
+
+</ResponseExample>
+
+## Body
+
+<ParamField body="appId" type={"string"} required>
+
+</ParamField>
+
+<ParamField body="clientAssertion" type={"string"} required>
+
+</ParamField>
+
+<ParamField body="redirectUri" type={"string"} required>
+
+</ParamField>
+
+<ParamField body="state" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`201`** Installation request metadata. No customer credential or access is issued. CreateAppInstallationRequestResponse
+
+<ResponseField name="appId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="appVersion" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="redirectUri" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="requestId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="state" type={"string"} required>
+
+</ResponseField>
+

@@ -1,0 +1,154 @@
+---
+title: "Confirm a phone number verification"
+icon: pencil
+description: "Confirm a phone number verification: confirmAccountPhoneVerification in the TypeScript, Python and Rust clients."
+---
+
+`PUT /v1/account/phone`
+
+Binds the number once the code is approved. Repeat calls return the bound Account.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.account.confirmPhoneVerification(input: ConfirmAccountPhoneVerificationInput, options?: RequestOptions): Promise<ConfirmAccountPhoneVerificationOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.account.confirm_phone_verification(input: ConfirmAccountPhoneVerificationInput) -> models.Account
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.confirm_account_phone_verification(body: &types::ConfirmAccountPhoneVerificationRequest).await -> Result<ResponseValue<types::Account>, Error<ConfirmAccountPhoneVerificationError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.account.confirmPhoneVerification({
+  body: {
+    code: "code",
+    phoneNumber: "phoneNumber",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import ConfirmAccountPhoneVerificationInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.account.confirm_phone_verification(
+    ConfirmAccountPhoneVerificationInput.model_validate({
+        "body": {
+            "code": "code",
+            "phoneNumber": "phoneNumber",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .confirm_account_phone_verification(
+        &serde_json::from_value(serde_json::json!({
+            "code": "code",
+            "phoneNumber": "phoneNumber",
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "accountId": "string",
+  "createdAt": null,
+  "deletedAt": null,
+  "email": "user@example.com",
+  "firstName": null,
+  "lastName": null,
+  "phoneNumber": null,
+  "phoneVerifiedAt": null,
+  "pictureUrl": "https://example.com",
+  "updatedAt": null
+}
+```
+
+</ResponseExample>
+
+## Body
+
+<ParamField body="code" type={"string"} required>
+
+</ParamField>
+
+<ParamField body="phoneNumber" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The Account with its verified phone number. Account
+
+<ResponseField name="accountId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="deletedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="email" type={"string (email)"} required>
+
+</ResponseField>
+
+<ResponseField name="firstName" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="lastName" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="phoneNumber" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="phoneVerifiedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="pictureUrl" type={"string (uri)"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+

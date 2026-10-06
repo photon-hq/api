@@ -1,0 +1,122 @@
+---
+title: "System"
+description: "The System resource in the TypeScript, Python and Rust clients."
+---
+
+## Methods
+
+<Tabs>
+<Tab title="TypeScript">
+**[Request an app installation](/api-client/sdk/system/create-app-installation-request)**
+
+```typescript TypeScript
+photon.system.createAppInstallationRequest(input: CreateAppInstallationRequestInput, options?: RequestOptions): Promise<CreateAppInstallationRequestOutput>
+```
+`POST /v1/installation-requests`
+
+**[Redeem an approved installation credential](/api-client/sdk/system/redeem-app-installation-delivery)**
+
+```typescript TypeScript
+photon.system.redeemAppInstallationDelivery(input: RedeemAppInstallationDeliveryInput, options?: RequestOptions): Promise<RedeemAppInstallationDeliveryOutput>
+```
+`POST /v1/installation-requests/redeem`
+
+</Tab>
+<Tab title="Python">
+**[Request an app installation](/api-client/sdk/system/create-app-installation-request)**
+
+```python Python
+photon.system.create_app_installation_request(input: CreateAppInstallationRequestInput) -> models.CreateAppInstallationRequestResponse
+```
+`POST /v1/installation-requests`
+
+**[Redeem an approved installation credential](/api-client/sdk/system/redeem-app-installation-delivery)**
+
+```python Python
+photon.system.redeem_app_installation_delivery(input: RedeemAppInstallationDeliveryInput) -> models.RedeemAppInstallationDeliveryResponse
+```
+`POST /v1/installation-requests/redeem`
+
+</Tab>
+<Tab title="Rust">
+**[Request an app installation](/api-client/sdk/system/create-app-installation-request)**
+
+```rust Rust
+client.create_app_installation_request(body: &types::CreateAppInstallationRequestRequest).await -> Result<ResponseValue<types::CreateAppInstallationRequestResponse>, Error<CreateAppInstallationRequestError>>
+```
+`POST /v1/installation-requests`
+
+**[Redeem an approved installation credential](/api-client/sdk/system/redeem-app-installation-delivery)**
+
+```rust Rust
+client.redeem_app_installation_delivery(body: &types::RedeemAppInstallationDeliveryRequest).await -> Result<ResponseValue<types::RedeemAppInstallationDeliveryResponse>, Error<RedeemAppInstallationDeliveryError>>
+```
+`POST /v1/installation-requests/redeem`
+
+</Tab>
+</Tabs>
+
+## Models
+
+### CreateAppInstallationRequestResponse
+
+
+
+<ResponseField name="appId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="appVersion" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="redirectUri" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="requestId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="state" type={"string"} required>
+
+</ResponseField>
+
+
+### RedeemAppInstallationDeliveryResponse
+
+
+
+**One of: CreatedAppInstallationDelivery**
+
+<ResponseField name="clientId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="clientSecret" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="installationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"\"created\""} required>
+
+</ResponseField>
+
+**One of: ExistingAppInstallationDelivery**
+
+<ResponseField name="installationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"ExistingAppInstallationDeliveryStatus"} required>
+
+</ResponseField>
+
+

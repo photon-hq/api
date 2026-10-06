@@ -3,15 +3,240 @@
   "groups": [
     {
       "group": "Get started",
-      "pages": ["api-client/index", "api-client/credentials", "api-client/making-requests"]
+      "pages": [
+        "api-client/index",
+        "api-client/credentials",
+        "api-client/making-requests"
+      ]
     },
     {
       "group": "Guides",
-      "pages": ["api-client/errors", "api-client/pagination", "api-client/raw-responses", "api-client/retries-and-timeouts"]
+      "pages": [
+        "api-client/errors",
+        "api-client/pagination",
+        "api-client/raw-responses",
+        "api-client/retries-and-timeouts"
+      ]
     },
     {
       "group": "Reference",
-      "pages": ["api-client/versioning"]
+      "pages": [
+        "api-client/versioning"
+      ]
+    },
+    {
+      "group": "SDK reference",
+      "pages": [
+        {
+          "group": "Account",
+          "root": "api-client/sdk/account/index",
+          "pages": [
+            "api-client/sdk/account/list-account-service-keys",
+            "api-client/sdk/account/list-authorized-applications",
+            "api-client/sdk/account/get",
+            "api-client/sdk/account/create-account-service-key",
+            "api-client/sdk/account/create-profile-picture-upload",
+            "api-client/sdk/account/start-phone-verification",
+            "api-client/sdk/account/commit-profile-picture",
+            "api-client/sdk/account/confirm-phone-verification",
+            "api-client/sdk/account/update",
+            "api-client/sdk/account/delete",
+            "api-client/sdk/account/reset-profile-picture",
+            "api-client/sdk/account/revoke-account-service-key",
+            "api-client/sdk/account/revoke-authorized-application"
+          ]
+        },
+        {
+          "group": "Auth",
+          "root": "api-client/sdk/auth/index",
+          "pages": [
+            "api-client/sdk/auth/list-oauth-scopes",
+            "api-client/sdk/auth/get-organization-connection-status",
+            "api-client/sdk/auth/get-organization-sso-configuration",
+            "api-client/sdk/auth/begin-invitation-sso",
+            "api-client/sdk/auth/begin-organization-authentication",
+            "api-client/sdk/auth/begin-organization-closure-authentication",
+            "api-client/sdk/auth/begin-organization-sso-admission",
+            "api-client/sdk/auth/create-organization-sso-portal-link",
+            "api-client/sdk/auth/disable-organization-sso",
+            "api-client/sdk/auth/refresh-organization-sso-connection",
+            "api-client/sdk/auth/retry-organization-connection-sync",
+            "api-client/sdk/auth/start-enterprise-login",
+            "api-client/sdk/auth/update-organization-sso-policy",
+            {
+              "group": "Device",
+              "root": "api-client/sdk/auth/device/index",
+              "pages": [
+                "api-client/sdk/auth/device/authorize",
+                "api-client/sdk/auth/device/token"
+              ]
+            }
+          ]
+        },
+        {
+          "group": "Organizations",
+          "root": "api-client/sdk/organizations/index",
+          "pages": [
+            {
+              "group": "Billing",
+              "root": "api-client/sdk/organizations/billing/index",
+              "pages": [
+                "api-client/sdk/organizations/billing/list-invoices",
+                "api-client/sdk/organizations/billing/get-organization-billing-overview",
+                "api-client/sdk/organizations/billing/get-organization-payment-method",
+                "api-client/sdk/organizations/billing/cancel-subscription",
+                "api-client/sdk/organizations/billing/change-plan",
+                "api-client/sdk/organizations/billing/create-organization-payment-method-checkout",
+                "api-client/sdk/organizations/billing/create-organization-setup-intent",
+                "api-client/sdk/organizations/billing/resume-subscription"
+              ]
+            },
+            {
+              "group": "Projects",
+              "root": "api-client/sdk/organizations/projects/index",
+              "pages": [
+                "api-client/sdk/organizations/projects/list",
+                "api-client/sdk/organizations/projects/check-project-slug-availability",
+                "api-client/sdk/organizations/projects/count",
+                "api-client/sdk/organizations/projects/get-project-closure-status",
+                "api-client/sdk/organizations/projects/create"
+              ]
+            }
+          ]
+        },
+        {
+          "group": "Projects",
+          "root": "api-client/sdk/projects/index",
+          "pages": [
+            "api-client/sdk/projects/list-attachments",
+            "api-client/sdk/projects/list-project-api-keys",
+            "api-client/sdk/projects/list-webhook-api-versions",
+            "api-client/sdk/projects/list-webhook-destinations",
+            "api-client/sdk/projects/list-webhook-egress-addresses",
+            "api-client/sdk/projects/list-webhook-event-types",
+            "api-client/sdk/projects/download-attachment",
+            "api-client/sdk/projects/get",
+            "api-client/sdk/projects/get-attachment",
+            "api-client/sdk/projects/get-message-metrics-backfill",
+            "api-client/sdk/projects/get-message-metrics-sql-schema",
+            "api-client/sdk/projects/get-webhook-destination",
+            "api-client/sdk/projects/get-webhook-event-schema",
+            "api-client/sdk/projects/create-project-api-key",
+            "api-client/sdk/projects/create-webhook-destination",
+            "api-client/sdk/projects/query-message-metrics",
+            "api-client/sdk/projects/retry-webhook-delivery",
+            "api-client/sdk/projects/rotate-webhook-signing-secret",
+            "api-client/sdk/projects/upload-attachment",
+            "api-client/sdk/projects/update",
+            "api-client/sdk/projects/update-project-api-key",
+            "api-client/sdk/projects/update-webhook-destination",
+            "api-client/sdk/projects/delete",
+            "api-client/sdk/projects/delete-webhook-destination",
+            "api-client/sdk/projects/revoke-project-api-key",
+            {
+              "group": "Agent profile",
+              "root": "api-client/sdk/projects/agent-profile/index",
+              "pages": [
+                "api-client/sdk/projects/agent-profile/get",
+                "api-client/sdk/projects/agent-profile/create-avatar-upload",
+                "api-client/sdk/projects/agent-profile/commit-avatar",
+                "api-client/sdk/projects/agent-profile/update",
+                "api-client/sdk/projects/agent-profile/reset-avatar"
+              ]
+            },
+            {
+              "group": "Billing",
+              "root": "api-client/sdk/projects/billing/index",
+              "pages": [
+                "api-client/sdk/projects/billing/list-billing-plans",
+                "api-client/sdk/projects/billing/get-operation",
+                "api-client/sdk/projects/billing/get-overview"
+              ]
+            },
+            {
+              "group": "Platforms",
+              "root": "api-client/sdk/projects/platforms/index",
+              "pages": [
+                "api-client/sdk/projects/platforms/list-number-area-codes",
+                "api-client/sdk/projects/platforms/list-number-countries",
+                "api-client/sdk/projects/platforms/list-operations",
+                "api-client/sdk/projects/platforms/list-project-platforms",
+                "api-client/sdk/projects/platforms/list-resources",
+                "api-client/sdk/projects/platforms/list-voice-profiles",
+                "api-client/sdk/projects/platforms/list-whatsapp-account-phone-numbers",
+                "api-client/sdk/projects/platforms/list-whatsapp-shared-line-assignments",
+                "api-client/sdk/projects/platforms/get-default-voice-profile",
+                "api-client/sdk/projects/platforms/get-imessage",
+                "api-client/sdk/projects/platforms/get-operation",
+                "api-client/sdk/projects/platforms/get-project-whatsapp-platform",
+                "api-client/sdk/projects/platforms/get-resource",
+                "api-client/sdk/projects/platforms/get-sms-line-campaign-assignment",
+                "api-client/sdk/projects/platforms/get-voice-line-profile-assignment",
+                "api-client/sdk/projects/platforms/get-voice-profile",
+                "api-client/sdk/projects/platforms/get-whatsapp-business-account",
+                "api-client/sdk/projects/platforms/get-whatsapp-business-verification-code",
+                "api-client/sdk/projects/platforms/get-whatsapp-shared-line-assignment",
+                "api-client/sdk/projects/platforms/get-whatsapp-signup-config",
+                "api-client/sdk/projects/platforms/batch-update-voice-line-profile-assignments",
+                "api-client/sdk/projects/platforms/cancel-operation",
+                "api-client/sdk/projects/platforms/connect-email-domain",
+                "api-client/sdk/projects/platforms/connect-telegram-bot",
+                "api-client/sdk/projects/platforms/connect-whatsapp-business",
+                "api-client/sdk/projects/platforms/create-voice-profile",
+                "api-client/sdk/projects/platforms/create-whatsapp-shared-line-assignment",
+                "api-client/sdk/projects/platforms/create-whatsapp-voip-sender",
+                "api-client/sdk/projects/platforms/provision-imessage-dedicated-line",
+                "api-client/sdk/projects/platforms/provision-whatsapp-dedicated-line",
+                "api-client/sdk/projects/platforms/purchase-sms-number",
+                "api-client/sdk/projects/platforms/rotate-voice-profile-outbound-credential",
+                "api-client/sdk/projects/platforms/assign-sms-line-campaign",
+                "api-client/sdk/projects/platforms/assign-voice-line-profile",
+                "api-client/sdk/projects/platforms/configure-voice-profile-outbound",
+                "api-client/sdk/projects/platforms/create-default-voice-profile",
+                "api-client/sdk/projects/platforms/replace-voice-profile-inbound",
+                "api-client/sdk/projects/platforms/update-default-voice-profile",
+                "api-client/sdk/projects/platforms/update-voice-profile",
+                "api-client/sdk/projects/platforms/update-voice-profile-inbound",
+                "api-client/sdk/projects/platforms/update-voice-profile-outbound-authentication",
+                "api-client/sdk/projects/platforms/delete-voice-profile",
+                "api-client/sdk/projects/platforms/delete-voice-profile-inbound",
+                "api-client/sdk/projects/platforms/delete-voice-profile-outbound",
+                "api-client/sdk/projects/platforms/disconnect-whatsapp-business-account",
+                "api-client/sdk/projects/platforms/release-imessage-dedicated-line",
+                "api-client/sdk/projects/platforms/release-resource",
+                "api-client/sdk/projects/platforms/release-whatsapp-dedicated-line",
+                "api-client/sdk/projects/platforms/release-whatsapp-shared-line-assignment",
+                "api-client/sdk/projects/platforms/unassign-sms-line-campaign",
+                "api-client/sdk/projects/platforms/unassign-voice-line-profile",
+                {
+                  "group": "iMessage",
+                  "root": "api-client/sdk/projects/platforms/imessage/index",
+                  "pages": [
+                    {
+                      "group": "Assignments",
+                      "root": "api-client/sdk/projects/platforms/imessage/assignments/index",
+                      "pages": [
+                        "api-client/sdk/projects/platforms/imessage/assignments/list",
+                        "api-client/sdk/projects/platforms/imessage/assignments/get",
+                        "api-client/sdk/projects/platforms/imessage/assignments/create",
+                        "api-client/sdk/projects/platforms/imessage/assignments/release"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "group": "System",
+          "root": "api-client/sdk/system/index",
+          "pages": [
+            "api-client/sdk/system/create-app-installation-request",
+            "api-client/sdk/system/redeem-app-installation-delivery"
+          ]
+        }
+      ]
     }
   ]
 }

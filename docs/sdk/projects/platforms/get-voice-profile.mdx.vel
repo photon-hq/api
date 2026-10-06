@@ -1,0 +1,157 @@
+---
+title: "Get Voice profile"
+icon: arrow-down-left
+description: "Get Voice profile: getVoiceProfile in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{id}/platforms/voice/profiles/{profileId}`
+
+Gets one reusable Voice profile, including its optional inbound delivery state. Requires platforms:read bound to the path project.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.platforms.getVoiceProfile(input: GetVoiceProfileInput, options?: RequestOptions): Promise<GetVoiceProfileOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.platforms.get_voice_profile(input: GetVoiceProfileInput) -> models.VoiceProfile
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.get_voice_profile(id: String, profile_id: String).await -> Result<ResponseValue<types::VoiceProfile>, Error<GetVoiceProfileError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.platforms.getVoiceProfile({
+  path: {
+    id: "id",
+    profileId: "profileId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import GetVoiceProfileInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.platforms.get_voice_profile(
+    GetVoiceProfileInput.model_validate({
+        "path": {
+            "id": "id",
+            "profileId": "profileId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .get_voice_profile("id".to_owned(), "profileId".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "configuration": {
+    "inbound": null,
+    "outbound": null
+  },
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "isDefault": true,
+  "lineCount": 0,
+  "mediaEncryption": "auto",
+  "name": "string",
+  "profileId": "string",
+  "projectId": "string",
+  "protocol": "sip",
+  "updatedAt": "2026-01-01T00:00:00.000Z",
+  "version": 1
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+<ParamField path="profileId" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The Voice profile. VoiceProfile
+
+<ResponseField name="configuration" type={"VoiceProfileConfiguration"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="isDefault" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="lineCount" type={"integer"} required>
+
+</ResponseField>
+
+<ResponseField name="mediaEncryption" type={"VoiceProfileMediaEncryption"} required>
+
+</ResponseField>
+
+<ResponseField name="name" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="profileId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="protocol" type={"\"sip\""} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="version" type={"integer"} required>
+
+</ResponseField>
+

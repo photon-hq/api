@@ -1,0 +1,143 @@
+---
+title: "Remove a profile picture"
+icon: x
+description: "Remove a profile picture: resetAccountProfilePicture in the TypeScript, Python and Rust clients."
+---
+
+`DELETE /v1/account/profile-picture`
+
+Removes the authenticated account's custom profile picture and returns the account using its default picture. This operation does not upload a replacement; use the upload-and-commit operations when setting a new custom picture. Supply the required Idempotency-Key header.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.account.resetProfilePicture(input: ResetAccountProfilePictureInput, options?: RequestOptions): Promise<ResetAccountProfilePictureOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.account.reset_profile_picture(input: ResetAccountProfilePictureInput) -> models.Account
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.reset_account_profile_picture(idempotency_key: String).await -> Result<ResponseValue<types::Account>, Error<ResetAccountProfilePictureError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.account.resetProfilePicture({
+  headers: {
+    idempotencyKey: "idempotencyKey",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import ResetAccountProfilePictureInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.account.reset_profile_picture(
+    ResetAccountProfilePictureInput.model_validate({
+        "headers": {
+            "Idempotency-Key": "idempotencyKey",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .reset_account_profile_picture("idempotencyKey".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "accountId": "string",
+  "createdAt": null,
+  "deletedAt": null,
+  "email": "user@example.com",
+  "firstName": null,
+  "lastName": null,
+  "phoneNumber": null,
+  "phoneVerifiedAt": null,
+  "pictureUrl": "https://example.com",
+  "updatedAt": null
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField header="Idempotency-Key" type={"string"} required>
+Identifies one logical mutation across retries.
+</ParamField>
+
+
+## Returns
+
+**`200`** The Account reset to its default profile picture. Account
+
+<ResponseField name="accountId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="deletedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="email" type={"string (email)"} required>
+
+</ResponseField>
+
+<ResponseField name="firstName" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="lastName" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="phoneNumber" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="phoneVerifiedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="pictureUrl" type={"string (uri)"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+

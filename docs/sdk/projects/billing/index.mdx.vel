@@ -1,0 +1,202 @@
+---
+title: "Billing"
+description: "The Billing resource in the TypeScript, Python and Rust clients."
+---
+
+## Methods
+
+<Tabs>
+<Tab title="TypeScript">
+**[List available billing plans](/api-client/sdk/projects/billing/list-billing-plans)**
+
+```typescript TypeScript
+photon.projects.billing.listBillingPlans(input: ListBillingPlansInput, options?: RequestOptions): Promise<ListBillingPlansOutput>
+```
+`GET /v1/projects/{projectId}/billing/plans`
+
+**[Get a billing operation snapshot](/api-client/sdk/projects/billing/get-operation)**
+
+```typescript TypeScript
+photon.projects.billing.getOperation(input: GetBillingOperationInput, options?: RequestOptions): Promise<GetBillingOperationOutput>
+```
+`GET /v1/projects/{projectId}/billing/operations/{operationId}`
+
+**[Get the project's billing overview](/api-client/sdk/projects/billing/get-overview)**
+
+```typescript TypeScript
+photon.projects.billing.getOverview(input: GetBillingOverviewInput, options?: RequestOptions): Promise<GetBillingOverviewOutput>
+```
+`GET /v1/projects/{projectId}/billing`
+
+</Tab>
+<Tab title="Python">
+**[List available billing plans](/api-client/sdk/projects/billing/list-billing-plans)**
+
+```python Python
+photon.projects.billing.list_billing_plans(input: ListBillingPlansInput) -> models.ListBillingPlansResponse
+```
+`GET /v1/projects/{projectId}/billing/plans`
+
+**[Get a billing operation snapshot](/api-client/sdk/projects/billing/get-operation)**
+
+```python Python
+photon.projects.billing.get_operation(input: GetBillingOperationInput) -> models.BillingOperation
+```
+`GET /v1/projects/{projectId}/billing/operations/{operationId}`
+
+**[Get the project's billing overview](/api-client/sdk/projects/billing/get-overview)**
+
+```python Python
+photon.projects.billing.get_overview(input: GetBillingOverviewInput) -> models.GetBillingOverviewResponse
+```
+`GET /v1/projects/{projectId}/billing`
+
+</Tab>
+<Tab title="Rust">
+**[List available billing plans](/api-client/sdk/projects/billing/list-billing-plans)**
+
+```rust Rust
+client.list_billing_plans(project_id: String).await -> Result<ResponseValue<types::ListBillingPlansResponse>, Error<ListBillingPlansError>>
+```
+`GET /v1/projects/{projectId}/billing/plans`
+
+**[Get a billing operation snapshot](/api-client/sdk/projects/billing/get-operation)**
+
+```rust Rust
+client.get_billing_operation(project_id: String, operation_id: String).await -> Result<ResponseValue<types::BillingOperation>, Error<GetBillingOperationError>>
+```
+`GET /v1/projects/{projectId}/billing/operations/{operationId}`
+
+**[Get the project's billing overview](/api-client/sdk/projects/billing/get-overview)**
+
+```rust Rust
+client.get_billing_overview(project_id: String).await -> Result<ResponseValue<types::GetBillingOverviewResponse>, Error<GetBillingOverviewError>>
+```
+`GET /v1/projects/{projectId}/billing`
+
+</Tab>
+</Tabs>
+
+## Models
+
+### ListBillingPlansResponse
+
+
+
+<ResponseField name="plans" type={"object"} required>
+Plans grouped by valid metadata type and explicitly published with visible="true".
+</ResponseField>
+
+
+### BillingOperation
+
+Authoritative provisioning state. Poll the operation route while pending.
+
+**One of: PendingBillingOperation**
+
+<ResponseField name="failure" type={"null"} required>
+
+</ResponseField>
+
+<ResponseField name="kind" type={"BillingOperationKind"} required>
+
+</ResponseField>
+
+<ResponseField name="operationId" type={"string"} required>
+Stable handle for this provisioning action.
+</ResponseField>
+
+<ResponseField name="resolvedAt" type={"null"} required>
+
+</ResponseField>
+
+<ResponseField name="result" type={"null"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"\"pending\""} required>
+Accepted and still executing. Poll the operation route.
+</ResponseField>
+
+<ResponseField name="submittedAt" type={"string | null"} required>
+
+</ResponseField>
+
+**One of: SucceededBillingOperation**
+
+<ResponseField name="failure" type={"null"} required>
+
+</ResponseField>
+
+<ResponseField name="kind" type={"BillingOperationKind"} required>
+
+</ResponseField>
+
+<ResponseField name="operationId" type={"string"} required>
+Stable handle for this provisioning action.
+</ResponseField>
+
+<ResponseField name="resolvedAt" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="result" type={"BillingOperationResult"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"\"succeeded\""} required>
+Terminal. The result is authoritative.
+</ResponseField>
+
+<ResponseField name="submittedAt" type={"string | null"} required>
+
+</ResponseField>
+
+**One of: FailedBillingOperation**
+
+<ResponseField name="failure" type={"BillingOperationFailure"} required>
+
+</ResponseField>
+
+<ResponseField name="kind" type={"BillingOperationKind"} required>
+
+</ResponseField>
+
+<ResponseField name="operationId" type={"string"} required>
+Stable handle for this provisioning action.
+</ResponseField>
+
+<ResponseField name="resolvedAt" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="result" type={"null"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"\"failed\""} required>
+Terminal. Failure contains a stable code and retryability.
+</ResponseField>
+
+<ResponseField name="submittedAt" type={"string | null"} required>
+
+</ResponseField>
+
+
+### GetBillingOverviewResponse
+
+
+
+<ResponseField name="entitlementsVersion" type={"integer"} required>
+Bumps on every entitlement change in any category.
+</ResponseField>
+
+<ResponseField name="subscriptions" type={"array of ProjectSubscription"} required>
+One entry per category that currently holds a subscription. Empty means none do — cancelled, or never opened.
+</ResponseField>
+
+<ResponseField name="usage" type={"array of MeteredUsage"} required>
+Current-period metered usage, priced.
+</ResponseField>
+
+

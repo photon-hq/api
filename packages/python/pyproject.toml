@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "photonhq-api"
-version = "0.2.2"
+version = "0.2.3"
 description = "Generated Photon API RPC client"
 readme = "README.md"
 requires-python = ">=3.11"
