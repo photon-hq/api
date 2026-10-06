@@ -1,0 +1,58 @@
+---
+title: "Versioning"
+description: "How the Photon API clients are versioned and released, and where to find their changelog and references."
+---
+
+The TypeScript, Python, and Rust clients share one version number. Every
+release publishes `@photon-ai/api` to npm, `photonhq-api` to PyPI, and
+`photonhq-api` to crates.io at the same version, even when one of them has no
+changes. A version of one package therefore matches the same version of the
+others and was generated from the same API contract.
+
+## Semantic versioning
+
+Releases follow [semantic versioning](https://semver.org). While the version is
+below 1.0:
+
+- a release with breaking changes increases the minor version, for example from
+  0.2.1 to 0.3.0;
+- every other release increases the patch version, for example from 0.2.0 to
+  0.2.1.
+
+Breaking changes include renamed or removed methods, types, and fields. Pin
+your dependency to one minor version and upgrade on purpose:
+
+| Package manager | Range that stays within one minor version |
+| --- | --- |
+| npm | The default `^0.x.y` range already does. |
+| pip | Use a compatible-release specifier, such as `photonhq-api~=0.x.y`. |
+| Cargo | The default `0.x.y` requirement already does. |
+
+Because responses are read leniently, an installed client keeps working when the
+API adds fields or enum values. All three clients accept new fields: TypeScript
+and Python keep them, and Rust ignores them unless the object allows extra
+members. Upgrade to use new endpoints and to get typed access to new fields.
+
+## Changelog and releases
+
+Every release is listed in
+[`CHANGELOG.md`](https://github.com/photon-hq/api/blob/main/CHANGELOG.md)
+and tagged `v<version>` in [photon-hq/api](https://github.com/photon-hq/api).
+Each release's GitHub page carries the exact files published to npm, PyPI, and
+crates.io, with their SHA-256 checksums. Their build provenance attestations are
+in the repository's
+[attestations](https://github.com/photon-hq/api/attestations); verify a file
+with `gh attestation verify FILE --repo photon-hq/api`.
+
+## API references
+
+- **Rust**: the full API reference is on
+  [docs.rs/photonhq-api](https://docs.rs/photonhq-api).
+- **TypeScript**: the package ships its type declarations, and the generated
+  methods carry each endpoint's summary and description as documentation
+  comments, so your editor shows them.
+- **Python**: the package is typed (`py.typed`), and each method's docstring
+  carries the endpoint's summary and description.
+
+The [API reference](/api-reference) on this site describes every endpoint, with
+its call in all three languages.

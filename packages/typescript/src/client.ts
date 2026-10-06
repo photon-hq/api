@@ -128,12 +128,17 @@ export class Photon {
     })) as HeyApiResult;
 
     if (!result?.response) {
-      if (result?.error instanceof TransportError) {
-        throw result.error;
-      }
-      throw new TransportError("Photon request failed", {
-        cause: result?.error,
-      });
+      // A failure before or while reading the response, or a cancellation:
+      // a TransportError naming the operation, with the underlying cause.
+      const error = result?.error;
+      throw new TransportError(
+        error instanceof TransportError ? error.message : "Photon request failed",
+        {
+          cause: error instanceof TransportError ? error.cause : error,
+          operationId,
+          requestId: error instanceof TransportError ? error.requestId : undefined,
+        },
+      );
     }
 
     const requestId = result.response.headers.get("x-request-id") ?? undefined;
@@ -199,13 +204,9 @@ export class Photon {
             ? await result.response.text()
             : await result.response.arrayBuffer();
       } catch (error) {
-        if (
-          requestOptions?.signal?.aborted ||
-          (error instanceof Error &&
-            (error.name === "AbortError" || error.name === "TimeoutError"))
-        ) {
-          throw error;
-        }
+        // The transport reads the body within each attempt, so this is rare;
+        // like a failure before the headers, it is a TransportError whose
+        // cause is the underlying error (or the caller's abort reason).
         throw new TransportError("Photon response body could not be read", {
           cause: error,
           operationId,

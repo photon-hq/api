@@ -1370,6 +1370,19 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "200": "json"
     }
   },
+  "retryWebhookDelivery": {
+    "request": "application/json",
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "202": "json"
+    }
+  },
   "revokeAccountServiceKey": {
     "responses": [
       "application/json"
@@ -3149,6 +3162,18 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
+         * Retry a waiting webhook delivery
+         *
+         * Requests an immediate attempt of the selected delivery if it is still the waiting head for its destination and event type. expectedAttemptCount is the failed-attempt counter recorded on the delivery and fences stale requests. This overrides the current backoff, including Retry-After, once. It preserves event identity and the retry budget. Delivered, active, disabled and dead-lettered deliveries cannot be retried. A 202 acknowledges the wake-up, not successful delivery. Supply an Idempotency-Key and retain it when retrying an ambiguous failure.
+         */
+        retryWebhookDelivery: (input: Schemas.RetryWebhookDeliveryInput, options?: RequestOptions) => invokers.data<Schemas.RetryWebhookDeliveryInput, Schemas.RetryWebhookDeliveryOutput>(
+            "retryWebhookDelivery",
+            Sdk.retryWebhookDelivery,
+            Schemas.RetryWebhookDeliveryOutputSchemas,
+            input,
+            options,
+        ),
+        /**
          * Delete a project API key
          *
          * Revokes the identified key on the selected project and returns its revoked metadata. Repeating the deletion returns the same revokedAt value. This operation does not rotate the key or return a replacement secret. Supply the required Idempotency-Key header.
@@ -4735,6 +4760,18 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             "queryMessageMetrics",
             Sdk.queryMessageMetrics,
             Schemas.QueryMessageMetricsOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Retry a waiting webhook delivery
+         *
+         * Requests an immediate attempt of the selected delivery if it is still the waiting head for its destination and event type. expectedAttemptCount is the failed-attempt counter recorded on the delivery and fences stale requests. This overrides the current backoff, including Retry-After, once. It preserves event identity and the retry budget. Delivered, active, disabled and dead-lettered deliveries cannot be retried. A 202 acknowledges the wake-up, not successful delivery. Supply an Idempotency-Key and retain it when retrying an ambiguous failure.
+         */
+        retryWebhookDelivery: (input: Schemas.RetryWebhookDeliveryInput, options?: RequestOptions) => invokers.raw<Schemas.RetryWebhookDeliveryInput, Schemas.RetryWebhookDeliveryOutput>(
+            "retryWebhookDelivery",
+            Sdk.retryWebhookDelivery,
+            Schemas.RetryWebhookDeliveryOutputSchemas,
             input,
             options,
         ),

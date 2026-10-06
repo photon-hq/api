@@ -14,6 +14,7 @@ contract.
 | --- | --- |
 | [`openapi/openapi.json`](openapi/openapi.json) | OpenAPI 3.1 contract, restricted to public operations. Server: `https://api.photon.codes`. |
 | [`postman/collection.json`](postman/collection.json) | Postman collection generated from the contract. |
+| [`docs/`](docs) | The API Client guide published on the Photon documentation site. |
 
 ## Try it in Postman
 

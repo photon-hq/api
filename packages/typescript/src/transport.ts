@@ -93,6 +93,23 @@ async function wait(delayMs: number, signal: AbortSignal): Promise<void> {
   });
 }
 
+// Statuses whose responses never have a body (the Fetch standard's null body statuses).
+const NULL_BODY_STATUSES = new Set([101, 103, 204, 205, 304]);
+
+/**
+ * The response with its body read in full, so reading the body is part of the
+ * attempt: a timeout, network failure or cancellation while the body arrives
+ * fails the attempt like one before the headers, and is retried the same way.
+ */
+async function buffered(response: Response): Promise<Response> {
+  const body = NULL_BODY_STATUSES.has(response.status) ? null : await response.arrayBuffer();
+  return new Response(body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers: response.headers,
+  });
+}
+
 function retryableRequest(method: string, headers: Headers): boolean {
   return (
     ["GET", "HEAD", "OPTIONS", "TRACE"].includes(method) ||
@@ -121,6 +138,8 @@ export function createPhotonFetch(
     // Idempotency-Key from the client-wide headers enables retries too.
     let canRetry = false;
     let lastError: unknown;
+    // The request ID of a response whose body could not be read.
+    let lastRequestId: string | undefined;
 
     for (let attempt = 1; attempt <= (canRetry ? maxAttempts : 1); attempt += 1) {
       const request = original.clone();
@@ -139,18 +158,20 @@ export function createPhotonFetch(
         signal,
       });
 
+      lastRequestId = undefined;
       try {
         const response = await fetchImplementation(attemptRequest);
+        lastRequestId = response.headers.get("x-request-id") ?? undefined;
         if (
           attempt >= maxAttempts ||
           !canRetry ||
           !statuses.has(response.status)
         ) {
-          return response;
+          return await buffered(response);
         }
         const retryAfter = retryAfterMs(response);
         if (retryAfter !== undefined && retryAfter > maximumRetryAfterMs) {
-          return response;
+          return await buffered(response);
         }
         const delay =
           retryAfter ?? jitterDelay(attempt, baseDelayMs, maximumDelayMs);
@@ -162,7 +183,7 @@ export function createPhotonFetch(
         }
         lastError = error;
         if (!canRetry || attempt >= maxAttempts) {
-          throw new TransportError("Photon request failed", { cause: error });
+          throw new TransportError("Photon request failed", { cause: error, requestId: lastRequestId });
         }
         await wait(
           jitterDelay(attempt, baseDelayMs, maximumDelayMs),
@@ -171,6 +192,6 @@ export function createPhotonFetch(
       }
     }
 
-    throw new TransportError("Photon request failed", { cause: lastError });
+    throw new TransportError("Photon request failed", { cause: lastError, requestId: lastRequestId });
   };
 }

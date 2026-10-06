@@ -2875,6 +2875,20 @@ export type RetryOrganizationConnectionSyncGatewayTimeoutProblem = UpstreamTimeo
 
 export type RetryOrganizationConnectionSyncInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
+export type RetryWebhookDeliveryBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+
+export type RetryWebhookDeliveryForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type RetryWebhookDeliveryRequest = {
+    eventId: string;
+    eventType: string;
+    expectedAttemptCount: number;
+};
+
+export type RetryWebhookDeliveryResponse = {
+    status: 'accepted';
+};
+
 export type RevokeAccountServiceKeyBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyInvalidProblem | IdempotencyKeyRequiredProblem;
 
 export type RevokeAccountServiceKeyForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
@@ -12454,6 +12468,74 @@ export type UpdateWebhookDestinationResponses = {
 };
 
 export type UpdateWebhookDestinationResult = UpdateWebhookDestinationResponses[keyof UpdateWebhookDestinationResponses];
+
+export type RetryWebhookDeliveryData = {
+    body: RetryWebhookDeliveryRequest;
+    headers: {
+        /**
+         * Identifies one logical mutation across retries.
+         */
+        'Idempotency-Key': string;
+    };
+    path: {
+        destinationId: string;
+        projectId: string;
+    };
+    query?: never;
+    url: '/v1/projects/{projectId}/webhooks/destinations/{destinationId}/retries';
+};
+
+export type RetryWebhookDeliveryErrors = {
+    /**
+     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     */
+    400: RetryWebhookDeliveryBadRequestProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: RetryWebhookDeliveryForbiddenProblem;
+    /**
+     * FAILED_PRECONDITION: Failed Precondition
+     */
+    409: FailedPreconditionProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * REQUEST_TIMEOUT: Request Timeout
+     */
+    504: RequestTimeoutProblem;
+};
+
+export type RetryWebhookDeliveryError = RetryWebhookDeliveryErrors[keyof RetryWebhookDeliveryErrors];
+
+export type RetryWebhookDeliveryResponses = {
+    /**
+     * The waiting delivery was made eligible for an immediate attempt.
+     */
+    202: RetryWebhookDeliveryResponse;
+};
+
+export type RetryWebhookDeliveryResult = RetryWebhookDeliveryResponses[keyof RetryWebhookDeliveryResponses];
 
 export type RotateWebhookSigningSecretData = {
     body: RotateWebhookSigningSecretRequest;
