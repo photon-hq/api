@@ -1,0 +1,127 @@
+---
+title: "List webhook destinations"
+icon: arrow-down-left
+description: "List webhook destinations: listWebhookDestinations in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{projectId}/webhooks/destinations`
+
+Returns a cursor-paginated page of active webhook destinations configured for the selected project. Use pageSize and pageToken to navigate it. The listing returns destination configuration, never signing secrets.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.listWebhookDestinations(input: ListWebhookDestinationsInput, options?: RequestOptions): Promise<ListWebhookDestinationsOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.list_webhook_destinations(input: ListWebhookDestinationsInput) -> models.WebhookDestinationPage
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.list_webhook_destinations(project_id: String, params: Option<ListWebhookDestinationsParams>).await -> Result<ResponseValue<types::WebhookDestinationPage>, Error<ListWebhookDestinationsError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.listWebhookDestinations({
+  path: {
+    projectId: "projectId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import ListWebhookDestinationsInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.list_webhook_destinations(
+    ListWebhookDestinationsInput.model_validate({
+        "path": {
+            "projectId": "projectId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .list_webhook_destinations("projectId".to_owned(), None)
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "destinations": [
+    {
+      "apiVersion": "2026-01-01",
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "deletedAt": null,
+      "description": null,
+      "destinationId": "string",
+      "enabledEvents": [
+        null
+      ],
+      "name": "string",
+      "projectId": "string",
+      "status": "enabled",
+      "updatedAt": "2026-01-01T00:00:00.000Z",
+      "url": "https://example.com"
+    }
+  ],
+  "nextPageToken": "string"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="projectId" type={"string"} required>
+
+</ParamField>
+
+<ParamField query="pageSize" type={"integer"}>
+
+</ParamField>
+
+<ParamField query="pageToken" type={"string"}>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** One page of active webhook destinations. WebhookDestinationPage
+
+<ResponseField name="destinations" type={"array of WebhookDestination"} required>
+
+</ResponseField>
+
+<ResponseField name="nextPageToken" type={"string"}>
+
+</ResponseField>
+

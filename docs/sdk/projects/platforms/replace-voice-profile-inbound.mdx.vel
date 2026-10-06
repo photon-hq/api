@@ -1,0 +1,168 @@
+---
+title: "Create or replace Voice profile inbound configuration"
+icon: pencil
+description: "Create or replace Voice profile inbound configuration: replaceVoiceProfileInbound in the TypeScript, Python and Rust clients."
+---
+
+`PUT /v1/projects/{id}/platforms/voice/profiles/{profileId}/inbound`
+
+Creates or fully replaces a profile's inbound destination when the shared profile version matches. The profileId may identify the default or an additional profile. Credentials are required and nullable; null removes destination authentication. Requires platforms:write bound to the path project.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.platforms.replaceVoiceProfileInbound(input: ReplaceVoiceProfileInboundInput, options?: RequestOptions): Promise<ReplaceVoiceProfileInboundOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.platforms.replace_voice_profile_inbound(input: ReplaceVoiceProfileInboundInput) -> models.VoiceProfileInboundConfiguration
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.replace_voice_profile_inbound(id: String, profile_id: String, body: &types::ReplaceVoiceProfileInboundRequest).await -> Result<ResponseValue<ReplaceVoiceProfileInboundResponse>, Error<ReplaceVoiceProfileInboundError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.platforms.replaceVoiceProfileInbound({
+  path: {
+    id: "id",
+    profileId: "profileId",
+  },
+  body: {
+    credentials: {
+      password: "password",
+      username: "username",
+    },
+    destinationUri: "destinationUri",
+    expectedVersion: 1,
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import ReplaceVoiceProfileInboundInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.platforms.replace_voice_profile_inbound(
+    ReplaceVoiceProfileInboundInput.model_validate({
+        "path": {
+            "id": "id",
+            "profileId": "profileId",
+        },
+        "body": {
+            "credentials": {
+                "password": "password",
+                "username": "username",
+            },
+            "destinationUri": "destinationUri",
+            "expectedVersion": 1,
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .replace_voice_profile_inbound(
+        "id".to_owned(),
+        "profileId".to_owned(),
+        &serde_json::from_value(serde_json::json!({
+            "credentials": {
+                "password": "password",
+                "username": "username",
+            },
+            "destinationUri": "destinationUri",
+            "expectedVersion": 1,
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "inbound": null,
+  "profileVersion": 1
+}
+```
+
+```json 201
+{
+  "inbound": null,
+  "profileVersion": 1
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+<ParamField path="profileId" type={"string"} required>
+
+</ParamField>
+
+
+## Body
+
+<ParamField body="credentials" type={"SipInboundCredentialsWithPassword | null"} required>
+
+</ParamField>
+
+<ParamField body="destinationUri" type={"string"} required>
+
+</ParamField>
+
+<ParamField body="expectedVersion" type={"integer"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The replaced inbound configuration and profile version. VoiceProfileInboundConfiguration
+
+<ResponseField name="inbound" type={"SipInboundConfiguration | null"} required>
+
+</ResponseField>
+
+<ResponseField name="profileVersion" type={"integer"} required>
+
+</ResponseField>
+
+**`201`** The newly created inbound configuration and profile version. VoiceProfileInboundConfiguration
+
+<ResponseField name="inbound" type={"SipInboundConfiguration | null"} required>
+
+</ResponseField>
+
+<ResponseField name="profileVersion" type={"integer"} required>
+
+</ResponseField>
+

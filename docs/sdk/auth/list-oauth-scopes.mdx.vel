@@ -1,0 +1,75 @@
+---
+title: "List OAuth scopes"
+icon: arrow-down-left
+description: "List OAuth scopes: listOauthScopes in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/auth/oauth/scopes`
+
+Lists the business permissions available to OAuth applications.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.auth.listOauthScopes(input?: ListOauthScopesInput, options?: RequestOptions): Promise<ListOauthScopesOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.auth.list_oauth_scopes(input: ListOauthScopesInput | None = None) -> models.ListOauthScopesResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.list_oauth_scopes().await -> Result<ResponseValue<types::ListOauthScopesResponse>, Error<ListOauthScopesError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon();
+const result = await photon.auth.listOauthScopes();
+```
+
+```python Python
+from photon_api import Photon
+
+photon = Photon()
+result = photon.auth.list_oauth_scopes()
+```
+
+```rust Rust
+use photon_ai_api::PhotonClientBuilder;
+
+let client = PhotonClientBuilder::new().build()?;
+let result = client
+    .list_oauth_scopes()
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "scopes": [
+    "string"
+  ]
+}
+```
+
+</ResponseExample>
+
+## Returns
+
+**`200`** The configurable OAuth business permissions. ListOauthScopesResponse
+
+<ResponseField name="scopes" type={"array of string"} required>
+Business permissions an OAuth application can be configured with. Client creation and scope updates accept only these values. OIDC protocol scopes (openid, profile, email, offline_access) are not included.
+</ResponseField>
+

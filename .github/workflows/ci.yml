@@ -48,10 +48,11 @@ jobs:
           npm run check:oas31
           npm run check:openapi
           npm run test:oas31
-      - name: Regenerate the Postman collection and code samples and compare
+      - name: Regenerate the Postman collection, code samples and SDK reference and compare
         run: |
           npm run generate:postman
           npm run generate:code-samples
+          npm run generate:sdk-reference
           git diff --exit-code
           test -z "$(git ls-files --others --exclude-standard)"
       - name: Validate every request and response example

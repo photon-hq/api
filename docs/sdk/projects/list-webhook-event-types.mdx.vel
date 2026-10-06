@@ -1,0 +1,192 @@
+---
+title: "List webhook event types"
+icon: arrow-down-left
+description: "List webhook event types: listWebhookEventTypes in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{projectId}/webhooks/event-types`
+
+Lists the webhook event types available in the requested apiVersion, including their descriptions, audiences and reader-schema URLs. Use this versioned catalog when selecting a destination's enabledEvents. The response may include version-retirement information; an authorized conditional request can return 304 without a body.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.listWebhookEventTypes(input: ListWebhookEventTypesInput, options?: RequestOptions): Promise<ListWebhookEventTypesOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.list_webhook_event_types(input: ListWebhookEventTypesInput) -> models.ListWebhookEventTypesResponse | None
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.list_webhook_event_types(project_id: String, api_version: Date).await -> Result<ResponseValue<ListWebhookEventTypesResponse>, Error<ListWebhookEventTypesError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.listWebhookEventTypes({
+  path: {
+    projectId: "projectId",
+  },
+  query: {
+    apiVersion: "2026-01-01",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import ListWebhookEventTypesInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.list_webhook_event_types(
+    ListWebhookEventTypesInput.model_validate({
+        "path": {
+            "projectId": "projectId",
+        },
+        "query": {
+            "apiVersion": "2026-01-01",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .list_webhook_event_types(
+        "projectId".to_owned(),
+        serde_json::from_value(serde_json::json!("2026-01-01"))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "apiVersion": "2026-01-01",
+  "contractNamespace": "@photon-hq/contracts",
+  "events": [
+    {
+      "audience": "agent",
+      "description": "string",
+      "schemaProfile": "reader",
+      "schemaUrl": "/v1/projects/pho_prj_00000000000000000000000001/webhooks/event-types/message.received/schema?apiVersion=2026-07-01",
+      "type": "string"
+    }
+  ],
+  "packageVersion": "string",
+  "retirement": null,
+  "selectable": true,
+  "status": "preview",
+  "successor": null
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="projectId" type={"string"} required>
+
+</ParamField>
+
+<ParamField query="apiVersion" type={"string (date)"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** Events available in the selected API version. ListWebhookEventTypesResponse
+
+**One of: SelectableWebhookEventCatalog**
+
+<ResponseField name="apiVersion" type={"string (date)"} required>
+
+</ResponseField>
+
+<ResponseField name="contractNamespace" type={"\"@photon-hq/contracts\""} required>
+
+</ResponseField>
+
+<ResponseField name="events" type={"array of WebhookEventType"} required>
+
+</ResponseField>
+
+<ResponseField name="packageVersion" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="retirement" type={"WebhookApiVersionRetirement | null"} required>
+
+</ResponseField>
+
+<ResponseField name="selectable" type={"true"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"SelectableWebhookApiVersionStatus"} required>
+
+</ResponseField>
+
+<ResponseField name="successor" type={"string (date) | null"} required>
+
+</ResponseField>
+
+**One of: DeprecatedWebhookEventCatalog**
+
+<ResponseField name="apiVersion" type={"string (date)"} required>
+
+</ResponseField>
+
+<ResponseField name="contractNamespace" type={"\"@photon-hq/contracts\""} required>
+
+</ResponseField>
+
+<ResponseField name="events" type={"array of WebhookEventType"} required>
+
+</ResponseField>
+
+<ResponseField name="packageVersion" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="retirement" type={"WebhookApiVersionRetirement"} required>
+
+</ResponseField>
+
+<ResponseField name="selectable" type={"false"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"\"deprecated\""} required>
+
+</ResponseField>
+
+<ResponseField name="successor" type={"string (date) | null"} required>
+
+</ResponseField>
+
+**`304`** The authorized cached representation is current; no response body. No body.
+

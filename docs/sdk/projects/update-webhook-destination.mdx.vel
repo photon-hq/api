@@ -1,0 +1,196 @@
+---
+title: "Update a webhook destination"
+icon: pencil
+description: "Update a webhook destination: updateWebhookDestination in the TypeScript, Python and Rust clients."
+---
+
+`PATCH /v1/projects/{projectId}/webhooks/destinations/{destinationId}`
+
+Updates the supplied URL, name, description, status or enabledEvents fields on a project's webhook destination and returns its updated configuration. The payload API version is not a mutable field in this request. Event selections are checked against the destination's versioned catalog; signing-secret rotation is a separate operation. Supply the required Idempotency-Key header.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.updateWebhookDestination(input: UpdateWebhookDestinationInput, options?: RequestOptions): Promise<UpdateWebhookDestinationOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.update_webhook_destination(input: UpdateWebhookDestinationInput) -> models.WebhookDestination
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.update_webhook_destination(idempotency_key: String, destination_id: String, project_id: String, body: &types::UpdateWebhookDestinationRequest).await -> Result<ResponseValue<types::WebhookDestination>, Error<UpdateWebhookDestinationError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.updateWebhookDestination({
+  path: {
+    destinationId: "destinationId",
+    projectId: "projectId",
+  },
+  headers: {
+    idempotencyKey: "idempotencyKey",
+  },
+  body: {},
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import UpdateWebhookDestinationInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.update_webhook_destination(
+    UpdateWebhookDestinationInput.model_validate({
+        "path": {
+            "destinationId": "destinationId",
+            "projectId": "projectId",
+        },
+        "headers": {
+            "Idempotency-Key": "idempotencyKey",
+        },
+        "body": {},
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .update_webhook_destination(
+        "idempotencyKey".to_owned(),
+        "destinationId".to_owned(),
+        "projectId".to_owned(),
+        &serde_json::from_value(serde_json::json!({}))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "apiVersion": "2026-01-01",
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "deletedAt": null,
+  "description": null,
+  "destinationId": "string",
+  "enabledEvents": [
+    null
+  ],
+  "name": "string",
+  "projectId": "string",
+  "status": "enabled",
+  "updatedAt": "2026-01-01T00:00:00.000Z",
+  "url": "https://example.com"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField header="Idempotency-Key" type={"string"} required>
+Identifies one logical mutation across retries.
+</ParamField>
+
+<ParamField path="destinationId" type={"string"} required>
+
+</ParamField>
+
+<ParamField path="projectId" type={"string"} required>
+
+</ParamField>
+
+
+## Body
+
+<ParamField body="description" type={"string | null"}>
+
+</ParamField>
+
+<ParamField body="enabledEvents" type={"WebhookEventSelection"}>
+
+</ParamField>
+
+<ParamField body="name" type={"string"}>
+
+</ParamField>
+
+<ParamField body="status" type={"WebhookDestinationStatus"}>
+
+</ParamField>
+
+<ParamField body="url" type={"string (uri)"}>
+HTTPS URL without credentials or a fragment.
+</ParamField>
+
+
+## Returns
+
+**`200`** The updated webhook destination. WebhookDestination
+
+<ResponseField name="apiVersion" type={"string (date)"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="deletedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="description" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="destinationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="enabledEvents" type={"WebhookEventSelection"} required>
+
+</ResponseField>
+
+<ResponseField name="name" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"WebhookDestinationStatus"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="url" type={"string (uri)"} required>
+
+</ResponseField>
+

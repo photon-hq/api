@@ -1,0 +1,123 @@
+---
+title: "Get WhatsApp Business verification code"
+icon: arrow-down-left
+description: "Get WhatsApp Business verification code: getWhatsappBusinessVerificationCode in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{id}/platforms/whatsapp-business/numbers/{resourceId}/verification-code`
+
+Returns the latest six-digit WhatsApp Business ownership code received by SMS for an active Photon VOIP number, but only when its provider timestamp is strictly newer than the required receivedAfter boundary. receivedAfter must be an RFC 3339 timestamp between this request's arrival time and two minutes before it; once it expires, restart Meta's verification flow with a new boundary. A missing newer code is a retryable 404 with Retry-After: 2. Poll after 2, 4, 8, then 10 seconds, applying ±20% jitter and capping later intervals at 10 seconds. Stop when the original boundary is two minutes old. Responses are never cached. Requires the platforms:write permission bound to the project resource in the path.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.platforms.getWhatsappBusinessVerificationCode(input: GetWhatsappBusinessVerificationCodeInput, options?: RequestOptions): Promise<GetWhatsappBusinessVerificationCodeOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.platforms.get_whatsapp_business_verification_code(input: GetWhatsappBusinessVerificationCodeInput) -> models.GetWhatsappBusinessVerificationCodeResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.get_whatsapp_business_verification_code(id: String, resource_id: String, received_after: DateTime).await -> Result<ResponseValue<types::GetWhatsappBusinessVerificationCodeResponse>, Error<GetWhatsappBusinessVerificationCodeError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.platforms.getWhatsappBusinessVerificationCode({
+  path: {
+    id: "id",
+    resourceId: "resourceId",
+  },
+  query: {
+    receivedAfter: "2026-01-01T00:00:00Z",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import GetWhatsappBusinessVerificationCodeInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.platforms.get_whatsapp_business_verification_code(
+    GetWhatsappBusinessVerificationCodeInput.model_validate({
+        "path": {
+            "id": "id",
+            "resourceId": "resourceId",
+        },
+        "query": {
+            "receivedAfter": "2026-01-01T00:00:00Z",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .get_whatsapp_business_verification_code(
+        "id".to_owned(),
+        "resourceId".to_owned(),
+        serde_json::from_value(serde_json::json!("2026-01-01T00:00:00Z"))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "code": "string",
+  "receivedAt": "2026-01-01T00:00:00.000Z"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+<ParamField path="resourceId" type={"string"} required>
+
+</ParamField>
+
+<ParamField query="receivedAfter" type={"string (date-time)"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** A verification code received strictly after receivedAfter. Treat it as an authentication secret. GetWhatsappBusinessVerificationCodeResponse
+
+<ResponseField name="code" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="receivedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+

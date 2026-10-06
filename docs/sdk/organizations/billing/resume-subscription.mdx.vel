@@ -1,0 +1,133 @@
+---
+title: "Resume a category scheduled for cancellation"
+icon: arrow-up-right
+description: "Resume a category scheduled for cancellation: resumeSubscription in the TypeScript, Python and Rust clients."
+---
+
+`POST /v1/organizations/{organizationId}/billing/projects/{projectId}/resume`
+
+Removes a scheduled cancellation for the specified billing category on the selected project so it can renew normally. This operation resumes a category scheduled to cancel; it is separate from purchasing or changing a plan. Supply both organizationId and projectId to select the project within its organization.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.billing.resumeSubscription(input: ResumeSubscriptionInput, options?: RequestOptions): Promise<ResumeSubscriptionOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.billing.resume_subscription(input: ResumeSubscriptionInput) -> models.ResumeSubscriptionResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.resume_subscription(organization_id: String, project_id: String, params: Option<ResumeSubscriptionParams>, body: &types::ResumeSubscriptionRequest).await -> Result<ResponseValue<types::ResumeSubscriptionResponse>, Error<ResumeSubscriptionError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.billing.resumeSubscription({
+  path: {
+    organizationId: "organizationId",
+    projectId: "projectId",
+  },
+  body: {
+    category: "category",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import ResumeSubscriptionInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.billing.resume_subscription(
+    ResumeSubscriptionInput.model_validate({
+        "path": {
+            "organizationId": "organizationId",
+            "projectId": "projectId",
+        },
+        "body": {
+            "category": "category",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .resume_subscription(
+        "organizationId".to_owned(),
+        "projectId".to_owned(),
+        None,
+        &serde_json::from_value(serde_json::json!({
+            "category": "category",
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "category": "string",
+  "resumed": true
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField header="Idempotency-Key" type={"string"}>
+Identifies one logical mutation across retries.
+</ParamField>
+
+<ParamField path="organizationId" type={"string"} required>
+
+</ParamField>
+
+<ParamField path="projectId" type={"string"} required>
+The project being billed.
+</ParamField>
+
+
+## Body
+
+<ParamField body="category" type={"string"} required>
+Category slug, e.g. analytics or messaging.
+</ParamField>
+
+
+## Returns
+
+**`200`** Removes a scheduled cancellation so the category renews normally. ResumeSubscriptionResponse
+
+<ResponseField name="category" type={"string"} required>
+Category slug, e.g. analytics or messaging.
+</ResponseField>
+
+<ResponseField name="resumed" type={"boolean"} required>
+False when the subscription was not scheduled to cancel.
+</ResponseField>
+

@@ -1,0 +1,164 @@
+---
+title: "Assignments"
+description: "The Assignments resource in the TypeScript, Python and Rust clients."
+---
+
+## Methods
+
+<Tabs>
+<Tab title="TypeScript">
+**[List shared line assignments](/api-client/sdk/projects/platforms/imessage/assignments/list)**
+
+```typescript TypeScript
+photon.projects.platforms.imessage.assignments.list(input: ListSharedLineAssignmentsInput, options?: RequestOptions): Promise<ListSharedLineAssignmentsOutput>
+```
+`GET /v1/projects/{id}/platforms/imessage/assignments`
+
+**[Get shared line assignment](/api-client/sdk/projects/platforms/imessage/assignments/get)**
+
+```typescript TypeScript
+photon.projects.platforms.imessage.assignments.get(input: GetSharedLineAssignmentInput, options?: RequestOptions): Promise<GetSharedLineAssignmentOutput>
+```
+`GET /v1/projects/{id}/platforms/imessage/assignments/{assignmentId}`
+
+**[Create shared line assignment](/api-client/sdk/projects/platforms/imessage/assignments/create)**
+
+```typescript TypeScript
+photon.projects.platforms.imessage.assignments.create(input: CreateSharedLineAssignmentInput, options?: RequestOptions): Promise<CreateSharedLineAssignmentOutput>
+```
+`POST /v1/projects/{id}/platforms/imessage/assignments`
+
+**[Release shared line assignment](/api-client/sdk/projects/platforms/imessage/assignments/release)**
+
+```typescript TypeScript
+photon.projects.platforms.imessage.assignments.release(input: ReleaseSharedLineAssignmentInput, options?: RequestOptions): Promise<ReleaseSharedLineAssignmentOutput>
+```
+`DELETE /v1/projects/{id}/platforms/imessage/assignments/{assignmentId}`
+
+</Tab>
+<Tab title="Python">
+**[List shared line assignments](/api-client/sdk/projects/platforms/imessage/assignments/list)**
+
+```python Python
+photon.projects.platforms.imessage.assignments.list(input: ListSharedLineAssignmentsInput) -> models.SharedLineAssignmentPage
+```
+`GET /v1/projects/{id}/platforms/imessage/assignments`
+
+**[Get shared line assignment](/api-client/sdk/projects/platforms/imessage/assignments/get)**
+
+```python Python
+photon.projects.platforms.imessage.assignments.get(input: GetSharedLineAssignmentInput) -> models.SharedLineAssignment
+```
+`GET /v1/projects/{id}/platforms/imessage/assignments/{assignmentId}`
+
+**[Create shared line assignment](/api-client/sdk/projects/platforms/imessage/assignments/create)**
+
+```python Python
+photon.projects.platforms.imessage.assignments.create(input: CreateSharedLineAssignmentInput) -> models.SharedLineAssignment
+```
+`POST /v1/projects/{id}/platforms/imessage/assignments`
+
+**[Release shared line assignment](/api-client/sdk/projects/platforms/imessage/assignments/release)**
+
+```python Python
+photon.projects.platforms.imessage.assignments.release(input: ReleaseSharedLineAssignmentInput) -> models.SharedLineAssignment
+```
+`DELETE /v1/projects/{id}/platforms/imessage/assignments/{assignmentId}`
+
+</Tab>
+<Tab title="Rust">
+**[List shared line assignments](/api-client/sdk/projects/platforms/imessage/assignments/list)**
+
+```rust Rust
+client.list_shared_line_assignments(id: String, params: Option<ListSharedLineAssignmentsParams>).await -> Result<ResponseValue<types::SharedLineAssignmentPage>, Error<ListSharedLineAssignmentsError>>
+```
+`GET /v1/projects/{id}/platforms/imessage/assignments`
+
+**[Get shared line assignment](/api-client/sdk/projects/platforms/imessage/assignments/get)**
+
+```rust Rust
+client.get_shared_line_assignment(assignment_id: String, id: String).await -> Result<ResponseValue<types::SharedLineAssignment>, Error<GetSharedLineAssignmentError>>
+```
+`GET /v1/projects/{id}/platforms/imessage/assignments/{assignmentId}`
+
+**[Create shared line assignment](/api-client/sdk/projects/platforms/imessage/assignments/create)**
+
+```rust Rust
+client.create_shared_line_assignment(idempotency_key: String, id: String, body: &types::CreateSharedLineAssignmentRequest).await -> Result<ResponseValue<types::SharedLineAssignment>, Error<CreateSharedLineAssignmentError>>
+```
+`POST /v1/projects/{id}/platforms/imessage/assignments`
+
+**[Release shared line assignment](/api-client/sdk/projects/platforms/imessage/assignments/release)**
+
+```rust Rust
+client.release_shared_line_assignment(assignment_id: String, id: String).await -> Result<ResponseValue<types::SharedLineAssignment>, Error<ReleaseSharedLineAssignmentError>>
+```
+`DELETE /v1/projects/{id}/platforms/imessage/assignments/{assignmentId}`
+
+</Tab>
+</Tabs>
+
+## Models
+
+### SharedLineAssignmentPage
+
+
+
+<ResponseField name="assignments" type={"array of SharedLineAssignment"} required>
+
+</ResponseField>
+
+<ResponseField name="nextPageToken" type={"string"}>
+
+</ResponseField>
+
+
+### SharedLineAssignment
+
+
+
+<ResponseField name="assignedPhoneNumber" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="assignmentId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="email" type={"string"}>
+
+</ResponseField>
+
+<ResponseField name="firstName" type={"string"}>
+
+</ResponseField>
+
+<ResponseField name="handle" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="lastName" type={"string"}>
+
+</ResponseField>
+
+<ResponseField name="platform" type={"SharedLineAssignmentPlatform"} required>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="releasedAt" type={"string (date-time)"}>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+

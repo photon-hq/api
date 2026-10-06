@@ -1,0 +1,129 @@
+---
+title: "List WhatsApp shared line assignments"
+icon: arrow-down-left
+description: "List WhatsApp shared line assignments: listWhatsappSharedLineAssignments in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{id}/platforms/whatsapp/assignments`
+
+Lists the project's WhatsApp shared line assignments, oldest first. Released assignments are excluded unless includeReleased is set. Requires the platforms:read permission bound to the project resource in the path.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.platforms.listWhatsappSharedLineAssignments(input: ListWhatsappSharedLineAssignmentsInput, options?: RequestOptions): Promise<ListWhatsappSharedLineAssignmentsOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.platforms.list_whatsapp_shared_line_assignments(input: ListWhatsappSharedLineAssignmentsInput) -> models.SharedLineAssignmentPage
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.list_whatsapp_shared_line_assignments(id: String, params: Option<ListWhatsappSharedLineAssignmentsParams>).await -> Result<ResponseValue<types::SharedLineAssignmentPage>, Error<ListWhatsappSharedLineAssignmentsError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.platforms.listWhatsappSharedLineAssignments({
+  path: {
+    id: "id",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import ListWhatsappSharedLineAssignmentsInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.platforms.list_whatsapp_shared_line_assignments(
+    ListWhatsappSharedLineAssignmentsInput.model_validate({
+        "path": {
+            "id": "id",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .list_whatsapp_shared_line_assignments("id".to_owned(), None)
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "assignments": [
+    {
+      "assignedPhoneNumber": "string",
+      "assignmentId": "string",
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "email": "string",
+      "firstName": "string",
+      "handle": "string",
+      "lastName": "string",
+      "platform": "imessage",
+      "projectId": "string",
+      "releasedAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z"
+    }
+  ],
+  "nextPageToken": "string"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+<ParamField query="includeReleased" type={"string"}>
+
+</ParamField>
+
+<ParamField query="pageSize" type={"integer"}>
+
+</ParamField>
+
+<ParamField query="pageToken" type={"string"}>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** A page of WhatsApp shared line assignments. SharedLineAssignmentPage
+
+<ResponseField name="assignments" type={"array of SharedLineAssignment"} required>
+
+</ResponseField>
+
+<ResponseField name="nextPageToken" type={"string"}>
+
+</ResponseField>
+

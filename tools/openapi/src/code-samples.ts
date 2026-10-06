@@ -23,6 +23,8 @@ import {
 
 export const MINTLIFY_CONTRACT_PATH = "openapi/openapi.mintlify.json";
 const BINARY_SAMPLE = "Hello from Photon.";
+// The media type of BINARY_SAMPLE, sent as its Content-Type.
+const BINARY_MEDIA_TYPE = "text/plain";
 const TOKEN_TS = "process.env.PHOTON_API_TOKEN";
 const DATE_TIME = "2026-01-01T00:00:00Z";
 
@@ -32,9 +34,18 @@ export interface CodeSample {
   source: string;
 }
 
-/** Python call path of each operation, read from the generated client (photon_api/rpc_generated.py). */
-export function pythonCallPaths(source: string): Map<string, string> {
-  const classes = new Map<string, { children: Array<[string, string]>; methods: Array<[string, string]> }>();
+export interface PythonMethod {
+  /** Call path from the client, e.g. `photon.projects.get`. */
+  path: string;
+  /** The `input` parameter as declared, e.g. `input: GetProjectInput | None = None`. */
+  parameter: string;
+  /** The declared return type, e.g. `models.Project`. */
+  returns: string;
+}
+
+/** Each operation's method on the generated Python client (photon_api/rpc_generated.py), by input type name without `Input`. */
+export function pythonMethods(source: string): Map<string, PythonMethod> {
+  const classes = new Map<string, { children: Array<[string, string]>; methods: Array<[string, string, string, string]> }>();
   // Each class block runs from its `class` line to the next top-level statement;
   // ruff may wrap a signature, so match across lines.
   for (const block of source.split(/^(?=class )/m)) {
@@ -43,18 +54,24 @@ export function pythonCallPaths(source: string): Map<string, string> {
     const body = block.split(/^(?=\S)/m).slice(0, 2).join("");
     classes.set(declared[1]!, {
       children: [...body.matchAll(/^ {8}self\.([a-z]\w*) = (\w+)\(transport\)/gm)].map((match) => [match[1]!, match[2]!]),
-      methods: [...body.matchAll(/^ {4}(?:async )?def (\w+)\(\s*self,\s*input: (\w+)Input\b/gm)].map((match) => [match[1]!, match[2]!]),
+      methods: [...body.matchAll(/^ {4}(?:async )?def (\w+)\(\s*self,\s*(input: (\w+)Input\b[^)]*?)\s*\)\s*->\s*([^:]+?):\s*$/gm)]
+        .map((match) => [match[1]!, match[3]!, match[2]!.replace(/\s+/g, " "), match[4]!.replace(/\s+/g, " ")]),
     });
   }
-  const paths = new Map<string, string>();
+  const methods = new Map<string, PythonMethod>();
   const visit = (className: string, prefix: string) => {
     const node = classes.get(className);
     assert(node, `Python client class ${className} not found`);
-    for (const [method, inputType] of node.methods) paths.set(inputType, `${prefix}.${method}`);
+    for (const [method, inputType, parameter, returns] of node.methods) methods.set(inputType, { path: `${prefix}.${method}`, parameter, returns });
     for (const [member, childClass] of node.children) visit(childClass, `${prefix}.${member}`);
   };
   visit("SyncRoot", "photon");
-  return paths;
+  return methods;
+}
+
+/** Python call path of each operation, read from the generated client (photon_api/rpc_generated.py). */
+export function pythonCallPaths(source: string): Map<string, string> {
+  return new Map([...pythonMethods(source)].map(([inputType, method]) => [inputType, method.path]));
 }
 
 export interface RustArgument {
@@ -62,10 +79,16 @@ export interface RustArgument {
   type: string;
 }
 
-/** Arguments of each generated Rust client method (photonhq-api src/generated.rs), by method name. */
-export function rustSignatures(source: string): Map<string, RustArgument[]> {
-  const signatures = new Map<string, RustArgument[]>();
-  for (const match of source.matchAll(/pub async fn (\w+)\(\s*&self,?([^)]*)\)\s*->/g)) {
+export interface RustMethod {
+  arguments: RustArgument[];
+  /** The declared return type, e.g. `Result<ResponseValue<types::Project>, Error<GetProjectError>>`. */
+  returns: string;
+}
+
+/** Each generated Rust client method (photonhq-api src/generated.rs), by method name. */
+export function rustMethods(source: string): Map<string, RustMethod> {
+  const methods = new Map<string, RustMethod>();
+  for (const match of source.matchAll(/pub async fn (\w+)\(\s*&self,?([^)]*)\)\s*->\s*([\s\S]*?)\s*\{/g)) {
     const argumentsList = match[2]!
       .split(/,\s*(?![^<]*>)/)
       .map((part) => part.trim())
@@ -74,9 +97,15 @@ export function rustSignatures(source: string): Map<string, RustArgument[]> {
         const separator = part.indexOf(":");
         return { name: part.slice(0, separator).trim(), type: part.slice(separator + 1).trim() };
       });
-    signatures.set(match[1]!, argumentsList);
+    const returns = match[3]!.replace(/\s+/g, " ").replace(/support::/g, "").replace(/<\s/g, "<").replace(/,?\s*>/g, ">");
+    methods.set(match[1]!, { arguments: argumentsList, returns });
   }
-  return signatures;
+  return methods;
+}
+
+/** Arguments of each generated Rust client method (photonhq-api src/generated.rs), by method name. */
+export function rustSignatures(source: string): Map<string, RustArgument[]> {
+  return new Map([...rustMethods(source)].map(([name, method]) => [name, method.arguments]));
 }
 
 function resolveSchema(document: JsonObject, schema: JsonValue | undefined): JsonValue | undefined {
@@ -203,7 +232,9 @@ function operationInputs(document: JsonObject, operation: ManifestOperation): In
     if (!parameter.required) continue;
     const value = parameter.location === "header" && /^content-length$/i.test(parameter.wireName)
       ? String(Buffer.byteLength(BINARY_SAMPLE))
-      : placeholder(document, parameter.schema as JsonValue, parameter.name);
+      : parameter.location === "header" && /^content-type$/i.test(parameter.wireName)
+        ? BINARY_MEDIA_TYPE
+        : placeholder(document, parameter.schema as JsonValue, parameter.name);
     if (parameter.location === "header") {
       groups.headers[parameter.wireName] = value;
       typescriptHeaders[parameter.name] = value;
@@ -245,7 +276,7 @@ export function typescriptSample(document: JsonObject, operation: ManifestOperat
   if (Object.keys(inputs.typescriptHeaders).length) input.headers = inputs.typescriptHeaders;
   let argument = Object.keys(input).length || inputs.body ? typescriptLiteral(input, "") : "";
   if (inputs.body) {
-    const body = inputs.body.binary ? `new Blob([${JSON.stringify(inputs.body.value)}])` : typescriptLiteral(inputs.body.value, "  ");
+    const body = inputs.body.binary ? `new Blob([${JSON.stringify(inputs.body.value)}], { type: ${JSON.stringify(BINARY_MEDIA_TYPE)} })` : typescriptLiteral(inputs.body.value, "  ");
     argument = argument === "{}" ? `{\n  body: ${body},\n}` : `${argument.slice(0, -1)}  body: ${body},\n}`;
   }
   const client = scheme

@@ -1,0 +1,256 @@
+---
+title: "Projects"
+description: "The Projects resource in the TypeScript, Python and Rust clients."
+---
+
+## Methods
+
+<Tabs>
+<Tab title="TypeScript">
+**[List accessible projects](/api-client/sdk/organizations/projects/list)**
+
+```typescript TypeScript
+photon.organizations.projects.list(input: ListProjectsInput, options?: RequestOptions): Promise<ListProjectsOutput>
+```
+`GET /v1/organizations/{organizationId}/projects`
+
+**[Check slug availability](/api-client/sdk/organizations/projects/check-project-slug-availability)**
+
+```typescript TypeScript
+photon.organizations.projects.checkProjectSlugAvailability(input: CheckProjectSlugAvailabilityInput, options?: RequestOptions): Promise<CheckProjectSlugAvailabilityOutput>
+```
+`GET /v1/organizations/{organizationId}/projects/slug-availability`
+
+**[Count accessible projects](/api-client/sdk/organizations/projects/count)**
+
+```typescript TypeScript
+photon.organizations.projects.count(input: CountProjectsInput, options?: RequestOptions): Promise<CountProjectsOutput>
+```
+`GET /v1/organizations/{organizationId}/projects/count`
+
+**[Read project closure progress](/api-client/sdk/organizations/projects/get-project-closure-status)**
+
+```typescript TypeScript
+photon.organizations.projects.getProjectClosureStatus(input: GetProjectClosureStatusInput, options?: RequestOptions): Promise<GetProjectClosureStatusOutput>
+```
+`GET /v1/organizations/{organizationId}/projects/closure-status`
+
+**[Create a project](/api-client/sdk/organizations/projects/create)**
+
+```typescript TypeScript
+photon.organizations.projects.create(input: CreateProjectInput, options?: RequestOptions): Promise<CreateProjectOutput>
+```
+`POST /v1/organizations/{organizationId}/projects`
+
+</Tab>
+<Tab title="Python">
+**[List accessible projects](/api-client/sdk/organizations/projects/list)**
+
+```python Python
+photon.organizations.projects.list(input: ListProjectsInput) -> models.ProjectPage
+```
+`GET /v1/organizations/{organizationId}/projects`
+
+**[Check slug availability](/api-client/sdk/organizations/projects/check-project-slug-availability)**
+
+```python Python
+photon.organizations.projects.check_project_slug_availability(input: CheckProjectSlugAvailabilityInput) -> models.CheckProjectSlugAvailabilityResponse
+```
+`GET /v1/organizations/{organizationId}/projects/slug-availability`
+
+**[Count accessible projects](/api-client/sdk/organizations/projects/count)**
+
+```python Python
+photon.organizations.projects.count(input: CountProjectsInput) -> models.ProjectCount
+```
+`GET /v1/organizations/{organizationId}/projects/count`
+
+**[Read project closure progress](/api-client/sdk/organizations/projects/get-project-closure-status)**
+
+```python Python
+photon.organizations.projects.get_project_closure_status(input: GetProjectClosureStatusInput) -> models.GetProjectClosureStatusResponse
+```
+`GET /v1/organizations/{organizationId}/projects/closure-status`
+
+**[Create a project](/api-client/sdk/organizations/projects/create)**
+
+```python Python
+photon.organizations.projects.create(input: CreateProjectInput) -> models.Project
+```
+`POST /v1/organizations/{organizationId}/projects`
+
+</Tab>
+<Tab title="Rust">
+**[List accessible projects](/api-client/sdk/organizations/projects/list)**
+
+```rust Rust
+client.list_projects(organization_id: String, params: Option<ListProjectsParams>).await -> Result<ResponseValue<types::ProjectPage>, Error<ListProjectsError>>
+```
+`GET /v1/organizations/{organizationId}/projects`
+
+**[Check slug availability](/api-client/sdk/organizations/projects/check-project-slug-availability)**
+
+```rust Rust
+client.check_project_slug_availability(organization_id: String, slug: String).await -> Result<ResponseValue<types::CheckProjectSlugAvailabilityResponse>, Error<CheckProjectSlugAvailabilityError>>
+```
+`GET /v1/organizations/{organizationId}/projects/slug-availability`
+
+**[Count accessible projects](/api-client/sdk/organizations/projects/count)**
+
+```rust Rust
+client.count_projects(organization_id: String, params: Option<CountProjectsParams>).await -> Result<ResponseValue<types::ProjectCount>, Error<CountProjectsError>>
+```
+`GET /v1/organizations/{organizationId}/projects/count`
+
+**[Read project closure progress](/api-client/sdk/organizations/projects/get-project-closure-status)**
+
+```rust Rust
+client.get_project_closure_status(organization_id: String, project_id: String).await -> Result<ResponseValue<types::GetProjectClosureStatusResponse>, Error<GetProjectClosureStatusError>>
+```
+`GET /v1/organizations/{organizationId}/projects/closure-status`
+
+**[Create a project](/api-client/sdk/organizations/projects/create)**
+
+```rust Rust
+client.create_project(idempotency_key: String, organization_id: String, body: &types::CreateProjectRequest).await -> Result<ResponseValue<types::Project>, Error<CreateProjectError>>
+```
+`POST /v1/organizations/{organizationId}/projects`
+
+</Tab>
+</Tabs>
+
+## Models
+
+### ProjectPage
+
+
+
+<ResponseField name="nextPageToken" type={"string"}>
+
+</ResponseField>
+
+<ResponseField name="projects" type={"array of Project"} required>
+
+</ResponseField>
+
+
+### CheckProjectSlugAvailabilityResponse
+
+
+
+**One of: AvailableProjectSlug**
+
+<ResponseField name="available" type={"true"} required>
+
+</ResponseField>
+
+<ResponseField name="slug" type={"string"} required>
+
+</ResponseField>
+
+**One of: UnavailableProjectSlug**
+
+<ResponseField name="available" type={"false"} required>
+
+</ResponseField>
+
+<ResponseField name="reason" type={"UnavailableProjectSlugReason"} required>
+
+</ResponseField>
+
+<ResponseField name="slug" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="suggestion" type={"string"}>
+
+</ResponseField>
+
+
+### ProjectCount
+
+
+
+<ResponseField name="count" type={"integer"} required>
+
+</ResponseField>
+
+
+### GetProjectClosureStatusResponse
+
+
+
+<ResponseField name="deletionOperationId" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="domains" type={"array of ProjectClosureDomainStatus"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="ready" type={"boolean"} required>
+
+</ResponseField>
+
+
+### Project
+
+
+
+<ResponseField name="agentProfile" type={"AgentProfile"} required>
+
+</ResponseField>
+
+<ResponseField name="billingInitialization" type={"ProjectBillingInitialization"}>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="createdByAccountId" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="createdByActorId" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="createdByActorKind" type={"ProjectCreatedByActorKind | null"} required>
+
+</ResponseField>
+
+<ResponseField name="deletedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="name" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="slug" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+

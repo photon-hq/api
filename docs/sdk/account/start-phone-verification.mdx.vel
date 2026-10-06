@@ -1,0 +1,116 @@
+---
+title: "Start a phone number verification"
+icon: arrow-up-right
+description: "Start a phone number verification: startAccountPhoneVerification in the TypeScript, Python and Rust clients."
+---
+
+`POST /v1/account/phone/verifications`
+
+Sends an SMS code. Answers CAPTCHA_REQUIRED with the widget to render when no solved challenge accompanies the request; retry with the returned challengeContext and a token. Rate limited per account, per destination number, and globally; a rejection carries Retry-After.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.account.startPhoneVerification(input: StartAccountPhoneVerificationInput, options?: RequestOptions): Promise<StartAccountPhoneVerificationOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.account.start_phone_verification(input: StartAccountPhoneVerificationInput) -> models.StartAccountPhoneVerificationResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.start_account_phone_verification(body: &types::StartAccountPhoneVerificationRequest).await -> Result<ResponseValue<types::StartAccountPhoneVerificationResponse>, Error<StartAccountPhoneVerificationError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.account.startPhoneVerification({
+  body: {
+    phoneNumber: "phoneNumber",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import StartAccountPhoneVerificationInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.account.start_phone_verification(
+    StartAccountPhoneVerificationInput.model_validate({
+        "body": {
+            "phoneNumber": "phoneNumber",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .start_account_phone_verification(
+        &serde_json::from_value(serde_json::json!({
+            "phoneNumber": "phoneNumber",
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 201
+{
+  "channel": "sms",
+  "expiresAt": "2026-01-01T00:00:00.000Z",
+  "resendAvailableAt": "2026-01-01T00:00:00.000Z"
+}
+```
+
+</ResponseExample>
+
+## Body
+
+<ParamField body="captcha" type={"PhoneVerificationCaptcha"}>
+
+</ParamField>
+
+<ParamField body="phoneNumber" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`201`** A pending verification. The Account is unchanged. StartAccountPhoneVerificationResponse
+
+<ResponseField name="channel" type={"\"sms\""} required>
+
+</ResponseField>
+
+<ResponseField name="expiresAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="resendAvailableAt" type={"string (date-time)"} required>
+
+</ResponseField>
+

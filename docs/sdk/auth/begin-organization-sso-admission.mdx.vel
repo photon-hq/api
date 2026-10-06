@@ -1,0 +1,116 @@
+---
+title: "Begin organization SSO admission for an existing Account"
+icon: arrow-up-right
+description: "Begin organization SSO admission for an existing Account: beginOrganizationSsoAdmission in the TypeScript, Python and Rust clients."
+---
+
+`POST /v1/auth/organizations/{orgId}/sso/admission`
+
+Returns an SSO admission URL for an existing account and the selected organization. Supply returnTo for the continuation URL. Admission requires completing the returned authentication flow; creating the URL does not itself grant membership.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.auth.beginOrganizationSsoAdmission(input: BeginOrganizationSsoAdmissionInput, options?: RequestOptions): Promise<BeginOrganizationSsoAdmissionOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.auth.begin_organization_sso_admission(input: BeginOrganizationSsoAdmissionInput) -> models.OrganizationAuthenticationRedirect
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.begin_organization_sso_admission(org_id: String, body: &types::OrganizationAuthenticationRequest).await -> Result<ResponseValue<types::OrganizationAuthenticationRedirect>, Error<BeginOrganizationSsoAdmissionError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.auth.beginOrganizationSsoAdmission({
+  path: {
+    orgId: "orgId",
+  },
+  body: {
+    returnTo: "returnTo",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import BeginOrganizationSsoAdmissionInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.auth.begin_organization_sso_admission(
+    BeginOrganizationSsoAdmissionInput.model_validate({
+        "path": {
+            "orgId": "orgId",
+        },
+        "body": {
+            "returnTo": "returnTo",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .begin_organization_sso_admission(
+        "orgId".to_owned(),
+        &serde_json::from_value(serde_json::json!({
+            "returnTo": "returnTo",
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "url": "string"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="orgId" type={"string"} required>
+
+</ParamField>
+
+
+## Body
+
+<ParamField body="returnTo" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** Targeted SSO authorization URL. OrganizationAuthenticationRedirect
+
+<ResponseField name="url" type={"string"} required>
+
+</ResponseField>
+

@@ -1,0 +1,271 @@
+---
+title: "Remove SMS line campaign"
+icon: x
+description: "Remove SMS line campaign: unassignSmsLineCampaign in the TypeScript, Python and Rust clients."
+---
+
+`DELETE /v1/projects/{id}/platforms/sms/lines/{resourceId}/campaign`
+
+Any project writer, including a scoped API key, may detach the campaign. The number and campaign remain owned. Requires a permanent Idempotency-Key and expectedVersion. Local eligibility is blocked immediately; provider detachment runs asynchronously.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.platforms.unassignSmsLineCampaign(input: UnassignSmsLineCampaignInput, options?: RequestOptions): Promise<UnassignSmsLineCampaignOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.platforms.unassign_sms_line_campaign(input: UnassignSmsLineCampaignInput) -> models.Operation
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.unassign_sms_line_campaign(idempotency_key: String, id: String, resource_id: String, expected_version: f64).await -> Result<ResponseValue<UnassignSmsLineCampaignResponse>, Error<UnassignSmsLineCampaignError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.platforms.unassignSmsLineCampaign({
+  path: {
+    id: "id",
+    resourceId: "resourceId",
+  },
+  query: {
+    expectedVersion: 1,
+  },
+  headers: {
+    idempotencyKey: "idempotencyKey",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import UnassignSmsLineCampaignInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.platforms.unassign_sms_line_campaign(
+    UnassignSmsLineCampaignInput.model_validate({
+        "path": {
+            "id": "id",
+            "resourceId": "resourceId",
+        },
+        "query": {
+            "expectedVersion": 1,
+        },
+        "headers": {
+            "Idempotency-Key": "idempotencyKey",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .unassign_sms_line_campaign(
+        "idempotencyKey".to_owned(),
+        "id".to_owned(),
+        "resourceId".to_owned(),
+        1.0,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "cancellable": true,
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "detail": {},
+  "endedAt": "2026-01-01T00:00:00.000Z",
+  "error": {
+    "code": "string",
+    "detail": "string"
+  },
+  "operationId": "string",
+  "projectId": "string",
+  "resourceId": "string",
+  "resourceType": "string",
+  "startedAt": "2026-01-01T00:00:00.000Z",
+  "state": "pending",
+  "type": "resource.provision",
+  "updatedAt": "2026-01-01T00:00:00.000Z"
+}
+```
+
+```json 202
+{
+  "cancellable": true,
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "detail": {},
+  "endedAt": "2026-01-01T00:00:00.000Z",
+  "error": {
+    "code": "string",
+    "detail": "string"
+  },
+  "operationId": "string",
+  "projectId": "string",
+  "resourceId": "string",
+  "resourceType": "string",
+  "startedAt": "2026-01-01T00:00:00.000Z",
+  "state": "pending",
+  "type": "resource.provision",
+  "updatedAt": "2026-01-01T00:00:00.000Z"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField header="Idempotency-Key" type={"string"} required>
+Identifies one logical mutation across retries.
+</ParamField>
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+<ParamField path="resourceId" type={"string"} required>
+
+</ParamField>
+
+<ParamField query="expectedVersion" type={"number"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The original terminal operation on an authorized replay. No Retry-After is emitted. Operation
+
+Headers: `Cache-Control`, `Location`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
+<ResponseField name="cancellable" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="detail" type={"object"}>
+
+</ResponseField>
+
+<ResponseField name="endedAt" type={"string (date-time)"}>
+
+</ResponseField>
+
+<ResponseField name="error" type={"OperationError"}>
+
+</ResponseField>
+
+<ResponseField name="operationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="resourceId" type={"string"}>
+
+</ResponseField>
+
+<ResponseField name="resourceType" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="startedAt" type={"string (date-time)"}>
+
+</ResponseField>
+
+<ResponseField name="state" type={"OperationState"} required>
+
+</ResponseField>
+
+<ResponseField name="type" type={"OperationType"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+**`202`** Assignment accepted. Poll the operation Location until terminal. Operation
+
+Headers: `Cache-Control`, `Location`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
+<ResponseField name="cancellable" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="detail" type={"object"}>
+
+</ResponseField>
+
+<ResponseField name="endedAt" type={"string (date-time)"}>
+
+</ResponseField>
+
+<ResponseField name="error" type={"OperationError"}>
+
+</ResponseField>
+
+<ResponseField name="operationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="resourceId" type={"string"}>
+
+</ResponseField>
+
+<ResponseField name="resourceType" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="startedAt" type={"string (date-time)"}>
+
+</ResponseField>
+
+<ResponseField name="state" type={"OperationState"} required>
+
+</ResponseField>
+
+<ResponseField name="type" type={"OperationType"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+

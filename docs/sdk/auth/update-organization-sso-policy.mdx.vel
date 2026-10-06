@@ -1,0 +1,183 @@
+---
+title: "Update organization SSO policy"
+icon: pencil
+description: "Update organization SSO policy: updateOrganizationSsoPolicy in the TypeScript, Python and Rust clients."
+---
+
+`PATCH /v1/auth/organizations/{orgId}/sso`
+
+Updates whether SSO can admit new members automatically using ssoJitEnabled and the current expectedVersion. Returns the organization’s SSO configuration and policy synchronization status; a successful response does not mean every desired policy setting has finished synchronizing.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.auth.updateOrganizationSsoPolicy(input: UpdateOrganizationSsoPolicyInput, options?: RequestOptions): Promise<UpdateOrganizationSsoPolicyOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.auth.update_organization_sso_policy(input: UpdateOrganizationSsoPolicyInput) -> models.OrganizationSsoConfiguration
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.update_organization_sso_policy(org_id: String, body: &types::UpdateOrganizationSsoPolicyRequest).await -> Result<ResponseValue<types::OrganizationSsoConfiguration>, Error<UpdateOrganizationSsoPolicyError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.auth.updateOrganizationSsoPolicy({
+  path: {
+    orgId: "orgId",
+  },
+  body: {
+    expectedVersion: "expectedVersion",
+    ssoJitEnabled: true,
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import UpdateOrganizationSsoPolicyInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.auth.update_organization_sso_policy(
+    UpdateOrganizationSsoPolicyInput.model_validate({
+        "path": {
+            "orgId": "orgId",
+        },
+        "body": {
+            "expectedVersion": "expectedVersion",
+            "ssoJitEnabled": True,
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .update_organization_sso_policy(
+        "orgId".to_owned(),
+        &serde_json::from_value(serde_json::json!({
+            "expectedVersion": "expectedVersion",
+            "ssoJitEnabled": true,
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "connectionChangedAt": null,
+  "connectionGeneration": "string",
+  "connectionState": "not_configured",
+  "connectionType": "string",
+  "desiredSsoEnforced": true,
+  "domains": [
+    {
+      "domain": "string",
+      "state": "verified"
+    }
+  ],
+  "organizationId": "string",
+  "policySyncStatus": "synced",
+  "providerAvailable": true,
+  "ssoEnforced": true,
+  "ssoJitEnabled": true,
+  "version": "string"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="orgId" type={"string"} required>
+
+</ParamField>
+
+
+## Body
+
+<ParamField body="expectedVersion" type={"string"} required>
+
+</ParamField>
+
+<ParamField body="ssoJitEnabled" type={"boolean"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** Current connection and independent local policy state. OrganizationSsoConfiguration
+
+<ResponseField name="connectionChangedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="connectionGeneration" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="connectionState" type={"OrganizationSsoConfigurationConnectionState"} required>
+
+</ResponseField>
+
+<ResponseField name="connectionType" type={"string"}>
+
+</ResponseField>
+
+<ResponseField name="desiredSsoEnforced" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="domains" type={"array of OrganizationSsoDomain"}>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="policySyncStatus" type={"OrganizationSsoConfigurationPolicySyncStatus"} required>
+
+</ResponseField>
+
+<ResponseField name="providerAvailable" type={"boolean"}>
+
+</ResponseField>
+
+<ResponseField name="ssoEnforced" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="ssoJitEnabled" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="version" type={"string"} required>
+
+</ResponseField>
+

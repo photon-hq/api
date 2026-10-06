@@ -1,0 +1,189 @@
+---
+title: "Create shared line assignment"
+icon: arrow-up-right
+description: "Create shared line assignment: createSharedLineAssignment in the TypeScript, Python and Rust clients."
+---
+
+`POST /v1/projects/{id}/platforms/imessage/assignments`
+
+Maps an end user's iMessage handle — an E.164 phone number or an email address — onto one of the project's pooled shared iMessage lines, consuming a seat from the project's entitlement. The assigned number is allocated by the server. When an email address is supplied in `email` the user is sent an invite asynchronously to that address; it is never inferred from the handle, and the response never reports whether the send succeeded. Requires the platforms:write permission bound to the project resource in the path.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.platforms.imessage.assignments.create(input: CreateSharedLineAssignmentInput, options?: RequestOptions): Promise<CreateSharedLineAssignmentOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.platforms.imessage.assignments.create(input: CreateSharedLineAssignmentInput) -> models.SharedLineAssignment
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.create_shared_line_assignment(idempotency_key: String, id: String, body: &types::CreateSharedLineAssignmentRequest).await -> Result<ResponseValue<types::SharedLineAssignment>, Error<CreateSharedLineAssignmentError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.platforms.imessage.assignments.create({
+  path: {
+    id: "id",
+  },
+  headers: {
+    idempotencyKey: "idempotencyKey",
+  },
+  body: {
+    handle: "handle",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import CreateSharedLineAssignmentInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.platforms.imessage.assignments.create(
+    CreateSharedLineAssignmentInput.model_validate({
+        "path": {
+            "id": "id",
+        },
+        "headers": {
+            "Idempotency-Key": "idempotencyKey",
+        },
+        "body": {
+            "handle": "handle",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .create_shared_line_assignment(
+        "idempotencyKey".to_owned(),
+        "id".to_owned(),
+        &serde_json::from_value(serde_json::json!({
+            "handle": "handle",
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 201
+{
+  "assignedPhoneNumber": "string",
+  "assignmentId": "string",
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "email": "string",
+  "firstName": "string",
+  "handle": "string",
+  "lastName": "string",
+  "platform": "imessage",
+  "projectId": "string",
+  "releasedAt": "2026-01-01T00:00:00.000Z",
+  "updatedAt": "2026-01-01T00:00:00.000Z"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField header="Idempotency-Key" type={"string"} required>
+Identifies one logical mutation across retries.
+</ParamField>
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+
+## Body
+
+<ParamField body="email" type={"string (email)"}>
+
+</ParamField>
+
+<ParamField body="firstName" type={"string"}>
+
+</ParamField>
+
+<ParamField body="handle" type={"ImessageHandle"} required>
+
+</ParamField>
+
+<ParamField body="lastName" type={"string"}>
+
+</ParamField>
+
+
+## Returns
+
+**`201`** The created shared line assignment. SharedLineAssignment
+
+<ResponseField name="assignedPhoneNumber" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="assignmentId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="email" type={"string"}>
+
+</ResponseField>
+
+<ResponseField name="firstName" type={"string"}>
+
+</ResponseField>
+
+<ResponseField name="handle" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="lastName" type={"string"}>
+
+</ResponseField>
+
+<ResponseField name="platform" type={"SharedLineAssignmentPlatform"} required>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="releasedAt" type={"string (date-time)"}>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+

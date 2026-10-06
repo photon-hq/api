@@ -1,0 +1,110 @@
+---
+title: "Get WhatsApp signup config"
+icon: arrow-down-left
+description: "Get WhatsApp signup config: getWhatsappSignupConfig in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{id}/platforms/whatsapp-business/signup-config`
+
+Returns what the browser needs to open Meta's Embedded Signup popup: the Facebook Login for Business configuration id, the Graph version to run against, and the scopes it will request. Answered in-process rather than forwarded, so the first step of onboarding survives an outage of the private service. Pass `configId` to `FB.login` as `config_id` with `response_type: 'code'` and `override_default_response_type: true`. Do NOT add a `featureType` — omitting it is what keeps the phone-number screen in the flow, and `only_waba_sharing` produces an account with no number that cannot be provisioned. Requires the platforms:read permission bound to the project resource in the path.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.platforms.getWhatsappSignupConfig(input: GetWhatsappSignupConfigInput, options?: RequestOptions): Promise<GetWhatsappSignupConfigOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.platforms.get_whatsapp_signup_config(input: GetWhatsappSignupConfigInput) -> models.GetWhatsappSignupConfigResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.get_whatsapp_signup_config(id: String).await -> Result<ResponseValue<types::GetWhatsappSignupConfigResponse>, Error<GetWhatsappSignupConfigError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.platforms.getWhatsappSignupConfig({
+  path: {
+    id: "id",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import GetWhatsappSignupConfigInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.platforms.get_whatsapp_signup_config(
+    GetWhatsappSignupConfigInput.model_validate({
+        "path": {
+            "id": "id",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .get_whatsapp_signup_config("id".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "configId": "string",
+  "graphVersion": "string",
+  "scopes": [
+    "string"
+  ]
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The parameters to launch Embedded Signup with. GetWhatsappSignupConfigResponse
+
+<ResponseField name="configId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="graphVersion" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="scopes" type={"array of string"} required>
+
+</ResponseField>
+

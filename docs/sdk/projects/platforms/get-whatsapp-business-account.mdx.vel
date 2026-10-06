@@ -1,0 +1,163 @@
+---
+title: "Get WhatsApp Business account"
+icon: arrow-down-left
+description: "Get WhatsApp Business account: getWhatsappBusinessAccount in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{id}/platforms/whatsapp-business/account`
+
+Gets the one WhatsApp Business Account this project has connected, with its number of live senders. Senders are resources and are listed by GET /platforms/resources?ability=whatsapp_business. The account is not a resource and carries no access token. Meta's retained numbers are listed separately by GET /platforms/whatsapp-business/account/phone-numbers. `subscribedAt` is absent until our app is attached to the account's webhooks. Requires the platforms:read permission bound to the project resource in the path.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.platforms.getWhatsappBusinessAccount(input: GetWhatsappBusinessAccountInput, options?: RequestOptions): Promise<GetWhatsappBusinessAccountOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.platforms.get_whatsapp_business_account(input: GetWhatsappBusinessAccountInput) -> models.WhatsappBusinessAccount
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.get_whatsapp_business_account(id: String).await -> Result<ResponseValue<types::WhatsappBusinessAccount>, Error<GetWhatsappBusinessAccountError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.platforms.getWhatsappBusinessAccount({
+  path: {
+    id: "id",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import GetWhatsappBusinessAccountInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.platforms.get_whatsapp_business_account(
+    GetWhatsappBusinessAccountInput.model_validate({
+        "path": {
+            "id": "id",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .get_whatsapp_business_account("id".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "accountName": null,
+  "alerts": [
+    {
+      "description": "string",
+      "entityId": "string",
+      "entityType": "string",
+      "observedAt": "2026-01-01T00:00:00.000Z",
+      "severity": "string",
+      "status": "string",
+      "type": "string"
+    }
+  ],
+  "businessId": "string",
+  "businessName": null,
+  "connectedAt": "2026-01-01T00:00:00.000Z",
+  "maxPhoneNumbersPerBusiness": 0,
+  "outboundCapacity": "50",
+  "restriction": null,
+  "reviewStatus": "PENDING",
+  "senderCount": 0,
+  "subscribedAt": "2026-01-01T00:00:00.000Z",
+  "wabaId": "string"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The project's connected account. WhatsappBusinessAccount
+
+<ResponseField name="accountName" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="alerts" type={"array of WhatsappBusinessAccountAlert"} required>
+
+</ResponseField>
+
+<ResponseField name="businessId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="businessName" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="connectedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="maxPhoneNumbersPerBusiness" type={"integer"}>
+
+</ResponseField>
+
+<ResponseField name="outboundCapacity" type={"WhatsappOutboundCapacity"} required>
+
+</ResponseField>
+
+<ResponseField name="restriction" type={"WhatsappBusinessAccountRestriction | null"} required>
+
+</ResponseField>
+
+<ResponseField name="reviewStatus" type={"WhatsappReviewStatus"} required>
+
+</ResponseField>
+
+<ResponseField name="senderCount" type={"integer"} required>
+
+</ResponseField>
+
+<ResponseField name="subscribedAt" type={"string (date-time)"}>
+
+</ResponseField>
+
+<ResponseField name="wabaId" type={"string"} required>
+
+</ResponseField>
+

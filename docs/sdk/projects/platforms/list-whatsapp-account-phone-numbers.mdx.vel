@@ -1,0 +1,110 @@
+---
+title: "List WhatsApp account phone numbers"
+icon: arrow-down-left
+description: "List WhatsApp account phone numbers: listWhatsappAccountPhoneNumbers in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{id}/platforms/whatsapp-business/account/phone-numbers`
+
+Lists the connected WABA's phone numbers directly from Meta, including numbers whose Photon sender was disconnected. Ownership is photon for a number in this project's current Photon inventory and meta otherwise. Match a Photon SMS number by its E.164 phoneNumber and reuse its existing displayName when reconnecting. A null name is unavailable, not permission to choose a new name. A failed lookup returns an error rather than an empty list. Requires platforms:read on the path project.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.platforms.listWhatsappAccountPhoneNumbers(input: ListWhatsappAccountPhoneNumbersInput, options?: RequestOptions): Promise<ListWhatsappAccountPhoneNumbersOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.platforms.list_whatsapp_account_phone_numbers(input: ListWhatsappAccountPhoneNumbersInput) -> models.ListWhatsappAccountPhoneNumbersResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.list_whatsapp_account_phone_numbers(id: String).await -> Result<ResponseValue<types::ListWhatsappAccountPhoneNumbersResponse>, Error<ListWhatsappAccountPhoneNumbersError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.platforms.listWhatsappAccountPhoneNumbers({
+  path: {
+    id: "id",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import ListWhatsappAccountPhoneNumbersInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.platforms.list_whatsapp_account_phone_numbers(
+    ListWhatsappAccountPhoneNumbersInput.model_validate({
+        "path": {
+            "id": "id",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .list_whatsapp_account_phone_numbers("id".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "phoneNumbers": [
+    {
+      "displayName": null,
+      "ownership": "photon",
+      "phoneNumber": "string",
+      "phoneNumberId": "string"
+    }
+  ],
+  "wabaId": "string"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The current Meta number inventory for the connected WABA. ListWhatsappAccountPhoneNumbersResponse
+
+<ResponseField name="phoneNumbers" type={"array of WhatsappAccountPhoneNumber"} required>
+
+</ResponseField>
+
+<ResponseField name="wabaId" type={"string"} required>
+
+</ResponseField>
+

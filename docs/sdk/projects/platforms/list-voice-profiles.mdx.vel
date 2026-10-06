@@ -1,0 +1,132 @@
+---
+title: "List Voice profiles"
+icon: arrow-down-left
+description: "List Voice profiles: listVoiceProfiles in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{id}/platforms/voice/profiles`
+
+Lists reusable Voice profiles in this project. Requires platforms:read bound to the path project.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.platforms.listVoiceProfiles(input: ListVoiceProfilesInput, options?: RequestOptions): Promise<ListVoiceProfilesOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.platforms.list_voice_profiles(input: ListVoiceProfilesInput) -> models.VoiceProfilePage
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.list_voice_profiles(id: String, params: Option<ListVoiceProfilesParams>).await -> Result<ResponseValue<types::VoiceProfilePage>, Error<ListVoiceProfilesError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.platforms.listVoiceProfiles({
+  path: {
+    id: "id",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import ListVoiceProfilesInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.platforms.list_voice_profiles(
+    ListVoiceProfilesInput.model_validate({
+        "path": {
+            "id": "id",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .list_voice_profiles("id".to_owned(), None)
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "nextPageToken": "string",
+  "profiles": [
+    {
+      "configuration": {
+        "inbound": null,
+        "outbound": null
+      },
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "isDefault": true,
+      "lineCount": 0,
+      "mediaEncryption": "auto",
+      "name": "string",
+      "profileId": "string",
+      "projectId": "string",
+      "protocol": "sip",
+      "updatedAt": "2026-01-01T00:00:00.000Z",
+      "version": 1
+    }
+  ]
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+<ParamField query="default" type={"ListVoiceProfilesDefaultInput"}>
+
+</ParamField>
+
+<ParamField query="pageSize" type={"integer"}>
+
+</ParamField>
+
+<ParamField query="pageToken" type={"string"}>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** A page of Voice profiles. VoiceProfilePage
+
+<ResponseField name="nextPageToken" type={"string"}>
+
+</ResponseField>
+
+<ResponseField name="profiles" type={"array of VoiceProfile"} required>
+
+</ResponseField>
+

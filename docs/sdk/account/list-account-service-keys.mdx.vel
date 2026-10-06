@@ -1,0 +1,89 @@
+---
+title: "List Account Service Keys"
+icon: arrow-down-left
+description: "List Account Service Keys: listAccountServiceKeys in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/account/service-keys`
+
+Returns metadata for the authenticated account's unrevoked service keys, including expired keys, ordered newest first. Secret values are not returned; a key's credential is disclosed only when that key is created.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.account.listAccountServiceKeys(input?: ListAccountServiceKeysInput, options?: RequestOptions): Promise<ListAccountServiceKeysOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.account.list_account_service_keys(input: ListAccountServiceKeysInput | None = None) -> models.ListAccountServiceKeysResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.list_account_service_keys().await -> Result<ResponseValue<types::ListAccountServiceKeysResponse>, Error<ListAccountServiceKeysError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.account.listAccountServiceKeys();
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.account.list_account_service_keys()
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .list_account_service_keys()
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "serviceKeys": [
+    {
+      "accountId": "string",
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "expiresAt": null,
+      "name": "string",
+      "revokedAt": null,
+      "serviceKeyId": "string"
+    }
+  ]
+}
+```
+
+</ResponseExample>
+
+## Returns
+
+**`200`** Unrevoked Account Service Key metadata, including expired keys, newest first. ListAccountServiceKeysResponse
+
+<ResponseField name="serviceKeys" type={"array of AccountServiceKey"} required>
+
+</ResponseField>
+

@@ -1,0 +1,84 @@
+---
+title: "Revoke a connected application"
+icon: x
+description: "Revoke a connected application: revokeAuthorizedApplication in the TypeScript, Python and Rust clients."
+---
+
+`DELETE /v1/account/oauth/authorized-applications/{applicationId}`
+
+Revokes the authenticated user's grant for one OAuth application.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.account.revokeAuthorizedApplication(input: RevokeAuthorizedApplicationInput, options?: RequestOptions): Promise<RevokeAuthorizedApplicationOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.account.revoke_authorized_application(input: RevokeAuthorizedApplicationInput) -> None
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.revoke_authorized_application(application_id: String).await -> Result<ResponseValue<()>, Error<RevokeAuthorizedApplicationError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+await photon.account.revokeAuthorizedApplication({
+  path: {
+    applicationId: "applicationId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import RevokeAuthorizedApplicationInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+photon.account.revoke_authorized_application(
+    RevokeAuthorizedApplicationInput.model_validate({
+        "path": {
+            "applicationId": "applicationId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+client
+    .revoke_authorized_application("applicationId".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?;
+```
+
+</RequestExample>
+
+## Parameters
+
+<ParamField path="applicationId" type={"string"} required>
+Authorized application's id, prefixed with connect_app_. Use application.id from the list response, not its clientId or authorizationId.
+</ParamField>
+
+
+## Returns
+
+**`204`** OAuth application grant revoked. No body.
+

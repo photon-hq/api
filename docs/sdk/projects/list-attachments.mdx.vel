@@ -1,0 +1,146 @@
+---
+title: "List Project Attachments"
+icon: arrow-down-left
+description: "List Project Attachments: listAttachments in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{id}/attachments`
+
+Lists the Project's Attachment metadata, with optional time filters.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.listAttachments(input: ListAttachmentsInput, options?: RequestOptions): Promise<ListAttachmentsOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.list_attachments(input: ListAttachmentsInput) -> models.AttachmentPage
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.list_attachments(id: String, params: Option<ListAttachmentsParams>).await -> Result<ResponseValue<types::AttachmentPage>, Error<ListAttachmentsError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.listAttachments({
+  path: {
+    id: "id",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import ListAttachmentsInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.list_attachments(
+    ListAttachmentsInput.model_validate({
+        "path": {
+            "id": "id",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .list_attachments("id".to_owned(), None)
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "items": [
+    {
+      "contentType": "string",
+      "createdAt": "2026-01-01T00:00:00Z",
+      "filename": "string",
+      "id": "string",
+      "metadata": {},
+      "projectId": "string",
+      "sizeBytes": 1,
+      "updatedAt": "2026-01-01T00:00:00Z"
+    }
+  ],
+  "nextPageToken": "string"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+<ParamField query="createdBefore" type={"string (date-time)"}>
+Exclusive upper bound on createdAt, RFC 3339. Cannot combine with updatedAt bounds.
+</ParamField>
+
+<ParamField query="createdSince" type={"string (date-time)"}>
+Inclusive lower bound on createdAt, RFC 3339. Cannot combine with updatedAt bounds.
+</ParamField>
+
+<ParamField query="order" type={"SortOrder"}>
+Direction along orderBy; desc, the default, is newest first
+</ParamField>
+
+<ParamField query="orderBy" type={"TimestampOrderBy"}>
+Sort timestamp; defaults to the filtered timestamp, otherwise created_at. Must match the time bounds.
+</ParamField>
+
+<ParamField query="pageSize" type={"integer"}>
+Items per page. A value above 100 returns at most 100 items.
+</ParamField>
+
+<ParamField query="pageToken" type={"string"}>
+Token from nextPageToken. Keep the same Project and query.
+</ParamField>
+
+<ParamField query="updatedBefore" type={"string (date-time)"}>
+Exclusive upper bound on updatedAt, RFC 3339. Cannot combine with createdAt bounds.
+</ParamField>
+
+<ParamField query="updatedSince" type={"string (date-time)"}>
+Inclusive lower bound on updatedAt, RFC 3339. Cannot combine with createdAt bounds.
+</ParamField>
+
+
+## Returns
+
+**`200`** A page of Project Attachments in the requested order. AttachmentPage
+
+<ResponseField name="items" type={"array of Attachment"} required>
+
+</ResponseField>
+
+<ResponseField name="nextPageToken" type={"string"}>
+Continue with this token, even if items is empty. Omitted when no more pages remain.
+</ResponseField>
+

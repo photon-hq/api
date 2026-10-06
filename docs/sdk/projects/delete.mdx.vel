@@ -1,0 +1,167 @@
+---
+title: "Delete a project"
+icon: x
+description: "Delete a project: deleteProject in the TypeScript, Python and Rust clients."
+---
+
+`DELETE /v1/projects/{projectId}`
+
+Starts deletion of the identified project using a credential authorized for project management. Inspect the documented response and use getProjectClosureStatus with the organization and project identifiers to read closure progress. A project API key is not an accepted credential for this operation.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.delete(input: DeleteProjectInput, options?: RequestOptions): Promise<DeleteProjectOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.delete(input: DeleteProjectInput) -> models.Project
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.delete_project(idempotency_key: String, project_id: String).await -> Result<ResponseValue<types::Project>, Error<DeleteProjectError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.delete({
+  path: {
+    projectId: "projectId",
+  },
+  headers: {
+    idempotencyKey: "idempotencyKey",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import DeleteProjectInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.delete(
+    DeleteProjectInput.model_validate({
+        "path": {
+            "projectId": "projectId",
+        },
+        "headers": {
+            "Idempotency-Key": "idempotencyKey",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .delete_project("idempotencyKey".to_owned(), "projectId".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "agentProfile": {
+    "avatarUrl": "https://example.com",
+    "firstName": "string",
+    "lastName": null
+  },
+  "billingInitialization": "pending",
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "createdByAccountId": null,
+  "createdByActorId": null,
+  "createdByActorKind": null,
+  "deletedAt": null,
+  "name": "string",
+  "organizationId": "string",
+  "projectId": "string",
+  "slug": "string",
+  "updatedAt": "2026-01-01T00:00:00.000Z"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField header="Idempotency-Key" type={"string"} required>
+Identifies one logical mutation across retries.
+</ParamField>
+
+<ParamField path="projectId" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The deleted project tombstone. Project
+
+<ResponseField name="agentProfile" type={"AgentProfile"} required>
+
+</ResponseField>
+
+<ResponseField name="billingInitialization" type={"ProjectBillingInitialization"}>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="createdByAccountId" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="createdByActorId" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="createdByActorKind" type={"ProjectCreatedByActorKind | null"} required>
+
+</ResponseField>
+
+<ResponseField name="deletedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="name" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="slug" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+

@@ -1,0 +1,132 @@
+---
+title: "List connected applications"
+icon: arrow-down-left
+description: "List connected applications: listAuthorizedApplications in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/account/oauth/authorized-applications`
+
+Lists the OAuth applications authorized by the authenticated user.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.account.listAuthorizedApplications(input?: ListAuthorizedApplicationsInput, options?: RequestOptions): Promise<ListAuthorizedApplicationsOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.account.list_authorized_applications(input: ListAuthorizedApplicationsInput | None = None) -> models.ListAuthorizedApplicationsResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.list_authorized_applications(params: Option<ListAuthorizedApplicationsParams>).await -> Result<ResponseValue<types::ListAuthorizedApplicationsResponse>, Error<ListAuthorizedApplicationsError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.account.listAuthorizedApplications();
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.account.list_authorized_applications()
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .list_authorized_applications(None)
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "authorizedApplications": [
+    {
+      "application": {
+        "applicationType": "string",
+        "clientId": "string",
+        "createdAt": "2026-01-01T00:00:00.000Z",
+        "description": null,
+        "id": "string",
+        "isFirstParty": true,
+        "name": "string",
+        "redirectUris": [
+          {}
+        ],
+        "scopes": [
+          "string"
+        ],
+        "updatedAt": "2026-01-01T00:00:00.000Z",
+        "usesPkce": true
+      },
+      "authorizationId": "string",
+      "grantedScopes": [
+        "string"
+      ],
+      "oauthResource": null
+    }
+  ],
+  "listMetadata": {
+    "after": null,
+    "before": null
+  }
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField query="after" type={"string"}>
+Pagination cursor from listMetadata.after for the next page. Cannot be combined with before.
+</ParamField>
+
+<ParamField query="before" type={"string"}>
+Pagination cursor from listMetadata.before for the previous page. Cannot be combined with after.
+</ParamField>
+
+<ParamField query="limit" type={"integer"}>
+Maximum number of authorized applications to return, from 1 to 100. Omit to use the default page size.
+</ParamField>
+
+<ParamField query="order" type={"ListAuthorizedApplicationsOrder"}>
+Result ordering: normal, descending (desc), or ascending (asc). Omit to use the default order.
+</ParamField>
+
+
+## Returns
+
+**`200`** OAuth applications authorized by the authenticated user. ListAuthorizedApplicationsResponse
+
+<ResponseField name="authorizedApplications" type={"array of AuthorizedApplication"} required>
+One page of applications authorized by the authenticated user.
+</ResponseField>
+
+<ResponseField name="listMetadata" type={"ListAuthorizedApplicationsResponseListMetadata"} required>
+Pagination cursors to pass as after or before in the next list request.
+</ResponseField>
+

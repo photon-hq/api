@@ -1,0 +1,136 @@
+---
+title: "Redeem an approved installation credential"
+icon: arrow-up-right
+description: "Redeem an approved installation credential: redeemAppInstallationDelivery in the TypeScript, Python and Rust clients."
+---
+
+`POST /v1/installation-requests/redeem`
+
+The registered app backend authenticates with a signed client assertion and a single-use code. Plaintext is returned only once; retries return status and never create another credential.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.system.redeemAppInstallationDelivery(input: RedeemAppInstallationDeliveryInput, options?: RequestOptions): Promise<RedeemAppInstallationDeliveryOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.system.redeem_app_installation_delivery(input: RedeemAppInstallationDeliveryInput) -> models.RedeemAppInstallationDeliveryResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.redeem_app_installation_delivery(body: &types::RedeemAppInstallationDeliveryRequest).await -> Result<ResponseValue<types::RedeemAppInstallationDeliveryResponse>, Error<RedeemAppInstallationDeliveryError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon();
+const result = await photon.system.redeemAppInstallationDelivery({
+  body: {
+    appId: "appId",
+    clientAssertion: "clientAssertion",
+    code: "code",
+  },
+});
+```
+
+```python Python
+from photon_api import Photon
+from photon_api.rpc_generated import RedeemAppInstallationDeliveryInput
+
+photon = Photon()
+result = photon.system.redeem_app_installation_delivery(
+    RedeemAppInstallationDeliveryInput.model_validate({
+        "body": {
+            "appId": "appId",
+            "clientAssertion": "clientAssertion",
+            "code": "code",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::PhotonClientBuilder;
+
+let client = PhotonClientBuilder::new().build()?;
+let result = client
+    .redeem_app_installation_delivery(
+        &serde_json::from_value(serde_json::json!({
+            "appId": "appId",
+            "clientAssertion": "clientAssertion",
+            "code": "code",
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "clientId": "string",
+  "clientSecret": "string",
+  "installationId": "string",
+  "status": "created"
+}
+```
+
+</ResponseExample>
+
+## Body
+
+<ParamField body="appId" type={"string"} required>
+
+</ParamField>
+
+<ParamField body="clientAssertion" type={"string"} required>
+
+</ParamField>
+
+<ParamField body="code" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** First successful delivery or metadata-only operation status. RedeemAppInstallationDeliveryResponse
+
+**One of: CreatedAppInstallationDelivery**
+
+<ResponseField name="clientId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="clientSecret" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="installationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"\"created\""} required>
+
+</ResponseField>
+
+**One of: ExistingAppInstallationDelivery**
+
+<ResponseField name="installationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"ExistingAppInstallationDeliveryStatus"} required>
+
+</ResponseField>
+

@@ -1,0 +1,118 @@
+---
+title: "List webhook API versions"
+icon: arrow-down-left
+description: "List webhook API versions: listWebhookApiVersions in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{projectId}/webhooks/api-versions`
+
+Lists the published webhook payload API versions and their lifecycle metadata. The list is the same for every project. Use the selectable indicator when choosing a version for a destination. These payload dates are separate from SDK package versions. An authorized conditional request may return 304 without a response body.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.listWebhookApiVersions(input: ListWebhookApiVersionsInput, options?: RequestOptions): Promise<ListWebhookApiVersionsOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.list_webhook_api_versions(input: ListWebhookApiVersionsInput) -> models.ListWebhookApiVersionsResponse | None
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.list_webhook_api_versions(project_id: String).await -> Result<ResponseValue<ListWebhookApiVersionsResponse>, Error<ListWebhookApiVersionsError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.listWebhookApiVersions({
+  path: {
+    projectId: "projectId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import ListWebhookApiVersionsInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.list_webhook_api_versions(
+    ListWebhookApiVersionsInput.model_validate({
+        "path": {
+            "projectId": "projectId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .list_webhook_api_versions("projectId".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "apiVersions": [
+    {
+      "retirement": null,
+      "selectable": true,
+      "status": "preview",
+      "successor": null,
+      "version": "2026-01-01"
+    }
+  ],
+  "contractNamespace": "@photon-hq/contracts",
+  "packageVersion": "string"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="projectId" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** Published webhook payload API versions. ListWebhookApiVersionsResponse
+
+<ResponseField name="apiVersions" type={"array of WebhookApiVersion"} required>
+
+</ResponseField>
+
+<ResponseField name="contractNamespace" type={"\"@photon-hq/contracts\""} required>
+
+</ResponseField>
+
+<ResponseField name="packageVersion" type={"string"} required>
+
+</ResponseField>
+
+**`304`** The authorized cached representation is current; no response body. No body.
+

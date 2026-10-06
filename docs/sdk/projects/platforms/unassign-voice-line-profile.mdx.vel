@@ -1,0 +1,100 @@
+---
+title: "Unassign Voice line profile"
+icon: x
+description: "Unassign Voice line profile: unassignVoiceLineProfile in the TypeScript, Python and Rust clients."
+---
+
+`DELETE /v1/projects/{id}/platforms/voice/lines/{resourceId}/profile`
+
+Removes a line's explicit override when the resource version matches so the line follows the project default. Profiles and the pstn_voice ability are unchanged. Requires platforms:write bound to the path project.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.platforms.unassignVoiceLineProfile(input: UnassignVoiceLineProfileInput, options?: RequestOptions): Promise<UnassignVoiceLineProfileOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.platforms.unassign_voice_line_profile(input: UnassignVoiceLineProfileInput) -> None
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.unassign_voice_line_profile(id: String, resource_id: String, expected_version: i64).await -> Result<ResponseValue<()>, Error<UnassignVoiceLineProfileError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+await photon.projects.platforms.unassignVoiceLineProfile({
+  path: {
+    id: "id",
+    resourceId: "resourceId",
+  },
+  query: {
+    expectedVersion: 1,
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import UnassignVoiceLineProfileInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+photon.projects.platforms.unassign_voice_line_profile(
+    UnassignVoiceLineProfileInput.model_validate({
+        "path": {
+            "id": "id",
+            "resourceId": "resourceId",
+        },
+        "query": {
+            "expectedVersion": 1,
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+client
+    .unassign_voice_line_profile("id".to_owned(), "resourceId".to_owned(), 1)
+    .await
+    .map_err(|error| format!("{error:?}"))?;
+```
+
+</RequestExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+<ParamField path="resourceId" type={"string"} required>
+
+</ParamField>
+
+<ParamField query="expectedVersion" type={"integer"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`204`** The Voice profile was unassigned. No body.
+

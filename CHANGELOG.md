@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.3 (2026-10-06)
+
+
+### Features
+
+* **docs:** generate the SDK reference and rebuild the docs after each release
+
 ## 0.2.2 (2026-10-04)
 
 

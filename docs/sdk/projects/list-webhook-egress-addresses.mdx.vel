@@ -1,0 +1,102 @@
+---
+title: "List webhook egress addresses"
+icon: arrow-down-left
+description: "List webhook egress addresses: listWebhookEgressAddresses in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{projectId}/webhooks/egress-addresses`
+
+Returns the public network addresses from which this environment sends webhook deliveries. Use this information when configuring the receiving system's network allowlist. The result is environment-specific and does not describe the API service's ingress addresses.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.listWebhookEgressAddresses(input: ListWebhookEgressAddressesInput, options?: RequestOptions): Promise<ListWebhookEgressAddressesOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.list_webhook_egress_addresses(input: ListWebhookEgressAddressesInput) -> models.ListWebhookEgressAddressesResponse | None
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.list_webhook_egress_addresses(project_id: String).await -> Result<ResponseValue<ListWebhookEgressAddressesResponse>, Error<ListWebhookEgressAddressesError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.listWebhookEgressAddresses({
+  path: {
+    projectId: "projectId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import ListWebhookEgressAddressesInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.list_webhook_egress_addresses(
+    ListWebhookEgressAddressesInput.model_validate({
+        "path": {
+            "projectId": "projectId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .list_webhook_egress_addresses("projectId".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "ipAddresses": [
+    "string"
+  ]
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="projectId" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The public addresses webhook deliveries originate from in this environment. ListWebhookEgressAddressesResponse
+
+<ResponseField name="ipAddresses" type={"array of string (ipv4)"} required>
+Every public IPv4 address webhook deliveries can originate from. Allow-list all of them; deliveries are spread across every address.
+</ResponseField>
+
+**`304`** The authorized cached representation is current; no response body. No body.
+
