@@ -1,0 +1,139 @@
+---
+title: "Get attachment"
+icon: arrow-down-left
+description: "Get attachment: getAttachment in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{id}/attachments/{attachmentId}`
+
+Returns an Attachment's metadata. Use the content endpoint to download its bytes.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.getAttachment(input: GetAttachmentInput, options?: RequestOptions): Promise<GetAttachmentOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.get_attachment(input: GetAttachmentInput) -> models.Attachment
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.get_attachment(attachment_id: String, id: String).await -> Result<ResponseValue<types::Attachment>, Error<GetAttachmentError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.getAttachment({
+  path: {
+    attachmentId: "attachmentId",
+    id: "id",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import GetAttachmentInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.get_attachment(
+    GetAttachmentInput.model_validate({
+        "path": {
+            "attachmentId": "attachmentId",
+            "id": "id",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .get_attachment("attachmentId".to_owned(), "id".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "contentType": "string",
+  "createdAt": "2026-01-01T00:00:00Z",
+  "filename": "string",
+  "id": "string",
+  "metadata": {},
+  "projectId": "string",
+  "sizeBytes": 1,
+  "updatedAt": "2026-01-01T00:00:00Z"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="attachmentId" type={"string"} required>
+
+</ParamField>
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The Attachment resource. Attachment
+
+<ResponseField name="contentType" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="filename" type={"string"}>
+
+</ResponseField>
+
+<ResponseField name="id" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="metadata" type={"object"}>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="sizeBytes" type={"integer"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+

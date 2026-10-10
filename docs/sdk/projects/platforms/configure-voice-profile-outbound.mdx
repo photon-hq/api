@@ -1,0 +1,213 @@
+---
+title: "Configure Voice outbound credential"
+icon: pencil
+description: "Configure Voice outbound credential: configureVoiceProfileOutbound in the TypeScript, Python and Rust clients."
+---
+
+`PUT /v1/projects/{id}/platforms/voice/profiles/{profileId}/outbound`
+
+Configures a SIP credential for outbound calls from a profile when the shared profile version matches. Outbound calls are paid usage, so the organization needs a payment method and no invoices overdue 7 days or more; otherwise this returns 402 ENTITLEMENT_REQUIRED with a reason. authentication.algorithm is required: SHA-256 is recommended, while MD5 is a weaker legacy option supported over UDP, TCP, and TLS; TLS is strongly recommended because UDP and TCP do not encrypt SIP signaling. The profileId may identify the default or an additional profile. The new password is returned once and is never recoverable. Requires platforms:write bound to the path project.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.platforms.configureVoiceProfileOutbound(input: ConfigureVoiceProfileOutboundInput, options?: RequestOptions): Promise<ConfigureVoiceProfileOutboundOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.platforms.configure_voice_profile_outbound(input: ConfigureVoiceProfileOutboundInput) -> models.ConfigureVoiceProfileOutboundResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.configure_voice_profile_outbound(idempotency_key: String, id: String, profile_id: String, body: &types::ConfigureVoiceProfileOutboundRequest).await -> Result<ResponseValue<ConfigureVoiceProfileOutboundResponse>, Error<ConfigureVoiceProfileOutboundError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.platforms.configureVoiceProfileOutbound({
+  path: {
+    id: "id",
+    profileId: "profileId",
+  },
+  headers: {
+    idempotencyKey: "idempotencyKey",
+  },
+  body: {
+    authentication: {
+      algorithm: "sha-256",
+    },
+    expectedVersion: 1,
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import ConfigureVoiceProfileOutboundInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.platforms.configure_voice_profile_outbound(
+    ConfigureVoiceProfileOutboundInput.model_validate({
+        "path": {
+            "id": "id",
+            "profileId": "profileId",
+        },
+        "headers": {
+            "Idempotency-Key": "idempotencyKey",
+        },
+        "body": {
+            "authentication": {
+                "algorithm": "sha-256",
+            },
+            "expectedVersion": 1,
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .configure_voice_profile_outbound(
+        "idempotencyKey".to_owned(),
+        "id".to_owned(),
+        "profileId".to_owned(),
+        &serde_json::from_value(serde_json::json!({
+            "authentication": {
+                "algorithm": "sha-256",
+            },
+            "expectedVersion": 1,
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "outbound": {
+    "authentication": {
+      "algorithm": "sha-256",
+      "previousPasswordValidUntil": null,
+      "username": "string",
+      "validFrom": "2026-01-01T00:00:00.000Z"
+    },
+    "connection": {
+      "endpoints": [
+        {
+          "host": "string",
+          "port": 1,
+          "transport": "udp"
+        }
+      ],
+      "realm": "string"
+    }
+  },
+  "password": null,
+  "profileVersion": 1
+}
+```
+
+```json 201
+{
+  "outbound": {
+    "authentication": {
+      "algorithm": "sha-256",
+      "previousPasswordValidUntil": null,
+      "username": "string",
+      "validFrom": "2026-01-01T00:00:00.000Z"
+    },
+    "connection": {
+      "endpoints": [
+        {
+          "host": "string",
+          "port": 1,
+          "transport": "udp"
+        }
+      ],
+      "realm": "string"
+    }
+  },
+  "password": null,
+  "profileVersion": 1
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField header="Idempotency-Key" type={"string"} required>
+Identifies one logical mutation across retries.
+</ParamField>
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+<ParamField path="profileId" type={"string"} required>
+
+</ParamField>
+
+
+## Body
+
+<ParamField body="authentication" type={"SipOutboundAuthenticationPolicy"} required>
+
+</ParamField>
+
+<ParamField body="expectedVersion" type={"integer"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** An idempotent replay with an explicit null password. ConfigureVoiceProfileOutboundResponse
+
+<ResponseField name="outbound" type={"SipOutboundConfiguration"} required>
+
+</ResponseField>
+
+<ResponseField name="password" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="profileVersion" type={"integer"} required>
+
+</ResponseField>
+
+**`201`** The configured outbound connection and display-once password. ConfigureVoiceProfileOutboundResponse
+
+<ResponseField name="outbound" type={"SipOutboundConfiguration"} required>
+
+</ResponseField>
+
+<ResponseField name="password" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="profileVersion" type={"integer"} required>
+
+</ResponseField>
+

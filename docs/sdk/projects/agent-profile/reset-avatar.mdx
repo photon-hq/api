@@ -1,0 +1,118 @@
+---
+title: "Reset agent avatar"
+icon: x
+description: "Reset agent avatar: resetAgentProfileAvatar in the TypeScript, Python and Rust clients."
+---
+
+`DELETE /v1/projects/{projectId}/agent-profile/avatar`
+
+Replaces the selected project's agent avatar with the project's default avatar, a generated planet image derived from the project ID, and returns the updated agent profile. The reset does not restore an earlier avatar: a custom avatar it replaces is discarded and must be uploaded and committed again to use it. When the default avatar is already in use, the profile is returned unchanged. This does not change the account's personal profile picture. Supply the required Idempotency-Key header.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.agentProfile.resetAvatar(input: ResetAgentProfileAvatarInput, options?: RequestOptions): Promise<ResetAgentProfileAvatarOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.agent_profile.reset_avatar(input: ResetAgentProfileAvatarInput) -> models.AgentProfile
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.reset_agent_profile_avatar(idempotency_key: String, project_id: String).await -> Result<ResponseValue<types::AgentProfile>, Error<ResetAgentProfileAvatarError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.agentProfile.resetAvatar({
+  path: {
+    projectId: "projectId",
+  },
+  headers: {
+    idempotencyKey: "idempotencyKey",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import ResetAgentProfileAvatarInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.agent_profile.reset_avatar(
+    ResetAgentProfileAvatarInput.model_validate({
+        "path": {
+            "projectId": "projectId",
+        },
+        "headers": {
+            "Idempotency-Key": "idempotencyKey",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .reset_agent_profile_avatar("idempotencyKey".to_owned(), "projectId".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "avatarUrl": "https://example.com",
+  "firstName": "string",
+  "lastName": null
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField header="Idempotency-Key" type={"string"} required>
+Identifies one logical mutation across retries.
+</ParamField>
+
+<ParamField path="projectId" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The agent profile with the project's default avatar. AgentProfile
+
+<ResponseField name="avatarUrl" type={"string (uri)"} required>
+
+</ResponseField>
+
+<ResponseField name="firstName" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="lastName" type={"string | null"} required>
+
+</ResponseField>
+

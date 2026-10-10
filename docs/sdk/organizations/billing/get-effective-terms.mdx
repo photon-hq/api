@@ -1,0 +1,151 @@
+---
+title: "Get the project's effective billing terms"
+icon: arrow-down-left
+description: "Get the project's effective billing terms: getEffectiveTerms in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/organizations/{organizationId}/billing/projects/{projectId}/terms`
+
+Returns what the selected project is billed on now, per category it holds: the plan as its subscription has it, with any override applied, each fixed charge at the subscription's price and quantity, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. It also returns the credit the paying organization holds on credit notes, such as the unused time of a plan an upgrade replaced; it offsets that organization's next invoices. Supply both organizationId and projectId; the organization must pay for the project. This operation does not change billing.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.billing.getEffectiveTerms(input: GetEffectiveTermsInput, options?: RequestOptions): Promise<GetEffectiveTermsOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.billing.get_effective_terms(input: GetEffectiveTermsInput) -> models.GetEffectiveTermsResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.get_effective_terms(organization_id: String, project_id: String).await -> Result<ResponseValue<types::GetEffectiveTermsResponse>, Error<GetEffectiveTermsError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.billing.getEffectiveTerms({
+  path: {
+    organizationId: "organizationId",
+    projectId: "projectId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import GetEffectiveTermsInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.billing.get_effective_terms(
+    GetEffectiveTermsInput.model_validate({
+        "path": {
+            "organizationId": "organizationId",
+            "projectId": "projectId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .get_effective_terms("organizationId".to_owned(), "projectId".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "creditBalance": null,
+  "subscriptions": [
+    {
+      "cancelsAt": null,
+      "category": "string",
+      "currentPeriodEnd": "string",
+      "currentPeriodStart": "string",
+      "nextBillingAt": "string",
+      "paymentMode": "automatic",
+      "plan": {
+        "baseAmountCents": 0,
+        "categoryDisplayName": null,
+        "currency": "string",
+        "description": null,
+        "entitlements": [
+          {}
+        ],
+        "fixedCharges": [
+          {}
+        ],
+        "interval": "weekly",
+        "isDefault": true,
+        "minimumCommitment": null,
+        "name": "string",
+        "payInAdvance": true,
+        "planCode": "string",
+        "tier": null,
+        "tierDisplayName": null,
+        "usageCharges": [
+          {}
+        ],
+        "usageThresholds": [
+          {}
+        ]
+      },
+      "planSource": "catalog",
+      "scheduledPlanChange": null
+    }
+  ],
+  "timeZone": "string"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="organizationId" type={"string"} required>
+
+</ParamField>
+
+<ParamField path="projectId" type={"string"} required>
+The project being billed.
+</ParamField>
+
+
+## Returns
+
+**`200`** The project's effective billing terms, per category. GetEffectiveTermsResponse
+
+<ResponseField name="creditBalance" type={"CreditBalance | null"} required>
+Credit the paying organization holds on credit notes, such as the unused time of a plan an upgrade replaced. It offsets that organization's next invoices of any kind except one-off invoices. Prepaid wallet credit is separate. Null when it holds none.
+</ResponseField>
+
+<ResponseField name="subscriptions" type={"array of SubscriptionTerms"} required>
+One entry per category the project holds, by category. Empty means it holds none.
+</ResponseField>
+
+<ResponseField name="timeZone" type={"string"} required>
+The IANA time zone the payer is billed in, e.g. America/Los_Angeles. Billing periods start and end at its midnights, so read their calendar dates in it.
+</ResponseField>
+

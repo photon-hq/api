@@ -1,0 +1,126 @@
+---
+title: "Get SMS line campaign assignment"
+icon: arrow-down-left
+description: "Get SMS line campaign assignment: getSmsLineCampaignAssignment in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{id}/platforms/sms/lines/{resourceId}/campaign`
+
+Read the last confirmed campaign and current eligibility. Follow changes through their operations. Eligibility is a control-plane assessment, not a delivery or recipient-consent guarantee.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.platforms.getSmsLineCampaignAssignment(input: GetSmsLineCampaignAssignmentInput, options?: RequestOptions): Promise<GetSmsLineCampaignAssignmentOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.platforms.get_sms_line_campaign_assignment(input: GetSmsLineCampaignAssignmentInput) -> models.GetSmsLineCampaignAssignmentResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.get_sms_line_campaign_assignment(id: String, resource_id: String).await -> Result<ResponseValue<types::GetSmsLineCampaignAssignmentResponse>, Error<GetSmsLineCampaignAssignmentError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.platforms.getSmsLineCampaignAssignment({
+  path: {
+    id: "id",
+    resourceId: "resourceId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import GetSmsLineCampaignAssignmentInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.platforms.get_sms_line_campaign_assignment(
+    GetSmsLineCampaignAssignmentInput.model_validate({
+        "path": {
+            "id": "id",
+            "resourceId": "resourceId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .get_sms_line_campaign_assignment("id".to_owned(), "resourceId".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "campaign": null,
+  "eligibility": "eligible",
+  "reasonCode": null,
+  "resourceId": "string",
+  "version": 1
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+<ParamField path="resourceId" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** Current assignment, including an untouched version of 1. GetSmsLineCampaignAssignmentResponse
+
+Headers: `Cache-Control`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
+<ResponseField name="campaign" type={"SmsLineCampaign | null"} required>
+
+</ResponseField>
+
+<ResponseField name="eligibility" type={"SmsLineCampaignEligibility"} required>
+
+</ResponseField>
+
+<ResponseField name="reasonCode" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="resourceId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="version" type={"integer"} required>
+
+</ResponseField>
+

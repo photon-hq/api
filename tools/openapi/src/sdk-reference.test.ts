@@ -179,12 +179,12 @@ test("a resource page lists its methods per language and the models they return"
 test("pages cover every method and nav.json keeps the guide while replacing the SDK reference", () => {
   const tree = resources(document, manifest, sources);
   assert.deepEqual([...sdkReferencePages(document, tree).keys()].sort(), [
-    "projects/get.mdx.vel",
-    "projects/index.mdx.vel",
-    "projects/platforms/imessage/assignments/index.mdx.vel",
-    "projects/platforms/imessage/assignments/list.mdx.vel",
-    "projects/platforms/imessage/index.mdx.vel",
-    "projects/platforms/index.mdx.vel",
+    "projects/get.mdx",
+    "projects/index.mdx",
+    "projects/platforms/imessage/assignments/index.mdx",
+    "projects/platforms/imessage/assignments/list.mdx",
+    "projects/platforms/imessage/index.mdx",
+    "projects/platforms/index.mdx",
   ]);
   const guide = { source: "api-client", groups: [{ group: "Get started", pages: ["api-client/index"] }] };
   const nav = withSdkNav(guide, tree);

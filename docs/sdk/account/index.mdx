@@ -1,0 +1,418 @@
+---
+title: "Account"
+description: "The Account resource in the TypeScript, Python and Rust clients."
+---
+
+## Methods
+
+<Tabs>
+<Tab title="TypeScript">
+**[List Account Service Keys](/api-client/sdk/account/list-account-service-keys)**
+
+```typescript TypeScript
+photon.account.listAccountServiceKeys(input?: ListAccountServiceKeysInput, options?: RequestOptions): Promise<ListAccountServiceKeysOutput>
+```
+`GET /v1/account/service-keys`
+
+**[List connected applications](/api-client/sdk/account/list-authorized-applications)**
+
+```typescript TypeScript
+photon.account.listAuthorizedApplications(input?: ListAuthorizedApplicationsInput, options?: RequestOptions): Promise<ListAuthorizedApplicationsOutput>
+```
+`GET /v1/account/oauth/authorized-applications`
+
+**[Get account](/api-client/sdk/account/get)**
+
+```typescript TypeScript
+photon.account.get(input?: GetAccountInput, options?: RequestOptions): Promise<GetAccountOutput>
+```
+`GET /v1/account`
+
+**[Create Account Service Key](/api-client/sdk/account/create-account-service-key)**
+
+```typescript TypeScript
+photon.account.createAccountServiceKey(input: CreateAccountServiceKeyInput, options?: RequestOptions): Promise<CreateAccountServiceKeyOutput>
+```
+`POST /v1/account/service-keys`
+
+**[Create profile picture upload](/api-client/sdk/account/create-profile-picture-upload)**
+
+```typescript TypeScript
+photon.account.createProfilePictureUpload(input: CreateAccountProfilePictureUploadInput, options?: RequestOptions): Promise<CreateAccountProfilePictureUploadOutput>
+```
+`POST /v1/account/profile-picture/uploads`
+
+**[Start phone verification](/api-client/sdk/account/start-phone-verification)**
+
+```typescript TypeScript
+photon.account.startPhoneVerification(input: StartAccountPhoneVerificationInput, options?: RequestOptions): Promise<StartAccountPhoneVerificationOutput>
+```
+`POST /v1/account/phone/verifications`
+
+**[Commit profile picture](/api-client/sdk/account/commit-profile-picture)**
+
+```typescript TypeScript
+photon.account.commitProfilePicture(input: CommitAccountProfilePictureInput, options?: RequestOptions): Promise<CommitAccountProfilePictureOutput>
+```
+`PUT /v1/account/profile-picture`
+
+**[Confirm phone verification](/api-client/sdk/account/confirm-phone-verification)**
+
+```typescript TypeScript
+photon.account.confirmPhoneVerification(input: ConfirmAccountPhoneVerificationInput, options?: RequestOptions): Promise<ConfirmAccountPhoneVerificationOutput>
+```
+`PUT /v1/account/phone`
+
+**[Update account](/api-client/sdk/account/update)**
+
+```typescript TypeScript
+photon.account.update(input: UpdateAccountInput, options?: RequestOptions): Promise<UpdateAccountOutput>
+```
+`PATCH /v1/account`
+
+**[Delete account](/api-client/sdk/account/delete)**
+
+```typescript TypeScript
+photon.account.delete(input?: DeleteAccountInput, options?: RequestOptions): Promise<DeleteAccountOutput>
+```
+`DELETE /v1/account`
+
+**[Remove profile picture](/api-client/sdk/account/reset-profile-picture)**
+
+```typescript TypeScript
+photon.account.resetProfilePicture(input: ResetAccountProfilePictureInput, options?: RequestOptions): Promise<ResetAccountProfilePictureOutput>
+```
+`DELETE /v1/account/profile-picture`
+
+**[Revoke Account Service Key](/api-client/sdk/account/revoke-account-service-key)**
+
+```typescript TypeScript
+photon.account.revokeAccountServiceKey(input: RevokeAccountServiceKeyInput, options?: RequestOptions): Promise<RevokeAccountServiceKeyOutput>
+```
+`DELETE /v1/account/service-keys/{serviceKeyId}`
+
+**[Revoke connected application](/api-client/sdk/account/revoke-authorized-application)**
+
+```typescript TypeScript
+photon.account.revokeAuthorizedApplication(input: RevokeAuthorizedApplicationInput, options?: RequestOptions): Promise<RevokeAuthorizedApplicationOutput>
+```
+`DELETE /v1/account/oauth/authorized-applications/{applicationId}`
+
+</Tab>
+<Tab title="Python">
+**[List Account Service Keys](/api-client/sdk/account/list-account-service-keys)**
+
+```python Python
+photon.account.list_account_service_keys(input: ListAccountServiceKeysInput | None = None) -> models.ListAccountServiceKeysResponse
+```
+`GET /v1/account/service-keys`
+
+**[List connected applications](/api-client/sdk/account/list-authorized-applications)**
+
+```python Python
+photon.account.list_authorized_applications(input: ListAuthorizedApplicationsInput | None = None) -> models.ListAuthorizedApplicationsResponse
+```
+`GET /v1/account/oauth/authorized-applications`
+
+**[Get account](/api-client/sdk/account/get)**
+
+```python Python
+photon.account.get(input: GetAccountInput | None = None) -> models.Account
+```
+`GET /v1/account`
+
+**[Create Account Service Key](/api-client/sdk/account/create-account-service-key)**
+
+```python Python
+photon.account.create_account_service_key(input: CreateAccountServiceKeyInput) -> models.CreateAccountServiceKeyResponse
+```
+`POST /v1/account/service-keys`
+
+**[Create profile picture upload](/api-client/sdk/account/create-profile-picture-upload)**
+
+```python Python
+photon.account.create_profile_picture_upload(input: CreateAccountProfilePictureUploadInput) -> models.ProfilePictureUpload
+```
+`POST /v1/account/profile-picture/uploads`
+
+**[Start phone verification](/api-client/sdk/account/start-phone-verification)**
+
+```python Python
+photon.account.start_phone_verification(input: StartAccountPhoneVerificationInput) -> models.StartAccountPhoneVerificationResponse
+```
+`POST /v1/account/phone/verifications`
+
+**[Commit profile picture](/api-client/sdk/account/commit-profile-picture)**
+
+```python Python
+photon.account.commit_profile_picture(input: CommitAccountProfilePictureInput) -> models.Account
+```
+`PUT /v1/account/profile-picture`
+
+**[Confirm phone verification](/api-client/sdk/account/confirm-phone-verification)**
+
+```python Python
+photon.account.confirm_phone_verification(input: ConfirmAccountPhoneVerificationInput) -> models.Account
+```
+`PUT /v1/account/phone`
+
+**[Update account](/api-client/sdk/account/update)**
+
+```python Python
+photon.account.update(input: UpdateAccountInput) -> models.Account
+```
+`PATCH /v1/account`
+
+**[Delete account](/api-client/sdk/account/delete)**
+
+```python Python
+photon.account.delete(input: DeleteAccountInput | None = None) -> models.Account
+```
+`DELETE /v1/account`
+
+**[Remove profile picture](/api-client/sdk/account/reset-profile-picture)**
+
+```python Python
+photon.account.reset_profile_picture(input: ResetAccountProfilePictureInput) -> models.Account
+```
+`DELETE /v1/account/profile-picture`
+
+**[Revoke Account Service Key](/api-client/sdk/account/revoke-account-service-key)**
+
+```python Python
+photon.account.revoke_account_service_key(input: RevokeAccountServiceKeyInput) -> models.RevokeAccountServiceKeyResponse
+```
+`DELETE /v1/account/service-keys/{serviceKeyId}`
+
+**[Revoke connected application](/api-client/sdk/account/revoke-authorized-application)**
+
+```python Python
+photon.account.revoke_authorized_application(input: RevokeAuthorizedApplicationInput) -> None
+```
+`DELETE /v1/account/oauth/authorized-applications/{applicationId}`
+
+</Tab>
+<Tab title="Rust">
+**[List Account Service Keys](/api-client/sdk/account/list-account-service-keys)**
+
+```rust Rust
+client.list_account_service_keys().await -> Result<ResponseValue<types::ListAccountServiceKeysResponse>, Error<ListAccountServiceKeysError>>
+```
+`GET /v1/account/service-keys`
+
+**[List connected applications](/api-client/sdk/account/list-authorized-applications)**
+
+```rust Rust
+client.list_authorized_applications(params: Option<ListAuthorizedApplicationsParams>).await -> Result<ResponseValue<types::ListAuthorizedApplicationsResponse>, Error<ListAuthorizedApplicationsError>>
+```
+`GET /v1/account/oauth/authorized-applications`
+
+**[Get account](/api-client/sdk/account/get)**
+
+```rust Rust
+client.get_account().await -> Result<ResponseValue<types::Account>, Error<GetAccountError>>
+```
+`GET /v1/account`
+
+**[Create Account Service Key](/api-client/sdk/account/create-account-service-key)**
+
+```rust Rust
+client.create_account_service_key(idempotency_key: String, body: &types::CreateAccountServiceKeyRequest).await -> Result<ResponseValue<types::CreateAccountServiceKeyResponse>, Error<CreateAccountServiceKeyError>>
+```
+`POST /v1/account/service-keys`
+
+**[Create profile picture upload](/api-client/sdk/account/create-profile-picture-upload)**
+
+```rust Rust
+client.create_account_profile_picture_upload(body: &types::ProfilePictureUploadRequest).await -> Result<ResponseValue<types::ProfilePictureUpload>, Error<CreateAccountProfilePictureUploadError>>
+```
+`POST /v1/account/profile-picture/uploads`
+
+**[Start phone verification](/api-client/sdk/account/start-phone-verification)**
+
+```rust Rust
+client.start_account_phone_verification(body: &types::StartAccountPhoneVerificationRequest).await -> Result<ResponseValue<types::StartAccountPhoneVerificationResponse>, Error<StartAccountPhoneVerificationError>>
+```
+`POST /v1/account/phone/verifications`
+
+**[Commit profile picture](/api-client/sdk/account/commit-profile-picture)**
+
+```rust Rust
+client.commit_account_profile_picture(idempotency_key: String, body: &types::CommitAccountProfilePictureRequest).await -> Result<ResponseValue<types::Account>, Error<CommitAccountProfilePictureError>>
+```
+`PUT /v1/account/profile-picture`
+
+**[Confirm phone verification](/api-client/sdk/account/confirm-phone-verification)**
+
+```rust Rust
+client.confirm_account_phone_verification(body: &types::ConfirmAccountPhoneVerificationRequest).await -> Result<ResponseValue<types::Account>, Error<ConfirmAccountPhoneVerificationError>>
+```
+`PUT /v1/account/phone`
+
+**[Update account](/api-client/sdk/account/update)**
+
+```rust Rust
+client.update_account(idempotency_key: String, body: &types::UpdateAccountRequest).await -> Result<ResponseValue<types::Account>, Error<UpdateAccountError>>
+```
+`PATCH /v1/account`
+
+**[Delete account](/api-client/sdk/account/delete)**
+
+```rust Rust
+client.delete_account().await -> Result<ResponseValue<types::Account>, Error<DeleteAccountError>>
+```
+`DELETE /v1/account`
+
+**[Remove profile picture](/api-client/sdk/account/reset-profile-picture)**
+
+```rust Rust
+client.reset_account_profile_picture(idempotency_key: String).await -> Result<ResponseValue<types::Account>, Error<ResetAccountProfilePictureError>>
+```
+`DELETE /v1/account/profile-picture`
+
+**[Revoke Account Service Key](/api-client/sdk/account/revoke-account-service-key)**
+
+```rust Rust
+client.revoke_account_service_key(idempotency_key: String, service_key_id: String).await -> Result<ResponseValue<types::RevokeAccountServiceKeyResponse>, Error<RevokeAccountServiceKeyError>>
+```
+`DELETE /v1/account/service-keys/{serviceKeyId}`
+
+**[Revoke connected application](/api-client/sdk/account/revoke-authorized-application)**
+
+```rust Rust
+client.revoke_authorized_application(application_id: String).await -> Result<ResponseValue<()>, Error<RevokeAuthorizedApplicationError>>
+```
+`DELETE /v1/account/oauth/authorized-applications/{applicationId}`
+
+</Tab>
+</Tabs>
+
+## Models
+
+### ListAccountServiceKeysResponse
+
+
+
+<ResponseField name="serviceKeys" type={"array of AccountServiceKey"} required>
+
+</ResponseField>
+
+
+### ListAuthorizedApplicationsResponse
+
+
+
+<ResponseField name="authorizedApplications" type={"array of AuthorizedApplication"} required>
+One page of applications authorized by the authenticated user.
+</ResponseField>
+
+<ResponseField name="listMetadata" type={"ListAuthorizedApplicationsResponseListMetadata"} required>
+Pagination cursors to pass as after or before in the next list request.
+</ResponseField>
+
+
+### Account
+
+
+
+<ResponseField name="accountId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="deletedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="email" type={"string (email)"} required>
+
+</ResponseField>
+
+<ResponseField name="firstName" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="lastName" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="phoneNumber" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="phoneVerifiedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="pictureUrl" type={"string (uri)"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+
+### CreateAccountServiceKeyResponse
+
+
+
+<ResponseField name="secret" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="serviceKey" type={"AccountServiceKey"} required>
+
+</ResponseField>
+
+
+### ProfilePictureUpload
+
+
+
+<ResponseField name="expiresAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="formFields" type={"ProfilePictureUploadFormFields"} required>
+
+</ResponseField>
+
+<ResponseField name="uploadId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="uploadUrl" type={"string (uri)"} required>
+
+</ResponseField>
+
+
+### StartAccountPhoneVerificationResponse
+
+
+
+<ResponseField name="channel" type={"\"sms\""} required>
+
+</ResponseField>
+
+<ResponseField name="expiresAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="resendAvailableAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+
+### RevokeAccountServiceKeyResponse
+
+
+
+<ResponseField name="serviceKey" type={"AccountServiceKey"} required>
+
+</ResponseField>
+
+

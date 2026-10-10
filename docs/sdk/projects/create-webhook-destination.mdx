@@ -1,0 +1,175 @@
+---
+title: "Create webhook destination"
+icon: arrow-up-right
+description: "Create webhook destination: createWebhookDestination in the TypeScript, Python and Rust clients."
+---
+
+`POST /v1/projects/{projectId}/webhooks/destinations`
+
+Creates a webhook destination for the selected project using its URL, payload API version, event selection and other documented settings. The response includes the signing secret, which is returned only in this response and in idempotent replays of it, never by destination reads; store it securely for signature verification. The API version must be selectable and selected event types must belong to that version's catalog. Supply the required Idempotency-Key header.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.createWebhookDestination(input: CreateWebhookDestinationInput, options?: RequestOptions): Promise<CreateWebhookDestinationOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.create_webhook_destination(input: CreateWebhookDestinationInput) -> models.CreateWebhookDestinationResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.create_webhook_destination(idempotency_key: String, project_id: String, body: &types::CreateWebhookDestinationRequest).await -> Result<ResponseValue<types::CreateWebhookDestinationResponse>, Error<CreateWebhookDestinationError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.createWebhookDestination({
+  path: {
+    projectId: "projectId",
+  },
+  headers: {
+    idempotencyKey: "idempotencyKey",
+  },
+  body: {
+    apiVersion: "2026-01-01",
+    enabledEvents: [],
+    name: "name",
+    url: "https://example.com",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import CreateWebhookDestinationInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.create_webhook_destination(
+    CreateWebhookDestinationInput.model_validate({
+        "path": {
+            "projectId": "projectId",
+        },
+        "headers": {
+            "Idempotency-Key": "idempotencyKey",
+        },
+        "body": {
+            "apiVersion": "2026-01-01",
+            "enabledEvents": [],
+            "name": "name",
+            "url": "https://example.com",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .create_webhook_destination(
+        "idempotencyKey".to_owned(),
+        "projectId".to_owned(),
+        &serde_json::from_value(serde_json::json!({
+            "apiVersion": "2026-01-01",
+            "enabledEvents": [],
+            "name": "name",
+            "url": "https://example.com",
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 201
+{
+  "destination": {
+    "apiVersion": "2026-01-01",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "deletedAt": null,
+    "description": null,
+    "destinationId": "string",
+    "enabledEvents": [
+      null
+    ],
+    "name": "string",
+    "projectId": "string",
+    "status": "enabled",
+    "updatedAt": "2026-01-01T00:00:00.000Z",
+    "url": "https://example.com"
+  },
+  "signingSecret": "string"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField header="Idempotency-Key" type={"string"} required>
+Identifies one logical mutation across retries.
+</ParamField>
+
+<ParamField path="projectId" type={"string"} required>
+
+</ParamField>
+
+
+## Body
+
+<ParamField body="apiVersion" type={"string (date)"} required>
+
+</ParamField>
+
+<ParamField body="description" type={"string"}>
+
+</ParamField>
+
+<ParamField body="enabledEvents" type={"WebhookEventSelection"} required>
+
+</ParamField>
+
+<ParamField body="name" type={"string"} required>
+
+</ParamField>
+
+<ParamField body="status" type={"WebhookDestinationStatus"}>
+
+</ParamField>
+
+<ParamField body="url" type={"string (uri)"} required>
+HTTPS URL without credentials or a fragment.
+</ParamField>
+
+
+## Returns
+
+**`201`** The created destination and its signing secret. CreateWebhookDestinationResponse
+
+<ResponseField name="destination" type={"WebhookDestination"} required>
+
+</ResponseField>
+
+<ResponseField name="signingSecret" type={"string"} required>
+
+</ResponseField>
+

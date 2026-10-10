@@ -1,0 +1,212 @@
+---
+title: "Upload attachment"
+icon: arrow-up-right
+description: "Upload attachment: uploadAttachment in the TypeScript, Python and Rust clients."
+---
+
+`POST /v1/projects/{id}/attachments`
+
+Uploads a file and returns its Attachment once ready to download.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.uploadAttachment(input: UploadAttachmentInput, options?: RequestOptions): Promise<UploadAttachmentOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.upload_attachment(input: UploadAttachmentInput) -> models.Attachment
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.upload_attachment(id: String, content_length: String, content_type: String, idempotency_key: String, body: &bytes::Bytes).await -> Result<ResponseValue<UploadAttachmentResponse>, Error<UploadAttachmentError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.uploadAttachment({
+  path: {
+    id: "id",
+  },
+  headers: {
+    "content-length": "18",
+    "content-type": "text/plain",
+    "idempotency-key": "idempotency-key",
+  },
+  body: new Blob(["Hello from Photon."], { type: "text/plain" }),
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import UploadAttachmentInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.upload_attachment(
+    UploadAttachmentInput.model_validate({
+        "path": {
+            "id": "id",
+        },
+        "headers": {
+            "content-length": "18",
+            "content-type": "text/plain",
+            "idempotency-key": "idempotency-key",
+        },
+        "body": b"Hello from Photon.",
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .upload_attachment(
+        "id".to_owned(),
+        "18".to_owned(),
+        "text/plain".to_owned(),
+        "idempotency-key".to_owned(),
+        &"Hello from Photon.".into(),
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "contentType": "string",
+  "createdAt": "2026-01-01T00:00:00Z",
+  "filename": "string",
+  "id": "string",
+  "metadata": {},
+  "projectId": "string",
+  "sizeBytes": 1,
+  "updatedAt": "2026-01-01T00:00:00Z"
+}
+```
+
+```json 201
+{
+  "contentType": "string",
+  "createdAt": "2026-01-01T00:00:00Z",
+  "filename": "string",
+  "id": "string",
+  "metadata": {},
+  "projectId": "string",
+  "sizeBytes": 1,
+  "updatedAt": "2026-01-01T00:00:00Z"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+<ParamField header="content-length" type={"string"} required>
+
+</ParamField>
+
+<ParamField header="content-type" type={"string"} required>
+
+</ParamField>
+
+<ParamField header="idempotency-key" type={"string"} required>
+Reuse the same key and request for retries.
+</ParamField>
+
+
+## Returns
+
+**`200`** The attachment upload had already been committed. Attachment
+
+<ResponseField name="contentType" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="filename" type={"string"}>
+
+</ResponseField>
+
+<ResponseField name="id" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="metadata" type={"object"}>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="sizeBytes" type={"integer"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+**`201`** The attachment was uploaded and committed. Attachment
+
+Headers: `Location`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
+<ResponseField name="contentType" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="filename" type={"string"}>
+
+</ResponseField>
+
+<ResponseField name="id" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="metadata" type={"object"}>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="sizeBytes" type={"integer"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+

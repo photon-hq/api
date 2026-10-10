@@ -1,0 +1,172 @@
+---
+title: "Cancel operation"
+icon: arrow-up-right
+description: "Cancel operation: cancelOperation in the TypeScript, Python and Rust clients."
+---
+
+`POST /v1/projects/{id}/platforms/operations/{operationId}/cancel`
+
+Withdraws a provision that has not been fulfilled yet. This is an operations action rather than a DELETE, because there is nothing to delete: no resource exists until the work commits. Whether it is accepted depends on the resource type — a dedicated iMessage line may sit waiting on inventory for hours and withdrawing costs nothing, while an SMS number is cancellable during inventory waiting and answers 409 once the workflow commits to its first provider order. Campaign assignment and detachment operations cannot be cancelled in any state. Wait for completion before requesting another change; that new change is not a guaranteed rollback. The output-only `cancellable` field is a snapshot; the cancellation transaction always checks the current phase under a row lock. A cancel that loses the race against the work finishing also answers 409: the resource exists and is billed for, so what you want then is to release it. Nothing is charged for a cancelled provision — billing runs after the work, so there is never anything to refund. Requires the platforms:write permission bound to the project resource in the path.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.platforms.cancelOperation(input: CancelOperationInput, options?: RequestOptions): Promise<CancelOperationOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.platforms.cancel_operation(input: CancelOperationInput) -> models.Operation
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.cancel_operation(id: String, operation_id: String).await -> Result<ResponseValue<types::Operation>, Error<CancelOperationError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.platforms.cancelOperation({
+  path: {
+    id: "id",
+    operationId: "operationId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import CancelOperationInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.platforms.cancel_operation(
+    CancelOperationInput.model_validate({
+        "path": {
+            "id": "id",
+            "operationId": "operationId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .cancel_operation("id".to_owned(), "operationId".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "cancellable": true,
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "detail": {},
+  "endedAt": "2026-01-01T00:00:00.000Z",
+  "error": {
+    "code": "string",
+    "detail": "string"
+  },
+  "operationId": "string",
+  "projectId": "string",
+  "reason": "charge_refused",
+  "resourceId": "string",
+  "resourceType": "string",
+  "startedAt": "2026-01-01T00:00:00.000Z",
+  "state": "pending",
+  "type": "resource.provision",
+  "updatedAt": "2026-01-01T00:00:00.000Z"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+<ParamField path="operationId" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The cancelled operation. Operation
+
+<ResponseField name="cancellable" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="detail" type={"object"}>
+
+</ResponseField>
+
+<ResponseField name="endedAt" type={"string (date-time)"}>
+
+</ResponseField>
+
+<ResponseField name="error" type={"OperationError"}>
+
+</ResponseField>
+
+<ResponseField name="operationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="reason" type={"OperationReason"}>
+
+</ResponseField>
+
+<ResponseField name="resourceId" type={"string"}>
+
+</ResponseField>
+
+<ResponseField name="resourceType" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="startedAt" type={"string (date-time)"}>
+
+</ResponseField>
+
+<ResponseField name="state" type={"OperationState"} required>
+
+</ResponseField>
+
+<ResponseField name="type" type={"OperationType"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+

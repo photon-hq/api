@@ -1,0 +1,168 @@
+---
+title: "Preview an organization billing change"
+icon: arrow-up-right
+description: "Preview an organization billing change: previewOrganizationChange in the TypeScript, Python and Rust clients."
+---
+
+`POST /v1/organizations/{organizationId}/billing/preview`
+
+Previews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A quantity already paid for this period is not billed again, so a purchase after a release can be free. nextCharge is what is charged in advance at the next period start. For a fixed-charge change, pass quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.billing.previewOrganizationChange(input: PreviewOrganizationChangeInput, options?: RequestOptions): Promise<PreviewOrganizationChangeOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.billing.preview_organization_change(input: PreviewOrganizationChangeInput) -> models.PreviewOrganizationChangeResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.preview_organization_change(organization_id: String, body: &types::PreviewOrganizationChangeRequest).await -> Result<ResponseValue<types::PreviewOrganizationChangeResponse>, Error<PreviewOrganizationChangeError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.billing.previewOrganizationChange({
+  path: {
+    organizationId: "organizationId",
+  },
+  body: {
+    fixedCharge: {
+      fixedChargeCode: "fixedChargeCode",
+      increment: -10000,
+    },
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import PreviewOrganizationChangeInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.billing.preview_organization_change(
+    PreviewOrganizationChangeInput.model_validate({
+        "path": {
+            "organizationId": "organizationId",
+        },
+        "body": {
+            "fixedCharge": {
+                "fixedChargeCode": "fixedChargeCode",
+                "increment": -10000,
+            },
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .preview_organization_change(
+        "organizationId".to_owned(),
+        &serde_json::from_value(serde_json::json!({
+            "fixedCharge": {
+                "fixedChargeCode": "fixedChargeCode",
+                "increment": -10000,
+            },
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "balanceAfterCents": null,
+  "dueNow": {
+    "creditsCents": -9007199254740991,
+    "currency": "string",
+    "discountCents": -9007199254740991,
+    "feesCents": -9007199254740991,
+    "lines": [
+      {
+        "amountCents": -9007199254740991,
+        "code": "string",
+        "kind": "fixed_charge",
+        "name": "string",
+        "periodEnd": null,
+        "periodStart": null,
+        "units": "string"
+      }
+    ],
+    "taxesCents": -9007199254740991,
+    "totalCents": -9007199254740991
+  },
+  "nextCharge": null,
+  "planChange": null,
+  "quote": null,
+  "timeZone": "string"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="organizationId" type={"string"} required>
+
+</ParamField>
+
+
+## Body
+
+<ParamField body="fixedCharge" type={"FixedChargeChange"} required>
+A quantity change made now, as a purchase or release makes it.
+</ParamField>
+
+
+## Returns
+
+**`200`** What the change would bill. PreviewOrganizationChangeResponse
+
+<ResponseField name="balanceAfterCents" type={"integer | null"} required>
+The payer's credit balance once dueNow is charged: the credit the change issues included, less what dueNow uses. In dueNow's currency. Null when the change charges nothing now (a downgrade).
+</ResponseField>
+
+<ResponseField name="dueNow" type={"BillingPreviewInvoice"} required>
+Charged when the change is made, priced as the change bills it. No lines when it charges nothing now.
+</ResponseField>
+
+<ResponseField name="nextCharge" type={"BillingNextCharge | null"} required>
+What is charged in advance at the next period start for what is held after the change. Usage and a minimum commitment are billed after the period. Null when nothing is, or the subscription ends first.
+</ResponseField>
+
+<ResponseField name="planChange" type={"BillingPlanChangeEffect | null"} required>
+Set for a plan change, null otherwise.
+</ResponseField>
+
+<ResponseField name="quote" type={"FixedChargeQuote | null"} required>
+Set for a fixed-charge change, null otherwise: the unit price, currency and period the preview was priced on. Pass them on with the purchase so it is refused if they no longer hold.
+</ResponseField>
+
+<ResponseField name="timeZone" type={"string"} required>
+The IANA time zone the payer is billed in, e.g. America/Los_Angeles. Billing periods start and end at its midnights, so read their calendar dates in it.
+</ResponseField>
+

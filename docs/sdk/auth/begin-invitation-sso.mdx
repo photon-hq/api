@@ -1,0 +1,123 @@
+---
+title: "Sign in with invitation SSO"
+icon: arrow-up-right
+description: "Sign in with invitation SSO: beginInvitationSso in the TypeScript, Python and Rust clients."
+---
+
+`POST /v1/auth/organizations/{orgId}/sso/invitation`
+
+Returns an authentication URL for the organization SSO connection associated with the supplied invitation token. Supply token and returnTo. Complete the returned authentication flow; requesting its URL does not itself accept the invitation.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.auth.beginInvitationSso(input: BeginInvitationSsoInput, options?: RequestOptions): Promise<BeginInvitationSsoOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.auth.begin_invitation_sso(input: BeginInvitationSsoInput) -> models.OrganizationAuthenticationRedirect
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.begin_invitation_sso(org_id: String, body: &types::BeginInvitationSsoRequest).await -> Result<ResponseValue<types::OrganizationAuthenticationRedirect>, Error<BeginInvitationSsoError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.auth.beginInvitationSso({
+  path: {
+    orgId: "orgId",
+  },
+  body: {
+    token: "token",
+    returnTo: "returnTo",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import BeginInvitationSsoInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.auth.begin_invitation_sso(
+    BeginInvitationSsoInput.model_validate({
+        "path": {
+            "orgId": "orgId",
+        },
+        "body": {
+            "token": "token",
+            "returnTo": "returnTo",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .begin_invitation_sso(
+        "orgId".to_owned(),
+        &serde_json::from_value(serde_json::json!({
+            "token": "token",
+            "returnTo": "returnTo",
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "url": "string"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="orgId" type={"string"} required>
+
+</ParamField>
+
+
+## Body
+
+<ParamField body="returnTo" type={"string"} required>
+
+</ParamField>
+
+<ParamField body="token" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** Invitation-bound SSO authorization URL. OrganizationAuthenticationRedirect
+
+<ResponseField name="url" type={"string"} required>
+
+</ResponseField>
+

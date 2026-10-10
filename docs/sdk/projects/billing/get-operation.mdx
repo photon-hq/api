@@ -1,0 +1,196 @@
+---
+title: "Get billing operation"
+icon: arrow-down-left
+description: "Get billing operation: getBillingOperation in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{projectId}/billing/operations/{operationId}`
+
+Returns the authoritative state of a billing operation belonging to the selected project. Use it to recover or poll a plan-change request until the operation reaches success or failure. An accepted request is not evidence that the plan change has completed.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.billing.getOperation(input: GetBillingOperationInput, options?: RequestOptions): Promise<GetBillingOperationOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.billing.get_operation(input: GetBillingOperationInput) -> models.BillingOperation
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.get_billing_operation(project_id: String, operation_id: String).await -> Result<ResponseValue<types::BillingOperation>, Error<GetBillingOperationError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.billing.getOperation({
+  path: {
+    projectId: "projectId",
+    operationId: "operationId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import GetBillingOperationInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.billing.get_operation(
+    GetBillingOperationInput.model_validate({
+        "path": {
+            "projectId": "projectId",
+            "operationId": "operationId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .get_billing_operation("projectId".to_owned(), "operationId".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "failure": null,
+  "kind": "change_plan",
+  "operationId": "string",
+  "resolvedAt": null,
+  "result": null,
+  "status": "pending",
+  "submittedAt": null
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="projectId" type={"string"} required>
+The project being billed.
+</ParamField>
+
+<ParamField path="operationId" type={"string"} required>
+Operation id returned by a purchase or quantity change.
+</ParamField>
+
+
+## Returns
+
+**`200`** Authoritative recovery snapshot for a billing operation. BillingOperation
+
+**One of: PendingBillingOperation**
+
+<ResponseField name="failure" type={"null"} required>
+
+</ResponseField>
+
+<ResponseField name="kind" type={"BillingOperationKind"} required>
+
+</ResponseField>
+
+<ResponseField name="operationId" type={"string"} required>
+Stable handle for this provisioning action.
+</ResponseField>
+
+<ResponseField name="resolvedAt" type={"null"} required>
+
+</ResponseField>
+
+<ResponseField name="result" type={"null"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"\"pending\""} required>
+Accepted and still executing. Poll the operation route.
+</ResponseField>
+
+<ResponseField name="submittedAt" type={"string | null"} required>
+
+</ResponseField>
+
+**One of: SucceededBillingOperation**
+
+<ResponseField name="failure" type={"null"} required>
+
+</ResponseField>
+
+<ResponseField name="kind" type={"BillingOperationKind"} required>
+
+</ResponseField>
+
+<ResponseField name="operationId" type={"string"} required>
+Stable handle for this provisioning action.
+</ResponseField>
+
+<ResponseField name="resolvedAt" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="result" type={"BillingOperationResult"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"\"succeeded\""} required>
+Terminal. The result is authoritative.
+</ResponseField>
+
+<ResponseField name="submittedAt" type={"string | null"} required>
+
+</ResponseField>
+
+**One of: FailedBillingOperation**
+
+<ResponseField name="failure" type={"BillingOperationFailure"} required>
+
+</ResponseField>
+
+<ResponseField name="kind" type={"BillingOperationKind"} required>
+
+</ResponseField>
+
+<ResponseField name="operationId" type={"string"} required>
+Stable handle for this provisioning action.
+</ResponseField>
+
+<ResponseField name="resolvedAt" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="result" type={"null"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"\"failed\""} required>
+Terminal. Failure contains a stable code and retryability.
+</ResponseField>
+
+<ResponseField name="submittedAt" type={"string | null"} required>
+
+</ResponseField>
+

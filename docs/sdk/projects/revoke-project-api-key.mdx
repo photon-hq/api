@@ -1,0 +1,130 @@
+---
+title: "Revoke project API key"
+icon: x
+description: "Revoke project API key: revokeProjectApiKey in the TypeScript, Python and Rust clients."
+---
+
+`DELETE /v1/projects/{projectId}/api-keys/{apiKeyId}`
+
+Revokes the identified key on the selected project and returns its revoked metadata. Repeating the deletion returns the same revokedAt value. This operation does not rotate the key or return a replacement secret. Supply the required Idempotency-Key header.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.revokeProjectApiKey(input: RevokeProjectApiKeyInput, options?: RequestOptions): Promise<RevokeProjectApiKeyOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.revoke_project_api_key(input: RevokeProjectApiKeyInput) -> models.ProjectApiKeyResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.revoke_project_api_key(idempotency_key: String, api_key_id: String, project_id: String).await -> Result<ResponseValue<types::ProjectApiKeyResponse>, Error<RevokeProjectApiKeyError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.revokeProjectApiKey({
+  path: {
+    apiKeyId: "apiKeyId",
+    projectId: "projectId",
+  },
+  headers: {
+    idempotencyKey: "idempotencyKey",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import RevokeProjectApiKeyInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.revoke_project_api_key(
+    RevokeProjectApiKeyInput.model_validate({
+        "path": {
+            "apiKeyId": "apiKeyId",
+            "projectId": "projectId",
+        },
+        "headers": {
+            "Idempotency-Key": "idempotencyKey",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .revoke_project_api_key(
+        "idempotencyKey".to_owned(),
+        "apiKeyId".to_owned(),
+        "projectId".to_owned(),
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "apiKey": {
+    "apiKeyId": "string",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "createdByAccountId": "string",
+    "expiresAt": null,
+    "name": "string",
+    "permissions": [
+      "string"
+    ],
+    "permissionsUpdatedAt": null,
+    "projectId": "string",
+    "revokedAt": null
+  }
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField header="Idempotency-Key" type={"string"} required>
+Identifies one logical mutation across retries.
+</ParamField>
+
+<ParamField path="apiKeyId" type={"string"} required>
+
+</ParamField>
+
+<ParamField path="projectId" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The revoked key. Repeating the delete returns the same revokedAt. ProjectApiKeyResponse
+
+<ResponseField name="apiKey" type={"ApiKey"} required>
+
+</ResponseField>
+

@@ -1,0 +1,133 @@
+---
+title: "Check project slug availability"
+icon: arrow-down-left
+description: "Check project slug availability: checkProjectSlugAvailability in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/organizations/{organizationId}/projects/slug-availability`
+
+Reports whether createProject would accept `slug` right now. Advisory: only the create itself allocates, so a caller must still handle SLUG_TAKEN. A malformed slug is rejected on shape; a reserved slug, a slug held by an active project, and a slug retired with a deleted project each answer `available: false` with a reason.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.projects.checkProjectSlugAvailability(input: CheckProjectSlugAvailabilityInput, options?: RequestOptions): Promise<CheckProjectSlugAvailabilityOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.projects.check_project_slug_availability(input: CheckProjectSlugAvailabilityInput) -> models.CheckProjectSlugAvailabilityResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.check_project_slug_availability(organization_id: String, slug: String).await -> Result<ResponseValue<types::CheckProjectSlugAvailabilityResponse>, Error<CheckProjectSlugAvailabilityError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.projects.checkProjectSlugAvailability({
+  path: {
+    organizationId: "organizationId",
+  },
+  query: {
+    slug: "slug",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import CheckProjectSlugAvailabilityInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.projects.check_project_slug_availability(
+    CheckProjectSlugAvailabilityInput.model_validate({
+        "path": {
+            "organizationId": "organizationId",
+        },
+        "query": {
+            "slug": "slug",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .check_project_slug_availability("organizationId".to_owned(), "slug".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "available": true,
+  "slug": "string"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="organizationId" type={"string"} required>
+
+</ParamField>
+
+<ParamField query="slug" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** Whether the slug can be allocated, and why not. CheckProjectSlugAvailabilityResponse
+
+**One of: AvailableProjectSlug**
+
+<ResponseField name="available" type={"true"} required>
+
+</ResponseField>
+
+<ResponseField name="slug" type={"string"} required>
+
+</ResponseField>
+
+**One of: UnavailableProjectSlug**
+
+<ResponseField name="available" type={"false"} required>
+
+</ResponseField>
+
+<ResponseField name="reason" type={"UnavailableProjectSlugReason"} required>
+
+</ResponseField>
+
+<ResponseField name="slug" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="suggestion" type={"string"}>
+
+</ResponseField>
+

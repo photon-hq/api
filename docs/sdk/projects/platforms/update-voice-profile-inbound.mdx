@@ -1,0 +1,136 @@
+---
+title: "Update Voice inbound configuration"
+icon: pencil
+description: "Update Voice inbound configuration: updateVoiceProfileInbound in the TypeScript, Python and Rust clients."
+---
+
+`PATCH /v1/projects/{id}/platforms/voice/profiles/{profileId}/inbound`
+
+Updates selected fields of a profile's inbound destination when the shared profile version matches. The profileId may identify the default or an additional profile. At least one of destinationUri or credentials is required. Credential omission preserves destination authentication, null removes it, and an object replaces it atomically. Requires platforms:write bound to the path project.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.platforms.updateVoiceProfileInbound(input: UpdateVoiceProfileInboundInput, options?: RequestOptions): Promise<UpdateVoiceProfileInboundOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.platforms.update_voice_profile_inbound(input: UpdateVoiceProfileInboundInput) -> models.VoiceProfileInboundConfiguration
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.update_voice_profile_inbound(id: String, profile_id: String, body: &types::UpdateVoiceProfileInboundRequest).await -> Result<ResponseValue<types::VoiceProfileInboundConfiguration>, Error<UpdateVoiceProfileInboundError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.platforms.updateVoiceProfileInbound({
+  path: {
+    id: "id",
+    profileId: "profileId",
+  },
+  body: {
+    expectedVersion: 1,
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import UpdateVoiceProfileInboundInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.platforms.update_voice_profile_inbound(
+    UpdateVoiceProfileInboundInput.model_validate({
+        "path": {
+            "id": "id",
+            "profileId": "profileId",
+        },
+        "body": {
+            "expectedVersion": 1,
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .update_voice_profile_inbound(
+        "id".to_owned(),
+        "profileId".to_owned(),
+        &serde_json::from_value(serde_json::json!({
+            "expectedVersion": 1,
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "inbound": null,
+  "profileVersion": 1
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+<ParamField path="profileId" type={"string"} required>
+
+</ParamField>
+
+
+## Body
+
+<ParamField body="credentials" type={"SipInboundCredentialsWithPassword | null"}>
+
+</ParamField>
+
+<ParamField body="destinationUri" type={"string"}>
+
+</ParamField>
+
+<ParamField body="expectedVersion" type={"integer"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The updated inbound configuration and profile version. VoiceProfileInboundConfiguration
+
+<ResponseField name="inbound" type={"SipInboundConfiguration | null"} required>
+
+</ResponseField>
+
+<ResponseField name="profileVersion" type={"integer"} required>
+
+</ResponseField>
+

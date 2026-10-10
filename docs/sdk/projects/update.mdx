@@ -1,0 +1,186 @@
+---
+title: "Update project"
+icon: pencil
+description: "Update project: updateProject in the TypeScript, Python and Rust clients."
+---
+
+`PATCH /v1/projects/{projectId}`
+
+Updates the identified project's name and returns the updated project. The project slug is not a mutable field in this request. Use an authorized account or organization service-identity credential; a project API key is not accepted. Supply the required Idempotency-Key header.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.update(input: UpdateProjectInput, options?: RequestOptions): Promise<UpdateProjectOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.update(input: UpdateProjectInput) -> models.Project
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.update_project(idempotency_key: String, project_id: String, body: &types::UpdateProjectRequest).await -> Result<ResponseValue<types::Project>, Error<UpdateProjectError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.update({
+  path: {
+    projectId: "projectId",
+  },
+  headers: {
+    idempotencyKey: "idempotencyKey",
+  },
+  body: {
+    name: "name",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import UpdateProjectInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.update(
+    UpdateProjectInput.model_validate({
+        "path": {
+            "projectId": "projectId",
+        },
+        "headers": {
+            "Idempotency-Key": "idempotencyKey",
+        },
+        "body": {
+            "name": "name",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .update_project(
+        "idempotencyKey".to_owned(),
+        "projectId".to_owned(),
+        &serde_json::from_value(serde_json::json!({
+            "name": "name",
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "agentProfile": {
+    "avatarUrl": "https://example.com",
+    "firstName": "string",
+    "lastName": null
+  },
+  "billingInitialization": "pending",
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "createdByAccountId": null,
+  "createdByActorId": null,
+  "createdByActorKind": null,
+  "deletedAt": null,
+  "name": "string",
+  "organizationId": "string",
+  "projectId": "string",
+  "slug": "string",
+  "updatedAt": "2026-01-01T00:00:00.000Z"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField header="Idempotency-Key" type={"string"} required>
+Identifies one logical mutation across retries.
+</ParamField>
+
+<ParamField path="projectId" type={"string"} required>
+
+</ParamField>
+
+
+## Body
+
+<ParamField body="name" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The updated project. Project
+
+<ResponseField name="agentProfile" type={"AgentProfile"} required>
+
+</ResponseField>
+
+<ResponseField name="billingInitialization" type={"ProjectBillingInitialization"}>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="createdByAccountId" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="createdByActorId" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="createdByActorKind" type={"ProjectCreatedByActorKind | null"} required>
+
+</ResponseField>
+
+<ResponseField name="deletedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="name" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="slug" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+

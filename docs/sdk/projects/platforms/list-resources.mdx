@@ -1,0 +1,137 @@
+---
+title: "List resources"
+icon: arrow-down-left
+description: "List resources: listResources in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{id}/platforms/resources`
+
+Lists everything the project holds, oldest first, whatever kind of thing it is — one endpoint and one id shape for numbers, dedicated lines and whatever ships next. Nothing half-built appears here: a resource exists only once it is real, so anything still being provisioned is an operation rather than a resource with a pending flag. Filter by `type`, by `ability` (which matches only abilities that are currently enabled), and by `state` — comma-separated, and absent means every state, including retired ones. `detail` carries a per-type public view: an SMS number's number, a dedicated line's number and its per-capability health (`imessageHealth`, `whatsappHealth`, each with an `overallStatus` of `available`, `degraded`, `unavailable` or `unknown`; `imessageHealth` also carries `account`, `photonSystemComponents`, `newConversations`, `sms` and `mms`, each a `status` with the `cause` that decided it: `account`, `photonSystemComponents`, or null for the item's own state). Requires the platforms:read permission bound to the project resource in the path.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.platforms.listResources(input: ListResourcesInput, options?: RequestOptions): Promise<ListResourcesOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.platforms.list_resources(input: ListResourcesInput) -> models.ResourcePage
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.list_resources(id: String, params: Option<ListResourcesParams>).await -> Result<ResponseValue<types::ResourcePage>, Error<ListResourcesError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.platforms.listResources({
+  path: {
+    id: "id",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import ListResourcesInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.platforms.list_resources(
+    ListResourcesInput.model_validate({
+        "path": {
+            "id": "id",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .list_resources("id".to_owned(), None)
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "nextPageToken": "string",
+  "resources": [
+    {
+      "abilities": [
+        "string"
+      ],
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "detail": {},
+      "projectId": "string",
+      "resourceId": "string",
+      "retiredAt": "2026-01-01T00:00:00.000Z",
+      "state": "unallocated",
+      "type": "string",
+      "updatedAt": "2026-01-01T00:00:00.000Z"
+    }
+  ]
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+<ParamField query="ability" type={"string"}>
+
+</ParamField>
+
+<ParamField query="pageSize" type={"integer"}>
+
+</ParamField>
+
+<ParamField query="pageToken" type={"string"}>
+
+</ParamField>
+
+<ParamField query="state" type={"string"}>
+
+</ParamField>
+
+<ParamField query="type" type={"string"}>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** A page of the project's resources. ResourcePage
+
+<ResponseField name="nextPageToken" type={"string"}>
+
+</ResponseField>
+
+<ResponseField name="resources" type={"array of Resource"} required>
+
+</ResponseField>
+

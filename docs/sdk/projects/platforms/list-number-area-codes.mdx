@@ -1,0 +1,117 @@
+---
+title: "List number area codes"
+icon: arrow-down-left
+description: "List number area codes: listNumberAreaCodes in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{id}/platforms/sms/numbers/area-codes`
+
+Lists current provider coverage for US local numbers, sorted and deduplicated. Coverage does not guarantee inventory carrying every required feature. New area-specific purchases must use a listed code; accepted purchases keep waiting if coverage later changes. Requires platforms:read for the path project.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.platforms.listNumberAreaCodes(input: ListNumberAreaCodesInput, options?: RequestOptions): Promise<ListNumberAreaCodesOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.platforms.list_number_area_codes(input: ListNumberAreaCodesInput) -> models.ListNumberAreaCodesResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.list_number_area_codes(id: String, country_code: String).await -> Result<ResponseValue<types::ListNumberAreaCodesResponse>, Error<ListNumberAreaCodesError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.platforms.listNumberAreaCodes({
+  path: {
+    id: "id",
+  },
+  query: {
+    countryCode: "US",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import ListNumberAreaCodesInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.platforms.list_number_area_codes(
+    ListNumberAreaCodesInput.model_validate({
+        "path": {
+            "id": "id",
+        },
+        "query": {
+            "countryCode": "US",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .list_number_area_codes("id".to_owned(), "US".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "areaCodes": [
+    "string"
+  ],
+  "countryCode": "US"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+<ParamField query="countryCode" type={"\"US\""} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** Current area-code coverage. An empty list is a successful coverage read, not an upstream failure. ListNumberAreaCodesResponse
+
+Headers: `Cache-Control`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
+<ResponseField name="areaCodes" type={"array of string"} required>
+
+</ResponseField>
+
+<ResponseField name="countryCode" type={"\"US\""} required>
+
+</ResponseField>
+

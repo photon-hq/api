@@ -1,0 +1,119 @@
+---
+title: "Delete Voice inbound configuration"
+icon: x
+description: "Delete Voice inbound configuration: deleteVoiceProfileInbound in the TypeScript, Python and Rust clients."
+---
+
+`DELETE /v1/projects/{id}/platforms/voice/profiles/{profileId}/inbound`
+
+Removes a profile's inbound destination when the shared profile version matches. The profileId may identify the default or an additional profile. The profile and its line assignments remain. Requires platforms:write bound to the path project.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.platforms.deleteVoiceProfileInbound(input: DeleteVoiceProfileInboundInput, options?: RequestOptions): Promise<DeleteVoiceProfileInboundOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.platforms.delete_voice_profile_inbound(input: DeleteVoiceProfileInboundInput) -> models.VoiceProfileInboundConfiguration
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.delete_voice_profile_inbound(id: String, profile_id: String, expected_version: i64).await -> Result<ResponseValue<types::VoiceProfileInboundConfiguration>, Error<DeleteVoiceProfileInboundError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.platforms.deleteVoiceProfileInbound({
+  path: {
+    id: "id",
+    profileId: "profileId",
+  },
+  query: {
+    expectedVersion: 1,
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import DeleteVoiceProfileInboundInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.platforms.delete_voice_profile_inbound(
+    DeleteVoiceProfileInboundInput.model_validate({
+        "path": {
+            "id": "id",
+            "profileId": "profileId",
+        },
+        "query": {
+            "expectedVersion": 1,
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .delete_voice_profile_inbound("id".to_owned(), "profileId".to_owned(), 1)
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "inbound": null,
+  "profileVersion": 1
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+<ParamField path="profileId" type={"string"} required>
+
+</ParamField>
+
+<ParamField query="expectedVersion" type={"integer"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The removed inbound configuration and next profile version. VoiceProfileInboundConfiguration
+
+<ResponseField name="inbound" type={"SipInboundConfiguration | null"} required>
+
+</ResponseField>
+
+<ResponseField name="profileVersion" type={"integer"} required>
+
+</ResponseField>
+

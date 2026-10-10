@@ -1,0 +1,158 @@
+---
+title: "Update Voice outbound authentication"
+icon: pencil
+description: "Update Voice outbound authentication: updateVoiceProfileOutboundAuthentication in the TypeScript, Python and Rust clients."
+---
+
+`PATCH /v1/projects/{id}/platforms/voice/profiles/{profileId}/outbound`
+
+Changes a SIP profile's outbound Digest algorithm when expectedVersion matches. The profileId may identify the default or an additional profile. This policy-only change preserves the password, username, and any previous-password grace deadline. SHA-256 is recommended; MD5 is a weaker legacy option. Returns non-secret outbound metadata and the profile version. Requires platforms:write bound to the path project.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.platforms.updateVoiceProfileOutboundAuthentication(input: UpdateVoiceProfileOutboundAuthenticationInput, options?: RequestOptions): Promise<UpdateVoiceProfileOutboundAuthenticationOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.platforms.update_voice_profile_outbound_authentication(input: UpdateVoiceProfileOutboundAuthenticationInput) -> models.UpdateVoiceProfileOutboundAuthenticationResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.update_voice_profile_outbound_authentication(id: String, profile_id: String, body: &types::UpdateVoiceProfileOutboundAuthenticationRequest).await -> Result<ResponseValue<types::UpdateVoiceProfileOutboundAuthenticationResponse>, Error<UpdateVoiceProfileOutboundAuthenticationError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.platforms.updateVoiceProfileOutboundAuthentication({
+  path: {
+    id: "id",
+    profileId: "profileId",
+  },
+  body: {
+    authentication: {
+      algorithm: "sha-256",
+    },
+    expectedVersion: 1,
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import UpdateVoiceProfileOutboundAuthenticationInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.platforms.update_voice_profile_outbound_authentication(
+    UpdateVoiceProfileOutboundAuthenticationInput.model_validate({
+        "path": {
+            "id": "id",
+            "profileId": "profileId",
+        },
+        "body": {
+            "authentication": {
+                "algorithm": "sha-256",
+            },
+            "expectedVersion": 1,
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .update_voice_profile_outbound_authentication(
+        "id".to_owned(),
+        "profileId".to_owned(),
+        &serde_json::from_value(serde_json::json!({
+            "authentication": {
+                "algorithm": "sha-256",
+            },
+            "expectedVersion": 1,
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "outbound": {
+    "authentication": {
+      "algorithm": "sha-256",
+      "previousPasswordValidUntil": null,
+      "username": "string",
+      "validFrom": "2026-01-01T00:00:00.000Z"
+    },
+    "connection": {
+      "endpoints": [
+        {
+          "host": "string",
+          "port": 1,
+          "transport": "udp"
+        }
+      ],
+      "realm": "string"
+    }
+  },
+  "profileVersion": 1
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+<ParamField path="profileId" type={"string"} required>
+
+</ParamField>
+
+
+## Body
+
+<ParamField body="authentication" type={"SipOutboundAuthenticationPolicy"} required>
+
+</ParamField>
+
+<ParamField body="expectedVersion" type={"integer"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The current outbound configuration and profile version. UpdateVoiceProfileOutboundAuthenticationResponse
+
+<ResponseField name="outbound" type={"SipOutboundConfiguration"} required>
+
+</ResponseField>
+
+<ResponseField name="profileVersion" type={"integer"} required>
+
+</ResponseField>
+

@@ -1,0 +1,102 @@
+---
+title: "Create payment method checkout"
+icon: arrow-up-right
+description: "Create payment method checkout: createOrganizationPaymentMethodCheckout in the TypeScript, Python and Rust clients."
+---
+
+`POST /v1/organizations/{organizationId}/billing/checkout`
+
+Returns a hosted payment-method collection URL for the selected organization. An Idempotency-Key header is optional; supply one to make retries safe. Complete the returned checkout flow. Receiving the URL does not mean a card has been saved; check payment-method status afterward.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.billing.createOrganizationPaymentMethodCheckout(input: CreateOrganizationPaymentMethodCheckoutInput, options?: RequestOptions): Promise<CreateOrganizationPaymentMethodCheckoutOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.billing.create_organization_payment_method_checkout(input: CreateOrganizationPaymentMethodCheckoutInput) -> models.CreateOrganizationPaymentMethodCheckoutResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.create_organization_payment_method_checkout(organization_id: String, params: Option<CreateOrganizationPaymentMethodCheckoutParams>).await -> Result<ResponseValue<types::CreateOrganizationPaymentMethodCheckoutResponse>, Error<CreateOrganizationPaymentMethodCheckoutError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.billing.createOrganizationPaymentMethodCheckout({
+  path: {
+    organizationId: "organizationId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import CreateOrganizationPaymentMethodCheckoutInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.billing.create_organization_payment_method_checkout(
+    CreateOrganizationPaymentMethodCheckoutInput.model_validate({
+        "path": {
+            "organizationId": "organizationId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .create_organization_payment_method_checkout("organizationId".to_owned(), None)
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "checkoutUrl": "https://example.com"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField header="Idempotency-Key" type={"string"}>
+Identifies one logical mutation across retries.
+</ParamField>
+
+<ParamField path="organizationId" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** Hosted card-capture page for the organization. CreateOrganizationPaymentMethodCheckoutResponse
+
+<ResponseField name="checkoutUrl" type={"string (uri)"} required>
+Hosted Stripe page; send the user here.
+</ResponseField>
+

@@ -1,0 +1,124 @@
+---
+title: "Start company sign-in"
+icon: arrow-up-right
+description: "Start company sign-in: startEnterpriseLogin in the TypeScript, Python and Rust clients."
+---
+
+`POST /v1/auth/login/enrollment`
+
+Returns a sign-in URL without requiring an existing account: the company SSO connection when the target has a ready connection, otherwise ordinary account login. Supply one documented enrollment variant: organizationId with returnTo (optionally invitationToken), invitationToken with returnTo, or retryToken. Open the returned URL to continue authentication; receiving a URL does not complete sign-in. This is a browser flow: the request must come from an allowed Origin, and the retryToken variant also needs the retry cookie set by the failed sign-in, so send it with credentials.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.auth.startEnterpriseLogin(input: StartEnterpriseLoginInput, options?: RequestOptions): Promise<StartEnterpriseLoginOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.auth.start_enterprise_login(input: StartEnterpriseLoginInput) -> models.StartEnterpriseLoginResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.start_enterprise_login(body: &types::StartEnterpriseLoginRequest).await -> Result<ResponseValue<types::StartEnterpriseLoginResponse>, Error<StartEnterpriseLoginError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon();
+const result = await photon.auth.startEnterpriseLogin({
+  body: {
+    organizationId: "organizationId",
+    returnTo: "returnTo",
+  },
+});
+```
+
+```python Python
+from photon_api import Photon
+from photon_api.rpc_generated import StartEnterpriseLoginInput
+
+photon = Photon()
+result = photon.auth.start_enterprise_login(
+    StartEnterpriseLoginInput.model_validate({
+        "body": {
+            "organizationId": "organizationId",
+            "returnTo": "returnTo",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::PhotonClientBuilder;
+
+let client = PhotonClientBuilder::new().build()?;
+let result = client
+    .start_enterprise_login(
+        &serde_json::from_value(serde_json::json!({
+            "organizationId": "organizationId",
+            "returnTo": "returnTo",
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "url": "https://example.com"
+}
+```
+
+</ResponseExample>
+
+## Body
+
+**One of: OrganizationEnterpriseLoginRequest**
+
+<ParamField body="invitationToken" type={"string"}>
+
+</ParamField>
+
+<ParamField body="organizationId" type={"string"} required>
+
+</ParamField>
+
+<ParamField body="returnTo" type={"string"} required>
+
+</ParamField>
+
+**One of: InvitationEnterpriseLoginRequest**
+
+<ParamField body="invitationToken" type={"string"} required>
+
+</ParamField>
+
+<ParamField body="returnTo" type={"string"} required>
+
+</ParamField>
+
+**One of: RetryEnterpriseLoginRequest**
+
+<ParamField body="retryToken" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** Company SSO URL when the target has a ready connection, otherwise the ordinary Account login URL. The response never says which, and access is decided only after authentication. StartEnterpriseLoginResponse
+
+<ResponseField name="url" type={"string (uri)"} required>
+
+</ResponseField>
+

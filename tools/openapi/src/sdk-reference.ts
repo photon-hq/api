@@ -6,7 +6,7 @@
 //
 // Reads the public contract with its code samples (openapi/openapi.mintlify.json),
 // the RPC manifest and the generated clients, so a signature is always the one
-// the released package has. Writes docs/sdk/**/*.mdx.vel and the "SDK reference"
+// the released package has. Writes docs/sdk/**/*.mdx and the "SDK reference"
 // group of docs/nav.json; the guide's groups in that file are kept.
 import { mkdir, readFile, rm } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
@@ -159,7 +159,7 @@ function operationsById(document: JsonObject): Map<string, JsonObject> {
   return operations;
 }
 
-// Rendering. Prose is escaped for MDX; the site renders .mdx.vel with Nunjucks, so
+// Rendering. Prose is escaped for MDX; pages are ordinary MDX, so
 // no page may contain its delimiters.
 
 function prose(value: unknown): string {
@@ -448,8 +448,8 @@ export function navGroup(tree: Resource[]): NavGroup {
 export function sdkReferencePages(document: JsonObject, tree: Resource[]): Map<string, string> {
   const pages = new Map<string, string>();
   const visit = (resource: Resource) => {
-    pages.set(`${resource.slug}/index.mdx.vel`, resourcePage(document, resource));
-    for (const method of resource.methods) pages.set(`${resource.slug}/${method.slug}.mdx.vel`, methodPage(document, method));
+    pages.set(`${resource.slug}/index.mdx`, resourcePage(document, resource));
+    for (const method of resource.methods) pages.set(`${resource.slug}/${method.slug}.mdx`, methodPage(document, method));
     resource.children.forEach(visit);
   };
   tree.forEach(visit);

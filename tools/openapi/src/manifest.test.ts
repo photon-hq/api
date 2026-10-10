@@ -50,6 +50,21 @@ async function repositoryOptions(): Promise<PrepareOptions> {
   return prepareOptionsFor(await loadSdkConfig());
 }
 
+/**
+ * The fixed feature-coverage fixture prepared in both lanes, with the options
+ * build-tree.mjs selects for them (internal: staging, public: production).
+ */
+async function preparedFixture(): Promise<Array<{
+  lane: string; source: JsonObject; sdk: JsonObject; manifest: Manifest; options: PrepareOptions;
+}>> {
+  const source = await readJson<JsonObject>(resolve(repositoryRoot, "tools/conformance/fixtures/feature-coverage.json"));
+  return (["staging", "production"] as const).map((environment) => {
+    const options = prepareOptionsFor({ environment });
+    const { sdk, manifest } = prepareSdk(source, options);
+    return { lane: options.lane ?? "internal", source, sdk, manifest: manifest as unknown as Manifest, options };
+  });
+}
+
 const COMPONENT_PREFIX = "#/components/schemas/";
 
 /** The component a schema is exactly a reference to, if any. */
@@ -208,34 +223,37 @@ test("manifest and the TypeScript and Python facades expose every OpenAPI operat
   );
 });
 
-test("project request and response components preserve their source constraints", async () => {
-  const [source, sdk] = await Promise.all([
-    readJson<JsonObject>(resolve(repositoryRoot, contractPath())),
-    readJson<JsonObject>(resolve(repositoryRoot, "openapi/sdk.json")),
-  ]);
-  const projected = jsonSdkDocument(source);
-  assert(isObject(projected.paths));
-  const item = projected.paths["/v1/organizations/{organizationId}/projects"];
-  assert(isObject(item) && isObject(item.post));
-  const operation = item.post;
-  assert(isObject(sdk.components) && isObject(sdk.components.schemas));
-  assert(isObject(operation.requestBody) && isObject(operation.requestBody.content));
-  const request = operation.requestBody.content["application/json"];
-  assert(isObject(request));
-  assert.deepEqual(
-    sdk.components.schemas[sdkMediaComponent(request.schema, "CreateProjectRequestApplicationJson")],
-    resolveComponent(projected, request.schema),
-  );
-  assert(isObject(operation.responses) && isObject(operation.responses["201"]));
-  const response = operation.responses["201"];
-  assert(isObject(response.content) && isObject(response.content["application/json"]));
-  const responseSchema = response.content["application/json"].schema;
-  assert.deepEqual(
-    sdk.components.schemas[sdkMediaComponent(responseSchema, "CreateProjectResponse201ApplicationJson")],
-    resolveComponent(projected, responseSchema),
-  );
-  for (const keyword of ["oneOf", "anyOf", "additionalProperties", "format"]) {
-    assert.ok(countKey(sdk, keyword) > 0, keyword);
+test("request and response components preserve their source constraints", async () => {
+  for (const { lane, source, sdk } of await preparedFixture()) {
+    const projected = jsonSdkDocument(source);
+    assert(isObject(projected.paths));
+    const item = projected.paths["/v1/fixture/widgets"];
+    assert(isObject(item) && isObject(item.post));
+    const operation = item.post;
+    assert.equal(operation.operationId, "createWidget");
+    assert(isObject(sdk.components) && isObject(sdk.components.schemas));
+    assert(isObject(operation.requestBody) && isObject(operation.requestBody.content));
+    const request = operation.requestBody.content["application/json"];
+    assert(isObject(request));
+    assert.equal(componentName(request.schema), "WidgetInput");
+    assert.deepEqual(
+      sdk.components.schemas[sdkMediaComponent(request.schema, "CreateWidgetRequestApplicationJson")],
+      resolveComponent(projected, request.schema),
+      lane,
+    );
+    assert(isObject(operation.responses) && isObject(operation.responses["201"]));
+    const response = operation.responses["201"];
+    assert(isObject(response.content) && isObject(response.content["application/json"]));
+    const responseSchema = response.content["application/json"].schema;
+    assert.equal(componentName(responseSchema), "Widget");
+    assert.deepEqual(
+      sdk.components.schemas[sdkMediaComponent(responseSchema, "CreateWidgetResponse201ApplicationJson")],
+      resolveComponent(projected, responseSchema),
+      lane,
+    );
+    for (const keyword of ["oneOf", "anyOf", "additionalProperties", "format"]) {
+      assert.ok(countKey(sdk, keyword) > 0, `${lane}: ${keyword}`);
+    }
   }
 });
 
@@ -282,53 +300,53 @@ test("every hoisted operation schema preserves the selected source contract", as
   }
 });
 
-test("device-token contract retains upstream JSON and form unions plus OAuth errors", async () => {
-  const [source, sdk] = await Promise.all([
-    readJson<JsonObject>(resolve(repositoryRoot, contractPath())),
-    readJson<JsonObject>(resolve(repositoryRoot, "openapi/sdk.json")),
-  ]);
-  assert(isObject(source.paths));
-  const path = source.paths["/v1/auth/device/token"];
-  assert(isObject(path));
-  assert(isObject(path.post));
-  assert(isObject(path.post.requestBody));
-  assert(isObject(path.post.requestBody.content));
-  assert.deepEqual(Object.keys(path.post.requestBody.content).sort(), [
-    "application/json",
-    "application/x-www-form-urlencoded",
-  ]);
-  assert(isObject(path.post.requestBody.content["application/json"]));
-  assert(isObject(path.post.requestBody.content["application/x-www-form-urlencoded"]));
-  assert(isObject(sdk.components) && isObject(sdk.components.schemas));
-  for (const [mediaType, suffix] of [
-    ["application/json", "ApplicationJson"],
-    ["application/x-www-form-urlencoded", "ApplicationForm"],
-  ] as const) {
-    const media: JsonValue | undefined = path.post.requestBody.content[mediaType];
-    assert(isObject(media));
-    const schema = resolveComponent(source, media.schema);
-    assert(isObject(schema));
-    assert.equal(Array.isArray(schema.oneOf), true, mediaType);
-    const name = sdkMediaComponent(media.schema, `DeviceTokenRequest${suffix}`);
-    const component: JsonValue | undefined = sdk.components.schemas[name];
-    assert(isObject(component));
-    assert.equal(Array.isArray(component.oneOf), true, name);
-  }
+test("token-exchange contract retains upstream JSON and form unions plus OAuth errors", async () => {
+  for (const { lane, source, sdk } of await preparedFixture()) {
+    assert(isObject(source.paths));
+    const path = source.paths["/v1/fixture/oauth/token"];
+    assert(isObject(path));
+    assert(isObject(path.post));
+    assert.equal(path.post.operationId, "exchangeToken");
+    assert(isObject(path.post.requestBody));
+    assert(isObject(path.post.requestBody.content));
+    assert.deepEqual(Object.keys(path.post.requestBody.content).sort(), [
+      "application/json",
+      "application/x-www-form-urlencoded",
+    ]);
+    assert(isObject(sdk.components) && isObject(sdk.components.schemas));
+    for (const [mediaType, suffix] of [
+      ["application/json", "ApplicationJson"],
+      ["application/x-www-form-urlencoded", "ApplicationForm"],
+    ] as const) {
+      const media: JsonValue | undefined = path.post.requestBody.content[mediaType];
+      assert(isObject(media));
+      const schema = resolveComponent(source, media.schema);
+      assert(isObject(schema));
+      assert.equal(Array.isArray(schema.oneOf), true, mediaType);
+      const name = sdkMediaComponent(media.schema, `ExchangeTokenRequest${suffix}`);
+      const component: JsonValue | undefined = sdk.components.schemas[name];
+      assert(isObject(component));
+      assert.equal(Array.isArray(component.oneOf), true, `${lane}: ${name}`);
+    }
 
-  assert(isObject(path.post.responses));
-  const oauth = path.post.responses["400"];
-  assert(isObject(oauth));
-  assert(isObject(oauth.content));
-  assert.ok(oauth.content["application/json"]);
+    // The OAuth error stays a plain JSON response in the SDK input.
+    assert(isObject(sdk.paths) && isObject(sdk.paths["/v1/fixture/oauth/token"]));
+    const prepared = sdk.paths["/v1/fixture/oauth/token"].post;
+    assert(isObject(prepared) && isObject(prepared.responses));
+    const oauth = prepared.responses["400"];
+    assert(isObject(oauth));
+    assert(isObject(oauth.content));
+    assert.ok(oauth.content["application/json"], lane);
+  }
 });
 
-test("successful and problem response schemas use stable component references", async () => {
-  const [manifest, source, sdk, options] = await Promise.all([
-    readJson<Manifest>(resolve(repositoryRoot, "openapi/rpc-manifest.json")),
-    readJson<JsonObject>(resolve(repositoryRoot, contractPath())),
-    readJson<JsonObject>(resolve(repositoryRoot, "openapi/sdk.json")),
-    repositoryOptions(),
-  ]);
+/**
+ * Check that every manifest media schema is a stable component reference;
+ * returns how many reference a contract component and whether any response
+ * is a problem document.
+ */
+function checkStableReferences(manifest: Manifest, source: JsonObject, sdk: JsonObject, options: PrepareOptions):
+    { contractReferences: number; problemResponses: boolean } {
   assert(isObject(source.components) && isObject(source.components.schemas));
   assert(isObject(sdk.components) && isObject(sdk.components.schemas));
   const sourceSchemas = source.components.schemas;
@@ -363,12 +381,28 @@ test("successful and problem response schemas use stable component references", 
       }
     }
   }
-  assert.ok(contractReferences > 0, "media that reference a contract component keep that reference");
-  assert.ok(
-    manifest.operations.some((operation) =>
-      Object.values(operation.responses).some((content) =>
-        Object.hasOwn(content, "application/problem+json"),
-      ),
+  const problemResponses = manifest.operations.some((operation) =>
+    Object.values(operation.responses).some((content) =>
+      Object.hasOwn(content, "application/problem+json"),
     ),
   );
+  return { contractReferences, problemResponses };
+}
+
+test("successful and problem response schemas use stable component references", async () => {
+  const [manifest, source, sdk, options] = await Promise.all([
+    readJson<Manifest>(resolve(repositoryRoot, "openapi/rpc-manifest.json")),
+    readJson<JsonObject>(resolve(repositoryRoot, contractPath())),
+    readJson<JsonObject>(resolve(repositoryRoot, "openapi/sdk.json")),
+    repositoryOptions(),
+  ]);
+  checkStableReferences(manifest, source, sdk, options);
+});
+
+test("contract component references and problem responses keep stable references in both lanes", async () => {
+  for (const { lane, source, sdk, manifest, options } of await preparedFixture()) {
+    const { contractReferences, problemResponses } = checkStableReferences(manifest, source, sdk, options);
+    assert.ok(contractReferences > 0, `${lane}: media that reference a contract component keep that reference`);
+    assert.ok(problemResponses, `${lane}: problem responses keep their media type`);
+  }
 });
