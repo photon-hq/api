@@ -1,0 +1,98 @@
+---
+title: "List billing plans"
+icon: arrow-down-left
+description: "List billing plans: listBillingPlans in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{projectId}/billing/plans`
+
+Lists the billing plan catalog, grouped by their public plan-metadata type. Use the returned plan information when choosing the category and planCode for a plan change. The catalog is the same for every project, and reading it does not purchase a plan.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.billing.listBillingPlans(input: ListBillingPlansInput, options?: RequestOptions): Promise<ListBillingPlansOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.billing.list_billing_plans(input: ListBillingPlansInput) -> models.ListBillingPlansResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.list_billing_plans(project_id: String).await -> Result<ResponseValue<types::ListBillingPlansResponse>, Error<ListBillingPlansError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.billing.listBillingPlans({
+  path: {
+    projectId: "projectId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import ListBillingPlansInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.billing.list_billing_plans(
+    ListBillingPlansInput.model_validate({
+        "path": {
+            "projectId": "projectId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .list_billing_plans("projectId".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "plans": {}
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="projectId" type={"string"} required>
+The project being billed.
+</ParamField>
+
+
+## Returns
+
+**`200`** Billing plans grouped by their public plan-metadata type. ListBillingPlansResponse
+
+<ResponseField name="plans" type={"object"} required>
+Plans grouped by valid metadata type and explicitly published with visible="true". Each group is in display order: by tier, plans without one last, then by planCode.
+</ResponseField>
+

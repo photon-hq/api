@@ -1,6 +1,6 @@
 {
-  "sourceSha256": "c7cd43818b938a0dd2ec370e49d67878a6c691171ff3765644affb638f5881ca",
-  "operationCount": 131,
+  "sourceSha256": "6f4d16cd6bf267f78f282e80fb373f0ed5a13c7c6305c1da322fecd0cfce013d",
+  "operationCount": 136,
   "operations": [
     {
       "operationId": "assignSmsLineCampaign",
@@ -227,7 +227,7 @@
           "application/problem+json": "#/components/schemas/BatchUpdateVoiceLineProfileAssignmentsGatewayTimeoutProblem"
         }
       },
-      "summary": "Batch update Voice line profile assignments",
+      "summary": "Batch update Voice line assignments",
       "description": "Atomically sets additional-profile overrides or switches lines back to the project default for up to 100 Voice-capable lines. A null profileId means use the default. Every expected resource version must match or no line changes. Requires platforms:write bound to the path project.",
       "requestBody": {
         "required": true,
@@ -296,7 +296,7 @@
           "application/problem+json": "#/components/schemas/BeginInvitationSsoGatewayTimeoutProblem"
         }
       },
-      "summary": "Authenticate to an invitation's organization SSO connection",
+      "summary": "Sign in with invitation SSO",
       "description": "Returns an authentication URL for the organization SSO connection associated with the supplied invitation token. Supply token and returnTo. Complete the returned authentication flow; requesting its URL does not itself accept the invitation.",
       "requestBody": {
         "required": true,
@@ -365,7 +365,7 @@
           "application/problem+json": "#/components/schemas/BeginOrganizationAuthenticationGatewayTimeoutProblem"
         }
       },
-      "summary": "Authenticate to the current organization SSO connection",
+      "summary": "Sign in with organization SSO",
       "description": "Returns a URL to authenticate through the selected organization’s current SSO connection. Supply returnTo and open the returned URL to continue the flow. Receiving the URL does not establish an authenticated session.",
       "requestBody": {
         "required": true,
@@ -434,7 +434,7 @@
           "application/problem+json": "#/components/schemas/BeginOrganizationClosureAuthenticationGatewayTimeoutProblem"
         }
       },
-      "summary": "Authenticate the current Owner to inspect organization closure",
+      "summary": "Sign in to close organization",
       "description": "Returns an authentication URL for the current organization owner to inspect organization closure. Supply returnTo and complete the returned flow. This operation initiates authentication and does not close the organization.",
       "requestBody": {
         "required": true,
@@ -503,7 +503,7 @@
           "application/problem+json": "#/components/schemas/BeginOrganizationSsoAdmissionGatewayTimeoutProblem"
         }
       },
-      "summary": "Begin organization SSO admission for an existing Account",
+      "summary": "Begin organization SSO admission",
       "description": "Returns an SSO admission URL for an existing account and the selected organization. Supply returnTo for the continuation URL. Admission requires completing the returned authentication flow; creating the URL does not itself grant membership.",
       "requestBody": {
         "required": true,
@@ -580,90 +580,6 @@
       },
       "summary": "Cancel operation",
       "description": "Withdraws a provision that has not been fulfilled yet. This is an operations action rather than a DELETE, because there is nothing to delete: no resource exists until the work commits. Whether it is accepted depends on the resource type — a dedicated iMessage line may sit waiting on inventory for hours and withdrawing costs nothing, while an SMS number is cancellable during inventory waiting and answers 409 once the workflow commits to its first provider order. Campaign assignment and detachment operations cannot be cancelled in any state. Wait for completion before requesting another change; that new change is not a guaranteed rollback. The output-only `cancellable` field is a snapshot; the cancellation transaction always checks the current phase under a row lock. A cancel that loses the race against the work finishing also answers 409: the resource exists and is billed for, so what you want then is to release it. Nothing is charged for a cancelled provision — billing runs after the work, so there is never anything to refund. Requires the platforms:write permission bound to the project resource in the path."
-    },
-    {
-      "operationId": "cancelSubscription",
-      "rpcMethod": "cancelSubscription",
-      "namespace": [
-        "organizations",
-        "billing"
-      ],
-      "httpMethod": "POST",
-      "path": "/v1/organizations/{organizationId}/billing/projects/{projectId}/cancel",
-      "safe": false,
-      "idempotencyKeyRequired": false,
-      "parameters": [
-        {
-          "name": "idempotencyKey",
-          "wireName": "Idempotency-Key",
-          "location": "header",
-          "required": false,
-          "schema": {
-            "maxLength": 255,
-            "minLength": 1,
-            "pattern": "^[\\x21-\\x7e]{1,255}$",
-            "type": "string"
-          }
-        },
-        {
-          "name": "organizationId",
-          "wireName": "organizationId",
-          "location": "path",
-          "required": true,
-          "schema": {
-            "type": "string"
-          }
-        },
-        {
-          "name": "projectId",
-          "wireName": "projectId",
-          "location": "path",
-          "required": true,
-          "schema": {
-            "type": "string"
-          }
-        }
-      ],
-      "responses": {
-        "200": {
-          "application/json": "#/components/schemas/CancelSubscriptionResponse"
-        },
-        "400": {
-          "application/problem+json": "#/components/schemas/CancelSubscriptionBadRequestProblem"
-        },
-        "401": {
-          "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
-        },
-        "403": {
-          "application/problem+json": "#/components/schemas/CancelSubscriptionForbiddenProblem"
-        },
-        "409": {
-          "application/problem+json": "#/components/schemas/CancelSubscriptionConflictProblem"
-        },
-        "422": {
-          "application/problem+json": "#/components/schemas/CancelSubscriptionUnprocessableEntityProblem"
-        },
-        "500": {
-          "application/problem+json": "#/components/schemas/CancelSubscriptionInternalServerErrorProblem"
-        },
-        "502": {
-          "application/problem+json": "#/components/schemas/UpstreamFailureProblem"
-        },
-        "503": {
-          "application/problem+json": "#/components/schemas/CancelSubscriptionServiceUnavailableProblem"
-        },
-        "504": {
-          "application/problem+json": "#/components/schemas/CancelSubscriptionGatewayTimeoutProblem"
-        }
-      },
-      "summary": "Cancel a category at the end of its billing period",
-      "description": "Schedules cancellation of the specified project's billing category at the end of its current period. The category remains active through the returned cancelsAt instant and then stops renewing. This is a scheduled cancellation, not an immediate removal of the remaining period's service. If the category has no active subscription, nothing changes and the response has cancellationScheduled set to false and cancelsAt set to null. Supply both organizationId and projectId to select the project within its organization.",
-      "requestBody": {
-        "required": true,
-        "content": {
-          "application/json": "#/components/schemas/CancelSubscriptionRequest"
-        }
-      }
     },
     {
       "operationId": "changePlan",
@@ -746,7 +662,7 @@
           "application/problem+json": "#/components/schemas/ChangePlanGatewayTimeoutProblem"
         }
       },
-      "summary": "Purchase or change a category's plan",
+      "summary": "Change plan",
       "description": "Purchases or changes the selected project's plan for the supplied category and planCode. A 202 response means the change is pending: poll the returned operation URL and honor Retry-After until it succeeds or fails. A 200 response means the idempotency key resolved to an operation that is already terminal; inspect that result rather than assuming success from the status code alone. Supply the required Idempotency-Key header. Supply both organizationId and projectId to select the project within its organization.",
       "requestBody": {
         "required": true,
@@ -818,7 +734,7 @@
           "application/problem+json": "#/components/schemas/CheckProjectSlugAvailabilityGatewayTimeoutProblem"
         }
       },
-      "summary": "Check slug availability",
+      "summary": "Check project slug availability",
       "description": "Reports whether createProject would accept `slug` right now. Advisory: only the create itself allocates, so a caller must still handle SLUG_TAKEN. A malformed slug is rejected on shape; a reserved slug, a slug held by an active project, and a slug retired with a deleted project each answer `available: false` with a reason."
     },
     {
@@ -883,7 +799,7 @@
           "application/problem+json": "#/components/schemas/CommitAccountProfilePictureGatewayTimeoutProblem"
         }
       },
-      "summary": "Commit a profile picture",
+      "summary": "Commit profile picture",
       "description": "Commits a profile picture previously uploaded through createAccountProfilePictureUpload. Call this only after the direct multipart upload succeeds, using the uploadId from the same upload session and a stable Idempotency-Key. The service validates the temporary object's ownership, size, content type, image bytes, dimensions, encryption, and age before changing the Account.",
       "requestBody": {
         "required": true,
@@ -964,7 +880,7 @@
           "application/problem+json": "#/components/schemas/CommitAgentProfileAvatarGatewayTimeoutProblem"
         }
       },
-      "summary": "Commit an agent avatar",
+      "summary": "Commit agent avatar",
       "description": "Commits an agent avatar previously uploaded through createAgentProfileAvatarUpload. Call this only after the direct multipart upload succeeds, using the uploadId from the same upload session and a stable Idempotency-Key. The service validates the temporary object's Project ownership, size, content type, image bytes, dimensions, encryption, and age before changing the agent profile.",
       "requestBody": {
         "required": true,
@@ -1029,6 +945,9 @@
         "401": {
           "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
         },
+        "402": {
+          "application/problem+json": "#/components/schemas/EntitlementRequiredProblem"
+        },
         "403": {
           "application/problem+json": "#/components/schemas/ConfigureVoiceProfileOutboundForbiddenProblem"
         },
@@ -1057,8 +976,8 @@
           "application/problem+json": "#/components/schemas/ConfigureVoiceProfileOutboundGatewayTimeoutProblem"
         }
       },
-      "summary": "Configure Voice profile outbound credential",
-      "description": "Configures a SIP credential for outbound calls from a profile when the shared profile version matches. authentication.algorithm is required: SHA-256 is recommended, while MD5 is a weaker legacy option supported over UDP, TCP, and TLS; TLS is strongly recommended because UDP and TCP do not encrypt SIP signaling. The profileId may identify the default or an additional profile. The new password is returned once and is never recoverable. Requires platforms:write bound to the path project.",
+      "summary": "Configure Voice outbound credential",
+      "description": "Configures a SIP credential for outbound calls from a profile when the shared profile version matches. Outbound calls are paid usage, so the organization needs a payment method and no invoices overdue 7 days or more; otherwise this returns 402 ENTITLEMENT_REQUIRED with a reason. authentication.algorithm is required: SHA-256 is recommended, while MD5 is a weaker legacy option supported over UDP, TCP, and TLS; TLS is strongly recommended because UDP and TCP do not encrypt SIP signaling. The profileId may identify the default or an additional profile. The new password is returned once and is never recoverable. Requires platforms:write bound to the path project.",
       "requestBody": {
         "required": true,
         "content": {
@@ -1118,7 +1037,7 @@
           "application/problem+json": "#/components/schemas/ConfirmAccountPhoneVerificationGatewayTimeoutProblem"
         }
       },
-      "summary": "Confirm a phone number verification",
+      "summary": "Confirm phone verification",
       "description": "Binds the number once the code is approved. Repeat calls return the bound Account.",
       "requestBody": {
         "required": true,
@@ -1368,6 +1287,93 @@
       }
     },
     {
+      "operationId": "countFilteredVerificationCodes",
+      "rpcMethod": "countFilteredVerificationCodes",
+      "namespace": [
+        "projects",
+        "platforms"
+      ],
+      "httpMethod": "GET",
+      "path": "/v1/projects/{id}/platforms/filtered-otp/count",
+      "safe": true,
+      "idempotencyKeyRequired": false,
+      "parameters": [
+        {
+          "name": "id",
+          "wireName": "id",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "platform",
+          "wireName": "platform",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/FilteredVerificationCodePlatform"
+          }
+        },
+        {
+          "name": "receivedAfter",
+          "wireName": "receivedAfter",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "example": "2026-09-01T00:00:00.000Z",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "receivedBefore",
+          "wireName": "receivedBefore",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "example": "2026-10-01T00:00:00.000Z",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "application/json": "#/components/schemas/FilteredVerificationCodeCount"
+        },
+        "401": {
+          "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
+        },
+        "403": {
+          "application/problem+json": "#/components/schemas/CountFilteredVerificationCodesForbiddenProblem"
+        },
+        "422": {
+          "application/problem+json": "#/components/schemas/ValidationFailedProblem"
+        },
+        "429": {
+          "application/problem+json": "#/components/schemas/RateLimitedProblem"
+        },
+        "500": {
+          "application/problem+json": "#/components/schemas/CountFilteredVerificationCodesInternalServerErrorProblem"
+        },
+        "502": {
+          "application/problem+json": "#/components/schemas/UpstreamFailureProblem"
+        },
+        "503": {
+          "application/problem+json": "#/components/schemas/UpstreamUnavailableProblem"
+        },
+        "504": {
+          "application/problem+json": "#/components/schemas/CountFilteredVerificationCodesGatewayTimeoutProblem"
+        }
+      },
+      "summary": "Count filtered verification codes",
+      "description": "Counts the verification codes Photon kept from this project's dedicated lines and numbers, optionally for one `platform`. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Requires the platforms:read permission bound to the project resource in the path."
+    },
+    {
       "operationId": "countProjects",
       "rpcMethod": "count",
       "namespace": [
@@ -1450,8 +1456,107 @@
           "application/problem+json": "#/components/schemas/CountProjectsGatewayTimeoutProblem"
         }
       },
-      "summary": "Count accessible projects",
+      "summary": "Count projects",
       "description": "Counts the projects the same filter would list. The count is read from the primary, so it is authoritative rather than replica-lagged."
+    },
+    {
+      "operationId": "countResourceFilteredVerificationCodes",
+      "rpcMethod": "countResourceFilteredVerificationCodes",
+      "namespace": [
+        "projects",
+        "platforms"
+      ],
+      "httpMethod": "GET",
+      "path": "/v1/projects/{id}/platforms/resources/{resourceId}/filtered-otp/count",
+      "safe": true,
+      "idempotencyKeyRequired": false,
+      "parameters": [
+        {
+          "name": "id",
+          "wireName": "id",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "resourceId",
+          "wireName": "resourceId",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "platform",
+          "wireName": "platform",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/FilteredVerificationCodePlatform"
+          }
+        },
+        {
+          "name": "receivedAfter",
+          "wireName": "receivedAfter",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "example": "2026-09-01T00:00:00.000Z",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "receivedBefore",
+          "wireName": "receivedBefore",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "example": "2026-10-01T00:00:00.000Z",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "application/json": "#/components/schemas/FilteredVerificationCodeCount"
+        },
+        "401": {
+          "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
+        },
+        "403": {
+          "application/problem+json": "#/components/schemas/CountResourceFilteredVerificationCodesForbiddenProblem"
+        },
+        "404": {
+          "application/problem+json": "#/components/schemas/ResourceNotFoundProblem"
+        },
+        "422": {
+          "application/problem+json": "#/components/schemas/ValidationFailedProblem"
+        },
+        "429": {
+          "application/problem+json": "#/components/schemas/RateLimitedProblem"
+        },
+        "500": {
+          "application/problem+json": "#/components/schemas/CountResourceFilteredVerificationCodesInternalServerErrorProblem"
+        },
+        "502": {
+          "application/problem+json": "#/components/schemas/UpstreamFailureProblem"
+        },
+        "503": {
+          "application/problem+json": "#/components/schemas/UpstreamUnavailableProblem"
+        },
+        "504": {
+          "application/problem+json": "#/components/schemas/CountResourceFilteredVerificationCodesGatewayTimeoutProblem"
+        }
+      },
+      "summary": "Count a line's filtered verification codes",
+      "description": "Counts the verification codes Photon kept from one dedicated line or number. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a number receives both SMS and WhatsApp. Requires the platforms:read permission bound to the project resource in the path."
     },
     {
       "operationId": "createAccountProfilePictureUpload",
@@ -1502,7 +1607,7 @@
           "application/problem+json": "#/components/schemas/CreateAccountProfilePictureUploadGatewayTimeoutProblem"
         }
       },
-      "summary": "Create a profile picture upload",
+      "summary": "Create profile picture upload",
       "description": "Creates a ten-minute, Account-bound presigned S3 POST for a JPEG, PNG, or WebP profile picture up to 5 MiB. Copy every returned formFields entry into a multipart/form-data request to uploadUrl, append the local file as the final form part, and upload it directly without sending Photon credentials. After the upload succeeds, call commitAccountProfilePicture with the returned uploadId. Do not cache or log the upload URL or form fields.",
       "requestBody": {
         "required": true,
@@ -1576,7 +1681,7 @@
           "application/problem+json": "#/components/schemas/CreateAccountServiceKeyGatewayTimeoutProblem"
         }
       },
-      "summary": "Create an Account Service Key",
+      "summary": "Create Account Service Key",
       "description": "Creates a service key for the authenticated account with the supplied name and optional expiresAt. Returns key metadata and a one-time credential; store the credential securely because it cannot be retrieved through the listing endpoint. These credentials act as the account and must not be distributed as project-scoped keys. Supply the required Idempotency-Key header.",
       "requestBody": {
         "required": true,
@@ -1639,7 +1744,7 @@
           "application/problem+json": "#/components/schemas/CreateAgentProfileAvatarUploadGatewayTimeoutProblem"
         }
       },
-      "summary": "Create an agent avatar upload",
+      "summary": "Create agent avatar upload",
       "description": "Creates a ten-minute, Project-bound presigned S3 POST for a JPEG, PNG, or WebP agent avatar up to 5 MiB. Copy every returned formFields entry into a multipart/form-data request to uploadUrl, append the local file as the final form part, and upload it directly without sending Photon credentials. After the upload succeeds, call commitAgentProfileAvatar with the returned uploadId. Do not cache or log the upload URL or form fields.",
       "requestBody": {
         "required": true,
@@ -1685,7 +1790,7 @@
           "application/problem+json": "#/components/schemas/CreateAppInstallationRequestGatewayTimeoutProblem"
         }
       },
-      "summary": "Request an app installation",
+      "summary": "Request app installation",
       "description": "Authenticates a registered app backend using a short-lived signed client assertion. Creates request metadata only; customer approval is still required.",
       "requestBody": {
         "required": true,
@@ -1826,7 +1931,7 @@
           "application/problem+json": "#/components/schemas/CreateOrganizationPaymentMethodCheckoutGatewayTimeoutProblem"
         }
       },
-      "summary": "Get a payment-method checkout URL for the organization",
+      "summary": "Create payment method checkout",
       "description": "Returns a hosted payment-method collection URL for the selected organization. An Idempotency-Key header is optional; supply one to make retries safe. Complete the returned checkout flow. Receiving the URL does not mean a card has been saved; check payment-method status afterward."
     },
     {
@@ -1895,7 +2000,7 @@
           "application/problem+json": "#/components/schemas/CreateOrganizationSetupIntentGatewayTimeoutProblem"
         }
       },
-      "summary": "Create a SetupIntent for an in-app card capture",
+      "summary": "Create card setup intent",
       "description": "Creates payment-provider configuration for collecting a card for the selected organization and returns clientSecret and publishableKey. Supply the required Idempotency-Key header. Complete the provider’s card-collection flow separately and avoid logging the returned client secret."
     },
     {
@@ -1958,7 +2063,7 @@
           "application/problem+json": "#/components/schemas/CreateOrganizationSsoPortalLinkGatewayTimeoutProblem"
         }
       },
-      "summary": "Create organization SSO setup portal",
+      "summary": "Create organization setup portal link",
       "description": "Returns an organization setup portal URL. Supply returnTo and optionally intent, either sso or domain_verification; sso is the default. Open the returned URL to complete the selected setup flow.",
       "requestBody": {
         "required": true,
@@ -2005,6 +2110,9 @@
         "201": {
           "application/json": "#/components/schemas/Project"
         },
+        "202": {
+          "application/json": "#/components/schemas/Project"
+        },
         "400": {
           "application/problem+json": "#/components/schemas/CreateProjectBadRequestProblem"
         },
@@ -2036,7 +2144,7 @@
           "application/problem+json": "#/components/schemas/CreateProjectGatewayTimeoutProblem"
         }
       },
-      "summary": "Create a project",
+      "summary": "Create project",
       "description": "Creates in the authorized organization. In addition to account credentials, explicitly granted Service Identity API keys and M2M tokens may create projects. Project API keys cannot create projects. Creator and private credential evidence come only from the trusted authorization context. The caller-selected slug is immutable, must be 3 to 63 lowercase ASCII alphanumerics separated by single hyphens, and cannot be reserved or held by any active or deleted project.",
       "requestBody": {
         "required": true,
@@ -2119,7 +2227,7 @@
           "application/problem+json": "#/components/schemas/RequestTimeoutProblem"
         }
       },
-      "summary": "Create a project API key",
+      "summary": "Create project API key",
       "description": "Creates a key bound to the selected project using the supplied name, permissions and optional expiry. The secret is returned only in this response and in idempotent replays of it; store it securely because other reads never return it. The key is scoped to this project and does not grant account-level access. Supply the required Idempotency-Key header.",
       "requestBody": {
         "required": true,
@@ -2337,7 +2445,7 @@
           "application/problem+json": "#/components/schemas/CreateWebhookDestinationGatewayTimeoutProblem"
         }
       },
-      "summary": "Create a webhook destination",
+      "summary": "Create webhook destination",
       "description": "Creates a webhook destination for the selected project using its URL, payload API version, event selection and other documented settings. The response includes the signing secret, which is returned only in this response and in idempotent replays of it, never by destination reads; store it securely for signature verification. The API version must be selectable and selected event types must belong to that version's catalog. Supply the required Idempotency-Key header.",
       "requestBody": {
         "required": true,
@@ -2499,7 +2607,7 @@
           "application/problem+json": "#/components/schemas/CreateWhatsappVoipSenderGatewayTimeoutProblem"
         }
       },
-      "summary": "Create a VoIP-backed WhatsApp sender",
+      "summary": "Create WhatsApp VoIP sender",
       "description": "Registers an active, SMS-capable Photon VoIP line on this project's connected WhatsApp Business Account. The account is resolved server-side; callers never select a WABA. The platform creates or reuses the Meta number, requests and consumes the SMS ownership code internally, verifies it, and registers the sender. displayName is optional; when omitted the project agent profile name is snapshotted before acceptance. The VoIP line remains a separate resource and never receives the whatsapp_business ability.",
       "requestBody": {
         "required": true,
@@ -2548,7 +2656,7 @@
           "application/problem+json": "#/components/schemas/DeleteAccountGatewayTimeoutProblem"
         }
       },
-      "summary": "Delete the authenticated account",
+      "summary": "Delete account",
       "description": "Deletes the authenticated account and returns its account tombstone. The operation is rejected while the account still owns organizations; transfer or close those organizations before retrying. This endpoint acts on the caller's account and does not accept another account's identifier."
     },
     {
@@ -2619,7 +2727,7 @@
           "application/problem+json": "#/components/schemas/DeleteProjectGatewayTimeoutProblem"
         }
       },
-      "summary": "Delete a project",
+      "summary": "Delete project",
       "description": "Starts deletion of the identified project using a credential authorized for project management. Inspect the documented response and use getProjectClosureStatus with the organization and project identifiers to read closure progress. A project API key is not an accepted credential for this operation."
     },
     {
@@ -2786,7 +2894,7 @@
           "application/problem+json": "#/components/schemas/DeleteVoiceProfileInboundGatewayTimeoutProblem"
         }
       },
-      "summary": "Remove Voice profile inbound configuration",
+      "summary": "Delete Voice inbound configuration",
       "description": "Removes a profile's inbound destination when the shared profile version matches. The profileId may identify the default or an additional profile. The profile and its line assignments remain. Requires platforms:write bound to the path project."
     },
     {
@@ -2866,7 +2974,7 @@
           "application/problem+json": "#/components/schemas/DeleteVoiceProfileOutboundGatewayTimeoutProblem"
         }
       },
-      "summary": "Revoke Voice profile outbound credential",
+      "summary": "Revoke Voice outbound credential",
       "description": "Revokes outbound calling for a profile when the shared profile version matches. The profileId may identify the default or an additional profile. The profile, inbound destination, and line assignments remain. Requires platforms:write bound to the path project."
     },
     {
@@ -2930,7 +3038,7 @@
           "application/problem+json": "#/components/schemas/DeleteWebhookDestinationGatewayTimeoutProblem"
         }
       },
-      "summary": "Delete a webhook destination",
+      "summary": "Delete webhook destination",
       "description": "Deletes the selected project's destination and returns its stable tombstone. Repeated deletion returns the deletion representation. This operation removes the destination configuration; it is separate from disabling a destination through an update."
     },
     {
@@ -2954,7 +3062,7 @@
           "application/problem+json": "#/components/schemas/UpstreamUnavailableProblem"
         }
       },
-      "summary": "Start Device Authorization",
+      "summary": "Start device authorization",
       "description": "Starts the device authorization flow for a CLI or another device without a browser. Show the verification URL and user code, then poll the token endpoint at the returned interval. No request fields are required; any supplied body is ignored."
     },
     {
@@ -2982,7 +3090,7 @@
           "application/problem+json": "#/components/schemas/UpstreamUnavailableProblem"
         }
       },
-      "summary": "Exchange Device Code or Refresh Token",
+      "summary": "Exchange device code or refresh token",
       "description": "Exchanges an authorized device code or a refresh token for an access token and rotating refresh token. Accepts JSON and form-encoded bodies. While polling, wait at least interval seconds and increase the interval on slow_down. Store the new refresh token after every successful grant.",
       "requestBody": {
         "required": true,
@@ -3064,7 +3172,7 @@
           "application/problem+json": "#/components/schemas/DisableOrganizationSsoGatewayTimeoutProblem"
         }
       },
-      "summary": "Turn organization SSO off",
+      "summary": "Disable organization SSO",
       "description": "Deletes the provider connection, releases the SSO requirement once the connection is gone, then unbinds the chosen domains. Retry with the same Idempotency-Key to resume or await the same run.",
       "requestBody": {
         "required": true,
@@ -3148,7 +3256,7 @@
           "application/problem+json": "#/components/schemas/DisconnectWhatsappBusinessAccountGatewayTimeoutProblem"
         }
       },
-      "summary": "Disconnect WhatsApp Business account and numbers",
+      "summary": "Disconnect WhatsApp Business account",
       "description": "Disconnects every attached WhatsApp sender, then unsubscribes our app and removes the project's business account connection. Photon VoIP lines and the numbers in Meta remain. Requires Idempotency-Key. Poll the returned operation; provider refusals appear as operation failures and retain the account for retry with a new key. New signups are blocked while disconnecting, and existing provisions must finish before this request can be accepted."
     },
     {
@@ -3215,7 +3323,7 @@
           "application/problem+json": "#/components/schemas/DownloadAttachmentGatewayTimeoutProblem"
         }
       },
-      "summary": "Download an Attachment",
+      "summary": "Download attachment",
       "description": "Downloads an Attachment's bytes. If unavailable after ten seconds, returns ATTACHMENT_NOT_READY with Retry-After: 5."
     },
     {
@@ -3258,7 +3366,7 @@
           "application/problem+json": "#/components/schemas/GetAccountGatewayTimeoutProblem"
         }
       },
-      "summary": "Get the authenticated account",
+      "summary": "Get account",
       "description": "Returns the profile of the authenticated account. The account is selected from the credential rather than a request parameter. A missing or deleted account is reported as an error instead of an empty profile."
     },
     {
@@ -3315,7 +3423,7 @@
           "application/problem+json": "#/components/schemas/GetAgentProfileGatewayTimeoutProblem"
         }
       },
-      "summary": "Get an agent profile",
+      "summary": "Get agent profile",
       "description": "Returns the agent profile belonging to the identified project. The profile is project-scoped and is distinct from the authenticated account's personal profile. Use the dedicated avatar operations when uploading or removing an agent avatar."
     },
     {
@@ -3379,7 +3487,7 @@
           "application/problem+json": "#/components/schemas/GetAttachmentGatewayTimeoutProblem"
         }
       },
-      "summary": "Get an Attachment",
+      "summary": "Get attachment",
       "description": "Returns an Attachment's metadata. Use the content endpoint to download its bytes."
     },
     {
@@ -3449,7 +3557,7 @@
           "application/problem+json": "#/components/schemas/GetBillingOperationGatewayTimeoutProblem"
         }
       },
-      "summary": "Get a billing operation snapshot",
+      "summary": "Get billing operation",
       "description": "Returns the authoritative state of a billing operation belonging to the selected project. Use it to recover or poll a plan-change request until the operation reaches success or failure. An accepted request is not evidence that the plan change has completed."
     },
     {
@@ -3506,7 +3614,7 @@
           "application/problem+json": "#/components/schemas/GetBillingOverviewGatewayTimeoutProblem"
         }
       },
-      "summary": "Get the project's billing overview",
+      "summary": "Get project billing overview",
       "description": "Returns the selected project's plan information, entitlements and current billing-period usage. This operation reads project billing state; it does not change plans or the payer's payment method. Organization-level plans are available through the organization billing overview."
     },
     {
@@ -3567,6 +3675,72 @@
       "description": "Gets the profile currently selected as the project default, including its optional inbound delivery state. Requires platforms:read bound to the path project."
     },
     {
+      "operationId": "getEffectiveTerms",
+      "rpcMethod": "getEffectiveTerms",
+      "namespace": [
+        "organizations",
+        "billing"
+      ],
+      "httpMethod": "GET",
+      "path": "/v1/organizations/{organizationId}/billing/projects/{projectId}/terms",
+      "safe": true,
+      "idempotencyKeyRequired": false,
+      "parameters": [
+        {
+          "name": "organizationId",
+          "wireName": "organizationId",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "projectId",
+          "wireName": "projectId",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "application/json": "#/components/schemas/GetEffectiveTermsResponse"
+        },
+        "400": {
+          "application/problem+json": "#/components/schemas/InvalidArgumentProblem"
+        },
+        "401": {
+          "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
+        },
+        "403": {
+          "application/problem+json": "#/components/schemas/GetEffectiveTermsForbiddenProblem"
+        },
+        "409": {
+          "application/problem+json": "#/components/schemas/FailedPreconditionProblem"
+        },
+        "422": {
+          "application/problem+json": "#/components/schemas/ValidationFailedProblem"
+        },
+        "500": {
+          "application/problem+json": "#/components/schemas/GetEffectiveTermsInternalServerErrorProblem"
+        },
+        "502": {
+          "application/problem+json": "#/components/schemas/UpstreamFailureProblem"
+        },
+        "503": {
+          "application/problem+json": "#/components/schemas/UpstreamUnavailableProblem"
+        },
+        "504": {
+          "application/problem+json": "#/components/schemas/GetEffectiveTermsGatewayTimeoutProblem"
+        }
+      },
+      "summary": "Get the project's effective billing terms",
+      "description": "Returns what the selected project is billed on now, per category it holds: the plan as its subscription has it, with any override applied, each fixed charge at the subscription's price and quantity, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. It also returns the credit the paying organization holds on credit notes, such as the unused time of a plan an upgrade replaced; it offsets that organization's next invoices. Supply both organizationId and projectId; the organization must pay for the project. This operation does not change billing."
+    },
+    {
       "operationId": "getMessageMetricsBackfill",
       "rpcMethod": "getMessageMetricsBackfill",
       "namespace": [
@@ -3619,7 +3793,7 @@
           "application/problem+json": "#/components/schemas/UpstreamUnavailableProblem"
         }
       },
-      "summary": "Get Metrics historical backfill status",
+      "summary": "Get metrics backfill status",
       "description": "Returns historical metrics update progress. Completion reflects lastVerifiedAt; queries remain available during updates."
     },
     {
@@ -3675,8 +3849,8 @@
           "application/problem+json": "#/components/schemas/UpstreamUnavailableProblem"
         }
       },
-      "summary": "Get messaging and voice metrics SQL schema",
-      "description": "Returns the message_events SQL schema, supported queries, and limits for the selected API version."
+      "summary": "Get metrics SQL schema",
+      "description": "Returns the message_events and call_events SQL schema, supported queries, and limits for the selected API version."
     },
     {
       "operationId": "getOperation",
@@ -3798,7 +3972,7 @@
           "application/problem+json": "#/components/schemas/GetOrganizationBillingOverviewGatewayTimeoutProblem"
         }
       },
-      "summary": "Get the organization's billing overview",
+      "summary": "Get organization billing overview",
       "description": "Returns the selected organization’s billing subscription and entitlementsVersion. The subscription can be null. Read the returned plan, charges and entitlements to inspect organization billing; this operation does not purchase or change a plan."
     },
     {
@@ -3858,7 +4032,7 @@
           "application/problem+json": "#/components/schemas/GetOrganizationConnectionStatusGatewayTimeoutProblem"
         }
       },
-      "summary": "Read organization and own membership synchronization",
+      "summary": "Get organization connection status",
       "description": "Requires current human organization membership. Synchronization status does not attest SSO configuration or completed authorization."
     },
     {
@@ -3915,7 +4089,7 @@
           "application/problem+json": "#/components/schemas/GetOrganizationPaymentMethodGatewayTimeoutProblem"
         }
       },
-      "summary": "Check the organization for a card on file",
+      "summary": "Get organization payment method",
       "description": "Reports whether the selected organization has a card on file and returns its documented payment-method metadata. Reading this endpoint does not collect a new card or create a checkout session."
     },
     {
@@ -3978,7 +4152,7 @@
           "application/problem+json": "#/components/schemas/GetOrganizationSsoConfigurationGatewayTimeoutProblem"
         }
       },
-      "summary": "Read organization SSO configuration",
+      "summary": "Get organization SSO configuration",
       "description": "Returns the selected organization’s SSO connection state, configuration version, and desired and effective policy settings. Read policySyncStatus alongside the enforcement fields to distinguish requested settings from synchronized settings."
     },
     {
@@ -4034,7 +4208,7 @@
           "application/problem+json": "#/components/schemas/GetProjectGatewayTimeoutProblem"
         }
       },
-      "summary": "Get a project",
+      "summary": "Get project",
       "description": "Returns the identified project's settings for an authorized caller. The credential must be allowed to access that project; possession of an unrelated project's key does not provide access. Missing and deleted projects are reported through the documented error responses."
     },
     {
@@ -4100,7 +4274,7 @@
           "application/problem+json": "#/components/schemas/GetProjectClosureStatusGatewayTimeoutProblem"
         }
       },
-      "summary": "Read project closure progress",
+      "summary": "Get project closure status",
       "description": "Returns closure progress for projectId within organizationId, including deletionOperationId, domain progress and ready. This read operation does not initiate deletion."
     },
     {
@@ -4152,7 +4326,7 @@
         }
       },
       "summary": "Get project iMessage platform",
-      "description": "Reports whether the project is on shared or dedicated iMessage lines, derived from its billing entitlements. Shared mode carries the seat cap. Requires the platforms:read permission bound to the project resource in the path."
+      "description": "Reports whether the project is on shared or dedicated iMessage lines, derived from its billing entitlements. Shared mode carries the seat cap. Both say whether a dedicated line requested now would be assigned without waiting. Requires the platforms:read permission bound to the project resource in the path."
     },
     {
       "operationId": "getProjectWhatsappPlatform",
@@ -4203,7 +4377,7 @@
         }
       },
       "summary": "Get project WhatsApp platform",
-      "description": "Reports whether the project is on shared or dedicated WhatsApp lines, derived from its billing entitlements. Shared mode carries the seat cap. Requires the platforms:read permission bound to the project resource in the path."
+      "description": "Reports whether the project is on shared or dedicated WhatsApp lines, derived from its billing entitlements. Shared mode carries the seat cap. Both say whether a dedicated line requested now would be assigned without waiting. Requires the platforms:read permission bound to the project resource in the path."
     },
     {
       "operationId": "getResource",
@@ -4405,7 +4579,7 @@
           "application/problem+json": "#/components/schemas/GetSmsLineCampaignAssignmentGatewayTimeoutProblem"
         }
       },
-      "summary": "Read SMS line campaign assignment",
+      "summary": "Get SMS line campaign assignment",
       "description": "Read the last confirmed campaign and current eligibility. Follow changes through their operations. Eligibility is a control-plane assessment, not a delivery or recipient-consent guarantee."
     },
     {
@@ -4604,7 +4778,7 @@
           "application/problem+json": "#/components/schemas/GetWebhookDestinationGatewayTimeoutProblem"
         }
       },
-      "summary": "Get a webhook destination",
+      "summary": "Get webhook destination",
       "description": "Returns the configuration of one webhook destination belonging to the selected project. Missing or deleted destinations are reported as errors. This read does not disclose the signing secret returned when the destination or a secret rotation was created."
     },
     {
@@ -4680,7 +4854,7 @@
           "application/problem+json": "#/components/schemas/GetWebhookEventSchemaGatewayTimeoutProblem"
         }
       },
-      "summary": "Get a webhook event schema",
+      "summary": "Get webhook event schema",
       "description": "Returns the published reader JSON Schema for eventType in the requested webhook apiVersion. Use it to interpret events for that exact payload version. The response media type is application/schema+json; an authorized conditional request may return 304 without a body. Unsupported event/version combinations are rejected."
     },
     {
@@ -5110,7 +5284,7 @@
           "application/problem+json": "#/components/schemas/ListAttachmentsGatewayTimeoutProblem"
         }
       },
-      "summary": "List Project Attachments",
+      "summary": "List attachments",
       "description": "Lists the Project's Attachment metadata, with optional time filters."
     },
     {
@@ -5250,8 +5424,116 @@
           "application/problem+json": "#/components/schemas/ListBillingPlansGatewayTimeoutProblem"
         }
       },
-      "summary": "List available billing plans",
+      "summary": "List billing plans",
       "description": "Lists the billing plan catalog, grouped by their public plan-metadata type. Use the returned plan information when choosing the category and planCode for a plan change. The catalog is the same for every project, and reading it does not purchase a plan."
+    },
+    {
+      "operationId": "listFilteredVerificationCodes",
+      "rpcMethod": "listFilteredVerificationCodes",
+      "namespace": [
+        "projects",
+        "platforms"
+      ],
+      "httpMethod": "GET",
+      "path": "/v1/projects/{id}/platforms/filtered-otp",
+      "safe": true,
+      "idempotencyKeyRequired": false,
+      "parameters": [
+        {
+          "name": "id",
+          "wireName": "id",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "platform",
+          "wireName": "platform",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/FilteredVerificationCodePlatform"
+          }
+        },
+        {
+          "name": "receivedAfter",
+          "wireName": "receivedAfter",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "example": "2026-09-01T00:00:00.000Z",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "receivedBefore",
+          "wireName": "receivedBefore",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "example": "2026-10-01T00:00:00.000Z",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "pageSize",
+          "wireName": "pageSize",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "maximum": 200,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        {
+          "name": "pageToken",
+          "wireName": "pageToken",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "minLength": 1,
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "application/json": "#/components/schemas/FilteredVerificationCodePage"
+        },
+        "401": {
+          "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
+        },
+        "403": {
+          "application/problem+json": "#/components/schemas/ListFilteredVerificationCodesForbiddenProblem"
+        },
+        "422": {
+          "application/problem+json": "#/components/schemas/ValidationFailedProblem"
+        },
+        "429": {
+          "application/problem+json": "#/components/schemas/RateLimitedProblem"
+        },
+        "500": {
+          "application/problem+json": "#/components/schemas/ListFilteredVerificationCodesInternalServerErrorProblem"
+        },
+        "502": {
+          "application/problem+json": "#/components/schemas/UpstreamFailureProblem"
+        },
+        "503": {
+          "application/problem+json": "#/components/schemas/UpstreamUnavailableProblem"
+        },
+        "504": {
+          "application/problem+json": "#/components/schemas/ListFilteredVerificationCodesGatewayTimeoutProblem"
+        }
+      },
+      "summary": "List filtered verification codes",
+      "description": "Lists the verification codes Photon kept from this project's dedicated lines and numbers. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line or number (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Filter by `platform`; to read one line, use its own filtered-otp path. Requires the platforms:read permission bound to the project resource in the path."
     },
     {
       "operationId": "listInvoices",
@@ -5371,7 +5653,7 @@
           "application/problem+json": "#/components/schemas/ListNumberAreaCodesGatewayTimeoutProblem"
         }
       },
-      "summary": "List supported number area codes",
+      "summary": "List number area codes",
       "description": "Lists current provider coverage for US local numbers, sorted and deduplicated. Coverage does not guarantee inventory carrying every required feature. New area-specific purchases must use a listed code; accepted purchases keep waiting if coverage later changes. Requires platforms:read for the path project."
     },
     {
@@ -5425,7 +5707,7 @@
           "application/problem+json": "#/components/schemas/ListNumberCountriesGatewayTimeoutProblem"
         }
       },
-      "summary": "List supported number countries",
+      "summary": "List number countries",
       "description": "Lists supported purchase countries independently of current provider inventory. Requires platforms:read for the path project."
     },
     {
@@ -5471,6 +5753,17 @@
           "location": "path",
           "required": true,
           "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "endedAfter",
+          "wireName": "endedAfter",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
             "type": "string"
           }
         },
@@ -5554,7 +5847,7 @@
         }
       },
       "summary": "List operations",
-      "description": "Lists the project's operations using the same operation representation as creation and GET. The API includes detail.setupUrl only with platforms:write for this project. Results are oldest first — every provision and release it has ever asked for, including the ones still running. This is the entire in-flight view: a resource only appears once it is real, so nothing half-built shows up in the resource list and nothing in flight is missing from this one. Filter by `resourceId` to get one resource's whole history, which for a pooled line is every tenure this project has had on it. `state` is comma-separated; `type` accepts one operation type and an absent filter means everything, including failed and cancelled operations. Requires the platforms:read permission bound to the project resource in the path."
+      "description": "Lists the project's operations using the same operation representation as creation and GET. The API includes detail.setupUrl only with platforms:write for this project. Results are oldest first — every provision and release it has ever asked for, including the ones still running. This is the entire in-flight view: a resource only appears once it is real, so nothing half-built shows up in the resource list and nothing in flight is missing from this one. Filter by `resourceId` to get one resource's whole history, which for a pooled line is every tenure this project has had on it. `state` is comma-separated; `type` accepts one operation type and an absent filter means everything, including failed and cancelled operations. `endedAfter` keeps only operations that finished after that instant, so what failed or was withdrawn recently is one short page. Requires the platforms:read permission bound to the project resource in the path."
     },
     {
       "operationId": "listProjectApiKeys",
@@ -5768,8 +6061,128 @@
           "application/problem+json": "#/components/schemas/ListProjectsGatewayTimeoutProblem"
         }
       },
-      "summary": "List accessible projects",
+      "summary": "List projects",
       "description": "Returns a cursor-paginated page of the active projects in organizationId. Filter using query and the documented creation-time bounds, and navigate with pageSize and pageToken. Project roles are not returned and role is not a supported filter."
+    },
+    {
+      "operationId": "listResourceFilteredVerificationCodes",
+      "rpcMethod": "listResourceFilteredVerificationCodes",
+      "namespace": [
+        "projects",
+        "platforms"
+      ],
+      "httpMethod": "GET",
+      "path": "/v1/projects/{id}/platforms/resources/{resourceId}/filtered-otp",
+      "safe": true,
+      "idempotencyKeyRequired": false,
+      "parameters": [
+        {
+          "name": "id",
+          "wireName": "id",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "resourceId",
+          "wireName": "resourceId",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "platform",
+          "wireName": "platform",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/FilteredVerificationCodePlatform"
+          }
+        },
+        {
+          "name": "receivedAfter",
+          "wireName": "receivedAfter",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "example": "2026-09-01T00:00:00.000Z",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "receivedBefore",
+          "wireName": "receivedBefore",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "example": "2026-10-01T00:00:00.000Z",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "pageSize",
+          "wireName": "pageSize",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "maximum": 200,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        {
+          "name": "pageToken",
+          "wireName": "pageToken",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "minLength": 1,
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "application/json": "#/components/schemas/FilteredVerificationCodePage"
+        },
+        "401": {
+          "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
+        },
+        "403": {
+          "application/problem+json": "#/components/schemas/ListResourceFilteredVerificationCodesForbiddenProblem"
+        },
+        "404": {
+          "application/problem+json": "#/components/schemas/ResourceNotFoundProblem"
+        },
+        "422": {
+          "application/problem+json": "#/components/schemas/ValidationFailedProblem"
+        },
+        "429": {
+          "application/problem+json": "#/components/schemas/RateLimitedProblem"
+        },
+        "500": {
+          "application/problem+json": "#/components/schemas/ListResourceFilteredVerificationCodesInternalServerErrorProblem"
+        },
+        "502": {
+          "application/problem+json": "#/components/schemas/UpstreamFailureProblem"
+        },
+        "503": {
+          "application/problem+json": "#/components/schemas/UpstreamUnavailableProblem"
+        },
+        "504": {
+          "application/problem+json": "#/components/schemas/ListResourceFilteredVerificationCodesGatewayTimeoutProblem"
+        }
+      },
+      "summary": "List a line's filtered verification codes",
+      "description": "Lists the verification codes Photon kept from one dedicated line or number. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line or number (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a number receives both SMS and WhatsApp. Requires the platforms:read permission bound to the project resource in the path."
     },
     {
       "operationId": "listResources",
@@ -5874,7 +6287,7 @@
         }
       },
       "summary": "List resources",
-      "description": "Lists everything the project holds, oldest first, whatever kind of thing it is — one endpoint and one id shape for numbers, dedicated lines and whatever ships next. Nothing half-built appears here: a resource exists only once it is real, so anything still being provisioned is an operation rather than a resource with a pending flag. Filter by `type`, by `ability` (which matches only abilities that are currently enabled), and by `state` — comma-separated, and absent means every state, including retired ones. `detail` carries a per-type public view: an SMS number's number, a dedicated line's number and whether it is healthy. Requires the platforms:read permission bound to the project resource in the path."
+      "description": "Lists everything the project holds, oldest first, whatever kind of thing it is — one endpoint and one id shape for numbers, dedicated lines and whatever ships next. Nothing half-built appears here: a resource exists only once it is real, so anything still being provisioned is an operation rather than a resource with a pending flag. Filter by `type`, by `ability` (which matches only abilities that are currently enabled), and by `state` — comma-separated, and absent means every state, including retired ones. `detail` carries a per-type public view: an SMS number's number, a dedicated line's number and its per-capability health (`imessageHealth`, `whatsappHealth`, each with an `overallStatus` of `available`, `degraded`, `unavailable` or `unknown`; `imessageHealth` also carries `account`, `photonSystemComponents`, `newConversations`, `sms` and `mms`, each a `status` with the `cause` that decided it: `account`, `photonSystemComponents`, or null for the item's own state). Requires the platforms:read permission bound to the project resource in the path."
     },
     {
       "operationId": "listSharedLineAssignments",
@@ -6431,6 +6844,141 @@
       "description": "Lists the project's WhatsApp shared line assignments, oldest first. Released assignments are excluded unless includeReleased is set. Requires the platforms:read permission bound to the project resource in the path."
     },
     {
+      "operationId": "previewOrganizationChange",
+      "rpcMethod": "previewOrganizationChange",
+      "namespace": [
+        "organizations",
+        "billing"
+      ],
+      "httpMethod": "POST",
+      "path": "/v1/organizations/{organizationId}/billing/preview",
+      "safe": false,
+      "idempotencyKeyRequired": false,
+      "parameters": [
+        {
+          "name": "organizationId",
+          "wireName": "organizationId",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "application/json": "#/components/schemas/PreviewOrganizationChangeResponse"
+        },
+        "400": {
+          "application/problem+json": "#/components/schemas/InvalidArgumentProblem"
+        },
+        "401": {
+          "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
+        },
+        "403": {
+          "application/problem+json": "#/components/schemas/PreviewOrganizationChangeForbiddenProblem"
+        },
+        "409": {
+          "application/problem+json": "#/components/schemas/FailedPreconditionProblem"
+        },
+        "422": {
+          "application/problem+json": "#/components/schemas/ValidationFailedProblem"
+        },
+        "500": {
+          "application/problem+json": "#/components/schemas/PreviewOrganizationChangeInternalServerErrorProblem"
+        },
+        "502": {
+          "application/problem+json": "#/components/schemas/UpstreamFailureProblem"
+        },
+        "503": {
+          "application/problem+json": "#/components/schemas/UpstreamUnavailableProblem"
+        },
+        "504": {
+          "application/problem+json": "#/components/schemas/PreviewOrganizationChangeGatewayTimeoutProblem"
+        }
+      },
+      "summary": "Preview an organization billing change",
+      "description": "Previews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A quantity already paid for this period is not billed again, so a purchase after a release can be free. nextCharge is what is charged in advance at the next period start. For a fixed-charge change, pass quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing.",
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": "#/components/schemas/PreviewOrganizationChangeRequest"
+        }
+      }
+    },
+    {
+      "operationId": "previewProjectChange",
+      "rpcMethod": "previewProjectChange",
+      "namespace": [
+        "organizations",
+        "billing"
+      ],
+      "httpMethod": "POST",
+      "path": "/v1/organizations/{organizationId}/billing/projects/{projectId}/preview",
+      "safe": false,
+      "idempotencyKeyRequired": false,
+      "parameters": [
+        {
+          "name": "organizationId",
+          "wireName": "organizationId",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "projectId",
+          "wireName": "projectId",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "application/json": "#/components/schemas/PreviewProjectChangeResponse"
+        },
+        "400": {
+          "application/problem+json": "#/components/schemas/InvalidArgumentProblem"
+        },
+        "401": {
+          "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
+        },
+        "403": {
+          "application/problem+json": "#/components/schemas/PreviewProjectChangeForbiddenProblem"
+        },
+        "409": {
+          "application/problem+json": "#/components/schemas/FailedPreconditionProblem"
+        },
+        "422": {
+          "application/problem+json": "#/components/schemas/ValidationFailedProblem"
+        },
+        "500": {
+          "application/problem+json": "#/components/schemas/PreviewProjectChangeInternalServerErrorProblem"
+        },
+        "502": {
+          "application/problem+json": "#/components/schemas/UpstreamFailureProblem"
+        },
+        "503": {
+          "application/problem+json": "#/components/schemas/UpstreamUnavailableProblem"
+        },
+        "504": {
+          "application/problem+json": "#/components/schemas/PreviewProjectChangeGatewayTimeoutProblem"
+        }
+      },
+      "summary": "Preview a project billing change",
+      "description": "Previews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A quantity already paid for this period is not billed again, so a purchase after a release can be free. nextCharge is what is charged in advance at the next period start. For a fixed-charge change, pass quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; planChange says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in planChange.additions and outside dueNow. Supply both organizationId and projectId; the organization must pay for the project.",
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": "#/components/schemas/PreviewProjectChangeRequest"
+        }
+      }
+    },
+    {
       "operationId": "provisionImessageDedicatedLine",
       "rpcMethod": "provisionImessageDedicatedLine",
       "namespace": [
@@ -6503,7 +7051,7 @@
         }
       },
       "summary": "Provision dedicated iMessage line",
-      "description": "Claims one dedicated iMessage line for the project and enables iMessage on it. Always answers 202 with an operation: dedicated lines are allocated from available capacity, and unavailable capacity causes a wait rather than a failure — this can legitimately stay `running` for hours, which is exactly why the response is a handle to poll rather than a number. The project's messaging subscription must grant the dedicated iMessage lines entitlement (`imessage_dedicated_lines.can_purchase`), and that is checked before capacity is reserved; nothing is charged until a line is actually claimed. If you no longer want to wait, POST to the operation's cancel endpoint, which costs nothing. The Idempotency-Key is required and permanent: repeating it returns the same operation forever. A further line always needs a NEW key, including while others are still waiting. Requires the platforms:write permission bound to the project resource in the path."
+      "description": "Claims one dedicated iMessage line for the project and enables iMessage on it. Always answers 202 with an operation: dedicated lines are allocated from available capacity, and unavailable capacity causes a wait rather than a failure — this can legitimately stay `running` for hours, which is exactly why the response is a handle to poll rather than a number. The project's messaging subscription must grant the dedicated iMessage lines entitlement (`imessage_dedicated_lines.can_purchase`), and that is checked before capacity is reserved. The line's own charge starts when a line is claimed; the subscription that grants the entitlement bills on its own terms, which cancelling a request does not change. Waiting requests are served first come, first served. One that is still waiting is cancelled with a `reason` if the project is deleted (`project_deleted`) or its plan stops selling dedicated lines (`entitlement_lost`); while the payer is restricted for overdue payment it keeps waiting. If you no longer want to wait, POST to the operation's cancel endpoint, which charges nothing for the line. The Idempotency-Key is required and permanent: repeating it returns the same operation forever. A further line always needs a NEW key, including while others are still waiting. Requires the platforms:write permission bound to the project resource in the path."
     },
     {
       "operationId": "provisionWhatsappDedicatedLine",
@@ -6578,7 +7126,7 @@
         }
       },
       "summary": "Provision dedicated WhatsApp line",
-      "description": "Provisions one dedicated WhatsApp line with WhatsApp and shared Voice enabled. It attaches to an eligible iMessage line the project already owns when possible so both products keep the same number; otherwise it claims healthy, available WhatsApp-capable dedicated-line inventory. Always answers 202, because waiting when no inventory is available is not a failure. The product opens its own charge period after the abilities are enabled; Voice has no separate charge. Cancel the returned operation to stop waiting. The Idempotency-Key is required and permanent."
+      "description": "Provisions one dedicated WhatsApp line with WhatsApp and shared Voice enabled. It attaches to an eligible iMessage line the project already owns when possible so both products keep the same number; otherwise it claims healthy, available WhatsApp-capable dedicated-line inventory. Always answers 202, because waiting when no inventory is available is not a failure. The product opens its own charge period after the abilities are enabled; Voice has no separate charge. Waiting requests are served first come, first served, and are cancelled with a `reason` exactly as for a dedicated iMessage line. Cancel the returned operation to stop waiting. The Idempotency-Key is required and permanent."
     },
     {
       "operationId": "purchaseSmsNumber",
@@ -6726,8 +7274,8 @@
           "application/problem+json": "#/components/schemas/QueryMessageMetricsGatewayTimeoutProblem"
         }
       },
-      "summary": "Query messaging and voice metrics with SQL",
-      "description": "Runs read-only SQL over the Project's message_events table. Get the SQL schema for supported columns, capabilities, and limits.",
+      "summary": "Query metrics",
+      "description": "Runs read-only SQL over the Project's message_events or call_events table. Get the SQL schema for supported columns, capabilities, and limits.",
       "requestBody": {
         "required": true,
         "content": {
@@ -6772,7 +7320,7 @@
           "application/problem+json": "#/components/schemas/RedeemAppInstallationDeliveryGatewayTimeoutProblem"
         }
       },
-      "summary": "Redeem an approved installation credential",
+      "summary": "Redeem installation credential",
       "description": "The registered app backend authenticates with a signed client assertion and a single-use code. Plaintext is returned only once; retries return status and never create another credential.",
       "requestBody": {
         "required": true,
@@ -7257,7 +7805,7 @@
           "application/problem+json": "#/components/schemas/ReplaceVoiceProfileInboundGatewayTimeoutProblem"
         }
       },
-      "summary": "Create or replace Voice profile inbound configuration",
+      "summary": "Replace Voice inbound configuration",
       "description": "Creates or fully replaces a profile's inbound destination when the shared profile version matches. The profileId may identify the default or an additional profile. Credentials are required and nullable; null removes destination authentication. Requires platforms:write bound to the path project.",
       "requestBody": {
         "required": true,
@@ -7328,7 +7876,7 @@
           "application/problem+json": "#/components/schemas/ResetAccountProfilePictureGatewayTimeoutProblem"
         }
       },
-      "summary": "Remove a profile picture",
+      "summary": "Remove profile picture",
       "description": "Removes the authenticated account's custom profile picture and returns the account using its default picture. This operation does not upload a replacement; use the upload-and-commit operations when setting a new custom picture. Supply the required Idempotency-Key header."
     },
     {
@@ -7400,92 +7948,8 @@
           "application/problem+json": "#/components/schemas/ResetAgentProfileAvatarGatewayTimeoutProblem"
         }
       },
-      "summary": "Reset an agent avatar",
+      "summary": "Reset agent avatar",
       "description": "Replaces the selected project's agent avatar with the project's default avatar, a generated planet image derived from the project ID, and returns the updated agent profile. The reset does not restore an earlier avatar: a custom avatar it replaces is discarded and must be uploaded and committed again to use it. When the default avatar is already in use, the profile is returned unchanged. This does not change the account's personal profile picture. Supply the required Idempotency-Key header."
-    },
-    {
-      "operationId": "resumeSubscription",
-      "rpcMethod": "resumeSubscription",
-      "namespace": [
-        "organizations",
-        "billing"
-      ],
-      "httpMethod": "POST",
-      "path": "/v1/organizations/{organizationId}/billing/projects/{projectId}/resume",
-      "safe": false,
-      "idempotencyKeyRequired": false,
-      "parameters": [
-        {
-          "name": "idempotencyKey",
-          "wireName": "Idempotency-Key",
-          "location": "header",
-          "required": false,
-          "schema": {
-            "maxLength": 255,
-            "minLength": 1,
-            "pattern": "^[\\x21-\\x7e]{1,255}$",
-            "type": "string"
-          }
-        },
-        {
-          "name": "organizationId",
-          "wireName": "organizationId",
-          "location": "path",
-          "required": true,
-          "schema": {
-            "type": "string"
-          }
-        },
-        {
-          "name": "projectId",
-          "wireName": "projectId",
-          "location": "path",
-          "required": true,
-          "schema": {
-            "type": "string"
-          }
-        }
-      ],
-      "responses": {
-        "200": {
-          "application/json": "#/components/schemas/ResumeSubscriptionResponse"
-        },
-        "400": {
-          "application/problem+json": "#/components/schemas/ResumeSubscriptionBadRequestProblem"
-        },
-        "401": {
-          "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
-        },
-        "403": {
-          "application/problem+json": "#/components/schemas/ResumeSubscriptionForbiddenProblem"
-        },
-        "409": {
-          "application/problem+json": "#/components/schemas/ResumeSubscriptionConflictProblem"
-        },
-        "422": {
-          "application/problem+json": "#/components/schemas/ResumeSubscriptionUnprocessableEntityProblem"
-        },
-        "500": {
-          "application/problem+json": "#/components/schemas/ResumeSubscriptionInternalServerErrorProblem"
-        },
-        "502": {
-          "application/problem+json": "#/components/schemas/UpstreamFailureProblem"
-        },
-        "503": {
-          "application/problem+json": "#/components/schemas/ResumeSubscriptionServiceUnavailableProblem"
-        },
-        "504": {
-          "application/problem+json": "#/components/schemas/ResumeSubscriptionGatewayTimeoutProblem"
-        }
-      },
-      "summary": "Resume a category scheduled for cancellation",
-      "description": "Removes a scheduled cancellation for the specified billing category on the selected project so it can renew normally. This operation resumes a category scheduled to cancel; it is separate from purchasing or changing a plan. Supply both organizationId and projectId to select the project within its organization.",
-      "requestBody": {
-        "required": true,
-        "content": {
-          "application/json": "#/components/schemas/ResumeSubscriptionRequest"
-        }
-      }
     },
     {
       "operationId": "retryOrganizationConnectionSync",
@@ -7544,7 +8008,7 @@
           "application/problem+json": "#/components/schemas/RetryOrganizationConnectionSyncGatewayTimeoutProblem"
         }
       },
-      "summary": "Retry own organization connection synchronization",
+      "summary": "Retry organization connection sync",
       "description": "Reconciles existing local intent. Takes no body and cannot change membership, roles or authentication policy."
     },
     {
@@ -7623,7 +8087,7 @@
           "application/problem+json": "#/components/schemas/RequestTimeoutProblem"
         }
       },
-      "summary": "Retry a waiting webhook delivery",
+      "summary": "Retry webhook delivery",
       "description": "Requests an immediate attempt of the selected delivery if it is still the waiting head for its destination and event type. expectedAttemptCount is the failed-attempt counter recorded on the delivery and fences stale requests. This overrides the current backoff, including Retry-After, once. It preserves event identity and the retry budget. Delivered, active, disabled and dead-lettered deliveries cannot be retried. A 202 acknowledges the wake-up, not successful delivery. Supply an Idempotency-Key and retain it when retrying an ambiguous failure.",
       "requestBody": {
         "required": true,
@@ -7704,7 +8168,7 @@
           "application/problem+json": "#/components/schemas/RevokeAccountServiceKeyGatewayTimeoutProblem"
         }
       },
-      "summary": "Revoke an Account Service Key",
+      "summary": "Revoke Account Service Key",
       "description": "Revokes the account-owned service key identified by serviceKeyId and returns its revoked metadata. Repeating the revocation is stable. Revocation changes the credential's validity; it does not create a replacement key. Supply the required Idempotency-Key header."
     },
     {
@@ -7754,7 +8218,7 @@
           "application/problem+json": "#/components/schemas/RevokeAuthorizedApplicationGatewayTimeoutProblem"
         }
       },
-      "summary": "Revoke a connected application",
+      "summary": "Revoke connected application",
       "description": "Revokes the authenticated user's grant for one OAuth application."
     },
     {
@@ -7834,7 +8298,7 @@
           "application/problem+json": "#/components/schemas/RequestTimeoutProblem"
         }
       },
-      "summary": "Delete a project API key",
+      "summary": "Revoke project API key",
       "description": "Revokes the identified key on the selected project and returns its revoked metadata. Repeating the deletion returns the same revokedAt value. This operation does not rotate the key or return a replacement secret. Supply the required Idempotency-Key header."
     },
     {
@@ -8009,7 +8473,7 @@
           "application/problem+json": "#/components/schemas/RotateWebhookSigningSecretGatewayTimeoutProblem"
         }
       },
-      "summary": "Rotate a webhook signing secret",
+      "summary": "Rotate webhook signing secret",
       "description": "Rotates the signing secret for the selected project's webhook destination and returns the new secret. The optional overlapSeconds controls the requested overlap with the previous secret according to the documented request constraints. Store the new secret securely and update the receiver's signature verification configuration; it is returned only in this response and in idempotent replays of it, never by destination reads. Supply the required Idempotency-Key header.",
       "requestBody": {
         "required": true,
@@ -8070,7 +8534,7 @@
           "application/problem+json": "#/components/schemas/StartAccountPhoneVerificationGatewayTimeoutProblem"
         }
       },
-      "summary": "Start a phone number verification",
+      "summary": "Start phone verification",
       "description": "Sends an SMS code. Answers CAPTCHA_REQUIRED with the widget to render when no solved challenge accompanies the request; retry with the returned challengeContext and a token. Rate limited per account, per destination number, and globally; a rejection carries Retry-After.",
       "requestBody": {
         "required": true,
@@ -8098,7 +8562,7 @@
           "application/problem+json": "#/components/schemas/InvalidReturnToProblem"
         }
       },
-      "summary": "Start company sign-in without an existing Account",
+      "summary": "Start company sign-in",
       "description": "Returns a sign-in URL without requiring an existing account: the company SSO connection when the target has a ready connection, otherwise ordinary account login. Supply one documented enrollment variant: organizationId with returnTo (optionally invitationToken), invitationToken with returnTo, or retryToken. Open the returned URL to continue authentication; receiving a URL does not complete sign-in. This is a browser flow: the request must come from an allowed Origin, and the retryToken variant also needs the retry cookie set by the failed sign-in, so send it with credentials.",
       "requestBody": {
         "required": true,
@@ -8200,7 +8664,7 @@
           "application/problem+json": "#/components/schemas/UnassignSmsLineCampaignGatewayTimeoutProblem"
         }
       },
-      "summary": "Remove SMS line campaign",
+      "summary": "Unassign SMS line campaign",
       "description": "Any project writer, including a scoped API key, may detach the campaign. The number and campaign remain owned. Requires a permanent Idempotency-Key and expectedVersion. Local eligibility is blocked immediately; provider detachment runs asynchronously."
     },
     {
@@ -8343,7 +8807,7 @@
           "application/problem+json": "#/components/schemas/UpdateAccountGatewayTimeoutProblem"
         }
       },
-      "summary": "Update the authenticated account",
+      "summary": "Update account",
       "description": "Updates the supplied firstName and lastName fields on the authenticated account and returns the updated profile. Only the documented profile fields can be changed through this endpoint; profile-picture uploads and phone-number verification use their dedicated operations. Supply the required Idempotency-Key header.",
       "requestBody": {
         "required": true,
@@ -8424,7 +8888,7 @@
           "application/problem+json": "#/components/schemas/UpdateAgentProfileGatewayTimeoutProblem"
         }
       },
-      "summary": "Update an agent profile",
+      "summary": "Update agent profile",
       "description": "Updates the supplied firstName and lastName fields in the project's agent profile and returns the updated profile. Avatar upload, commit and reset are separate operations. The caller must be authorized to change configuration for the selected project. Supply the required Idempotency-Key header.",
       "requestBody": {
         "required": true,
@@ -8639,7 +9103,7 @@
           "application/problem+json": "#/components/schemas/UpdateProjectGatewayTimeoutProblem"
         }
       },
-      "summary": "Update a project",
+      "summary": "Update project",
       "description": "Updates the identified project's name and returns the updated project. The project slug is not a mutable field in this request. Use an authorized account or organization service-identity credential; a project API key is not accepted. Supply the required Idempotency-Key header.",
       "requestBody": {
         "required": true,
@@ -8731,7 +9195,7 @@
           "application/problem+json": "#/components/schemas/RequestTimeoutProblem"
         }
       },
-      "summary": "Update a project API key's permissions",
+      "summary": "Update project API key permissions",
       "description": "Replaces the identified project key's permission list with the supplied permissions and returns the updated metadata. Sending the permission list the key already has leaves it unchanged. This request does not create a new secret or change the key's project binding. Supply the required Idempotency-Key header.",
       "requestBody": {
         "required": true,
@@ -8881,7 +9345,7 @@
           "application/problem+json": "#/components/schemas/UpdateVoiceProfileInboundGatewayTimeoutProblem"
         }
       },
-      "summary": "Update Voice profile inbound configuration",
+      "summary": "Update Voice inbound configuration",
       "description": "Updates selected fields of a profile's inbound destination when the shared profile version matches. The profileId may identify the default or an additional profile. At least one of destinationUri or credentials is required. Credential omission preserves destination authentication, null removes it, and an object replaces it atomically. Requires platforms:write bound to the path project.",
       "requestBody": {
         "required": true,
@@ -8956,7 +9420,7 @@
           "application/problem+json": "#/components/schemas/UpdateVoiceProfileOutboundAuthenticationGatewayTimeoutProblem"
         }
       },
-      "summary": "Update Voice profile outbound authentication policy",
+      "summary": "Update Voice outbound authentication",
       "description": "Changes a SIP profile's outbound Digest algorithm when expectedVersion matches. The profileId may identify the default or an additional profile. This policy-only change preserves the password, username, and any previous-password grace deadline. SHA-256 is recommended; MD5 is a weaker legacy option. Returns non-secret outbound metadata and the profile version. Requires platforms:write bound to the path project.",
       "requestBody": {
         "required": true,
@@ -9047,7 +9511,7 @@
           "application/problem+json": "#/components/schemas/UpdateWebhookDestinationGatewayTimeoutProblem"
         }
       },
-      "summary": "Update a webhook destination",
+      "summary": "Update webhook destination",
       "description": "Updates the supplied URL, name, description, status or enabledEvents fields on a project's webhook destination and returns its updated configuration. The payload API version is not a mutable field in this request. Event selections are checked against the destination's versioned catalog; signing-secret rotation is a separate operation. Supply the required Idempotency-Key header.",
       "requestBody": {
         "required": true,
@@ -9146,7 +9610,7 @@
           "application/problem+json": "#/components/schemas/UploadAttachmentGatewayTimeoutProblem"
         }
       },
-      "summary": "Upload an Attachment",
+      "summary": "Upload attachment",
       "description": "Uploads a file and returns its Attachment once ready to download.",
       "requestBody": {
         "required": true,

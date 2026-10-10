@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.3.0 (2026-10-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* Upgrading from 0.2.x:
+    * **Cancelling and resuming a subscription are removed:** `organizations.billing.cancelSubscription` and `organizations.billing.resumeSubscription` (`cancel_subscription` and `resume_subscription` in Python and Rust), with their request and response types. To leave a paid plan, call `organizations.billing.changePlan` with the default plan (`isDefault` in `projects.billing.listBillingPlans`); the change takes effect at the end of the billing period. To keep the paid plan, change back to it before then.
+    * **Creating a project can return `202`** while the project's billing is still being set up, with the same project in the body. In Rust, `create_project` now returns `CreateProjectResponse` (`Status201` or `Status202`, each holding the project) instead of `types::Project`; TypeScript and Python still return the project. After a `202`, wait for `Retry-After` and read the project again until `billingInitialization` is `completed` or `unknown`.
+    * **Response enums have new values.** Code that handles every value needs the new ones: `SubscriptionStatus` adds `restricted` and `suspended`, `BillingOperationFailureDetail` adds `reconciliation_required` and `release_required`, and `MessageMetricsSqlTableName` adds `call_events`. In `projects.getMessageMetricsSqlSchema`, a column's `json.resource.type` is now `MessageMetricsJsonResourceType` (`call` or `message`) instead of always `message`.
+    * **Platform provisioning can fail with a new `503` problem, `BillingEntitlementsPendingProblem` (`BILLING_ENTITLEMENTS_PENDING`),** while the project's billing entitlements are pending: adding email domains, SMS numbers, WhatsApp Business numbers and senders, iMessage and WhatsApp assignments and dedicated lines, and reading the iMessage and WhatsApp settings. Error handling that matches every problem type needs the new one.
+
+### Features
+
+* Add `organizations.billing.getEffectiveTerms` (`GET /v1/organizations/{organizationId}/billing/projects/{projectId}/terms`): what a project is billed on now, per category.
+* Add `organizations.billing.previewOrganizationChange` (`POST /v1/organizations/{organizationId}/billing/preview`) and `organizations.billing.previewProjectChange` (`POST /v1/organizations/{organizationId}/billing/projects/{projectId}/preview`), which price a billing change exactly as making it would bill it.
+* Add `projects.platforms.listFilteredVerificationCodes` and `projects.platforms.countFilteredVerificationCodes` (`GET /v1/projects/{id}/platforms/filtered-otp` and `…/count`), and `listResourceFilteredVerificationCodes` and `countResourceFilteredVerificationCodes` for one line or number (`GET /v1/projects/{id}/platforms/resources/{resourceId}/filtered-otp` and `…/count`): the one-time codes Photon filtered from inbound messages.
+* Billing plans report `isDefault`; organization subscriptions report `planName`, `baseAmountCents`, `currency` and `minimumCommitment`; platform operations report a `reason`; and `projects.platforms.listOperations` accepts `endedAfter`.
+
+
+### Documentation
+
+* publish ordinary MDX SDK references from released clients
+
 ## 0.2.3 (2026-10-06)
 
 

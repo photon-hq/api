@@ -108,19 +108,6 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "200": "json"
     }
   },
-  "cancelSubscription": {
-    "request": "application/json",
-    "responses": [
-      "application/json"
-    ],
-    "accept": [
-      "application/json",
-      "application/problem+json"
-    ],
-    "responseKinds": {
-      "200": "json"
-    }
-  },
   "changePlan": {
     "request": "application/json",
     "responses": [
@@ -239,7 +226,31 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "202": "json"
     }
   },
+  "countFilteredVerificationCodes": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
   "countProjects": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
+  "countResourceFilteredVerificationCodes": {
     "responses": [
       "application/json"
     ],
@@ -364,7 +375,8 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "application/problem+json"
     ],
     "responseKinds": {
-      "201": "json"
+      "201": "json",
+      "202": "json"
     }
   },
   "createProjectApiKey": {
@@ -638,6 +650,18 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
     }
   },
   "getDefaultVoiceProfile": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
+  "getEffectiveTerms": {
     "responses": [
       "application/json"
     ],
@@ -962,6 +986,18 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "200": "json"
     }
   },
+  "listFilteredVerificationCodes": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
   "listInvoices": {
     "responses": [
       "application/json"
@@ -1047,6 +1083,18 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
     }
   },
   "listProjects": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
+  "listResourceFilteredVerificationCodes": {
     "responses": [
       "application/json"
     ],
@@ -1158,6 +1206,32 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
     }
   },
   "listWhatsappSharedLineAssignments": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
+  "previewOrganizationChange": {
+    "request": "application/json",
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
+  "previewProjectChange": {
+    "request": "application/json",
     "responses": [
       "application/json"
     ],
@@ -1334,19 +1408,6 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
     }
   },
   "resetAgentProfileAvatar": {
-    "responses": [
-      "application/json"
-    ],
-    "accept": [
-      "application/json",
-      "application/problem+json"
-    ],
-    "responseKinds": {
-      "200": "json"
-    }
-  },
-  "resumeSubscription": {
-    "request": "application/json",
     "responses": [
       "application/json"
     ],
@@ -1674,7 +1735,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
   const data = {
     account: {
         /**
-         * Commit a profile picture
+         * Commit profile picture
          *
          * Commits a profile picture previously uploaded through createAccountProfilePictureUpload. Call this only after the direct multipart upload succeeds, using the uploadId from the same upload session and a stable Idempotency-Key. The service validates the temporary object's ownership, size, content type, image bytes, dimensions, encryption, and age before changing the Account.
          */
@@ -1686,7 +1747,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Confirm a phone number verification
+         * Confirm phone verification
          *
          * Binds the number once the code is approved. Repeat calls return the bound Account.
          */
@@ -1698,7 +1759,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Create an Account Service Key
+         * Create Account Service Key
          *
          * Creates a service key for the authenticated account with the supplied name and optional expiresAt. Returns key metadata and a one-time credential; store the credential securely because it cannot be retrieved through the listing endpoint. These credentials act as the account and must not be distributed as project-scoped keys. Supply the required Idempotency-Key header.
          */
@@ -1710,7 +1771,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Create a profile picture upload
+         * Create profile picture upload
          *
          * Creates a ten-minute, Account-bound presigned S3 POST for a JPEG, PNG, or WebP profile picture up to 5 MiB. Copy every returned formFields entry into a multipart/form-data request to uploadUrl, append the local file as the final form part, and upload it directly without sending Photon credentials. After the upload succeeds, call commitAccountProfilePicture with the returned uploadId. Do not cache or log the upload URL or form fields.
          */
@@ -1722,7 +1783,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Delete the authenticated account
+         * Delete account
          *
          * Deletes the authenticated account and returns its account tombstone. The operation is rejected while the account still owns organizations; transfer or close those organizations before retrying. This endpoint acts on the caller's account and does not accept another account's identifier.
          */
@@ -1734,7 +1795,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Get the authenticated account
+         * Get account
          *
          * Returns the profile of the authenticated account. The account is selected from the credential rather than a request parameter. A missing or deleted account is reported as an error instead of an empty profile.
          */
@@ -1770,7 +1831,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Remove a profile picture
+         * Remove profile picture
          *
          * Removes the authenticated account's custom profile picture and returns the account using its default picture. This operation does not upload a replacement; use the upload-and-commit operations when setting a new custom picture. Supply the required Idempotency-Key header.
          */
@@ -1782,7 +1843,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Revoke an Account Service Key
+         * Revoke Account Service Key
          *
          * Revokes the account-owned service key identified by serviceKeyId and returns its revoked metadata. Repeating the revocation is stable. Revocation changes the credential's validity; it does not create a replacement key. Supply the required Idempotency-Key header.
          */
@@ -1794,7 +1855,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Revoke a connected application
+         * Revoke connected application
          *
          * Revokes the authenticated user's grant for one OAuth application.
          */
@@ -1806,7 +1867,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Start a phone number verification
+         * Start phone verification
          *
          * Sends an SMS code. Answers CAPTCHA_REQUIRED with the widget to render when no solved challenge accompanies the request; retry with the returned challengeContext and a token. Rate limited per account, per destination number, and globally; a rejection carries Retry-After.
          */
@@ -1818,7 +1879,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Update the authenticated account
+         * Update account
          *
          * Updates the supplied firstName and lastName fields on the authenticated account and returns the updated profile. Only the documented profile fields can be changed through this endpoint; profile-picture uploads and phone-number verification use their dedicated operations. Supply the required Idempotency-Key header.
          */
@@ -1833,7 +1894,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
     auth: {
         device: {
             /**
-             * Start Device Authorization
+             * Start device authorization
              *
              * Starts the device authorization flow for a CLI or another device without a browser. Show the verification URL and user code, then poll the token endpoint at the returned interval. No request fields are required; any supplied body is ignored.
              */
@@ -1845,7 +1906,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Exchange Device Code or Refresh Token
+             * Exchange device code or refresh token
              *
              * Exchanges an authorized device code or a refresh token for an access token and rotating refresh token. Accepts JSON and form-encoded bodies. While polling, wait at least interval seconds and increase the interval on slow_down. Store the new refresh token after every successful grant.
              *
@@ -1860,7 +1921,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             ),
         },
         /**
-         * Authenticate to an invitation's organization SSO connection
+         * Sign in with invitation SSO
          *
          * Returns an authentication URL for the organization SSO connection associated with the supplied invitation token. Supply token and returnTo. Complete the returned authentication flow; requesting its URL does not itself accept the invitation.
          */
@@ -1872,7 +1933,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Authenticate to the current organization SSO connection
+         * Sign in with organization SSO
          *
          * Returns a URL to authenticate through the selected organization’s current SSO connection. Supply returnTo and open the returned URL to continue the flow. Receiving the URL does not establish an authenticated session.
          */
@@ -1884,7 +1945,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Authenticate the current Owner to inspect organization closure
+         * Sign in to close organization
          *
          * Returns an authentication URL for the current organization owner to inspect organization closure. Supply returnTo and complete the returned flow. This operation initiates authentication and does not close the organization.
          */
@@ -1896,7 +1957,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Begin organization SSO admission for an existing Account
+         * Begin organization SSO admission
          *
          * Returns an SSO admission URL for an existing account and the selected organization. Supply returnTo for the continuation URL. Admission requires completing the returned authentication flow; creating the URL does not itself grant membership.
          */
@@ -1908,7 +1969,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Create organization SSO setup portal
+         * Create organization setup portal link
          *
          * Returns an organization setup portal URL. Supply returnTo and optionally intent, either sso or domain_verification; sso is the default. Open the returned URL to complete the selected setup flow.
          */
@@ -1920,7 +1981,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Turn organization SSO off
+         * Disable organization SSO
          *
          * Deletes the provider connection, releases the SSO requirement once the connection is gone, then unbinds the chosen domains. Retry with the same Idempotency-Key to resume or await the same run.
          */
@@ -1932,7 +1993,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Read organization and own membership synchronization
+         * Get organization connection status
          *
          * Requires current human organization membership. Synchronization status does not attest SSO configuration or completed authorization.
          */
@@ -1944,7 +2005,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Read organization SSO configuration
+         * Get organization SSO configuration
          *
          * Returns the selected organization’s SSO connection state, configuration version, and desired and effective policy settings. Read policySyncStatus alongside the enforcement fields to distinguish requested settings from synchronized settings.
          */
@@ -1980,7 +2041,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Retry own organization connection synchronization
+         * Retry organization connection sync
          *
          * Reconciles existing local intent. Takes no body and cannot change membership, roles or authentication policy.
          */
@@ -1992,7 +2053,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Start company sign-in without an existing Account
+         * Start company sign-in
          *
          * Returns a sign-in URL without requiring an existing account: the company SSO connection when the target has a ready connection, otherwise ordinary account login. Supply one documented enrollment variant: organizationId with returnTo (optionally invitationToken), invitationToken with returnTo, or retryToken. Open the returned URL to continue authentication; receiving a URL does not complete sign-in. This is a browser flow: the request must come from an allowed Origin, and the retryToken variant also needs the retry cookie set by the failed sign-in, so send it with credentials.
          */
@@ -2019,19 +2080,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
     organizations: {
         billing: {
             /**
-             * Cancel a category at the end of its billing period
-             *
-             * Schedules cancellation of the specified project's billing category at the end of its current period. The category remains active through the returned cancelsAt instant and then stops renewing. This is a scheduled cancellation, not an immediate removal of the remaining period's service. If the category has no active subscription, nothing changes and the response has cancellationScheduled set to false and cancelsAt set to null. Supply both organizationId and projectId to select the project within its organization.
-             */
-            cancelSubscription: (input: Schemas.CancelSubscriptionInput, options?: RequestOptions) => invokers.data<Schemas.CancelSubscriptionInput, Schemas.CancelSubscriptionOutput>(
-                "cancelSubscription",
-                Sdk.cancelSubscription,
-                Schemas.CancelSubscriptionOutputSchemas,
-                input,
-                options,
-            ),
-            /**
-             * Purchase or change a category's plan
+             * Change plan
              *
              * Purchases or changes the selected project's plan for the supplied category and planCode. A 202 response means the change is pending: poll the returned operation URL and honor Retry-After until it succeeds or fails. A 200 response means the idempotency key resolved to an operation that is already terminal; inspect that result rather than assuming success from the status code alone. Supply the required Idempotency-Key header. Supply both organizationId and projectId to select the project within its organization.
              */
@@ -2043,7 +2092,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Get a payment-method checkout URL for the organization
+             * Create payment method checkout
              *
              * Returns a hosted payment-method collection URL for the selected organization. An Idempotency-Key header is optional; supply one to make retries safe. Complete the returned checkout flow. Receiving the URL does not mean a card has been saved; check payment-method status afterward.
              */
@@ -2055,7 +2104,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Create a SetupIntent for an in-app card capture
+             * Create card setup intent
              *
              * Creates payment-provider configuration for collecting a card for the selected organization and returns clientSecret and publishableKey. Supply the required Idempotency-Key header. Complete the provider’s card-collection flow separately and avoid logging the returned client secret.
              */
@@ -2067,7 +2116,19 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Get the organization's billing overview
+             * Get the project's effective billing terms
+             *
+             * Returns what the selected project is billed on now, per category it holds: the plan as its subscription has it, with any override applied, each fixed charge at the subscription's price and quantity, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. It also returns the credit the paying organization holds on credit notes, such as the unused time of a plan an upgrade replaced; it offsets that organization's next invoices. Supply both organizationId and projectId; the organization must pay for the project. This operation does not change billing.
+             */
+            getEffectiveTerms: (input: Schemas.GetEffectiveTermsInput, options?: RequestOptions) => invokers.data<Schemas.GetEffectiveTermsInput, Schemas.GetEffectiveTermsOutput>(
+                "getEffectiveTerms",
+                Sdk.getEffectiveTerms,
+                Schemas.GetEffectiveTermsOutputSchemas,
+                input,
+                options,
+            ),
+            /**
+             * Get organization billing overview
              *
              * Returns the selected organization’s billing subscription and entitlementsVersion. The subscription can be null. Read the returned plan, charges and entitlements to inspect organization billing; this operation does not purchase or change a plan.
              */
@@ -2079,7 +2140,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Check the organization for a card on file
+             * Get organization payment method
              *
              * Reports whether the selected organization has a card on file and returns its documented payment-method metadata. Reading this endpoint does not collect a new card or create a checkout session.
              */
@@ -2103,21 +2164,33 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Resume a category scheduled for cancellation
+             * Preview an organization billing change
              *
-             * Removes a scheduled cancellation for the specified billing category on the selected project so it can renew normally. This operation resumes a category scheduled to cancel; it is separate from purchasing or changing a plan. Supply both organizationId and projectId to select the project within its organization.
+             * Previews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A quantity already paid for this period is not billed again, so a purchase after a release can be free. nextCharge is what is charged in advance at the next period start. For a fixed-charge change, pass quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing.
              */
-            resumeSubscription: (input: Schemas.ResumeSubscriptionInput, options?: RequestOptions) => invokers.data<Schemas.ResumeSubscriptionInput, Schemas.ResumeSubscriptionOutput>(
-                "resumeSubscription",
-                Sdk.resumeSubscription,
-                Schemas.ResumeSubscriptionOutputSchemas,
+            previewOrganizationChange: (input: Schemas.PreviewOrganizationChangeInput, options?: RequestOptions) => invokers.data<Schemas.PreviewOrganizationChangeInput, Schemas.PreviewOrganizationChangeOutput>(
+                "previewOrganizationChange",
+                Sdk.previewOrganizationChange,
+                Schemas.PreviewOrganizationChangeOutputSchemas,
+                input,
+                options,
+            ),
+            /**
+             * Preview a project billing change
+             *
+             * Previews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A quantity already paid for this period is not billed again, so a purchase after a release can be free. nextCharge is what is charged in advance at the next period start. For a fixed-charge change, pass quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; planChange says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in planChange.additions and outside dueNow. Supply both organizationId and projectId; the organization must pay for the project.
+             */
+            previewProjectChange: (input: Schemas.PreviewProjectChangeInput, options?: RequestOptions) => invokers.data<Schemas.PreviewProjectChangeInput, Schemas.PreviewProjectChangeOutput>(
+                "previewProjectChange",
+                Sdk.previewProjectChange,
+                Schemas.PreviewProjectChangeOutputSchemas,
                 input,
                 options,
             ),
         },
         projects: {
             /**
-             * Check slug availability
+             * Check project slug availability
              *
              * Reports whether createProject would accept `slug` right now. Advisory: only the create itself allocates, so a caller must still handle SLUG_TAKEN. A malformed slug is rejected on shape; a reserved slug, a slug held by an active project, and a slug retired with a deleted project each answer `available: false` with a reason.
              */
@@ -2129,7 +2202,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Count accessible projects
+             * Count projects
              *
              * Counts the projects the same filter would list. The count is read from the primary, so it is authoritative rather than replica-lagged.
              */
@@ -2141,7 +2214,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Create a project
+             * Create project
              *
              * Creates in the authorized organization. In addition to account credentials, explicitly granted Service Identity API keys and M2M tokens may create projects. Project API keys cannot create projects. Creator and private credential evidence come only from the trusted authorization context. The caller-selected slug is immutable, must be 3 to 63 lowercase ASCII alphanumerics separated by single hyphens, and cannot be reserved or held by any active or deleted project.
              */
@@ -2153,7 +2226,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Read project closure progress
+             * Get project closure status
              *
              * Returns closure progress for projectId within organizationId, including deletionOperationId, domain progress and ready. This read operation does not initiate deletion.
              */
@@ -2165,7 +2238,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * List accessible projects
+             * List projects
              *
              * Returns a cursor-paginated page of the active projects in organizationId. Filter using query and the documented creation-time bounds, and navigate with pageSize and pageToken. Project roles are not returned and role is not a supported filter.
              */
@@ -2181,7 +2254,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
     projects: {
         agentProfile: {
             /**
-             * Commit an agent avatar
+             * Commit agent avatar
              *
              * Commits an agent avatar previously uploaded through createAgentProfileAvatarUpload. Call this only after the direct multipart upload succeeds, using the uploadId from the same upload session and a stable Idempotency-Key. The service validates the temporary object's Project ownership, size, content type, image bytes, dimensions, encryption, and age before changing the agent profile.
              */
@@ -2193,7 +2266,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Create an agent avatar upload
+             * Create agent avatar upload
              *
              * Creates a ten-minute, Project-bound presigned S3 POST for a JPEG, PNG, or WebP agent avatar up to 5 MiB. Copy every returned formFields entry into a multipart/form-data request to uploadUrl, append the local file as the final form part, and upload it directly without sending Photon credentials. After the upload succeeds, call commitAgentProfileAvatar with the returned uploadId. Do not cache or log the upload URL or form fields.
              */
@@ -2205,7 +2278,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Get an agent profile
+             * Get agent profile
              *
              * Returns the agent profile belonging to the identified project. The profile is project-scoped and is distinct from the authenticated account's personal profile. Use the dedicated avatar operations when uploading or removing an agent avatar.
              */
@@ -2217,7 +2290,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Reset an agent avatar
+             * Reset agent avatar
              *
              * Replaces the selected project's agent avatar with the project's default avatar, a generated planet image derived from the project ID, and returns the updated agent profile. The reset does not restore an earlier avatar: a custom avatar it replaces is discarded and must be uploaded and committed again to use it. When the default avatar is already in use, the profile is returned unchanged. This does not change the account's personal profile picture. Supply the required Idempotency-Key header.
              */
@@ -2229,7 +2302,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Update an agent profile
+             * Update agent profile
              *
              * Updates the supplied firstName and lastName fields in the project's agent profile and returns the updated profile. Avatar upload, commit and reset are separate operations. The caller must be authorized to change configuration for the selected project. Supply the required Idempotency-Key header.
              */
@@ -2243,7 +2316,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
         },
         billing: {
             /**
-             * Get a billing operation snapshot
+             * Get billing operation
              *
              * Returns the authoritative state of a billing operation belonging to the selected project. Use it to recover or poll a plan-change request until the operation reaches success or failure. An accepted request is not evidence that the plan change has completed.
              */
@@ -2255,7 +2328,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Get the project's billing overview
+             * Get project billing overview
              *
              * Returns the selected project's plan information, entitlements and current billing-period usage. This operation reads project billing state; it does not change plans or the payer's payment method. Organization-level plans are available through the organization billing overview.
              */
@@ -2267,7 +2340,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * List available billing plans
+             * List billing plans
              *
              * Lists the billing plan catalog, grouped by their public plan-metadata type. Use the returned plan information when choosing the category and planCode for a plan change. The catalog is the same for every project, and reading it does not purchase a plan.
              */
@@ -2357,7 +2430,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Batch update Voice line profile assignments
+             * Batch update Voice line assignments
              *
              * Atomically sets additional-profile overrides or switches lines back to the project default for up to 100 Voice-capable lines. A null profileId means use the default. Every expected resource version must match or no line changes. Requires platforms:write bound to the path project.
              */
@@ -2381,9 +2454,9 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Configure Voice profile outbound credential
+             * Configure Voice outbound credential
              *
-             * Configures a SIP credential for outbound calls from a profile when the shared profile version matches. authentication.algorithm is required: SHA-256 is recommended, while MD5 is a weaker legacy option supported over UDP, TCP, and TLS; TLS is strongly recommended because UDP and TCP do not encrypt SIP signaling. The profileId may identify the default or an additional profile. The new password is returned once and is never recoverable. Requires platforms:write bound to the path project.
+             * Configures a SIP credential for outbound calls from a profile when the shared profile version matches. Outbound calls are paid usage, so the organization needs a payment method and no invoices overdue 7 days or more; otherwise this returns 402 ENTITLEMENT_REQUIRED with a reason. authentication.algorithm is required: SHA-256 is recommended, while MD5 is a weaker legacy option supported over UDP, TCP, and TLS; TLS is strongly recommended because UDP and TCP do not encrypt SIP signaling. The profileId may identify the default or an additional profile. The new password is returned once and is never recoverable. Requires platforms:write bound to the path project.
              */
             configureVoiceProfileOutbound: (input: Schemas.ConfigureVoiceProfileOutboundInput, options?: RequestOptions) => invokers.data<Schemas.ConfigureVoiceProfileOutboundInput, Schemas.ConfigureVoiceProfileOutboundOutput>(
                 "configureVoiceProfileOutbound",
@@ -2429,6 +2502,30 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
+             * Count filtered verification codes
+             *
+             * Counts the verification codes Photon kept from this project's dedicated lines and numbers, optionally for one `platform`. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Requires the platforms:read permission bound to the project resource in the path.
+             */
+            countFilteredVerificationCodes: (input: Schemas.CountFilteredVerificationCodesInput, options?: RequestOptions) => invokers.data<Schemas.CountFilteredVerificationCodesInput, Schemas.CountFilteredVerificationCodesOutput>(
+                "countFilteredVerificationCodes",
+                Sdk.countFilteredVerificationCodes,
+                Schemas.CountFilteredVerificationCodesOutputSchemas,
+                input,
+                options,
+            ),
+            /**
+             * Count a line's filtered verification codes
+             *
+             * Counts the verification codes Photon kept from one dedicated line or number. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a number receives both SMS and WhatsApp. Requires the platforms:read permission bound to the project resource in the path.
+             */
+            countResourceFilteredVerificationCodes: (input: Schemas.CountResourceFilteredVerificationCodesInput, options?: RequestOptions) => invokers.data<Schemas.CountResourceFilteredVerificationCodesInput, Schemas.CountResourceFilteredVerificationCodesOutput>(
+                "countResourceFilteredVerificationCodes",
+                Sdk.countResourceFilteredVerificationCodes,
+                Schemas.CountResourceFilteredVerificationCodesOutputSchemas,
+                input,
+                options,
+            ),
+            /**
              * Create default Voice profile
              *
              * Creates the project default Voice profile when absent. An identical replay returns the existing default without changing its version; a different existing default conflicts. Direction configuration is managed separately. Requires platforms:write bound to the path project.
@@ -2465,7 +2562,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Create a VoIP-backed WhatsApp sender
+             * Create WhatsApp VoIP sender
              *
              * Registers an active, SMS-capable Photon VoIP line on this project's connected WhatsApp Business Account. The account is resolved server-side; callers never select a WABA. The platform creates or reuses the Meta number, requests and consumes the SMS ownership code internally, verifies it, and registers the sender. displayName is optional; when omitted the project agent profile name is snapshotted before acceptance. The VoIP line remains a separate resource and never receives the whatsapp_business ability.
              */
@@ -2489,7 +2586,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Remove Voice profile inbound configuration
+             * Delete Voice inbound configuration
              *
              * Removes a profile's inbound destination when the shared profile version matches. The profileId may identify the default or an additional profile. The profile and its line assignments remain. Requires platforms:write bound to the path project.
              */
@@ -2501,7 +2598,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Revoke Voice profile outbound credential
+             * Revoke Voice outbound credential
              *
              * Revokes outbound calling for a profile when the shared profile version matches. The profileId may identify the default or an additional profile. The profile, inbound destination, and line assignments remain. Requires platforms:write bound to the path project.
              */
@@ -2513,7 +2610,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Disconnect WhatsApp Business account and numbers
+             * Disconnect WhatsApp Business account
              *
              * Disconnects every attached WhatsApp sender, then unsubscribes our app and removes the project's business account connection. Photon VoIP lines and the numbers in Meta remain. Requires Idempotency-Key. Poll the returned operation; provider refusals appear as operation failures and retain the account for retry with a new key. New signups are blocked while disconnecting, and existing provisions must finish before this request can be accepted.
              */
@@ -2539,7 +2636,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Get project iMessage platform
              *
-             * Reports whether the project is on shared or dedicated iMessage lines, derived from its billing entitlements. Shared mode carries the seat cap. Requires the platforms:read permission bound to the project resource in the path.
+             * Reports whether the project is on shared or dedicated iMessage lines, derived from its billing entitlements. Shared mode carries the seat cap. Both say whether a dedicated line requested now would be assigned without waiting. Requires the platforms:read permission bound to the project resource in the path.
              */
             getImessage: (input: Schemas.GetProjectImessagePlatformInput, options?: RequestOptions) => invokers.data<Schemas.GetProjectImessagePlatformInput, Schemas.GetProjectImessagePlatformOutput>(
                 "getProjectImessagePlatform",
@@ -2563,7 +2660,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Get project WhatsApp platform
              *
-             * Reports whether the project is on shared or dedicated WhatsApp lines, derived from its billing entitlements. Shared mode carries the seat cap. Requires the platforms:read permission bound to the project resource in the path.
+             * Reports whether the project is on shared or dedicated WhatsApp lines, derived from its billing entitlements. Shared mode carries the seat cap. Both say whether a dedicated line requested now would be assigned without waiting. Requires the platforms:read permission bound to the project resource in the path.
              */
             getProjectWhatsappPlatform: (input: Schemas.GetProjectWhatsappPlatformInput, options?: RequestOptions) => invokers.data<Schemas.GetProjectWhatsappPlatformInput, Schemas.GetProjectWhatsappPlatformOutput>(
                 "getProjectWhatsappPlatform",
@@ -2585,7 +2682,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Read SMS line campaign assignment
+             * Get SMS line campaign assignment
              *
              * Read the last confirmed campaign and current eligibility. Follow changes through their operations. Eligibility is a control-plane assessment, not a delivery or recipient-consent guarantee.
              */
@@ -2669,7 +2766,19 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * List supported number area codes
+             * List filtered verification codes
+             *
+             * Lists the verification codes Photon kept from this project's dedicated lines and numbers. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line or number (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Filter by `platform`; to read one line, use its own filtered-otp path. Requires the platforms:read permission bound to the project resource in the path.
+             */
+            listFilteredVerificationCodes: (input: Schemas.ListFilteredVerificationCodesInput, options?: RequestOptions) => invokers.data<Schemas.ListFilteredVerificationCodesInput, Schemas.ListFilteredVerificationCodesOutput>(
+                "listFilteredVerificationCodes",
+                Sdk.listFilteredVerificationCodes,
+                Schemas.ListFilteredVerificationCodesOutputSchemas,
+                input,
+                options,
+            ),
+            /**
+             * List number area codes
              *
              * Lists current provider coverage for US local numbers, sorted and deduplicated. Coverage does not guarantee inventory carrying every required feature. New area-specific purchases must use a listed code; accepted purchases keep waiting if coverage later changes. Requires platforms:read for the path project.
              */
@@ -2681,7 +2790,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * List supported number countries
+             * List number countries
              *
              * Lists supported purchase countries independently of current provider inventory. Requires platforms:read for the path project.
              */
@@ -2695,7 +2804,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * List operations
              *
-             * Lists the project's operations using the same operation representation as creation and GET. The API includes detail.setupUrl only with platforms:write for this project. Results are oldest first — every provision and release it has ever asked for, including the ones still running. This is the entire in-flight view: a resource only appears once it is real, so nothing half-built shows up in the resource list and nothing in flight is missing from this one. Filter by `resourceId` to get one resource's whole history, which for a pooled line is every tenure this project has had on it. `state` is comma-separated; `type` accepts one operation type and an absent filter means everything, including failed and cancelled operations. Requires the platforms:read permission bound to the project resource in the path.
+             * Lists the project's operations using the same operation representation as creation and GET. The API includes detail.setupUrl only with platforms:write for this project. Results are oldest first — every provision and release it has ever asked for, including the ones still running. This is the entire in-flight view: a resource only appears once it is real, so nothing half-built shows up in the resource list and nothing in flight is missing from this one. Filter by `resourceId` to get one resource's whole history, which for a pooled line is every tenure this project has had on it. `state` is comma-separated; `type` accepts one operation type and an absent filter means everything, including failed and cancelled operations. `endedAfter` keeps only operations that finished after that instant, so what failed or was withdrawn recently is one short page. Requires the platforms:read permission bound to the project resource in the path.
              */
             listOperations: (input: Schemas.ListOperationsInput, options?: RequestOptions) => invokers.data<Schemas.ListOperationsInput, Schemas.ListOperationsOutput>(
                 "listOperations",
@@ -2717,9 +2826,21 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
+             * List a line's filtered verification codes
+             *
+             * Lists the verification codes Photon kept from one dedicated line or number. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line or number (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a number receives both SMS and WhatsApp. Requires the platforms:read permission bound to the project resource in the path.
+             */
+            listResourceFilteredVerificationCodes: (input: Schemas.ListResourceFilteredVerificationCodesInput, options?: RequestOptions) => invokers.data<Schemas.ListResourceFilteredVerificationCodesInput, Schemas.ListResourceFilteredVerificationCodesOutput>(
+                "listResourceFilteredVerificationCodes",
+                Sdk.listResourceFilteredVerificationCodes,
+                Schemas.ListResourceFilteredVerificationCodesOutputSchemas,
+                input,
+                options,
+            ),
+            /**
              * List resources
              *
-             * Lists everything the project holds, oldest first, whatever kind of thing it is — one endpoint and one id shape for numbers, dedicated lines and whatever ships next. Nothing half-built appears here: a resource exists only once it is real, so anything still being provisioned is an operation rather than a resource with a pending flag. Filter by `type`, by `ability` (which matches only abilities that are currently enabled), and by `state` — comma-separated, and absent means every state, including retired ones. `detail` carries a per-type public view: an SMS number's number, a dedicated line's number and whether it is healthy. Requires the platforms:read permission bound to the project resource in the path.
+             * Lists everything the project holds, oldest first, whatever kind of thing it is — one endpoint and one id shape for numbers, dedicated lines and whatever ships next. Nothing half-built appears here: a resource exists only once it is real, so anything still being provisioned is an operation rather than a resource with a pending flag. Filter by `type`, by `ability` (which matches only abilities that are currently enabled), and by `state` — comma-separated, and absent means every state, including retired ones. `detail` carries a per-type public view: an SMS number's number, a dedicated line's number and its per-capability health (`imessageHealth`, `whatsappHealth`, each with an `overallStatus` of `available`, `degraded`, `unavailable` or `unknown`; `imessageHealth` also carries `account`, `photonSystemComponents`, `newConversations`, `sms` and `mms`, each a `status` with the `cause` that decided it: `account`, `photonSystemComponents`, or null for the item's own state). Requires the platforms:read permission bound to the project resource in the path.
              */
             listResources: (input: Schemas.ListResourcesInput, options?: RequestOptions) => invokers.data<Schemas.ListResourcesInput, Schemas.ListResourcesOutput>(
                 "listResources",
@@ -2767,7 +2888,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Provision dedicated iMessage line
              *
-             * Claims one dedicated iMessage line for the project and enables iMessage on it. Always answers 202 with an operation: dedicated lines are allocated from available capacity, and unavailable capacity causes a wait rather than a failure — this can legitimately stay `running` for hours, which is exactly why the response is a handle to poll rather than a number. The project's messaging subscription must grant the dedicated iMessage lines entitlement (`imessage_dedicated_lines.can_purchase`), and that is checked before capacity is reserved; nothing is charged until a line is actually claimed. If you no longer want to wait, POST to the operation's cancel endpoint, which costs nothing. The Idempotency-Key is required and permanent: repeating it returns the same operation forever. A further line always needs a NEW key, including while others are still waiting. Requires the platforms:write permission bound to the project resource in the path.
+             * Claims one dedicated iMessage line for the project and enables iMessage on it. Always answers 202 with an operation: dedicated lines are allocated from available capacity, and unavailable capacity causes a wait rather than a failure — this can legitimately stay `running` for hours, which is exactly why the response is a handle to poll rather than a number. The project's messaging subscription must grant the dedicated iMessage lines entitlement (`imessage_dedicated_lines.can_purchase`), and that is checked before capacity is reserved. The line's own charge starts when a line is claimed; the subscription that grants the entitlement bills on its own terms, which cancelling a request does not change. Waiting requests are served first come, first served. One that is still waiting is cancelled with a `reason` if the project is deleted (`project_deleted`) or its plan stops selling dedicated lines (`entitlement_lost`); while the payer is restricted for overdue payment it keeps waiting. If you no longer want to wait, POST to the operation's cancel endpoint, which charges nothing for the line. The Idempotency-Key is required and permanent: repeating it returns the same operation forever. A further line always needs a NEW key, including while others are still waiting. Requires the platforms:write permission bound to the project resource in the path.
              */
             provisionImessageDedicatedLine: (input: Schemas.ProvisionImessageDedicatedLineInput, options?: RequestOptions) => invokers.data<Schemas.ProvisionImessageDedicatedLineInput, Schemas.ProvisionImessageDedicatedLineOutput>(
                 "provisionImessageDedicatedLine",
@@ -2779,7 +2900,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Provision dedicated WhatsApp line
              *
-             * Provisions one dedicated WhatsApp line with WhatsApp and shared Voice enabled. It attaches to an eligible iMessage line the project already owns when possible so both products keep the same number; otherwise it claims healthy, available WhatsApp-capable dedicated-line inventory. Always answers 202, because waiting when no inventory is available is not a failure. The product opens its own charge period after the abilities are enabled; Voice has no separate charge. Cancel the returned operation to stop waiting. The Idempotency-Key is required and permanent.
+             * Provisions one dedicated WhatsApp line with WhatsApp and shared Voice enabled. It attaches to an eligible iMessage line the project already owns when possible so both products keep the same number; otherwise it claims healthy, available WhatsApp-capable dedicated-line inventory. Always answers 202, because waiting when no inventory is available is not a failure. The product opens its own charge period after the abilities are enabled; Voice has no separate charge. Waiting requests are served first come, first served, and are cancelled with a `reason` exactly as for a dedicated iMessage line. Cancel the returned operation to stop waiting. The Idempotency-Key is required and permanent.
              */
             provisionWhatsappDedicatedLine: (input: Schemas.ProvisionWhatsappDedicatedLineInput, options?: RequestOptions) => invokers.data<Schemas.ProvisionWhatsappDedicatedLineInput, Schemas.ProvisionWhatsappDedicatedLineOutput>(
                 "provisionWhatsappDedicatedLine",
@@ -2849,7 +2970,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Create or replace Voice profile inbound configuration
+             * Replace Voice inbound configuration
              *
              * Creates or fully replaces a profile's inbound destination when the shared profile version matches. The profileId may identify the default or an additional profile. Credentials are required and nullable; null removes destination authentication. Requires platforms:write bound to the path project.
              */
@@ -2873,7 +2994,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Remove SMS line campaign
+             * Unassign SMS line campaign
              *
              * Any project writer, including a scoped API key, may detach the campaign. The number and campaign remain owned. Requires a permanent Idempotency-Key and expectedVersion. Local eligibility is blocked immediately; provider detachment runs asynchronously.
              */
@@ -2921,7 +3042,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Update Voice profile inbound configuration
+             * Update Voice inbound configuration
              *
              * Updates selected fields of a profile's inbound destination when the shared profile version matches. The profileId may identify the default or an additional profile. At least one of destinationUri or credentials is required. Credential omission preserves destination authentication, null removes it, and an object replaces it atomically. Requires platforms:write bound to the path project.
              */
@@ -2933,7 +3054,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Update Voice profile outbound authentication policy
+             * Update Voice outbound authentication
              *
              * Changes a SIP profile's outbound Digest algorithm when expectedVersion matches. The profileId may identify the default or an additional profile. This policy-only change preserves the password, username, and any previous-password grace deadline. SHA-256 is recommended; MD5 is a weaker legacy option. Returns non-secret outbound metadata and the profile version. Requires platforms:write bound to the path project.
              */
@@ -2946,7 +3067,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             ),
         },
         /**
-         * Create a project API key
+         * Create project API key
          *
          * Creates a key bound to the selected project using the supplied name, permissions and optional expiry. The secret is returned only in this response and in idempotent replays of it; store it securely because other reads never return it. The key is scoped to this project and does not grant account-level access. Supply the required Idempotency-Key header.
          */
@@ -2958,7 +3079,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Create a webhook destination
+         * Create webhook destination
          *
          * Creates a webhook destination for the selected project using its URL, payload API version, event selection and other documented settings. The response includes the signing secret, which is returned only in this response and in idempotent replays of it, never by destination reads; store it securely for signature verification. The API version must be selectable and selected event types must belong to that version's catalog. Supply the required Idempotency-Key header.
          */
@@ -2970,7 +3091,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Delete a project
+         * Delete project
          *
          * Starts deletion of the identified project using a credential authorized for project management. Inspect the documented response and use getProjectClosureStatus with the organization and project identifiers to read closure progress. A project API key is not an accepted credential for this operation.
          */
@@ -2982,7 +3103,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Delete a webhook destination
+         * Delete webhook destination
          *
          * Deletes the selected project's destination and returns its stable tombstone. Repeated deletion returns the deletion representation. This operation removes the destination configuration; it is separate from disabling a destination through an update.
          */
@@ -2994,7 +3115,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Download an Attachment
+         * Download attachment
          *
          * Downloads an Attachment's bytes. If unavailable after ten seconds, returns ATTACHMENT_NOT_READY with Retry-After: 5.
          */
@@ -3006,7 +3127,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Get a project
+         * Get project
          *
          * Returns the identified project's settings for an authorized caller. The credential must be allowed to access that project; possession of an unrelated project's key does not provide access. Missing and deleted projects are reported through the documented error responses.
          */
@@ -3018,7 +3139,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Get an Attachment
+         * Get attachment
          *
          * Returns an Attachment's metadata. Use the content endpoint to download its bytes.
          */
@@ -3030,7 +3151,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Get Metrics historical backfill status
+         * Get metrics backfill status
          *
          * Returns historical metrics update progress. Completion reflects lastVerifiedAt; queries remain available during updates.
          */
@@ -3042,9 +3163,9 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Get messaging and voice metrics SQL schema
+         * Get metrics SQL schema
          *
-         * Returns the message_events SQL schema, supported queries, and limits for the selected API version.
+         * Returns the message_events and call_events SQL schema, supported queries, and limits for the selected API version.
          */
         getMessageMetricsSqlSchema: (input: Schemas.GetMessageMetricsSqlSchemaInput, options?: RequestOptions) => invokers.data<Schemas.GetMessageMetricsSqlSchemaInput, Schemas.GetMessageMetricsSqlSchemaOutput>(
             "getMessageMetricsSqlSchema",
@@ -3054,7 +3175,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Get a webhook destination
+         * Get webhook destination
          *
          * Returns the configuration of one webhook destination belonging to the selected project. Missing or deleted destinations are reported as errors. This read does not disclose the signing secret returned when the destination or a secret rotation was created.
          */
@@ -3066,7 +3187,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Get a webhook event schema
+         * Get webhook event schema
          *
          * Returns the published reader JSON Schema for eventType in the requested webhook apiVersion. Use it to interpret events for that exact payload version. The response media type is application/schema+json; an authorized conditional request may return 304 without a body. Unsupported event/version combinations are rejected.
          */
@@ -3078,7 +3199,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * List Project Attachments
+         * List attachments
          *
          * Lists the Project's Attachment metadata, with optional time filters.
          */
@@ -3150,9 +3271,9 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Query messaging and voice metrics with SQL
+         * Query metrics
          *
-         * Runs read-only SQL over the Project's message_events table. Get the SQL schema for supported columns, capabilities, and limits.
+         * Runs read-only SQL over the Project's message_events or call_events table. Get the SQL schema for supported columns, capabilities, and limits.
          */
         queryMessageMetrics: (input: Schemas.QueryMessageMetricsInput, options?: RequestOptions) => invokers.data<Schemas.QueryMessageMetricsInput, Schemas.QueryMessageMetricsOutput>(
             "queryMessageMetrics",
@@ -3162,7 +3283,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Retry a waiting webhook delivery
+         * Retry webhook delivery
          *
          * Requests an immediate attempt of the selected delivery if it is still the waiting head for its destination and event type. expectedAttemptCount is the failed-attempt counter recorded on the delivery and fences stale requests. This overrides the current backoff, including Retry-After, once. It preserves event identity and the retry budget. Delivered, active, disabled and dead-lettered deliveries cannot be retried. A 202 acknowledges the wake-up, not successful delivery. Supply an Idempotency-Key and retain it when retrying an ambiguous failure.
          */
@@ -3174,7 +3295,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Delete a project API key
+         * Revoke project API key
          *
          * Revokes the identified key on the selected project and returns its revoked metadata. Repeating the deletion returns the same revokedAt value. This operation does not rotate the key or return a replacement secret. Supply the required Idempotency-Key header.
          */
@@ -3186,7 +3307,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Rotate a webhook signing secret
+         * Rotate webhook signing secret
          *
          * Rotates the signing secret for the selected project's webhook destination and returns the new secret. The optional overlapSeconds controls the requested overlap with the previous secret according to the documented request constraints. Store the new secret securely and update the receiver's signature verification configuration; it is returned only in this response and in idempotent replays of it, never by destination reads. Supply the required Idempotency-Key header.
          */
@@ -3198,7 +3319,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Update a project
+         * Update project
          *
          * Updates the identified project's name and returns the updated project. The project slug is not a mutable field in this request. Use an authorized account or organization service-identity credential; a project API key is not accepted. Supply the required Idempotency-Key header.
          */
@@ -3210,7 +3331,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Update a project API key's permissions
+         * Update project API key permissions
          *
          * Replaces the identified project key's permission list with the supplied permissions and returns the updated metadata. Sending the permission list the key already has leaves it unchanged. This request does not create a new secret or change the key's project binding. Supply the required Idempotency-Key header.
          */
@@ -3222,7 +3343,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Update a webhook destination
+         * Update webhook destination
          *
          * Updates the supplied URL, name, description, status or enabledEvents fields on a project's webhook destination and returns its updated configuration. The payload API version is not a mutable field in this request. Event selections are checked against the destination's versioned catalog; signing-secret rotation is a separate operation. Supply the required Idempotency-Key header.
          */
@@ -3234,7 +3355,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Upload an Attachment
+         * Upload attachment
          *
          * Uploads a file and returns its Attachment once ready to download.
          */
@@ -3248,7 +3369,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
     },
     system: {
         /**
-         * Request an app installation
+         * Request app installation
          *
          * Authenticates a registered app backend using a short-lived signed client assertion. Creates request metadata only; customer approval is still required.
          */
@@ -3260,7 +3381,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Redeem an approved installation credential
+         * Redeem installation credential
          *
          * The registered app backend authenticates with a signed client assertion and a single-use code. Plaintext is returned only once; retries return status and never create another credential.
          */
@@ -3276,7 +3397,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
   const raw = {
     account: {
         /**
-         * Commit a profile picture
+         * Commit profile picture
          *
          * Commits a profile picture previously uploaded through createAccountProfilePictureUpload. Call this only after the direct multipart upload succeeds, using the uploadId from the same upload session and a stable Idempotency-Key. The service validates the temporary object's ownership, size, content type, image bytes, dimensions, encryption, and age before changing the Account.
          */
@@ -3288,7 +3409,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Confirm a phone number verification
+         * Confirm phone verification
          *
          * Binds the number once the code is approved. Repeat calls return the bound Account.
          */
@@ -3300,7 +3421,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Create an Account Service Key
+         * Create Account Service Key
          *
          * Creates a service key for the authenticated account with the supplied name and optional expiresAt. Returns key metadata and a one-time credential; store the credential securely because it cannot be retrieved through the listing endpoint. These credentials act as the account and must not be distributed as project-scoped keys. Supply the required Idempotency-Key header.
          */
@@ -3312,7 +3433,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Create a profile picture upload
+         * Create profile picture upload
          *
          * Creates a ten-minute, Account-bound presigned S3 POST for a JPEG, PNG, or WebP profile picture up to 5 MiB. Copy every returned formFields entry into a multipart/form-data request to uploadUrl, append the local file as the final form part, and upload it directly without sending Photon credentials. After the upload succeeds, call commitAccountProfilePicture with the returned uploadId. Do not cache or log the upload URL or form fields.
          */
@@ -3324,7 +3445,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Delete the authenticated account
+         * Delete account
          *
          * Deletes the authenticated account and returns its account tombstone. The operation is rejected while the account still owns organizations; transfer or close those organizations before retrying. This endpoint acts on the caller's account and does not accept another account's identifier.
          */
@@ -3336,7 +3457,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Get the authenticated account
+         * Get account
          *
          * Returns the profile of the authenticated account. The account is selected from the credential rather than a request parameter. A missing or deleted account is reported as an error instead of an empty profile.
          */
@@ -3372,7 +3493,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Remove a profile picture
+         * Remove profile picture
          *
          * Removes the authenticated account's custom profile picture and returns the account using its default picture. This operation does not upload a replacement; use the upload-and-commit operations when setting a new custom picture. Supply the required Idempotency-Key header.
          */
@@ -3384,7 +3505,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Revoke an Account Service Key
+         * Revoke Account Service Key
          *
          * Revokes the account-owned service key identified by serviceKeyId and returns its revoked metadata. Repeating the revocation is stable. Revocation changes the credential's validity; it does not create a replacement key. Supply the required Idempotency-Key header.
          */
@@ -3396,7 +3517,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Revoke a connected application
+         * Revoke connected application
          *
          * Revokes the authenticated user's grant for one OAuth application.
          */
@@ -3408,7 +3529,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Start a phone number verification
+         * Start phone verification
          *
          * Sends an SMS code. Answers CAPTCHA_REQUIRED with the widget to render when no solved challenge accompanies the request; retry with the returned challengeContext and a token. Rate limited per account, per destination number, and globally; a rejection carries Retry-After.
          */
@@ -3420,7 +3541,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Update the authenticated account
+         * Update account
          *
          * Updates the supplied firstName and lastName fields on the authenticated account and returns the updated profile. Only the documented profile fields can be changed through this endpoint; profile-picture uploads and phone-number verification use their dedicated operations. Supply the required Idempotency-Key header.
          */
@@ -3435,7 +3556,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
     auth: {
         device: {
             /**
-             * Start Device Authorization
+             * Start device authorization
              *
              * Starts the device authorization flow for a CLI or another device without a browser. Show the verification URL and user code, then poll the token endpoint at the returned interval. No request fields are required; any supplied body is ignored.
              */
@@ -3447,7 +3568,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Exchange Device Code or Refresh Token
+             * Exchange device code or refresh token
              *
              * Exchanges an authorized device code or a refresh token for an access token and rotating refresh token. Accepts JSON and form-encoded bodies. While polling, wait at least interval seconds and increase the interval on slow_down. Store the new refresh token after every successful grant.
              *
@@ -3462,7 +3583,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             ),
         },
         /**
-         * Authenticate to an invitation's organization SSO connection
+         * Sign in with invitation SSO
          *
          * Returns an authentication URL for the organization SSO connection associated with the supplied invitation token. Supply token and returnTo. Complete the returned authentication flow; requesting its URL does not itself accept the invitation.
          */
@@ -3474,7 +3595,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Authenticate to the current organization SSO connection
+         * Sign in with organization SSO
          *
          * Returns a URL to authenticate through the selected organization’s current SSO connection. Supply returnTo and open the returned URL to continue the flow. Receiving the URL does not establish an authenticated session.
          */
@@ -3486,7 +3607,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Authenticate the current Owner to inspect organization closure
+         * Sign in to close organization
          *
          * Returns an authentication URL for the current organization owner to inspect organization closure. Supply returnTo and complete the returned flow. This operation initiates authentication and does not close the organization.
          */
@@ -3498,7 +3619,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Begin organization SSO admission for an existing Account
+         * Begin organization SSO admission
          *
          * Returns an SSO admission URL for an existing account and the selected organization. Supply returnTo for the continuation URL. Admission requires completing the returned authentication flow; creating the URL does not itself grant membership.
          */
@@ -3510,7 +3631,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Create organization SSO setup portal
+         * Create organization setup portal link
          *
          * Returns an organization setup portal URL. Supply returnTo and optionally intent, either sso or domain_verification; sso is the default. Open the returned URL to complete the selected setup flow.
          */
@@ -3522,7 +3643,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Turn organization SSO off
+         * Disable organization SSO
          *
          * Deletes the provider connection, releases the SSO requirement once the connection is gone, then unbinds the chosen domains. Retry with the same Idempotency-Key to resume or await the same run.
          */
@@ -3534,7 +3655,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Read organization and own membership synchronization
+         * Get organization connection status
          *
          * Requires current human organization membership. Synchronization status does not attest SSO configuration or completed authorization.
          */
@@ -3546,7 +3667,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Read organization SSO configuration
+         * Get organization SSO configuration
          *
          * Returns the selected organization’s SSO connection state, configuration version, and desired and effective policy settings. Read policySyncStatus alongside the enforcement fields to distinguish requested settings from synchronized settings.
          */
@@ -3582,7 +3703,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Retry own organization connection synchronization
+         * Retry organization connection sync
          *
          * Reconciles existing local intent. Takes no body and cannot change membership, roles or authentication policy.
          */
@@ -3594,7 +3715,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Start company sign-in without an existing Account
+         * Start company sign-in
          *
          * Returns a sign-in URL without requiring an existing account: the company SSO connection when the target has a ready connection, otherwise ordinary account login. Supply one documented enrollment variant: organizationId with returnTo (optionally invitationToken), invitationToken with returnTo, or retryToken. Open the returned URL to continue authentication; receiving a URL does not complete sign-in. This is a browser flow: the request must come from an allowed Origin, and the retryToken variant also needs the retry cookie set by the failed sign-in, so send it with credentials.
          */
@@ -3621,19 +3742,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
     organizations: {
         billing: {
             /**
-             * Cancel a category at the end of its billing period
-             *
-             * Schedules cancellation of the specified project's billing category at the end of its current period. The category remains active through the returned cancelsAt instant and then stops renewing. This is a scheduled cancellation, not an immediate removal of the remaining period's service. If the category has no active subscription, nothing changes and the response has cancellationScheduled set to false and cancelsAt set to null. Supply both organizationId and projectId to select the project within its organization.
-             */
-            cancelSubscription: (input: Schemas.CancelSubscriptionInput, options?: RequestOptions) => invokers.raw<Schemas.CancelSubscriptionInput, Schemas.CancelSubscriptionOutput>(
-                "cancelSubscription",
-                Sdk.cancelSubscription,
-                Schemas.CancelSubscriptionOutputSchemas,
-                input,
-                options,
-            ),
-            /**
-             * Purchase or change a category's plan
+             * Change plan
              *
              * Purchases or changes the selected project's plan for the supplied category and planCode. A 202 response means the change is pending: poll the returned operation URL and honor Retry-After until it succeeds or fails. A 200 response means the idempotency key resolved to an operation that is already terminal; inspect that result rather than assuming success from the status code alone. Supply the required Idempotency-Key header. Supply both organizationId and projectId to select the project within its organization.
              */
@@ -3645,7 +3754,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Get a payment-method checkout URL for the organization
+             * Create payment method checkout
              *
              * Returns a hosted payment-method collection URL for the selected organization. An Idempotency-Key header is optional; supply one to make retries safe. Complete the returned checkout flow. Receiving the URL does not mean a card has been saved; check payment-method status afterward.
              */
@@ -3657,7 +3766,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Create a SetupIntent for an in-app card capture
+             * Create card setup intent
              *
              * Creates payment-provider configuration for collecting a card for the selected organization and returns clientSecret and publishableKey. Supply the required Idempotency-Key header. Complete the provider’s card-collection flow separately and avoid logging the returned client secret.
              */
@@ -3669,7 +3778,19 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Get the organization's billing overview
+             * Get the project's effective billing terms
+             *
+             * Returns what the selected project is billed on now, per category it holds: the plan as its subscription has it, with any override applied, each fixed charge at the subscription's price and quantity, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. It also returns the credit the paying organization holds on credit notes, such as the unused time of a plan an upgrade replaced; it offsets that organization's next invoices. Supply both organizationId and projectId; the organization must pay for the project. This operation does not change billing.
+             */
+            getEffectiveTerms: (input: Schemas.GetEffectiveTermsInput, options?: RequestOptions) => invokers.raw<Schemas.GetEffectiveTermsInput, Schemas.GetEffectiveTermsOutput>(
+                "getEffectiveTerms",
+                Sdk.getEffectiveTerms,
+                Schemas.GetEffectiveTermsOutputSchemas,
+                input,
+                options,
+            ),
+            /**
+             * Get organization billing overview
              *
              * Returns the selected organization’s billing subscription and entitlementsVersion. The subscription can be null. Read the returned plan, charges and entitlements to inspect organization billing; this operation does not purchase or change a plan.
              */
@@ -3681,7 +3802,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Check the organization for a card on file
+             * Get organization payment method
              *
              * Reports whether the selected organization has a card on file and returns its documented payment-method metadata. Reading this endpoint does not collect a new card or create a checkout session.
              */
@@ -3705,21 +3826,33 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Resume a category scheduled for cancellation
+             * Preview an organization billing change
              *
-             * Removes a scheduled cancellation for the specified billing category on the selected project so it can renew normally. This operation resumes a category scheduled to cancel; it is separate from purchasing or changing a plan. Supply both organizationId and projectId to select the project within its organization.
+             * Previews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A quantity already paid for this period is not billed again, so a purchase after a release can be free. nextCharge is what is charged in advance at the next period start. For a fixed-charge change, pass quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing.
              */
-            resumeSubscription: (input: Schemas.ResumeSubscriptionInput, options?: RequestOptions) => invokers.raw<Schemas.ResumeSubscriptionInput, Schemas.ResumeSubscriptionOutput>(
-                "resumeSubscription",
-                Sdk.resumeSubscription,
-                Schemas.ResumeSubscriptionOutputSchemas,
+            previewOrganizationChange: (input: Schemas.PreviewOrganizationChangeInput, options?: RequestOptions) => invokers.raw<Schemas.PreviewOrganizationChangeInput, Schemas.PreviewOrganizationChangeOutput>(
+                "previewOrganizationChange",
+                Sdk.previewOrganizationChange,
+                Schemas.PreviewOrganizationChangeOutputSchemas,
+                input,
+                options,
+            ),
+            /**
+             * Preview a project billing change
+             *
+             * Previews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A quantity already paid for this period is not billed again, so a purchase after a release can be free. nextCharge is what is charged in advance at the next period start. For a fixed-charge change, pass quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; planChange says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in planChange.additions and outside dueNow. Supply both organizationId and projectId; the organization must pay for the project.
+             */
+            previewProjectChange: (input: Schemas.PreviewProjectChangeInput, options?: RequestOptions) => invokers.raw<Schemas.PreviewProjectChangeInput, Schemas.PreviewProjectChangeOutput>(
+                "previewProjectChange",
+                Sdk.previewProjectChange,
+                Schemas.PreviewProjectChangeOutputSchemas,
                 input,
                 options,
             ),
         },
         projects: {
             /**
-             * Check slug availability
+             * Check project slug availability
              *
              * Reports whether createProject would accept `slug` right now. Advisory: only the create itself allocates, so a caller must still handle SLUG_TAKEN. A malformed slug is rejected on shape; a reserved slug, a slug held by an active project, and a slug retired with a deleted project each answer `available: false` with a reason.
              */
@@ -3731,7 +3864,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Count accessible projects
+             * Count projects
              *
              * Counts the projects the same filter would list. The count is read from the primary, so it is authoritative rather than replica-lagged.
              */
@@ -3743,7 +3876,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Create a project
+             * Create project
              *
              * Creates in the authorized organization. In addition to account credentials, explicitly granted Service Identity API keys and M2M tokens may create projects. Project API keys cannot create projects. Creator and private credential evidence come only from the trusted authorization context. The caller-selected slug is immutable, must be 3 to 63 lowercase ASCII alphanumerics separated by single hyphens, and cannot be reserved or held by any active or deleted project.
              */
@@ -3755,7 +3888,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Read project closure progress
+             * Get project closure status
              *
              * Returns closure progress for projectId within organizationId, including deletionOperationId, domain progress and ready. This read operation does not initiate deletion.
              */
@@ -3767,7 +3900,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * List accessible projects
+             * List projects
              *
              * Returns a cursor-paginated page of the active projects in organizationId. Filter using query and the documented creation-time bounds, and navigate with pageSize and pageToken. Project roles are not returned and role is not a supported filter.
              */
@@ -3783,7 +3916,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
     projects: {
         agentProfile: {
             /**
-             * Commit an agent avatar
+             * Commit agent avatar
              *
              * Commits an agent avatar previously uploaded through createAgentProfileAvatarUpload. Call this only after the direct multipart upload succeeds, using the uploadId from the same upload session and a stable Idempotency-Key. The service validates the temporary object's Project ownership, size, content type, image bytes, dimensions, encryption, and age before changing the agent profile.
              */
@@ -3795,7 +3928,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Create an agent avatar upload
+             * Create agent avatar upload
              *
              * Creates a ten-minute, Project-bound presigned S3 POST for a JPEG, PNG, or WebP agent avatar up to 5 MiB. Copy every returned formFields entry into a multipart/form-data request to uploadUrl, append the local file as the final form part, and upload it directly without sending Photon credentials. After the upload succeeds, call commitAgentProfileAvatar with the returned uploadId. Do not cache or log the upload URL or form fields.
              */
@@ -3807,7 +3940,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Get an agent profile
+             * Get agent profile
              *
              * Returns the agent profile belonging to the identified project. The profile is project-scoped and is distinct from the authenticated account's personal profile. Use the dedicated avatar operations when uploading or removing an agent avatar.
              */
@@ -3819,7 +3952,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Reset an agent avatar
+             * Reset agent avatar
              *
              * Replaces the selected project's agent avatar with the project's default avatar, a generated planet image derived from the project ID, and returns the updated agent profile. The reset does not restore an earlier avatar: a custom avatar it replaces is discarded and must be uploaded and committed again to use it. When the default avatar is already in use, the profile is returned unchanged. This does not change the account's personal profile picture. Supply the required Idempotency-Key header.
              */
@@ -3831,7 +3964,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Update an agent profile
+             * Update agent profile
              *
              * Updates the supplied firstName and lastName fields in the project's agent profile and returns the updated profile. Avatar upload, commit and reset are separate operations. The caller must be authorized to change configuration for the selected project. Supply the required Idempotency-Key header.
              */
@@ -3845,7 +3978,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
         },
         billing: {
             /**
-             * Get a billing operation snapshot
+             * Get billing operation
              *
              * Returns the authoritative state of a billing operation belonging to the selected project. Use it to recover or poll a plan-change request until the operation reaches success or failure. An accepted request is not evidence that the plan change has completed.
              */
@@ -3857,7 +3990,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Get the project's billing overview
+             * Get project billing overview
              *
              * Returns the selected project's plan information, entitlements and current billing-period usage. This operation reads project billing state; it does not change plans or the payer's payment method. Organization-level plans are available through the organization billing overview.
              */
@@ -3869,7 +4002,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * List available billing plans
+             * List billing plans
              *
              * Lists the billing plan catalog, grouped by their public plan-metadata type. Use the returned plan information when choosing the category and planCode for a plan change. The catalog is the same for every project, and reading it does not purchase a plan.
              */
@@ -3959,7 +4092,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Batch update Voice line profile assignments
+             * Batch update Voice line assignments
              *
              * Atomically sets additional-profile overrides or switches lines back to the project default for up to 100 Voice-capable lines. A null profileId means use the default. Every expected resource version must match or no line changes. Requires platforms:write bound to the path project.
              */
@@ -3983,9 +4116,9 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Configure Voice profile outbound credential
+             * Configure Voice outbound credential
              *
-             * Configures a SIP credential for outbound calls from a profile when the shared profile version matches. authentication.algorithm is required: SHA-256 is recommended, while MD5 is a weaker legacy option supported over UDP, TCP, and TLS; TLS is strongly recommended because UDP and TCP do not encrypt SIP signaling. The profileId may identify the default or an additional profile. The new password is returned once and is never recoverable. Requires platforms:write bound to the path project.
+             * Configures a SIP credential for outbound calls from a profile when the shared profile version matches. Outbound calls are paid usage, so the organization needs a payment method and no invoices overdue 7 days or more; otherwise this returns 402 ENTITLEMENT_REQUIRED with a reason. authentication.algorithm is required: SHA-256 is recommended, while MD5 is a weaker legacy option supported over UDP, TCP, and TLS; TLS is strongly recommended because UDP and TCP do not encrypt SIP signaling. The profileId may identify the default or an additional profile. The new password is returned once and is never recoverable. Requires platforms:write bound to the path project.
              */
             configureVoiceProfileOutbound: (input: Schemas.ConfigureVoiceProfileOutboundInput, options?: RequestOptions) => invokers.raw<Schemas.ConfigureVoiceProfileOutboundInput, Schemas.ConfigureVoiceProfileOutboundOutput>(
                 "configureVoiceProfileOutbound",
@@ -4031,6 +4164,30 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
+             * Count filtered verification codes
+             *
+             * Counts the verification codes Photon kept from this project's dedicated lines and numbers, optionally for one `platform`. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Requires the platforms:read permission bound to the project resource in the path.
+             */
+            countFilteredVerificationCodes: (input: Schemas.CountFilteredVerificationCodesInput, options?: RequestOptions) => invokers.raw<Schemas.CountFilteredVerificationCodesInput, Schemas.CountFilteredVerificationCodesOutput>(
+                "countFilteredVerificationCodes",
+                Sdk.countFilteredVerificationCodes,
+                Schemas.CountFilteredVerificationCodesOutputSchemas,
+                input,
+                options,
+            ),
+            /**
+             * Count a line's filtered verification codes
+             *
+             * Counts the verification codes Photon kept from one dedicated line or number. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a number receives both SMS and WhatsApp. Requires the platforms:read permission bound to the project resource in the path.
+             */
+            countResourceFilteredVerificationCodes: (input: Schemas.CountResourceFilteredVerificationCodesInput, options?: RequestOptions) => invokers.raw<Schemas.CountResourceFilteredVerificationCodesInput, Schemas.CountResourceFilteredVerificationCodesOutput>(
+                "countResourceFilteredVerificationCodes",
+                Sdk.countResourceFilteredVerificationCodes,
+                Schemas.CountResourceFilteredVerificationCodesOutputSchemas,
+                input,
+                options,
+            ),
+            /**
              * Create default Voice profile
              *
              * Creates the project default Voice profile when absent. An identical replay returns the existing default without changing its version; a different existing default conflicts. Direction configuration is managed separately. Requires platforms:write bound to the path project.
@@ -4067,7 +4224,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Create a VoIP-backed WhatsApp sender
+             * Create WhatsApp VoIP sender
              *
              * Registers an active, SMS-capable Photon VoIP line on this project's connected WhatsApp Business Account. The account is resolved server-side; callers never select a WABA. The platform creates or reuses the Meta number, requests and consumes the SMS ownership code internally, verifies it, and registers the sender. displayName is optional; when omitted the project agent profile name is snapshotted before acceptance. The VoIP line remains a separate resource and never receives the whatsapp_business ability.
              */
@@ -4091,7 +4248,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Remove Voice profile inbound configuration
+             * Delete Voice inbound configuration
              *
              * Removes a profile's inbound destination when the shared profile version matches. The profileId may identify the default or an additional profile. The profile and its line assignments remain. Requires platforms:write bound to the path project.
              */
@@ -4103,7 +4260,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Revoke Voice profile outbound credential
+             * Revoke Voice outbound credential
              *
              * Revokes outbound calling for a profile when the shared profile version matches. The profileId may identify the default or an additional profile. The profile, inbound destination, and line assignments remain. Requires platforms:write bound to the path project.
              */
@@ -4115,7 +4272,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Disconnect WhatsApp Business account and numbers
+             * Disconnect WhatsApp Business account
              *
              * Disconnects every attached WhatsApp sender, then unsubscribes our app and removes the project's business account connection. Photon VoIP lines and the numbers in Meta remain. Requires Idempotency-Key. Poll the returned operation; provider refusals appear as operation failures and retain the account for retry with a new key. New signups are blocked while disconnecting, and existing provisions must finish before this request can be accepted.
              */
@@ -4141,7 +4298,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Get project iMessage platform
              *
-             * Reports whether the project is on shared or dedicated iMessage lines, derived from its billing entitlements. Shared mode carries the seat cap. Requires the platforms:read permission bound to the project resource in the path.
+             * Reports whether the project is on shared or dedicated iMessage lines, derived from its billing entitlements. Shared mode carries the seat cap. Both say whether a dedicated line requested now would be assigned without waiting. Requires the platforms:read permission bound to the project resource in the path.
              */
             getImessage: (input: Schemas.GetProjectImessagePlatformInput, options?: RequestOptions) => invokers.raw<Schemas.GetProjectImessagePlatformInput, Schemas.GetProjectImessagePlatformOutput>(
                 "getProjectImessagePlatform",
@@ -4165,7 +4322,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Get project WhatsApp platform
              *
-             * Reports whether the project is on shared or dedicated WhatsApp lines, derived from its billing entitlements. Shared mode carries the seat cap. Requires the platforms:read permission bound to the project resource in the path.
+             * Reports whether the project is on shared or dedicated WhatsApp lines, derived from its billing entitlements. Shared mode carries the seat cap. Both say whether a dedicated line requested now would be assigned without waiting. Requires the platforms:read permission bound to the project resource in the path.
              */
             getProjectWhatsappPlatform: (input: Schemas.GetProjectWhatsappPlatformInput, options?: RequestOptions) => invokers.raw<Schemas.GetProjectWhatsappPlatformInput, Schemas.GetProjectWhatsappPlatformOutput>(
                 "getProjectWhatsappPlatform",
@@ -4187,7 +4344,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Read SMS line campaign assignment
+             * Get SMS line campaign assignment
              *
              * Read the last confirmed campaign and current eligibility. Follow changes through their operations. Eligibility is a control-plane assessment, not a delivery or recipient-consent guarantee.
              */
@@ -4271,7 +4428,19 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * List supported number area codes
+             * List filtered verification codes
+             *
+             * Lists the verification codes Photon kept from this project's dedicated lines and numbers. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line or number (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Filter by `platform`; to read one line, use its own filtered-otp path. Requires the platforms:read permission bound to the project resource in the path.
+             */
+            listFilteredVerificationCodes: (input: Schemas.ListFilteredVerificationCodesInput, options?: RequestOptions) => invokers.raw<Schemas.ListFilteredVerificationCodesInput, Schemas.ListFilteredVerificationCodesOutput>(
+                "listFilteredVerificationCodes",
+                Sdk.listFilteredVerificationCodes,
+                Schemas.ListFilteredVerificationCodesOutputSchemas,
+                input,
+                options,
+            ),
+            /**
+             * List number area codes
              *
              * Lists current provider coverage for US local numbers, sorted and deduplicated. Coverage does not guarantee inventory carrying every required feature. New area-specific purchases must use a listed code; accepted purchases keep waiting if coverage later changes. Requires platforms:read for the path project.
              */
@@ -4283,7 +4452,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * List supported number countries
+             * List number countries
              *
              * Lists supported purchase countries independently of current provider inventory. Requires platforms:read for the path project.
              */
@@ -4297,7 +4466,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * List operations
              *
-             * Lists the project's operations using the same operation representation as creation and GET. The API includes detail.setupUrl only with platforms:write for this project. Results are oldest first — every provision and release it has ever asked for, including the ones still running. This is the entire in-flight view: a resource only appears once it is real, so nothing half-built shows up in the resource list and nothing in flight is missing from this one. Filter by `resourceId` to get one resource's whole history, which for a pooled line is every tenure this project has had on it. `state` is comma-separated; `type` accepts one operation type and an absent filter means everything, including failed and cancelled operations. Requires the platforms:read permission bound to the project resource in the path.
+             * Lists the project's operations using the same operation representation as creation and GET. The API includes detail.setupUrl only with platforms:write for this project. Results are oldest first — every provision and release it has ever asked for, including the ones still running. This is the entire in-flight view: a resource only appears once it is real, so nothing half-built shows up in the resource list and nothing in flight is missing from this one. Filter by `resourceId` to get one resource's whole history, which for a pooled line is every tenure this project has had on it. `state` is comma-separated; `type` accepts one operation type and an absent filter means everything, including failed and cancelled operations. `endedAfter` keeps only operations that finished after that instant, so what failed or was withdrawn recently is one short page. Requires the platforms:read permission bound to the project resource in the path.
              */
             listOperations: (input: Schemas.ListOperationsInput, options?: RequestOptions) => invokers.raw<Schemas.ListOperationsInput, Schemas.ListOperationsOutput>(
                 "listOperations",
@@ -4319,9 +4488,21 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
+             * List a line's filtered verification codes
+             *
+             * Lists the verification codes Photon kept from one dedicated line or number. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line or number (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a number receives both SMS and WhatsApp. Requires the platforms:read permission bound to the project resource in the path.
+             */
+            listResourceFilteredVerificationCodes: (input: Schemas.ListResourceFilteredVerificationCodesInput, options?: RequestOptions) => invokers.raw<Schemas.ListResourceFilteredVerificationCodesInput, Schemas.ListResourceFilteredVerificationCodesOutput>(
+                "listResourceFilteredVerificationCodes",
+                Sdk.listResourceFilteredVerificationCodes,
+                Schemas.ListResourceFilteredVerificationCodesOutputSchemas,
+                input,
+                options,
+            ),
+            /**
              * List resources
              *
-             * Lists everything the project holds, oldest first, whatever kind of thing it is — one endpoint and one id shape for numbers, dedicated lines and whatever ships next. Nothing half-built appears here: a resource exists only once it is real, so anything still being provisioned is an operation rather than a resource with a pending flag. Filter by `type`, by `ability` (which matches only abilities that are currently enabled), and by `state` — comma-separated, and absent means every state, including retired ones. `detail` carries a per-type public view: an SMS number's number, a dedicated line's number and whether it is healthy. Requires the platforms:read permission bound to the project resource in the path.
+             * Lists everything the project holds, oldest first, whatever kind of thing it is — one endpoint and one id shape for numbers, dedicated lines and whatever ships next. Nothing half-built appears here: a resource exists only once it is real, so anything still being provisioned is an operation rather than a resource with a pending flag. Filter by `type`, by `ability` (which matches only abilities that are currently enabled), and by `state` — comma-separated, and absent means every state, including retired ones. `detail` carries a per-type public view: an SMS number's number, a dedicated line's number and its per-capability health (`imessageHealth`, `whatsappHealth`, each with an `overallStatus` of `available`, `degraded`, `unavailable` or `unknown`; `imessageHealth` also carries `account`, `photonSystemComponents`, `newConversations`, `sms` and `mms`, each a `status` with the `cause` that decided it: `account`, `photonSystemComponents`, or null for the item's own state). Requires the platforms:read permission bound to the project resource in the path.
              */
             listResources: (input: Schemas.ListResourcesInput, options?: RequestOptions) => invokers.raw<Schemas.ListResourcesInput, Schemas.ListResourcesOutput>(
                 "listResources",
@@ -4369,7 +4550,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Provision dedicated iMessage line
              *
-             * Claims one dedicated iMessage line for the project and enables iMessage on it. Always answers 202 with an operation: dedicated lines are allocated from available capacity, and unavailable capacity causes a wait rather than a failure — this can legitimately stay `running` for hours, which is exactly why the response is a handle to poll rather than a number. The project's messaging subscription must grant the dedicated iMessage lines entitlement (`imessage_dedicated_lines.can_purchase`), and that is checked before capacity is reserved; nothing is charged until a line is actually claimed. If you no longer want to wait, POST to the operation's cancel endpoint, which costs nothing. The Idempotency-Key is required and permanent: repeating it returns the same operation forever. A further line always needs a NEW key, including while others are still waiting. Requires the platforms:write permission bound to the project resource in the path.
+             * Claims one dedicated iMessage line for the project and enables iMessage on it. Always answers 202 with an operation: dedicated lines are allocated from available capacity, and unavailable capacity causes a wait rather than a failure — this can legitimately stay `running` for hours, which is exactly why the response is a handle to poll rather than a number. The project's messaging subscription must grant the dedicated iMessage lines entitlement (`imessage_dedicated_lines.can_purchase`), and that is checked before capacity is reserved. The line's own charge starts when a line is claimed; the subscription that grants the entitlement bills on its own terms, which cancelling a request does not change. Waiting requests are served first come, first served. One that is still waiting is cancelled with a `reason` if the project is deleted (`project_deleted`) or its plan stops selling dedicated lines (`entitlement_lost`); while the payer is restricted for overdue payment it keeps waiting. If you no longer want to wait, POST to the operation's cancel endpoint, which charges nothing for the line. The Idempotency-Key is required and permanent: repeating it returns the same operation forever. A further line always needs a NEW key, including while others are still waiting. Requires the platforms:write permission bound to the project resource in the path.
              */
             provisionImessageDedicatedLine: (input: Schemas.ProvisionImessageDedicatedLineInput, options?: RequestOptions) => invokers.raw<Schemas.ProvisionImessageDedicatedLineInput, Schemas.ProvisionImessageDedicatedLineOutput>(
                 "provisionImessageDedicatedLine",
@@ -4381,7 +4562,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Provision dedicated WhatsApp line
              *
-             * Provisions one dedicated WhatsApp line with WhatsApp and shared Voice enabled. It attaches to an eligible iMessage line the project already owns when possible so both products keep the same number; otherwise it claims healthy, available WhatsApp-capable dedicated-line inventory. Always answers 202, because waiting when no inventory is available is not a failure. The product opens its own charge period after the abilities are enabled; Voice has no separate charge. Cancel the returned operation to stop waiting. The Idempotency-Key is required and permanent.
+             * Provisions one dedicated WhatsApp line with WhatsApp and shared Voice enabled. It attaches to an eligible iMessage line the project already owns when possible so both products keep the same number; otherwise it claims healthy, available WhatsApp-capable dedicated-line inventory. Always answers 202, because waiting when no inventory is available is not a failure. The product opens its own charge period after the abilities are enabled; Voice has no separate charge. Waiting requests are served first come, first served, and are cancelled with a `reason` exactly as for a dedicated iMessage line. Cancel the returned operation to stop waiting. The Idempotency-Key is required and permanent.
              */
             provisionWhatsappDedicatedLine: (input: Schemas.ProvisionWhatsappDedicatedLineInput, options?: RequestOptions) => invokers.raw<Schemas.ProvisionWhatsappDedicatedLineInput, Schemas.ProvisionWhatsappDedicatedLineOutput>(
                 "provisionWhatsappDedicatedLine",
@@ -4451,7 +4632,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Create or replace Voice profile inbound configuration
+             * Replace Voice inbound configuration
              *
              * Creates or fully replaces a profile's inbound destination when the shared profile version matches. The profileId may identify the default or an additional profile. Credentials are required and nullable; null removes destination authentication. Requires platforms:write bound to the path project.
              */
@@ -4475,7 +4656,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Remove SMS line campaign
+             * Unassign SMS line campaign
              *
              * Any project writer, including a scoped API key, may detach the campaign. The number and campaign remain owned. Requires a permanent Idempotency-Key and expectedVersion. Local eligibility is blocked immediately; provider detachment runs asynchronously.
              */
@@ -4523,7 +4704,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Update Voice profile inbound configuration
+             * Update Voice inbound configuration
              *
              * Updates selected fields of a profile's inbound destination when the shared profile version matches. The profileId may identify the default or an additional profile. At least one of destinationUri or credentials is required. Credential omission preserves destination authentication, null removes it, and an object replaces it atomically. Requires platforms:write bound to the path project.
              */
@@ -4535,7 +4716,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
-             * Update Voice profile outbound authentication policy
+             * Update Voice outbound authentication
              *
              * Changes a SIP profile's outbound Digest algorithm when expectedVersion matches. The profileId may identify the default or an additional profile. This policy-only change preserves the password, username, and any previous-password grace deadline. SHA-256 is recommended; MD5 is a weaker legacy option. Returns non-secret outbound metadata and the profile version. Requires platforms:write bound to the path project.
              */
@@ -4548,7 +4729,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             ),
         },
         /**
-         * Create a project API key
+         * Create project API key
          *
          * Creates a key bound to the selected project using the supplied name, permissions and optional expiry. The secret is returned only in this response and in idempotent replays of it; store it securely because other reads never return it. The key is scoped to this project and does not grant account-level access. Supply the required Idempotency-Key header.
          */
@@ -4560,7 +4741,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Create a webhook destination
+         * Create webhook destination
          *
          * Creates a webhook destination for the selected project using its URL, payload API version, event selection and other documented settings. The response includes the signing secret, which is returned only in this response and in idempotent replays of it, never by destination reads; store it securely for signature verification. The API version must be selectable and selected event types must belong to that version's catalog. Supply the required Idempotency-Key header.
          */
@@ -4572,7 +4753,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Delete a project
+         * Delete project
          *
          * Starts deletion of the identified project using a credential authorized for project management. Inspect the documented response and use getProjectClosureStatus with the organization and project identifiers to read closure progress. A project API key is not an accepted credential for this operation.
          */
@@ -4584,7 +4765,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Delete a webhook destination
+         * Delete webhook destination
          *
          * Deletes the selected project's destination and returns its stable tombstone. Repeated deletion returns the deletion representation. This operation removes the destination configuration; it is separate from disabling a destination through an update.
          */
@@ -4596,7 +4777,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Download an Attachment
+         * Download attachment
          *
          * Downloads an Attachment's bytes. If unavailable after ten seconds, returns ATTACHMENT_NOT_READY with Retry-After: 5.
          */
@@ -4608,7 +4789,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Get a project
+         * Get project
          *
          * Returns the identified project's settings for an authorized caller. The credential must be allowed to access that project; possession of an unrelated project's key does not provide access. Missing and deleted projects are reported through the documented error responses.
          */
@@ -4620,7 +4801,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Get an Attachment
+         * Get attachment
          *
          * Returns an Attachment's metadata. Use the content endpoint to download its bytes.
          */
@@ -4632,7 +4813,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Get Metrics historical backfill status
+         * Get metrics backfill status
          *
          * Returns historical metrics update progress. Completion reflects lastVerifiedAt; queries remain available during updates.
          */
@@ -4644,9 +4825,9 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Get messaging and voice metrics SQL schema
+         * Get metrics SQL schema
          *
-         * Returns the message_events SQL schema, supported queries, and limits for the selected API version.
+         * Returns the message_events and call_events SQL schema, supported queries, and limits for the selected API version.
          */
         getMessageMetricsSqlSchema: (input: Schemas.GetMessageMetricsSqlSchemaInput, options?: RequestOptions) => invokers.raw<Schemas.GetMessageMetricsSqlSchemaInput, Schemas.GetMessageMetricsSqlSchemaOutput>(
             "getMessageMetricsSqlSchema",
@@ -4656,7 +4837,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Get a webhook destination
+         * Get webhook destination
          *
          * Returns the configuration of one webhook destination belonging to the selected project. Missing or deleted destinations are reported as errors. This read does not disclose the signing secret returned when the destination or a secret rotation was created.
          */
@@ -4668,7 +4849,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Get a webhook event schema
+         * Get webhook event schema
          *
          * Returns the published reader JSON Schema for eventType in the requested webhook apiVersion. Use it to interpret events for that exact payload version. The response media type is application/schema+json; an authorized conditional request may return 304 without a body. Unsupported event/version combinations are rejected.
          */
@@ -4680,7 +4861,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * List Project Attachments
+         * List attachments
          *
          * Lists the Project's Attachment metadata, with optional time filters.
          */
@@ -4752,9 +4933,9 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Query messaging and voice metrics with SQL
+         * Query metrics
          *
-         * Runs read-only SQL over the Project's message_events table. Get the SQL schema for supported columns, capabilities, and limits.
+         * Runs read-only SQL over the Project's message_events or call_events table. Get the SQL schema for supported columns, capabilities, and limits.
          */
         queryMessageMetrics: (input: Schemas.QueryMessageMetricsInput, options?: RequestOptions) => invokers.raw<Schemas.QueryMessageMetricsInput, Schemas.QueryMessageMetricsOutput>(
             "queryMessageMetrics",
@@ -4764,7 +4945,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Retry a waiting webhook delivery
+         * Retry webhook delivery
          *
          * Requests an immediate attempt of the selected delivery if it is still the waiting head for its destination and event type. expectedAttemptCount is the failed-attempt counter recorded on the delivery and fences stale requests. This overrides the current backoff, including Retry-After, once. It preserves event identity and the retry budget. Delivered, active, disabled and dead-lettered deliveries cannot be retried. A 202 acknowledges the wake-up, not successful delivery. Supply an Idempotency-Key and retain it when retrying an ambiguous failure.
          */
@@ -4776,7 +4957,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Delete a project API key
+         * Revoke project API key
          *
          * Revokes the identified key on the selected project and returns its revoked metadata. Repeating the deletion returns the same revokedAt value. This operation does not rotate the key or return a replacement secret. Supply the required Idempotency-Key header.
          */
@@ -4788,7 +4969,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Rotate a webhook signing secret
+         * Rotate webhook signing secret
          *
          * Rotates the signing secret for the selected project's webhook destination and returns the new secret. The optional overlapSeconds controls the requested overlap with the previous secret according to the documented request constraints. Store the new secret securely and update the receiver's signature verification configuration; it is returned only in this response and in idempotent replays of it, never by destination reads. Supply the required Idempotency-Key header.
          */
@@ -4800,7 +4981,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Update a project
+         * Update project
          *
          * Updates the identified project's name and returns the updated project. The project slug is not a mutable field in this request. Use an authorized account or organization service-identity credential; a project API key is not accepted. Supply the required Idempotency-Key header.
          */
@@ -4812,7 +4993,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Update a project API key's permissions
+         * Update project API key permissions
          *
          * Replaces the identified project key's permission list with the supplied permissions and returns the updated metadata. Sending the permission list the key already has leaves it unchanged. This request does not create a new secret or change the key's project binding. Supply the required Idempotency-Key header.
          */
@@ -4824,7 +5005,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Update a webhook destination
+         * Update webhook destination
          *
          * Updates the supplied URL, name, description, status or enabledEvents fields on a project's webhook destination and returns its updated configuration. The payload API version is not a mutable field in this request. Event selections are checked against the destination's versioned catalog; signing-secret rotation is a separate operation. Supply the required Idempotency-Key header.
          */
@@ -4836,7 +5017,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Upload an Attachment
+         * Upload attachment
          *
          * Uploads a file and returns its Attachment once ready to download.
          */
@@ -4850,7 +5031,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
     },
     system: {
         /**
-         * Request an app installation
+         * Request app installation
          *
          * Authenticates a registered app backend using a short-lived signed client assertion. Creates request metadata only; customer approval is still required.
          */
@@ -4862,7 +5043,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Redeem an approved installation credential
+         * Redeem installation credential
          *
          * The registered app backend authenticates with a signed client assertion and a single-use code. Plaintext is returned only once; retries return status and never create another credential.
          */

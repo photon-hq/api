@@ -1,0 +1,152 @@
+---
+title: "Update project API key permissions"
+icon: pencil
+description: "Update project API key permissions: updateProjectApiKey in the TypeScript, Python and Rust clients."
+---
+
+`PATCH /v1/projects/{projectId}/api-keys/{apiKeyId}`
+
+Replaces the identified project key's permission list with the supplied permissions and returns the updated metadata. Sending the permission list the key already has leaves it unchanged. This request does not create a new secret or change the key's project binding. Supply the required Idempotency-Key header.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.updateProjectApiKey(input: UpdateProjectApiKeyInput, options?: RequestOptions): Promise<UpdateProjectApiKeyOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.update_project_api_key(input: UpdateProjectApiKeyInput) -> models.ProjectApiKeyResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.update_project_api_key(idempotency_key: String, api_key_id: String, project_id: String, body: &types::UpdateProjectApiKeyRequest).await -> Result<ResponseValue<types::ProjectApiKeyResponse>, Error<UpdateProjectApiKeyError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.updateProjectApiKey({
+  path: {
+    apiKeyId: "apiKeyId",
+    projectId: "projectId",
+  },
+  headers: {
+    idempotencyKey: "idempotencyKey",
+  },
+  body: {
+    permissions: [
+      "events:read",
+    ],
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import UpdateProjectApiKeyInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.update_project_api_key(
+    UpdateProjectApiKeyInput.model_validate({
+        "path": {
+            "apiKeyId": "apiKeyId",
+            "projectId": "projectId",
+        },
+        "headers": {
+            "Idempotency-Key": "idempotencyKey",
+        },
+        "body": {
+            "permissions": [
+                "events:read",
+            ],
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .update_project_api_key(
+        "idempotencyKey".to_owned(),
+        "apiKeyId".to_owned(),
+        "projectId".to_owned(),
+        &serde_json::from_value(serde_json::json!({
+            "permissions": [
+                "events:read",
+            ],
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "apiKey": {
+    "apiKeyId": "string",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "createdByAccountId": "string",
+    "expiresAt": null,
+    "name": "string",
+    "permissions": [
+      "string"
+    ],
+    "permissionsUpdatedAt": null,
+    "projectId": "string",
+    "revokedAt": null
+  }
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField header="Idempotency-Key" type={"string"} required>
+Identifies one logical mutation across retries.
+</ParamField>
+
+<ParamField path="apiKeyId" type={"string"} required>
+
+</ParamField>
+
+<ParamField path="projectId" type={"string"} required>
+
+</ParamField>
+
+
+## Body
+
+<ParamField body="permissions" type={"array of ApiKeyPermission"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The key with its new permission list. Sending the list it already holds returns it unchanged. ProjectApiKeyResponse
+
+<ResponseField name="apiKey" type={"ApiKey"} required>
+
+</ResponseField>
+

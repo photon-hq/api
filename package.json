@@ -48,7 +48,7 @@
     "@redocly/cli": "2.49.0",
     "@types/node": "26.4.0",
     "esbuild": "0.28.1",
-    "handlebars": "4.7.9",
+    "handlebars": "4.7.10",
     "json-canonicalize": "2.0.0",
     "typescript": "7.0.2",
     "yaml": "2.9.0"

@@ -13,5 +13,5 @@ referencing==0.37.0
 # Gate B reference (tools/conformance/reference.py): ECMA-262 patterns, as
 # JSON Schema 2020-12 specifies, so generated values are contract-valid.
 regress==2026.9.1
-# Static type check of the Python client's public typing (packages/python/tests/typing_check.py).
+# Static type check of the Python client's public typing (tools/conformance/fixtures/tests/python/typing_check.py, run by check:fixture).
 pyright==1.1.414

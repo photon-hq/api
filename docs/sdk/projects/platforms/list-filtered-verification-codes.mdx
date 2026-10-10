@@ -1,0 +1,130 @@
+---
+title: "List filtered verification codes"
+icon: arrow-down-left
+description: "List filtered verification codes: listFilteredVerificationCodes in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{id}/platforms/filtered-otp`
+
+Lists the verification codes Photon kept from this project's dedicated lines and numbers. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line or number (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Filter by `platform`; to read one line, use its own filtered-otp path. Requires the platforms:read permission bound to the project resource in the path.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.platforms.listFilteredVerificationCodes(input: ListFilteredVerificationCodesInput, options?: RequestOptions): Promise<ListFilteredVerificationCodesOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.platforms.list_filtered_verification_codes(input: ListFilteredVerificationCodesInput) -> models.FilteredVerificationCodePage
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.list_filtered_verification_codes(id: String, params: Option<ListFilteredVerificationCodesParams>).await -> Result<ResponseValue<types::FilteredVerificationCodePage>, Error<ListFilteredVerificationCodesError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.platforms.listFilteredVerificationCodes({
+  path: {
+    id: "id",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import ListFilteredVerificationCodesInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.platforms.list_filtered_verification_codes(
+    ListFilteredVerificationCodesInput.model_validate({
+        "path": {
+            "id": "id",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .list_filtered_verification_codes("id".to_owned(), None)
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "filteredVerificationCodes": [
+    {
+      "handle": "string",
+      "platform": "sms",
+      "receivedAt": "2026-10-01T12:00:00.000Z",
+      "resourceId": "string"
+    }
+  ],
+  "nextPageToken": "string"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+<ParamField query="platform" type={"FilteredVerificationCodePlatform"}>
+
+</ParamField>
+
+<ParamField query="receivedAfter" type={"string (date-time)"}>
+
+</ParamField>
+
+<ParamField query="receivedBefore" type={"string (date-time)"}>
+
+</ParamField>
+
+<ParamField query="pageSize" type={"integer"}>
+
+</ParamField>
+
+<ParamField query="pageToken" type={"string"}>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** A page of filtered verification codes, newest first. FilteredVerificationCodePage
+
+<ResponseField name="filteredVerificationCodes" type={"array of FilteredVerificationCode"} required>
+
+</ResponseField>
+
+<ResponseField name="nextPageToken" type={"string"}>
+
+</ResponseField>
+

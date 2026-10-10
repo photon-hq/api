@@ -1,0 +1,139 @@
+---
+title: "Exchange device code or refresh token"
+icon: arrow-up-right
+description: "Exchange device code or refresh token: deviceToken in the TypeScript, Python and Rust clients."
+---
+
+`POST /v1/auth/device/token`
+
+Exchanges an authorized device code or a refresh token for an access token and rotating refresh token. Accepts JSON and form-encoded bodies. While polling, wait at least interval seconds and increase the interval on slow_down. Store the new refresh token after every successful grant.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.auth.device.token(input: DeviceTokenInput, options?: RequestOptions): Promise<DeviceTokenOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.auth.device.token(input: DeviceTokenInput) -> models.DeviceTokenResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.device_token(body: &types::DeviceTokenRequest).await -> Result<ResponseValue<types::DeviceTokenResponse>, Error<DeviceTokenError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon();
+const result = await photon.auth.device.token({
+  body: {
+    device_code: "device_code",
+    grant_type: "urn:ietf:params:oauth:grant-type:device_code",
+  },
+});
+```
+
+```python Python
+from photon_api import Photon
+from photon_api.rpc_generated import DeviceTokenInput
+
+photon = Photon()
+result = photon.auth.device.token(
+    DeviceTokenInput.model_validate({
+        "body": {
+            "device_code": "device_code",
+            "grant_type": "urn:ietf:params:oauth:grant-type:device_code",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::PhotonClientBuilder;
+
+let client = PhotonClientBuilder::new().build()?;
+let result = client
+    .device_token(
+        &serde_json::from_value(serde_json::json!({
+            "device_code": "device_code",
+            "grant_type": "urn:ietf:params:oauth:grant-type:device_code",
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "access_token": "string",
+  "authentication_method": "string",
+  "expires_in": 0,
+  "refresh_token": "string",
+  "user": {
+    "email": "string",
+    "first_name": null,
+    "id": "string",
+    "last_name": null
+  }
+}
+```
+
+</ResponseExample>
+
+## Body
+
+**One of: DeviceCodeGrantRequest**
+
+<ParamField body="device_code" type={"string"} required>
+device_code returned by POST /v1/auth/device/code. Required for a device-code grant.
+</ParamField>
+
+<ParamField body="grant_type" type={"\"urn:ietf:params:oauth:grant-type:device_code\""} required>
+Selects the device authorization grant to poll or exchange a device code.
+</ParamField>
+
+**One of: RefreshTokenGrantRequest**
+
+<ParamField body="grant_type" type={"\"refresh_token\""} required>
+Selects the refresh-token grant to obtain a new token pair.
+</ParamField>
+
+<ParamField body="refresh_token" type={"string"} required>
+Most recently issued refresh token. Required for a refresh grant; replace it with the returned refresh_token after success.
+</ParamField>
+
+
+## Returns
+
+**`200`** Token pair (snake_case OAuth wire format). Body (form-encoded or JSON): grant_type=urn:ietf:params:oauth:grant-type:device_code with device_code, or grant_type=refresh_token with refresh_token. Refresh tokens rotate on every grant — always store the new one. DeviceTokenResponse
+
+<ResponseField name="access_token" type={"string"} required>
+Bearer access token for authenticated Photon API requests.
+</ResponseField>
+
+<ResponseField name="authentication_method" type={"string"}>
+Authentication method used for the device login, when returned. Omitted for refresh grants.
+</ResponseField>
+
+<ResponseField name="expires_in" type={"number"} required>
+Access-token validity in seconds, derived from its expiry and issue times; defaults to 300 when unavailable.
+</ResponseField>
+
+<ResponseField name="refresh_token" type={"string"} required>
+Refresh token for the next refresh grant. Tokens rotate on every grant; replace the stored value with this one.
+</ResponseField>
+
+<ResponseField name="user" type={"DeviceTokenResponseUser"} required>
+Profile of the authenticated user.
+</ResponseField>
+

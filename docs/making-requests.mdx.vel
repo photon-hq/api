@@ -146,7 +146,9 @@ query and header parameters go in a `<Operation>Params` builder, such as
 
 Models are in `photon_ai_api::types`, with snake_case fields. A call returns
 `Result<ResponseValue<T>, Error<E>>`: `into_inner()` gives the body, and
-[Raw responses](/api-client/raw-responses) covers the rest.
+[Raw responses](/api-client/raw-responses) covers the rest. When an operation
+has more than one success status, `T` is an enum with a variant for each, such
+as `CreateProjectResponse::Status201` and `CreateProjectResponse::Status202`.
 
 With the optional `blocking` feature, the crate also provides `BlockingClient`,
 a synchronous wrapper. It is built directly rather than with
@@ -220,7 +222,7 @@ with Photon(headers={"Authorization": f"Bearer {api_key}"}) as photon:
 ```
 
 ```rust Rust
-use photon_ai_api::{Credential, PhotonClientBuilder, SecretString, types};
+use photon_ai_api::{CreateProjectResponse, Credential, PhotonClientBuilder, SecretString, types};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -238,11 +240,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
     // Any unique key works; this one is 32 random hex digits.
     let idempotency_key = format!("{:032x}", rand::random::<u128>());
-    let project = client
+    let response = client
         .create_project(idempotency_key, organization_id, &body)
         .await
         .map_err(|error| format!("{error:?}"))?
         .into_inner();
+    // 202: the project exists, but its billing is still being set up.
+    let project = match response {
+        CreateProjectResponse::Status201(project) | CreateProjectResponse::Status202(project) => {
+            project
+        }
+    };
     println!("{}", project.project_id);
     Ok(())
 }

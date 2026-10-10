@@ -82,13 +82,14 @@
               "root": "api-client/sdk/organizations/billing/index",
               "pages": [
                 "api-client/sdk/organizations/billing/list-invoices",
+                "api-client/sdk/organizations/billing/get-effective-terms",
                 "api-client/sdk/organizations/billing/get-organization-billing-overview",
                 "api-client/sdk/organizations/billing/get-organization-payment-method",
-                "api-client/sdk/organizations/billing/cancel-subscription",
                 "api-client/sdk/organizations/billing/change-plan",
                 "api-client/sdk/organizations/billing/create-organization-payment-method-checkout",
                 "api-client/sdk/organizations/billing/create-organization-setup-intent",
-                "api-client/sdk/organizations/billing/resume-subscription"
+                "api-client/sdk/organizations/billing/preview-organization-change",
+                "api-client/sdk/organizations/billing/preview-project-change"
               ]
             },
             {
@@ -157,14 +158,18 @@
               "group": "Platforms",
               "root": "api-client/sdk/projects/platforms/index",
               "pages": [
+                "api-client/sdk/projects/platforms/list-filtered-verification-codes",
                 "api-client/sdk/projects/platforms/list-number-area-codes",
                 "api-client/sdk/projects/platforms/list-number-countries",
                 "api-client/sdk/projects/platforms/list-operations",
                 "api-client/sdk/projects/platforms/list-project-platforms",
+                "api-client/sdk/projects/platforms/list-resource-filtered-verification-codes",
                 "api-client/sdk/projects/platforms/list-resources",
                 "api-client/sdk/projects/platforms/list-voice-profiles",
                 "api-client/sdk/projects/platforms/list-whatsapp-account-phone-numbers",
                 "api-client/sdk/projects/platforms/list-whatsapp-shared-line-assignments",
+                "api-client/sdk/projects/platforms/count-filtered-verification-codes",
+                "api-client/sdk/projects/platforms/count-resource-filtered-verification-codes",
                 "api-client/sdk/projects/platforms/get-default-voice-profile",
                 "api-client/sdk/projects/platforms/get-imessage",
                 "api-client/sdk/projects/platforms/get-operation",

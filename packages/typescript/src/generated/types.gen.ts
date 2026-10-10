@@ -483,6 +483,32 @@ export type BeginOrganizationSsoAdmissionInternalServerErrorProblem = InternalEr
 
 export type BeginOrganizationSsoAdmissionPreconditionFailedProblem = OrganizationSsoPreconditionFailedProblem | SsoSubscriptionRequiredProblem;
 
+export type BillingEntitlementsPendingProblem = {
+    code: 'BILLING_ENTITLEMENTS_PENDING';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 503;
+    title: 'Billing Entitlements Pending';
+    type: 'https://photon.codes/docs/problems/billing-entitlements-pending';
+    [key: string]: JsonValue | 'BILLING_ENTITLEMENTS_PENDING' | string | never | 503 | 'Billing Entitlements Pending' | 'https://photon.codes/docs/problems/billing-entitlements-pending' | undefined;
+};
+
+export type BillingHeldFixedCharge = {
+    fixedChargeCode: string;
+    quantity: number;
+};
+
+export type BillingNextCharge = {
+    amountCents: number;
+    /**
+     * ISO 8601.
+     */
+    at: string;
+    currency: string;
+};
+
 export type BillingNotProvisionedProblem = {
     code: 'BILLING_NOT_PROVISIONED';
     detail?: string;
@@ -504,6 +530,7 @@ export type BillingOperationFailure = {
     code: BillingOperationFailureCode;
     detail: BillingOperationFailureDetail | null;
     retryable: boolean;
+    unsoldFixedCharges: Array<BillingHeldFixedCharge>;
 };
 
 /**
@@ -511,11 +538,12 @@ export type BillingOperationFailure = {
  */
 export type BillingOperationFailureCode = 'payment_method_required' | 'payment_failed' | 'not_provisioned' | 'invalid_target' | 'internal' | (string & {});
 
-export type BillingOperationFailureDetail = 'cancellation_scheduled' | 'feature_not_sold_by_plan' | 'feature_not_found' | 'payment_timeout' | 'plan_activation_timeout' | 'plan_not_found' | 'quantity_out_of_range' | 'target_rejected' | (string & {});
+export type BillingOperationFailureDetail = 'cancellation_scheduled' | 'feature_not_sold_by_plan' | 'feature_not_found' | 'payment_timeout' | 'plan_activation_timeout' | 'plan_not_found' | 'quantity_out_of_range' | 'reconciliation_required' | 'release_required' | 'target_rejected' | (string & {});
 
 export type BillingOperationKind = 'change_plan' | 'adjust_fixed_charge_quantity' | (string & {});
 
 export type BillingOperationResult = {
+    effectiveAt: string | null;
     type: 'version';
     version: string;
 };
@@ -537,11 +565,57 @@ export type BillingPlan = {
     entitlements: Array<BillingPlanEntitlement>;
     fixedCharges: Array<FixedCharge>;
     interval: BillingPlanInterval;
+    /**
+     * The category's default plan: the one a project holds when it pays for none, and moves to at the period end when it leaves a paid plan. At most one per category.
+     */
+    isDefault: boolean;
+    minimumCommitment: BillingPlanMinimumCommitment | null;
     name: string;
     payInAdvance: boolean;
     planCode: string;
+    /**
+     * Rank within the category: moving to a higher tier is an upgrade and applies now, to a lower one a downgrade scheduled for the period end. Null when the plan has none.
+     */
+    tier: number | null;
+    /**
+     * The plan's tier as customers see it, e.g. Pro for Messaging Pro, where the category is already clear. Null when unconfigured.
+     */
+    tierDisplayName: string | null;
     usageCharges: Array<UsageCharge>;
+    /**
+     * Progressive-billing thresholds, ordered by amount.
+     */
+    usageThresholds: Array<BillingPlanUsageThreshold>;
 };
+
+export type BillingPlanChangeEffect = {
+    /**
+     * One line per requested addition: what adding it bills on the target plan, prorated as if added now. Billed when it is added, not with dueNow; the balance left after dueNow applies to it first. nextCharge already includes it.
+     */
+    additions: Array<BillingPreviewLine>;
+    /**
+     * When a period_end change applies. Null otherwise.
+     */
+    effectiveAt: string | null;
+    /**
+     * The target plan's minimum commitment: when a period's charges fall short of it, the difference is billed at the period end. Set for an upgrade to a plan with one, null otherwise.
+     */
+    minimumCommitment: BillingPreviewMinimumCommitment | null;
+    timing: BillingPlanChangeTiming;
+    /**
+     * Held fixed charges the target plan does not sell; the preview prices the change without them. With period_end they stay until it applies and are released with it. Otherwise the change is refused (release_required) until they are released.
+     */
+    unsoldFixedCharges: Array<BillingHeldFixedCharge>;
+    /**
+     * The replaced plan's unused time, which an upgrade credits to the payer: applied to dueNow first, the rest kept as balance. Set for an upgrade from a plan paid in advance, null otherwise.
+     */
+    unusedTimeCredit: BillingPreviewCredit | null;
+};
+
+/**
+ * immediate applies now and charges dueNow with it. on_payment applies once dueNow is paid; the current plan stays until then. period_end is a downgrade: it applies at the period end and charges nothing now.
+ */
+export type BillingPlanChangeTiming = 'immediate' | 'on_payment' | 'period_end' | (string & {});
 
 export type BillingPlanEntitlement = {
     featureKey: string;
@@ -550,47 +624,142 @@ export type BillingPlanEntitlement = {
 
 export type BillingPlanInterval = 'weekly' | 'monthly' | 'quarterly' | 'semiannual' | 'yearly' | (string & {});
 
+/**
+ * When the plan's fees for an interval come to less than amountCents, the difference is invoiced at the end of the period.
+ */
+export type BillingPlanMinimumCommitment = {
+    /**
+     * Least the plan bills each interval, in whole cents.
+     */
+    amountCents: number;
+    displayName: string | null;
+};
+
+export type BillingPlanUsageThreshold = {
+    /**
+     * Usage amount, in whole cents, at which usage is invoiced before the period ends.
+     */
+    amountCents: number;
+    displayName: string | null;
+    /**
+     * Whether usage is invoiced again every further amountCents.
+     */
+    recurring: boolean;
+};
+
+export type BillingPreviewCredit = {
+    amountCents: number;
+    /**
+     * The replaced plan's code.
+     */
+    code: string;
+    /**
+     * The replaced plan's name.
+     */
+    name: string;
+    /**
+     * The end of the period the plan was paid for.
+     */
+    periodEnd: string | null;
+    /**
+     * When the change is made.
+     */
+    periodStart: string | null;
+};
+
+export type BillingPreviewFixedChargeChange = {
+    /**
+     * Category slug, e.g. analytics or messaging.
+     */
+    category: string;
+    fixedCharge: FixedChargeChange;
+};
+
+/**
+ * Charged when the change is made, priced as the change bills it. No lines when it charges nothing now.
+ */
+export type BillingPreviewInvoice = {
+    /**
+     * Credit notes and prepaid credit applied, in cents.
+     */
+    creditsCents: number;
+    currency: string;
+    /**
+     * Coupons applied, in cents.
+     */
+    discountCents: number;
+    /**
+     * Sum of the lines, in cents.
+     */
+    feesCents: number;
+    lines: Array<BillingPreviewLine>;
+    taxesCents: number;
+    /**
+     * What the payer is charged, in cents.
+     */
+    totalCents: number;
+};
+
+export type BillingPreviewLine = {
+    amountCents: number;
+    /**
+     * The fixed-charge code for a fixed charge, the metric code for usage, and the plan code otherwise.
+     */
+    code: string;
+    kind: BillingPreviewLineKind;
+    name: string;
+    periodEnd: string | null;
+    periodStart: string | null;
+    /**
+     * Units billed, as a decimal. Units already paid this period are not billed again, so a purchase can bill fewer units than it adds.
+     */
+    units: string;
+};
+
+/**
+ * subscription is a plan's base fee. usage is the replaced plan's usage to date, billed as it stands when the change is made, so it is an estimate. commitment is the replaced plan's minimum commitment less what its fees cover.
+ */
+export type BillingPreviewLineKind = 'fixed_charge' | 'subscription' | 'usage' | 'commitment' | (string & {});
+
+export type BillingPreviewMinimumCommitment = {
+    /**
+     * For each full period.
+     */
+    amountCents: number;
+    /**
+     * For the rest of the current period, prorated as its true-up bills it.
+     */
+    currentPeriodAmountCents: number;
+    /**
+     * ISO 8601.
+     */
+    currentPeriodEnd: string;
+    /**
+     * ISO 8601.
+     */
+    currentPeriodStart: string;
+};
+
+export type BillingPreviewPlanChange = {
+    /**
+     * Fixed charges added once an upgrade applies, each billed when it is added rather than with the upgrade. Priced as if added now on the target plan and returned in planChange.additions, outside dueNow. Each must be sold by the target plan and named once.
+     */
+    additions?: Array<FixedChargeAddition>;
+    /**
+     * Category slug, e.g. analytics or messaging.
+     */
+    category: string;
+    /**
+     * Plan to change to, as a purchase of it changes it.
+     */
+    planCode: string;
+};
+
 export type CancelOperationForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type CancelOperationGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
 
 export type CancelOperationInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
-
-export type CancelSubscriptionBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
-
-export type CancelSubscriptionConflictProblem = FailedPreconditionProblem | IdempotencyRequestInProgressProblem;
-
-export type CancelSubscriptionForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
-
-export type CancelSubscriptionGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
-
-export type CancelSubscriptionInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
-
-export type CancelSubscriptionRequest = {
-    /**
-     * Category slug, e.g. analytics or messaging.
-     */
-    category: string;
-};
-
-export type CancelSubscriptionResponse = {
-    /**
-     * False when the category held no active subscription.
-     */
-    cancellationScheduled: boolean;
-    /**
-     * End of the final paid period, ISO 8601.
-     */
-    cancelsAt: string | null;
-    /**
-     * Category slug, e.g. analytics or messaging.
-     */
-    category: string;
-};
-
-export type CancelSubscriptionServiceUnavailableProblem = IdempotencyUnavailableProblem | UpstreamUnavailableProblem;
-
-export type CancelSubscriptionUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
 export type CaptchaProvider = 'turnstile' | 'hcaptcha' | (string & {});
 
@@ -721,7 +890,7 @@ export type ConnectEmailDomainRequest = {
     domain: string;
 };
 
-export type ConnectEmailDomainServiceUnavailableProblem = BillingNotProvisionedProblem | UpstreamUnavailableProblem;
+export type ConnectEmailDomainServiceUnavailableProblem = BillingEntitlementsPendingProblem | BillingNotProvisionedProblem | UpstreamUnavailableProblem;
 
 export type ConnectEmailDomainUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
@@ -753,13 +922,25 @@ export type ConnectWhatsappBusinessRequest = {
     wabaId: string;
 };
 
-export type ConnectWhatsappBusinessServiceUnavailableProblem = BillingNotProvisionedProblem | UpstreamUnavailableProblem;
+export type ConnectWhatsappBusinessServiceUnavailableProblem = BillingEntitlementsPendingProblem | BillingNotProvisionedProblem | UpstreamUnavailableProblem;
 
 export type ConnectWhatsappBusinessUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
+
+export type CountFilteredVerificationCodesForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type CountFilteredVerificationCodesGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
+
+export type CountFilteredVerificationCodesInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
 export type CountProjectsForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type CountProjectsGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type CountResourceFilteredVerificationCodesForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type CountResourceFilteredVerificationCodesGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
+
+export type CountResourceFilteredVerificationCodesInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
 export type CreateAccountProfilePictureUploadForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -941,7 +1122,7 @@ export type CreateSharedLineAssignmentRequest = {
     lastName?: string;
 };
 
-export type CreateSharedLineAssignmentServiceUnavailableProblem = BillingNotProvisionedProblem | SharedLinePoolExhaustedProblem | UpstreamUnavailableProblem;
+export type CreateSharedLineAssignmentServiceUnavailableProblem = BillingEntitlementsPendingProblem | BillingNotProvisionedProblem | SharedLinePoolExhaustedProblem | UpstreamUnavailableProblem;
 
 export type CreateSharedLineAssignmentUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
@@ -1004,7 +1185,7 @@ export type CreateWhatsappSharedLineAssignmentRequest = {
     lastName?: string;
 };
 
-export type CreateWhatsappSharedLineAssignmentServiceUnavailableProblem = BillingNotProvisionedProblem | SharedLinePoolExhaustedProblem | UpstreamUnavailableProblem;
+export type CreateWhatsappSharedLineAssignmentServiceUnavailableProblem = BillingEntitlementsPendingProblem | BillingNotProvisionedProblem | SharedLinePoolExhaustedProblem | UpstreamUnavailableProblem;
 
 export type CreateWhatsappSharedLineAssignmentUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
@@ -1025,7 +1206,7 @@ export type CreateWhatsappVoipSenderRequest = {
     voipResourceId: string;
 };
 
-export type CreateWhatsappVoipSenderServiceUnavailableProblem = BillingNotProvisionedProblem | UpstreamUnavailableProblem;
+export type CreateWhatsappVoipSenderServiceUnavailableProblem = BillingEntitlementsPendingProblem | BillingNotProvisionedProblem | UpstreamUnavailableProblem;
 
 export type CreateWhatsappVoipSenderUnprocessableEntityProblem = ValidationFailedProblem | WhatsappDisplayNameUnavailableProblem | IdempotencyKeyReusedProblem;
 
@@ -1036,7 +1217,19 @@ export type CreatedAppInstallationDelivery = {
     status: 'created';
 };
 
+export type CreditBalance = {
+    /**
+     * Credit left to offset the next invoices, in cents.
+     */
+    balanceCents: number;
+    /**
+     * ISO currency code.
+     */
+    currency: string;
+};
+
 export type DedicatedProjectPlatformSettings = {
+    dedicatedLineAvailableNow: boolean;
     mode: 'dedicated';
 };
 
@@ -1269,16 +1462,20 @@ export type EmailDomainCapExceededProblem = {
     [key: string]: JsonValue | 'EMAIL_DOMAIN_CAP_EXCEEDED' | string | never | 409 | 'Email Domain Cap Exceeded' | 'https://photon.codes/docs/problems/email-domain-cap-exceeded' | undefined;
 };
 
+export type EntitlementRejectionReason = 'billing_restricted' | 'business_plan_required' | 'card_required' | 'email_required' | 'plan_change_scheduled' | 'subscription_not_billable' | (string & {});
+
 export type EntitlementRequiredProblem = {
     code: 'ENTITLEMENT_REQUIRED';
     detail?: string;
+    effectiveAt?: string;
     instance?: string;
+    reason: EntitlementRejectionReason;
     remediation?: never;
     requestId?: string;
     status: 402;
     title: 'Entitlement Required';
     type: 'https://photon.codes/docs/problems/entitlement-required';
-    [key: string]: JsonValue | 'ENTITLEMENT_REQUIRED' | string | never | 402 | 'Entitlement Required' | 'https://photon.codes/docs/problems/entitlement-required' | undefined;
+    [key: string]: JsonValue | 'ENTITLEMENT_REQUIRED' | string | EntitlementRejectionReason | never | 402 | 'Entitlement Required' | 'https://photon.codes/docs/problems/entitlement-required' | undefined;
 };
 
 export type ExistingAppInstallationDelivery = {
@@ -1316,6 +1513,26 @@ export type FailedPreconditionProblem = {
     [key: string]: JsonValue | 'FAILED_PRECONDITION' | string | never | 409 | 'Failed Precondition' | 'https://photon.codes/docs/problems/failed-precondition' | undefined;
 };
 
+export type FilteredVerificationCode = {
+    handle: string;
+    platform: string;
+    receivedAt: string;
+    resourceId: string;
+};
+
+export type FilteredVerificationCodeCount = {
+    count: number;
+    receivedAfter: string;
+    receivedBefore: string;
+};
+
+export type FilteredVerificationCodePage = {
+    filteredVerificationCodes: Array<FilteredVerificationCode>;
+    nextPageToken?: string;
+};
+
+export type FilteredVerificationCodePlatform = 'imessage' | 'sms' | 'whatsapp' | (string & {});
+
 export type FixedCharge = {
     chargeModel: FixedChargeModel;
     displayName: string;
@@ -1326,11 +1543,51 @@ export type FixedCharge = {
     quantity: number;
 };
 
+/**
+ * Units of a fixed charge added once a plan change applies.
+ */
+export type FixedChargeAddition = {
+    /**
+     * Fixed charge to change, e.g. sms_local_us_number.
+     */
+    fixedChargeCode: string;
+    /**
+     * Units added.
+     */
+    increment: number;
+};
+
+/**
+ * A quantity change made now, as a purchase or release makes it.
+ */
+export type FixedChargeChange = {
+    /**
+     * Fixed charge to change, e.g. sms_local_us_number.
+     */
+    fixedChargeCode: string;
+    /**
+     * Signed change to the current quantity. The resulting quantity must stay between 0 and 10,000.
+     */
+    increment: number;
+};
+
 export type FixedChargeModel = 'graduated' | 'standard' | 'volume' | (string & {});
 
 export type FixedChargePricing = {
     amount: string | null;
     tiers: Array<FixedChargeTier>;
+};
+
+export type FixedChargeQuote = {
+    /**
+     * Decimal amount in the plan currency. Kept as text so sub-cent unit prices remain exact.
+     */
+    amount: string;
+    currency: string;
+    /**
+     * ISO 8601.
+     */
+    currentPeriodEnd: string;
 };
 
 export type FixedChargeTier = {
@@ -1400,6 +1657,27 @@ export type GetDefaultVoiceProfileForbiddenProblem = ForbiddenProblem | Insuffic
 export type GetDefaultVoiceProfileGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
 
 export type GetDefaultVoiceProfileInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type GetEffectiveTermsForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type GetEffectiveTermsGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
+
+export type GetEffectiveTermsInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type GetEffectiveTermsResponse = {
+    /**
+     * Credit the paying organization holds on credit notes, such as the unused time of a plan an upgrade replaced. It offsets that organization's next invoices of any kind except one-off invoices. Prepaid wallet credit is separate. Null when it holds none.
+     */
+    creditBalance: CreditBalance | null;
+    /**
+     * One entry per category the project holds, by category. Empty means it holds none.
+     */
+    subscriptions: Array<SubscriptionTerms>;
+    /**
+     * The IANA time zone the payer is billed in, e.g. America/Los_Angeles. Billing periods start and end at its midnights, so read their calendar dates in it.
+     */
+    timeZone: string;
+};
 
 export type GetMessageMetricsBackfillForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -1507,7 +1785,7 @@ export type GetProjectImessagePlatformGatewayTimeoutProblem = RequestTimeoutProb
 
 export type GetProjectImessagePlatformInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
-export type GetProjectImessagePlatformServiceUnavailableProblem = BillingNotProvisionedProblem | UpstreamUnavailableProblem;
+export type GetProjectImessagePlatformServiceUnavailableProblem = BillingEntitlementsPendingProblem | BillingNotProvisionedProblem | UpstreamUnavailableProblem;
 
 export type GetProjectWhatsappPlatformForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -1515,7 +1793,7 @@ export type GetProjectWhatsappPlatformGatewayTimeoutProblem = RequestTimeoutProb
 
 export type GetProjectWhatsappPlatformInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
-export type GetProjectWhatsappPlatformServiceUnavailableProblem = BillingNotProvisionedProblem | UpstreamUnavailableProblem;
+export type GetProjectWhatsappPlatformServiceUnavailableProblem = BillingEntitlementsPendingProblem | BillingNotProvisionedProblem | UpstreamUnavailableProblem;
 
 export type GetResourceForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -1875,12 +2153,18 @@ export type ListBillingPlansInternalServerErrorProblem = InternalErrorProblem | 
 
 export type ListBillingPlansResponse = {
     /**
-     * Plans grouped by valid metadata type and explicitly published with visible="true".
+     * Plans grouped by valid metadata type and explicitly published with visible="true". Each group is in display order: by tier, plans without one last, then by planCode.
      */
     plans: {
         [key: string]: Array<BillingPlan>;
     };
 };
+
+export type ListFilteredVerificationCodesForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type ListFilteredVerificationCodesGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
+
+export type ListFilteredVerificationCodesInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
 export type ListInvoicesForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -1946,6 +2230,12 @@ export type ListProjectPlatformsResponse = {
 export type ListProjectsForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type ListProjectsGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type ListResourceFilteredVerificationCodesForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type ListResourceFilteredVerificationCodesGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
+
+export type ListResourceFilteredVerificationCodesInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
 export type ListResourcesForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -2051,8 +2341,10 @@ export type MessageMetricsJsonPathValue = boolean | number | string;
 
 export type MessageMetricsJsonResource = {
     contractsVersion: string;
-    type: 'message';
+    type: MessageMetricsJsonResourceType;
 };
+
+export type MessageMetricsJsonResourceType = 'call' | 'message' | (string & {});
 
 export type MessageMetricsPlatform = 'email' | 'imessage' | 'sms' | 'telegram' | 'voice' | 'whatsapp' | 'whatsapp_business' | (string & {});
 
@@ -2103,7 +2395,7 @@ export type MessageMetricsSqlTable = {
     name: MessageMetricsSqlTableName;
 };
 
-export type MessageMetricsSqlTableName = 'message_events';
+export type MessageMetricsSqlTableName = 'message_events' | 'call_events' | (string & {});
 
 export type MeteredUsage = {
     /**
@@ -2164,6 +2456,7 @@ export type Operation = {
     error?: OperationError;
     operationId: string;
     projectId: string;
+    reason?: OperationReason;
     resourceId?: string;
     resourceType: string;
     startedAt?: string;
@@ -2205,6 +2498,8 @@ export type OperationPage = {
     nextPageToken?: string;
     operations: Array<Operation>;
 };
+
+export type OperationReason = 'charge_refused' | 'entitlement_lost' | 'project_deleted' | (string & {});
 
 export type OperationState = 'pending' | 'running' | 'succeeded' | 'failed' | 'cancelled' | (string & {});
 
@@ -2342,9 +2637,17 @@ export type OrganizationSsoRequiredProblem = {
 
 export type OrganizationSubscription = {
     /**
+     * The plan's recurring base fee in whole cents.
+     */
+    baseAmountCents: number;
+    /**
      * When the subscription will end, ISO 8601.
      */
     cancelsAt: string | null;
+    /**
+     * ISO currency code.
+     */
+    currency: string;
     /**
      * End of the current billing period, ISO 8601.
      */
@@ -2354,10 +2657,15 @@ export type OrganizationSubscription = {
      * Fixed charges defined by the organization's current plan. Quantity is the plan default.
      */
     fixedCharges: Array<FixedCharge>;
+    minimumCommitment: BillingPlanMinimumCommitment | null;
     /**
-     * The organization's plan; display only.
+     * The organization's plan.
      */
     planCode: string;
+    /**
+     * The plan's customer-facing name, e.g. Messaging Pro.
+     */
+    planName: string;
     status: SubscriptionStatus;
 };
 
@@ -2415,6 +2723,8 @@ export type PaymentMethod = {
     last4: string | null;
 };
 
+export type PaymentMode = 'automatic' | 'manual' | (string & {});
+
 export type PaymentProviderNotReadyProblem = {
     code: 'PAYMENT_PROVIDER_NOT_READY';
     detail?: string;
@@ -2446,6 +2756,74 @@ export type PendingBillingOperation = {
 export type PhoneVerificationCaptcha = {
     challengeContext: string;
     token: string;
+};
+
+export type PlanSource = 'catalog' | 'override' | (string & {});
+
+export type PreviewOrganizationChangeForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type PreviewOrganizationChangeGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
+
+export type PreviewOrganizationChangeInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type PreviewOrganizationChangeRequest = {
+    fixedCharge: FixedChargeChange;
+};
+
+export type PreviewOrganizationChangeResponse = {
+    /**
+     * The payer's credit balance once dueNow is charged: the credit the change issues included, less what dueNow uses. In dueNow's currency. Null when the change charges nothing now (a downgrade).
+     */
+    balanceAfterCents: number | null;
+    dueNow: BillingPreviewInvoice;
+    /**
+     * What is charged in advance at the next period start for what is held after the change. Usage and a minimum commitment are billed after the period. Null when nothing is, or the subscription ends first.
+     */
+    nextCharge: BillingNextCharge | null;
+    /**
+     * Set for a plan change, null otherwise.
+     */
+    planChange: BillingPlanChangeEffect | null;
+    /**
+     * Set for a fixed-charge change, null otherwise: the unit price, currency and period the preview was priced on. Pass them on with the purchase so it is refused if they no longer hold.
+     */
+    quote: FixedChargeQuote | null;
+    /**
+     * The IANA time zone the payer is billed in, e.g. America/Los_Angeles. Billing periods start and end at its midnights, so read their calendar dates in it.
+     */
+    timeZone: string;
+};
+
+export type PreviewProjectChangeForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type PreviewProjectChangeGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
+
+export type PreviewProjectChangeInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type PreviewProjectChangeRequest = BillingPreviewFixedChargeChange | BillingPreviewPlanChange;
+
+export type PreviewProjectChangeResponse = {
+    /**
+     * The payer's credit balance once dueNow is charged: the credit the change issues included, less what dueNow uses. In dueNow's currency. Null when the change charges nothing now (a downgrade).
+     */
+    balanceAfterCents: number | null;
+    dueNow: BillingPreviewInvoice;
+    /**
+     * What is charged in advance at the next period start for what is held after the change. Usage and a minimum commitment are billed after the period. Null when nothing is, or the subscription ends first.
+     */
+    nextCharge: BillingNextCharge | null;
+    /**
+     * Set for a plan change, null otherwise.
+     */
+    planChange: BillingPlanChangeEffect | null;
+    /**
+     * Set for a fixed-charge change, null otherwise: the unit price, currency and period the preview was priced on. Pass them on with the purchase so it is refused if they no longer hold.
+     */
+    quote: FixedChargeQuote | null;
+    /**
+     * The IANA time zone the payer is billed in, e.g. America/Los_Angeles. Billing periods start and end at its midnights, so read their calendar dates in it.
+     */
+    timeZone: string;
 };
 
 export type ProfilePictureContentType = 'image/jpeg' | 'image/png' | 'image/webp' | (string & {});
@@ -2551,6 +2929,10 @@ export type ProjectPlatformSettings = SharedProjectPlatformSettings | DedicatedP
 
 export type ProjectSubscription = {
     /**
+     * The plan's recurring base fee in whole cents.
+     */
+    baseAmountCents: number;
+    /**
      * When the subscription will end instead of renewing, ISO 8601.
      */
     cancelsAt: string | null;
@@ -2563,6 +2945,10 @@ export type ProjectSubscription = {
      */
     categoryDisplayName?: string | null;
     /**
+     * ISO currency code.
+     */
+    currency: string;
+    /**
      * End of the current billing period, ISO 8601.
      */
     currentPeriodEnd: string | null;
@@ -2574,11 +2960,20 @@ export type ProjectSubscription = {
      * Fixed charges defined by this category's current plan. Quantity is the plan default.
      */
     fixedCharges: Array<FixedCharge>;
+    minimumCommitment: BillingPlanMinimumCommitment | null;
     /**
-     * This category's plan; display only.
+     * This category's plan.
      */
     planCode: string;
+    /**
+     * The plan's customer-facing name, e.g. Messaging Pro.
+     */
+    planName: string;
     status: SubscriptionStatus;
+    /**
+     * The plan's tier as customers see it, e.g. Pro for Messaging Pro, where the category is already clear. Null when unconfigured.
+     */
+    tierDisplayName: string | null;
 };
 
 export type ProjectSubscriptionEntitlement = {
@@ -2600,7 +2995,7 @@ export type ProvisionImessageDedicatedLineGatewayTimeoutProblem = RequestTimeout
 
 export type ProvisionImessageDedicatedLineInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
-export type ProvisionImessageDedicatedLineServiceUnavailableProblem = BillingNotProvisionedProblem | UpstreamUnavailableProblem;
+export type ProvisionImessageDedicatedLineServiceUnavailableProblem = BillingEntitlementsPendingProblem | BillingNotProvisionedProblem | UpstreamUnavailableProblem;
 
 export type ProvisionImessageDedicatedLineUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
@@ -2612,7 +3007,7 @@ export type ProvisionWhatsappDedicatedLineGatewayTimeoutProblem = RequestTimeout
 
 export type ProvisionWhatsappDedicatedLineInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
-export type ProvisionWhatsappDedicatedLineServiceUnavailableProblem = BillingNotProvisionedProblem | UpstreamUnavailableProblem;
+export type ProvisionWhatsappDedicatedLineServiceUnavailableProblem = BillingEntitlementsPendingProblem | BillingNotProvisionedProblem | UpstreamUnavailableProblem;
 
 export type ProvisionWhatsappDedicatedLineUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
@@ -2629,7 +3024,7 @@ export type PurchaseSmsNumberRequest = {
     countryCode: 'US';
 };
 
-export type PurchaseSmsNumberServiceUnavailableProblem = BillingNotProvisionedProblem | UpstreamUnavailableProblem;
+export type PurchaseSmsNumberServiceUnavailableProblem = BillingEntitlementsPendingProblem | BillingNotProvisionedProblem | UpstreamUnavailableProblem;
 
 export type PurchaseSmsNumberUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
@@ -2833,38 +3228,6 @@ export type ResourcePage = {
 
 export type ResourceState = 'unallocated' | 'active' | 'retired' | (string & {});
 
-export type ResumeSubscriptionBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
-
-export type ResumeSubscriptionConflictProblem = FailedPreconditionProblem | IdempotencyRequestInProgressProblem;
-
-export type ResumeSubscriptionForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
-
-export type ResumeSubscriptionGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
-
-export type ResumeSubscriptionInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
-
-export type ResumeSubscriptionRequest = {
-    /**
-     * Category slug, e.g. analytics or messaging.
-     */
-    category: string;
-};
-
-export type ResumeSubscriptionResponse = {
-    /**
-     * Category slug, e.g. analytics or messaging.
-     */
-    category: string;
-    /**
-     * False when the subscription was not scheduled to cancel.
-     */
-    resumed: boolean;
-};
-
-export type ResumeSubscriptionServiceUnavailableProblem = IdempotencyUnavailableProblem | UpstreamUnavailableProblem;
-
-export type ResumeSubscriptionUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
-
 export type RetryEnterpriseLoginRequest = {
     retryToken: string;
 };
@@ -2962,6 +3325,14 @@ export type RotateWebhookSigningSecretResponse = {
 
 export type RotateWebhookSigningSecretUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
+export type ScheduledPlanChange = {
+    /**
+     * ISO 8601.
+     */
+    effectiveAt: string;
+    planCode: string;
+};
+
 export type SelectableWebhookApiVersion = {
     retirement: WebhookApiVersionRetirement | null;
     selectable: true;
@@ -3029,6 +3400,7 @@ export type SharedLinePoolExhaustedProblem = {
 };
 
 export type SharedProjectPlatformSettings = {
+    dedicatedLineAvailableNow: boolean;
     maxUserAssignments: number;
     mode: 'shared';
 };
@@ -3272,9 +3644,42 @@ export type StartEnterpriseLoginResponse = {
 };
 
 /**
- * State of one category's subscription. Only categories that hold one appear at all, so the overview reports active or past_due; a cancelled category is absent rather than listed as terminated.
+ * State of one category's subscription: the payer's dunning stage while it holds one. Dunning is organization-level, so the stage applies to every category at once, and paying clears it. Entitlements are unaffected at every stage; viewing, paying and releasing resources stay available. Only categories that hold a subscription appear at all; a cancelled category is absent rather than listed as terminated.
  */
-export type SubscriptionStatus = 'active' | 'past_due' | 'terminated' | (string & {});
+export type SubscriptionStatus = 'active' | 'past_due' | 'restricted' | 'suspended' | 'terminated' | (string & {});
+
+/**
+ * What one subscription is billed on now. plan is the plan as this subscription has it: its own prices when overridden, each fixed charge at the subscription's price and quantity, and entitlements resolved with overrides.
+ */
+export type SubscriptionTerms = {
+    /**
+     * When the subscription ends instead of renewing, ISO 8601.
+     */
+    cancelsAt: string | null;
+    /**
+     * Category slug, e.g. analytics or messaging.
+     */
+    category: string;
+    /**
+     * ISO 8601.
+     */
+    currentPeriodEnd: string;
+    /**
+     * ISO 8601.
+     */
+    currentPeriodStart: string;
+    /**
+     * When the next invoice is issued: the second after the period ends, ISO 8601.
+     */
+    nextBillingAt: string;
+    paymentMode: PaymentMode;
+    plan: BillingPlan;
+    planSource: PlanSource;
+    /**
+     * A downgrade waiting for the period end, or null.
+     */
+    scheduledPlanChange: ScheduledPlanChange | null;
+};
 
 export type SucceededBillingOperation = {
     failure: null;
@@ -6186,30 +6591,20 @@ export type GetOrganizationPaymentMethodResponses = {
 
 export type GetOrganizationPaymentMethodResult = GetOrganizationPaymentMethodResponses[keyof GetOrganizationPaymentMethodResponses];
 
-export type CancelSubscriptionData = {
-    body: CancelSubscriptionRequest;
-    headers?: {
-        /**
-         * Identifies one logical mutation across retries.
-         */
-        'Idempotency-Key'?: string;
-    };
+export type PreviewOrganizationChangeData = {
+    body: PreviewOrganizationChangeRequest;
     path: {
         organizationId: string;
-        /**
-         * The project being billed.
-         */
-        projectId: string;
     };
     query?: never;
-    url: '/v1/organizations/{organizationId}/billing/projects/{projectId}/cancel';
+    url: '/v1/organizations/{organizationId}/billing/preview';
 };
 
-export type CancelSubscriptionErrors = {
+export type PreviewOrganizationChangeErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     * INVALID_ARGUMENT: Invalid Argument
      */
-    400: CancelSubscriptionBadRequestProblem;
+    400: InvalidArgumentProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -6219,47 +6614,112 @@ export type CancelSubscriptionErrors = {
      *
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
-    403: CancelSubscriptionForbiddenProblem;
+    403: PreviewOrganizationChangeForbiddenProblem;
     /**
-     * FAILED_PRECONDITION: Failed Precondition; IDEMPOTENCY_REQUEST_IN_PROGRESS: Idempotency Request In Progress
+     * FAILED_PRECONDITION: Failed Precondition
      */
-    409: CancelSubscriptionConflictProblem;
+    409: FailedPreconditionProblem;
     /**
-     * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
+     * VALIDATION_FAILED: Request Validation Failed
      */
-    422: CancelSubscriptionUnprocessableEntityProblem;
+    422: ValidationFailedProblem;
     /**
      * INVALID_AUTH_CONTEXT: Invalid Authentication Context
      *
      * INTERNAL_ERROR: Internal Server Error
      */
-    500: CancelSubscriptionInternalServerErrorProblem;
+    500: PreviewOrganizationChangeInternalServerErrorProblem;
     /**
      * UPSTREAM_FAILURE: Upstream Service Failure
      */
     502: UpstreamFailureProblem;
     /**
-     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable; IDEMPOTENCY_UNAVAILABLE: Idempotency Unavailable
-     *
      * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
      */
-    503: CancelSubscriptionServiceUnavailableProblem;
+    503: UpstreamUnavailableProblem;
     /**
      * REQUEST_TIMEOUT: Request Timeout; UPSTREAM_TIMEOUT: Upstream Service Timeout
      */
-    504: CancelSubscriptionGatewayTimeoutProblem;
+    504: PreviewOrganizationChangeGatewayTimeoutProblem;
 };
 
-export type CancelSubscriptionError = CancelSubscriptionErrors[keyof CancelSubscriptionErrors];
+export type PreviewOrganizationChangeError = PreviewOrganizationChangeErrors[keyof PreviewOrganizationChangeErrors];
 
-export type CancelSubscriptionResponses = {
+export type PreviewOrganizationChangeResponses = {
     /**
-     * The category remains active through cancelsAt, then stops renewing. cancellationScheduled is false and cancelsAt is null when the category had no active subscription.
+     * What the change would bill.
      */
-    200: CancelSubscriptionResponse;
+    200: PreviewOrganizationChangeResponse;
 };
 
-export type CancelSubscriptionResult = CancelSubscriptionResponses[keyof CancelSubscriptionResponses];
+export type PreviewOrganizationChangeResult = PreviewOrganizationChangeResponses[keyof PreviewOrganizationChangeResponses];
+
+export type PreviewProjectChangeData = {
+    body: PreviewProjectChangeRequest;
+    path: {
+        organizationId: string;
+        /**
+         * The project being billed.
+         */
+        projectId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/billing/projects/{projectId}/preview';
+};
+
+export type PreviewProjectChangeErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument
+     */
+    400: InvalidArgumentProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: PreviewProjectChangeForbiddenProblem;
+    /**
+     * FAILED_PRECONDITION: Failed Precondition
+     */
+    409: FailedPreconditionProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: PreviewProjectChangeInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * REQUEST_TIMEOUT: Request Timeout; UPSTREAM_TIMEOUT: Upstream Service Timeout
+     */
+    504: PreviewProjectChangeGatewayTimeoutProblem;
+};
+
+export type PreviewProjectChangeError = PreviewProjectChangeErrors[keyof PreviewProjectChangeErrors];
+
+export type PreviewProjectChangeResponses = {
+    /**
+     * What the change would bill.
+     */
+    200: PreviewProjectChangeResponse;
+};
+
+export type PreviewProjectChangeResult = PreviewProjectChangeResponses[keyof PreviewProjectChangeResponses];
 
 export type ChangePlanData = {
     body: ChangePlanRequest;
@@ -6344,14 +6804,8 @@ export type ChangePlanResponses = {
 
 export type ChangePlanResult = ChangePlanResponses[keyof ChangePlanResponses];
 
-export type ResumeSubscriptionData = {
-    body: ResumeSubscriptionRequest;
-    headers?: {
-        /**
-         * Identifies one logical mutation across retries.
-         */
-        'Idempotency-Key'?: string;
-    };
+export type GetEffectiveTermsData = {
+    body?: never;
     path: {
         organizationId: string;
         /**
@@ -6360,14 +6814,14 @@ export type ResumeSubscriptionData = {
         projectId: string;
     };
     query?: never;
-    url: '/v1/organizations/{organizationId}/billing/projects/{projectId}/resume';
+    url: '/v1/organizations/{organizationId}/billing/projects/{projectId}/terms';
 };
 
-export type ResumeSubscriptionErrors = {
+export type GetEffectiveTermsErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     * INVALID_ARGUMENT: Invalid Argument
      */
-    400: ResumeSubscriptionBadRequestProblem;
+    400: InvalidArgumentProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -6377,47 +6831,45 @@ export type ResumeSubscriptionErrors = {
      *
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
-    403: ResumeSubscriptionForbiddenProblem;
+    403: GetEffectiveTermsForbiddenProblem;
     /**
-     * FAILED_PRECONDITION: Failed Precondition; IDEMPOTENCY_REQUEST_IN_PROGRESS: Idempotency Request In Progress
+     * FAILED_PRECONDITION: Failed Precondition
      */
-    409: ResumeSubscriptionConflictProblem;
+    409: FailedPreconditionProblem;
     /**
-     * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
+     * VALIDATION_FAILED: Request Validation Failed
      */
-    422: ResumeSubscriptionUnprocessableEntityProblem;
+    422: ValidationFailedProblem;
     /**
      * INVALID_AUTH_CONTEXT: Invalid Authentication Context
      *
      * INTERNAL_ERROR: Internal Server Error
      */
-    500: ResumeSubscriptionInternalServerErrorProblem;
+    500: GetEffectiveTermsInternalServerErrorProblem;
     /**
      * UPSTREAM_FAILURE: Upstream Service Failure
      */
     502: UpstreamFailureProblem;
     /**
-     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable; IDEMPOTENCY_UNAVAILABLE: Idempotency Unavailable
-     *
      * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
      */
-    503: ResumeSubscriptionServiceUnavailableProblem;
+    503: UpstreamUnavailableProblem;
     /**
      * REQUEST_TIMEOUT: Request Timeout; UPSTREAM_TIMEOUT: Upstream Service Timeout
      */
-    504: ResumeSubscriptionGatewayTimeoutProblem;
+    504: GetEffectiveTermsGatewayTimeoutProblem;
 };
 
-export type ResumeSubscriptionError = ResumeSubscriptionErrors[keyof ResumeSubscriptionErrors];
+export type GetEffectiveTermsError = GetEffectiveTermsErrors[keyof GetEffectiveTermsErrors];
 
-export type ResumeSubscriptionResponses = {
+export type GetEffectiveTermsResponses = {
     /**
-     * Removes a scheduled cancellation so the category renews normally.
+     * The project's effective billing terms, per category.
      */
-    200: ResumeSubscriptionResponse;
+    200: GetEffectiveTermsResponse;
 };
 
-export type ResumeSubscriptionResult = ResumeSubscriptionResponses[keyof ResumeSubscriptionResponses];
+export type GetEffectiveTermsResult = GetEffectiveTermsResponses[keyof GetEffectiveTermsResponses];
 
 export type CreateOrganizationSetupIntentData = {
     body?: never;
@@ -6615,9 +7067,13 @@ export type CreateProjectError = CreateProjectErrors[keyof CreateProjectErrors];
 
 export type CreateProjectResponses = {
     /**
-     * The created project.
+     * The created project, ready to use: its billingInitialization is completed or unknown. A replay after setup finished answers here too.
      */
     201: Project;
+    /**
+     * The project is created but its billing is still being set up. GET the Location after the Retry-After interval until billingInitialization is completed or unknown; retry_required means setup is being retried, so keep polling.
+     */
+    202: Project;
 };
 
 export type CreateProjectResult = CreateProjectResponses[keyof CreateProjectResponses];
@@ -7207,7 +7663,7 @@ export type ConnectEmailDomainErrors = {
      */
     502: UpstreamFailureProblem;
     /**
-     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable; BILLING_NOT_PROVISIONED: Billing Not Provisioned
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable; BILLING_NOT_PROVISIONED: Billing Not Provisioned; BILLING_ENTITLEMENTS_PENDING: Billing Entitlements Pending
      *
      * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
      */
@@ -7228,6 +7684,134 @@ export type ConnectEmailDomainResponses = {
 };
 
 export type ConnectEmailDomainResult = ConnectEmailDomainResponses[keyof ConnectEmailDomainResponses];
+
+export type ListFilteredVerificationCodesData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: {
+        platform?: FilteredVerificationCodePlatform;
+        receivedAfter?: string;
+        receivedBefore?: string;
+        pageSize?: number;
+        pageToken?: string;
+    };
+    url: '/v1/projects/{id}/platforms/filtered-otp';
+};
+
+export type ListFilteredVerificationCodesErrors = {
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: ListFilteredVerificationCodesForbiddenProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * RATE_LIMITED: Too Many Requests
+     */
+    429: RateLimitedProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: ListFilteredVerificationCodesInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * REQUEST_TIMEOUT: Request Timeout; UPSTREAM_TIMEOUT: Upstream Service Timeout
+     */
+    504: ListFilteredVerificationCodesGatewayTimeoutProblem;
+};
+
+export type ListFilteredVerificationCodesError = ListFilteredVerificationCodesErrors[keyof ListFilteredVerificationCodesErrors];
+
+export type ListFilteredVerificationCodesResponses = {
+    /**
+     * A page of filtered verification codes, newest first.
+     */
+    200: FilteredVerificationCodePage;
+};
+
+export type ListFilteredVerificationCodesResult = ListFilteredVerificationCodesResponses[keyof ListFilteredVerificationCodesResponses];
+
+export type CountFilteredVerificationCodesData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: {
+        platform?: FilteredVerificationCodePlatform;
+        receivedAfter?: string;
+        receivedBefore?: string;
+    };
+    url: '/v1/projects/{id}/platforms/filtered-otp/count';
+};
+
+export type CountFilteredVerificationCodesErrors = {
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: CountFilteredVerificationCodesForbiddenProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * RATE_LIMITED: Too Many Requests
+     */
+    429: RateLimitedProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: CountFilteredVerificationCodesInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * REQUEST_TIMEOUT: Request Timeout; UPSTREAM_TIMEOUT: Upstream Service Timeout
+     */
+    504: CountFilteredVerificationCodesGatewayTimeoutProblem;
+};
+
+export type CountFilteredVerificationCodesError = CountFilteredVerificationCodesErrors[keyof CountFilteredVerificationCodesErrors];
+
+export type CountFilteredVerificationCodesResponses = {
+    /**
+     * How many codes were filtered in the resolved window.
+     */
+    200: FilteredVerificationCodeCount;
+};
+
+export type CountFilteredVerificationCodesResult = CountFilteredVerificationCodesResponses[keyof CountFilteredVerificationCodesResponses];
 
 export type GetProjectImessagePlatformData = {
     body?: never;
@@ -7264,7 +7848,7 @@ export type GetProjectImessagePlatformErrors = {
      */
     502: UpstreamFailureProblem;
     /**
-     * BILLING_NOT_PROVISIONED: Billing Not Provisioned; UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     * BILLING_NOT_PROVISIONED: Billing Not Provisioned; BILLING_ENTITLEMENTS_PENDING: Billing Entitlements Pending; UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
      *
      * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
      */
@@ -7402,7 +7986,7 @@ export type CreateSharedLineAssignmentErrors = {
      */
     502: UpstreamFailureProblem;
     /**
-     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable; BILLING_NOT_PROVISIONED: Billing Not Provisioned; SHARED_LINE_POOL_EXHAUSTED: Shared Line Pool Exhausted
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable; BILLING_NOT_PROVISIONED: Billing Not Provisioned; BILLING_ENTITLEMENTS_PENDING: Billing Entitlements Pending; SHARED_LINE_POOL_EXHAUSTED: Shared Line Pool Exhausted
      *
      * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
      */
@@ -7609,7 +8193,7 @@ export type ProvisionImessageDedicatedLineErrors = {
      */
     502: UpstreamFailureProblem;
     /**
-     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable; BILLING_NOT_PROVISIONED: Billing Not Provisioned
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable; BILLING_NOT_PROVISIONED: Billing Not Provisioned; BILLING_ENTITLEMENTS_PENDING: Billing Entitlements Pending
      *
      * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
      */
@@ -7705,6 +8289,7 @@ export type ListOperationsData = {
         id: string;
     };
     query?: {
+        endedAfter?: string;
         pageSize?: number;
         pageToken?: string;
         resourceId?: string;
@@ -8097,6 +8682,144 @@ export type GetResourceResponses = {
 
 export type GetResourceResult = GetResourceResponses[keyof GetResourceResponses];
 
+export type ListResourceFilteredVerificationCodesData = {
+    body?: never;
+    path: {
+        id: string;
+        resourceId: string;
+    };
+    query?: {
+        platform?: FilteredVerificationCodePlatform;
+        receivedAfter?: string;
+        receivedBefore?: string;
+        pageSize?: number;
+        pageToken?: string;
+    };
+    url: '/v1/projects/{id}/platforms/resources/{resourceId}/filtered-otp';
+};
+
+export type ListResourceFilteredVerificationCodesErrors = {
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: ListResourceFilteredVerificationCodesForbiddenProblem;
+    /**
+     * RESOURCE_NOT_FOUND: Resource Not Found
+     */
+    404: ResourceNotFoundProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * RATE_LIMITED: Too Many Requests
+     */
+    429: RateLimitedProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: ListResourceFilteredVerificationCodesInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * REQUEST_TIMEOUT: Request Timeout; UPSTREAM_TIMEOUT: Upstream Service Timeout
+     */
+    504: ListResourceFilteredVerificationCodesGatewayTimeoutProblem;
+};
+
+export type ListResourceFilteredVerificationCodesError = ListResourceFilteredVerificationCodesErrors[keyof ListResourceFilteredVerificationCodesErrors];
+
+export type ListResourceFilteredVerificationCodesResponses = {
+    /**
+     * A page of filtered verification codes, newest first.
+     */
+    200: FilteredVerificationCodePage;
+};
+
+export type ListResourceFilteredVerificationCodesResult = ListResourceFilteredVerificationCodesResponses[keyof ListResourceFilteredVerificationCodesResponses];
+
+export type CountResourceFilteredVerificationCodesData = {
+    body?: never;
+    path: {
+        id: string;
+        resourceId: string;
+    };
+    query?: {
+        platform?: FilteredVerificationCodePlatform;
+        receivedAfter?: string;
+        receivedBefore?: string;
+    };
+    url: '/v1/projects/{id}/platforms/resources/{resourceId}/filtered-otp/count';
+};
+
+export type CountResourceFilteredVerificationCodesErrors = {
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: CountResourceFilteredVerificationCodesForbiddenProblem;
+    /**
+     * RESOURCE_NOT_FOUND: Resource Not Found
+     */
+    404: ResourceNotFoundProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * RATE_LIMITED: Too Many Requests
+     */
+    429: RateLimitedProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: CountResourceFilteredVerificationCodesInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * REQUEST_TIMEOUT: Request Timeout; UPSTREAM_TIMEOUT: Upstream Service Timeout
+     */
+    504: CountResourceFilteredVerificationCodesGatewayTimeoutProblem;
+};
+
+export type CountResourceFilteredVerificationCodesError = CountResourceFilteredVerificationCodesErrors[keyof CountResourceFilteredVerificationCodesErrors];
+
+export type CountResourceFilteredVerificationCodesResponses = {
+    /**
+     * How many codes were filtered in the resolved window.
+     */
+    200: FilteredVerificationCodeCount;
+};
+
+export type CountResourceFilteredVerificationCodesResult = CountResourceFilteredVerificationCodesResponses[keyof CountResourceFilteredVerificationCodesResponses];
+
 export type UnassignSmsLineCampaignData = {
     body?: never;
     headers: {
@@ -8394,7 +9117,7 @@ export type PurchaseSmsNumberErrors = {
      */
     502: UpstreamFailureProblem;
     /**
-     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable; BILLING_NOT_PROVISIONED: Billing Not Provisioned
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable; BILLING_NOT_PROVISIONED: Billing Not Provisioned; BILLING_ENTITLEMENTS_PENDING: Billing Entitlements Pending
      *
      * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
      */
@@ -9778,6 +10501,10 @@ export type ConfigureVoiceProfileOutboundErrors = {
      */
     401: NotAuthenticatedProblem;
     /**
+     * ENTITLEMENT_REQUIRED: Entitlement Required
+     */
+    402: EntitlementRequiredProblem;
+    /**
      * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
      *
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
@@ -9947,7 +10674,7 @@ export type GetProjectWhatsappPlatformErrors = {
      */
     502: UpstreamFailureProblem;
     /**
-     * BILLING_NOT_PROVISIONED: Billing Not Provisioned; UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     * BILLING_NOT_PROVISIONED: Billing Not Provisioned; BILLING_ENTITLEMENTS_PENDING: Billing Entitlements Pending; UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
      *
      * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
      */
@@ -10237,7 +10964,7 @@ export type CreateWhatsappVoipSenderErrors = {
      */
     502: UpstreamFailureProblem;
     /**
-     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable; BILLING_NOT_PROVISIONED: Billing Not Provisioned
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable; BILLING_NOT_PROVISIONED: Billing Not Provisioned; BILLING_ENTITLEMENTS_PENDING: Billing Entitlements Pending
      *
      * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
      */
@@ -10316,7 +11043,7 @@ export type ConnectWhatsappBusinessErrors = {
      */
     502: UpstreamFailureProblem;
     /**
-     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable; BILLING_NOT_PROVISIONED: Billing Not Provisioned
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable; BILLING_NOT_PROVISIONED: Billing Not Provisioned; BILLING_ENTITLEMENTS_PENDING: Billing Entitlements Pending
      *
      * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
      */
@@ -10575,7 +11302,7 @@ export type CreateWhatsappSharedLineAssignmentErrors = {
      */
     502: UpstreamFailureProblem;
     /**
-     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable; BILLING_NOT_PROVISIONED: Billing Not Provisioned; SHARED_LINE_POOL_EXHAUSTED: Shared Line Pool Exhausted
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable; BILLING_NOT_PROVISIONED: Billing Not Provisioned; BILLING_ENTITLEMENTS_PENDING: Billing Entitlements Pending; SHARED_LINE_POOL_EXHAUSTED: Shared Line Pool Exhausted
      *
      * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
      */
@@ -10782,7 +11509,7 @@ export type ProvisionWhatsappDedicatedLineErrors = {
      */
     502: UpstreamFailureProblem;
     /**
-     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable; BILLING_NOT_PROVISIONED: Billing Not Provisioned
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable; BILLING_NOT_PROVISIONED: Billing Not Provisioned; BILLING_ENTITLEMENTS_PENDING: Billing Entitlements Pending
      *
      * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
      */

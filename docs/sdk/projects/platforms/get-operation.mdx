@@ -1,0 +1,141 @@
+---
+title: "Get operation"
+icon: arrow-down-left
+description: "Get operation: getOperation in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{id}/platforms/operations/{operationId}`
+
+Reads one operation using the same operation representation as creation and list. The API includes detail.setupUrl only with platforms:write for this project. This is the polling endpoint every asynchronous request here points its Location at, and it resolves from the moment that request is accepted — an operation is committed before its work is dispatched, so there is no window in which the URL 404s. Poll until `state` is one of `succeeded`, `failed` or `cancelled`, pacing from the Retry-After the accepting response returned. While an email domain waits for DNS, `detail` always contains the manual records and may additionally contain `automaticSetup` with a signed provider URL to open separately. Once the operation has produced a resource, the response carries that resource too, so the poll that finishes is also the one that tells you what you got. `succeeded` means the work is done; billing runs behind it and is not something the caller waits on. Operations are never purged, so a 404 means the id was never this project's. Requires the platforms:read permission bound to the project resource in the path.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.platforms.getOperation(input: GetOperationInput, options?: RequestOptions): Promise<GetOperationOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.platforms.get_operation(input: GetOperationInput) -> models.GetOperationResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.get_operation(id: String, operation_id: String).await -> Result<ResponseValue<types::GetOperationResponse>, Error<GetOperationError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.platforms.getOperation({
+  path: {
+    id: "id",
+    operationId: "operationId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import GetOperationInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.platforms.get_operation(
+    GetOperationInput.model_validate({
+        "path": {
+            "id": "id",
+            "operationId": "operationId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .get_operation("id".to_owned(), "operationId".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "operation": {
+    "cancellable": true,
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "detail": {},
+    "endedAt": "2026-01-01T00:00:00.000Z",
+    "error": {
+      "code": "string",
+      "detail": "string"
+    },
+    "operationId": "string",
+    "projectId": "string",
+    "reason": "charge_refused",
+    "resourceId": "string",
+    "resourceType": "string",
+    "startedAt": "2026-01-01T00:00:00.000Z",
+    "state": "pending",
+    "type": "resource.provision",
+    "updatedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "resource": {
+    "abilities": [
+      "string"
+    ],
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "detail": {},
+    "projectId": "string",
+    "resourceId": "string",
+    "retiredAt": "2026-01-01T00:00:00.000Z",
+    "state": "unallocated",
+    "type": "string",
+    "updatedAt": "2026-01-01T00:00:00.000Z"
+  }
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+<ParamField path="operationId" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The operation, and the resource it produced once one exists. Retry-After is supplied for pending/running campaign and Telegram operations and omitted once terminal. GetOperationResponse
+
+Headers: `Cache-Control`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
+<ResponseField name="operation" type={"Operation"} required>
+
+</ResponseField>
+
+<ResponseField name="resource" type={"Resource"}>
+
+</ResponseField>
+

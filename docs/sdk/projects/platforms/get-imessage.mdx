@@ -1,0 +1,120 @@
+---
+title: "Get project iMessage platform"
+icon: arrow-down-left
+description: "Get project iMessage platform: getProjectImessagePlatform in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{id}/platforms/imessage`
+
+Reports whether the project is on shared or dedicated iMessage lines, derived from its billing entitlements. Shared mode carries the seat cap. Both say whether a dedicated line requested now would be assigned without waiting. Requires the platforms:read permission bound to the project resource in the path.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.platforms.getImessage(input: GetProjectImessagePlatformInput, options?: RequestOptions): Promise<GetProjectImessagePlatformOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.platforms.get_imessage(input: GetProjectImessagePlatformInput) -> models.ProjectPlatformSettings
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.get_project_imessage_platform(id: String).await -> Result<ResponseValue<types::ProjectPlatformSettings>, Error<GetProjectImessagePlatformError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.platforms.getImessage({
+  path: {
+    id: "id",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import GetProjectImessagePlatformInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.platforms.get_imessage(
+    GetProjectImessagePlatformInput.model_validate({
+        "path": {
+            "id": "id",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .get_project_imessage_platform("id".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "dedicatedLineAvailableNow": true,
+  "maxUserAssignments": 0,
+  "mode": "shared"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The project's iMessage line mode. ProjectPlatformSettings
+
+**One of: SharedProjectPlatformSettings**
+
+<ResponseField name="dedicatedLineAvailableNow" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="maxUserAssignments" type={"integer"} required>
+
+</ResponseField>
+
+<ResponseField name="mode" type={"\"shared\""} required>
+
+</ResponseField>
+
+**One of: DedicatedProjectPlatformSettings**
+
+<ResponseField name="dedicatedLineAvailableNow" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="mode" type={"\"dedicated\""} required>
+
+</ResponseField>
+

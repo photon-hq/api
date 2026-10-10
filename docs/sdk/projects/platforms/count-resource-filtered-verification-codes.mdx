@@ -1,0 +1,126 @@
+---
+title: "Count a line's filtered verification codes"
+icon: arrow-down-left
+description: "Count a line's filtered verification codes: countResourceFilteredVerificationCodes in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{id}/platforms/resources/{resourceId}/filtered-otp/count`
+
+Counts the verification codes Photon kept from one dedicated line or number. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a number receives both SMS and WhatsApp. Requires the platforms:read permission bound to the project resource in the path.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.platforms.countResourceFilteredVerificationCodes(input: CountResourceFilteredVerificationCodesInput, options?: RequestOptions): Promise<CountResourceFilteredVerificationCodesOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.platforms.count_resource_filtered_verification_codes(input: CountResourceFilteredVerificationCodesInput) -> models.FilteredVerificationCodeCount
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.count_resource_filtered_verification_codes(id: String, resource_id: String, params: Option<CountResourceFilteredVerificationCodesParams>).await -> Result<ResponseValue<types::FilteredVerificationCodeCount>, Error<CountResourceFilteredVerificationCodesError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.platforms.countResourceFilteredVerificationCodes({
+  path: {
+    id: "id",
+    resourceId: "resourceId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import CountResourceFilteredVerificationCodesInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.platforms.count_resource_filtered_verification_codes(
+    CountResourceFilteredVerificationCodesInput.model_validate({
+        "path": {
+            "id": "id",
+            "resourceId": "resourceId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .count_resource_filtered_verification_codes("id".to_owned(), "resourceId".to_owned(), None)
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "count": 0,
+  "receivedAfter": "2026-09-02T00:00:00.000Z",
+  "receivedBefore": "2026-10-02T00:00:00.000Z"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+<ParamField path="resourceId" type={"string"} required>
+
+</ParamField>
+
+<ParamField query="platform" type={"FilteredVerificationCodePlatform"}>
+
+</ParamField>
+
+<ParamField query="receivedAfter" type={"string (date-time)"}>
+
+</ParamField>
+
+<ParamField query="receivedBefore" type={"string (date-time)"}>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** How many codes were filtered in the resolved window. FilteredVerificationCodeCount
+
+<ResponseField name="count" type={"integer"} required>
+
+</ResponseField>
+
+<ResponseField name="receivedAfter" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="receivedBefore" type={"string (date-time)"} required>
+
+</ResponseField>
+

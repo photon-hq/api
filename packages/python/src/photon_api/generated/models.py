@@ -184,6 +184,26 @@ class BeginInvitationSsoRequest(BaseModel):
     token: str
 
 
+class BillingHeldFixedCharge(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    fixedChargeCode: str
+    quantity: int
+
+
+class BillingNextCharge(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    amountCents: int
+    at: str
+    """
+    ISO 8601.
+    """
+    currency: str
+
+
 class BillingOperationFailureCode(
     RootModel[
         Literal[
@@ -221,6 +241,8 @@ class BillingOperationFailureDetail(
             "plan_activation_timeout",
             "plan_not_found",
             "quantity_out_of_range",
+            "reconciliation_required",
+            "release_required",
             "target_rejected",
         ]
         | str
@@ -235,6 +257,8 @@ class BillingOperationFailureDetail(
             "plan_activation_timeout",
             "plan_not_found",
             "quantity_out_of_range",
+            "reconciliation_required",
+            "release_required",
             "target_rejected",
         ]
         | str
@@ -249,8 +273,16 @@ class BillingOperationResult(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
+    effectiveAt: str | None
     type: Literal["version"]
     version: str
+
+
+class BillingPlanChangeTiming(RootModel[Literal["immediate", "on_payment", "period_end"] | str]):
+    root: Literal["immediate", "on_payment", "period_end"] | str
+    """
+    immediate applies now and charges dueNow with it. on_payment applies once dueNow is paid; the current plan stays until then. period_end is a downgrade: it applies at the period end and charges nothing now.
+    """
 
 
 class BillingPlanEntitlement(BaseModel):
@@ -267,31 +299,87 @@ class BillingPlanInterval(
     root: Literal["weekly", "monthly", "quarterly", "semiannual", "yearly"] | str
 
 
-class CancelSubscriptionRequest(BaseModel):
+class BillingPlanMinimumCommitment(BaseModel):
+    """
+    When the plan's fees for an interval come to less than amountCents, the difference is invoiced at the end of the period.
+    """
+
     model_config = ConfigDict(
         extra="allow",
     )
-    category: str
+    amountCents: int
     """
-    Category slug, e.g. analytics or messaging.
+    Least the plan bills each interval, in whole cents.
     """
+    displayName: str | None
 
 
-class CancelSubscriptionResponse(BaseModel):
+class BillingPlanUsageThreshold(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    cancellationScheduled: bool
+    amountCents: int
     """
-    False when the category held no active subscription.
+    Usage amount, in whole cents, at which usage is invoiced before the period ends.
     """
-    cancelsAt: str | None
+    displayName: str | None
+    recurring: bool
     """
-    End of the final paid period, ISO 8601.
+    Whether usage is invoiced again every further amountCents.
     """
-    category: str
+
+
+class BillingPreviewCredit(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    amountCents: int
+    code: str
     """
-    Category slug, e.g. analytics or messaging.
+    The replaced plan's code.
+    """
+    name: str
+    """
+    The replaced plan's name.
+    """
+    periodEnd: str | None
+    """
+    The end of the period the plan was paid for.
+    """
+    periodStart: str | None
+    """
+    When the change is made.
+    """
+
+
+class BillingPreviewLineKind(
+    RootModel[Literal["fixed_charge", "subscription", "usage", "commitment"] | str]
+):
+    root: Literal["fixed_charge", "subscription", "usage", "commitment"] | str
+    """
+    subscription is a plan's base fee. usage is the replaced plan's usage to date, billed as it stands when the change is made, so it is an estimate. commitment is the replaced plan's minimum commitment less what its fees cover.
+    """
+
+
+class BillingPreviewMinimumCommitment(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    amountCents: int
+    """
+    For each full period.
+    """
+    currentPeriodAmountCents: int
+    """
+    For the rest of the current period, prorated as its true-up bills it.
+    """
+    currentPeriodEnd: str
+    """
+    ISO 8601.
+    """
+    currentPeriodStart: str
+    """
+    ISO 8601.
     """
 
 
@@ -516,10 +604,25 @@ class CreatedAppInstallationDelivery(BaseModel):
     status: Literal["created"]
 
 
+class CreditBalance(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    balanceCents: int
+    """
+    Credit left to offset the next invoices, in cents.
+    """
+    currency: str
+    """
+    ISO currency code.
+    """
+
+
 class DedicatedProjectPlatformSettings(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
+    dedicatedLineAvailableNow: bool
     mode: Literal["dedicated"]
 
 
@@ -640,6 +743,32 @@ class DownloadAttachmentResponse(RootModel[Any]):
     root: Any
 
 
+class EntitlementRejectionReason(
+    RootModel[
+        Literal[
+            "billing_restricted",
+            "business_plan_required",
+            "card_required",
+            "email_required",
+            "plan_change_scheduled",
+            "subscription_not_billable",
+        ]
+        | str
+    ]
+):
+    root: (
+        Literal[
+            "billing_restricted",
+            "business_plan_required",
+            "card_required",
+            "email_required",
+            "plan_change_scheduled",
+            "subscription_not_billable",
+        ]
+        | str
+    )
+
+
 class ExistingAppInstallationDeliveryStatus(
     RootModel[
         Literal["delivery_consumed", "recovery_required", "revocation_pending", "revoked"] | str
@@ -648,8 +777,90 @@ class ExistingAppInstallationDeliveryStatus(
     root: Literal["delivery_consumed", "recovery_required", "revocation_pending", "revoked"] | str
 
 
+class FilteredVerificationCode(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    handle: str
+    platform: str = Field(..., examples=["sms"])
+    receivedAt: str = Field(..., examples=["2026-10-01T12:00:00.000Z"])
+    resourceId: str
+
+
+class FilteredVerificationCodeCount(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    count: int
+    receivedAfter: str = Field(..., examples=["2026-09-02T00:00:00.000Z"])
+    receivedBefore: str = Field(..., examples=["2026-10-02T00:00:00.000Z"])
+
+
+class FilteredVerificationCodePage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    filteredVerificationCodes: list[FilteredVerificationCode]
+    nextPageToken: str | MISSING = MISSING
+
+
+class FilteredVerificationCodePlatform(RootModel[Literal["imessage", "sms", "whatsapp"] | str]):
+    root: Literal["imessage", "sms", "whatsapp"] | str
+
+
+class FixedChargeAddition(BaseModel):
+    """
+    Units of a fixed charge added once a plan change applies.
+    """
+
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    fixedChargeCode: str
+    """
+    Fixed charge to change, e.g. sms_local_us_number.
+    """
+    increment: int
+    """
+    Units added.
+    """
+
+
+class FixedChargeChange(BaseModel):
+    """
+    A quantity change made now, as a purchase or release makes it.
+    """
+
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    fixedChargeCode: str
+    """
+    Fixed charge to change, e.g. sms_local_us_number.
+    """
+    increment: int
+    """
+    Signed change to the current quantity. The resulting quantity must stay between 0 and 10,000.
+    """
+
+
 class FixedChargeModel(RootModel[Literal["graduated", "standard", "volume"] | str]):
     root: Literal["graduated", "standard", "volume"] | str
+
+
+class FixedChargeQuote(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    amount: str
+    """
+    Decimal amount in the plan currency. Kept as text so sub-cent unit prices remain exact.
+    """
+    currency: str
+    currentPeriodEnd: str
+    """
+    ISO 8601.
+    """
 
 
 class FixedChargeTier(BaseModel):
@@ -818,12 +1029,8 @@ class MessageMetricsJsonPathValue(RootModel[bool | int | float | str]):
     root: bool | int | float | str
 
 
-class MessageMetricsJsonResource(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    contractsVersion: str
-    type: Literal["message"]
+class MessageMetricsJsonResourceType(RootModel[Literal["call", "message"] | str]):
+    root: Literal["call", "message"] | str
 
 
 class MessageMetricsPlatform(
@@ -878,8 +1085,8 @@ class MessageMetricsSqlLimits(BaseModel):
     maximumTotalParameterBytes: int
 
 
-class MessageMetricsSqlTableName(RootModel[Literal["message_events"]]):
-    root: Literal["message_events"]
+class MessageMetricsSqlTableName(RootModel[Literal["message_events", "call_events"] | str]):
+    root: Literal["message_events", "call_events"] | str
 
 
 class MeteredUsage(BaseModel):
@@ -979,6 +1186,12 @@ class OperationNotFoundProblem(BaseModel):
     status: Literal[404]
     title: Literal["Operation Not Found"]
     type: Literal["https://photon.codes/docs/problems/operation-not-found"]
+
+
+class OperationReason(
+    RootModel[Literal["charge_refused", "entitlement_lost", "project_deleted"] | str]
+):
+    root: Literal["charge_refused", "entitlement_lost", "project_deleted"] | str
 
 
 class OperationState(
@@ -1212,6 +1425,10 @@ class PaymentMethod(BaseModel):
     """
 
 
+class PaymentMode(RootModel[Literal["automatic", "manual"] | str]):
+    root: Literal["automatic", "manual"] | str
+
+
 class PaymentProviderNotReadyProblem(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -1253,6 +1470,17 @@ class PhoneVerificationCaptcha(BaseModel):
     )
     challengeContext: str
     token: str
+
+
+class PlanSource(RootModel[Literal["catalog", "override"] | str]):
+    root: Literal["catalog", "override"] | str
+
+
+class PreviewOrganizationChangeRequest(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    fixedCharge: FixedChargeChange
 
 
 class ProfilePictureContentType(RootModel[Literal["image/jpeg", "image/png", "image/webp"] | str]):
@@ -1522,30 +1750,6 @@ class ResourceState(RootModel[Literal["unallocated", "active", "retired"] | str]
     root: Literal["unallocated", "active", "retired"] | str
 
 
-class ResumeSubscriptionRequest(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    category: str
-    """
-    Category slug, e.g. analytics or messaging.
-    """
-
-
-class ResumeSubscriptionResponse(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    category: str
-    """
-    Category slug, e.g. analytics or messaging.
-    """
-    resumed: bool
-    """
-    False when the subscription was not scheduled to cancel.
-    """
-
-
 class RetryEnterpriseLoginRequest(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -1600,6 +1804,17 @@ class RotateWebhookSigningSecretResponse(BaseModel):
     signingSecret: str
 
 
+class ScheduledPlanChange(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    effectiveAt: str
+    """
+    ISO 8601.
+    """
+    planCode: str
+
+
 class SelectableWebhookApiVersionStatus(RootModel[Literal["preview", "latest", "maintain"] | str]):
     root: Literal["preview", "latest", "maintain"] | str
 
@@ -1644,6 +1859,7 @@ class SharedProjectPlatformSettings(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
+    dedicatedLineAvailableNow: bool
     maxUserAssignments: int
     mode: Literal["shared"]
 
@@ -1959,10 +2175,12 @@ class StartEnterpriseLoginResponse(BaseModel):
     url: str
 
 
-class SubscriptionStatus(RootModel[Literal["active", "past_due", "terminated"] | str]):
-    root: Literal["active", "past_due", "terminated"] | str
+class SubscriptionStatus(
+    RootModel[Literal["active", "past_due", "restricted", "suspended", "terminated"] | str]
+):
+    root: Literal["active", "past_due", "restricted", "suspended", "terminated"] | str
     """
-    State of one category's subscription. Only categories that hold one appear at all, so the overview reports active or past_due; a cancelled category is absent rather than listed as terminated.
+    State of one category's subscription: the payer's dunning stage while it holds one. Dunning is organization-level, so the stage applies to every category at once, and paying clears it. Entitlements are unaffected at every stage; viewing, paying and releasing resources stay available. Only categories that hold a subscription appear at all; a cancelled category is absent rather than listed as terminated.
     """
 
 
@@ -3231,6 +3449,22 @@ class BeginOrganizationSsoAdmissionPreconditionFailedProblem(
     root: OrganizationSsoPreconditionFailedProblem | SsoSubscriptionRequiredProblem
 
 
+class BillingEntitlementsPendingProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["BILLING_ENTITLEMENTS_PENDING"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[503]
+    title: Literal["Billing Entitlements Pending"]
+    type: Literal["https://photon.codes/docs/problems/billing-entitlements-pending"]
+
+
 class BillingNotProvisionedProblem(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -3273,21 +3507,69 @@ class BillingOperationFailure(BaseModel):
             "plan_activation_timeout",
             "plan_not_found",
             "quantity_out_of_range",
+            "reconciliation_required",
+            "release_required",
             "target_rejected",
         ]
         | str
         | None
     )
     retryable: bool
+    unsoldFixedCharges: list[BillingHeldFixedCharge]
+
+
+class BillingPreviewFixedChargeChange(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    category: str
+    """
+    Category slug, e.g. analytics or messaging.
+    """
+    fixedCharge: FixedChargeChange
+
+
+class BillingPreviewLine(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    amountCents: int
+    code: str
+    """
+    The fixed-charge code for a fixed charge, the metric code for usage, and the plan code otherwise.
+    """
+    kind: Literal["fixed_charge", "subscription", "usage", "commitment"] | str
+    """
+    subscription is a plan's base fee. usage is the replaced plan's usage to date, billed as it stands when the change is made, so it is an estimate. commitment is the replaced plan's minimum commitment less what its fees cover.
+    """
+    name: str
+    periodEnd: str | None
+    periodStart: str | None
+    units: str
+    """
+    Units billed, as a decimal. Units already paid this period are not billed again, so a purchase can bill fewer units than it adds.
+    """
+
+
+class BillingPreviewPlanChange(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    additions: list[FixedChargeAddition] | MISSING = MISSING
+    """
+    Fixed charges added once an upgrade applies, each billed when it is added rather than with the upgrade. Priced as if added now on the target plan and returned in planChange.additions, outside dueNow. Each must be sold by the target plan and named once.
+    """
+    category: str
+    """
+    Category slug, e.g. analytics or messaging.
+    """
+    planCode: str
+    """
+    Plan to change to, as a purchase of it changes it.
+    """
 
 
 class CancelOperationGatewayTimeoutProblem(
-    RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
-):
-    root: RequestTimeoutProblem | UpstreamTimeoutProblem
-
-
-class CancelSubscriptionGatewayTimeoutProblem(
     RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
 ):
     root: RequestTimeoutProblem | UpstreamTimeoutProblem
@@ -3377,9 +3659,17 @@ class ConnectEmailDomainGatewayTimeoutProblem(
 
 
 class ConnectEmailDomainServiceUnavailableProblem(
-    RootModel[BillingNotProvisionedProblem | UpstreamUnavailableProblem]
+    RootModel[
+        BillingEntitlementsPendingProblem
+        | BillingNotProvisionedProblem
+        | UpstreamUnavailableProblem
+    ]
 ):
-    root: BillingNotProvisionedProblem | UpstreamUnavailableProblem
+    root: (
+        BillingEntitlementsPendingProblem
+        | BillingNotProvisionedProblem
+        | UpstreamUnavailableProblem
+    )
 
 
 class ConnectTelegramBotConflictProblem(
@@ -3403,13 +3693,33 @@ class ConnectWhatsappBusinessGatewayTimeoutProblem(
 
 
 class ConnectWhatsappBusinessServiceUnavailableProblem(
-    RootModel[BillingNotProvisionedProblem | UpstreamUnavailableProblem]
+    RootModel[
+        BillingEntitlementsPendingProblem
+        | BillingNotProvisionedProblem
+        | UpstreamUnavailableProblem
+    ]
 ):
-    root: BillingNotProvisionedProblem | UpstreamUnavailableProblem
+    root: (
+        BillingEntitlementsPendingProblem
+        | BillingNotProvisionedProblem
+        | UpstreamUnavailableProblem
+    )
+
+
+class CountFilteredVerificationCodesGatewayTimeoutProblem(
+    RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
+):
+    root: RequestTimeoutProblem | UpstreamTimeoutProblem
 
 
 class CountProjectsGatewayTimeoutProblem(RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]):
     root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class CountResourceFilteredVerificationCodesGatewayTimeoutProblem(
+    RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
+):
+    root: RequestTimeoutProblem | UpstreamTimeoutProblem
 
 
 class CreateAccountProfilePictureUploadGatewayTimeoutProblem(
@@ -3522,10 +3832,18 @@ class CreateSharedLineAssignmentRequest(BaseModel):
 
 class CreateSharedLineAssignmentServiceUnavailableProblem(
     RootModel[
-        BillingNotProvisionedProblem | SharedLinePoolExhaustedProblem | UpstreamUnavailableProblem
+        BillingEntitlementsPendingProblem
+        | BillingNotProvisionedProblem
+        | SharedLinePoolExhaustedProblem
+        | UpstreamUnavailableProblem
     ]
 ):
-    root: BillingNotProvisionedProblem | SharedLinePoolExhaustedProblem | UpstreamUnavailableProblem
+    root: (
+        BillingEntitlementsPendingProblem
+        | BillingNotProvisionedProblem
+        | SharedLinePoolExhaustedProblem
+        | UpstreamUnavailableProblem
+    )
 
 
 class CreateVoiceProfileConflictProblem(
@@ -3579,10 +3897,18 @@ class CreateWhatsappSharedLineAssignmentGatewayTimeoutProblem(
 
 class CreateWhatsappSharedLineAssignmentServiceUnavailableProblem(
     RootModel[
-        BillingNotProvisionedProblem | SharedLinePoolExhaustedProblem | UpstreamUnavailableProblem
+        BillingEntitlementsPendingProblem
+        | BillingNotProvisionedProblem
+        | SharedLinePoolExhaustedProblem
+        | UpstreamUnavailableProblem
     ]
 ):
-    root: BillingNotProvisionedProblem | SharedLinePoolExhaustedProblem | UpstreamUnavailableProblem
+    root: (
+        BillingEntitlementsPendingProblem
+        | BillingNotProvisionedProblem
+        | SharedLinePoolExhaustedProblem
+        | UpstreamUnavailableProblem
+    )
 
 
 class CreateWhatsappVoipSenderConflictProblem(
@@ -3618,9 +3944,17 @@ class CreateWhatsappVoipSenderNotFoundProblem(
 
 
 class CreateWhatsappVoipSenderServiceUnavailableProblem(
-    RootModel[BillingNotProvisionedProblem | UpstreamUnavailableProblem]
+    RootModel[
+        BillingEntitlementsPendingProblem
+        | BillingNotProvisionedProblem
+        | UpstreamUnavailableProblem
+    ]
 ):
-    root: BillingNotProvisionedProblem | UpstreamUnavailableProblem
+    root: (
+        BillingEntitlementsPendingProblem
+        | BillingNotProvisionedProblem
+        | UpstreamUnavailableProblem
+    )
 
 
 class DeleteAccountGatewayTimeoutProblem(RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]):
@@ -3793,7 +4127,19 @@ class EntitlementRequiredProblem(BaseModel):
     }
     code: Literal["ENTITLEMENT_REQUIRED"]
     detail: str | MISSING = MISSING
+    effectiveAt: str | MISSING = MISSING
     instance: str | MISSING = MISSING
+    reason: (
+        Literal[
+            "billing_restricted",
+            "business_plan_required",
+            "card_required",
+            "email_required",
+            "plan_change_scheduled",
+            "subscription_not_billable",
+        ]
+        | str
+    )
     requestId: str | MISSING = MISSING
     status: Literal[402]
     title: Literal["Entitlement Required"]
@@ -3899,6 +4245,12 @@ class GetDefaultVoiceProfileGatewayTimeoutProblem(
     root: RequestTimeoutProblem | UpstreamTimeoutProblem
 
 
+class GetEffectiveTermsGatewayTimeoutProblem(
+    RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
+):
+    root: RequestTimeoutProblem | UpstreamTimeoutProblem
+
+
 class GetMessageMetricsBackfillResponse(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -3995,9 +4347,17 @@ class GetProjectImessagePlatformGatewayTimeoutProblem(
 
 
 class GetProjectImessagePlatformServiceUnavailableProblem(
-    RootModel[BillingNotProvisionedProblem | UpstreamUnavailableProblem]
+    RootModel[
+        BillingEntitlementsPendingProblem
+        | BillingNotProvisionedProblem
+        | UpstreamUnavailableProblem
+    ]
 ):
-    root: BillingNotProvisionedProblem | UpstreamUnavailableProblem
+    root: (
+        BillingEntitlementsPendingProblem
+        | BillingNotProvisionedProblem
+        | UpstreamUnavailableProblem
+    )
 
 
 class GetProjectWhatsappPlatformGatewayTimeoutProblem(
@@ -4007,9 +4367,17 @@ class GetProjectWhatsappPlatformGatewayTimeoutProblem(
 
 
 class GetProjectWhatsappPlatformServiceUnavailableProblem(
-    RootModel[BillingNotProvisionedProblem | UpstreamUnavailableProblem]
+    RootModel[
+        BillingEntitlementsPendingProblem
+        | BillingNotProvisionedProblem
+        | UpstreamUnavailableProblem
+    ]
 ):
-    root: BillingNotProvisionedProblem | UpstreamUnavailableProblem
+    root: (
+        BillingEntitlementsPendingProblem
+        | BillingNotProvisionedProblem
+        | UpstreamUnavailableProblem
+    )
 
 
 class GetResourceGatewayTimeoutProblem(RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]):
@@ -4438,6 +4806,34 @@ class ListBillingPlansInternalServerErrorProblem(
     root: InternalErrorProblem | InvalidAuthContextProblem
 
 
+class ListFilteredVerificationCodesForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class ListFilteredVerificationCodesGatewayTimeoutProblem(
+    RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
+):
+    root: RequestTimeoutProblem | UpstreamTimeoutProblem
+
+
+class ListFilteredVerificationCodesInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
 class ListInvoicesForbiddenProblem(
     RootModel[
         ForbiddenProblem
@@ -4624,6 +5020,34 @@ class ListProjectsForbiddenProblem(
 
 class ListProjectsGatewayTimeoutProblem(RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]):
     root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class ListResourceFilteredVerificationCodesForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class ListResourceFilteredVerificationCodesGatewayTimeoutProblem(
+    RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
+):
+    root: RequestTimeoutProblem | UpstreamTimeoutProblem
+
+
+class ListResourceFilteredVerificationCodesInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
 
 
 class ListResourcesForbiddenProblem(
@@ -4877,6 +5301,14 @@ class MessageMetricsJsonPath(BaseModel):
     values: list[bool | int | float | str] | MISSING = MISSING
 
 
+class MessageMetricsJsonResource(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    contractsVersion: str
+    type: Literal["call", "message"] | str
+
+
 class MessageMetricsPlatformJsonPaths(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -4899,6 +5331,9 @@ class Operation(BaseModel):
     error: OperationError | MISSING = MISSING
     operationId: str
     projectId: str
+    reason: Literal["charge_refused", "entitlement_lost", "project_deleted"] | str | MISSING = (
+        MISSING
+    )
     resourceId: str | MISSING = MISSING
     resourceType: str
     startedAt: str | MISSING = Field(MISSING, examples=["2026-01-01T00:00:00.000Z"])
@@ -4947,6 +5382,68 @@ class OrganizationSsoDomain(BaseModel):
     }
     domain: str
     state: Literal["verified", "pending", "failed"] | str
+
+
+class PreviewOrganizationChangeForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class PreviewOrganizationChangeGatewayTimeoutProblem(
+    RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
+):
+    root: RequestTimeoutProblem | UpstreamTimeoutProblem
+
+
+class PreviewOrganizationChangeInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class PreviewProjectChangeForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class PreviewProjectChangeGatewayTimeoutProblem(
+    RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
+):
+    root: RequestTimeoutProblem | UpstreamTimeoutProblem
+
+
+class PreviewProjectChangeInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class PreviewProjectChangeRequest(
+    RootModel[BillingPreviewFixedChargeChange | BillingPreviewPlanChange]
+):
+    root: BillingPreviewFixedChargeChange | BillingPreviewPlanChange
 
 
 class ProfilePictureUpload(BaseModel):
@@ -5028,9 +5525,17 @@ class ProvisionImessageDedicatedLineInternalServerErrorProblem(
 
 
 class ProvisionImessageDedicatedLineServiceUnavailableProblem(
-    RootModel[BillingNotProvisionedProblem | UpstreamUnavailableProblem]
+    RootModel[
+        BillingEntitlementsPendingProblem
+        | BillingNotProvisionedProblem
+        | UpstreamUnavailableProblem
+    ]
 ):
-    root: BillingNotProvisionedProblem | UpstreamUnavailableProblem
+    root: (
+        BillingEntitlementsPendingProblem
+        | BillingNotProvisionedProblem
+        | UpstreamUnavailableProblem
+    )
 
 
 class ProvisionWhatsappDedicatedLineBadRequestProblem(
@@ -5068,9 +5573,17 @@ class ProvisionWhatsappDedicatedLineInternalServerErrorProblem(
 
 
 class ProvisionWhatsappDedicatedLineServiceUnavailableProblem(
-    RootModel[BillingNotProvisionedProblem | UpstreamUnavailableProblem]
+    RootModel[
+        BillingEntitlementsPendingProblem
+        | BillingNotProvisionedProblem
+        | UpstreamUnavailableProblem
+    ]
 ):
-    root: BillingNotProvisionedProblem | UpstreamUnavailableProblem
+    root: (
+        BillingEntitlementsPendingProblem
+        | BillingNotProvisionedProblem
+        | UpstreamUnavailableProblem
+    )
 
 
 class PurchaseSmsNumberBadRequestProblem(
@@ -5108,9 +5621,17 @@ class PurchaseSmsNumberInternalServerErrorProblem(
 
 
 class PurchaseSmsNumberServiceUnavailableProblem(
-    RootModel[BillingNotProvisionedProblem | UpstreamUnavailableProblem]
+    RootModel[
+        BillingEntitlementsPendingProblem
+        | BillingNotProvisionedProblem
+        | UpstreamUnavailableProblem
+    ]
 ):
-    root: BillingNotProvisionedProblem | UpstreamUnavailableProblem
+    root: (
+        BillingEntitlementsPendingProblem
+        | BillingNotProvisionedProblem
+        | UpstreamUnavailableProblem
+    )
 
 
 class QueryMessageMetricsForbiddenProblem(
@@ -5457,52 +5978,6 @@ class ResourcePage(BaseModel):
     )
     nextPageToken: str | MISSING = MISSING
     resources: list[Resource]
-
-
-class ResumeSubscriptionBadRequestProblem(
-    RootModel[InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
-):
-    root: InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
-
-
-class ResumeSubscriptionConflictProblem(
-    RootModel[FailedPreconditionProblem | IdempotencyRequestInProgressProblem]
-):
-    root: FailedPreconditionProblem | IdempotencyRequestInProgressProblem
-
-
-class ResumeSubscriptionForbiddenProblem(
-    RootModel[
-        ForbiddenProblem
-        | InsufficientScopeProblem
-        | OrganizationSsoRequiredProblem
-        | ResourceMismatchProblem
-    ]
-):
-    root: (
-        ForbiddenProblem
-        | InsufficientScopeProblem
-        | OrganizationSsoRequiredProblem
-        | ResourceMismatchProblem
-    )
-
-
-class ResumeSubscriptionGatewayTimeoutProblem(
-    RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
-):
-    root: RequestTimeoutProblem | UpstreamTimeoutProblem
-
-
-class ResumeSubscriptionInternalServerErrorProblem(
-    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
-):
-    root: InternalErrorProblem | InvalidAuthContextProblem
-
-
-class ResumeSubscriptionServiceUnavailableProblem(
-    RootModel[IdempotencyUnavailableProblem | UpstreamUnavailableProblem]
-):
-    root: IdempotencyUnavailableProblem | UpstreamUnavailableProblem
 
 
 class RetryOrganizationConnectionSyncForbiddenProblem(
@@ -6567,6 +7042,65 @@ class BillingOperation(
     """
 
 
+class BillingPlanChangeEffect(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    additions: list[BillingPreviewLine]
+    """
+    One line per requested addition: what adding it bills on the target plan, prorated as if added now. Billed when it is added, not with dueNow; the balance left after dueNow applies to it first. nextCharge already includes it.
+    """
+    effectiveAt: str | None
+    """
+    When a period_end change applies. Null otherwise.
+    """
+    minimumCommitment: BillingPreviewMinimumCommitment | None
+    """
+    The target plan's minimum commitment: when a period's charges fall short of it, the difference is billed at the period end. Set for an upgrade to a plan with one, null otherwise.
+    """
+    timing: Literal["immediate", "on_payment", "period_end"] | str
+    """
+    immediate applies now and charges dueNow with it. on_payment applies once dueNow is paid; the current plan stays until then. period_end is a downgrade: it applies at the period end and charges nothing now.
+    """
+    unsoldFixedCharges: list[BillingHeldFixedCharge]
+    """
+    Held fixed charges the target plan does not sell; the preview prices the change without them. With period_end they stay until it applies and are released with it. Otherwise the change is refused (release_required) until they are released.
+    """
+    unusedTimeCredit: BillingPreviewCredit | None
+    """
+    The replaced plan's unused time, which an upgrade credits to the payer: applied to dueNow first, the rest kept as balance. Set for an upgrade from a plan paid in advance, null otherwise.
+    """
+
+
+class BillingPreviewInvoice(BaseModel):
+    """
+    Charged when the change is made, priced as the change bills it. No lines when it charges nothing now.
+    """
+
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    creditsCents: int
+    """
+    Credit notes and prepaid credit applied, in cents.
+    """
+    currency: str
+    discountCents: int
+    """
+    Coupons applied, in cents.
+    """
+    feesCents: int
+    """
+    Sum of the lines, in cents.
+    """
+    lines: list[BillingPreviewLine]
+    taxesCents: int
+    totalCents: int
+    """
+    What the payer is charged, in cents.
+    """
+
+
 class CancelOperationForbiddenProblem(
     RootModel[
         ForbiddenProblem
@@ -6587,46 +7121,6 @@ class CancelOperationInternalServerErrorProblem(
     RootModel[InternalErrorProblem | InvalidAuthContextProblem]
 ):
     root: InternalErrorProblem | InvalidAuthContextProblem
-
-
-class CancelSubscriptionBadRequestProblem(
-    RootModel[InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
-):
-    root: InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
-
-
-class CancelSubscriptionConflictProblem(
-    RootModel[FailedPreconditionProblem | IdempotencyRequestInProgressProblem]
-):
-    root: FailedPreconditionProblem | IdempotencyRequestInProgressProblem
-
-
-class CancelSubscriptionForbiddenProblem(
-    RootModel[
-        ForbiddenProblem
-        | InsufficientScopeProblem
-        | OrganizationSsoRequiredProblem
-        | ResourceMismatchProblem
-    ]
-):
-    root: (
-        ForbiddenProblem
-        | InsufficientScopeProblem
-        | OrganizationSsoRequiredProblem
-        | ResourceMismatchProblem
-    )
-
-
-class CancelSubscriptionInternalServerErrorProblem(
-    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
-):
-    root: InternalErrorProblem | InvalidAuthContextProblem
-
-
-class CancelSubscriptionServiceUnavailableProblem(
-    RootModel[IdempotencyUnavailableProblem | UpstreamUnavailableProblem]
-):
-    root: IdempotencyUnavailableProblem | UpstreamUnavailableProblem
 
 
 class ChangePlanBadRequestProblem(
@@ -6883,6 +7377,28 @@ class ConnectWhatsappBusinessInternalServerErrorProblem(
     root: InternalErrorProblem | InvalidAuthContextProblem
 
 
+class CountFilteredVerificationCodesForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class CountFilteredVerificationCodesInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
 class CountProjectsForbiddenProblem(
     RootModel[
         ForbiddenProblem
@@ -6897,6 +7413,28 @@ class CountProjectsForbiddenProblem(
         | OrganizationSsoRequiredProblem
         | ResourceMismatchProblem
     )
+
+
+class CountResourceFilteredVerificationCodesForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class CountResourceFilteredVerificationCodesInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
 
 
 class CreateAccountProfilePictureUploadForbiddenProblem(
@@ -7606,6 +8144,28 @@ class GetDefaultVoiceProfileInternalServerErrorProblem(
     root: InternalErrorProblem | InvalidAuthContextProblem
 
 
+class GetEffectiveTermsForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class GetEffectiveTermsInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
 class GetMessageMetricsBackfillForbiddenProblem(
     RootModel[
         ForbiddenProblem
@@ -8159,7 +8719,7 @@ class MessageMetricsSqlTable(BaseModel):
     columns: list[MessageMetricsSqlColumn]
     currentState: str
     description: str
-    name: Literal["message_events"]
+    name: Literal["message_events", "call_events"] | str
 
 
 class OrganizationConnectionStatus(BaseModel):
@@ -8200,9 +8760,17 @@ class OrganizationSubscription(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
+    baseAmountCents: int
+    """
+    The plan's recurring base fee in whole cents.
+    """
     cancelsAt: str | None
     """
     When the subscription will end, ISO 8601.
+    """
+    currency: str
+    """
+    ISO currency code.
     """
     currentPeriodEnd: str | None
     """
@@ -8213,13 +8781,72 @@ class OrganizationSubscription(BaseModel):
     """
     Fixed charges defined by the organization's current plan. Quantity is the plan default.
     """
+    minimumCommitment: BillingPlanMinimumCommitment | None
     planCode: str
     """
-    The organization's plan; display only.
+    The organization's plan.
     """
-    status: Literal["active", "past_due", "terminated"] | str
+    planName: str
     """
-    State of one category's subscription. Only categories that hold one appear at all, so the overview reports active or past_due; a cancelled category is absent rather than listed as terminated.
+    The plan's customer-facing name, e.g. Messaging Pro.
+    """
+    status: Literal["active", "past_due", "restricted", "suspended", "terminated"] | str
+    """
+    State of one category's subscription: the payer's dunning stage while it holds one. Dunning is organization-level, so the stage applies to every category at once, and paying clears it. Entitlements are unaffected at every stage; viewing, paying and releasing resources stay available. Only categories that hold a subscription appear at all; a cancelled category is absent rather than listed as terminated.
+    """
+
+
+class PreviewOrganizationChangeResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    balanceAfterCents: int | None
+    """
+    The payer's credit balance once dueNow is charged: the credit the change issues included, less what dueNow uses. In dueNow's currency. Null when the change charges nothing now (a downgrade).
+    """
+    dueNow: BillingPreviewInvoice
+    nextCharge: BillingNextCharge | None
+    """
+    What is charged in advance at the next period start for what is held after the change. Usage and a minimum commitment are billed after the period. Null when nothing is, or the subscription ends first.
+    """
+    planChange: BillingPlanChangeEffect | None
+    """
+    Set for a plan change, null otherwise.
+    """
+    quote: FixedChargeQuote | None
+    """
+    Set for a fixed-charge change, null otherwise: the unit price, currency and period the preview was priced on. Pass them on with the purchase so it is refused if they no longer hold.
+    """
+    timeZone: str
+    """
+    The IANA time zone the payer is billed in, e.g. America/Los_Angeles. Billing periods start and end at its midnights, so read their calendar dates in it.
+    """
+
+
+class PreviewProjectChangeResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    balanceAfterCents: int | None
+    """
+    The payer's credit balance once dueNow is charged: the credit the change issues included, less what dueNow uses. In dueNow's currency. Null when the change charges nothing now (a downgrade).
+    """
+    dueNow: BillingPreviewInvoice
+    nextCharge: BillingNextCharge | None
+    """
+    What is charged in advance at the next period start for what is held after the change. Usage and a minimum commitment are billed after the period. Null when nothing is, or the subscription ends first.
+    """
+    planChange: BillingPlanChangeEffect | None
+    """
+    Set for a plan change, null otherwise.
+    """
+    quote: FixedChargeQuote | None
+    """
+    Set for a fixed-charge change, null otherwise: the unit price, currency and period the preview was priced on. Pass them on with the purchase so it is refused if they no longer hold.
+    """
+    timeZone: str
+    """
+    The IANA time zone the payer is billed in, e.g. America/Los_Angeles. Billing periods start and end at its midnights, so read their calendar dates in it.
     """
 
 
@@ -8227,6 +8854,10 @@ class ProjectSubscription(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
+    baseAmountCents: int
+    """
+    The plan's recurring base fee in whole cents.
+    """
     cancelsAt: str | None
     """
     When the subscription will end instead of renewing, ISO 8601.
@@ -8238,6 +8869,10 @@ class ProjectSubscription(BaseModel):
     categoryDisplayName: str | None | MISSING = MISSING
     """
     Display name for the subscription category; absent or null when unconfigured.
+    """
+    currency: str
+    """
+    ISO currency code.
     """
     currentPeriodEnd: str | None
     """
@@ -8251,13 +8886,22 @@ class ProjectSubscription(BaseModel):
     """
     Fixed charges defined by this category's current plan. Quantity is the plan default.
     """
+    minimumCommitment: BillingPlanMinimumCommitment | None
     planCode: str
     """
-    This category's plan; display only.
+    This category's plan.
     """
-    status: Literal["active", "past_due", "terminated"] | str
+    planName: str
     """
-    State of one category's subscription. Only categories that hold one appear at all, so the overview reports active or past_due; a cancelled category is absent rather than listed as terminated.
+    The plan's customer-facing name, e.g. Messaging Pro.
+    """
+    status: Literal["active", "past_due", "restricted", "suspended", "terminated"] | str
+    """
+    State of one category's subscription: the payer's dunning stage while it holds one. Dunning is organization-level, so the stage applies to every category at once, and paying clears it. Entitlements are unaffected at every stage; viewing, paying and releasing resources stay available. Only categories that hold a subscription appear at all; a cancelled category is absent rather than listed as terminated.
+    """
+    tierDisplayName: str | None
+    """
+    The plan's tier as customers see it, e.g. Pro for Messaging Pro, where the category is already clear. Null when unconfigured.
     """
 
 
@@ -8348,12 +8992,6 @@ class WhatsappBusinessAccount(BaseModel):
     senderCount: int
     subscribedAt: str | MISSING = Field(MISSING, examples=["2026-01-01T00:00:00.000Z"])
     wabaId: str
-
-
-class CancelSubscriptionUnprocessableEntityProblem(
-    RootModel[ValidationFailedProblem | IdempotencyKeyReusedProblem]
-):
-    root: ValidationFailedProblem | IdempotencyKeyReusedProblem
 
 
 class ChangePlanUnprocessableEntityProblem(
@@ -8594,12 +9232,6 @@ class ResetAgentProfileAvatarUnprocessableEntityProblem(
     root: ValidationFailedProblem | IdempotencyKeyReusedProblem
 
 
-class ResumeSubscriptionUnprocessableEntityProblem(
-    RootModel[ValidationFailedProblem | IdempotencyKeyReusedProblem]
-):
-    root: ValidationFailedProblem | IdempotencyKeyReusedProblem
-
-
 class RevokeAccountServiceKeyUnprocessableEntityProblem(
     RootModel[IdempotencyKeyReusedProblem | ValidationFailedProblem]
 ):
@@ -8765,10 +9397,27 @@ class BillingPlan(BaseModel):
     entitlements: list[BillingPlanEntitlement]
     fixedCharges: list[FixedCharge]
     interval: Literal["weekly", "monthly", "quarterly", "semiannual", "yearly"] | str
+    isDefault: bool
+    """
+    The category's default plan: the one a project holds when it pays for none, and moves to at the period end when it leaves a paid plan. At most one per category.
+    """
+    minimumCommitment: BillingPlanMinimumCommitment | None
     name: str
     payInAdvance: bool
     planCode: str
+    tier: int | None
+    """
+    Rank within the category: moving to a higher tier is an upgrade and applies now, to a lower one a downgrade scheduled for the period end. Null when the plan has none.
+    """
+    tierDisplayName: str | None
+    """
+    The plan's tier as customers see it, e.g. Pro for Messaging Pro, where the category is already clear. Null when unconfigured.
+    """
     usageCharges: list[UsageCharge]
+    usageThresholds: list[BillingPlanUsageThreshold]
+    """
+    Progressive-billing thresholds, ordered by amount.
+    """
 
 
 class CreateWebhookDestinationResponse(BaseModel):
@@ -8785,7 +9434,62 @@ class ListBillingPlansResponse(BaseModel):
     )
     plans: dict[str, list[BillingPlan]]
     """
-    Plans grouped by valid metadata type and explicitly published with visible="true".
+    Plans grouped by valid metadata type and explicitly published with visible="true". Each group is in display order: by tier, plans without one last, then by planCode.
+    """
+
+
+class SubscriptionTerms(BaseModel):
+    """
+    What one subscription is billed on now. plan is the plan as this subscription has it: its own prices when overridden, each fixed charge at the subscription's price and quantity, and entitlements resolved with overrides.
+    """
+
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    cancelsAt: str | None
+    """
+    When the subscription ends instead of renewing, ISO 8601.
+    """
+    category: str
+    """
+    Category slug, e.g. analytics or messaging.
+    """
+    currentPeriodEnd: str
+    """
+    ISO 8601.
+    """
+    currentPeriodStart: str
+    """
+    ISO 8601.
+    """
+    nextBillingAt: str
+    """
+    When the next invoice is issued: the second after the period ends, ISO 8601.
+    """
+    paymentMode: Literal["automatic", "manual"] | str
+    plan: BillingPlan
+    planSource: Literal["catalog", "override"] | str
+    scheduledPlanChange: ScheduledPlanChange | None
+    """
+    A downgrade waiting for the period end, or null.
+    """
+
+
+class GetEffectiveTermsResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    creditBalance: CreditBalance | None
+    """
+    Credit the paying organization holds on credit notes, such as the unused time of a plan an upgrade replaced. It offsets that organization's next invoices of any kind except one-off invoices. Prepaid wallet credit is separate. Null when it holds none.
+    """
+    subscriptions: list[SubscriptionTerms]
+    """
+    One entry per category the project holds, by category. Empty means it holds none.
+    """
+    timeZone: str
+    """
+    The IANA time zone the payer is billed in, e.g. America/Los_Angeles. Billing periods start and end at its midnights, so read their calendar dates in it.
     """
 
 

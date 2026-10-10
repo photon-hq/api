@@ -1,0 +1,437 @@
+---
+title: "Billing"
+description: "The Billing resource in the TypeScript, Python and Rust clients."
+---
+
+## Methods
+
+<Tabs>
+<Tab title="TypeScript">
+**[List invoices](/api-client/sdk/organizations/billing/list-invoices)**
+
+```typescript TypeScript
+photon.organizations.billing.listInvoices(input: ListInvoicesInput, options?: RequestOptions): Promise<ListInvoicesOutput>
+```
+`GET /v1/organizations/{organizationId}/billing/invoices`
+
+**[Get the project's effective billing terms](/api-client/sdk/organizations/billing/get-effective-terms)**
+
+```typescript TypeScript
+photon.organizations.billing.getEffectiveTerms(input: GetEffectiveTermsInput, options?: RequestOptions): Promise<GetEffectiveTermsOutput>
+```
+`GET /v1/organizations/{organizationId}/billing/projects/{projectId}/terms`
+
+**[Get organization billing overview](/api-client/sdk/organizations/billing/get-organization-billing-overview)**
+
+```typescript TypeScript
+photon.organizations.billing.getOrganizationBillingOverview(input: GetOrganizationBillingOverviewInput, options?: RequestOptions): Promise<GetOrganizationBillingOverviewOutput>
+```
+`GET /v1/organizations/{organizationId}/billing`
+
+**[Get organization payment method](/api-client/sdk/organizations/billing/get-organization-payment-method)**
+
+```typescript TypeScript
+photon.organizations.billing.getOrganizationPaymentMethod(input: GetOrganizationPaymentMethodInput, options?: RequestOptions): Promise<GetOrganizationPaymentMethodOutput>
+```
+`GET /v1/organizations/{organizationId}/billing/payment-method`
+
+**[Change plan](/api-client/sdk/organizations/billing/change-plan)**
+
+```typescript TypeScript
+photon.organizations.billing.changePlan(input: ChangePlanInput, options?: RequestOptions): Promise<ChangePlanOutput>
+```
+`POST /v1/organizations/{organizationId}/billing/projects/{projectId}/purchase`
+
+**[Create payment method checkout](/api-client/sdk/organizations/billing/create-organization-payment-method-checkout)**
+
+```typescript TypeScript
+photon.organizations.billing.createOrganizationPaymentMethodCheckout(input: CreateOrganizationPaymentMethodCheckoutInput, options?: RequestOptions): Promise<CreateOrganizationPaymentMethodCheckoutOutput>
+```
+`POST /v1/organizations/{organizationId}/billing/checkout`
+
+**[Create card setup intent](/api-client/sdk/organizations/billing/create-organization-setup-intent)**
+
+```typescript TypeScript
+photon.organizations.billing.createOrganizationSetupIntent(input: CreateOrganizationSetupIntentInput, options?: RequestOptions): Promise<CreateOrganizationSetupIntentOutput>
+```
+`POST /v1/organizations/{organizationId}/billing/setup-intent`
+
+**[Preview an organization billing change](/api-client/sdk/organizations/billing/preview-organization-change)**
+
+```typescript TypeScript
+photon.organizations.billing.previewOrganizationChange(input: PreviewOrganizationChangeInput, options?: RequestOptions): Promise<PreviewOrganizationChangeOutput>
+```
+`POST /v1/organizations/{organizationId}/billing/preview`
+
+**[Preview a project billing change](/api-client/sdk/organizations/billing/preview-project-change)**
+
+```typescript TypeScript
+photon.organizations.billing.previewProjectChange(input: PreviewProjectChangeInput, options?: RequestOptions): Promise<PreviewProjectChangeOutput>
+```
+`POST /v1/organizations/{organizationId}/billing/projects/{projectId}/preview`
+
+</Tab>
+<Tab title="Python">
+**[List invoices](/api-client/sdk/organizations/billing/list-invoices)**
+
+```python Python
+photon.organizations.billing.list_invoices(input: ListInvoicesInput) -> models.ListInvoicesResponse
+```
+`GET /v1/organizations/{organizationId}/billing/invoices`
+
+**[Get the project's effective billing terms](/api-client/sdk/organizations/billing/get-effective-terms)**
+
+```python Python
+photon.organizations.billing.get_effective_terms(input: GetEffectiveTermsInput) -> models.GetEffectiveTermsResponse
+```
+`GET /v1/organizations/{organizationId}/billing/projects/{projectId}/terms`
+
+**[Get organization billing overview](/api-client/sdk/organizations/billing/get-organization-billing-overview)**
+
+```python Python
+photon.organizations.billing.get_organization_billing_overview(input: GetOrganizationBillingOverviewInput) -> models.GetOrganizationBillingOverviewResponse
+```
+`GET /v1/organizations/{organizationId}/billing`
+
+**[Get organization payment method](/api-client/sdk/organizations/billing/get-organization-payment-method)**
+
+```python Python
+photon.organizations.billing.get_organization_payment_method(input: GetOrganizationPaymentMethodInput) -> models.GetOrganizationPaymentMethodResponse
+```
+`GET /v1/organizations/{organizationId}/billing/payment-method`
+
+**[Change plan](/api-client/sdk/organizations/billing/change-plan)**
+
+```python Python
+photon.organizations.billing.change_plan(input: ChangePlanInput) -> models.TerminalBillingOperation | models.PendingBillingOperation
+```
+`POST /v1/organizations/{organizationId}/billing/projects/{projectId}/purchase`
+
+**[Create payment method checkout](/api-client/sdk/organizations/billing/create-organization-payment-method-checkout)**
+
+```python Python
+photon.organizations.billing.create_organization_payment_method_checkout(input: CreateOrganizationPaymentMethodCheckoutInput) -> models.CreateOrganizationPaymentMethodCheckoutResponse
+```
+`POST /v1/organizations/{organizationId}/billing/checkout`
+
+**[Create card setup intent](/api-client/sdk/organizations/billing/create-organization-setup-intent)**
+
+```python Python
+photon.organizations.billing.create_organization_setup_intent(input: CreateOrganizationSetupIntentInput) -> models.CreateOrganizationSetupIntentResponse
+```
+`POST /v1/organizations/{organizationId}/billing/setup-intent`
+
+**[Preview an organization billing change](/api-client/sdk/organizations/billing/preview-organization-change)**
+
+```python Python
+photon.organizations.billing.preview_organization_change(input: PreviewOrganizationChangeInput) -> models.PreviewOrganizationChangeResponse
+```
+`POST /v1/organizations/{organizationId}/billing/preview`
+
+**[Preview a project billing change](/api-client/sdk/organizations/billing/preview-project-change)**
+
+```python Python
+photon.organizations.billing.preview_project_change(input: PreviewProjectChangeInput) -> models.PreviewProjectChangeResponse
+```
+`POST /v1/organizations/{organizationId}/billing/projects/{projectId}/preview`
+
+</Tab>
+<Tab title="Rust">
+**[List invoices](/api-client/sdk/organizations/billing/list-invoices)**
+
+```rust Rust
+client.list_invoices(organization_id: String).await -> Result<ResponseValue<types::ListInvoicesResponse>, Error<ListInvoicesError>>
+```
+`GET /v1/organizations/{organizationId}/billing/invoices`
+
+**[Get the project's effective billing terms](/api-client/sdk/organizations/billing/get-effective-terms)**
+
+```rust Rust
+client.get_effective_terms(organization_id: String, project_id: String).await -> Result<ResponseValue<types::GetEffectiveTermsResponse>, Error<GetEffectiveTermsError>>
+```
+`GET /v1/organizations/{organizationId}/billing/projects/{projectId}/terms`
+
+**[Get organization billing overview](/api-client/sdk/organizations/billing/get-organization-billing-overview)**
+
+```rust Rust
+client.get_organization_billing_overview(organization_id: String).await -> Result<ResponseValue<types::GetOrganizationBillingOverviewResponse>, Error<GetOrganizationBillingOverviewError>>
+```
+`GET /v1/organizations/{organizationId}/billing`
+
+**[Get organization payment method](/api-client/sdk/organizations/billing/get-organization-payment-method)**
+
+```rust Rust
+client.get_organization_payment_method(organization_id: String).await -> Result<ResponseValue<types::GetOrganizationPaymentMethodResponse>, Error<GetOrganizationPaymentMethodError>>
+```
+`GET /v1/organizations/{organizationId}/billing/payment-method`
+
+**[Change plan](/api-client/sdk/organizations/billing/change-plan)**
+
+```rust Rust
+client.change_plan(idempotency_key: String, organization_id: String, project_id: String, body: &types::ChangePlanRequest).await -> Result<ResponseValue<ChangePlanResponse>, Error<ChangePlanError>>
+```
+`POST /v1/organizations/{organizationId}/billing/projects/{projectId}/purchase`
+
+**[Create payment method checkout](/api-client/sdk/organizations/billing/create-organization-payment-method-checkout)**
+
+```rust Rust
+client.create_organization_payment_method_checkout(organization_id: String, params: Option<CreateOrganizationPaymentMethodCheckoutParams>).await -> Result<ResponseValue<types::CreateOrganizationPaymentMethodCheckoutResponse>, Error<CreateOrganizationPaymentMethodCheckoutError>>
+```
+`POST /v1/organizations/{organizationId}/billing/checkout`
+
+**[Create card setup intent](/api-client/sdk/organizations/billing/create-organization-setup-intent)**
+
+```rust Rust
+client.create_organization_setup_intent(idempotency_key: String, organization_id: String).await -> Result<ResponseValue<types::CreateOrganizationSetupIntentResponse>, Error<CreateOrganizationSetupIntentError>>
+```
+`POST /v1/organizations/{organizationId}/billing/setup-intent`
+
+**[Preview an organization billing change](/api-client/sdk/organizations/billing/preview-organization-change)**
+
+```rust Rust
+client.preview_organization_change(organization_id: String, body: &types::PreviewOrganizationChangeRequest).await -> Result<ResponseValue<types::PreviewOrganizationChangeResponse>, Error<PreviewOrganizationChangeError>>
+```
+`POST /v1/organizations/{organizationId}/billing/preview`
+
+**[Preview a project billing change](/api-client/sdk/organizations/billing/preview-project-change)**
+
+```rust Rust
+client.preview_project_change(organization_id: String, project_id: String, body: &types::PreviewProjectChangeRequest).await -> Result<ResponseValue<types::PreviewProjectChangeResponse>, Error<PreviewProjectChangeError>>
+```
+`POST /v1/organizations/{organizationId}/billing/projects/{projectId}/preview`
+
+</Tab>
+</Tabs>
+
+## Models
+
+### ListInvoicesResponse
+
+
+
+<ResponseField name="invoices" type={"array of Invoice"} required>
+
+</ResponseField>
+
+
+### GetEffectiveTermsResponse
+
+
+
+<ResponseField name="creditBalance" type={"CreditBalance | null"} required>
+Credit the paying organization holds on credit notes, such as the unused time of a plan an upgrade replaced. It offsets that organization's next invoices of any kind except one-off invoices. Prepaid wallet credit is separate. Null when it holds none.
+</ResponseField>
+
+<ResponseField name="subscriptions" type={"array of SubscriptionTerms"} required>
+One entry per category the project holds, by category. Empty means it holds none.
+</ResponseField>
+
+<ResponseField name="timeZone" type={"string"} required>
+The IANA time zone the payer is billed in, e.g. America/Los_Angeles. Billing periods start and end at its midnights, so read their calendar dates in it.
+</ResponseField>
+
+
+### GetOrganizationBillingOverviewResponse
+
+
+
+<ResponseField name="entitlementsVersion" type={"integer"} required>
+Bumps on every entitlement change for the organization.
+</ResponseField>
+
+<ResponseField name="subscription" type={"OrganizationSubscription | null"} required>
+The organization-owned subscription, or null when billing was never opened or has ended.
+</ResponseField>
+
+
+### GetOrganizationPaymentMethodResponse
+
+
+
+<ResponseField name="cardOnFile" type={"boolean"} required>
+True once a card is captured for the payer.
+</ResponseField>
+
+<ResponseField name="paymentMethod" type={"PaymentMethod | null"} required>
+Metadata for the default card, or null.
+</ResponseField>
+
+
+### TerminalBillingOperation
+
+
+
+**One of: SucceededBillingOperation**
+
+<ResponseField name="failure" type={"null"} required>
+
+</ResponseField>
+
+<ResponseField name="kind" type={"BillingOperationKind"} required>
+
+</ResponseField>
+
+<ResponseField name="operationId" type={"string"} required>
+Stable handle for this provisioning action.
+</ResponseField>
+
+<ResponseField name="resolvedAt" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="result" type={"BillingOperationResult"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"\"succeeded\""} required>
+Terminal. The result is authoritative.
+</ResponseField>
+
+<ResponseField name="submittedAt" type={"string | null"} required>
+
+</ResponseField>
+
+**One of: FailedBillingOperation**
+
+<ResponseField name="failure" type={"BillingOperationFailure"} required>
+
+</ResponseField>
+
+<ResponseField name="kind" type={"BillingOperationKind"} required>
+
+</ResponseField>
+
+<ResponseField name="operationId" type={"string"} required>
+Stable handle for this provisioning action.
+</ResponseField>
+
+<ResponseField name="resolvedAt" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="result" type={"null"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"\"failed\""} required>
+Terminal. Failure contains a stable code and retryability.
+</ResponseField>
+
+<ResponseField name="submittedAt" type={"string | null"} required>
+
+</ResponseField>
+
+
+### PendingBillingOperation
+
+
+
+<ResponseField name="failure" type={"null"} required>
+
+</ResponseField>
+
+<ResponseField name="kind" type={"BillingOperationKind"} required>
+
+</ResponseField>
+
+<ResponseField name="operationId" type={"string"} required>
+Stable handle for this provisioning action.
+</ResponseField>
+
+<ResponseField name="resolvedAt" type={"null"} required>
+
+</ResponseField>
+
+<ResponseField name="result" type={"null"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"\"pending\""} required>
+Accepted and still executing. Poll the operation route.
+</ResponseField>
+
+<ResponseField name="submittedAt" type={"string | null"} required>
+
+</ResponseField>
+
+
+### CreateOrganizationPaymentMethodCheckoutResponse
+
+
+
+<ResponseField name="checkoutUrl" type={"string (uri)"} required>
+Hosted Stripe page; send the user here.
+</ResponseField>
+
+
+### CreateOrganizationSetupIntentResponse
+
+
+
+<ResponseField name="clientSecret" type={"string"} required>
+Stripe SetupIntent client secret.
+</ResponseField>
+
+<ResponseField name="publishableKey" type={"string"} required>
+Publishable key for the Stripe account backing billing.
+</ResponseField>
+
+
+### PreviewOrganizationChangeResponse
+
+
+
+<ResponseField name="balanceAfterCents" type={"integer | null"} required>
+The payer's credit balance once dueNow is charged: the credit the change issues included, less what dueNow uses. In dueNow's currency. Null when the change charges nothing now (a downgrade).
+</ResponseField>
+
+<ResponseField name="dueNow" type={"BillingPreviewInvoice"} required>
+Charged when the change is made, priced as the change bills it. No lines when it charges nothing now.
+</ResponseField>
+
+<ResponseField name="nextCharge" type={"BillingNextCharge | null"} required>
+What is charged in advance at the next period start for what is held after the change. Usage and a minimum commitment are billed after the period. Null when nothing is, or the subscription ends first.
+</ResponseField>
+
+<ResponseField name="planChange" type={"BillingPlanChangeEffect | null"} required>
+Set for a plan change, null otherwise.
+</ResponseField>
+
+<ResponseField name="quote" type={"FixedChargeQuote | null"} required>
+Set for a fixed-charge change, null otherwise: the unit price, currency and period the preview was priced on. Pass them on with the purchase so it is refused if they no longer hold.
+</ResponseField>
+
+<ResponseField name="timeZone" type={"string"} required>
+The IANA time zone the payer is billed in, e.g. America/Los_Angeles. Billing periods start and end at its midnights, so read their calendar dates in it.
+</ResponseField>
+
+
+### PreviewProjectChangeResponse
+
+
+
+<ResponseField name="balanceAfterCents" type={"integer | null"} required>
+The payer's credit balance once dueNow is charged: the credit the change issues included, less what dueNow uses. In dueNow's currency. Null when the change charges nothing now (a downgrade).
+</ResponseField>
+
+<ResponseField name="dueNow" type={"BillingPreviewInvoice"} required>
+Charged when the change is made, priced as the change bills it. No lines when it charges nothing now.
+</ResponseField>
+
+<ResponseField name="nextCharge" type={"BillingNextCharge | null"} required>
+What is charged in advance at the next period start for what is held after the change. Usage and a minimum commitment are billed after the period. Null when nothing is, or the subscription ends first.
+</ResponseField>
+
+<ResponseField name="planChange" type={"BillingPlanChangeEffect | null"} required>
+Set for a plan change, null otherwise.
+</ResponseField>
+
+<ResponseField name="quote" type={"FixedChargeQuote | null"} required>
+Set for a fixed-charge change, null otherwise: the unit price, currency and period the preview was priced on. Pass them on with the purchase so it is refused if they no longer hold.
+</ResponseField>
+
+<ResponseField name="timeZone" type={"string"} required>
+The IANA time zone the payer is billed in, e.g. America/Los_Angeles. Billing periods start and end at its midnights, so read their calendar dates in it.
+</ResponseField>
+
+

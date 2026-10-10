@@ -1,0 +1,113 @@
+---
+title: "Create card setup intent"
+icon: arrow-up-right
+description: "Create card setup intent: createOrganizationSetupIntent in the TypeScript, Python and Rust clients."
+---
+
+`POST /v1/organizations/{organizationId}/billing/setup-intent`
+
+Creates payment-provider configuration for collecting a card for the selected organization and returns clientSecret and publishableKey. Supply the required Idempotency-Key header. Complete the provider’s card-collection flow separately and avoid logging the returned client secret.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.billing.createOrganizationSetupIntent(input: CreateOrganizationSetupIntentInput, options?: RequestOptions): Promise<CreateOrganizationSetupIntentOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.billing.create_organization_setup_intent(input: CreateOrganizationSetupIntentInput) -> models.CreateOrganizationSetupIntentResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.create_organization_setup_intent(idempotency_key: String, organization_id: String).await -> Result<ResponseValue<types::CreateOrganizationSetupIntentResponse>, Error<CreateOrganizationSetupIntentError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.billing.createOrganizationSetupIntent({
+  path: {
+    organizationId: "organizationId",
+  },
+  headers: {
+    idempotencyKey: "idempotencyKey",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import CreateOrganizationSetupIntentInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.billing.create_organization_setup_intent(
+    CreateOrganizationSetupIntentInput.model_validate({
+        "path": {
+            "organizationId": "organizationId",
+        },
+        "headers": {
+            "Idempotency-Key": "idempotencyKey",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .create_organization_setup_intent("idempotencyKey".to_owned(), "organizationId".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "clientSecret": "string",
+  "publishableKey": "string"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField header="Idempotency-Key" type={"string"} required>
+Identifies one logical mutation across retries.
+</ParamField>
+
+<ParamField path="organizationId" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** Payment-provider client configuration (client secret and publishable key) for capturing the organization's card. CreateOrganizationSetupIntentResponse
+
+<ResponseField name="clientSecret" type={"string"} required>
+Stripe SetupIntent client secret.
+</ResponseField>
+
+<ResponseField name="publishableKey" type={"string"} required>
+Publishable key for the Stripe account backing billing.
+</ResponseField>
+

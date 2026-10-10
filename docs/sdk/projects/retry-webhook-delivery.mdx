@@ -1,0 +1,148 @@
+---
+title: "Retry webhook delivery"
+icon: arrow-up-right
+description: "Retry webhook delivery: retryWebhookDelivery in the TypeScript, Python and Rust clients."
+---
+
+`POST /v1/projects/{projectId}/webhooks/destinations/{destinationId}/retries`
+
+Requests an immediate attempt of the selected delivery if it is still the waiting head for its destination and event type. expectedAttemptCount is the failed-attempt counter recorded on the delivery and fences stale requests. This overrides the current backoff, including Retry-After, once. It preserves event identity and the retry budget. Delivered, active, disabled and dead-lettered deliveries cannot be retried. A 202 acknowledges the wake-up, not successful delivery. Supply an Idempotency-Key and retain it when retrying an ambiguous failure.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.retryWebhookDelivery(input: RetryWebhookDeliveryInput, options?: RequestOptions): Promise<RetryWebhookDeliveryOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.retry_webhook_delivery(input: RetryWebhookDeliveryInput) -> models.RetryWebhookDeliveryResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.retry_webhook_delivery(idempotency_key: String, destination_id: String, project_id: String, body: &types::RetryWebhookDeliveryRequest).await -> Result<ResponseValue<types::RetryWebhookDeliveryResponse>, Error<RetryWebhookDeliveryError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.retryWebhookDelivery({
+  path: {
+    destinationId: "destinationId",
+    projectId: "projectId",
+  },
+  headers: {
+    idempotencyKey: "idempotencyKey",
+  },
+  body: {
+    eventId: "eventId",
+    eventType: "eventType",
+    expectedAttemptCount: 0,
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import RetryWebhookDeliveryInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.retry_webhook_delivery(
+    RetryWebhookDeliveryInput.model_validate({
+        "path": {
+            "destinationId": "destinationId",
+            "projectId": "projectId",
+        },
+        "headers": {
+            "Idempotency-Key": "idempotencyKey",
+        },
+        "body": {
+            "eventId": "eventId",
+            "eventType": "eventType",
+            "expectedAttemptCount": 0,
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .retry_webhook_delivery(
+        "idempotencyKey".to_owned(),
+        "destinationId".to_owned(),
+        "projectId".to_owned(),
+        &serde_json::from_value(serde_json::json!({
+            "eventId": "eventId",
+            "eventType": "eventType",
+            "expectedAttemptCount": 0,
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 202
+{
+  "status": "accepted"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField header="Idempotency-Key" type={"string"} required>
+Identifies one logical mutation across retries.
+</ParamField>
+
+<ParamField path="destinationId" type={"string"} required>
+
+</ParamField>
+
+<ParamField path="projectId" type={"string"} required>
+
+</ParamField>
+
+
+## Body
+
+<ParamField body="eventId" type={"string"} required>
+
+</ParamField>
+
+<ParamField body="eventType" type={"string"} required>
+
+</ParamField>
+
+<ParamField body="expectedAttemptCount" type={"integer"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`202`** The waiting delivery was made eligible for an immediate attempt. RetryWebhookDeliveryResponse
+
+<ResponseField name="status" type={"\"accepted\""} required>
+
+</ResponseField>
+

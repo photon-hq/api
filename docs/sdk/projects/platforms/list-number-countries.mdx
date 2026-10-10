@@ -1,0 +1,104 @@
+---
+title: "List number countries"
+icon: arrow-down-left
+description: "List number countries: listNumberCountries in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{id}/platforms/sms/numbers/countries`
+
+Lists supported purchase countries independently of current provider inventory. Requires platforms:read for the path project.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.platforms.listNumberCountries(input: ListNumberCountriesInput, options?: RequestOptions): Promise<ListNumberCountriesOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.platforms.list_number_countries(input: ListNumberCountriesInput) -> models.ListNumberCountriesResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.list_number_countries(id: String).await -> Result<ResponseValue<types::ListNumberCountriesResponse>, Error<ListNumberCountriesError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.platforms.listNumberCountries({
+  path: {
+    id: "id",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import ListNumberCountriesInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.platforms.list_number_countries(
+    ListNumberCountriesInput.model_validate({
+        "path": {
+            "id": "id",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .list_number_countries("id".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "countries": [
+    {
+      "callingCode": "string",
+      "countryCode": "string",
+      "displayName": "string"
+    }
+  ]
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** Supported countries. ListNumberCountriesResponse
+
+<ResponseField name="countries" type={"array of NumberCountry"} required>
+
+</ResponseField>
+
