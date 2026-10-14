@@ -197,6 +197,10 @@ class CommitAgentProfileAvatarInput(BaseModel):
     headers: CommitAgentProfileAvatarHeader
 
 
+class CompleteAccountOnboardingInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+
 class ConfigureVoiceProfileOutboundPath(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
@@ -747,6 +751,10 @@ class DownloadAttachmentInput(BaseModel):
 
 
 class GetAccountInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+
+class GetAccountOnboardingInput(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
 
@@ -2006,6 +2014,19 @@ class UpdateAccountInput(BaseModel):
     headers: UpdateAccountHeader
 
 
+class UpdateAccountOnboardingHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    idempotency_key: str = Field(alias="Idempotency-Key")
+
+
+class UpdateAccountOnboardingInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    body: models.UpdateAccountOnboardingRequest
+    headers: UpdateAccountOnboardingHeader
+
+
 class UpdateAgentProfilePath(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
@@ -2367,6 +2388,21 @@ _OP_COMMIT_AGENT_PROFILE_AVATAR = OperationSpec(
     ),
     success_responses={
         "200": TypeAdapter(models.AgentProfile),
+    },
+)
+
+_OP_COMPLETE_ACCOUNT_ONBOARDING = OperationSpec(
+    operation_id="completeAccountOnboarding",
+    method="POST",
+    path="/v1/account/onboarding/complete",
+    safe=False,
+    idempotency_key_required=False,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.CompleteAccountOnboardingResponse),
     },
 )
 
@@ -2913,6 +2949,21 @@ _OP_GET_ACCOUNT = OperationSpec(
     ),
     success_responses={
         "200": TypeAdapter(models.Account),
+    },
+)
+
+_OP_GET_ACCOUNT_ONBOARDING = OperationSpec(
+    operation_id="getAccountOnboarding",
+    method="GET",
+    path="/v1/account/onboarding",
+    safe=True,
+    idempotency_key_required=False,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.GetAccountOnboardingResponse),
     },
 )
 
@@ -4161,6 +4212,22 @@ _OP_UPDATE_ACCOUNT = OperationSpec(
     },
 )
 
+_OP_UPDATE_ACCOUNT_ONBOARDING = OperationSpec(
+    operation_id="updateAccountOnboarding",
+    method="PATCH",
+    path="/v1/account/onboarding",
+    safe=False,
+    idempotency_key_required=True,
+    request_media_type="application/json",
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.UpdateAccountOnboardingResponse),
+    },
+)
+
 _OP_UPDATE_AGENT_PROFILE = OperationSpec(
     operation_id="updateAgentProfile",
     method="PATCH",
@@ -5205,9 +5272,40 @@ class SyncRawOrganizationsResource:
         self.projects = SyncRawOrganizationsProjectsResource(transport)
 
 
+class SyncRawAccountOnboardingResource:
+    def __init__(self, transport: SyncTransport) -> None:
+        self._transport = transport
+
+    def complete(
+        self, input: CompleteAccountOnboardingInput | None = None
+    ) -> RawResponse[models.CompleteAccountOnboardingResponse]:
+        "Complete onboarding\n\nMarks the authenticated account's onboarding flow complete and returns a confirmation with onboarded set to true. No prior update is required, but submit any onboarding information you want to keep with updateAccountOnboarding first, because further edits through updateAccountOnboarding are rejected after completion."
+        payload = (input or CompleteAccountOnboardingInput()).model_dump(
+            mode="json", by_alias=True, exclude_unset=True
+        )
+        return self._transport.request(_OP_COMPLETE_ACCOUNT_ONBOARDING, payload)
+
+    def get(
+        self, input: GetAccountOnboardingInput | None = None
+    ) -> RawResponse[models.GetAccountOnboardingResponse]:
+        "Get onboarding state\n\nReturns the authenticated account's current onboarding state and collected onboarding information. Reading the state does not complete onboarding or modify the supplied account information."
+        payload = (input or GetAccountOnboardingInput()).model_dump(
+            mode="json", by_alias=True, exclude_unset=True
+        )
+        return self._transport.request(_OP_GET_ACCOUNT_ONBOARDING, payload)
+
+    def update(
+        self, input: UpdateAccountOnboardingInput
+    ) -> RawResponse[models.UpdateAccountOnboardingResponse]:
+        "Update onboarding state\n\nUpdates the authenticated account's submitted onboarding information, including the documented company, background, platform and referral fields. Returns the updated onboarding state. Completed onboarding cannot be edited through this operation; completion is performed separately with completeAccountOnboarding. Supply the required Idempotency-Key header."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_UPDATE_ACCOUNT_ONBOARDING, payload)
+
+
 class SyncRawAccountResource:
     def __init__(self, transport: SyncTransport) -> None:
         self._transport = transport
+        self.onboarding = SyncRawAccountOnboardingResource(transport)
 
     def commit_profile_picture(
         self, input: CommitAccountProfilePictureInput
@@ -6043,9 +6141,31 @@ class SyncOrganizationsResource:
         self.projects = SyncOrganizationsProjectsResource(transport)
 
 
+class SyncAccountOnboardingResource:
+    def __init__(self, transport: SyncTransport) -> None:
+        self._raw_resource = SyncRawAccountOnboardingResource(transport)
+
+    def complete(
+        self, input: CompleteAccountOnboardingInput | None = None
+    ) -> models.CompleteAccountOnboardingResponse:
+        "Complete onboarding\n\nMarks the authenticated account's onboarding flow complete and returns a confirmation with onboarded set to true. No prior update is required, but submit any onboarding information you want to keep with updateAccountOnboarding first, because further edits through updateAccountOnboarding are rejected after completion."
+        return (self._raw_resource.complete(input)).data
+
+    def get(
+        self, input: GetAccountOnboardingInput | None = None
+    ) -> models.GetAccountOnboardingResponse:
+        "Get onboarding state\n\nReturns the authenticated account's current onboarding state and collected onboarding information. Reading the state does not complete onboarding or modify the supplied account information."
+        return (self._raw_resource.get(input)).data
+
+    def update(self, input: UpdateAccountOnboardingInput) -> models.UpdateAccountOnboardingResponse:
+        "Update onboarding state\n\nUpdates the authenticated account's submitted onboarding information, including the documented company, background, platform and referral fields. Returns the updated onboarding state. Completed onboarding cannot be edited through this operation; completion is performed separately with completeAccountOnboarding. Supply the required Idempotency-Key header."
+        return (self._raw_resource.update(input)).data
+
+
 class SyncAccountResource:
     def __init__(self, transport: SyncTransport) -> None:
         self._raw_resource = SyncRawAccountResource(transport)
+        self.onboarding = SyncAccountOnboardingResource(transport)
 
     def commit_profile_picture(self, input: CommitAccountProfilePictureInput) -> models.Account:
         "Commit profile picture\n\nCommits a profile picture previously uploaded through createAccountProfilePictureUpload. Call this only after the direct multipart upload succeeds, using the uploadId from the same upload session and a stable Idempotency-Key. The service validates the temporary object's ownership, size, content type, image bytes, dimensions, encryption, and age before changing the Account."
@@ -7043,9 +7163,40 @@ class AsyncRawOrganizationsResource:
         self.projects = AsyncRawOrganizationsProjectsResource(transport)
 
 
+class AsyncRawAccountOnboardingResource:
+    def __init__(self, transport: AsyncTransport) -> None:
+        self._transport = transport
+
+    async def complete(
+        self, input: CompleteAccountOnboardingInput | None = None
+    ) -> RawResponse[models.CompleteAccountOnboardingResponse]:
+        "Complete onboarding\n\nMarks the authenticated account's onboarding flow complete and returns a confirmation with onboarded set to true. No prior update is required, but submit any onboarding information you want to keep with updateAccountOnboarding first, because further edits through updateAccountOnboarding are rejected after completion."
+        payload = (input or CompleteAccountOnboardingInput()).model_dump(
+            mode="json", by_alias=True, exclude_unset=True
+        )
+        return await self._transport.request(_OP_COMPLETE_ACCOUNT_ONBOARDING, payload)
+
+    async def get(
+        self, input: GetAccountOnboardingInput | None = None
+    ) -> RawResponse[models.GetAccountOnboardingResponse]:
+        "Get onboarding state\n\nReturns the authenticated account's current onboarding state and collected onboarding information. Reading the state does not complete onboarding or modify the supplied account information."
+        payload = (input or GetAccountOnboardingInput()).model_dump(
+            mode="json", by_alias=True, exclude_unset=True
+        )
+        return await self._transport.request(_OP_GET_ACCOUNT_ONBOARDING, payload)
+
+    async def update(
+        self, input: UpdateAccountOnboardingInput
+    ) -> RawResponse[models.UpdateAccountOnboardingResponse]:
+        "Update onboarding state\n\nUpdates the authenticated account's submitted onboarding information, including the documented company, background, platform and referral fields. Returns the updated onboarding state. Completed onboarding cannot be edited through this operation; completion is performed separately with completeAccountOnboarding. Supply the required Idempotency-Key header."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_UPDATE_ACCOUNT_ONBOARDING, payload)
+
+
 class AsyncRawAccountResource:
     def __init__(self, transport: AsyncTransport) -> None:
         self._transport = transport
+        self.onboarding = AsyncRawAccountOnboardingResource(transport)
 
     async def commit_profile_picture(
         self, input: CommitAccountProfilePictureInput
@@ -7893,9 +8044,33 @@ class AsyncOrganizationsResource:
         self.projects = AsyncOrganizationsProjectsResource(transport)
 
 
+class AsyncAccountOnboardingResource:
+    def __init__(self, transport: AsyncTransport) -> None:
+        self._raw_resource = AsyncRawAccountOnboardingResource(transport)
+
+    async def complete(
+        self, input: CompleteAccountOnboardingInput | None = None
+    ) -> models.CompleteAccountOnboardingResponse:
+        "Complete onboarding\n\nMarks the authenticated account's onboarding flow complete and returns a confirmation with onboarded set to true. No prior update is required, but submit any onboarding information you want to keep with updateAccountOnboarding first, because further edits through updateAccountOnboarding are rejected after completion."
+        return (await self._raw_resource.complete(input)).data
+
+    async def get(
+        self, input: GetAccountOnboardingInput | None = None
+    ) -> models.GetAccountOnboardingResponse:
+        "Get onboarding state\n\nReturns the authenticated account's current onboarding state and collected onboarding information. Reading the state does not complete onboarding or modify the supplied account information."
+        return (await self._raw_resource.get(input)).data
+
+    async def update(
+        self, input: UpdateAccountOnboardingInput
+    ) -> models.UpdateAccountOnboardingResponse:
+        "Update onboarding state\n\nUpdates the authenticated account's submitted onboarding information, including the documented company, background, platform and referral fields. Returns the updated onboarding state. Completed onboarding cannot be edited through this operation; completion is performed separately with completeAccountOnboarding. Supply the required Idempotency-Key header."
+        return (await self._raw_resource.update(input)).data
+
+
 class AsyncAccountResource:
     def __init__(self, transport: AsyncTransport) -> None:
         self._raw_resource = AsyncRawAccountResource(transport)
+        self.onboarding = AsyncAccountOnboardingResource(transport)
 
     async def commit_profile_picture(
         self, input: CommitAccountProfilePictureInput

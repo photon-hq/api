@@ -1,0 +1,80 @@
+---
+title: "Complete onboarding"
+icon: arrow-up-right
+description: "Complete onboarding: completeAccountOnboarding in the TypeScript, Python and Rust clients."
+---
+
+`POST /v1/account/onboarding/complete`
+
+Marks the authenticated account's onboarding flow complete and returns a confirmation with onboarded set to true. No prior update is required, but submit any onboarding information you want to keep with updateAccountOnboarding first, because further edits through updateAccountOnboarding are rejected after completion.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.account.onboarding.complete(input?: CompleteAccountOnboardingInput, options?: RequestOptions): Promise<CompleteAccountOnboardingOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.account.onboarding.complete(input: CompleteAccountOnboardingInput | None = None) -> models.CompleteAccountOnboardingResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.complete_account_onboarding().await -> Result<ResponseValue<types::CompleteAccountOnboardingResponse>, Error<CompleteAccountOnboardingError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.account.onboarding.complete();
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.account.onboarding.complete()
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .complete_account_onboarding()
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "onboarded": true
+}
+```
+
+</ResponseExample>
+
+## Returns
+
+**`200`** The completed onboarding state. CompleteAccountOnboardingResponse
+
+<ResponseField name="onboarded" type={"true"} required>
+
+</ResponseField>
+

@@ -285,3 +285,46 @@ jobs:
         run: |
           cargo install cargo-audit --version 0.22.2 --locked
           cargo audit
+
+  go:
+    name: Go client
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 26
+          cache: npm
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.11"
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.26"
+          cache: false
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Regenerate from the committed contract and compare
+        run: |
+          npm run regenerate:go
+          git diff --exit-code
+          test -z "$(git ls-files --others --exclude-standard)"
+      - name: Lint and test
+        run: |
+          test -z "$(gofmt -l packages/go)"
+          npm run test:go-codegen
+          npm run test:go
+      # The module is consumed by its path, so a clean consumer must build against it.
+      - name: Build a clean consumer
+        run: |
+          consumer="$(mktemp -d)"
+          cd "$consumer"
+          go mod init photon-ci-consumer
+          go mod edit -require 'github.com/photon-hq/api/packages/go@v0.0.0-00010101000000-000000000000' -replace "github.com/photon-hq/api/packages/go=$GITHUB_WORKSPACE/packages/go"
+          printf 'package consumer\n\nimport photonapi "github.com/photon-hq/api/packages/go"\n\nfunc Build() *photonapi.Client { return photonapi.NewClient() }\n' > consumer.go
+          go mod tidy
+          go build ./...

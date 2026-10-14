@@ -208,6 +208,17 @@ export const CommitAgentProfileAvatarOutputSchemas: OutputSchemas<CommitAgentPro
     "200": GeneratedZod.zAgentProfile,
 }))();
 
+export const CompleteAccountOnboardingInputSchema = /* @__PURE__ */ (() => z.strictObject({
+
+}))();
+export type CompleteAccountOnboardingInput = Record<string, never>;
+
+export const CompleteAccountOnboardingOutputSchema = GeneratedZod.zCompleteAccountOnboardingResponse;
+export type CompleteAccountOnboardingOutput = z.output<typeof CompleteAccountOnboardingOutputSchema>;
+export const CompleteAccountOnboardingOutputSchemas: OutputSchemas<CompleteAccountOnboardingOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zCompleteAccountOnboardingResponse,
+}))();
+
 export const ConfigureVoiceProfileOutboundInputSchema = /* @__PURE__ */ (() => z.strictObject({
     body: GeneratedZod.zConfigureVoiceProfileOutboundBody,
     path: GeneratedZod.zConfigureVoiceProfileOutboundPath.strict(),
@@ -797,6 +808,17 @@ export const GetAccountOutputSchema = GeneratedZod.zAccount;
 export type GetAccountOutput = z.output<typeof GetAccountOutputSchema>;
 export const GetAccountOutputSchemas: OutputSchemas<GetAccountOutput> = /* @__PURE__ */ (() => ({
     "200": GeneratedZod.zAccount,
+}))();
+
+export const GetAccountOnboardingInputSchema = /* @__PURE__ */ (() => z.strictObject({
+
+}))();
+export type GetAccountOnboardingInput = Record<string, never>;
+
+export const GetAccountOnboardingOutputSchema = GeneratedZod.zGetAccountOnboardingResponse;
+export type GetAccountOnboardingOutput = z.output<typeof GetAccountOnboardingOutputSchema>;
+export const GetAccountOnboardingOutputSchemas: OutputSchemas<GetAccountOnboardingOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zGetAccountOnboardingResponse,
 }))();
 
 export const GetAgentProfileInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -2010,6 +2032,25 @@ export const UpdateAccountOutputSchema = GeneratedZod.zAccount;
 export type UpdateAccountOutput = z.output<typeof UpdateAccountOutputSchema>;
 export const UpdateAccountOutputSchemas: OutputSchemas<UpdateAccountOutput> = /* @__PURE__ */ (() => ({
     "200": GeneratedZod.zAccount,
+}))();
+
+export const UpdateAccountOnboardingInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    body: GeneratedZod.zUpdateAccountOnboardingBody,
+    headers: z.strictObject({
+        idempotencyKey: GeneratedZod.zUpdateAccountOnboardingHeaders.shape["Idempotency-Key"],
+    }),
+}))();
+export type UpdateAccountOnboardingInput = {
+    body: WireTypes.UpdateAccountOnboardingData["body"];
+    headers: {
+        idempotencyKey: NonNullable<WireTypes.UpdateAccountOnboardingData["headers"]>["Idempotency-Key"];
+    };
+};
+
+export const UpdateAccountOnboardingOutputSchema = GeneratedZod.zUpdateAccountOnboardingResponse;
+export type UpdateAccountOnboardingOutput = z.output<typeof UpdateAccountOnboardingOutputSchema>;
+export const UpdateAccountOnboardingOutputSchemas: OutputSchemas<UpdateAccountOnboardingOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zUpdateAccountOnboardingResponse,
 }))();
 
 export const UpdateAgentProfileInputSchema = /* @__PURE__ */ (() => z.strictObject({

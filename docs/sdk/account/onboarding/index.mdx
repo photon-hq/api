@@ -1,0 +1,148 @@
+---
+title: "Onboarding"
+description: "The Onboarding resource in the TypeScript, Python and Rust clients."
+---
+
+## Methods
+
+<Tabs>
+<Tab title="TypeScript">
+**[Get onboarding state](/api-client/sdk/account/onboarding/get)**
+
+```typescript TypeScript
+photon.account.onboarding.get(input?: GetAccountOnboardingInput, options?: RequestOptions): Promise<GetAccountOnboardingOutput>
+```
+`GET /v1/account/onboarding`
+
+**[Complete onboarding](/api-client/sdk/account/onboarding/complete)**
+
+```typescript TypeScript
+photon.account.onboarding.complete(input?: CompleteAccountOnboardingInput, options?: RequestOptions): Promise<CompleteAccountOnboardingOutput>
+```
+`POST /v1/account/onboarding/complete`
+
+**[Update onboarding state](/api-client/sdk/account/onboarding/update)**
+
+```typescript TypeScript
+photon.account.onboarding.update(input: UpdateAccountOnboardingInput, options?: RequestOptions): Promise<UpdateAccountOnboardingOutput>
+```
+`PATCH /v1/account/onboarding`
+
+</Tab>
+<Tab title="Python">
+**[Get onboarding state](/api-client/sdk/account/onboarding/get)**
+
+```python Python
+photon.account.onboarding.get(input: GetAccountOnboardingInput | None = None) -> models.GetAccountOnboardingResponse
+```
+`GET /v1/account/onboarding`
+
+**[Complete onboarding](/api-client/sdk/account/onboarding/complete)**
+
+```python Python
+photon.account.onboarding.complete(input: CompleteAccountOnboardingInput | None = None) -> models.CompleteAccountOnboardingResponse
+```
+`POST /v1/account/onboarding/complete`
+
+**[Update onboarding state](/api-client/sdk/account/onboarding/update)**
+
+```python Python
+photon.account.onboarding.update(input: UpdateAccountOnboardingInput) -> models.UpdateAccountOnboardingResponse
+```
+`PATCH /v1/account/onboarding`
+
+</Tab>
+<Tab title="Rust">
+**[Get onboarding state](/api-client/sdk/account/onboarding/get)**
+
+```rust Rust
+client.get_account_onboarding().await -> Result<ResponseValue<types::GetAccountOnboardingResponse>, Error<GetAccountOnboardingError>>
+```
+`GET /v1/account/onboarding`
+
+**[Complete onboarding](/api-client/sdk/account/onboarding/complete)**
+
+```rust Rust
+client.complete_account_onboarding().await -> Result<ResponseValue<types::CompleteAccountOnboardingResponse>, Error<CompleteAccountOnboardingError>>
+```
+`POST /v1/account/onboarding/complete`
+
+**[Update onboarding state](/api-client/sdk/account/onboarding/update)**
+
+```rust Rust
+client.update_account_onboarding(idempotency_key: String, body: &types::UpdateAccountOnboardingRequest).await -> Result<ResponseValue<types::UpdateAccountOnboardingResponse>, Error<UpdateAccountOnboardingError>>
+```
+`PATCH /v1/account/onboarding`
+
+</Tab>
+</Tabs>
+
+## Models
+
+### GetAccountOnboardingResponse
+
+
+
+<ResponseField name="background" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="companyName" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="companyUrl" type={"string (uri) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="onboarded" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="platforms" type={"array of AccountOnboardingPlatform | null"} required>
+
+</ResponseField>
+
+<ResponseField name="referralSource" type={"string | null"} required>
+
+</ResponseField>
+
+
+### CompleteAccountOnboardingResponse
+
+
+
+<ResponseField name="onboarded" type={"true"} required>
+
+</ResponseField>
+
+
+### UpdateAccountOnboardingResponse
+
+
+
+<ResponseField name="background" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="companyName" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="companyUrl" type={"string (uri) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="onboarded" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="platforms" type={"array of AccountOnboardingPlatform | null"} required>
+
+</ResponseField>
+
+<ResponseField name="referralSource" type={"string | null"} required>
+
+</ResponseField>
+
+

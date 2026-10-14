@@ -43,7 +43,16 @@
             "api-client/sdk/account/delete",
             "api-client/sdk/account/reset-profile-picture",
             "api-client/sdk/account/revoke-account-service-key",
-            "api-client/sdk/account/revoke-authorized-application"
+            "api-client/sdk/account/revoke-authorized-application",
+            {
+              "group": "Onboarding",
+              "root": "api-client/sdk/account/onboarding/index",
+              "pages": [
+                "api-client/sdk/account/onboarding/get",
+                "api-client/sdk/account/onboarding/complete",
+                "api-client/sdk/account/onboarding/update"
+              ]
+            }
           ]
         },
         {

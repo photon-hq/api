@@ -1,6 +1,6 @@
 {
-  "sourceSha256": "f2e092fb1ac67d444f101b3c2ce32a855e8a887ea1b006754ae3dd5e7710987d",
-  "operationCount": 139,
+  "sourceSha256": "a978aabca91c090ff39970c4795aa515f1b54cac10d7cbad1717f9ce4b08d53d",
+  "operationCount": 142,
   "operations": [
     {
       "operationId": "assignSmsLineCampaign",
@@ -888,6 +888,50 @@
           "application/json": "#/components/schemas/CommitAgentProfileAvatarRequest"
         }
       }
+    },
+    {
+      "operationId": "completeAccountOnboarding",
+      "rpcMethod": "complete",
+      "namespace": [
+        "account",
+        "onboarding"
+      ],
+      "httpMethod": "POST",
+      "path": "/v1/account/onboarding/complete",
+      "safe": false,
+      "idempotencyKeyRequired": false,
+      "parameters": [],
+      "responses": {
+        "200": {
+          "application/json": "#/components/schemas/CompleteAccountOnboardingResponse"
+        },
+        "401": {
+          "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
+        },
+        "403": {
+          "application/problem+json": "#/components/schemas/CompleteAccountOnboardingForbiddenProblem"
+        },
+        "404": {
+          "application/problem+json": "#/components/schemas/AccountNotFoundProblem"
+        },
+        "410": {
+          "application/problem+json": "#/components/schemas/AccountDeletedProblem"
+        },
+        "500": {
+          "application/problem+json": "#/components/schemas/CompleteAccountOnboardingInternalServerErrorProblem"
+        },
+        "502": {
+          "application/problem+json": "#/components/schemas/UpstreamFailureProblem"
+        },
+        "503": {
+          "application/problem+json": "#/components/schemas/UpstreamUnavailableProblem"
+        },
+        "504": {
+          "application/problem+json": "#/components/schemas/CompleteAccountOnboardingGatewayTimeoutProblem"
+        }
+      },
+      "summary": "Complete onboarding",
+      "description": "Marks the authenticated account's onboarding flow complete and returns a confirmation with onboarded set to true. No prior update is required, but submit any onboarding information you want to keep with updateAccountOnboarding first, because further edits through updateAccountOnboarding are rejected after completion."
     },
     {
       "operationId": "configureVoiceProfileOutbound",
@@ -3368,6 +3412,50 @@
       },
       "summary": "Get account",
       "description": "Returns the profile of the authenticated account. The account is selected from the credential rather than a request parameter. A missing or deleted account is reported as an error instead of an empty profile."
+    },
+    {
+      "operationId": "getAccountOnboarding",
+      "rpcMethod": "get",
+      "namespace": [
+        "account",
+        "onboarding"
+      ],
+      "httpMethod": "GET",
+      "path": "/v1/account/onboarding",
+      "safe": true,
+      "idempotencyKeyRequired": false,
+      "parameters": [],
+      "responses": {
+        "200": {
+          "application/json": "#/components/schemas/GetAccountOnboardingResponse"
+        },
+        "401": {
+          "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
+        },
+        "403": {
+          "application/problem+json": "#/components/schemas/GetAccountOnboardingForbiddenProblem"
+        },
+        "404": {
+          "application/problem+json": "#/components/schemas/AccountNotFoundProblem"
+        },
+        "410": {
+          "application/problem+json": "#/components/schemas/AccountDeletedProblem"
+        },
+        "500": {
+          "application/problem+json": "#/components/schemas/GetAccountOnboardingInternalServerErrorProblem"
+        },
+        "502": {
+          "application/problem+json": "#/components/schemas/UpstreamFailureProblem"
+        },
+        "503": {
+          "application/problem+json": "#/components/schemas/UpstreamUnavailableProblem"
+        },
+        "504": {
+          "application/problem+json": "#/components/schemas/GetAccountOnboardingGatewayTimeoutProblem"
+        }
+      },
+      "summary": "Get onboarding state",
+      "description": "Returns the authenticated account's current onboarding state and collected onboarding information. Reading the state does not complete onboarding or modify the supplied account information."
     },
     {
       "operationId": "getAgentProfile",
@@ -9026,6 +9114,81 @@
         "required": true,
         "content": {
           "application/json": "#/components/schemas/UpdateAccountRequest"
+        }
+      }
+    },
+    {
+      "operationId": "updateAccountOnboarding",
+      "rpcMethod": "update",
+      "namespace": [
+        "account",
+        "onboarding"
+      ],
+      "httpMethod": "PATCH",
+      "path": "/v1/account/onboarding",
+      "safe": false,
+      "idempotencyKeyRequired": true,
+      "parameters": [
+        {
+          "name": "idempotencyKey",
+          "wireName": "Idempotency-Key",
+          "location": "header",
+          "required": true,
+          "schema": {
+            "maxLength": 255,
+            "minLength": 1,
+            "pattern": "^[\\x21-\\x7e]{1,255}$",
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "application/json": "#/components/schemas/UpdateAccountOnboardingResponse"
+        },
+        "400": {
+          "application/problem+json": "#/components/schemas/UpdateAccountOnboardingBadRequestProblem"
+        },
+        "401": {
+          "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
+        },
+        "403": {
+          "application/problem+json": "#/components/schemas/UpdateAccountOnboardingForbiddenProblem"
+        },
+        "404": {
+          "application/problem+json": "#/components/schemas/AccountNotFoundProblem"
+        },
+        "409": {
+          "application/problem+json": "#/components/schemas/OnboardingCompletedProblem"
+        },
+        "410": {
+          "application/problem+json": "#/components/schemas/AccountDeletedProblem"
+        },
+        "413": {
+          "application/problem+json": "#/components/schemas/PayloadTooLargeProblem"
+        },
+        "422": {
+          "application/problem+json": "#/components/schemas/UpdateAccountOnboardingUnprocessableEntityProblem"
+        },
+        "500": {
+          "application/problem+json": "#/components/schemas/UpdateAccountOnboardingInternalServerErrorProblem"
+        },
+        "502": {
+          "application/problem+json": "#/components/schemas/UpstreamFailureProblem"
+        },
+        "503": {
+          "application/problem+json": "#/components/schemas/UpstreamUnavailableProblem"
+        },
+        "504": {
+          "application/problem+json": "#/components/schemas/UpdateAccountOnboardingGatewayTimeoutProblem"
+        }
+      },
+      "summary": "Update onboarding state",
+      "description": "Updates the authenticated account's submitted onboarding information, including the documented company, background, platform and referral fields. Returns the updated onboarding state. Completed onboarding cannot be edited through this operation; completion is performed separately with completeAccountOnboarding. Supply the required Idempotency-Key header.",
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": "#/components/schemas/UpdateAccountOnboardingRequest"
         }
       }
     },
