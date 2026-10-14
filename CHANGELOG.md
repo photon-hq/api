@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.4.0 (2026-10-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* Upgrading from 0.3.x:
+    * **Credit moved to its own operation:** `organizations.billing.getEffectiveTerms` (`get_effective_terms` in Python and Rust) no longer returns `creditBalance`, and the `CreditBalance` type is removed. Read an organization's granted credit from the new `organizations.billing.getOrganizationCredit` and its history from `organizations.billing.listCreditActivity`.
+    * **Change previews are restructured:** `organizations.billing.previewOrganizationChange` and `organizations.billing.previewProjectChange` no longer return `planChange` and `quote`. A preview now returns what the change does as the required `change` union (`BillingChangeEffect`: a fixed-charge or a plan-change effect) and what it bills later as `dueLater`, next to the existing `dueNow`, `nextCharge` and `balanceAfterCents`.
+    * **`updates[].profileId` no longer accepts `null`** in `projects.platforms.batchUpdateVoiceLineProfileAssignments` requests.
+    * **Some response fields are no longer nullable:** `reasonCode` in `projects.platforms.getSmsLineCampaignAssignment`, `accountName` and `businessName` in `projects.platforms.getWhatsappBusinessAccount`, and `phoneNumbers[].displayName` in `projects.platforms.listWhatsappAccountPhoneNumbers`. The generated types change from nullable to plain values.
+    * **Request timestamps require seconds:** date-time request fields now accept any RFC 3339 UTC offset (not only `Z`) but reject minute-precision values such as `2026-01-01T10:00Z`.
+
+### Features
+
+* New billing operations `organizations.billing.getOrganizationCredit`, `organizations.billing.listCreditActivity` and `organizations.billing.getOrganizationTerms`, and a `subject` filter on `organizations.billing.listInvoices`
+* The Python package now allows pydantic 2.14 (`pydantic>=2.13.5,<2.15`) and the TypeScript package zod `^4.6.5`
+
+### Documentation
+
+* The `listInvoices` description now says invoices fully paid by credit are included; drafts and empty invoices are excluded
+
 ## 0.3.0 (2026-10-10)
 
 

@@ -483,6 +483,11 @@ export type BeginOrganizationSsoAdmissionInternalServerErrorProblem = InternalEr
 
 export type BeginOrganizationSsoAdmissionPreconditionFailedProblem = OrganizationSsoPreconditionFailedProblem | SsoSubscriptionRequiredProblem;
 
+/**
+ * What the change does beside what it bills, by the kind of change requested: fixed_charge for a fixed-charge change, plan_change for a plan change.
+ */
+export type BillingChangeEffect = BillingFixedChargeEffect | BillingPlanChangeEffect;
+
 export type BillingEntitlementsPendingProblem = {
     code: 'BILLING_ENTITLEMENTS_PENDING';
     detail?: string;
@@ -493,6 +498,11 @@ export type BillingEntitlementsPendingProblem = {
     title: 'Billing Entitlements Pending';
     type: 'https://photon.codes/docs/problems/billing-entitlements-pending';
     [key: string]: JsonValue | 'BILLING_ENTITLEMENTS_PENDING' | string | never | 503 | 'Billing Entitlements Pending' | 'https://photon.codes/docs/problems/billing-entitlements-pending' | undefined;
+};
+
+export type BillingFixedChargeEffect = {
+    quote: FixedChargeQuote;
+    type: 'fixed_charge';
 };
 
 export type BillingHeldFixedCharge = {
@@ -590,10 +600,6 @@ export type BillingPlan = {
 
 export type BillingPlanChangeEffect = {
     /**
-     * One line per requested addition: what adding it bills on the target plan, prorated as if added now. Billed when it is added, not with dueNow; the balance left after dueNow applies to it first. nextCharge already includes it.
-     */
-    additions: Array<BillingPreviewLine>;
-    /**
      * When a period_end change applies. Null otherwise.
      */
     effectiveAt: string | null;
@@ -602,12 +608,13 @@ export type BillingPlanChangeEffect = {
      */
     minimumCommitment: BillingPreviewMinimumCommitment | null;
     timing: BillingPlanChangeTiming;
+    type: 'plan_change';
     /**
      * Held fixed charges the target plan does not sell; the preview prices the change without them. With period_end they stay until it applies and are released with it. Otherwise the change is refused (release_required) until they are released.
      */
     unsoldFixedCharges: Array<BillingHeldFixedCharge>;
     /**
-     * The replaced plan's unused time, which an upgrade credits to the payer: applied to dueNow first, the rest kept as balance. Set for an upgrade from a plan paid in advance, null otherwise.
+     * The replaced plan's unused time, which an upgrade credits to the payer. Set for an upgrade from a plan paid in advance, null otherwise.
      */
     unusedTimeCredit: BillingPreviewCredit | null;
 };
@@ -650,6 +657,10 @@ export type BillingPlanUsageThreshold = {
 export type BillingPreviewCredit = {
     amountCents: number;
     /**
+     * What dueNow uses of amountCents, within its creditsCents. The credit the payer already holds applies first; what dueNow leaves of this joins the balance.
+     */
+    appliedCents: number;
+    /**
      * The replaced plan's code.
      */
     code: string;
@@ -665,6 +676,18 @@ export type BillingPreviewCredit = {
      * When the change is made.
      */
     periodStart: string | null;
+};
+
+/**
+ * Billed later rather than with dueNow: one line per plan change addition, billed when it is added and priced as if added now. Before taxes; the balance left after dueNow applies to it first. nextCharge already includes it. No lines when nothing is billed later.
+ */
+export type BillingPreviewDeferred = {
+    currency: string;
+    lines: Array<BillingPreviewLine>;
+    /**
+     * Sum of the lines, in cents.
+     */
+    totalCents: number;
 };
 
 export type BillingPreviewFixedChargeChange = {
@@ -711,7 +734,7 @@ export type BillingPreviewLine = {
     periodEnd: string | null;
     periodStart: string | null;
     /**
-     * Units billed, as a decimal. Units already paid this period are not billed again, so a purchase can bill fewer units than it adds.
+     * Units billed, as a decimal. A purchase bills the units it adds; a plan change, the units it carries over, less what the replaced plan paid for them.
      */
     units: string;
 };
@@ -742,7 +765,7 @@ export type BillingPreviewMinimumCommitment = {
 
 export type BillingPreviewPlanChange = {
     /**
-     * Fixed charges added once an upgrade applies, each billed when it is added rather than with the upgrade. Priced as if added now on the target plan and returned in planChange.additions, outside dueNow. Each must be sold by the target plan and named once.
+     * Fixed charges added once an upgrade applies, each billed when it is added rather than with the upgrade. Priced as if added now on the target plan and returned in dueLater, outside dueNow. Each must be sold by the target plan and named once.
      */
     additions?: Array<FixedChargeAddition>;
     /**
@@ -1217,16 +1240,84 @@ export type CreatedAppInstallationDelivery = {
     status: 'created';
 };
 
-export type CreditBalance = {
+/**
+ * One change to the organization's credit balance, on a credit note or granted.
+ */
+export type CreditActivity = {
     /**
-     * Credit left to offset the next invoices, in cents.
+     * How much the balance moved, in cents; kind says which way.
      */
-    balanceCents: number;
+    amountCents: number;
+    /**
+     * The organization's credit balance once this entry applied, in cents.
+     */
+    balanceAfterCents: number;
+    /**
+     * The credit note whose credit moved. Null for granted credit.
+     */
+    creditNote: CreditDocument | null;
     /**
      * ISO currency code.
      */
     currency: string;
+    /**
+     * The invoice credit was applied to or restored from. Null otherwise.
+     */
+    invoice: CreditDocument | null;
+    kind: CreditActivityKind;
+    /**
+     * ISO 8601.
+     */
+    occurredAt: string;
+    /**
+     * Why the credit was issued: from the charge a credit note credits, or a grant. Null when it is neither: a credit note that credits no charge, or wallet credit an invoice used or that was voided.
+     */
+    source: CreditSource | null;
+    /**
+     * The wallet transaction that moved granted credit. Null for a credit note, and when ending the wallet voided what it had left.
+     */
+    walletTransaction: CreditActivityWalletTransaction | null;
 };
+
+export type CreditActivityKind = 'issued' | 'applied' | 'restored' | 'voided' | (string & {});
+
+export type CreditActivityWalletTransaction = {
+    /**
+     * Stable Photon identifier.
+     */
+    id: string;
+};
+
+export type CreditDocument = {
+    /**
+     * Stable Photon identifier.
+     */
+    id: string;
+    /**
+     * Human document number.
+     */
+    number: string;
+};
+
+export type CreditSource = {
+    /**
+     * The fixed-charge code for a release, the plan code for a plan change. Null for a grant.
+     */
+    chargeCode: string | null;
+    /**
+     * Null for a grant.
+     */
+    chargeName: string | null;
+    kind: CreditSourceKind;
+    /**
+     * Whose subscription the charge was on: the organization's own, or a project's. Null when it is none Billing knows.
+     */
+    subject: CreditSubject | null;
+};
+
+export type CreditSourceKind = 'release' | 'unused_time' | 'other' | 'grant' | (string & {});
+
+export type CreditSubject = OrganizationCreditSubject | ProjectCreditSubject;
 
 export type DedicatedProjectPlatformSettings = {
     dedicatedLineAvailableNow: boolean;
@@ -1578,6 +1669,9 @@ export type FixedChargePricing = {
     tiers: Array<FixedChargeTier>;
 };
 
+/**
+ * The unit price, currency and period the preview was priced on. Pass them on with the purchase so it is refused if they no longer hold.
+ */
 export type FixedChargeQuote = {
     /**
      * Decimal amount in the plan currency. Kept as text so sub-cent unit prices remain exact.
@@ -1666,10 +1760,6 @@ export type GetEffectiveTermsInternalServerErrorProblem = InternalErrorProblem |
 
 export type GetEffectiveTermsResponse = {
     /**
-     * Credit the paying organization holds on credit notes, such as the unused time of a plan an upgrade replaced. It offsets that organization's next invoices of any kind except one-off invoices. Prepaid wallet credit is separate. Null when it holds none.
-     */
-    creditBalance: CreditBalance | null;
-    /**
      * One entry per category the project holds, by category. Empty means it holds none.
      */
     subscriptions: Array<SubscriptionTerms>;
@@ -1735,6 +1825,23 @@ export type GetOrganizationConnectionStatusGatewayTimeoutProblem = UpstreamTimeo
 
 export type GetOrganizationConnectionStatusInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
+export type GetOrganizationCreditForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type GetOrganizationCreditGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
+
+export type GetOrganizationCreditInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type GetOrganizationCreditResponse = {
+    /**
+     * Credit left to offset the organization's next invoices, in cents: on credit notes, and in its wallet, granted to it or purchased. Zero when none is left.
+     */
+    balanceCents: number;
+    /**
+     * ISO currency code.
+     */
+    currency: string;
+};
+
 export type GetOrganizationPaymentMethodForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type GetOrganizationPaymentMethodGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
@@ -1761,6 +1868,23 @@ export type GetOrganizationSsoConfigurationGatewayTimeoutProblem = UpstreamTimeo
 export type GetOrganizationSsoConfigurationInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
 export type GetOrganizationSsoConfigurationPreconditionFailedProblem = OrganizationSsoPreconditionFailedProblem | SsoSubscriptionRequiredProblem;
+
+export type GetOrganizationTermsForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type GetOrganizationTermsGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
+
+export type GetOrganizationTermsInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type GetOrganizationTermsResponse = {
+    /**
+     * What one subscription is billed on now. plan is the plan as this subscription has it: its own prices when overridden, each fixed charge at the subscription's price and quantity, and entitlements resolved with overrides. The organization's own subscription, or null when it holds none.
+     */
+    subscription: OrganizationSubscriptionTerms | null;
+    /**
+     * The IANA time zone the payer is billed in, e.g. America/Los_Angeles. Billing periods start and end at its midnights, so read their calendar dates in it.
+     */
+    timeZone: string;
+};
 
 export type GetProjectClosureStatusForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -2071,8 +2195,9 @@ export type Invoice = {
      * Downloadable PDF link.
      */
     pdfUrl: string | null;
+    status: InvoiceStatus;
     /**
-     * Known associated billing subjects, deduplicated. Empty means no known association, not organization-level charges.
+     * Every billing subject on the invoice, deduplicated, including one it charged nothing. Empty when none is known.
      */
     subjects: Array<InvoiceSubject>;
     /**
@@ -2090,6 +2215,11 @@ export type InvoiceKind = 'subscription' | 'one_off' | 'credit' | (string & {});
  * Provider-neutral payment status.
  */
 export type InvoicePaymentStatus = 'pending' | 'succeeded' | 'failed' | (string & {});
+
+/**
+ * Where the invoice is in its lifecycle, apart from its payment: draft while it can still change, finalized once issued, voided when cancelled after, and pending or failed while its taxes are still being computed.
+ */
+export type InvoiceStatus = 'draft' | 'finalized' | 'voided' | 'pending' | 'failed' | (string & {});
 
 export type InvoiceSubject = ProjectInvoiceSubject | OrganizationInvoiceSubject;
 
@@ -2160,6 +2290,23 @@ export type ListBillingPlansResponse = {
     };
 };
 
+export type ListCreditActivityForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type ListCreditActivityGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
+
+export type ListCreditActivityInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type ListCreditActivityResponse = {
+    /**
+     * Newest first.
+     */
+    entries: Array<CreditActivity>;
+    /**
+     * Pass as page to read the next page. Null on the last page.
+     */
+    nextPage: number | null;
+};
+
 export type ListFilteredVerificationCodesForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type ListFilteredVerificationCodesGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
@@ -2174,7 +2321,15 @@ export type ListInvoicesInternalServerErrorProblem = InternalErrorProblem | Inva
 
 export type ListInvoicesResponse = {
     invoices: Array<Invoice>;
+    /**
+     * Pass as cursor to read the next page. Null on the last page.
+     */
+    nextCursor: string | null;
 };
+
+export type ListInvoicesSubjectParam = ListInvoicesSubjectParamOrganization | string;
+
+export type ListInvoicesSubjectParamOrganization = 'organization';
 
 export type ListNumberAreaCodesForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -2548,6 +2703,10 @@ export type OrganizationConnectionStatusOrganization = {
 
 export type OrganizationConnectionSyncStatus = 'pending' | 'syncing' | 'ready' | 'error' | 'blocked' | (string & {});
 
+export type OrganizationCreditSubject = {
+    type: 'organization';
+};
+
 export type OrganizationEnterpriseLoginRequest = {
     invitationToken?: string;
     organizationId: string;
@@ -2680,6 +2839,32 @@ export type OrganizationSubscriptionEntitlement = {
     value: string;
 };
 
+export type OrganizationSubscriptionTerms = {
+    /**
+     * When the subscription ends instead of renewing, ISO 8601.
+     */
+    cancelsAt: string | null;
+    /**
+     * ISO 8601.
+     */
+    currentPeriodEnd: string;
+    /**
+     * ISO 8601.
+     */
+    currentPeriodStart: string;
+    /**
+     * When the next invoice is issued: the second after the period ends, ISO 8601.
+     */
+    nextBillingAt: string;
+    paymentMode: PaymentMode;
+    plan: BillingPlan;
+    planSource: PlanSource;
+    /**
+     * A downgrade waiting for the period end, or null.
+     */
+    scheduledPlanChange: ScheduledPlanChange | null;
+};
+
 export type OrganizationSyncUnavailableProblem = {
     code: 'ORGANIZATION_SYNC_UNAVAILABLE';
     detail?: string;
@@ -2775,19 +2960,13 @@ export type PreviewOrganizationChangeResponse = {
      * The payer's credit balance once dueNow is charged: the credit the change issues included, less what dueNow uses. In dueNow's currency. Null when the change charges nothing now (a downgrade).
      */
     balanceAfterCents: number | null;
+    change: BillingChangeEffect;
+    dueLater: BillingPreviewDeferred;
     dueNow: BillingPreviewInvoice;
     /**
      * What is charged in advance at the next period start for what is held after the change. Usage and a minimum commitment are billed after the period. Null when nothing is, or the subscription ends first.
      */
     nextCharge: BillingNextCharge | null;
-    /**
-     * Set for a plan change, null otherwise.
-     */
-    planChange: BillingPlanChangeEffect | null;
-    /**
-     * Set for a fixed-charge change, null otherwise: the unit price, currency and period the preview was priced on. Pass them on with the purchase so it is refused if they no longer hold.
-     */
-    quote: FixedChargeQuote | null;
     /**
      * The IANA time zone the payer is billed in, e.g. America/Los_Angeles. Billing periods start and end at its midnights, so read their calendar dates in it.
      */
@@ -2807,19 +2986,13 @@ export type PreviewProjectChangeResponse = {
      * The payer's credit balance once dueNow is charged: the credit the change issues included, less what dueNow uses. In dueNow's currency. Null when the change charges nothing now (a downgrade).
      */
     balanceAfterCents: number | null;
+    change: BillingChangeEffect;
+    dueLater: BillingPreviewDeferred;
     dueNow: BillingPreviewInvoice;
     /**
      * What is charged in advance at the next period start for what is held after the change. Usage and a minimum commitment are billed after the period. Null when nothing is, or the subscription ends first.
      */
     nextCharge: BillingNextCharge | null;
-    /**
-     * Set for a plan change, null otherwise.
-     */
-    planChange: BillingPlanChangeEffect | null;
-    /**
-     * Set for a fixed-charge change, null otherwise: the unit price, currency and period the preview was priced on. Pass them on with the purchase so it is refused if they no longer hold.
-     */
-    quote: FixedChargeQuote | null;
     /**
      * The IANA time zone the payer is billed in, e.g. America/Los_Angeles. Billing periods start and end at its midnights, so read their calendar dates in it.
      */
@@ -2890,6 +3063,11 @@ export type ProjectCount = {
 };
 
 export type ProjectCreatedByActorKind = 'account' | 'service_identity' | (string & {});
+
+export type ProjectCreditSubject = {
+    projectId: string;
+    type: 'project';
+};
 
 export type ProjectDeletedProblem = {
     code: 'PROJECT_DELETED';
@@ -6465,12 +6643,156 @@ export type CreateOrganizationPaymentMethodCheckoutResponses = {
 
 export type CreateOrganizationPaymentMethodCheckoutResult = CreateOrganizationPaymentMethodCheckoutResponses[keyof CreateOrganizationPaymentMethodCheckoutResponses];
 
-export type ListInvoicesData = {
+export type GetOrganizationCreditData = {
     body?: never;
     path: {
         organizationId: string;
     };
     query?: never;
+    url: '/v1/organizations/{organizationId}/billing/credit';
+};
+
+export type GetOrganizationCreditErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument
+     */
+    400: InvalidArgumentProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: GetOrganizationCreditForbiddenProblem;
+    /**
+     * FAILED_PRECONDITION: Failed Precondition
+     */
+    409: FailedPreconditionProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: GetOrganizationCreditInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * REQUEST_TIMEOUT: Request Timeout; UPSTREAM_TIMEOUT: Upstream Service Timeout
+     */
+    504: GetOrganizationCreditGatewayTimeoutProblem;
+};
+
+export type GetOrganizationCreditError = GetOrganizationCreditErrors[keyof GetOrganizationCreditErrors];
+
+export type GetOrganizationCreditResponses = {
+    /**
+     * The organization's credit balance.
+     */
+    200: GetOrganizationCreditResponse;
+};
+
+export type GetOrganizationCreditResult = GetOrganizationCreditResponses[keyof GetOrganizationCreditResponses];
+
+export type ListCreditActivityData = {
+    body?: never;
+    path: {
+        organizationId: string;
+    };
+    query?: {
+        /**
+         * Page to read, from 1: the nextPage of the page before.
+         */
+        page?: number;
+    };
+    url: '/v1/organizations/{organizationId}/billing/credit/activity';
+};
+
+export type ListCreditActivityErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument
+     */
+    400: InvalidArgumentProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: ListCreditActivityForbiddenProblem;
+    /**
+     * FAILED_PRECONDITION: Failed Precondition
+     */
+    409: FailedPreconditionProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: ListCreditActivityInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * REQUEST_TIMEOUT: Request Timeout; UPSTREAM_TIMEOUT: Upstream Service Timeout
+     */
+    504: ListCreditActivityGatewayTimeoutProblem;
+};
+
+export type ListCreditActivityError = ListCreditActivityErrors[keyof ListCreditActivityErrors];
+
+export type ListCreditActivityResponses = {
+    /**
+     * One page of the organization's credit activity.
+     */
+    200: ListCreditActivityResponse;
+};
+
+export type ListCreditActivityResult = ListCreditActivityResponses[keyof ListCreditActivityResponses];
+
+export type ListInvoicesData = {
+    body?: never;
+    path: {
+        organizationId: string;
+    };
+    query?: {
+        /**
+         * nextCursor of the page before; omitted for the first page.
+         */
+        cursor?: string;
+        /**
+         * At most this many invoices, 1 to 100. 20 when omitted.
+         */
+        limit?: number;
+        /**
+         * Only the invoices that charge this subject a nonzero amount: organization for the organization's own charges, such as SSO and 10DLC, or one of its projects by id. Omitted, every invoice.
+         */
+        subject?: ListInvoicesSubjectParam;
+    };
     url: '/v1/organizations/{organizationId}/billing/invoices';
 };
 
@@ -6521,7 +6843,7 @@ export type ListInvoicesError = ListInvoicesErrors[keyof ListInvoicesErrors];
 
 export type ListInvoicesResponses = {
     /**
-     * A single page of the organization's invoices, excluding invoices with a zero total, in no guaranteed order.
+     * One page of the organization's invoices, newest first, excluding drafts and empty invoices; includes charges fully paid by credit.
      */
     200: ListInvoicesResponse;
 };
@@ -6939,6 +7261,69 @@ export type CreateOrganizationSetupIntentResponses = {
 };
 
 export type CreateOrganizationSetupIntentResult = CreateOrganizationSetupIntentResponses[keyof CreateOrganizationSetupIntentResponses];
+
+export type GetOrganizationTermsData = {
+    body?: never;
+    path: {
+        organizationId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/billing/terms';
+};
+
+export type GetOrganizationTermsErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument
+     */
+    400: InvalidArgumentProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: GetOrganizationTermsForbiddenProblem;
+    /**
+     * FAILED_PRECONDITION: Failed Precondition
+     */
+    409: FailedPreconditionProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: GetOrganizationTermsInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * REQUEST_TIMEOUT: Request Timeout; UPSTREAM_TIMEOUT: Upstream Service Timeout
+     */
+    504: GetOrganizationTermsGatewayTimeoutProblem;
+};
+
+export type GetOrganizationTermsError = GetOrganizationTermsErrors[keyof GetOrganizationTermsErrors];
+
+export type GetOrganizationTermsResponses = {
+    /**
+     * The organization's effective billing terms.
+     */
+    200: GetOrganizationTermsResponse;
+};
+
+export type GetOrganizationTermsResult = GetOrganizationTermsResponses[keyof GetOrganizationTermsResponses];
 
 export type ListProjectsData = {
     body?: never;

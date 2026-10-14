@@ -1,0 +1,103 @@
+---
+title: "Get organization credit"
+icon: arrow-down-left
+description: "Get organization credit: getOrganizationCredit in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/organizations/{organizationId}/billing/credit`
+
+Returns the credit the selected organization holds: on credit notes, such as the unused time of a plan an upgrade replaced or the unused days of a prorated fixed charge it released, and in its wallet: the credit Photon granted it, such as a new account's first organization's welcome credit, and any prepaid credit it bought. It offsets that organization's invoices of any kind except one-off invoices, credit notes first. Reading it does not apply or change credit.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.billing.getOrganizationCredit(input: GetOrganizationCreditInput, options?: RequestOptions): Promise<GetOrganizationCreditOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.billing.get_organization_credit(input: GetOrganizationCreditInput) -> models.GetOrganizationCreditResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.get_organization_credit(organization_id: String).await -> Result<ResponseValue<types::GetOrganizationCreditResponse>, Error<GetOrganizationCreditError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.billing.getOrganizationCredit({
+  path: {
+    organizationId: "organizationId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import GetOrganizationCreditInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.billing.get_organization_credit(
+    GetOrganizationCreditInput.model_validate({
+        "path": {
+            "organizationId": "organizationId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .get_organization_credit("organizationId".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "balanceCents": 0,
+  "currency": "string"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="organizationId" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The organization's credit balance. GetOrganizationCreditResponse
+
+<ResponseField name="balanceCents" type={"integer"} required>
+Credit left to offset the organization's next invoices, in cents: on credit notes, and in its wallet, granted to it or purchased. Zero when none is left.
+</ResponseField>
+
+<ResponseField name="currency" type={"string"} required>
+ISO currency code.
+</ResponseField>
+

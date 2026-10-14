@@ -733,6 +733,18 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "200": "json"
     }
   },
+  "getOrganizationCredit": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
   "getOrganizationPaymentMethod": {
     "responses": [
       "application/json"
@@ -746,6 +758,18 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
     }
   },
   "getOrganizationSsoConfiguration": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
+  "getOrganizationTerms": {
     "responses": [
       "application/json"
     ],
@@ -975,6 +999,18 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
     }
   },
   "listBillingPlans": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
+  "listCreditActivity": {
     "responses": [
       "application/json"
     ],
@@ -2118,7 +2154,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Get the project's effective billing terms
              *
-             * Returns what the selected project is billed on now, per category it holds: the plan as its subscription has it, with any override applied, each fixed charge at the subscription's price and quantity, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. It also returns the credit the paying organization holds on credit notes, such as the unused time of a plan an upgrade replaced; it offsets that organization's next invoices. Supply both organizationId and projectId; the organization must pay for the project. This operation does not change billing.
+             * Returns what the selected project is billed on now, per category it holds: the plan as its subscription has it, with any override applied, each fixed charge at the subscription's price and quantity, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. Supply both organizationId and projectId; the organization must pay for the project. This operation does not change billing.
              */
             getEffectiveTerms: (input: Schemas.GetEffectiveTermsInput, options?: RequestOptions) => invokers.data<Schemas.GetEffectiveTermsInput, Schemas.GetEffectiveTermsOutput>(
                 "getEffectiveTerms",
@@ -2140,6 +2176,18 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
+             * Get organization credit
+             *
+             * Returns the credit the selected organization holds: on credit notes, such as the unused time of a plan an upgrade replaced or the unused days of a prorated fixed charge it released, and in its wallet: the credit Photon granted it, such as a new account's first organization's welcome credit, and any prepaid credit it bought. It offsets that organization's invoices of any kind except one-off invoices, credit notes first. Reading it does not apply or change credit.
+             */
+            getOrganizationCredit: (input: Schemas.GetOrganizationCreditInput, options?: RequestOptions) => invokers.data<Schemas.GetOrganizationCreditInput, Schemas.GetOrganizationCreditOutput>(
+                "getOrganizationCredit",
+                Sdk.getOrganizationCredit,
+                Schemas.GetOrganizationCreditOutputSchemas,
+                input,
+                options,
+            ),
+            /**
              * Get organization payment method
              *
              * Reports whether the selected organization has a card on file and returns its documented payment-method metadata. Reading this endpoint does not collect a new card or create a checkout session.
@@ -2152,9 +2200,33 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
+             * Get the organization's effective billing terms
+             *
+             * Returns what the selected organization is billed on now on its own subscription, such as SSO and 10DLC campaigns: the plan as the subscription has it, with any override applied, each fixed charge at the subscription's price and the quantity the organization holds, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. subscription has a project subscription's terms without its category, and is null when the organization holds none. Project subscriptions are read per project. This operation does not change billing.
+             */
+            getOrganizationTerms: (input: Schemas.GetOrganizationTermsInput, options?: RequestOptions) => invokers.data<Schemas.GetOrganizationTermsInput, Schemas.GetOrganizationTermsOutput>(
+                "getOrganizationTerms",
+                Sdk.getOrganizationTerms,
+                Schemas.GetOrganizationTermsOutputSchemas,
+                input,
+                options,
+            ),
+            /**
+             * List credit activity
+             *
+             * Returns one page of how the selected organization's credit balance changed, newest first: credit notes issued and credit granted, credit applied to invoices, credit restored when the change an invoice paid for never applied, and credit voided. Each entry names the credit note (none for granted credit), the invoice when there is one, and the charge and subscription the credit note credits, or that the credit was a grant. Pass nextPage as page to read further. This operation does not change billing.
+             */
+            listCreditActivity: (input: Schemas.ListCreditActivityInput, options?: RequestOptions) => invokers.data<Schemas.ListCreditActivityInput, Schemas.ListCreditActivityOutput>(
+                "listCreditActivity",
+                Sdk.listCreditActivity,
+                Schemas.ListCreditActivityOutputSchemas,
+                input,
+                options,
+            ),
+            /**
              * List invoices
              *
-             * Returns a single page of the selected organization's invoices; invoices with a zero total are excluded. Use the documented invoice fields to inspect each invoice's billing state. Listing invoices does not make a payment or modify a subscription.
+             * Returns one page of the selected organization's invoices, newest first: every invoice issued to it with a nonzero total or actual charges, including charges fully paid by credit; drafts and empty invoices are excluded. Each names what it charged the organization's own subscription and each project. Pass subject to list only the invoices that charge the organization itself or one of its projects, and nextCursor as cursor to read further. Listing invoices does not make a payment or modify a subscription.
              */
             listInvoices: (input: Schemas.ListInvoicesInput, options?: RequestOptions) => invokers.data<Schemas.ListInvoicesInput, Schemas.ListInvoicesOutput>(
                 "listInvoices",
@@ -2166,7 +2238,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Preview an organization billing change
              *
-             * Previews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A quantity already paid for this period is not billed again, so a purchase after a release can be free. nextCharge is what is charged in advance at the next period start. For a fixed-charge change, pass quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing.
+             * Previews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing.
              */
             previewOrganizationChange: (input: Schemas.PreviewOrganizationChangeInput, options?: RequestOptions) => invokers.data<Schemas.PreviewOrganizationChangeInput, Schemas.PreviewOrganizationChangeOutput>(
                 "previewOrganizationChange",
@@ -2178,7 +2250,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Preview a project billing change
              *
-             * Previews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A quantity already paid for this period is not billed again, so a purchase after a release can be free. nextCharge is what is charged in advance at the next period start. For a fixed-charge change, pass quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; planChange says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in planChange.additions and outside dueNow. Supply both organizationId and projectId; the organization must pay for the project.
+             * Previews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. Supply both organizationId and projectId; the organization must pay for the project.
              */
             previewProjectChange: (input: Schemas.PreviewProjectChangeInput, options?: RequestOptions) => invokers.data<Schemas.PreviewProjectChangeInput, Schemas.PreviewProjectChangeOutput>(
                 "previewProjectChange",
@@ -2480,7 +2552,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Connect Telegram bot
              *
-             * Starts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to connect an existing managed bot or create a new one with the project's default agent name or a custom display name, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged.
+             * Starts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to create a new bot, whose name and username are chosen in Telegram, or to connect an existing managed bot, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged.
              */
             connectTelegramBot: (input: Schemas.ConnectTelegramBotInput, options?: RequestOptions) => invokers.data<Schemas.ConnectTelegramBotInput, Schemas.ConnectTelegramBotOutput>(
                 "connectTelegramBot",
@@ -2840,7 +2912,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * List resources
              *
-             * Lists everything the project holds, oldest first, whatever kind of thing it is — one endpoint and one id shape for numbers, dedicated lines and whatever ships next. Nothing half-built appears here: a resource exists only once it is real, so anything still being provisioned is an operation rather than a resource with a pending flag. Filter by `type`, by `ability` (which matches only abilities that are currently enabled), and by `state` — comma-separated, and absent means every state, including retired ones. `detail` carries a per-type public view: an SMS number's number, a dedicated line's number and its per-capability health (`imessageHealth`, `whatsappHealth`, each with an `overallStatus` of `available`, `degraded`, `unavailable` or `unknown`; `imessageHealth` also carries `account`, `photonSystemComponents`, `newConversations`, `sms` and `mms`, each a `status` with the `cause` that decided it: `account`, `photonSystemComponents`, or null for the item's own state). Requires the platforms:read permission bound to the project resource in the path.
+             * Lists everything the project holds, oldest first, whatever kind of thing it is — one endpoint and one id shape for numbers, dedicated lines and whatever ships next. Nothing half-built appears here: a resource exists only once it is real, so anything still being provisioned is an operation rather than a resource with a pending flag. Filter by `type`, by `ability` (which matches only abilities that are currently enabled), and by `state` — comma-separated, and absent means every state, including retired ones. `detail` carries a per-type public view: an SMS number's number, a dedicated line's number and its per-capability health (`imessageHealth`, `whatsappHealth`, each with an `overallStatus` of `available`, `degraded`, `unavailable` or `unknown`; `imessageHealth` also carries `account`, `photonSystemComponents`, `newConversations`, `sms`, `mms` and `outboundPhoneCalling`, each a `status` with the `cause` that decided it: `account`, `photonSystemComponents`, or null for the item's own state. `outboundPhoneCalling` is whether the line's number can place outbound phone calls: `available`, `unavailable` when its caller ID is not verified (the line is then `degraded`), or `unknown` when it has not been checked yet; it does not depend on the account or the Photon system components, so its `cause` is always null). Requires the platforms:read permission bound to the project resource in the path.
              */
             listResources: (input: Schemas.ListResourcesInput, options?: RequestOptions) => invokers.data<Schemas.ListResourcesInput, Schemas.ListResourcesOutput>(
                 "listResources",
@@ -3780,7 +3852,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Get the project's effective billing terms
              *
-             * Returns what the selected project is billed on now, per category it holds: the plan as its subscription has it, with any override applied, each fixed charge at the subscription's price and quantity, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. It also returns the credit the paying organization holds on credit notes, such as the unused time of a plan an upgrade replaced; it offsets that organization's next invoices. Supply both organizationId and projectId; the organization must pay for the project. This operation does not change billing.
+             * Returns what the selected project is billed on now, per category it holds: the plan as its subscription has it, with any override applied, each fixed charge at the subscription's price and quantity, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. Supply both organizationId and projectId; the organization must pay for the project. This operation does not change billing.
              */
             getEffectiveTerms: (input: Schemas.GetEffectiveTermsInput, options?: RequestOptions) => invokers.raw<Schemas.GetEffectiveTermsInput, Schemas.GetEffectiveTermsOutput>(
                 "getEffectiveTerms",
@@ -3802,6 +3874,18 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
+             * Get organization credit
+             *
+             * Returns the credit the selected organization holds: on credit notes, such as the unused time of a plan an upgrade replaced or the unused days of a prorated fixed charge it released, and in its wallet: the credit Photon granted it, such as a new account's first organization's welcome credit, and any prepaid credit it bought. It offsets that organization's invoices of any kind except one-off invoices, credit notes first. Reading it does not apply or change credit.
+             */
+            getOrganizationCredit: (input: Schemas.GetOrganizationCreditInput, options?: RequestOptions) => invokers.raw<Schemas.GetOrganizationCreditInput, Schemas.GetOrganizationCreditOutput>(
+                "getOrganizationCredit",
+                Sdk.getOrganizationCredit,
+                Schemas.GetOrganizationCreditOutputSchemas,
+                input,
+                options,
+            ),
+            /**
              * Get organization payment method
              *
              * Reports whether the selected organization has a card on file and returns its documented payment-method metadata. Reading this endpoint does not collect a new card or create a checkout session.
@@ -3814,9 +3898,33 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
+             * Get the organization's effective billing terms
+             *
+             * Returns what the selected organization is billed on now on its own subscription, such as SSO and 10DLC campaigns: the plan as the subscription has it, with any override applied, each fixed charge at the subscription's price and the quantity the organization holds, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. subscription has a project subscription's terms without its category, and is null when the organization holds none. Project subscriptions are read per project. This operation does not change billing.
+             */
+            getOrganizationTerms: (input: Schemas.GetOrganizationTermsInput, options?: RequestOptions) => invokers.raw<Schemas.GetOrganizationTermsInput, Schemas.GetOrganizationTermsOutput>(
+                "getOrganizationTerms",
+                Sdk.getOrganizationTerms,
+                Schemas.GetOrganizationTermsOutputSchemas,
+                input,
+                options,
+            ),
+            /**
+             * List credit activity
+             *
+             * Returns one page of how the selected organization's credit balance changed, newest first: credit notes issued and credit granted, credit applied to invoices, credit restored when the change an invoice paid for never applied, and credit voided. Each entry names the credit note (none for granted credit), the invoice when there is one, and the charge and subscription the credit note credits, or that the credit was a grant. Pass nextPage as page to read further. This operation does not change billing.
+             */
+            listCreditActivity: (input: Schemas.ListCreditActivityInput, options?: RequestOptions) => invokers.raw<Schemas.ListCreditActivityInput, Schemas.ListCreditActivityOutput>(
+                "listCreditActivity",
+                Sdk.listCreditActivity,
+                Schemas.ListCreditActivityOutputSchemas,
+                input,
+                options,
+            ),
+            /**
              * List invoices
              *
-             * Returns a single page of the selected organization's invoices; invoices with a zero total are excluded. Use the documented invoice fields to inspect each invoice's billing state. Listing invoices does not make a payment or modify a subscription.
+             * Returns one page of the selected organization's invoices, newest first: every invoice issued to it with a nonzero total or actual charges, including charges fully paid by credit; drafts and empty invoices are excluded. Each names what it charged the organization's own subscription and each project. Pass subject to list only the invoices that charge the organization itself or one of its projects, and nextCursor as cursor to read further. Listing invoices does not make a payment or modify a subscription.
              */
             listInvoices: (input: Schemas.ListInvoicesInput, options?: RequestOptions) => invokers.raw<Schemas.ListInvoicesInput, Schemas.ListInvoicesOutput>(
                 "listInvoices",
@@ -3828,7 +3936,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Preview an organization billing change
              *
-             * Previews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A quantity already paid for this period is not billed again, so a purchase after a release can be free. nextCharge is what is charged in advance at the next period start. For a fixed-charge change, pass quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing.
+             * Previews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing.
              */
             previewOrganizationChange: (input: Schemas.PreviewOrganizationChangeInput, options?: RequestOptions) => invokers.raw<Schemas.PreviewOrganizationChangeInput, Schemas.PreviewOrganizationChangeOutput>(
                 "previewOrganizationChange",
@@ -3840,7 +3948,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Preview a project billing change
              *
-             * Previews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A quantity already paid for this period is not billed again, so a purchase after a release can be free. nextCharge is what is charged in advance at the next period start. For a fixed-charge change, pass quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; planChange says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in planChange.additions and outside dueNow. Supply both organizationId and projectId; the organization must pay for the project.
+             * Previews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. Supply both organizationId and projectId; the organization must pay for the project.
              */
             previewProjectChange: (input: Schemas.PreviewProjectChangeInput, options?: RequestOptions) => invokers.raw<Schemas.PreviewProjectChangeInput, Schemas.PreviewProjectChangeOutput>(
                 "previewProjectChange",
@@ -4142,7 +4250,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Connect Telegram bot
              *
-             * Starts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to connect an existing managed bot or create a new one with the project's default agent name or a custom display name, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged.
+             * Starts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to create a new bot, whose name and username are chosen in Telegram, or to connect an existing managed bot, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged.
              */
             connectTelegramBot: (input: Schemas.ConnectTelegramBotInput, options?: RequestOptions) => invokers.raw<Schemas.ConnectTelegramBotInput, Schemas.ConnectTelegramBotOutput>(
                 "connectTelegramBot",
@@ -4502,7 +4610,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * List resources
              *
-             * Lists everything the project holds, oldest first, whatever kind of thing it is — one endpoint and one id shape for numbers, dedicated lines and whatever ships next. Nothing half-built appears here: a resource exists only once it is real, so anything still being provisioned is an operation rather than a resource with a pending flag. Filter by `type`, by `ability` (which matches only abilities that are currently enabled), and by `state` — comma-separated, and absent means every state, including retired ones. `detail` carries a per-type public view: an SMS number's number, a dedicated line's number and its per-capability health (`imessageHealth`, `whatsappHealth`, each with an `overallStatus` of `available`, `degraded`, `unavailable` or `unknown`; `imessageHealth` also carries `account`, `photonSystemComponents`, `newConversations`, `sms` and `mms`, each a `status` with the `cause` that decided it: `account`, `photonSystemComponents`, or null for the item's own state). Requires the platforms:read permission bound to the project resource in the path.
+             * Lists everything the project holds, oldest first, whatever kind of thing it is — one endpoint and one id shape for numbers, dedicated lines and whatever ships next. Nothing half-built appears here: a resource exists only once it is real, so anything still being provisioned is an operation rather than a resource with a pending flag. Filter by `type`, by `ability` (which matches only abilities that are currently enabled), and by `state` — comma-separated, and absent means every state, including retired ones. `detail` carries a per-type public view: an SMS number's number, a dedicated line's number and its per-capability health (`imessageHealth`, `whatsappHealth`, each with an `overallStatus` of `available`, `degraded`, `unavailable` or `unknown`; `imessageHealth` also carries `account`, `photonSystemComponents`, `newConversations`, `sms`, `mms` and `outboundPhoneCalling`, each a `status` with the `cause` that decided it: `account`, `photonSystemComponents`, or null for the item's own state. `outboundPhoneCalling` is whether the line's number can place outbound phone calls: `available`, `unavailable` when its caller ID is not verified (the line is then `degraded`), or `unknown` when it has not been checked yet; it does not depend on the account or the Photon system components, so its `cause` is always null). Requires the platforms:read permission bound to the project resource in the path.
              */
             listResources: (input: Schemas.ListResourcesInput, options?: RequestOptions) => invokers.raw<Schemas.ListResourcesInput, Schemas.ListResourcesOutput>(
                 "listResources",

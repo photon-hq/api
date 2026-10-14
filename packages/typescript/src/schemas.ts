@@ -954,6 +954,19 @@ export const GetOrganizationConnectionStatusOutputSchemas: OutputSchemas<GetOrga
     "200": GeneratedZod.zOrganizationConnectionStatus,
 }))();
 
+export const GetOrganizationCreditInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zGetOrganizationCreditPath.strict(),
+}))();
+export type GetOrganizationCreditInput = {
+    path: NonNullable<WireTypes.GetOrganizationCreditData["path"]>;
+};
+
+export const GetOrganizationCreditOutputSchema = GeneratedZod.zGetOrganizationCreditResponse;
+export type GetOrganizationCreditOutput = z.output<typeof GetOrganizationCreditOutputSchema>;
+export const GetOrganizationCreditOutputSchemas: OutputSchemas<GetOrganizationCreditOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zGetOrganizationCreditResponse,
+}))();
+
 export const GetOrganizationPaymentMethodInputSchema = /* @__PURE__ */ (() => z.strictObject({
     path: GeneratedZod.zGetOrganizationPaymentMethodPath.strict(),
 }))();
@@ -978,6 +991,19 @@ export const GetOrganizationSsoConfigurationOutputSchema = GeneratedZod.zOrganiz
 export type GetOrganizationSsoConfigurationOutput = z.output<typeof GetOrganizationSsoConfigurationOutputSchema>;
 export const GetOrganizationSsoConfigurationOutputSchemas: OutputSchemas<GetOrganizationSsoConfigurationOutput> = /* @__PURE__ */ (() => ({
     "200": GeneratedZod.zOrganizationSsoConfiguration,
+}))();
+
+export const GetOrganizationTermsInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zGetOrganizationTermsPath.strict(),
+}))();
+export type GetOrganizationTermsInput = {
+    path: NonNullable<WireTypes.GetOrganizationTermsData["path"]>;
+};
+
+export const GetOrganizationTermsOutputSchema = GeneratedZod.zGetOrganizationTermsResponse;
+export type GetOrganizationTermsOutput = z.output<typeof GetOrganizationTermsOutputSchema>;
+export const GetOrganizationTermsOutputSchemas: OutputSchemas<GetOrganizationTermsOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zGetOrganizationTermsResponse,
 }))();
 
 export const GetProjectInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1234,6 +1260,21 @@ export const ListBillingPlansOutputSchemas: OutputSchemas<ListBillingPlansOutput
     "200": GeneratedZod.zListBillingPlansResponse,
 }))();
 
+export const ListCreditActivityInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zListCreditActivityPath.strict(),
+    query: GeneratedZod.zListCreditActivityQuery.strict().optional(),
+}))();
+export type ListCreditActivityInput = {
+    path: NonNullable<WireTypes.ListCreditActivityData["path"]>;
+    query?: NonNullable<WireTypes.ListCreditActivityData["query"]>;
+};
+
+export const ListCreditActivityOutputSchema = GeneratedZod.zListCreditActivityResponse;
+export type ListCreditActivityOutput = z.output<typeof ListCreditActivityOutputSchema>;
+export const ListCreditActivityOutputSchemas: OutputSchemas<ListCreditActivityOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zListCreditActivityResponse,
+}))();
+
 export const ListFilteredVerificationCodesInputSchema = /* @__PURE__ */ (() => z.strictObject({
     path: GeneratedZod.zListFilteredVerificationCodesPath.strict(),
     query: GeneratedZod.zListFilteredVerificationCodesQuery.strict().optional(),
@@ -1251,9 +1292,11 @@ export const ListFilteredVerificationCodesOutputSchemas: OutputSchemas<ListFilte
 
 export const ListInvoicesInputSchema = /* @__PURE__ */ (() => z.strictObject({
     path: GeneratedZod.zListInvoicesPath.strict(),
+    query: GeneratedZod.zListInvoicesQuery.strict().optional(),
 }))();
 export type ListInvoicesInput = {
     path: NonNullable<WireTypes.ListInvoicesData["path"]>;
+    query?: NonNullable<WireTypes.ListInvoicesData["query"]>;
 };
 
 export const ListInvoicesOutputSchema = GeneratedZod.zListInvoicesResponse;

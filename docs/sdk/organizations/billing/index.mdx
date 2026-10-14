@@ -7,6 +7,13 @@ description: "The Billing resource in the TypeScript, Python and Rust clients."
 
 <Tabs>
 <Tab title="TypeScript">
+**[List credit activity](/api-client/sdk/organizations/billing/list-credit-activity)**
+
+```typescript TypeScript
+photon.organizations.billing.listCreditActivity(input: ListCreditActivityInput, options?: RequestOptions): Promise<ListCreditActivityOutput>
+```
+`GET /v1/organizations/{organizationId}/billing/credit/activity`
+
 **[List invoices](/api-client/sdk/organizations/billing/list-invoices)**
 
 ```typescript TypeScript
@@ -28,12 +35,26 @@ photon.organizations.billing.getOrganizationBillingOverview(input: GetOrganizati
 ```
 `GET /v1/organizations/{organizationId}/billing`
 
+**[Get organization credit](/api-client/sdk/organizations/billing/get-organization-credit)**
+
+```typescript TypeScript
+photon.organizations.billing.getOrganizationCredit(input: GetOrganizationCreditInput, options?: RequestOptions): Promise<GetOrganizationCreditOutput>
+```
+`GET /v1/organizations/{organizationId}/billing/credit`
+
 **[Get organization payment method](/api-client/sdk/organizations/billing/get-organization-payment-method)**
 
 ```typescript TypeScript
 photon.organizations.billing.getOrganizationPaymentMethod(input: GetOrganizationPaymentMethodInput, options?: RequestOptions): Promise<GetOrganizationPaymentMethodOutput>
 ```
 `GET /v1/organizations/{organizationId}/billing/payment-method`
+
+**[Get the organization's effective billing terms](/api-client/sdk/organizations/billing/get-organization-terms)**
+
+```typescript TypeScript
+photon.organizations.billing.getOrganizationTerms(input: GetOrganizationTermsInput, options?: RequestOptions): Promise<GetOrganizationTermsOutput>
+```
+`GET /v1/organizations/{organizationId}/billing/terms`
 
 **[Change plan](/api-client/sdk/organizations/billing/change-plan)**
 
@@ -72,6 +93,13 @@ photon.organizations.billing.previewProjectChange(input: PreviewProjectChangeInp
 
 </Tab>
 <Tab title="Python">
+**[List credit activity](/api-client/sdk/organizations/billing/list-credit-activity)**
+
+```python Python
+photon.organizations.billing.list_credit_activity(input: ListCreditActivityInput) -> models.ListCreditActivityResponse
+```
+`GET /v1/organizations/{organizationId}/billing/credit/activity`
+
 **[List invoices](/api-client/sdk/organizations/billing/list-invoices)**
 
 ```python Python
@@ -93,12 +121,26 @@ photon.organizations.billing.get_organization_billing_overview(input: GetOrganiz
 ```
 `GET /v1/organizations/{organizationId}/billing`
 
+**[Get organization credit](/api-client/sdk/organizations/billing/get-organization-credit)**
+
+```python Python
+photon.organizations.billing.get_organization_credit(input: GetOrganizationCreditInput) -> models.GetOrganizationCreditResponse
+```
+`GET /v1/organizations/{organizationId}/billing/credit`
+
 **[Get organization payment method](/api-client/sdk/organizations/billing/get-organization-payment-method)**
 
 ```python Python
 photon.organizations.billing.get_organization_payment_method(input: GetOrganizationPaymentMethodInput) -> models.GetOrganizationPaymentMethodResponse
 ```
 `GET /v1/organizations/{organizationId}/billing/payment-method`
+
+**[Get the organization's effective billing terms](/api-client/sdk/organizations/billing/get-organization-terms)**
+
+```python Python
+photon.organizations.billing.get_organization_terms(input: GetOrganizationTermsInput) -> models.GetOrganizationTermsResponse
+```
+`GET /v1/organizations/{organizationId}/billing/terms`
 
 **[Change plan](/api-client/sdk/organizations/billing/change-plan)**
 
@@ -137,10 +179,17 @@ photon.organizations.billing.preview_project_change(input: PreviewProjectChangeI
 
 </Tab>
 <Tab title="Rust">
+**[List credit activity](/api-client/sdk/organizations/billing/list-credit-activity)**
+
+```rust Rust
+client.list_credit_activity(organization_id: String, params: Option<ListCreditActivityParams>).await -> Result<ResponseValue<types::ListCreditActivityResponse>, Error<ListCreditActivityError>>
+```
+`GET /v1/organizations/{organizationId}/billing/credit/activity`
+
 **[List invoices](/api-client/sdk/organizations/billing/list-invoices)**
 
 ```rust Rust
-client.list_invoices(organization_id: String).await -> Result<ResponseValue<types::ListInvoicesResponse>, Error<ListInvoicesError>>
+client.list_invoices(organization_id: String, params: Option<ListInvoicesParams>).await -> Result<ResponseValue<types::ListInvoicesResponse>, Error<ListInvoicesError>>
 ```
 `GET /v1/organizations/{organizationId}/billing/invoices`
 
@@ -158,12 +207,26 @@ client.get_organization_billing_overview(organization_id: String).await -> Resul
 ```
 `GET /v1/organizations/{organizationId}/billing`
 
+**[Get organization credit](/api-client/sdk/organizations/billing/get-organization-credit)**
+
+```rust Rust
+client.get_organization_credit(organization_id: String).await -> Result<ResponseValue<types::GetOrganizationCreditResponse>, Error<GetOrganizationCreditError>>
+```
+`GET /v1/organizations/{organizationId}/billing/credit`
+
 **[Get organization payment method](/api-client/sdk/organizations/billing/get-organization-payment-method)**
 
 ```rust Rust
 client.get_organization_payment_method(organization_id: String).await -> Result<ResponseValue<types::GetOrganizationPaymentMethodResponse>, Error<GetOrganizationPaymentMethodError>>
 ```
 `GET /v1/organizations/{organizationId}/billing/payment-method`
+
+**[Get the organization's effective billing terms](/api-client/sdk/organizations/billing/get-organization-terms)**
+
+```rust Rust
+client.get_organization_terms(organization_id: String).await -> Result<ResponseValue<types::GetOrganizationTermsResponse>, Error<GetOrganizationTermsError>>
+```
+`GET /v1/organizations/{organizationId}/billing/terms`
 
 **[Change plan](/api-client/sdk/organizations/billing/change-plan)**
 
@@ -205,6 +268,19 @@ client.preview_project_change(organization_id: String, project_id: String, body:
 
 ## Models
 
+### ListCreditActivityResponse
+
+
+
+<ResponseField name="entries" type={"array of CreditActivity"} required>
+Newest first.
+</ResponseField>
+
+<ResponseField name="nextPage" type={"integer | null"} required>
+Pass as page to read the next page. Null on the last page.
+</ResponseField>
+
+
 ### ListInvoicesResponse
 
 
@@ -213,14 +289,14 @@ client.preview_project_change(organization_id: String, project_id: String, body:
 
 </ResponseField>
 
+<ResponseField name="nextCursor" type={"string | null"} required>
+Pass as cursor to read the next page. Null on the last page.
+</ResponseField>
+
 
 ### GetEffectiveTermsResponse
 
 
-
-<ResponseField name="creditBalance" type={"CreditBalance | null"} required>
-Credit the paying organization holds on credit notes, such as the unused time of a plan an upgrade replaced. It offsets that organization's next invoices of any kind except one-off invoices. Prepaid wallet credit is separate. Null when it holds none.
-</ResponseField>
 
 <ResponseField name="subscriptions" type={"array of SubscriptionTerms"} required>
 One entry per category the project holds, by category. Empty means it holds none.
@@ -244,6 +320,19 @@ The organization-owned subscription, or null when billing was never opened or ha
 </ResponseField>
 
 
+### GetOrganizationCreditResponse
+
+
+
+<ResponseField name="balanceCents" type={"integer"} required>
+Credit left to offset the organization's next invoices, in cents: on credit notes, and in its wallet, granted to it or purchased. Zero when none is left.
+</ResponseField>
+
+<ResponseField name="currency" type={"string"} required>
+ISO currency code.
+</ResponseField>
+
+
 ### GetOrganizationPaymentMethodResponse
 
 
@@ -254,6 +343,19 @@ True once a card is captured for the payer.
 
 <ResponseField name="paymentMethod" type={"PaymentMethod | null"} required>
 Metadata for the default card, or null.
+</ResponseField>
+
+
+### GetOrganizationTermsResponse
+
+
+
+<ResponseField name="subscription" type={"OrganizationSubscriptionTerms | null"} required>
+What one subscription is billed on now. plan is the plan as this subscription has it: its own prices when overridden, each fixed charge at the subscription's price and quantity, and entitlements resolved with overrides. The organization's own subscription, or null when it holds none.
+</ResponseField>
+
+<ResponseField name="timeZone" type={"string"} required>
+The IANA time zone the payer is billed in, e.g. America/Los_Angeles. Billing periods start and end at its midnights, so read their calendar dates in it.
 </ResponseField>
 
 
@@ -385,20 +487,20 @@ Publishable key for the Stripe account backing billing.
 The payer's credit balance once dueNow is charged: the credit the change issues included, less what dueNow uses. In dueNow's currency. Null when the change charges nothing now (a downgrade).
 </ResponseField>
 
+<ResponseField name="change" type={"BillingChangeEffect"} required>
+What the change does beside what it bills, by the kind of change requested: fixed_charge for a fixed-charge change, plan_change for a plan change.
+</ResponseField>
+
+<ResponseField name="dueLater" type={"BillingPreviewDeferred"} required>
+Billed later rather than with dueNow: one line per plan change addition, billed when it is added and priced as if added now. Before taxes; the balance left after dueNow applies to it first. nextCharge already includes it. No lines when nothing is billed later.
+</ResponseField>
+
 <ResponseField name="dueNow" type={"BillingPreviewInvoice"} required>
 Charged when the change is made, priced as the change bills it. No lines when it charges nothing now.
 </ResponseField>
 
 <ResponseField name="nextCharge" type={"BillingNextCharge | null"} required>
 What is charged in advance at the next period start for what is held after the change. Usage and a minimum commitment are billed after the period. Null when nothing is, or the subscription ends first.
-</ResponseField>
-
-<ResponseField name="planChange" type={"BillingPlanChangeEffect | null"} required>
-Set for a plan change, null otherwise.
-</ResponseField>
-
-<ResponseField name="quote" type={"FixedChargeQuote | null"} required>
-Set for a fixed-charge change, null otherwise: the unit price, currency and period the preview was priced on. Pass them on with the purchase so it is refused if they no longer hold.
 </ResponseField>
 
 <ResponseField name="timeZone" type={"string"} required>
@@ -414,20 +516,20 @@ The IANA time zone the payer is billed in, e.g. America/Los_Angeles. Billing per
 The payer's credit balance once dueNow is charged: the credit the change issues included, less what dueNow uses. In dueNow's currency. Null when the change charges nothing now (a downgrade).
 </ResponseField>
 
+<ResponseField name="change" type={"BillingChangeEffect"} required>
+What the change does beside what it bills, by the kind of change requested: fixed_charge for a fixed-charge change, plan_change for a plan change.
+</ResponseField>
+
+<ResponseField name="dueLater" type={"BillingPreviewDeferred"} required>
+Billed later rather than with dueNow: one line per plan change addition, billed when it is added and priced as if added now. Before taxes; the balance left after dueNow applies to it first. nextCharge already includes it. No lines when nothing is billed later.
+</ResponseField>
+
 <ResponseField name="dueNow" type={"BillingPreviewInvoice"} required>
 Charged when the change is made, priced as the change bills it. No lines when it charges nothing now.
 </ResponseField>
 
 <ResponseField name="nextCharge" type={"BillingNextCharge | null"} required>
 What is charged in advance at the next period start for what is held after the change. Usage and a minimum commitment are billed after the period. Null when nothing is, or the subscription ends first.
-</ResponseField>
-
-<ResponseField name="planChange" type={"BillingPlanChangeEffect | null"} required>
-Set for a plan change, null otherwise.
-</ResponseField>
-
-<ResponseField name="quote" type={"FixedChargeQuote | null"} required>
-Set for a fixed-charge change, null otherwise: the unit price, currency and period the preview was priced on. Pass them on with the purchase so it is refused if they no longer hold.
 </ResponseField>
 
 <ResponseField name="timeZone" type={"string"} required>

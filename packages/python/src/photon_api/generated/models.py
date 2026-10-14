@@ -334,6 +334,10 @@ class BillingPreviewCredit(BaseModel):
         extra="allow",
     )
     amountCents: int
+    appliedCents: int
+    """
+    What dueNow uses of amountCents, within its creditsCents. The credit the payer already holds applies first; what dueNow leaves of this joins the balance.
+    """
     code: str
     """
     The replaced plan's code.
@@ -604,18 +608,36 @@ class CreatedAppInstallationDelivery(BaseModel):
     status: Literal["created"]
 
 
-class CreditBalance(BaseModel):
+class CreditActivityKind(RootModel[Literal["issued", "applied", "restored", "voided"] | str]):
+    root: Literal["issued", "applied", "restored", "voided"] | str
+
+
+class CreditActivityWalletTransaction(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    balanceCents: int
+    id: str
     """
-    Credit left to offset the next invoices, in cents.
+    Stable Photon identifier.
     """
-    currency: str
+
+
+class CreditDocument(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    id: str
     """
-    ISO currency code.
+    Stable Photon identifier.
     """
+    number: str
+    """
+    Human document number.
+    """
+
+
+class CreditSourceKind(RootModel[Literal["release", "unused_time", "other", "grant"] | str]):
+    root: Literal["release", "unused_time", "other", "grant"] | str
 
 
 class DedicatedProjectPlatformSettings(BaseModel):
@@ -849,6 +871,10 @@ class FixedChargeModel(RootModel[Literal["graduated", "standard", "volume"] | st
 
 
 class FixedChargeQuote(BaseModel):
+    """
+    The unit price, currency and period the preview was priced on. Pass them on with the purchase so it is refused if they no longer hold.
+    """
+
     model_config = ConfigDict(
         extra="allow",
     )
@@ -871,6 +897,20 @@ class FixedChargeTier(BaseModel):
     fromUnit: int
     perUnitAmount: str | None
     toUnit: int | None
+
+
+class GetOrganizationCreditResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    balanceCents: int
+    """
+    Credit left to offset the organization's next invoices, in cents: on credit notes, and in its wallet, granted to it or purchased. Zero when none is left.
+    """
+    currency: str
+    """
+    ISO currency code.
+    """
 
 
 class GetWhatsappBusinessVerificationCodeResponse(BaseModel):
@@ -913,6 +953,13 @@ class InvoicePaymentStatus(RootModel[Literal["pending", "succeeded", "failed"] |
     root: Literal["pending", "succeeded", "failed"] | str
     """
     Provider-neutral payment status.
+    """
+
+
+class InvoiceStatus(RootModel[Literal["draft", "finalized", "voided", "pending", "failed"] | str]):
+    root: Literal["draft", "finalized", "voided", "pending", "failed"] | str
+    """
+    Where the invoice is in its lifecycle, apart from its payment: draft while it can still change, finalized once issued, voided when cancelled after, and pending or failed while its taxes are still being computed.
     """
 
 
@@ -960,6 +1007,10 @@ class ListAuthorizedApplicationsResponseListMetadata(BaseModel):
     """
     Cursor for the previous page, or null when there is no previous page.
     """
+
+
+class ListInvoicesSubjectParamOrganization(RootModel[Literal["organization"]]):
+    root: Literal["organization"]
 
 
 class ListNumberAreaCodesResponse(BaseModel):
@@ -1260,6 +1311,13 @@ class OrganizationConnectionSyncStatus(
     root: Literal["pending", "syncing", "ready", "error", "blocked"] | str
 
 
+class OrganizationCreditSubject(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    type: Literal["organization"]
+
+
 class OrganizationEnterpriseLoginRequest(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -1554,6 +1612,14 @@ class ProjectCount(BaseModel):
 
 class ProjectCreatedByActorKind(RootModel[Literal["account", "service_identity"] | str]):
     root: Literal["account", "service_identity"] | str
+
+
+class ProjectCreditSubject(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    projectId: str
+    type: Literal["project"]
 
 
 class ProjectDeletedProblem(BaseModel):
@@ -3465,6 +3531,14 @@ class BillingEntitlementsPendingProblem(BaseModel):
     type: Literal["https://photon.codes/docs/problems/billing-entitlements-pending"]
 
 
+class BillingFixedChargeEffect(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    quote: FixedChargeQuote
+    type: Literal["fixed_charge"]
+
+
 class BillingNotProvisionedProblem(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -3518,6 +3592,33 @@ class BillingOperationFailure(BaseModel):
     unsoldFixedCharges: list[BillingHeldFixedCharge]
 
 
+class BillingPlanChangeEffect(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    effectiveAt: str | None
+    """
+    When a period_end change applies. Null otherwise.
+    """
+    minimumCommitment: BillingPreviewMinimumCommitment | None
+    """
+    The target plan's minimum commitment: when a period's charges fall short of it, the difference is billed at the period end. Set for an upgrade to a plan with one, null otherwise.
+    """
+    timing: Literal["immediate", "on_payment", "period_end"] | str
+    """
+    immediate applies now and charges dueNow with it. on_payment applies once dueNow is paid; the current plan stays until then. period_end is a downgrade: it applies at the period end and charges nothing now.
+    """
+    type: Literal["plan_change"]
+    unsoldFixedCharges: list[BillingHeldFixedCharge]
+    """
+    Held fixed charges the target plan does not sell; the preview prices the change without them. With period_end they stay until it applies and are released with it. Otherwise the change is refused (release_required) until they are released.
+    """
+    unusedTimeCredit: BillingPreviewCredit | None
+    """
+    The replaced plan's unused time, which an upgrade credits to the payer. Set for an upgrade from a plan paid in advance, null otherwise.
+    """
+
+
 class BillingPreviewFixedChargeChange(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -3547,7 +3648,7 @@ class BillingPreviewLine(BaseModel):
     periodStart: str | None
     units: str
     """
-    Units billed, as a decimal. Units already paid this period are not billed again, so a purchase can bill fewer units than it adds.
+    Units billed, as a decimal. A purchase bills the units it adds; a plan change, the units it carries over, less what the replaced plan paid for them.
     """
 
 
@@ -3557,7 +3658,7 @@ class BillingPreviewPlanChange(BaseModel):
     )
     additions: list[FixedChargeAddition] | MISSING = MISSING
     """
-    Fixed charges added once an upgrade applies, each billed when it is added rather than with the upgrade. Priced as if added now on the target plan and returned in planChange.additions, outside dueNow. Each must be sold by the target plan and named once.
+    Fixed charges added once an upgrade applies, each billed when it is added rather than with the upgrade. Priced as if added now on the target plan and returned in dueLater, outside dueNow. Each must be sold by the target plan and named once.
     """
     category: str
     """
@@ -3957,6 +4058,10 @@ class CreateWhatsappVoipSenderServiceUnavailableProblem(
     )
 
 
+class CreditSubject(RootModel[OrganizationCreditSubject | ProjectCreditSubject]):
+    root: OrganizationCreditSubject | ProjectCreditSubject
+
+
 class DeleteAccountGatewayTimeoutProblem(RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]):
     root: UpstreamTimeoutProblem | RequestTimeoutProblem
 
@@ -4284,6 +4389,12 @@ class GetOrganizationConnectionStatusGatewayTimeoutProblem(
     root: UpstreamTimeoutProblem | RequestTimeoutProblem
 
 
+class GetOrganizationCreditGatewayTimeoutProblem(
+    RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
+):
+    root: RequestTimeoutProblem | UpstreamTimeoutProblem
+
+
 class GetOrganizationPaymentMethodGatewayTimeoutProblem(
     RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
 ):
@@ -4314,6 +4425,12 @@ class GetOrganizationSsoConfigurationPreconditionFailedProblem(
     RootModel[OrganizationSsoPreconditionFailedProblem | SsoSubscriptionRequiredProblem]
 ):
     root: OrganizationSsoPreconditionFailedProblem | SsoSubscriptionRequiredProblem
+
+
+class GetOrganizationTermsGatewayTimeoutProblem(
+    RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
+):
+    root: RequestTimeoutProblem | UpstreamTimeoutProblem
 
 
 class GetProjectClosureStatusGatewayTimeoutProblem(
@@ -4806,6 +4923,34 @@ class ListBillingPlansInternalServerErrorProblem(
     root: InternalErrorProblem | InvalidAuthContextProblem
 
 
+class ListCreditActivityForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class ListCreditActivityGatewayTimeoutProblem(
+    RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
+):
+    root: RequestTimeoutProblem | UpstreamTimeoutProblem
+
+
+class ListCreditActivityInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
 class ListFilteredVerificationCodesForbiddenProblem(
     RootModel[
         ForbiddenProblem
@@ -4858,6 +5003,10 @@ class ListInvoicesInternalServerErrorProblem(
     RootModel[InternalErrorProblem | InvalidAuthContextProblem]
 ):
     root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class ListInvoicesSubjectParam(RootModel[str | Literal["organization"]]):
+    root: str | Literal["organization"]
 
 
 class ListNumberAreaCodesForbiddenProblem(
@@ -7033,6 +7182,13 @@ class BeginOrganizationSsoAdmissionInternalServerErrorProblem(
     root: InternalErrorProblem | InvalidAuthContextProblem
 
 
+class BillingChangeEffect(RootModel[BillingFixedChargeEffect | BillingPlanChangeEffect]):
+    root: BillingFixedChargeEffect | BillingPlanChangeEffect
+    """
+    What the change does beside what it bills, by the kind of change requested: fixed_charge for a fixed-charge change, plan_change for a plan change.
+    """
+
+
 class BillingOperation(
     RootModel[PendingBillingOperation | SucceededBillingOperation | FailedBillingOperation]
 ):
@@ -7042,33 +7198,19 @@ class BillingOperation(
     """
 
 
-class BillingPlanChangeEffect(BaseModel):
+class BillingPreviewDeferred(BaseModel):
+    """
+    Billed later rather than with dueNow: one line per plan change addition, billed when it is added and priced as if added now. Before taxes; the balance left after dueNow applies to it first. nextCharge already includes it. No lines when nothing is billed later.
+    """
+
     model_config = ConfigDict(
         extra="allow",
     )
-    additions: list[BillingPreviewLine]
+    currency: str
+    lines: list[BillingPreviewLine]
+    totalCents: int
     """
-    One line per requested addition: what adding it bills on the target plan, prorated as if added now. Billed when it is added, not with dueNow; the balance left after dueNow applies to it first. nextCharge already includes it.
-    """
-    effectiveAt: str | None
-    """
-    When a period_end change applies. Null otherwise.
-    """
-    minimumCommitment: BillingPreviewMinimumCommitment | None
-    """
-    The target plan's minimum commitment: when a period's charges fall short of it, the difference is billed at the period end. Set for an upgrade to a plan with one, null otherwise.
-    """
-    timing: Literal["immediate", "on_payment", "period_end"] | str
-    """
-    immediate applies now and charges dueNow with it. on_payment applies once dueNow is paid; the current plan stays until then. period_end is a downgrade: it applies at the period end and charges nothing now.
-    """
-    unsoldFixedCharges: list[BillingHeldFixedCharge]
-    """
-    Held fixed charges the target plan does not sell; the preview prices the change without them. With period_end they stay until it applies and are released with it. Otherwise the change is refused (release_required) until they are released.
-    """
-    unusedTimeCredit: BillingPreviewCredit | None
-    """
-    The replaced plan's unused time, which an upgrade credits to the payer: applied to dueNow first, the rest kept as balance. Set for an upgrade from a plan paid in advance, null otherwise.
+    Sum of the lines, in cents.
     """
 
 
@@ -7787,6 +7929,25 @@ class CreateWhatsappVoipSenderInternalServerErrorProblem(
     root: InternalErrorProblem | InvalidAuthContextProblem
 
 
+class CreditSource(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    chargeCode: str | None
+    """
+    The fixed-charge code for a release, the plan code for a plan change. Null for a grant.
+    """
+    chargeName: str | None
+    """
+    Null for a grant.
+    """
+    kind: Literal["release", "unused_time", "other", "grant"] | str
+    subject: OrganizationCreditSubject | ProjectCreditSubject | None
+    """
+    Whose subscription the charge was on: the organization's own, or a project's. Null when it is none Billing knows.
+    """
+
+
 class DeleteAccountForbiddenProblem(
     RootModel[
         ForbiddenProblem
@@ -8262,6 +8423,28 @@ class GetOrganizationConnectionStatusInternalServerErrorProblem(
     root: InternalErrorProblem | InvalidAuthContextProblem
 
 
+class GetOrganizationCreditForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class GetOrganizationCreditInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
 class GetOrganizationPaymentMethodForbiddenProblem(
     RootModel[
         ForbiddenProblem
@@ -8297,6 +8480,28 @@ class GetOrganizationSsoConfigurationForbiddenProblem(
 
 
 class GetOrganizationSsoConfigurationInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class GetOrganizationTermsForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class GetOrganizationTermsInternalServerErrorProblem(
     RootModel[InternalErrorProblem | InvalidAuthContextProblem]
 ):
     root: InternalErrorProblem | InvalidAuthContextProblem
@@ -8642,9 +8847,13 @@ class Invoice(BaseModel):
     """
     Downloadable PDF link.
     """
+    status: Literal["draft", "finalized", "voided", "pending", "failed"] | str
+    """
+    Where the invoice is in its lifecycle, apart from its payment: draft while it can still change, finalized once issued, voided when cancelled after, and pending or failed while its taxes are still being computed.
+    """
     subjects: list[ProjectInvoiceSubject | OrganizationInvoiceSubject]
     """
-    Known associated billing subjects, deduplicated. Empty means no known association, not organization-level charges.
+    Every billing subject on the invoice, deduplicated, including one it charged nothing. Empty when none is known.
     """
     totalCents: int
     """
@@ -8671,6 +8880,10 @@ class ListInvoicesResponse(BaseModel):
         extra="allow",
     )
     invoices: list[Invoice]
+    nextCursor: str | None
+    """
+    Pass as cursor to read the next page. Null on the last page.
+    """
 
 
 class ListWebhookApiVersionsResponse(BaseModel):
@@ -8804,18 +9017,15 @@ class PreviewOrganizationChangeResponse(BaseModel):
     """
     The payer's credit balance once dueNow is charged: the credit the change issues included, less what dueNow uses. In dueNow's currency. Null when the change charges nothing now (a downgrade).
     """
+    change: BillingFixedChargeEffect | BillingPlanChangeEffect
+    """
+    What the change does beside what it bills, by the kind of change requested: fixed_charge for a fixed-charge change, plan_change for a plan change.
+    """
+    dueLater: BillingPreviewDeferred
     dueNow: BillingPreviewInvoice
     nextCharge: BillingNextCharge | None
     """
     What is charged in advance at the next period start for what is held after the change. Usage and a minimum commitment are billed after the period. Null when nothing is, or the subscription ends first.
-    """
-    planChange: BillingPlanChangeEffect | None
-    """
-    Set for a plan change, null otherwise.
-    """
-    quote: FixedChargeQuote | None
-    """
-    Set for a fixed-charge change, null otherwise: the unit price, currency and period the preview was priced on. Pass them on with the purchase so it is refused if they no longer hold.
     """
     timeZone: str
     """
@@ -8831,18 +9041,15 @@ class PreviewProjectChangeResponse(BaseModel):
     """
     The payer's credit balance once dueNow is charged: the credit the change issues included, less what dueNow uses. In dueNow's currency. Null when the change charges nothing now (a downgrade).
     """
+    change: BillingFixedChargeEffect | BillingPlanChangeEffect
+    """
+    What the change does beside what it bills, by the kind of change requested: fixed_charge for a fixed-charge change, plan_change for a plan change.
+    """
+    dueLater: BillingPreviewDeferred
     dueNow: BillingPreviewInvoice
     nextCharge: BillingNextCharge | None
     """
     What is charged in advance at the next period start for what is held after the change. Usage and a minimum commitment are billed after the period. Null when nothing is, or the subscription ends first.
-    """
-    planChange: BillingPlanChangeEffect | None
-    """
-    Set for a plan change, null otherwise.
-    """
-    quote: FixedChargeQuote | None
-    """
-    Set for a fixed-charge change, null otherwise: the unit price, currency and period the preview was priced on. Pass them on with the purchase so it is refused if they no longer hold.
     """
     timeZone: str
     """
@@ -9122,6 +9329,49 @@ class CreateWhatsappVoipSenderUnprocessableEntityProblem(
     )
 
 
+class CreditActivity(BaseModel):
+    """
+    One change to the organization's credit balance, on a credit note or granted.
+    """
+
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    amountCents: int
+    """
+    How much the balance moved, in cents; kind says which way.
+    """
+    balanceAfterCents: int
+    """
+    The organization's credit balance once this entry applied, in cents.
+    """
+    creditNote: CreditDocument | None
+    """
+    The credit note whose credit moved. Null for granted credit.
+    """
+    currency: str
+    """
+    ISO currency code.
+    """
+    invoice: CreditDocument | None
+    """
+    The invoice credit was applied to or restored from. Null otherwise.
+    """
+    kind: Literal["issued", "applied", "restored", "voided"] | str
+    occurredAt: str
+    """
+    ISO 8601.
+    """
+    source: CreditSource | None
+    """
+    Why the credit was issued: from the charge a credit note credits, or a grant. Null when it is neither: a credit note that credits no charge, or wallet credit an invoice used or that was voided.
+    """
+    walletTransaction: CreditActivityWalletTransaction | None
+    """
+    The wallet transaction that moved granted credit. Null for a credit note, and when ending the wallet voided what it had left.
+    """
+
+
 class DeleteProjectUnprocessableEntityProblem(
     RootModel[ValidationFailedProblem | IdempotencyKeyReusedProblem]
 ):
@@ -9188,6 +9438,20 @@ class GetWhatsappBusinessVerificationCodeUnprocessableEntityProblem(
     RootModel[ValidationFailedProblem | WhatsappVerificationWindowExpiredProblem]
 ):
     root: ValidationFailedProblem | WhatsappVerificationWindowExpiredProblem
+
+
+class ListCreditActivityResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    entries: list[CreditActivity]
+    """
+    Newest first.
+    """
+    nextPage: int | None
+    """
+    Pass as page to read the next page. Null on the last page.
+    """
 
 
 class ListWebhookEventTypesResponse(
@@ -9438,6 +9702,35 @@ class ListBillingPlansResponse(BaseModel):
     """
 
 
+class OrganizationSubscriptionTerms(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    cancelsAt: str | None
+    """
+    When the subscription ends instead of renewing, ISO 8601.
+    """
+    currentPeriodEnd: str
+    """
+    ISO 8601.
+    """
+    currentPeriodStart: str
+    """
+    ISO 8601.
+    """
+    nextBillingAt: str
+    """
+    When the next invoice is issued: the second after the period ends, ISO 8601.
+    """
+    paymentMode: Literal["automatic", "manual"] | str
+    plan: BillingPlan
+    planSource: Literal["catalog", "override"] | str
+    scheduledPlanChange: ScheduledPlanChange | None
+    """
+    A downgrade waiting for the period end, or null.
+    """
+
+
 class SubscriptionTerms(BaseModel):
     """
     What one subscription is billed on now. plan is the plan as this subscription has it: its own prices when overridden, each fixed charge at the subscription's price and quantity, and entitlements resolved with overrides.
@@ -9479,13 +9772,23 @@ class GetEffectiveTermsResponse(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    creditBalance: CreditBalance | None
-    """
-    Credit the paying organization holds on credit notes, such as the unused time of a plan an upgrade replaced. It offsets that organization's next invoices of any kind except one-off invoices. Prepaid wallet credit is separate. Null when it holds none.
-    """
     subscriptions: list[SubscriptionTerms]
     """
     One entry per category the project holds, by category. Empty means it holds none.
+    """
+    timeZone: str
+    """
+    The IANA time zone the payer is billed in, e.g. America/Los_Angeles. Billing periods start and end at its midnights, so read their calendar dates in it.
+    """
+
+
+class GetOrganizationTermsResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    subscription: OrganizationSubscriptionTerms | None
+    """
+    What one subscription is billed on now. plan is the plan as this subscription has it: its own prices when overridden, each fixed charge at the subscription's price and quantity, and entitlements resolved with overrides. The organization's own subscription, or null when it holds none.
     """
     timeZone: str
     """

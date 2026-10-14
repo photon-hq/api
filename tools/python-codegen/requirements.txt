@@ -4,4 +4,4 @@ datamodel-code-generator==0.76.2
 email-validator==2.3.0
 httpx==0.28.1
 pydantic==2.13.5
-ruff==0.16.2
+ruff==0.17.0

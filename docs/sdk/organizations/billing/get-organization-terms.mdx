@@ -1,0 +1,103 @@
+---
+title: "Get the organization's effective billing terms"
+icon: arrow-down-left
+description: "Get the organization's effective billing terms: getOrganizationTerms in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/organizations/{organizationId}/billing/terms`
+
+Returns what the selected organization is billed on now on its own subscription, such as SSO and 10DLC campaigns: the plan as the subscription has it, with any override applied, each fixed charge at the subscription's price and the quantity the organization holds, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. subscription has a project subscription's terms without its category, and is null when the organization holds none. Project subscriptions are read per project. This operation does not change billing.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.billing.getOrganizationTerms(input: GetOrganizationTermsInput, options?: RequestOptions): Promise<GetOrganizationTermsOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.billing.get_organization_terms(input: GetOrganizationTermsInput) -> models.GetOrganizationTermsResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.get_organization_terms(organization_id: String).await -> Result<ResponseValue<types::GetOrganizationTermsResponse>, Error<GetOrganizationTermsError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.billing.getOrganizationTerms({
+  path: {
+    organizationId: "organizationId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import GetOrganizationTermsInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.billing.get_organization_terms(
+    GetOrganizationTermsInput.model_validate({
+        "path": {
+            "organizationId": "organizationId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .get_organization_terms("organizationId".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "subscription": null,
+  "timeZone": "string"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="organizationId" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The organization's effective billing terms. GetOrganizationTermsResponse
+
+<ResponseField name="subscription" type={"OrganizationSubscriptionTerms | null"} required>
+What one subscription is billed on now. plan is the plan as this subscription has it: its own prices when overridden, each fixed charge at the subscription's price and quantity, and entitlements resolved with overrides. The organization's own subscription, or null when it holds none.
+</ResponseField>
+
+<ResponseField name="timeZone" type={"string"} required>
+The IANA time zone the payer is billed in, e.g. America/Los_Angeles. Billing periods start and end at its midnights, so read their calendar dates in it.
+</ResponseField>
+
