@@ -1,10 +1,10 @@
 [build-system]
-requires = ["hatchling==1.31.0"]
+requires = ["hatchling==1.32.4"]
 build-backend = "hatchling.build"
 
 [project]
 name = "photonhq-api"
-version = "0.3.0"
+version = "0.4.0"
 description = "Generated Photon API RPC client"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -15,7 +15,7 @@ dependencies = [
   "httpx>=0.28.1,<1",
   # Generated models use Pydantic's experimental MISSING sentinel, which may
   # change in a minor release.
-  "pydantic>=2.13.5,<2.14",
+  "pydantic>=2.13.5,<2.15",
 ]
 
 [project.urls]

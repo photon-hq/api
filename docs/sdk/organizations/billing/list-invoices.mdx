@@ -6,7 +6,7 @@ description: "List invoices: listInvoices in the TypeScript, Python and Rust cli
 
 `GET /v1/organizations/{organizationId}/billing/invoices`
 
-Returns a single page of the selected organization's invoices; invoices with a zero total are excluded. Use the documented invoice fields to inspect each invoice's billing state. Listing invoices does not make a payment or modify a subscription.
+Returns one page of the selected organization's invoices, newest first: every invoice issued to it with a nonzero total or actual charges, including charges fully paid by credit; drafts and empty invoices are excluded. Each names what it charged the organization's own subscription and each project. Pass subject to list only the invoices that charge the organization itself or one of its projects, and nextCursor as cursor to read further. Listing invoices does not make a payment or modify a subscription.
 
 <Tabs>
 <Tab title="TypeScript">
@@ -21,7 +21,7 @@ photon.organizations.billing.list_invoices(input: ListInvoicesInput) -> models.L
 </Tab>
 <Tab title="Rust">
 ```rust Rust
-client.list_invoices(organization_id: String).await -> Result<ResponseValue<types::ListInvoicesResponse>, Error<ListInvoicesError>>
+client.list_invoices(organization_id: String, params: Option<ListInvoicesParams>).await -> Result<ResponseValue<types::ListInvoicesResponse>, Error<ListInvoicesError>>
 ```
 </Tab>
 </Tabs>
@@ -64,7 +64,7 @@ let client = PhotonClientBuilder::new()
     .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
     .build()?;
 let result = client
-    .list_invoices("organizationId".to_owned())
+    .list_invoices("organizationId".to_owned(), None)
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
@@ -84,6 +84,7 @@ let result = client
       "number": "string",
       "paymentStatus": "pending",
       "pdfUrl": null,
+      "status": "draft",
       "subjects": [
         {
           "projectId": "string",
@@ -92,7 +93,8 @@ let result = client
       ],
       "totalCents": -9007199254740991
     }
-  ]
+  ],
+  "nextCursor": null
 }
 ```
 
@@ -104,12 +106,28 @@ let result = client
 
 </ParamField>
 
+<ParamField query="cursor" type={"string"}>
+nextCursor of the page before; omitted for the first page.
+</ParamField>
+
+<ParamField query="limit" type={"integer"}>
+At most this many invoices, 1 to 100. 20 when omitted.
+</ParamField>
+
+<ParamField query="subject" type={"ListInvoicesSubjectParam"}>
+Only the invoices that charge this subject a nonzero amount: organization for the organization's own charges, such as SSO and 10DLC, or one of its projects by id. Omitted, every invoice.
+</ParamField>
+
 
 ## Returns
 
-**`200`** A single page of the organization's invoices, excluding invoices with a zero total, in no guaranteed order. ListInvoicesResponse
+**`200`** One page of the organization's invoices, newest first, excluding drafts and empty invoices; includes charges fully paid by credit. ListInvoicesResponse
 
 <ResponseField name="invoices" type={"array of Invoice"} required>
 
+</ResponseField>
+
+<ResponseField name="nextCursor" type={"string | null"} required>
+Pass as cursor to read the next page. Null on the last page.
 </ResponseField>
 

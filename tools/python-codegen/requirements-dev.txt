@@ -1,8 +1,8 @@
 -r requirements.txt
 # Audit installer tooling too; runner images may include vulnerable older versions.
 pip==26.2.1
-setuptools==83.0.0
-hatchling==1.31.0
+setuptools==84.0.0
+hatchling==1.32.4
 pip-audit==2.10.1
 pytest==9.1.1
 # OpenAPI 3.1 conformance check (tools/openapi/check_oas31.py). The JSON Schema

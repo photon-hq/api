@@ -525,7 +525,6 @@
           "expiresAt": {
             "example": "2026-01-01T00:00:00.000Z",
             "format": "date-time",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
             "type": "string"
           },
           "formFields": {
@@ -573,7 +572,6 @@
           "createdAt": {
             "example": "2026-01-01T00:00:00.000Z",
             "format": "date-time",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
             "type": "string"
           },
           "createdByAccountId": {
@@ -584,7 +582,6 @@
               {
                 "example": "2026-01-01T00:00:00.000Z",
                 "format": "date-time",
-                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
                 "type": "string"
               },
               {
@@ -607,7 +604,6 @@
               {
                 "example": "2026-01-01T00:00:00.000Z",
                 "format": "date-time",
-                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
                 "type": "string"
               },
               {
@@ -623,7 +619,6 @@
               {
                 "example": "2026-01-01T00:00:00.000Z",
                 "format": "date-time",
-                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
                 "type": "string"
               },
               {
@@ -2118,6 +2113,23 @@
         ],
         "type": "object"
       },
+      "BillingFixedChargeEffect": {
+        "additionalProperties": false,
+        "properties": {
+          "quote": {
+            "$ref": "#/components/schemas/FixedChargeQuote"
+          },
+          "type": {
+            "const": "fixed_charge",
+            "type": "string"
+          }
+        },
+        "required": [
+          "quote",
+          "type"
+        ],
+        "type": "object"
+      },
       "BillingHeldFixedCharge": {
         "additionalProperties": false,
         "properties": {
@@ -2457,13 +2469,6 @@
       "BillingPlanChangeEffect": {
         "additionalProperties": false,
         "properties": {
-          "additions": {
-            "description": "One line per requested addition: what adding it bills on the target plan, prorated as if added now. Billed when it is added, not with dueNow; the balance left after dueNow applies to it first. nextCharge already includes it.",
-            "items": {
-              "$ref": "#/components/schemas/BillingPreviewLine"
-            },
-            "type": "array"
-          },
           "effectiveAt": {
             "anyOf": [
               {
@@ -2490,6 +2495,10 @@
           "timing": {
             "$ref": "#/components/schemas/BillingPlanChangeTiming"
           },
+          "type": {
+            "const": "plan_change",
+            "type": "string"
+          },
           "unsoldFixedCharges": {
             "description": "Held fixed charges the target plan does not sell; the preview prices the change without them. With period_end they stay until it applies and are released with it. Otherwise the change is refused (release_required) until they are released.",
             "items": {
@@ -2506,14 +2515,14 @@
                 "type": "null"
               }
             ],
-            "description": "The replaced plan's unused time, which an upgrade credits to the payer: applied to dueNow first, the rest kept as balance. Set for an upgrade from a plan paid in advance, null otherwise."
+            "description": "The replaced plan's unused time, which an upgrade credits to the payer. Set for an upgrade from a plan paid in advance, null otherwise."
           }
         },
         "required": [
-          "additions",
           "effectiveAt",
           "minimumCommitment",
           "timing",
+          "type",
           "unsoldFixedCharges",
           "unusedTimeCredit"
         ],
@@ -2620,6 +2629,12 @@
             "minimum": -9007199254740991,
             "type": "integer"
           },
+          "appliedCents": {
+            "description": "What dueNow uses of amountCents, within its creditsCents. The credit the payer already holds applies first; what dueNow leaves of this joins the balance.",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer"
+          },
           "code": {
             "description": "The replaced plan's code.",
             "type": "string"
@@ -2655,10 +2670,38 @@
         },
         "required": [
           "amountCents",
+          "appliedCents",
           "code",
           "name",
           "periodEnd",
           "periodStart"
+        ],
+        "type": "object"
+      },
+      "BillingPreviewDeferred": {
+        "additionalProperties": false,
+        "description": "Billed later rather than with dueNow: one line per plan change addition, billed when it is added and priced as if added now. Before taxes; the balance left after dueNow applies to it first. nextCharge already includes it. No lines when nothing is billed later.",
+        "properties": {
+          "currency": {
+            "type": "string"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/BillingPreviewLine"
+            },
+            "type": "array"
+          },
+          "totalCents": {
+            "description": "Sum of the lines, in cents.",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "currency",
+          "lines",
+          "totalCents"
         ],
         "type": "object"
       },
@@ -2775,7 +2818,7 @@
             ]
           },
           "units": {
-            "description": "Units billed, as a decimal. Units already paid this period are not billed again, so a purchase can bill fewer units than it adds.",
+            "description": "Units billed, as a decimal. A purchase bills the units it adds; a plan change, the units it carries over, less what the replaced plan paid for them.",
             "type": "string"
           }
         },
@@ -2836,7 +2879,7 @@
         "additionalProperties": false,
         "properties": {
           "additions": {
-            "description": "Fixed charges added once an upgrade applies, each billed when it is added rather than with the upgrade. Priced as if added now on the target plan and returned in planChange.additions, outside dueNow. Each must be sold by the target plan and named once.",
+            "description": "Fixed charges added once an upgrade applies, each billed when it is added rather than with the upgrade. Priced as if added now on the target plan and returned in dueLater, outside dueNow. Each must be sold by the target plan and named once.",
             "items": {
               "$ref": "#/components/schemas/FixedChargeAddition"
             },
@@ -4595,7 +4638,7 @@
           "email": {
             "format": "email",
             "maxLength": 254,
-            "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
+            "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
             "type": "string"
           },
           "firstName": {
@@ -4885,7 +4928,7 @@
           "email": {
             "format": "email",
             "maxLength": 254,
-            "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
+            "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
             "type": "string"
           },
           "firstName": {
@@ -5083,25 +5126,196 @@
         ],
         "type": "object"
       },
-      "CreditBalance": {
+      "CreditActivity": {
         "additionalProperties": false,
+        "description": "One change to the organization's credit balance, on a credit note or granted.",
         "properties": {
-          "balanceCents": {
-            "description": "Credit left to offset the next invoices, in cents.",
-            "exclusiveMinimum": 0,
+          "amountCents": {
+            "description": "How much the balance moved, in cents; kind says which way.",
             "maximum": 9007199254740991,
+            "minimum": 0,
             "type": "integer"
+          },
+          "balanceAfterCents": {
+            "description": "The organization's credit balance once this entry applied, in cents.",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer"
+          },
+          "creditNote": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CreditDocument"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The credit note whose credit moved. Null for granted credit."
           },
           "currency": {
             "description": "ISO currency code.",
             "type": "string"
+          },
+          "invoice": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CreditDocument"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The invoice credit was applied to or restored from. Null otherwise."
+          },
+          "kind": {
+            "$ref": "#/components/schemas/CreditActivityKind"
+          },
+          "occurredAt": {
+            "description": "ISO 8601.",
+            "type": "string"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CreditSource"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Why the credit was issued: from the charge a credit note credits, or a grant. Null when it is neither: a credit note that credits no charge, or wallet credit an invoice used or that was voided."
+          },
+          "walletTransaction": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CreditActivityWalletTransaction"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The wallet transaction that moved granted credit. Null for a credit note, and when ending the wallet voided what it had left."
           }
         },
         "required": [
-          "balanceCents",
-          "currency"
+          "amountCents",
+          "balanceAfterCents",
+          "creditNote",
+          "currency",
+          "invoice",
+          "kind",
+          "occurredAt",
+          "source",
+          "walletTransaction"
         ],
         "type": "object"
+      },
+      "CreditActivityKind": {
+        "enum": [
+          "issued",
+          "applied",
+          "restored",
+          "voided"
+        ],
+        "type": "string",
+        "x-enumDescriptions": {
+          "applied": "Credit paid part of an invoice.",
+          "issued": "A credit note or a grant added credit.",
+          "restored": "Credit an invoice used came back because the change it paid for never applied.",
+          "voided": "What a credit note or granted credit had left was voided."
+        }
+      },
+      "CreditDocument": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "description": "Stable Photon identifier.",
+            "type": "string"
+          },
+          "number": {
+            "description": "Human document number.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "number"
+        ],
+        "type": "object"
+      },
+      "CreditSource": {
+        "additionalProperties": false,
+        "properties": {
+          "chargeCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The fixed-charge code for a release, the plan code for a plan change. Null for a grant."
+          },
+          "chargeName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Null for a grant."
+          },
+          "kind": {
+            "$ref": "#/components/schemas/CreditSourceKind"
+          },
+          "subject": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CreditSubject"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Whose subscription the charge was on: the organization's own, or a project's. Null when it is none Billing knows."
+          }
+        },
+        "required": [
+          "chargeCode",
+          "chargeName",
+          "kind",
+          "subject"
+        ],
+        "type": "object"
+      },
+      "CreditSourceKind": {
+        "enum": [
+          "release",
+          "unused_time",
+          "other",
+          "grant"
+        ],
+        "type": "string",
+        "x-enumDescriptions": {
+          "grant": "Credit Photon granted the organization, such as a new account's first organization's welcome credit.",
+          "other": "Any other credit note.",
+          "release": "Released units of a prorated fixed charge: their unused days.",
+          "unused_time": "A plan's base fee: the unused time after an upgrade or termination."
+        }
+      },
+      "CreditSubject": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/OrganizationCreditSubject"
+          },
+          {
+            "$ref": "#/components/schemas/ProjectCreditSubject"
+          }
+        ]
       },
       "DedicatedProjectPlatformSettings": {
         "additionalProperties": false,
@@ -6162,7 +6376,7 @@
           "receivedAt": {
             "example": "2026-10-01T12:00:00.000Z",
             "format": "date-time",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
             "type": "string"
           },
           "resourceId": {
@@ -6188,13 +6402,13 @@
           "receivedAfter": {
             "example": "2026-09-02T00:00:00.000Z",
             "format": "date-time",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
             "type": "string"
           },
           "receivedBefore": {
             "example": "2026-10-02T00:00:00.000Z",
             "format": "date-time",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
             "type": "string"
           }
         },
@@ -6351,6 +6565,7 @@
       },
       "FixedChargeQuote": {
         "additionalProperties": false,
+        "description": "The unit price, currency and period the preview was priced on. Pass them on with the purchase so it is refused if they no longer hold.",
         "properties": {
           "amount": {
             "description": "Decimal amount in the plan currency. Kept as text so sub-cent unit prices remain exact.",
@@ -6752,17 +6967,6 @@
       "GetEffectiveTermsResponse": {
         "additionalProperties": false,
         "properties": {
-          "creditBalance": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/CreditBalance"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Credit the paying organization holds on credit notes, such as the unused time of a plan an upgrade replaced. It offsets that organization's next invoices of any kind except one-off invoices. Prepaid wallet credit is separate. Null when it holds none."
-          },
           "subscriptions": {
             "description": "One entry per category the project holds, by category. Empty means it holds none.",
             "items": {
@@ -6776,7 +6980,6 @@
           }
         },
         "required": [
-          "creditBalance",
           "subscriptions",
           "timeZone"
         ],
@@ -7043,6 +7246,62 @@
           }
         ]
       },
+      "GetOrganizationCreditForbiddenProblem": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/ForbiddenProblem"
+          },
+          {
+            "$ref": "#/components/schemas/InsufficientScopeProblem"
+          },
+          {
+            "$ref": "#/components/schemas/OrganizationSsoRequiredProblem"
+          },
+          {
+            "$ref": "#/components/schemas/ResourceMismatchProblem"
+          }
+        ]
+      },
+      "GetOrganizationCreditGatewayTimeoutProblem": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/RequestTimeoutProblem"
+          },
+          {
+            "$ref": "#/components/schemas/UpstreamTimeoutProblem"
+          }
+        ]
+      },
+      "GetOrganizationCreditInternalServerErrorProblem": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/InternalErrorProblem"
+          },
+          {
+            "$ref": "#/components/schemas/InvalidAuthContextProblem"
+          }
+        ]
+      },
+      "GetOrganizationCreditResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "balanceCents": {
+            "description": "Credit left to offset the organization's next invoices, in cents: on credit notes, and in its wallet, granted to it or purchased. Zero when none is left.",
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "currency": {
+            "description": "ISO currency code.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "balanceCents",
+          "currency"
+        ],
+        "type": "object"
+      },
       "GetOrganizationPaymentMethodForbiddenProblem": {
         "oneOf": [
           {
@@ -7156,6 +7415,67 @@
             "$ref": "#/components/schemas/SsoSubscriptionRequiredProblem"
           }
         ]
+      },
+      "GetOrganizationTermsForbiddenProblem": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/ForbiddenProblem"
+          },
+          {
+            "$ref": "#/components/schemas/InsufficientScopeProblem"
+          },
+          {
+            "$ref": "#/components/schemas/OrganizationSsoRequiredProblem"
+          },
+          {
+            "$ref": "#/components/schemas/ResourceMismatchProblem"
+          }
+        ]
+      },
+      "GetOrganizationTermsGatewayTimeoutProblem": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/RequestTimeoutProblem"
+          },
+          {
+            "$ref": "#/components/schemas/UpstreamTimeoutProblem"
+          }
+        ]
+      },
+      "GetOrganizationTermsInternalServerErrorProblem": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/InternalErrorProblem"
+          },
+          {
+            "$ref": "#/components/schemas/InvalidAuthContextProblem"
+          }
+        ]
+      },
+      "GetOrganizationTermsResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "subscription": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OrganizationSubscriptionTerms"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "What one subscription is billed on now. plan is the plan as this subscription has it: its own prices when overridden, each fixed charge at the subscription's price and quantity, and entitlements resolved with overrides. The organization's own subscription, or null when it holds none."
+          },
+          "timeZone": {
+            "description": "The IANA time zone the payer is billed in, e.g. America/Los_Angeles. Billing periods start and end at its midnights, so read their calendar dates in it.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "subscription",
+          "timeZone"
+        ],
+        "type": "object"
       },
       "GetProjectClosureStatusForbiddenProblem": {
         "oneOf": [
@@ -7509,13 +7829,9 @@
             "$ref": "#/components/schemas/SmsLineCampaignEligibility"
           },
           "reasonCode": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
+            "type": [
+              "string",
+              "null"
             ]
           },
           "resourceId": {
@@ -7762,7 +8078,7 @@
           "receivedAt": {
             "example": "2026-01-01T00:00:00.000Z",
             "format": "date-time",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
             "type": "string"
           }
         },
@@ -8182,7 +8498,7 @@
           {
             "format": "email",
             "maxLength": 254,
-            "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
+            "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
             "type": "string"
           }
         ]
@@ -8606,8 +8922,11 @@
             ],
             "description": "Downloadable PDF link."
           },
+          "status": {
+            "$ref": "#/components/schemas/InvoiceStatus"
+          },
           "subjects": {
-            "description": "Known associated billing subjects, deduplicated. Empty means no known association, not organization-level charges.",
+            "description": "Every billing subject on the invoice, deduplicated, including one it charged nothing. Empty when none is known.",
             "items": {
               "$ref": "#/components/schemas/InvoiceSubject"
             },
@@ -8628,6 +8947,7 @@
           "number",
           "paymentStatus",
           "pdfUrl",
+          "status",
           "subjects",
           "totalCents"
         ],
@@ -8647,6 +8967,17 @@
         "enum": [
           "pending",
           "succeeded",
+          "failed"
+        ],
+        "type": "string"
+      },
+      "InvoiceStatus": {
+        "description": "Where the invoice is in its lifecycle, apart from its payment: draft while it can still change, finalized once issued, voided when cancelled after, and pending or failed while its taxes are still being computed.",
+        "enum": [
+          "draft",
+          "finalized",
+          "voided",
+          "pending",
           "failed"
         ],
         "type": "string"
@@ -8933,6 +9264,72 @@
         ],
         "type": "object"
       },
+      "ListCreditActivityForbiddenProblem": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/ForbiddenProblem"
+          },
+          {
+            "$ref": "#/components/schemas/InsufficientScopeProblem"
+          },
+          {
+            "$ref": "#/components/schemas/OrganizationSsoRequiredProblem"
+          },
+          {
+            "$ref": "#/components/schemas/ResourceMismatchProblem"
+          }
+        ]
+      },
+      "ListCreditActivityGatewayTimeoutProblem": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/RequestTimeoutProblem"
+          },
+          {
+            "$ref": "#/components/schemas/UpstreamTimeoutProblem"
+          }
+        ]
+      },
+      "ListCreditActivityInternalServerErrorProblem": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/InternalErrorProblem"
+          },
+          {
+            "$ref": "#/components/schemas/InvalidAuthContextProblem"
+          }
+        ]
+      },
+      "ListCreditActivityResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "entries": {
+            "description": "Newest first.",
+            "items": {
+              "$ref": "#/components/schemas/CreditActivity"
+            },
+            "type": "array"
+          },
+          "nextPage": {
+            "anyOf": [
+              {
+                "maximum": 9007199254740991,
+                "minimum": -9007199254740991,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Pass as page to read the next page. Null on the last page."
+          }
+        },
+        "required": [
+          "entries",
+          "nextPage"
+        ],
+        "type": "object"
+      },
       "ListFilteredVerificationCodesForbiddenProblem": {
         "oneOf": [
           {
@@ -9013,10 +9410,22 @@
               "$ref": "#/components/schemas/Invoice"
             },
             "type": "array"
+          },
+          "nextCursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Pass as cursor to read the next page. Null on the last page."
           }
         },
         "required": [
-          "invoices"
+          "invoices",
+          "nextCursor"
         ],
         "type": "object"
       },
@@ -10200,7 +10609,7 @@
           "createdAt": {
             "example": "2026-01-01T00:00:00.000Z",
             "format": "date-time",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
             "type": "string"
           },
           "detail": {
@@ -10213,7 +10622,7 @@
           "endedAt": {
             "example": "2026-01-01T00:00:00.000Z",
             "format": "date-time",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
             "type": "string"
           },
           "error": {
@@ -10237,7 +10646,7 @@
           "startedAt": {
             "example": "2026-01-01T00:00:00.000Z",
             "format": "date-time",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
             "type": "string"
           },
           "state": {
@@ -10249,7 +10658,7 @@
           "updatedAt": {
             "example": "2026-01-01T00:00:00.000Z",
             "format": "date-time",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
             "type": "string"
           }
         },
@@ -10597,6 +11006,19 @@
           "blocked"
         ],
         "type": "string"
+      },
+      "OrganizationCreditSubject": {
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "const": "organization",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "type": "object"
       },
       "OrganizationEnterpriseLoginRequest": {
         "additionalProperties": false,
@@ -10963,7 +11385,6 @@
               {
                 "example": "2026-01-01T00:00:00.000Z",
                 "format": "date-time",
-                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
                 "type": "string"
               },
               {
@@ -10981,7 +11402,6 @@
               {
                 "example": "2026-01-01T00:00:00.000Z",
                 "format": "date-time",
-                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
                 "type": "string"
               },
               {
@@ -11054,6 +11474,66 @@
         "required": [
           "featureKey",
           "value"
+        ],
+        "type": "object"
+      },
+      "OrganizationSubscriptionTerms": {
+        "additionalProperties": false,
+        "properties": {
+          "cancelsAt": {
+            "anyOf": [
+              {
+                "description": "ISO 8601.",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "When the subscription ends instead of renewing, ISO 8601."
+          },
+          "currentPeriodEnd": {
+            "description": "ISO 8601.",
+            "type": "string"
+          },
+          "currentPeriodStart": {
+            "description": "ISO 8601.",
+            "type": "string"
+          },
+          "nextBillingAt": {
+            "description": "When the next invoice is issued: the second after the period ends, ISO 8601.",
+            "type": "string"
+          },
+          "paymentMode": {
+            "$ref": "#/components/schemas/PaymentMode"
+          },
+          "plan": {
+            "$ref": "#/components/schemas/BillingPlan"
+          },
+          "planSource": {
+            "$ref": "#/components/schemas/PlanSource"
+          },
+          "scheduledPlanChange": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ScheduledPlanChange"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "A downgrade waiting for the period end, or null."
+          }
+        },
+        "required": [
+          "cancelsAt",
+          "currentPeriodEnd",
+          "currentPeriodStart",
+          "nextBillingAt",
+          "paymentMode",
+          "plan",
+          "planSource",
+          "scheduledPlanChange"
         ],
         "type": "object"
       },
@@ -11423,6 +11903,12 @@
             ],
             "description": "The payer's credit balance once dueNow is charged: the credit the change issues included, less what dueNow uses. In dueNow's currency. Null when the change charges nothing now (a downgrade)."
           },
+          "change": {
+            "$ref": "#/components/schemas/BillingChangeEffect"
+          },
+          "dueLater": {
+            "$ref": "#/components/schemas/BillingPreviewDeferred"
+          },
           "dueNow": {
             "$ref": "#/components/schemas/BillingPreviewInvoice"
           },
@@ -11437,28 +11923,6 @@
             ],
             "description": "What is charged in advance at the next period start for what is held after the change. Usage and a minimum commitment are billed after the period. Null when nothing is, or the subscription ends first."
           },
-          "planChange": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/BillingPlanChangeEffect"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Set for a plan change, null otherwise."
-          },
-          "quote": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/FixedChargeQuote"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Set for a fixed-charge change, null otherwise: the unit price, currency and period the preview was priced on. Pass them on with the purchase so it is refused if they no longer hold."
-          },
           "timeZone": {
             "description": "The IANA time zone the payer is billed in, e.g. America/Los_Angeles. Billing periods start and end at its midnights, so read their calendar dates in it.",
             "type": "string"
@@ -11466,10 +11930,10 @@
         },
         "required": [
           "balanceAfterCents",
+          "change",
+          "dueLater",
           "dueNow",
           "nextCharge",
-          "planChange",
-          "quote",
           "timeZone"
         ],
         "type": "object"
@@ -11536,6 +12000,12 @@
             ],
             "description": "The payer's credit balance once dueNow is charged: the credit the change issues included, less what dueNow uses. In dueNow's currency. Null when the change charges nothing now (a downgrade)."
           },
+          "change": {
+            "$ref": "#/components/schemas/BillingChangeEffect"
+          },
+          "dueLater": {
+            "$ref": "#/components/schemas/BillingPreviewDeferred"
+          },
           "dueNow": {
             "$ref": "#/components/schemas/BillingPreviewInvoice"
           },
@@ -11550,28 +12020,6 @@
             ],
             "description": "What is charged in advance at the next period start for what is held after the change. Usage and a minimum commitment are billed after the period. Null when nothing is, or the subscription ends first."
           },
-          "planChange": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/BillingPlanChangeEffect"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Set for a plan change, null otherwise."
-          },
-          "quote": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/FixedChargeQuote"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Set for a fixed-charge change, null otherwise: the unit price, currency and period the preview was priced on. Pass them on with the purchase so it is refused if they no longer hold."
-          },
           "timeZone": {
             "description": "The IANA time zone the payer is billed in, e.g. America/Los_Angeles. Billing periods start and end at its midnights, so read their calendar dates in it.",
             "type": "string"
@@ -11579,10 +12027,10 @@
         },
         "required": [
           "balanceAfterCents",
+          "change",
+          "dueLater",
           "dueNow",
           "nextCharge",
-          "planChange",
-          "quote",
           "timeZone"
         ],
         "type": "object"
@@ -11656,7 +12104,6 @@
           "createdAt": {
             "example": "2026-01-01T00:00:00.000Z",
             "format": "date-time",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
             "type": "string"
           },
           "createdByAccountId": {
@@ -11694,7 +12141,6 @@
               {
                 "example": "2026-01-01T00:00:00.000Z",
                 "format": "date-time",
-                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
                 "type": "string"
               },
               {
@@ -11717,7 +12163,6 @@
           "updatedAt": {
             "example": "2026-01-01T00:00:00.000Z",
             "format": "date-time",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
             "type": "string"
           }
         },
@@ -11860,6 +12305,23 @@
           "service_identity"
         ],
         "type": "string"
+      },
+      "ProjectCreditSubject": {
+        "additionalProperties": false,
+        "properties": {
+          "projectId": {
+            "type": "string"
+          },
+          "type": {
+            "const": "project",
+            "type": "string"
+          }
+        },
+        "required": [
+          "projectId",
+          "type"
+        ],
+        "type": "object"
       },
       "ProjectDeletedProblem": {
         "additionalProperties": {
@@ -13138,7 +13600,7 @@
           "createdAt": {
             "example": "2026-01-01T00:00:00.000Z",
             "format": "date-time",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
             "type": "string"
           },
           "detail": {
@@ -13157,7 +13619,7 @@
           "retiredAt": {
             "example": "2026-01-01T00:00:00.000Z",
             "format": "date-time",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
             "type": "string"
           },
           "state": {
@@ -13169,7 +13631,7 @@
           "updatedAt": {
             "example": "2026-01-01T00:00:00.000Z",
             "format": "date-time",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
             "type": "string"
           }
         },
@@ -13683,7 +14145,7 @@
               {
                 "example": "2026-01-01T00:00:00.000Z",
                 "format": "date-time",
-                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
                 "type": "string"
               },
               {
@@ -13952,7 +14414,7 @@
           "createdAt": {
             "example": "2026-01-01T00:00:00.000Z",
             "format": "date-time",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
             "type": "string"
           },
           "email": {
@@ -13976,13 +14438,13 @@
           "releasedAt": {
             "example": "2026-01-01T00:00:00.000Z",
             "format": "date-time",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
             "type": "string"
           },
           "updatedAt": {
             "example": "2026-01-01T00:00:00.000Z",
             "format": "date-time",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
             "type": "string"
           }
         },
@@ -14241,7 +14703,7 @@
               {
                 "example": "2026-01-01T00:00:00.000Z",
                 "format": "date-time",
-                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
                 "type": "string"
               },
               {
@@ -14255,7 +14717,7 @@
           "validFrom": {
             "example": "2026-01-01T00:00:00.000Z",
             "format": "date-time",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
             "type": "string"
           }
         },
@@ -15205,8 +15667,8 @@
           }
         },
         "required": [
-          "cancelsAt",
           "category",
+          "cancelsAt",
           "currentPeriodEnd",
           "currentPeriodStart",
           "nextBillingAt",
@@ -17210,7 +17672,7 @@
           "updatedAt": {
             "example": "2026-01-01T00:00:00.000Z",
             "format": "date-time",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
             "type": "string"
           }
         },
@@ -17231,13 +17693,9 @@
             "type": "integer"
           },
           "profileId": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
+            "type": [
+              "string",
+              "null"
             ]
           },
           "resourceId": {
@@ -17420,7 +17878,7 @@
           "createdAt": {
             "example": "2026-01-01T00:00:00.000Z",
             "format": "date-time",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
             "type": "string"
           },
           "isDefault": {
@@ -17450,7 +17908,7 @@
           "updatedAt": {
             "example": "2026-01-01T00:00:00.000Z",
             "format": "date-time",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
             "type": "string"
           },
           "version": {
@@ -18130,13 +18588,9 @@
         "additionalProperties": false,
         "properties": {
           "displayName": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
+            "type": [
+              "string",
+              "null"
             ]
           },
           "ownership": {
@@ -18214,13 +18668,9 @@
         "additionalProperties": false,
         "properties": {
           "accountName": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
+            "type": [
+              "string",
+              "null"
             ]
           },
           "alerts": {
@@ -18233,19 +18683,15 @@
             "type": "string"
           },
           "businessName": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
+            "type": [
+              "string",
+              "null"
             ]
           },
           "connectedAt": {
             "example": "2026-01-01T00:00:00.000Z",
             "format": "date-time",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
             "type": "string"
           },
           "maxPhoneNumbersPerBusiness": {
@@ -18277,7 +18723,7 @@
           "subscribedAt": {
             "example": "2026-01-01T00:00:00.000Z",
             "format": "date-time",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
             "type": "string"
           },
           "wabaId": {
@@ -18313,7 +18759,7 @@
           "observedAt": {
             "example": "2026-01-01T00:00:00.000Z",
             "format": "date-time",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
             "type": "string"
           },
           "severity": {
@@ -18343,7 +18789,7 @@
           "observedAt": {
             "example": "2026-01-01T00:00:00.000Z",
             "format": "date-time",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
             "type": "string"
           },
           "status": {
@@ -18853,6 +19299,44 @@
           "type"
         ],
         "type": "object"
+      },
+      "ListInvoicesSubjectParamOrganization": {
+        "const": "organization",
+        "type": "string"
+      },
+      "CreditActivityWalletTransaction": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "description": "Stable Photon identifier.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "type": "object"
+      },
+      "ListInvoicesSubjectParam": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/ListInvoicesSubjectParamOrganization"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      },
+      "BillingChangeEffect": {
+        "description": "What the change does beside what it bills, by the kind of change requested: fixed_charge for a fixed-charge change, plan_change for a plan change.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/BillingFixedChargeEffect"
+          },
+          {
+            "$ref": "#/components/schemas/BillingPlanChangeEffect"
+          }
+        ]
       }
     },
     "securitySchemes": {
@@ -34813,10 +35297,10 @@
         ]
       }
     },
-    "/v1/organizations/{organizationId}/billing/invoices": {
+    "/v1/organizations/{organizationId}/billing/credit": {
       "get": {
-        "description": "Returns a single page of the selected organization's invoices; invoices with a zero total are excluded. Use the documented invoice fields to inspect each invoice's billing state. Listing invoices does not make a payment or modify a subscription.",
-        "operationId": "listInvoices",
+        "description": "Returns the credit the selected organization holds: on credit notes, such as the unused time of a plan an upgrade replaced or the unused days of a prorated fixed charge it released, and in its wallet: the credit Photon granted it, such as a new account's first organization's welcome credit, and any prepaid credit it bought. It offsets that organization's invoices of any kind except one-off invoices, credit notes first. Reading it does not apply or change credit.",
+        "operationId": "getOrganizationCredit",
         "parameters": [
           {
             "in": "path",
@@ -34832,11 +35316,1103 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "$ref": "#/components/schemas/GetOrganizationCreditResponse"
+                }
+              }
+            },
+            "description": "The organization's credit balance.",
+            "headers": {
+              "Deprecation": {
+                "$ref": "#/components/headers/Deprecation"
+              },
+              "Idempotent-Replayed": {
+                "$ref": "#/components/headers/Idempotent-Replayed"
+              },
+              "Link": {
+                "$ref": "#/components/headers/Link"
+              },
+              "RateLimit": {
+                "$ref": "#/components/headers/RateLimit"
+              },
+              "RateLimit-Policy": {
+                "$ref": "#/components/headers/RateLimit-Policy"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/Retry-After"
+              },
+              "Sunset": {
+                "$ref": "#/components/headers/Sunset"
+              },
+              "X-Request-ID": {
+                "$ref": "#/components/headers/X-Request-ID"
+              },
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidArgumentProblem"
+                }
+              }
+            },
+            "description": "INVALID_ARGUMENT: Invalid Argument",
+            "headers": {
+              "Deprecation": {
+                "$ref": "#/components/headers/Deprecation"
+              },
+              "Idempotent-Replayed": {
+                "$ref": "#/components/headers/Idempotent-Replayed"
+              },
+              "Link": {
+                "$ref": "#/components/headers/Link"
+              },
+              "RateLimit": {
+                "$ref": "#/components/headers/RateLimit"
+              },
+              "RateLimit-Policy": {
+                "$ref": "#/components/headers/RateLimit-Policy"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/Retry-After"
+              },
+              "Sunset": {
+                "$ref": "#/components/headers/Sunset"
+              },
+              "X-Request-ID": {
+                "$ref": "#/components/headers/X-Request-ID"
+              },
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotAuthenticatedProblem"
+                }
+              }
+            },
+            "description": "NOT_AUTHENTICATED: Not Authenticated",
+            "headers": {
+              "Link": {
+                "description": "Optional related resources.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "RateLimit": {
+                "description": "Optional rate limit information.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "RateLimit-Policy": {
+                "description": "Optional rate limit policy.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Retry-After": {
+                "description": "Optional retry delay or HTTP date.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "WWW-Authenticate": {
+                "required": true,
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-Request-ID": {
+                "description": "Application request identifier.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetOrganizationCreditForbiddenProblem"
+                }
+              }
+            },
+            "description": "FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch\n\nFORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required",
+            "headers": {
+              "Deprecation": {
+                "description": "RFC 9745 structured-field Date at which the operation was or will be deprecated: `@` followed by Unix seconds, for example `@1767225599`.",
+                "schema": {
+                  "pattern": "^@-?[0-9]+$",
+                  "type": "string"
+                }
+              },
+              "Idempotent-Replayed": {
+                "description": "True when this response was replayed from an earlier attempt.",
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "Link": {
+                "description": "Links related to lifecycle or remediation documentation.\n\nOptional related resources.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "RateLimit": {
+                "description": "Current rate-limit state.\n\nOptional rate limit information.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "RateLimit-Policy": {
+                "description": "Rate-limit policy applied by the gateway.\n\nOptional rate limit policy.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Retry-After": {
+                "description": "Delay before retrying, in seconds or as an HTTP date.\n\nOptional retry delay or HTTP date.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "RFC 8594 HTTP-date (IMF-fixdate) after which the operation may become unavailable, for example `Thu, 31 Dec 2026 23:59:59 GMT`.",
+                "schema": {
+                  "pattern": "^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), [0-9]{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) [0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2} GMT$",
+                  "type": "string"
+                }
+              },
+              "X-Request-ID": {
+                "description": "Identifier for this HTTP attempt.\n\nApplication request identifier.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-Trace-ID": {
+                "description": "Trace ID of this request. Sent alongside X-Request-ID when a middleware published a trace ID for the request.",
+                "schema": {
+                  "pattern": "^(?!0{32}$)[0-9a-f]{32}$",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedPreconditionProblem"
+                }
+              }
+            },
+            "description": "FAILED_PRECONDITION: Failed Precondition",
+            "headers": {
+              "Deprecation": {
+                "$ref": "#/components/headers/Deprecation"
+              },
+              "Idempotent-Replayed": {
+                "$ref": "#/components/headers/Idempotent-Replayed"
+              },
+              "Link": {
+                "$ref": "#/components/headers/Link"
+              },
+              "RateLimit": {
+                "$ref": "#/components/headers/RateLimit"
+              },
+              "RateLimit-Policy": {
+                "$ref": "#/components/headers/RateLimit-Policy"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/Retry-After"
+              },
+              "Sunset": {
+                "$ref": "#/components/headers/Sunset"
+              },
+              "X-Request-ID": {
+                "$ref": "#/components/headers/X-Request-ID"
+              },
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationFailedProblem"
+                }
+              }
+            },
+            "description": "VALIDATION_FAILED: Request Validation Failed",
+            "headers": {
+              "Deprecation": {
+                "$ref": "#/components/headers/Deprecation"
+              },
+              "Idempotent-Replayed": {
+                "$ref": "#/components/headers/Idempotent-Replayed"
+              },
+              "Link": {
+                "$ref": "#/components/headers/Link"
+              },
+              "RateLimit": {
+                "$ref": "#/components/headers/RateLimit"
+              },
+              "RateLimit-Policy": {
+                "$ref": "#/components/headers/RateLimit-Policy"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/Retry-After"
+              },
+              "Sunset": {
+                "$ref": "#/components/headers/Sunset"
+              },
+              "X-Request-ID": {
+                "$ref": "#/components/headers/X-Request-ID"
+              },
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetOrganizationCreditInternalServerErrorProblem"
+                }
+              }
+            },
+            "description": "INVALID_AUTH_CONTEXT: Invalid Authentication Context\n\nINTERNAL_ERROR: Internal Server Error",
+            "headers": {
+              "Deprecation": {
+                "description": "RFC 9745 structured-field Date at which the operation was or will be deprecated: `@` followed by Unix seconds, for example `@1767225599`.",
+                "schema": {
+                  "pattern": "^@-?[0-9]+$",
+                  "type": "string"
+                }
+              },
+              "Idempotent-Replayed": {
+                "description": "True when this response was replayed from an earlier attempt.",
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "Link": {
+                "description": "Links related to lifecycle or remediation documentation.\n\nOptional related resources.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "RateLimit": {
+                "description": "Current rate-limit state.\n\nOptional rate limit information.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "RateLimit-Policy": {
+                "description": "Rate-limit policy applied by the gateway.\n\nOptional rate limit policy.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Retry-After": {
+                "description": "Delay before retrying, in seconds or as an HTTP date.\n\nOptional retry delay or HTTP date.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "RFC 8594 HTTP-date (IMF-fixdate) after which the operation may become unavailable, for example `Thu, 31 Dec 2026 23:59:59 GMT`.",
+                "schema": {
+                  "pattern": "^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), [0-9]{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) [0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2} GMT$",
+                  "type": "string"
+                }
+              },
+              "X-Request-ID": {
+                "description": "Identifier for this HTTP attempt.\n\nApplication request identifier.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-Trace-ID": {
+                "description": "Trace ID of this request. Sent alongside X-Request-ID when a middleware published a trace ID for the request.",
+                "schema": {
+                  "pattern": "^(?!0{32}$)[0-9a-f]{32}$",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "502": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpstreamFailureProblem"
+                }
+              }
+            },
+            "description": "UPSTREAM_FAILURE: Upstream Service Failure",
+            "headers": {
+              "Deprecation": {
+                "$ref": "#/components/headers/Deprecation"
+              },
+              "Idempotent-Replayed": {
+                "$ref": "#/components/headers/Idempotent-Replayed"
+              },
+              "Link": {
+                "$ref": "#/components/headers/Link"
+              },
+              "RateLimit": {
+                "$ref": "#/components/headers/RateLimit"
+              },
+              "RateLimit-Policy": {
+                "$ref": "#/components/headers/RateLimit-Policy"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/Retry-After"
+              },
+              "Sunset": {
+                "$ref": "#/components/headers/Sunset"
+              },
+              "X-Request-ID": {
+                "$ref": "#/components/headers/X-Request-ID"
+              },
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            }
+          },
+          "503": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpstreamUnavailableProblem"
+                }
+              }
+            },
+            "description": "UPSTREAM_UNAVAILABLE: Upstream Service Unavailable",
+            "headers": {
+              "Deprecation": {
+                "description": "RFC 9745 structured-field Date at which the operation was or will be deprecated: `@` followed by Unix seconds, for example `@1767225599`.",
+                "schema": {
+                  "pattern": "^@-?[0-9]+$",
+                  "type": "string"
+                }
+              },
+              "Idempotent-Replayed": {
+                "description": "True when this response was replayed from an earlier attempt.",
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "Link": {
+                "description": "Links related to lifecycle or remediation documentation.\n\nOptional related resources.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "RateLimit": {
+                "description": "Current rate-limit state.\n\nOptional rate limit information.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "RateLimit-Policy": {
+                "description": "Rate-limit policy applied by the gateway.\n\nOptional rate limit policy.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Retry-After": {
+                "description": "Delay before retrying, in seconds or as an HTTP date.\n\nOptional retry delay or HTTP date.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "RFC 8594 HTTP-date (IMF-fixdate) after which the operation may become unavailable, for example `Thu, 31 Dec 2026 23:59:59 GMT`.",
+                "schema": {
+                  "pattern": "^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), [0-9]{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) [0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2} GMT$",
+                  "type": "string"
+                }
+              },
+              "X-Request-ID": {
+                "description": "Identifier for this HTTP attempt.\n\nApplication request identifier.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-Trace-ID": {
+                "description": "Trace ID of this request. Sent alongside X-Request-ID when a middleware published a trace ID for the request.",
+                "schema": {
+                  "pattern": "^(?!0{32}$)[0-9a-f]{32}$",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "504": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetOrganizationCreditGatewayTimeoutProblem"
+                }
+              }
+            },
+            "description": "REQUEST_TIMEOUT: Request Timeout; UPSTREAM_TIMEOUT: Upstream Service Timeout",
+            "headers": {
+              "Deprecation": {
+                "$ref": "#/components/headers/Deprecation"
+              },
+              "Idempotent-Replayed": {
+                "$ref": "#/components/headers/Idempotent-Replayed"
+              },
+              "Link": {
+                "$ref": "#/components/headers/Link"
+              },
+              "RateLimit": {
+                "$ref": "#/components/headers/RateLimit"
+              },
+              "RateLimit-Policy": {
+                "$ref": "#/components/headers/RateLimit-Policy"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/Retry-After"
+              },
+              "Sunset": {
+                "$ref": "#/components/headers/Sunset"
+              },
+              "X-Request-ID": {
+                "$ref": "#/components/headers/X-Request-ID"
+              },
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "accountServiceKey": []
+          },
+          {
+            "serviceIdentityBearer": []
+          },
+          {
+            "oauth2": [
+              "billing:read"
+            ]
+          }
+        ],
+        "summary": "Get organization credit",
+        "tags": [
+          "Organization Billing"
+        ],
+        "x-required-permissions": [
+          "billing:read"
+        ]
+      }
+    },
+    "/v1/organizations/{organizationId}/billing/credit/activity": {
+      "get": {
+        "description": "Returns one page of how the selected organization's credit balance changed, newest first: credit notes issued and credit granted, credit applied to invoices, credit restored when the change an invoice paid for never applied, and credit voided. Each entry names the credit note (none for granted credit), the invoice when there is one, and the charge and subscription the credit note credits, or that the credit was a grant. Pass nextPage as page to read further. This operation does not change billing.",
+        "operationId": "listCreditActivity",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page to read, from 1: the nextPage of the page before.",
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListCreditActivityResponse"
+                }
+              }
+            },
+            "description": "One page of the organization's credit activity.",
+            "headers": {
+              "Deprecation": {
+                "$ref": "#/components/headers/Deprecation"
+              },
+              "Idempotent-Replayed": {
+                "$ref": "#/components/headers/Idempotent-Replayed"
+              },
+              "Link": {
+                "$ref": "#/components/headers/Link"
+              },
+              "RateLimit": {
+                "$ref": "#/components/headers/RateLimit"
+              },
+              "RateLimit-Policy": {
+                "$ref": "#/components/headers/RateLimit-Policy"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/Retry-After"
+              },
+              "Sunset": {
+                "$ref": "#/components/headers/Sunset"
+              },
+              "X-Request-ID": {
+                "$ref": "#/components/headers/X-Request-ID"
+              },
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidArgumentProblem"
+                }
+              }
+            },
+            "description": "INVALID_ARGUMENT: Invalid Argument",
+            "headers": {
+              "Deprecation": {
+                "$ref": "#/components/headers/Deprecation"
+              },
+              "Idempotent-Replayed": {
+                "$ref": "#/components/headers/Idempotent-Replayed"
+              },
+              "Link": {
+                "$ref": "#/components/headers/Link"
+              },
+              "RateLimit": {
+                "$ref": "#/components/headers/RateLimit"
+              },
+              "RateLimit-Policy": {
+                "$ref": "#/components/headers/RateLimit-Policy"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/Retry-After"
+              },
+              "Sunset": {
+                "$ref": "#/components/headers/Sunset"
+              },
+              "X-Request-ID": {
+                "$ref": "#/components/headers/X-Request-ID"
+              },
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotAuthenticatedProblem"
+                }
+              }
+            },
+            "description": "NOT_AUTHENTICATED: Not Authenticated",
+            "headers": {
+              "Link": {
+                "description": "Optional related resources.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "RateLimit": {
+                "description": "Optional rate limit information.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "RateLimit-Policy": {
+                "description": "Optional rate limit policy.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Retry-After": {
+                "description": "Optional retry delay or HTTP date.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "WWW-Authenticate": {
+                "required": true,
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-Request-ID": {
+                "description": "Application request identifier.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListCreditActivityForbiddenProblem"
+                }
+              }
+            },
+            "description": "FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch\n\nFORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required",
+            "headers": {
+              "Deprecation": {
+                "description": "RFC 9745 structured-field Date at which the operation was or will be deprecated: `@` followed by Unix seconds, for example `@1767225599`.",
+                "schema": {
+                  "pattern": "^@-?[0-9]+$",
+                  "type": "string"
+                }
+              },
+              "Idempotent-Replayed": {
+                "description": "True when this response was replayed from an earlier attempt.",
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "Link": {
+                "description": "Links related to lifecycle or remediation documentation.\n\nOptional related resources.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "RateLimit": {
+                "description": "Current rate-limit state.\n\nOptional rate limit information.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "RateLimit-Policy": {
+                "description": "Rate-limit policy applied by the gateway.\n\nOptional rate limit policy.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Retry-After": {
+                "description": "Delay before retrying, in seconds or as an HTTP date.\n\nOptional retry delay or HTTP date.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "RFC 8594 HTTP-date (IMF-fixdate) after which the operation may become unavailable, for example `Thu, 31 Dec 2026 23:59:59 GMT`.",
+                "schema": {
+                  "pattern": "^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), [0-9]{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) [0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2} GMT$",
+                  "type": "string"
+                }
+              },
+              "X-Request-ID": {
+                "description": "Identifier for this HTTP attempt.\n\nApplication request identifier.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-Trace-ID": {
+                "description": "Trace ID of this request. Sent alongside X-Request-ID when a middleware published a trace ID for the request.",
+                "schema": {
+                  "pattern": "^(?!0{32}$)[0-9a-f]{32}$",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedPreconditionProblem"
+                }
+              }
+            },
+            "description": "FAILED_PRECONDITION: Failed Precondition",
+            "headers": {
+              "Deprecation": {
+                "$ref": "#/components/headers/Deprecation"
+              },
+              "Idempotent-Replayed": {
+                "$ref": "#/components/headers/Idempotent-Replayed"
+              },
+              "Link": {
+                "$ref": "#/components/headers/Link"
+              },
+              "RateLimit": {
+                "$ref": "#/components/headers/RateLimit"
+              },
+              "RateLimit-Policy": {
+                "$ref": "#/components/headers/RateLimit-Policy"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/Retry-After"
+              },
+              "Sunset": {
+                "$ref": "#/components/headers/Sunset"
+              },
+              "X-Request-ID": {
+                "$ref": "#/components/headers/X-Request-ID"
+              },
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationFailedProblem"
+                }
+              }
+            },
+            "description": "VALIDATION_FAILED: Request Validation Failed",
+            "headers": {
+              "Deprecation": {
+                "$ref": "#/components/headers/Deprecation"
+              },
+              "Idempotent-Replayed": {
+                "$ref": "#/components/headers/Idempotent-Replayed"
+              },
+              "Link": {
+                "$ref": "#/components/headers/Link"
+              },
+              "RateLimit": {
+                "$ref": "#/components/headers/RateLimit"
+              },
+              "RateLimit-Policy": {
+                "$ref": "#/components/headers/RateLimit-Policy"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/Retry-After"
+              },
+              "Sunset": {
+                "$ref": "#/components/headers/Sunset"
+              },
+              "X-Request-ID": {
+                "$ref": "#/components/headers/X-Request-ID"
+              },
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListCreditActivityInternalServerErrorProblem"
+                }
+              }
+            },
+            "description": "INVALID_AUTH_CONTEXT: Invalid Authentication Context\n\nINTERNAL_ERROR: Internal Server Error",
+            "headers": {
+              "Deprecation": {
+                "description": "RFC 9745 structured-field Date at which the operation was or will be deprecated: `@` followed by Unix seconds, for example `@1767225599`.",
+                "schema": {
+                  "pattern": "^@-?[0-9]+$",
+                  "type": "string"
+                }
+              },
+              "Idempotent-Replayed": {
+                "description": "True when this response was replayed from an earlier attempt.",
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "Link": {
+                "description": "Links related to lifecycle or remediation documentation.\n\nOptional related resources.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "RateLimit": {
+                "description": "Current rate-limit state.\n\nOptional rate limit information.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "RateLimit-Policy": {
+                "description": "Rate-limit policy applied by the gateway.\n\nOptional rate limit policy.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Retry-After": {
+                "description": "Delay before retrying, in seconds or as an HTTP date.\n\nOptional retry delay or HTTP date.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "RFC 8594 HTTP-date (IMF-fixdate) after which the operation may become unavailable, for example `Thu, 31 Dec 2026 23:59:59 GMT`.",
+                "schema": {
+                  "pattern": "^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), [0-9]{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) [0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2} GMT$",
+                  "type": "string"
+                }
+              },
+              "X-Request-ID": {
+                "description": "Identifier for this HTTP attempt.\n\nApplication request identifier.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-Trace-ID": {
+                "description": "Trace ID of this request. Sent alongside X-Request-ID when a middleware published a trace ID for the request.",
+                "schema": {
+                  "pattern": "^(?!0{32}$)[0-9a-f]{32}$",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "502": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpstreamFailureProblem"
+                }
+              }
+            },
+            "description": "UPSTREAM_FAILURE: Upstream Service Failure",
+            "headers": {
+              "Deprecation": {
+                "$ref": "#/components/headers/Deprecation"
+              },
+              "Idempotent-Replayed": {
+                "$ref": "#/components/headers/Idempotent-Replayed"
+              },
+              "Link": {
+                "$ref": "#/components/headers/Link"
+              },
+              "RateLimit": {
+                "$ref": "#/components/headers/RateLimit"
+              },
+              "RateLimit-Policy": {
+                "$ref": "#/components/headers/RateLimit-Policy"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/Retry-After"
+              },
+              "Sunset": {
+                "$ref": "#/components/headers/Sunset"
+              },
+              "X-Request-ID": {
+                "$ref": "#/components/headers/X-Request-ID"
+              },
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            }
+          },
+          "503": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpstreamUnavailableProblem"
+                }
+              }
+            },
+            "description": "UPSTREAM_UNAVAILABLE: Upstream Service Unavailable",
+            "headers": {
+              "Deprecation": {
+                "description": "RFC 9745 structured-field Date at which the operation was or will be deprecated: `@` followed by Unix seconds, for example `@1767225599`.",
+                "schema": {
+                  "pattern": "^@-?[0-9]+$",
+                  "type": "string"
+                }
+              },
+              "Idempotent-Replayed": {
+                "description": "True when this response was replayed from an earlier attempt.",
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "Link": {
+                "description": "Links related to lifecycle or remediation documentation.\n\nOptional related resources.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "RateLimit": {
+                "description": "Current rate-limit state.\n\nOptional rate limit information.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "RateLimit-Policy": {
+                "description": "Rate-limit policy applied by the gateway.\n\nOptional rate limit policy.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Retry-After": {
+                "description": "Delay before retrying, in seconds or as an HTTP date.\n\nOptional retry delay or HTTP date.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "RFC 8594 HTTP-date (IMF-fixdate) after which the operation may become unavailable, for example `Thu, 31 Dec 2026 23:59:59 GMT`.",
+                "schema": {
+                  "pattern": "^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), [0-9]{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) [0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2} GMT$",
+                  "type": "string"
+                }
+              },
+              "X-Request-ID": {
+                "description": "Identifier for this HTTP attempt.\n\nApplication request identifier.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-Trace-ID": {
+                "description": "Trace ID of this request. Sent alongside X-Request-ID when a middleware published a trace ID for the request.",
+                "schema": {
+                  "pattern": "^(?!0{32}$)[0-9a-f]{32}$",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "504": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListCreditActivityGatewayTimeoutProblem"
+                }
+              }
+            },
+            "description": "REQUEST_TIMEOUT: Request Timeout; UPSTREAM_TIMEOUT: Upstream Service Timeout",
+            "headers": {
+              "Deprecation": {
+                "$ref": "#/components/headers/Deprecation"
+              },
+              "Idempotent-Replayed": {
+                "$ref": "#/components/headers/Idempotent-Replayed"
+              },
+              "Link": {
+                "$ref": "#/components/headers/Link"
+              },
+              "RateLimit": {
+                "$ref": "#/components/headers/RateLimit"
+              },
+              "RateLimit-Policy": {
+                "$ref": "#/components/headers/RateLimit-Policy"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/Retry-After"
+              },
+              "Sunset": {
+                "$ref": "#/components/headers/Sunset"
+              },
+              "X-Request-ID": {
+                "$ref": "#/components/headers/X-Request-ID"
+              },
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "accountServiceKey": []
+          },
+          {
+            "serviceIdentityBearer": []
+          },
+          {
+            "oauth2": [
+              "billing:read"
+            ]
+          }
+        ],
+        "summary": "List credit activity",
+        "tags": [
+          "Organization Billing"
+        ],
+        "x-required-permissions": [
+          "billing:read"
+        ]
+      }
+    },
+    "/v1/organizations/{organizationId}/billing/invoices": {
+      "get": {
+        "description": "Returns one page of the selected organization's invoices, newest first: every invoice issued to it with a nonzero total or actual charges, including charges fully paid by credit; drafts and empty invoices are excluded. Each names what it charged the organization's own subscription and each project. Pass subject to list only the invoices that charge the organization itself or one of its projects, and nextCursor as cursor to read further. Listing invoices does not make a payment or modify a subscription.",
+        "operationId": "listInvoices",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "nextCursor of the page before; omitted for the first page.",
+            "in": "query",
+            "name": "cursor",
+            "schema": {
+              "maxLength": 512,
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          {
+            "description": "At most this many invoices, 1 to 100. 20 when omitted.",
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Only the invoices that charge this subject a nonzero amount: organization for the organization's own charges, such as SSO and 10DLC, or one of its projects by id. Omitted, every invoice.",
+            "in": "query",
+            "name": "subject",
+            "schema": {
+              "$ref": "#/components/schemas/ListInvoicesSubjectParam"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
                   "$ref": "#/components/schemas/ListInvoicesResponse"
                 }
               }
             },
-            "description": "A single page of the organization's invoices, excluding invoices with a zero total, in no guaranteed order.",
+            "description": "One page of the organization's invoices, newest first, excluding drafts and empty invoices; includes charges fully paid by credit.",
             "headers": {
               "Deprecation": {
                 "$ref": "#/components/headers/Deprecation"
@@ -35869,7 +37445,7 @@
     },
     "/v1/organizations/{organizationId}/billing/preview": {
       "post": {
-        "description": "Previews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A quantity already paid for this period is not billed again, so a purchase after a release can be free. nextCharge is what is charged in advance at the next period start. For a fixed-charge change, pass quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing.",
+        "description": "Previews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing.",
         "operationId": "previewOrganizationChange",
         "parameters": [
           {
@@ -36406,7 +37982,7 @@
     },
     "/v1/organizations/{organizationId}/billing/projects/{projectId}/preview": {
       "post": {
-        "description": "Previews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A quantity already paid for this period is not billed again, so a purchase after a release can be free. nextCharge is what is charged in advance at the next period start. For a fixed-charge change, pass quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; planChange says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in planChange.additions and outside dueNow. Supply both organizationId and projectId; the organization must pay for the project.",
+        "description": "Previews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. Supply both organizationId and projectId; the organization must pay for the project.",
         "operationId": "previewProjectChange",
         "parameters": [
           {
@@ -37594,7 +39170,7 @@
     },
     "/v1/organizations/{organizationId}/billing/projects/{projectId}/terms": {
       "get": {
-        "description": "Returns what the selected project is billed on now, per category it holds: the plan as its subscription has it, with any override applied, each fixed charge at the subscription's price and quantity, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. It also returns the credit the paying organization holds on credit notes, such as the unused time of a plan an upgrade replaced; it offsets that organization's next invoices. Supply both organizationId and projectId; the organization must pay for the project. This operation does not change billing.",
+        "description": "Returns what the selected project is billed on now, per category it holds: the plan as its subscription has it, with any override applied, each fixed charge at the subscription's price and quantity, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. Supply both organizationId and projectId; the organization must pay for the project. This operation does not change billing.",
         "operationId": "getEffectiveTerms",
         "parameters": [
           {
@@ -38659,6 +40235,533 @@
         },
         "x-required-permissions": [
           "billing:manage"
+        ]
+      }
+    },
+    "/v1/organizations/{organizationId}/billing/terms": {
+      "get": {
+        "description": "Returns what the selected organization is billed on now on its own subscription, such as SSO and 10DLC campaigns: the plan as the subscription has it, with any override applied, each fixed charge at the subscription's price and the quantity the organization holds, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. subscription has a project subscription's terms without its category, and is null when the organization holds none. Project subscriptions are read per project. This operation does not change billing.",
+        "operationId": "getOrganizationTerms",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organizationId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetOrganizationTermsResponse"
+                }
+              }
+            },
+            "description": "The organization's effective billing terms.",
+            "headers": {
+              "Deprecation": {
+                "$ref": "#/components/headers/Deprecation"
+              },
+              "Idempotent-Replayed": {
+                "$ref": "#/components/headers/Idempotent-Replayed"
+              },
+              "Link": {
+                "$ref": "#/components/headers/Link"
+              },
+              "RateLimit": {
+                "$ref": "#/components/headers/RateLimit"
+              },
+              "RateLimit-Policy": {
+                "$ref": "#/components/headers/RateLimit-Policy"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/Retry-After"
+              },
+              "Sunset": {
+                "$ref": "#/components/headers/Sunset"
+              },
+              "X-Request-ID": {
+                "$ref": "#/components/headers/X-Request-ID"
+              },
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidArgumentProblem"
+                }
+              }
+            },
+            "description": "INVALID_ARGUMENT: Invalid Argument",
+            "headers": {
+              "Deprecation": {
+                "$ref": "#/components/headers/Deprecation"
+              },
+              "Idempotent-Replayed": {
+                "$ref": "#/components/headers/Idempotent-Replayed"
+              },
+              "Link": {
+                "$ref": "#/components/headers/Link"
+              },
+              "RateLimit": {
+                "$ref": "#/components/headers/RateLimit"
+              },
+              "RateLimit-Policy": {
+                "$ref": "#/components/headers/RateLimit-Policy"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/Retry-After"
+              },
+              "Sunset": {
+                "$ref": "#/components/headers/Sunset"
+              },
+              "X-Request-ID": {
+                "$ref": "#/components/headers/X-Request-ID"
+              },
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotAuthenticatedProblem"
+                }
+              }
+            },
+            "description": "NOT_AUTHENTICATED: Not Authenticated",
+            "headers": {
+              "Link": {
+                "description": "Optional related resources.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "RateLimit": {
+                "description": "Optional rate limit information.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "RateLimit-Policy": {
+                "description": "Optional rate limit policy.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Retry-After": {
+                "description": "Optional retry delay or HTTP date.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "WWW-Authenticate": {
+                "required": true,
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-Request-ID": {
+                "description": "Application request identifier.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetOrganizationTermsForbiddenProblem"
+                }
+              }
+            },
+            "description": "FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch\n\nFORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required",
+            "headers": {
+              "Deprecation": {
+                "description": "RFC 9745 structured-field Date at which the operation was or will be deprecated: `@` followed by Unix seconds, for example `@1767225599`.",
+                "schema": {
+                  "pattern": "^@-?[0-9]+$",
+                  "type": "string"
+                }
+              },
+              "Idempotent-Replayed": {
+                "description": "True when this response was replayed from an earlier attempt.",
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "Link": {
+                "description": "Links related to lifecycle or remediation documentation.\n\nOptional related resources.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "RateLimit": {
+                "description": "Current rate-limit state.\n\nOptional rate limit information.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "RateLimit-Policy": {
+                "description": "Rate-limit policy applied by the gateway.\n\nOptional rate limit policy.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Retry-After": {
+                "description": "Delay before retrying, in seconds or as an HTTP date.\n\nOptional retry delay or HTTP date.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "RFC 8594 HTTP-date (IMF-fixdate) after which the operation may become unavailable, for example `Thu, 31 Dec 2026 23:59:59 GMT`.",
+                "schema": {
+                  "pattern": "^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), [0-9]{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) [0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2} GMT$",
+                  "type": "string"
+                }
+              },
+              "X-Request-ID": {
+                "description": "Identifier for this HTTP attempt.\n\nApplication request identifier.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-Trace-ID": {
+                "description": "Trace ID of this request. Sent alongside X-Request-ID when a middleware published a trace ID for the request.",
+                "schema": {
+                  "pattern": "^(?!0{32}$)[0-9a-f]{32}$",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedPreconditionProblem"
+                }
+              }
+            },
+            "description": "FAILED_PRECONDITION: Failed Precondition",
+            "headers": {
+              "Deprecation": {
+                "$ref": "#/components/headers/Deprecation"
+              },
+              "Idempotent-Replayed": {
+                "$ref": "#/components/headers/Idempotent-Replayed"
+              },
+              "Link": {
+                "$ref": "#/components/headers/Link"
+              },
+              "RateLimit": {
+                "$ref": "#/components/headers/RateLimit"
+              },
+              "RateLimit-Policy": {
+                "$ref": "#/components/headers/RateLimit-Policy"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/Retry-After"
+              },
+              "Sunset": {
+                "$ref": "#/components/headers/Sunset"
+              },
+              "X-Request-ID": {
+                "$ref": "#/components/headers/X-Request-ID"
+              },
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationFailedProblem"
+                }
+              }
+            },
+            "description": "VALIDATION_FAILED: Request Validation Failed",
+            "headers": {
+              "Deprecation": {
+                "$ref": "#/components/headers/Deprecation"
+              },
+              "Idempotent-Replayed": {
+                "$ref": "#/components/headers/Idempotent-Replayed"
+              },
+              "Link": {
+                "$ref": "#/components/headers/Link"
+              },
+              "RateLimit": {
+                "$ref": "#/components/headers/RateLimit"
+              },
+              "RateLimit-Policy": {
+                "$ref": "#/components/headers/RateLimit-Policy"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/Retry-After"
+              },
+              "Sunset": {
+                "$ref": "#/components/headers/Sunset"
+              },
+              "X-Request-ID": {
+                "$ref": "#/components/headers/X-Request-ID"
+              },
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetOrganizationTermsInternalServerErrorProblem"
+                }
+              }
+            },
+            "description": "INVALID_AUTH_CONTEXT: Invalid Authentication Context\n\nINTERNAL_ERROR: Internal Server Error",
+            "headers": {
+              "Deprecation": {
+                "description": "RFC 9745 structured-field Date at which the operation was or will be deprecated: `@` followed by Unix seconds, for example `@1767225599`.",
+                "schema": {
+                  "pattern": "^@-?[0-9]+$",
+                  "type": "string"
+                }
+              },
+              "Idempotent-Replayed": {
+                "description": "True when this response was replayed from an earlier attempt.",
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "Link": {
+                "description": "Links related to lifecycle or remediation documentation.\n\nOptional related resources.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "RateLimit": {
+                "description": "Current rate-limit state.\n\nOptional rate limit information.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "RateLimit-Policy": {
+                "description": "Rate-limit policy applied by the gateway.\n\nOptional rate limit policy.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Retry-After": {
+                "description": "Delay before retrying, in seconds or as an HTTP date.\n\nOptional retry delay or HTTP date.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "RFC 8594 HTTP-date (IMF-fixdate) after which the operation may become unavailable, for example `Thu, 31 Dec 2026 23:59:59 GMT`.",
+                "schema": {
+                  "pattern": "^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), [0-9]{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) [0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2} GMT$",
+                  "type": "string"
+                }
+              },
+              "X-Request-ID": {
+                "description": "Identifier for this HTTP attempt.\n\nApplication request identifier.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-Trace-ID": {
+                "description": "Trace ID of this request. Sent alongside X-Request-ID when a middleware published a trace ID for the request.",
+                "schema": {
+                  "pattern": "^(?!0{32}$)[0-9a-f]{32}$",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "502": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpstreamFailureProblem"
+                }
+              }
+            },
+            "description": "UPSTREAM_FAILURE: Upstream Service Failure",
+            "headers": {
+              "Deprecation": {
+                "$ref": "#/components/headers/Deprecation"
+              },
+              "Idempotent-Replayed": {
+                "$ref": "#/components/headers/Idempotent-Replayed"
+              },
+              "Link": {
+                "$ref": "#/components/headers/Link"
+              },
+              "RateLimit": {
+                "$ref": "#/components/headers/RateLimit"
+              },
+              "RateLimit-Policy": {
+                "$ref": "#/components/headers/RateLimit-Policy"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/Retry-After"
+              },
+              "Sunset": {
+                "$ref": "#/components/headers/Sunset"
+              },
+              "X-Request-ID": {
+                "$ref": "#/components/headers/X-Request-ID"
+              },
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            }
+          },
+          "503": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpstreamUnavailableProblem"
+                }
+              }
+            },
+            "description": "UPSTREAM_UNAVAILABLE: Upstream Service Unavailable",
+            "headers": {
+              "Deprecation": {
+                "description": "RFC 9745 structured-field Date at which the operation was or will be deprecated: `@` followed by Unix seconds, for example `@1767225599`.",
+                "schema": {
+                  "pattern": "^@-?[0-9]+$",
+                  "type": "string"
+                }
+              },
+              "Idempotent-Replayed": {
+                "description": "True when this response was replayed from an earlier attempt.",
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "Link": {
+                "description": "Links related to lifecycle or remediation documentation.\n\nOptional related resources.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "RateLimit": {
+                "description": "Current rate-limit state.\n\nOptional rate limit information.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "RateLimit-Policy": {
+                "description": "Rate-limit policy applied by the gateway.\n\nOptional rate limit policy.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Retry-After": {
+                "description": "Delay before retrying, in seconds or as an HTTP date.\n\nOptional retry delay or HTTP date.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Sunset": {
+                "description": "RFC 8594 HTTP-date (IMF-fixdate) after which the operation may become unavailable, for example `Thu, 31 Dec 2026 23:59:59 GMT`.",
+                "schema": {
+                  "pattern": "^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), [0-9]{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) [0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2} GMT$",
+                  "type": "string"
+                }
+              },
+              "X-Request-ID": {
+                "description": "Identifier for this HTTP attempt.\n\nApplication request identifier.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-Trace-ID": {
+                "description": "Trace ID of this request. Sent alongside X-Request-ID when a middleware published a trace ID for the request.",
+                "schema": {
+                  "pattern": "^(?!0{32}$)[0-9a-f]{32}$",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "504": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetOrganizationTermsGatewayTimeoutProblem"
+                }
+              }
+            },
+            "description": "REQUEST_TIMEOUT: Request Timeout; UPSTREAM_TIMEOUT: Upstream Service Timeout",
+            "headers": {
+              "Deprecation": {
+                "$ref": "#/components/headers/Deprecation"
+              },
+              "Idempotent-Replayed": {
+                "$ref": "#/components/headers/Idempotent-Replayed"
+              },
+              "Link": {
+                "$ref": "#/components/headers/Link"
+              },
+              "RateLimit": {
+                "$ref": "#/components/headers/RateLimit"
+              },
+              "RateLimit-Policy": {
+                "$ref": "#/components/headers/RateLimit-Policy"
+              },
+              "Retry-After": {
+                "$ref": "#/components/headers/Retry-After"
+              },
+              "Sunset": {
+                "$ref": "#/components/headers/Sunset"
+              },
+              "X-Request-ID": {
+                "$ref": "#/components/headers/X-Request-ID"
+              },
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "accountServiceKey": []
+          },
+          {
+            "serviceIdentityBearer": []
+          },
+          {
+            "oauth2": [
+              "billing:read"
+            ]
+          }
+        ],
+        "summary": "Get the organization's effective billing terms",
+        "tags": [
+          "Organization Billing"
+        ],
+        "x-required-permissions": [
+          "billing:read"
         ]
       }
     },
@@ -44463,7 +46566,7 @@
             "schema": {
               "example": "2026-09-01T00:00:00.000Z",
               "format": "date-time",
-              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
               "type": "string"
             }
           },
@@ -44473,7 +46576,7 @@
             "schema": {
               "example": "2026-10-01T00:00:00.000Z",
               "format": "date-time",
-              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
               "type": "string"
             }
           },
@@ -44990,7 +47093,7 @@
             "schema": {
               "example": "2026-09-01T00:00:00.000Z",
               "format": "date-time",
-              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
               "type": "string"
             }
           },
@@ -45000,7 +47103,7 @@
             "schema": {
               "example": "2026-10-01T00:00:00.000Z",
               "format": "date-time",
-              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
               "type": "string"
             }
           }
@@ -49296,7 +51399,7 @@
             "name": "endedAfter",
             "schema": {
               "format": "date-time",
-              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
               "type": "string"
             }
           },
@@ -50921,7 +53024,7 @@
     },
     "/v1/projects/{id}/platforms/resources": {
       "get": {
-        "description": "Lists everything the project holds, oldest first, whatever kind of thing it is — one endpoint and one id shape for numbers, dedicated lines and whatever ships next. Nothing half-built appears here: a resource exists only once it is real, so anything still being provisioned is an operation rather than a resource with a pending flag. Filter by `type`, by `ability` (which matches only abilities that are currently enabled), and by `state` — comma-separated, and absent means every state, including retired ones. `detail` carries a per-type public view: an SMS number's number, a dedicated line's number and its per-capability health (`imessageHealth`, `whatsappHealth`, each with an `overallStatus` of `available`, `degraded`, `unavailable` or `unknown`; `imessageHealth` also carries `account`, `photonSystemComponents`, `newConversations`, `sms` and `mms`, each a `status` with the `cause` that decided it: `account`, `photonSystemComponents`, or null for the item's own state). Requires the platforms:read permission bound to the project resource in the path.",
+        "description": "Lists everything the project holds, oldest first, whatever kind of thing it is — one endpoint and one id shape for numbers, dedicated lines and whatever ships next. Nothing half-built appears here: a resource exists only once it is real, so anything still being provisioned is an operation rather than a resource with a pending flag. Filter by `type`, by `ability` (which matches only abilities that are currently enabled), and by `state` — comma-separated, and absent means every state, including retired ones. `detail` carries a per-type public view: an SMS number's number, a dedicated line's number and its per-capability health (`imessageHealth`, `whatsappHealth`, each with an `overallStatus` of `available`, `degraded`, `unavailable` or `unknown`; `imessageHealth` also carries `account`, `photonSystemComponents`, `newConversations`, `sms`, `mms` and `outboundPhoneCalling`, each a `status` with the `cause` that decided it: `account`, `photonSystemComponents`, or null for the item's own state. `outboundPhoneCalling` is whether the line's number can place outbound phone calls: `available`, `unavailable` when its caller ID is not verified (the line is then `degraded`), or `unknown` when it has not been checked yet; it does not depend on the account or the Photon system components, so its `cause` is always null). Requires the platforms:read permission bound to the project resource in the path.",
         "operationId": "listResources",
         "parameters": [
           {
@@ -52635,7 +54738,7 @@
             "schema": {
               "example": "2026-09-01T00:00:00.000Z",
               "format": "date-time",
-              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
               "type": "string"
             }
           },
@@ -52645,7 +54748,7 @@
             "schema": {
               "example": "2026-10-01T00:00:00.000Z",
               "format": "date-time",
-              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
               "type": "string"
             }
           },
@@ -53209,7 +55312,7 @@
             "schema": {
               "example": "2026-09-01T00:00:00.000Z",
               "format": "date-time",
-              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
               "type": "string"
             }
           },
@@ -53219,7 +55322,7 @@
             "schema": {
               "example": "2026-10-01T00:00:00.000Z",
               "format": "date-time",
-              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
               "type": "string"
             }
           }
@@ -57320,7 +59423,7 @@
     },
     "/v1/projects/{id}/platforms/telegram/bots": {
       "post": {
-        "description": "Starts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to connect an existing managed bot or create a new one with the project's default agent name or a custom display name, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged.",
+        "description": "Starts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to create a new bot, whose name and username are chosen in Telegram, or to connect an existing managed bot, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged.",
         "operationId": "connectTelegramBot",
         "parameters": [
           {
@@ -72300,7 +74403,7 @@
             "required": true,
             "schema": {
               "format": "date-time",
-              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
               "type": "string"
             }
           }

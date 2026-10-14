@@ -81,10 +81,13 @@
               "group": "Billing",
               "root": "api-client/sdk/organizations/billing/index",
               "pages": [
+                "api-client/sdk/organizations/billing/list-credit-activity",
                 "api-client/sdk/organizations/billing/list-invoices",
                 "api-client/sdk/organizations/billing/get-effective-terms",
                 "api-client/sdk/organizations/billing/get-organization-billing-overview",
+                "api-client/sdk/organizations/billing/get-organization-credit",
                 "api-client/sdk/organizations/billing/get-organization-payment-method",
+                "api-client/sdk/organizations/billing/get-organization-terms",
                 "api-client/sdk/organizations/billing/change-plan",
                 "api-client/sdk/organizations/billing/create-organization-payment-method-checkout",
                 "api-client/sdk/organizations/billing/create-organization-setup-intent",

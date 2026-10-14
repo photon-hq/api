@@ -900,6 +900,18 @@ class GetOrganizationConnectionStatusInput(BaseModel):
     path: GetOrganizationConnectionStatusPath
 
 
+class GetOrganizationCreditPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+
+
+class GetOrganizationCreditInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: GetOrganizationCreditPath
+
+
 class GetOrganizationPaymentMethodPath(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
@@ -922,6 +934,18 @@ class GetOrganizationSsoConfigurationInput(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
     path: GetOrganizationSsoConfigurationPath
+
+
+class GetOrganizationTermsPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+
+
+class GetOrganizationTermsInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: GetOrganizationTermsPath
 
 
 class GetProjectPath(BaseModel):
@@ -1191,6 +1215,25 @@ class ListBillingPlansInput(BaseModel):
     path: ListBillingPlansPath
 
 
+class ListCreditActivityPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+
+
+class ListCreditActivityQuery(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    page: int | MISSING = Field(default=MISSING, alias="page")
+
+
+class ListCreditActivityInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: ListCreditActivityPath
+    query: ListCreditActivityQuery | None = None
+
+
 class ListFilteredVerificationCodesPath(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
@@ -1222,10 +1265,19 @@ class ListInvoicesPath(BaseModel):
     organization_id: str = Field(alias="organizationId")
 
 
+class ListInvoicesQuery(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    cursor: str | MISSING = Field(default=MISSING, alias="cursor")
+    limit: int | MISSING = Field(default=MISSING, alias="limit")
+    subject: models.ListInvoicesSubjectParam | MISSING = Field(default=MISSING, alias="subject")
+
+
 class ListInvoicesInput(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
     path: ListInvoicesPath
+    query: ListInvoicesQuery | None = None
 
 
 class ListNumberAreaCodesPath(BaseModel):
@@ -3029,6 +3081,21 @@ _OP_GET_ORGANIZATION_CONNECTION_STATUS = OperationSpec(
     },
 )
 
+_OP_GET_ORGANIZATION_CREDIT = OperationSpec(
+    operation_id="getOrganizationCredit",
+    method="GET",
+    path="/v1/organizations/{organizationId}/billing/credit",
+    safe=True,
+    idempotency_key_required=False,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.GetOrganizationCreditResponse),
+    },
+)
+
 _OP_GET_ORGANIZATION_PAYMENT_METHOD = OperationSpec(
     operation_id="getOrganizationPaymentMethod",
     method="GET",
@@ -3056,6 +3123,21 @@ _OP_GET_ORGANIZATION_SSO_CONFIGURATION = OperationSpec(
     ),
     success_responses={
         "200": TypeAdapter(models.OrganizationSsoConfiguration),
+    },
+)
+
+_OP_GET_ORGANIZATION_TERMS = OperationSpec(
+    operation_id="getOrganizationTerms",
+    method="GET",
+    path="/v1/organizations/{organizationId}/billing/terms",
+    safe=True,
+    idempotency_key_required=False,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.GetOrganizationTermsResponse),
     },
 )
 
@@ -3342,6 +3424,21 @@ _OP_LIST_BILLING_PLANS = OperationSpec(
     ),
     success_responses={
         "200": TypeAdapter(models.ListBillingPlansResponse),
+    },
+)
+
+_OP_LIST_CREDIT_ACTIVITY = OperationSpec(
+    operation_id="listCreditActivity",
+    method="GET",
+    path="/v1/organizations/{organizationId}/billing/credit/activity",
+    safe=True,
+    idempotency_key_required=False,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.ListCreditActivityResponse),
     },
 )
 
@@ -4307,7 +4404,7 @@ class SyncRawProjectsPlatformsResource:
         return self._transport.request(_OP_CONNECT_EMAIL_DOMAIN, payload)
 
     def connect_telegram_bot(self, input: ConnectTelegramBotInput) -> RawResponse[models.Operation]:
-        "Connect Telegram bot\n\nStarts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to connect an existing managed bot or create a new one with the project's default agent name or a custom display name, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged."
+        "Connect Telegram bot\n\nStarts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to create a new bot, whose name and username are chosen in Telegram, or to connect an existing managed bot, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_CONNECT_TELEGRAM_BOT, payload)
 
@@ -4505,7 +4602,7 @@ class SyncRawProjectsPlatformsResource:
         return self._transport.request(_OP_LIST_RESOURCE_FILTERED_VERIFICATION_CODES, payload)
 
     def list_resources(self, input: ListResourcesInput) -> RawResponse[models.ResourcePage]:
-        "List resources\n\nLists everything the project holds, oldest first, whatever kind of thing it is — one endpoint and one id shape for numbers, dedicated lines and whatever ships next. Nothing half-built appears here: a resource exists only once it is real, so anything still being provisioned is an operation rather than a resource with a pending flag. Filter by `type`, by `ability` (which matches only abilities that are currently enabled), and by `state` — comma-separated, and absent means every state, including retired ones. `detail` carries a per-type public view: an SMS number's number, a dedicated line's number and its per-capability health (`imessageHealth`, `whatsappHealth`, each with an `overallStatus` of `available`, `degraded`, `unavailable` or `unknown`; `imessageHealth` also carries `account`, `photonSystemComponents`, `newConversations`, `sms` and `mms`, each a `status` with the `cause` that decided it: `account`, `photonSystemComponents`, or null for the item's own state). Requires the platforms:read permission bound to the project resource in the path."
+        "List resources\n\nLists everything the project holds, oldest first, whatever kind of thing it is — one endpoint and one id shape for numbers, dedicated lines and whatever ships next. Nothing half-built appears here: a resource exists only once it is real, so anything still being provisioned is an operation rather than a resource with a pending flag. Filter by `type`, by `ability` (which matches only abilities that are currently enabled), and by `state` — comma-separated, and absent means every state, including retired ones. `detail` carries a per-type public view: an SMS number's number, a dedicated line's number and its per-capability health (`imessageHealth`, `whatsappHealth`, each with an `overallStatus` of `available`, `degraded`, `unavailable` or `unknown`; `imessageHealth` also carries `account`, `photonSystemComponents`, `newConversations`, `sms`, `mms` and `outboundPhoneCalling`, each a `status` with the `cause` that decided it: `account`, `photonSystemComponents`, or null for the item's own state. `outboundPhoneCalling` is whether the line's number can place outbound phone calls: `available`, `unavailable` when its caller ID is not verified (the line is then `degraded`), or `unknown` when it has not been checked yet; it does not depend on the account or the Photon system components, so its `cause` is always null). Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_LIST_RESOURCES, payload)
 
@@ -5008,7 +5105,7 @@ class SyncRawOrganizationsBillingResource:
     def get_effective_terms(
         self, input: GetEffectiveTermsInput
     ) -> RawResponse[models.GetEffectiveTermsResponse]:
-        "Get the project's effective billing terms\n\nReturns what the selected project is billed on now, per category it holds: the plan as its subscription has it, with any override applied, each fixed charge at the subscription's price and quantity, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. It also returns the credit the paying organization holds on credit notes, such as the unused time of a plan an upgrade replaced; it offsets that organization's next invoices. Supply both organizationId and projectId; the organization must pay for the project. This operation does not change billing."
+        "Get the project's effective billing terms\n\nReturns what the selected project is billed on now, per category it holds: the plan as its subscription has it, with any override applied, each fixed charge at the subscription's price and quantity, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. Supply both organizationId and projectId; the organization must pay for the project. This operation does not change billing."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_GET_EFFECTIVE_TERMS, payload)
 
@@ -5019,6 +5116,13 @@ class SyncRawOrganizationsBillingResource:
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_GET_ORGANIZATION_BILLING_OVERVIEW, payload)
 
+    def get_organization_credit(
+        self, input: GetOrganizationCreditInput
+    ) -> RawResponse[models.GetOrganizationCreditResponse]:
+        "Get organization credit\n\nReturns the credit the selected organization holds: on credit notes, such as the unused time of a plan an upgrade replaced or the unused days of a prorated fixed charge it released, and in its wallet: the credit Photon granted it, such as a new account's first organization's welcome credit, and any prepaid credit it bought. It offsets that organization's invoices of any kind except one-off invoices, credit notes first. Reading it does not apply or change credit."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_GET_ORGANIZATION_CREDIT, payload)
+
     def get_organization_payment_method(
         self, input: GetOrganizationPaymentMethodInput
     ) -> RawResponse[models.GetOrganizationPaymentMethodResponse]:
@@ -5026,22 +5130,36 @@ class SyncRawOrganizationsBillingResource:
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_GET_ORGANIZATION_PAYMENT_METHOD, payload)
 
+    def get_organization_terms(
+        self, input: GetOrganizationTermsInput
+    ) -> RawResponse[models.GetOrganizationTermsResponse]:
+        "Get the organization's effective billing terms\n\nReturns what the selected organization is billed on now on its own subscription, such as SSO and 10DLC campaigns: the plan as the subscription has it, with any override applied, each fixed charge at the subscription's price and the quantity the organization holds, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. subscription has a project subscription's terms without its category, and is null when the organization holds none. Project subscriptions are read per project. This operation does not change billing."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_GET_ORGANIZATION_TERMS, payload)
+
+    def list_credit_activity(
+        self, input: ListCreditActivityInput
+    ) -> RawResponse[models.ListCreditActivityResponse]:
+        "List credit activity\n\nReturns one page of how the selected organization's credit balance changed, newest first: credit notes issued and credit granted, credit applied to invoices, credit restored when the change an invoice paid for never applied, and credit voided. Each entry names the credit note (none for granted credit), the invoice when there is one, and the charge and subscription the credit note credits, or that the credit was a grant. Pass nextPage as page to read further. This operation does not change billing."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_LIST_CREDIT_ACTIVITY, payload)
+
     def list_invoices(self, input: ListInvoicesInput) -> RawResponse[models.ListInvoicesResponse]:
-        "List invoices\n\nReturns a single page of the selected organization's invoices; invoices with a zero total are excluded. Use the documented invoice fields to inspect each invoice's billing state. Listing invoices does not make a payment or modify a subscription."
+        "List invoices\n\nReturns one page of the selected organization's invoices, newest first: every invoice issued to it with a nonzero total or actual charges, including charges fully paid by credit; drafts and empty invoices are excluded. Each names what it charged the organization's own subscription and each project. Pass subject to list only the invoices that charge the organization itself or one of its projects, and nextCursor as cursor to read further. Listing invoices does not make a payment or modify a subscription."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_LIST_INVOICES, payload)
 
     def preview_organization_change(
         self, input: PreviewOrganizationChangeInput
     ) -> RawResponse[models.PreviewOrganizationChangeResponse]:
-        "Preview an organization billing change\n\nPreviews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A quantity already paid for this period is not billed again, so a purchase after a release can be free. nextCharge is what is charged in advance at the next period start. For a fixed-charge change, pass quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing."
+        "Preview an organization billing change\n\nPreviews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_PREVIEW_ORGANIZATION_CHANGE, payload)
 
     def preview_project_change(
         self, input: PreviewProjectChangeInput
     ) -> RawResponse[models.PreviewProjectChangeResponse]:
-        "Preview a project billing change\n\nPreviews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A quantity already paid for this period is not billed again, so a purchase after a release can be free. nextCharge is what is charged in advance at the next period start. For a fixed-charge change, pass quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; planChange says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in planChange.additions and outside dueNow. Supply both organizationId and projectId; the organization must pay for the project."
+        "Preview a project billing change\n\nPreviews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. Supply both organizationId and projectId; the organization must pay for the project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_PREVIEW_PROJECT_CHANGE, payload)
 
@@ -5267,7 +5385,7 @@ class SyncProjectsPlatformsResource:
         return (self._raw_resource.connect_email_domain(input)).data
 
     def connect_telegram_bot(self, input: ConnectTelegramBotInput) -> models.Operation:
-        "Connect Telegram bot\n\nStarts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to connect an existing managed bot or create a new one with the project's default agent name or a custom display name, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged."
+        "Connect Telegram bot\n\nStarts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to create a new bot, whose name and username are chosen in Telegram, or to connect an existing managed bot, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged."
         return (self._raw_resource.connect_telegram_bot(input)).data
 
     def connect_whatsapp_business(self, input: ConnectWhatsappBusinessInput) -> models.Operation:
@@ -5427,7 +5545,7 @@ class SyncProjectsPlatformsResource:
         return (self._raw_resource.list_resource_filtered_verification_codes(input)).data
 
     def list_resources(self, input: ListResourcesInput) -> models.ResourcePage:
-        "List resources\n\nLists everything the project holds, oldest first, whatever kind of thing it is — one endpoint and one id shape for numbers, dedicated lines and whatever ships next. Nothing half-built appears here: a resource exists only once it is real, so anything still being provisioned is an operation rather than a resource with a pending flag. Filter by `type`, by `ability` (which matches only abilities that are currently enabled), and by `state` — comma-separated, and absent means every state, including retired ones. `detail` carries a per-type public view: an SMS number's number, a dedicated line's number and its per-capability health (`imessageHealth`, `whatsappHealth`, each with an `overallStatus` of `available`, `degraded`, `unavailable` or `unknown`; `imessageHealth` also carries `account`, `photonSystemComponents`, `newConversations`, `sms` and `mms`, each a `status` with the `cause` that decided it: `account`, `photonSystemComponents`, or null for the item's own state). Requires the platforms:read permission bound to the project resource in the path."
+        "List resources\n\nLists everything the project holds, oldest first, whatever kind of thing it is — one endpoint and one id shape for numbers, dedicated lines and whatever ships next. Nothing half-built appears here: a resource exists only once it is real, so anything still being provisioned is an operation rather than a resource with a pending flag. Filter by `type`, by `ability` (which matches only abilities that are currently enabled), and by `state` — comma-separated, and absent means every state, including retired ones. `detail` carries a per-type public view: an SMS number's number, a dedicated line's number and its per-capability health (`imessageHealth`, `whatsappHealth`, each with an `overallStatus` of `available`, `degraded`, `unavailable` or `unknown`; `imessageHealth` also carries `account`, `photonSystemComponents`, `newConversations`, `sms`, `mms` and `outboundPhoneCalling`, each a `status` with the `cause` that decided it: `account`, `photonSystemComponents`, or null for the item's own state. `outboundPhoneCalling` is whether the line's number can place outbound phone calls: `available`, `unavailable` when its caller ID is not verified (the line is then `degraded`), or `unknown` when it has not been checked yet; it does not depend on the account or the Photon system components, so its `cause` is always null). Requires the platforms:read permission bound to the project resource in the path."
         return (self._raw_resource.list_resources(input)).data
 
     def list_voice_profiles(self, input: ListVoiceProfilesInput) -> models.VoiceProfilePage:
@@ -5839,7 +5957,7 @@ class SyncOrganizationsBillingResource:
     def get_effective_terms(
         self, input: GetEffectiveTermsInput
     ) -> models.GetEffectiveTermsResponse:
-        "Get the project's effective billing terms\n\nReturns what the selected project is billed on now, per category it holds: the plan as its subscription has it, with any override applied, each fixed charge at the subscription's price and quantity, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. It also returns the credit the paying organization holds on credit notes, such as the unused time of a plan an upgrade replaced; it offsets that organization's next invoices. Supply both organizationId and projectId; the organization must pay for the project. This operation does not change billing."
+        "Get the project's effective billing terms\n\nReturns what the selected project is billed on now, per category it holds: the plan as its subscription has it, with any override applied, each fixed charge at the subscription's price and quantity, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. Supply both organizationId and projectId; the organization must pay for the project. This operation does not change billing."
         return (self._raw_resource.get_effective_terms(input)).data
 
     def get_organization_billing_overview(
@@ -5848,26 +5966,44 @@ class SyncOrganizationsBillingResource:
         "Get organization billing overview\n\nReturns the selected organization’s billing subscription and entitlementsVersion. The subscription can be null. Read the returned plan, charges and entitlements to inspect organization billing; this operation does not purchase or change a plan."
         return (self._raw_resource.get_organization_billing_overview(input)).data
 
+    def get_organization_credit(
+        self, input: GetOrganizationCreditInput
+    ) -> models.GetOrganizationCreditResponse:
+        "Get organization credit\n\nReturns the credit the selected organization holds: on credit notes, such as the unused time of a plan an upgrade replaced or the unused days of a prorated fixed charge it released, and in its wallet: the credit Photon granted it, such as a new account's first organization's welcome credit, and any prepaid credit it bought. It offsets that organization's invoices of any kind except one-off invoices, credit notes first. Reading it does not apply or change credit."
+        return (self._raw_resource.get_organization_credit(input)).data
+
     def get_organization_payment_method(
         self, input: GetOrganizationPaymentMethodInput
     ) -> models.GetOrganizationPaymentMethodResponse:
         "Get organization payment method\n\nReports whether the selected organization has a card on file and returns its documented payment-method metadata. Reading this endpoint does not collect a new card or create a checkout session."
         return (self._raw_resource.get_organization_payment_method(input)).data
 
+    def get_organization_terms(
+        self, input: GetOrganizationTermsInput
+    ) -> models.GetOrganizationTermsResponse:
+        "Get the organization's effective billing terms\n\nReturns what the selected organization is billed on now on its own subscription, such as SSO and 10DLC campaigns: the plan as the subscription has it, with any override applied, each fixed charge at the subscription's price and the quantity the organization holds, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. subscription has a project subscription's terms without its category, and is null when the organization holds none. Project subscriptions are read per project. This operation does not change billing."
+        return (self._raw_resource.get_organization_terms(input)).data
+
+    def list_credit_activity(
+        self, input: ListCreditActivityInput
+    ) -> models.ListCreditActivityResponse:
+        "List credit activity\n\nReturns one page of how the selected organization's credit balance changed, newest first: credit notes issued and credit granted, credit applied to invoices, credit restored when the change an invoice paid for never applied, and credit voided. Each entry names the credit note (none for granted credit), the invoice when there is one, and the charge and subscription the credit note credits, or that the credit was a grant. Pass nextPage as page to read further. This operation does not change billing."
+        return (self._raw_resource.list_credit_activity(input)).data
+
     def list_invoices(self, input: ListInvoicesInput) -> models.ListInvoicesResponse:
-        "List invoices\n\nReturns a single page of the selected organization's invoices; invoices with a zero total are excluded. Use the documented invoice fields to inspect each invoice's billing state. Listing invoices does not make a payment or modify a subscription."
+        "List invoices\n\nReturns one page of the selected organization's invoices, newest first: every invoice issued to it with a nonzero total or actual charges, including charges fully paid by credit; drafts and empty invoices are excluded. Each names what it charged the organization's own subscription and each project. Pass subject to list only the invoices that charge the organization itself or one of its projects, and nextCursor as cursor to read further. Listing invoices does not make a payment or modify a subscription."
         return (self._raw_resource.list_invoices(input)).data
 
     def preview_organization_change(
         self, input: PreviewOrganizationChangeInput
     ) -> models.PreviewOrganizationChangeResponse:
-        "Preview an organization billing change\n\nPreviews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A quantity already paid for this period is not billed again, so a purchase after a release can be free. nextCharge is what is charged in advance at the next period start. For a fixed-charge change, pass quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing."
+        "Preview an organization billing change\n\nPreviews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing."
         return (self._raw_resource.preview_organization_change(input)).data
 
     def preview_project_change(
         self, input: PreviewProjectChangeInput
     ) -> models.PreviewProjectChangeResponse:
-        "Preview a project billing change\n\nPreviews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A quantity already paid for this period is not billed again, so a purchase after a release can be free. nextCharge is what is charged in advance at the next period start. For a fixed-charge change, pass quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; planChange says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in planChange.additions and outside dueNow. Supply both organizationId and projectId; the organization must pay for the project."
+        "Preview a project billing change\n\nPreviews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. Supply both organizationId and projectId; the organization must pay for the project."
         return (self._raw_resource.preview_project_change(input)).data
 
 
@@ -6084,7 +6220,7 @@ class AsyncRawProjectsPlatformsResource:
     async def connect_telegram_bot(
         self, input: ConnectTelegramBotInput
     ) -> RawResponse[models.Operation]:
-        "Connect Telegram bot\n\nStarts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to connect an existing managed bot or create a new one with the project's default agent name or a custom display name, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged."
+        "Connect Telegram bot\n\nStarts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to create a new bot, whose name and username are chosen in Telegram, or to connect an existing managed bot, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_CONNECT_TELEGRAM_BOT, payload)
 
@@ -6290,7 +6426,7 @@ class AsyncRawProjectsPlatformsResource:
         return await self._transport.request(_OP_LIST_RESOURCE_FILTERED_VERIFICATION_CODES, payload)
 
     async def list_resources(self, input: ListResourcesInput) -> RawResponse[models.ResourcePage]:
-        "List resources\n\nLists everything the project holds, oldest first, whatever kind of thing it is — one endpoint and one id shape for numbers, dedicated lines and whatever ships next. Nothing half-built appears here: a resource exists only once it is real, so anything still being provisioned is an operation rather than a resource with a pending flag. Filter by `type`, by `ability` (which matches only abilities that are currently enabled), and by `state` — comma-separated, and absent means every state, including retired ones. `detail` carries a per-type public view: an SMS number's number, a dedicated line's number and its per-capability health (`imessageHealth`, `whatsappHealth`, each with an `overallStatus` of `available`, `degraded`, `unavailable` or `unknown`; `imessageHealth` also carries `account`, `photonSystemComponents`, `newConversations`, `sms` and `mms`, each a `status` with the `cause` that decided it: `account`, `photonSystemComponents`, or null for the item's own state). Requires the platforms:read permission bound to the project resource in the path."
+        "List resources\n\nLists everything the project holds, oldest first, whatever kind of thing it is — one endpoint and one id shape for numbers, dedicated lines and whatever ships next. Nothing half-built appears here: a resource exists only once it is real, so anything still being provisioned is an operation rather than a resource with a pending flag. Filter by `type`, by `ability` (which matches only abilities that are currently enabled), and by `state` — comma-separated, and absent means every state, including retired ones. `detail` carries a per-type public view: an SMS number's number, a dedicated line's number and its per-capability health (`imessageHealth`, `whatsappHealth`, each with an `overallStatus` of `available`, `degraded`, `unavailable` or `unknown`; `imessageHealth` also carries `account`, `photonSystemComponents`, `newConversations`, `sms`, `mms` and `outboundPhoneCalling`, each a `status` with the `cause` that decided it: `account`, `photonSystemComponents`, or null for the item's own state. `outboundPhoneCalling` is whether the line's number can place outbound phone calls: `available`, `unavailable` when its caller ID is not verified (the line is then `degraded`), or `unknown` when it has not been checked yet; it does not depend on the account or the Photon system components, so its `cause` is always null). Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_LIST_RESOURCES, payload)
 
@@ -6805,7 +6941,7 @@ class AsyncRawOrganizationsBillingResource:
     async def get_effective_terms(
         self, input: GetEffectiveTermsInput
     ) -> RawResponse[models.GetEffectiveTermsResponse]:
-        "Get the project's effective billing terms\n\nReturns what the selected project is billed on now, per category it holds: the plan as its subscription has it, with any override applied, each fixed charge at the subscription's price and quantity, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. It also returns the credit the paying organization holds on credit notes, such as the unused time of a plan an upgrade replaced; it offsets that organization's next invoices. Supply both organizationId and projectId; the organization must pay for the project. This operation does not change billing."
+        "Get the project's effective billing terms\n\nReturns what the selected project is billed on now, per category it holds: the plan as its subscription has it, with any override applied, each fixed charge at the subscription's price and quantity, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. Supply both organizationId and projectId; the organization must pay for the project. This operation does not change billing."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_GET_EFFECTIVE_TERMS, payload)
 
@@ -6816,6 +6952,13 @@ class AsyncRawOrganizationsBillingResource:
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_GET_ORGANIZATION_BILLING_OVERVIEW, payload)
 
+    async def get_organization_credit(
+        self, input: GetOrganizationCreditInput
+    ) -> RawResponse[models.GetOrganizationCreditResponse]:
+        "Get organization credit\n\nReturns the credit the selected organization holds: on credit notes, such as the unused time of a plan an upgrade replaced or the unused days of a prorated fixed charge it released, and in its wallet: the credit Photon granted it, such as a new account's first organization's welcome credit, and any prepaid credit it bought. It offsets that organization's invoices of any kind except one-off invoices, credit notes first. Reading it does not apply or change credit."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_GET_ORGANIZATION_CREDIT, payload)
+
     async def get_organization_payment_method(
         self, input: GetOrganizationPaymentMethodInput
     ) -> RawResponse[models.GetOrganizationPaymentMethodResponse]:
@@ -6823,24 +6966,38 @@ class AsyncRawOrganizationsBillingResource:
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_GET_ORGANIZATION_PAYMENT_METHOD, payload)
 
+    async def get_organization_terms(
+        self, input: GetOrganizationTermsInput
+    ) -> RawResponse[models.GetOrganizationTermsResponse]:
+        "Get the organization's effective billing terms\n\nReturns what the selected organization is billed on now on its own subscription, such as SSO and 10DLC campaigns: the plan as the subscription has it, with any override applied, each fixed charge at the subscription's price and the quantity the organization holds, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. subscription has a project subscription's terms without its category, and is null when the organization holds none. Project subscriptions are read per project. This operation does not change billing."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_GET_ORGANIZATION_TERMS, payload)
+
+    async def list_credit_activity(
+        self, input: ListCreditActivityInput
+    ) -> RawResponse[models.ListCreditActivityResponse]:
+        "List credit activity\n\nReturns one page of how the selected organization's credit balance changed, newest first: credit notes issued and credit granted, credit applied to invoices, credit restored when the change an invoice paid for never applied, and credit voided. Each entry names the credit note (none for granted credit), the invoice when there is one, and the charge and subscription the credit note credits, or that the credit was a grant. Pass nextPage as page to read further. This operation does not change billing."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_LIST_CREDIT_ACTIVITY, payload)
+
     async def list_invoices(
         self, input: ListInvoicesInput
     ) -> RawResponse[models.ListInvoicesResponse]:
-        "List invoices\n\nReturns a single page of the selected organization's invoices; invoices with a zero total are excluded. Use the documented invoice fields to inspect each invoice's billing state. Listing invoices does not make a payment or modify a subscription."
+        "List invoices\n\nReturns one page of the selected organization's invoices, newest first: every invoice issued to it with a nonzero total or actual charges, including charges fully paid by credit; drafts and empty invoices are excluded. Each names what it charged the organization's own subscription and each project. Pass subject to list only the invoices that charge the organization itself or one of its projects, and nextCursor as cursor to read further. Listing invoices does not make a payment or modify a subscription."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_LIST_INVOICES, payload)
 
     async def preview_organization_change(
         self, input: PreviewOrganizationChangeInput
     ) -> RawResponse[models.PreviewOrganizationChangeResponse]:
-        "Preview an organization billing change\n\nPreviews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A quantity already paid for this period is not billed again, so a purchase after a release can be free. nextCharge is what is charged in advance at the next period start. For a fixed-charge change, pass quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing."
+        "Preview an organization billing change\n\nPreviews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_PREVIEW_ORGANIZATION_CHANGE, payload)
 
     async def preview_project_change(
         self, input: PreviewProjectChangeInput
     ) -> RawResponse[models.PreviewProjectChangeResponse]:
-        "Preview a project billing change\n\nPreviews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A quantity already paid for this period is not billed again, so a purchase after a release can be free. nextCharge is what is charged in advance at the next period start. For a fixed-charge change, pass quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; planChange says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in planChange.additions and outside dueNow. Supply both organizationId and projectId; the organization must pay for the project."
+        "Preview a project billing change\n\nPreviews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. Supply both organizationId and projectId; the organization must pay for the project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_PREVIEW_PROJECT_CHANGE, payload)
 
@@ -7066,7 +7223,7 @@ class AsyncProjectsPlatformsResource:
         return (await self._raw_resource.connect_email_domain(input)).data
 
     async def connect_telegram_bot(self, input: ConnectTelegramBotInput) -> models.Operation:
-        "Connect Telegram bot\n\nStarts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to connect an existing managed bot or create a new one with the project's default agent name or a custom display name, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged."
+        "Connect Telegram bot\n\nStarts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to create a new bot, whose name and username are chosen in Telegram, or to connect an existing managed bot, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged."
         return (await self._raw_resource.connect_telegram_bot(input)).data
 
     async def connect_whatsapp_business(
@@ -7232,7 +7389,7 @@ class AsyncProjectsPlatformsResource:
         return (await self._raw_resource.list_resource_filtered_verification_codes(input)).data
 
     async def list_resources(self, input: ListResourcesInput) -> models.ResourcePage:
-        "List resources\n\nLists everything the project holds, oldest first, whatever kind of thing it is — one endpoint and one id shape for numbers, dedicated lines and whatever ships next. Nothing half-built appears here: a resource exists only once it is real, so anything still being provisioned is an operation rather than a resource with a pending flag. Filter by `type`, by `ability` (which matches only abilities that are currently enabled), and by `state` — comma-separated, and absent means every state, including retired ones. `detail` carries a per-type public view: an SMS number's number, a dedicated line's number and its per-capability health (`imessageHealth`, `whatsappHealth`, each with an `overallStatus` of `available`, `degraded`, `unavailable` or `unknown`; `imessageHealth` also carries `account`, `photonSystemComponents`, `newConversations`, `sms` and `mms`, each a `status` with the `cause` that decided it: `account`, `photonSystemComponents`, or null for the item's own state). Requires the platforms:read permission bound to the project resource in the path."
+        "List resources\n\nLists everything the project holds, oldest first, whatever kind of thing it is — one endpoint and one id shape for numbers, dedicated lines and whatever ships next. Nothing half-built appears here: a resource exists only once it is real, so anything still being provisioned is an operation rather than a resource with a pending flag. Filter by `type`, by `ability` (which matches only abilities that are currently enabled), and by `state` — comma-separated, and absent means every state, including retired ones. `detail` carries a per-type public view: an SMS number's number, a dedicated line's number and its per-capability health (`imessageHealth`, `whatsappHealth`, each with an `overallStatus` of `available`, `degraded`, `unavailable` or `unknown`; `imessageHealth` also carries `account`, `photonSystemComponents`, `newConversations`, `sms`, `mms` and `outboundPhoneCalling`, each a `status` with the `cause` that decided it: `account`, `photonSystemComponents`, or null for the item's own state. `outboundPhoneCalling` is whether the line's number can place outbound phone calls: `available`, `unavailable` when its caller ID is not verified (the line is then `degraded`), or `unknown` when it has not been checked yet; it does not depend on the account or the Photon system components, so its `cause` is always null). Requires the platforms:read permission bound to the project resource in the path."
         return (await self._raw_resource.list_resources(input)).data
 
     async def list_voice_profiles(self, input: ListVoiceProfilesInput) -> models.VoiceProfilePage:
@@ -7650,7 +7807,7 @@ class AsyncOrganizationsBillingResource:
     async def get_effective_terms(
         self, input: GetEffectiveTermsInput
     ) -> models.GetEffectiveTermsResponse:
-        "Get the project's effective billing terms\n\nReturns what the selected project is billed on now, per category it holds: the plan as its subscription has it, with any override applied, each fixed charge at the subscription's price and quantity, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. It also returns the credit the paying organization holds on credit notes, such as the unused time of a plan an upgrade replaced; it offsets that organization's next invoices. Supply both organizationId and projectId; the organization must pay for the project. This operation does not change billing."
+        "Get the project's effective billing terms\n\nReturns what the selected project is billed on now, per category it holds: the plan as its subscription has it, with any override applied, each fixed charge at the subscription's price and quantity, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. Supply both organizationId and projectId; the organization must pay for the project. This operation does not change billing."
         return (await self._raw_resource.get_effective_terms(input)).data
 
     async def get_organization_billing_overview(
@@ -7659,26 +7816,44 @@ class AsyncOrganizationsBillingResource:
         "Get organization billing overview\n\nReturns the selected organization’s billing subscription and entitlementsVersion. The subscription can be null. Read the returned plan, charges and entitlements to inspect organization billing; this operation does not purchase or change a plan."
         return (await self._raw_resource.get_organization_billing_overview(input)).data
 
+    async def get_organization_credit(
+        self, input: GetOrganizationCreditInput
+    ) -> models.GetOrganizationCreditResponse:
+        "Get organization credit\n\nReturns the credit the selected organization holds: on credit notes, such as the unused time of a plan an upgrade replaced or the unused days of a prorated fixed charge it released, and in its wallet: the credit Photon granted it, such as a new account's first organization's welcome credit, and any prepaid credit it bought. It offsets that organization's invoices of any kind except one-off invoices, credit notes first. Reading it does not apply or change credit."
+        return (await self._raw_resource.get_organization_credit(input)).data
+
     async def get_organization_payment_method(
         self, input: GetOrganizationPaymentMethodInput
     ) -> models.GetOrganizationPaymentMethodResponse:
         "Get organization payment method\n\nReports whether the selected organization has a card on file and returns its documented payment-method metadata. Reading this endpoint does not collect a new card or create a checkout session."
         return (await self._raw_resource.get_organization_payment_method(input)).data
 
+    async def get_organization_terms(
+        self, input: GetOrganizationTermsInput
+    ) -> models.GetOrganizationTermsResponse:
+        "Get the organization's effective billing terms\n\nReturns what the selected organization is billed on now on its own subscription, such as SSO and 10DLC campaigns: the plan as the subscription has it, with any override applied, each fixed charge at the subscription's price and the quantity the organization holds, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. subscription has a project subscription's terms without its category, and is null when the organization holds none. Project subscriptions are read per project. This operation does not change billing."
+        return (await self._raw_resource.get_organization_terms(input)).data
+
+    async def list_credit_activity(
+        self, input: ListCreditActivityInput
+    ) -> models.ListCreditActivityResponse:
+        "List credit activity\n\nReturns one page of how the selected organization's credit balance changed, newest first: credit notes issued and credit granted, credit applied to invoices, credit restored when the change an invoice paid for never applied, and credit voided. Each entry names the credit note (none for granted credit), the invoice when there is one, and the charge and subscription the credit note credits, or that the credit was a grant. Pass nextPage as page to read further. This operation does not change billing."
+        return (await self._raw_resource.list_credit_activity(input)).data
+
     async def list_invoices(self, input: ListInvoicesInput) -> models.ListInvoicesResponse:
-        "List invoices\n\nReturns a single page of the selected organization's invoices; invoices with a zero total are excluded. Use the documented invoice fields to inspect each invoice's billing state. Listing invoices does not make a payment or modify a subscription."
+        "List invoices\n\nReturns one page of the selected organization's invoices, newest first: every invoice issued to it with a nonzero total or actual charges, including charges fully paid by credit; drafts and empty invoices are excluded. Each names what it charged the organization's own subscription and each project. Pass subject to list only the invoices that charge the organization itself or one of its projects, and nextCursor as cursor to read further. Listing invoices does not make a payment or modify a subscription."
         return (await self._raw_resource.list_invoices(input)).data
 
     async def preview_organization_change(
         self, input: PreviewOrganizationChangeInput
     ) -> models.PreviewOrganizationChangeResponse:
-        "Preview an organization billing change\n\nPreviews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A quantity already paid for this period is not billed again, so a purchase after a release can be free. nextCharge is what is charged in advance at the next period start. For a fixed-charge change, pass quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing."
+        "Preview an organization billing change\n\nPreviews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing."
         return (await self._raw_resource.preview_organization_change(input)).data
 
     async def preview_project_change(
         self, input: PreviewProjectChangeInput
     ) -> models.PreviewProjectChangeResponse:
-        "Preview a project billing change\n\nPreviews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A quantity already paid for this period is not billed again, so a purchase after a release can be free. nextCharge is what is charged in advance at the next period start. For a fixed-charge change, pass quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; planChange says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in planChange.additions and outside dueNow. Supply both organizationId and projectId; the organization must pay for the project."
+        "Preview a project billing change\n\nPreviews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. Supply both organizationId and projectId; the organization must pay for the project."
         return (await self._raw_resource.preview_project_change(input)).data
 
 

@@ -6,7 +6,7 @@ description: "Get the project's effective billing terms: getEffectiveTerms in th
 
 `GET /v1/organizations/{organizationId}/billing/projects/{projectId}/terms`
 
-Returns what the selected project is billed on now, per category it holds: the plan as its subscription has it, with any override applied, each fixed charge at the subscription's price and quantity, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. It also returns the credit the paying organization holds on credit notes, such as the unused time of a plan an upgrade replaced; it offsets that organization's next invoices. Supply both organizationId and projectId; the organization must pay for the project. This operation does not change billing.
+Returns what the selected project is billed on now, per category it holds: the plan as its subscription has it, with any override applied, each fixed charge at the subscription's price and quantity, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. Supply both organizationId and projectId; the organization must pay for the project. This operation does not change billing.
 
 <Tabs>
 <Tab title="TypeScript">
@@ -77,7 +77,6 @@ let result = client
 <ResponseExample>
 ```json 200
 {
-  "creditBalance": null,
   "subscriptions": [
     {
       "cancelsAt": null,
@@ -136,10 +135,6 @@ The project being billed.
 ## Returns
 
 **`200`** The project's effective billing terms, per category. GetEffectiveTermsResponse
-
-<ResponseField name="creditBalance" type={"CreditBalance | null"} required>
-Credit the paying organization holds on credit notes, such as the unused time of a plan an upgrade replaced. It offsets that organization's next invoices of any kind except one-off invoices. Prepaid wallet credit is separate. Null when it holds none.
-</ResponseField>
 
 <ResponseField name="subscriptions" type={"array of SubscriptionTerms"} required>
 One entry per category the project holds, by category. Empty means it holds none.

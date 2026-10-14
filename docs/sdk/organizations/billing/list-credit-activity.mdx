@@ -1,0 +1,119 @@
+---
+title: "List credit activity"
+icon: arrow-down-left
+description: "List credit activity: listCreditActivity in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/organizations/{organizationId}/billing/credit/activity`
+
+Returns one page of how the selected organization's credit balance changed, newest first: credit notes issued and credit granted, credit applied to invoices, credit restored when the change an invoice paid for never applied, and credit voided. Each entry names the credit note (none for granted credit), the invoice when there is one, and the charge and subscription the credit note credits, or that the credit was a grant. Pass nextPage as page to read further. This operation does not change billing.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.billing.listCreditActivity(input: ListCreditActivityInput, options?: RequestOptions): Promise<ListCreditActivityOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.billing.list_credit_activity(input: ListCreditActivityInput) -> models.ListCreditActivityResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.list_credit_activity(organization_id: String, params: Option<ListCreditActivityParams>).await -> Result<ResponseValue<types::ListCreditActivityResponse>, Error<ListCreditActivityError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.billing.listCreditActivity({
+  path: {
+    organizationId: "organizationId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import ListCreditActivityInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.billing.list_credit_activity(
+    ListCreditActivityInput.model_validate({
+        "path": {
+            "organizationId": "organizationId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .list_credit_activity("organizationId".to_owned(), None)
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "entries": [
+    {
+      "amountCents": 0,
+      "balanceAfterCents": -9007199254740991,
+      "creditNote": null,
+      "currency": "string",
+      "invoice": null,
+      "kind": "issued",
+      "occurredAt": "string",
+      "source": null,
+      "walletTransaction": null
+    }
+  ],
+  "nextPage": null
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="organizationId" type={"string"} required>
+
+</ParamField>
+
+<ParamField query="page" type={"integer"}>
+Page to read, from 1: the nextPage of the page before.
+</ParamField>
+
+
+## Returns
+
+**`200`** One page of the organization's credit activity. ListCreditActivityResponse
+
+<ResponseField name="entries" type={"array of CreditActivity"} required>
+Newest first.
+</ResponseField>
+
+<ResponseField name="nextPage" type={"integer | null"} required>
+Pass as page to read the next page. Null on the last page.
+</ResponseField>
+

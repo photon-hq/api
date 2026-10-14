@@ -45,8 +45,8 @@
     "test": "npm run test:tools && npm run test:publish && npm run test:postman && npm run test:oas31 && npm run test:typescript && npm run test:python-codegen && npm run test:python && npm run test:rust"
   },
   "devDependencies": {
-    "@redocly/cli": "2.49.0",
-    "@types/node": "26.4.0",
+    "@redocly/cli": "2.62.1",
+    "@types/node": "26.4.1",
     "esbuild": "0.28.1",
     "handlebars": "4.7.10",
     "json-canonicalize": "2.0.0",
