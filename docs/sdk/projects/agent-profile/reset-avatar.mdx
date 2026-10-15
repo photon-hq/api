@@ -1,7 +1,7 @@
 ---
 title: "Reset agent avatar"
 icon: x
-description: "Reset agent avatar: resetAgentProfileAvatar in the TypeScript, Python and Rust clients."
+description: "Reset agent avatar: resetAgentProfileAvatar in the TypeScript, Python, Rust and Go clients."
 ---
 
 `DELETE /v1/projects/{projectId}/agent-profile/avatar`
@@ -22,6 +22,11 @@ photon.projects.agent_profile.reset_avatar(input: ResetAgentProfileAvatarInput) 
 <Tab title="Rust">
 ```rust Rust
 client.reset_agent_profile_avatar(idempotency_key: String, project_id: String).await -> Result<ResponseValue<types::AgentProfile>, Error<ResetAgentProfileAvatarError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.AgentProfile.ResetAvatar(ctx context.Context, params *ResetAgentProfileAvatarParams, opts ...RequestOption) (*AgentProfile, error)
 ```
 </Tab>
 </Tabs>
@@ -74,6 +79,26 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Projects.AgentProfile.ResetAvatar(ctx, &photonapi.ResetAgentProfileAvatarParams{
+	IdempotencyKey: "idempotencyKey",
+	ProjectID: "projectId",
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

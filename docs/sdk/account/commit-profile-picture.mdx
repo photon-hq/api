@@ -1,7 +1,7 @@
 ---
 title: "Commit profile picture"
 icon: pencil
-description: "Commit profile picture: commitAccountProfilePicture in the TypeScript, Python and Rust clients."
+description: "Commit profile picture: commitAccountProfilePicture in the TypeScript, Python, Rust and Go clients."
 ---
 
 `PUT /v1/account/profile-picture`
@@ -22,6 +22,11 @@ photon.account.commit_profile_picture(input: CommitAccountProfilePictureInput) -
 <Tab title="Rust">
 ```rust Rust
 client.commit_account_profile_picture(idempotency_key: String, body: &types::CommitAccountProfilePictureRequest).await -> Result<ResponseValue<types::Account>, Error<CommitAccountProfilePictureError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Account.CommitProfilePicture(ctx context.Context, params *CommitAccountProfilePictureParams, opts ...RequestOption) (*Account, error)
 ```
 </Tab>
 </Tabs>
@@ -79,6 +84,33 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.CommitAccountProfilePictureRequest
+if err := json.Unmarshal([]byte(`{
+	"uploadId": "uploadId"
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Account.CommitProfilePicture(ctx, &photonapi.CommitAccountProfilePictureParams{
+	IdempotencyKey: "idempotencyKey",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

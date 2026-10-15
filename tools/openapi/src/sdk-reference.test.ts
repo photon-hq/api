@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { pythonMethods, rustMethods } from "./code-samples.js";
+import { goMethods, pythonMethods, rustMethods } from "./code-samples.js";
 import type { ManifestOperation } from "./generate-facades.js";
 import {
   methodPage,
@@ -18,6 +18,7 @@ const samples = (call: string) => [
   { lang: "typescript", label: "TypeScript", source: `await photon.${call}();` },
   { lang: "python", label: "Python", source: `photon.${call}()` },
   { lang: "rust", label: "Rust", source: `client.${call}().await?;` },
+  { lang: "go", label: "Go", source: `client.${call}(ctx)` },
 ];
 
 const document: JsonObject = {
@@ -124,7 +125,66 @@ const rustClient = `impl Client {
     pub async fn list_imessage_assignments(&self) -> Result<support::ResponseValue<Vec<String>>, support::Error<ListImessageAssignmentsError>> {}
 }`;
 
-const sources = { typescriptClient, pythonClient, rustClient };
+const goClient = `// ProjectsService groups the projects operations.
+type ProjectsService struct{ c *core }
+
+// ProjectsPlatformsService groups the projects.platforms operations.
+type ProjectsPlatformsService struct{ c *core }
+
+// ProjectsPlatformsImessageService groups the projects.platforms.imessage operations.
+type ProjectsPlatformsImessageService struct{ c *core }
+
+// ProjectsPlatformsImessageAssignmentsService groups the projects.platforms.imessage.assignments operations.
+type ProjectsPlatformsImessageAssignmentsService struct{ c *core }
+
+type Client struct {
+	c        *core
+	Projects *ProjectsService
+}
+
+func newClient(c *core) *Client {
+	client := &Client{c: c}
+	client.Projects = newProjectsService(c)
+	return client
+}
+
+func newProjectsService(c *core) *ProjectsService {
+	s := &ProjectsService{c: c}
+	s.Platforms = newProjectsPlatformsService(c)
+	return s
+}
+
+func newProjectsPlatformsService(c *core) *ProjectsPlatformsService {
+	s := &ProjectsPlatformsService{c: c}
+	s.Imessage = newProjectsPlatformsImessageService(c)
+	return s
+}
+
+func newProjectsPlatformsImessageService(c *core) *ProjectsPlatformsImessageService {
+	s := &ProjectsPlatformsImessageService{c: c}
+	s.Assignments = newProjectsPlatformsImessageAssignmentsService(c)
+	return s
+}
+
+func newProjectsPlatformsImessageAssignmentsService(c *core) *ProjectsPlatformsImessageAssignmentsService {
+	return &ProjectsPlatformsImessageAssignmentsService{c: c}
+}
+
+type GetProjectParams struct {
+	// ProjectID is the path parameter projectId.
+	ProjectID string
+}
+
+func (s *ProjectsService) Get(ctx context.Context, params *GetProjectParams, opts ...RequestOption) (*Project, error) {
+	return nil, nil
+}
+
+func (s *ProjectsPlatformsImessageAssignmentsService) List(ctx context.Context, opts ...RequestOption) (*ListImessageAssignmentsResponse, error) {
+	return nil, nil
+}
+`;
+
+const sources = { typescriptClient, pythonClient, rustClient, goClient };
 
 test("signatures come from the generated clients", () => {
   assert.equal(
@@ -136,6 +196,7 @@ test("signatures come from the generated clients", () => {
   });
   assert.equal(pythonMethods(pythonClient).get("ListImessageAssignments")?.parameter, "input: ListImessageAssignmentsInput | None = None");
   assert.equal(rustMethods(rustClient).get("get_project")?.returns, "Result<ResponseValue<types::Project>, Error<GetProjectError>>");
+  assert.equal(goMethods(goClient).get("projects.platforms.imessage.assignments.List")?.path, "client.Projects.Platforms.Imessage.Assignments.List");
 });
 
 test("resources follow the SDK namespaces, with product names capitalised", () => {
@@ -158,6 +219,7 @@ test("a method page shows each SDK's signature, the call beside it, and the cont
   // Prose is escaped for MDX.
   assert.match(page, /Use &#123;projectId&#125; from &lt;listProjects>\./);
   assert.match(page, /```python Python\nphoton\.projects\.get\(input: GetProjectInput\) -> models\.Project\n```/);
+  assert.match(page, /```go Go\nclient\.Projects\.Get\(ctx context\.Context, params \*GetProjectParams, opts \.\.\.RequestOption\) \(\*Project, error\)\n```/);
   assert.match(page, /<RequestExample>\n```typescript TypeScript\nawait photon\.projects\.get\(\);/);
   assert.match(page, /<ParamField path="projectId" type=\{"string"\} required>/);
   // Types are JavaScript strings, so an enum's quotes cannot end the attribute.
@@ -276,6 +338,46 @@ class SyncRoot:
 `,
     rustClient: `pub async fn create_token(&self, body: &types::CreateTokenRequest) -> Result<support::ResponseValue<types::Token>, support::Error<CreateTokenError>> {}
 pub async fn download_file(&self, id: String) -> Result<support::ResponseValue<support::ByteStream>, support::Error<DownloadFileError>> {}`,
+    goClient: `// TokensService groups the tokens operations.
+// FilesService groups the files operations.
+type Client struct {
+	Tokens *TokensService
+	Files  *FilesService
+}
+
+func newClient(c *core) *Client {
+	client := &Client{c: c}
+	client.Tokens = newTokensService(c)
+	client.Files = newFilesService(c)
+	return client
+}
+
+func newTokensService(c *core) *TokensService {
+	return &TokensService{c: c}
+}
+
+func newFilesService(c *core) *FilesService {
+	return &FilesService{c: c}
+}
+
+type CreateTokenParams struct {
+	// Body is the request body.
+	Body CreateTokenRequest
+}
+
+type DownloadFileParams struct {
+	// ID is the path parameter id.
+	ID string
+}
+
+func (s *TokensService) Create(ctx context.Context, params *CreateTokenParams, opts ...RequestOption) (*Token, error) {
+	return nil, nil
+}
+
+func (s *FilesService) Download(ctx context.Context, params *DownloadFileParams, opts ...RequestOption) ([]byte, error) {
+	return nil, nil
+}
+`,
   });
   const token = methodPage(document, tree.find((resource) => resource.title === "Tokens")!.methods[0]!);
   // A union body lists each variant's fields.

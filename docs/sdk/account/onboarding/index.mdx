@@ -1,6 +1,6 @@
 ---
 title: "Onboarding"
-description: "The Onboarding resource in the TypeScript, Python and Rust clients."
+description: "The Onboarding resource in the TypeScript, Python, Rust and Go clients."
 ---
 
 ## Methods
@@ -71,6 +71,29 @@ client.complete_account_onboarding().await -> Result<ResponseValue<types::Comple
 
 ```rust Rust
 client.update_account_onboarding(idempotency_key: String, body: &types::UpdateAccountOnboardingRequest).await -> Result<ResponseValue<types::UpdateAccountOnboardingResponse>, Error<UpdateAccountOnboardingError>>
+```
+`PATCH /v1/account/onboarding`
+
+</Tab>
+<Tab title="Go">
+**[Get onboarding state](/api-client/sdk/account/onboarding/get)**
+
+```go Go
+client.Account.Onboarding.Get(ctx context.Context, opts ...RequestOption) (*GetAccountOnboardingResponse, error)
+```
+`GET /v1/account/onboarding`
+
+**[Complete onboarding](/api-client/sdk/account/onboarding/complete)**
+
+```go Go
+client.Account.Onboarding.Complete(ctx context.Context, opts ...RequestOption) (*CompleteAccountOnboardingResponse, error)
+```
+`POST /v1/account/onboarding/complete`
+
+**[Update onboarding state](/api-client/sdk/account/onboarding/update)**
+
+```go Go
+client.Account.Onboarding.Update(ctx context.Context, params *UpdateAccountOnboardingParams, opts ...RequestOption) (*UpdateAccountOnboardingResponse, error)
 ```
 `PATCH /v1/account/onboarding`
 

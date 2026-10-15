@@ -1,7 +1,7 @@
 ---
 title: "Confirm phone verification"
 icon: pencil
-description: "Confirm phone verification: confirmAccountPhoneVerification in the TypeScript, Python and Rust clients."
+description: "Confirm phone verification: confirmAccountPhoneVerification in the TypeScript, Python, Rust and Go clients."
 ---
 
 `PUT /v1/account/phone`
@@ -22,6 +22,11 @@ photon.account.confirm_phone_verification(input: ConfirmAccountPhoneVerification
 <Tab title="Rust">
 ```rust Rust
 client.confirm_account_phone_verification(body: &types::ConfirmAccountPhoneVerificationRequest).await -> Result<ResponseValue<types::Account>, Error<ConfirmAccountPhoneVerificationError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Account.ConfirmPhoneVerification(ctx context.Context, params *ConfirmAccountPhoneVerificationParams, opts ...RequestOption) (*Account, error)
 ```
 </Tab>
 </Tabs>
@@ -75,6 +80,33 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.ConfirmAccountPhoneVerificationRequest
+if err := json.Unmarshal([]byte(`{
+	"code": "code",
+	"phoneNumber": "phoneNumber"
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Account.ConfirmPhoneVerification(ctx, &photonapi.ConfirmAccountPhoneVerificationParams{
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

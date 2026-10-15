@@ -1,7 +1,7 @@
 ---
 title: "Get SMS line campaign assignment"
 icon: arrow-down-left
-description: "Get SMS line campaign assignment: getSmsLineCampaignAssignment in the TypeScript, Python and Rust clients."
+description: "Get SMS line campaign assignment: getSmsLineCampaignAssignment in the TypeScript, Python, Rust and Go clients."
 ---
 
 `GET /v1/projects/{id}/platforms/sms/lines/{resourceId}/campaign`
@@ -22,6 +22,11 @@ photon.projects.platforms.get_sms_line_campaign_assignment(input: GetSmsLineCamp
 <Tab title="Rust">
 ```rust Rust
 client.get_sms_line_campaign_assignment(id: String, resource_id: String).await -> Result<ResponseValue<types::GetSmsLineCampaignAssignmentResponse>, Error<GetSmsLineCampaignAssignmentError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.Platforms.GetSmsLineCampaignAssignment(ctx context.Context, params *GetSmsLineCampaignAssignmentParams, opts ...RequestOption) (*GetSmsLineCampaignAssignmentResponse, error)
 ```
 </Tab>
 </Tabs>
@@ -70,6 +75,26 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Projects.Platforms.GetSmsLineCampaignAssignment(ctx, &photonapi.GetSmsLineCampaignAssignmentParams{
+	ID: "id",
+	ResourceID: "resourceId",
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

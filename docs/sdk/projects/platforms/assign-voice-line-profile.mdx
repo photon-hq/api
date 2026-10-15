@@ -1,7 +1,7 @@
 ---
 title: "Assign Voice line profile"
 icon: pencil
-description: "Assign Voice line profile: assignVoiceLineProfile in the TypeScript, Python and Rust clients."
+description: "Assign Voice line profile: assignVoiceLineProfile in the TypeScript, Python, Rust and Go clients."
 ---
 
 `PUT /v1/projects/{id}/platforms/voice/lines/{resourceId}/profile`
@@ -22,6 +22,11 @@ photon.projects.platforms.assign_voice_line_profile(input: AssignVoiceLineProfil
 <Tab title="Rust">
 ```rust Rust
 client.assign_voice_line_profile(id: String, resource_id: String, body: &types::AssignVoiceLineProfileRequest).await -> Result<ResponseValue<types::VoiceLineProfileAssignment>, Error<AssignVoiceLineProfileError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.Platforms.AssignVoiceLineProfile(ctx context.Context, params *AssignVoiceLineProfileParams, opts ...RequestOption) (*VoiceLineProfileAssignment, error)
 ```
 </Tab>
 </Tabs>
@@ -85,6 +90,35 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.AssignVoiceLineProfileRequest
+if err := json.Unmarshal([]byte(`{
+	"expectedVersion": 1,
+	"profileId": "profileId"
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Projects.Platforms.AssignVoiceLineProfile(ctx, &photonapi.AssignVoiceLineProfileParams{
+	ID: "id",
+	ResourceID: "resourceId",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

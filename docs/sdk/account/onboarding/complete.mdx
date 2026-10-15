@@ -1,7 +1,7 @@
 ---
 title: "Complete onboarding"
 icon: arrow-up-right
-description: "Complete onboarding: completeAccountOnboarding in the TypeScript, Python and Rust clients."
+description: "Complete onboarding: completeAccountOnboarding in the TypeScript, Python, Rust and Go clients."
 ---
 
 `POST /v1/account/onboarding/complete`
@@ -22,6 +22,11 @@ photon.account.onboarding.complete(input: CompleteAccountOnboardingInput | None 
 <Tab title="Rust">
 ```rust Rust
 client.complete_account_onboarding().await -> Result<ResponseValue<types::CompleteAccountOnboardingResponse>, Error<CompleteAccountOnboardingError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Account.Onboarding.Complete(ctx context.Context, opts ...RequestOption) (*CompleteAccountOnboardingResponse, error)
 ```
 </Tab>
 </Tabs>
@@ -57,6 +62,23 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Account.Onboarding.Complete(ctx)
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

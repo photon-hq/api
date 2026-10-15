@@ -1,7 +1,7 @@
 ---
 title: "List filtered verification codes"
 icon: arrow-down-left
-description: "List filtered verification codes: listFilteredVerificationCodes in the TypeScript, Python and Rust clients."
+description: "List filtered verification codes: listFilteredVerificationCodes in the TypeScript, Python, Rust and Go clients."
 ---
 
 `GET /v1/projects/{id}/platforms/filtered-otp`
@@ -22,6 +22,11 @@ photon.projects.platforms.list_filtered_verification_codes(input: ListFilteredVe
 <Tab title="Rust">
 ```rust Rust
 client.list_filtered_verification_codes(id: String, params: Option<ListFilteredVerificationCodesParams>).await -> Result<ResponseValue<types::FilteredVerificationCodePage>, Error<ListFilteredVerificationCodesError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.Platforms.ListFilteredVerificationCodes(ctx context.Context, params *ListFilteredVerificationCodesParams, opts ...RequestOption) (*FilteredVerificationCodePage, error)
 ```
 </Tab>
 </Tabs>
@@ -68,6 +73,25 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Projects.Platforms.ListFilteredVerificationCodes(ctx, &photonapi.ListFilteredVerificationCodesParams{
+	ID: "id",
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

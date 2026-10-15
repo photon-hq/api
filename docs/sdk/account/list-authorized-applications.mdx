@@ -1,7 +1,7 @@
 ---
 title: "List connected applications"
 icon: arrow-down-left
-description: "List connected applications: listAuthorizedApplications in the TypeScript, Python and Rust clients."
+description: "List connected applications: listAuthorizedApplications in the TypeScript, Python, Rust and Go clients."
 ---
 
 `GET /v1/account/oauth/authorized-applications`
@@ -22,6 +22,11 @@ photon.account.list_authorized_applications(input: ListAuthorizedApplicationsInp
 <Tab title="Rust">
 ```rust Rust
 client.list_authorized_applications(params: Option<ListAuthorizedApplicationsParams>).await -> Result<ResponseValue<types::ListAuthorizedApplicationsResponse>, Error<ListAuthorizedApplicationsError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Account.ListAuthorizedApplications(ctx context.Context, params *ListAuthorizedApplicationsParams, opts ...RequestOption) (*ListAuthorizedApplicationsResponse, error)
 ```
 </Tab>
 </Tabs>
@@ -57,6 +62,23 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Account.ListAuthorizedApplications(ctx, nil)
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

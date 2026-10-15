@@ -1,6 +1,6 @@
 ---
 title: "Projects"
-description: "The Projects resource in the TypeScript, Python and Rust clients."
+description: "The Projects resource in the TypeScript, Python, Rust and Go clients."
 ---
 
 ## Methods
@@ -113,6 +113,43 @@ client.get_project_closure_status(organization_id: String, project_id: String).a
 
 ```rust Rust
 client.create_project(idempotency_key: String, organization_id: String, body: &types::CreateProjectRequest).await -> Result<ResponseValue<CreateProjectResponse>, Error<CreateProjectError>>
+```
+`POST /v1/organizations/{organizationId}/projects`
+
+</Tab>
+<Tab title="Go">
+**[List projects](/api-client/sdk/organizations/projects/list)**
+
+```go Go
+client.Organizations.Projects.List(ctx context.Context, params *ListProjectsParams, opts ...RequestOption) (*ProjectPage, error)
+```
+`GET /v1/organizations/{organizationId}/projects`
+
+**[Check project slug availability](/api-client/sdk/organizations/projects/check-project-slug-availability)**
+
+```go Go
+client.Organizations.Projects.CheckProjectSlugAvailability(ctx context.Context, params *CheckProjectSlugAvailabilityParams, opts ...RequestOption) (*CheckProjectSlugAvailabilityResponse, error)
+```
+`GET /v1/organizations/{organizationId}/projects/slug-availability`
+
+**[Count projects](/api-client/sdk/organizations/projects/count)**
+
+```go Go
+client.Organizations.Projects.Count(ctx context.Context, params *CountProjectsParams, opts ...RequestOption) (*ProjectCount, error)
+```
+`GET /v1/organizations/{organizationId}/projects/count`
+
+**[Get project closure status](/api-client/sdk/organizations/projects/get-project-closure-status)**
+
+```go Go
+client.Organizations.Projects.GetProjectClosureStatus(ctx context.Context, params *GetProjectClosureStatusParams, opts ...RequestOption) (*GetProjectClosureStatusResponse, error)
+```
+`GET /v1/organizations/{organizationId}/projects/closure-status`
+
+**[Create project](/api-client/sdk/organizations/projects/create)**
+
+```go Go
+client.Organizations.Projects.Create(ctx context.Context, params *CreateProjectParams, opts ...RequestOption) (*Project, error)
 ```
 `POST /v1/organizations/{organizationId}/projects`
 

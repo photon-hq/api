@@ -1,7 +1,7 @@
 ---
 title: "Retry organization connection sync"
 icon: arrow-up-right
-description: "Retry organization connection sync: retryOrganizationConnectionSync in the TypeScript, Python and Rust clients."
+description: "Retry organization connection sync: retryOrganizationConnectionSync in the TypeScript, Python, Rust and Go clients."
 ---
 
 `POST /v1/auth/organizations/{orgId}/connection-sync/retry`
@@ -22,6 +22,11 @@ photon.auth.retry_organization_connection_sync(input: RetryOrganizationConnectio
 <Tab title="Rust">
 ```rust Rust
 client.retry_organization_connection_sync(org_id: String).await -> Result<ResponseValue<types::OrganizationConnectionStatus>, Error<RetryOrganizationConnectionSyncError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Auth.RetryOrganizationConnectionSync(ctx context.Context, params *RetryOrganizationConnectionSyncParams, opts ...RequestOption) (*OrganizationConnectionStatus, error)
 ```
 </Tab>
 </Tabs>
@@ -68,6 +73,25 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Auth.RetryOrganizationConnectionSync(ctx, &photonapi.RetryOrganizationConnectionSyncParams{
+	OrgID: "orgId",
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

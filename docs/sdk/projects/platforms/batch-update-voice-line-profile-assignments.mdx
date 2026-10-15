@@ -1,7 +1,7 @@
 ---
 title: "Batch update Voice line assignments"
 icon: arrow-up-right
-description: "Batch update Voice line assignments: batchUpdateVoiceLineProfileAssignments in the TypeScript, Python and Rust clients."
+description: "Batch update Voice line assignments: batchUpdateVoiceLineProfileAssignments in the TypeScript, Python, Rust and Go clients."
 ---
 
 `POST /v1/projects/{id}/platforms/voice/lines/profile-assignments/batch`
@@ -22,6 +22,11 @@ photon.projects.platforms.batch_update_voice_line_profile_assignments(input: Bat
 <Tab title="Rust">
 ```rust Rust
 client.batch_update_voice_line_profile_assignments(id: String, body: &types::BatchUpdateVoiceLineProfileAssignmentsRequest).await -> Result<ResponseValue<types::BatchUpdateVoiceLineProfileAssignmentsResponse>, Error<BatchUpdateVoiceLineProfileAssignmentsError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.Platforms.BatchUpdateVoiceLineProfileAssignments(ctx context.Context, params *BatchUpdateVoiceLineProfileAssignmentsParams, opts ...RequestOption) (*BatchUpdateVoiceLineProfileAssignmentsResponse, error)
 ```
 </Tab>
 </Tabs>
@@ -97,6 +102,39 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.BatchUpdateVoiceLineProfileAssignmentsRequest
+if err := json.Unmarshal([]byte(`{
+	"updates": [
+		{
+			"expectedVersion": 1,
+			"profileId": "profileId",
+			"resourceId": "resourceId"
+		}
+	]
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Projects.Platforms.BatchUpdateVoiceLineProfileAssignments(ctx, &photonapi.BatchUpdateVoiceLineProfileAssignmentsParams{
+	ID: "id",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

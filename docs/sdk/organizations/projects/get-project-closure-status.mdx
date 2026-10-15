@@ -1,7 +1,7 @@
 ---
 title: "Get project closure status"
 icon: arrow-down-left
-description: "Get project closure status: getProjectClosureStatus in the TypeScript, Python and Rust clients."
+description: "Get project closure status: getProjectClosureStatus in the TypeScript, Python, Rust and Go clients."
 ---
 
 `GET /v1/organizations/{organizationId}/projects/closure-status`
@@ -22,6 +22,11 @@ photon.organizations.projects.get_project_closure_status(input: GetProjectClosur
 <Tab title="Rust">
 ```rust Rust
 client.get_project_closure_status(organization_id: String, project_id: String).await -> Result<ResponseValue<types::GetProjectClosureStatusResponse>, Error<GetProjectClosureStatusError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.Projects.GetProjectClosureStatus(ctx context.Context, params *GetProjectClosureStatusParams, opts ...RequestOption) (*GetProjectClosureStatusResponse, error)
 ```
 </Tab>
 </Tabs>
@@ -74,6 +79,26 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Organizations.Projects.GetProjectClosureStatus(ctx, &photonapi.GetProjectClosureStatusParams{
+	OrganizationID: "organizationId",
+	ProjectID: "projectId",
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

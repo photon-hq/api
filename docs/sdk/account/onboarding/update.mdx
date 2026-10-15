@@ -1,7 +1,7 @@
 ---
 title: "Update onboarding state"
 icon: pencil
-description: "Update onboarding state: updateAccountOnboarding in the TypeScript, Python and Rust clients."
+description: "Update onboarding state: updateAccountOnboarding in the TypeScript, Python, Rust and Go clients."
 ---
 
 `PATCH /v1/account/onboarding`
@@ -22,6 +22,11 @@ photon.account.onboarding.update(input: UpdateAccountOnboardingInput) -> models.
 <Tab title="Rust">
 ```rust Rust
 client.update_account_onboarding(idempotency_key: String, body: &types::UpdateAccountOnboardingRequest).await -> Result<ResponseValue<types::UpdateAccountOnboardingResponse>, Error<UpdateAccountOnboardingError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Account.Onboarding.Update(ctx context.Context, params *UpdateAccountOnboardingParams, opts ...RequestOption) (*UpdateAccountOnboardingResponse, error)
 ```
 </Tab>
 </Tabs>
@@ -73,6 +78,31 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.UpdateAccountOnboardingRequest
+if err := json.Unmarshal([]byte(`{}`), &body); err != nil {
+	return err
+}
+result, err := client.Account.Onboarding.Update(ctx, &photonapi.UpdateAccountOnboardingParams{
+	IdempotencyKey: "idempotencyKey",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

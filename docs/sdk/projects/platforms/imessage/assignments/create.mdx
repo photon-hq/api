@@ -1,7 +1,7 @@
 ---
 title: "Create shared line assignment"
 icon: arrow-up-right
-description: "Create shared line assignment: createSharedLineAssignment in the TypeScript, Python and Rust clients."
+description: "Create shared line assignment: createSharedLineAssignment in the TypeScript, Python, Rust and Go clients."
 ---
 
 `POST /v1/projects/{id}/platforms/imessage/assignments`
@@ -22,6 +22,11 @@ photon.projects.platforms.imessage.assignments.create(input: CreateSharedLineAss
 <Tab title="Rust">
 ```rust Rust
 client.create_shared_line_assignment(idempotency_key: String, id: String, body: &types::CreateSharedLineAssignmentRequest).await -> Result<ResponseValue<types::SharedLineAssignment>, Error<CreateSharedLineAssignmentError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.Platforms.Imessage.Assignments.Create(ctx context.Context, params *CreateSharedLineAssignmentParams, opts ...RequestOption) (*SharedLineAssignment, error)
 ```
 </Tab>
 </Tabs>
@@ -86,6 +91,34 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.CreateSharedLineAssignmentRequest
+if err := json.Unmarshal([]byte(`{
+	"handle": "handle"
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Projects.Platforms.Imessage.Assignments.Create(ctx, &photonapi.CreateSharedLineAssignmentParams{
+	IdempotencyKey: "idempotencyKey",
+	ID: "id",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

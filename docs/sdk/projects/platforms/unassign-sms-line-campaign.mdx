@@ -1,7 +1,7 @@
 ---
 title: "Unassign SMS line campaign"
 icon: x
-description: "Unassign SMS line campaign: unassignSmsLineCampaign in the TypeScript, Python and Rust clients."
+description: "Unassign SMS line campaign: unassignSmsLineCampaign in the TypeScript, Python, Rust and Go clients."
 ---
 
 `DELETE /v1/projects/{id}/platforms/sms/lines/{resourceId}/campaign`
@@ -22,6 +22,11 @@ photon.projects.platforms.unassign_sms_line_campaign(input: UnassignSmsLineCampa
 <Tab title="Rust">
 ```rust Rust
 client.unassign_sms_line_campaign(idempotency_key: String, id: String, resource_id: String, expected_version: f64).await -> Result<ResponseValue<UnassignSmsLineCampaignResponse>, Error<UnassignSmsLineCampaignError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.Platforms.UnassignSmsLineCampaign(ctx context.Context, params *UnassignSmsLineCampaignParams, opts ...RequestOption) (*Operation, error)
 ```
 </Tab>
 </Tabs>
@@ -87,6 +92,28 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Projects.Platforms.UnassignSmsLineCampaign(ctx, &photonapi.UnassignSmsLineCampaignParams{
+	IdempotencyKey: "idempotencyKey",
+	ID: "id",
+	ResourceID: "resourceId",
+	ExpectedVersion: 1,
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

@@ -31445,6 +31445,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .delete_account()\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Account.Delete(ctx)\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -31936,6 +31941,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_account()\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Account.Get(ctx)\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -32567,6 +32577,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .update_account(\n        \"idempotencyKey\".to_owned(),\n        &serde_json::from_value(serde_json::json!({}))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.UpdateAccountRequest\nif err := json.Unmarshal([]byte(`{}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Account.Update(ctx, &photonapi.UpdateAccountParams{\n\tIdempotencyKey: \"idempotencyKey\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -33052,6 +33067,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .list_authorized_applications(None)\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Account.ListAuthorizedApplications(ctx, nil)\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -33503,6 +33523,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nclient\n    .revoke_authorized_application(\"applicationId\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?;"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nerr := client.Account.RevokeAuthorizedApplication(ctx, &photonapi.RevokeAuthorizedApplicationParams{\n\tApplicationID: \"applicationId\",\n})\nif err != nil {\n\treturn err\n}"
           }
         ]
       }
@@ -33996,6 +34021,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_account_onboarding()\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Account.Onboarding.Get(ctx)\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -34666,6 +34696,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .update_account_onboarding(\n        \"idempotencyKey\".to_owned(),\n        &serde_json::from_value(serde_json::json!({}))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.UpdateAccountOnboardingRequest\nif err := json.Unmarshal([]byte(`{}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Account.Onboarding.Update(ctx, &photonapi.UpdateAccountOnboardingParams{\n\tIdempotencyKey: \"idempotencyKey\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -35159,6 +35194,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .complete_account_onboarding()\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Account.Onboarding.Complete(ctx)\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -35821,6 +35861,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .confirm_account_phone_verification(\n        &serde_json::from_value(serde_json::json!({\n            \"code\": \"code\",\n            \"phoneNumber\": \"phoneNumber\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.ConfirmAccountPhoneVerificationRequest\nif err := json.Unmarshal([]byte(`{\n\t\"code\": \"code\",\n\t\"phoneNumber\": \"phoneNumber\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Account.ConfirmPhoneVerification(ctx, &photonapi.ConfirmAccountPhoneVerificationParams{\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -36483,6 +36528,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .start_account_phone_verification(\n        &serde_json::from_value(serde_json::json!({\n            \"phoneNumber\": \"phoneNumber\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.StartAccountPhoneVerificationRequest\nif err := json.Unmarshal([]byte(`{\n\t\"phoneNumber\": \"phoneNumber\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Account.StartPhoneVerification(ctx, &photonapi.StartAccountPhoneVerificationParams{\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -37106,6 +37156,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .reset_account_profile_picture(\"idempotencyKey\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Account.ResetProfilePicture(ctx, &photonapi.ResetAccountProfilePictureParams{\n\tIdempotencyKey: \"idempotencyKey\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -37737,6 +37792,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .commit_account_profile_picture(\n        \"idempotencyKey\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"uploadId\": \"uploadId\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.CommitAccountProfilePictureRequest\nif err := json.Unmarshal([]byte(`{\n\t\"uploadId\": \"uploadId\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Account.CommitProfilePicture(ctx, &photonapi.CommitAccountProfilePictureParams{\n\tIdempotencyKey: \"idempotencyKey\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -38357,6 +38417,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .create_account_profile_picture_upload(\n        &serde_json::from_value(serde_json::json!({\n            \"contentType\": \"image/jpeg\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.ProfilePictureUploadRequest\nif err := json.Unmarshal([]byte(`{\n\t\"contentType\": \"image/jpeg\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Account.CreateProfilePictureUpload(ctx, &photonapi.CreateAccountProfilePictureUploadParams{\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -38845,6 +38910,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .list_account_service_keys()\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Account.ListAccountServiceKeys(ctx)\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -39513,6 +39583,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .create_account_service_key(\n        \"idempotencyKey\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"name\": \"name\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.CreateAccountServiceKeyRequest\nif err := json.Unmarshal([]byte(`{\n\t\"name\": \"name\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Account.CreateAccountServiceKey(ctx, &photonapi.CreateAccountServiceKeyParams{\n\tIdempotencyKey: \"idempotencyKey\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -40140,6 +40215,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .revoke_account_service_key(\"idempotencyKey\".to_owned(), \"serviceKeyId\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Account.RevokeAccountServiceKey(ctx, &photonapi.RevokeAccountServiceKeyParams{\n\tIdempotencyKey: \"idempotencyKey\",\n\tServiceKeyID: \"serviceKeyId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -40284,6 +40364,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::PhotonClientBuilder;\n\nlet client = PhotonClientBuilder::new().build()?;\nlet result = client\n    .device_authorize()\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient()\nresult, err := client.Auth.Device.Authorize(ctx)\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -40515,6 +40600,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::PhotonClientBuilder;\n\nlet client = PhotonClientBuilder::new().build()?;\nlet result = client\n    .device_token(\n        &serde_json::from_value(serde_json::json!({\n            \"device_code\": \"device_code\",\n            \"grant_type\": \"urn:ietf:params:oauth:grant-type:device_code\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient()\nvar body photonapi.DeviceTokenRequest\nif err := json.Unmarshal([]byte(`{\n\t\"device_code\": \"device_code\",\n\t\"grant_type\": \"urn:ietf:params:oauth:grant-type:device_code\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Auth.Device.Token(ctx, &photonapi.DeviceTokenParams{\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -40637,6 +40727,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::PhotonClientBuilder;\n\nlet client = PhotonClientBuilder::new().build()?;\nlet result = client\n    .start_enterprise_login(\n        &serde_json::from_value(serde_json::json!({\n            \"organizationId\": \"organizationId\",\n            \"returnTo\": \"returnTo\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient()\nvar body photonapi.StartEnterpriseLoginRequest\nif err := json.Unmarshal([]byte(`{\n\t\"organizationId\": \"organizationId\",\n\t\"returnTo\": \"returnTo\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Auth.StartEnterpriseLogin(ctx, &photonapi.StartEnterpriseLoginParams{\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -40785,6 +40880,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::PhotonClientBuilder;\n\nlet client = PhotonClientBuilder::new().build()?;\nlet result = client\n    .list_oauth_scopes()\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient()\nresult, err := client.Auth.ListOauthScopes(ctx)\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -41334,6 +41434,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_organization_connection_status(\"orgId\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Auth.GetOrganizationConnectionStatus(ctx, &photonapi.GetOrganizationConnectionStatusParams{\n\tOrgID: \"orgId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -41883,6 +41988,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .retry_organization_connection_sync(\"orgId\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Auth.RetryOrganizationConnectionSync(ctx, &photonapi.RetryOrganizationConnectionSyncParams{\n\tOrgID: \"orgId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -42471,6 +42581,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_organization_sso_configuration(\"orgId\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Auth.GetOrganizationSsoConfiguration(ctx, &photonapi.GetOrganizationSsoConfigurationParams{\n\tOrgID: \"orgId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -43067,6 +43182,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .update_organization_sso_policy(\n        \"orgId\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"expectedVersion\": \"expectedVersion\",\n            \"ssoJitEnabled\": true,\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.UpdateOrganizationSsoPolicyRequest\nif err := json.Unmarshal([]byte(`{\n\t\"expectedVersion\": \"expectedVersion\",\n\t\"ssoJitEnabled\": true\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Auth.UpdateOrganizationSsoPolicy(ctx, &photonapi.UpdateOrganizationSsoPolicyParams{\n\tOrgID: \"orgId\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -43665,6 +43785,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .begin_organization_sso_admission(\n        \"orgId\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"returnTo\": \"returnTo\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.OrganizationAuthenticationRequest\nif err := json.Unmarshal([]byte(`{\n\t\"returnTo\": \"returnTo\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Auth.BeginOrganizationSsoAdmission(ctx, &photonapi.BeginOrganizationSsoAdmissionParams{\n\tOrgID: \"orgId\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -44263,6 +44388,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .begin_organization_authentication(\n        \"orgId\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"returnTo\": \"returnTo\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.OrganizationAuthenticationRequest\nif err := json.Unmarshal([]byte(`{\n\t\"returnTo\": \"returnTo\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Auth.BeginOrganizationAuthentication(ctx, &photonapi.BeginOrganizationAuthenticationParams{\n\tOrgID: \"orgId\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -44861,6 +44991,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .begin_organization_closure_authentication(\n        \"orgId\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"returnTo\": \"returnTo\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.OrganizationAuthenticationRequest\nif err := json.Unmarshal([]byte(`{\n\t\"returnTo\": \"returnTo\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Auth.BeginOrganizationClosureAuthentication(ctx, &photonapi.BeginOrganizationClosureAuthenticationParams{\n\tOrgID: \"orgId\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -45471,6 +45606,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .disable_organization_sso(\n        \"idempotencyKey\".to_owned(),\n        \"orgId\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"expectedVersion\": \"expectedVersion\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.DisableOrganizationSsoRequest\nif err := json.Unmarshal([]byte(`{\n\t\"expectedVersion\": \"expectedVersion\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Auth.DisableOrganizationSso(ctx, &photonapi.DisableOrganizationSsoParams{\n\tIdempotencyKey: \"idempotencyKey\",\n\tOrgID: \"orgId\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -46069,6 +46209,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .begin_invitation_sso(\n        \"orgId\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"token\": \"token\",\n            \"returnTo\": \"returnTo\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.BeginInvitationSsoRequest\nif err := json.Unmarshal([]byte(`{\n\t\"token\": \"token\",\n\t\"returnTo\": \"returnTo\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Auth.BeginInvitationSso(ctx, &photonapi.BeginInvitationSsoParams{\n\tOrgID: \"orgId\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -46667,6 +46812,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .create_organization_sso_portal_link(\n        \"orgId\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"returnTo\": \"returnTo\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.CreateOrganizationSsoPortalLinkRequest\nif err := json.Unmarshal([]byte(`{\n\t\"returnTo\": \"returnTo\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Auth.CreateOrganizationSsoPortalLink(ctx, &photonapi.CreateOrganizationSsoPortalLinkParams{\n\tOrgID: \"orgId\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -47255,6 +47405,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .refresh_organization_sso_connection(\"orgId\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Auth.RefreshOrganizationSsoConnection(ctx, &photonapi.RefreshOrganizationSsoConnectionParams{\n\tOrgID: \"orgId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -47611,6 +47766,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::PhotonClientBuilder;\n\nlet client = PhotonClientBuilder::new().build()?;\nlet result = client\n    .create_app_installation_request(\n        &serde_json::from_value(serde_json::json!({\n            \"appId\": \"appId\",\n            \"clientAssertion\": \"clientAssertion\",\n            \"redirectUri\": \"redirectUri\",\n            \"state\": \"state\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient()\nvar body photonapi.CreateAppInstallationRequestRequest\nif err := json.Unmarshal([]byte(`{\n\t\"appId\": \"appId\",\n\t\"clientAssertion\": \"clientAssertion\",\n\t\"redirectUri\": \"redirectUri\",\n\t\"state\": \"state\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.System.CreateAppInstallationRequest(ctx, &photonapi.CreateAppInstallationRequestParams{\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -47967,6 +48127,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::PhotonClientBuilder;\n\nlet client = PhotonClientBuilder::new().build()?;\nlet result = client\n    .redeem_app_installation_delivery(\n        &serde_json::from_value(serde_json::json!({\n            \"appId\": \"appId\",\n            \"clientAssertion\": \"clientAssertion\",\n            \"code\": \"code\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient()\nvar body photonapi.RedeemAppInstallationDeliveryRequest\nif err := json.Unmarshal([]byte(`{\n\t\"appId\": \"appId\",\n\t\"clientAssertion\": \"clientAssertion\",\n\t\"code\": \"code\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.System.RedeemAppInstallationDelivery(ctx, &photonapi.RedeemAppInstallationDeliveryParams{\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -48511,6 +48676,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_organization_billing_overview(\"organizationId\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Organizations.Billing.GetOrganizationBillingOverview(ctx, &photonapi.GetOrganizationBillingOverviewParams{\n\tOrganizationID: \"organizationId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -49062,6 +49232,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .create_organization_payment_method_checkout(\"organizationId\".to_owned(), None)\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Organizations.Billing.CreateOrganizationPaymentMethodCheckout(ctx, &photonapi.CreateOrganizationPaymentMethodCheckoutParams{\n\tOrganizationID: \"organizationId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -49606,6 +49781,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_organization_credit(\"organizationId\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Organizations.Billing.GetOrganizationCredit(ctx, &photonapi.GetOrganizationCreditParams{\n\tOrganizationID: \"organizationId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -50160,6 +50340,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .list_credit_activity(\"organizationId\".to_owned(), None)\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Organizations.Billing.ListCreditActivity(ctx, &photonapi.ListCreditActivityParams{\n\tOrganizationID: \"organizationId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -50732,6 +50917,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .list_invoices(\"organizationId\".to_owned(), None)\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Organizations.Billing.ListInvoices(ctx, &photonapi.ListInvoicesParams{\n\tOrganizationID: \"organizationId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -51276,6 +51466,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_organization_payment_method(\"organizationId\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Organizations.Billing.GetOrganizationPaymentMethod(ctx, &photonapi.GetOrganizationPaymentMethodParams{\n\tOrganizationID: \"organizationId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -51830,6 +52025,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .preview_organization_change(\n        \"organizationId\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"fixedCharge\": {\n                \"fixedChargeCode\": \"fixedChargeCode\",\n                \"increment\": -10000,\n            },\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.PreviewOrganizationChangeRequest\nif err := json.Unmarshal([]byte(`{\n\t\"fixedCharge\": {\n\t\t\"fixedChargeCode\": \"fixedChargeCode\",\n\t\t\"increment\": -10000\n\t}\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Organizations.Billing.PreviewOrganizationChange(ctx, &photonapi.PreviewOrganizationChangeParams{\n\tOrganizationID: \"organizationId\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -52393,6 +52593,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .preview_project_change(\n        \"organizationId\".to_owned(),\n        \"projectId\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"category\": \"category\",\n            \"fixedCharge\": {\n                \"fixedChargeCode\": \"fixedChargeCode\",\n                \"increment\": -10000,\n            },\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.PreviewProjectChangeRequest\nif err := json.Unmarshal([]byte(`{\n\t\"category\": \"category\",\n\t\"fixedCharge\": {\n\t\t\"fixedChargeCode\": \"fixedChargeCode\",\n\t\t\"increment\": -10000\n\t}\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Organizations.Billing.PreviewProjectChange(ctx, &photonapi.PreviewProjectChangeParams{\n\tOrganizationID: \"organizationId\",\n\tProjectID: \"projectId\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -53052,6 +53257,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .change_plan(\n        \"idempotencyKey\".to_owned(),\n        \"organizationId\".to_owned(),\n        \"projectId\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"category\": \"category\",\n            \"planCode\": \"planCode\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.ChangePlanRequest\nif err := json.Unmarshal([]byte(`{\n\t\"category\": \"category\",\n\t\"planCode\": \"planCode\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Organizations.Billing.ChangePlan(ctx, &photonapi.ChangePlanParams{\n\tIdempotencyKey: \"idempotencyKey\",\n\tOrganizationID: \"organizationId\",\n\tProjectID: \"projectId\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -53605,6 +53815,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_effective_terms(\"organizationId\".to_owned(), \"projectId\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Organizations.Billing.GetEffectiveTerms(ctx, &photonapi.GetEffectiveTermsParams{\n\tOrganizationID: \"organizationId\",\n\tProjectID: \"projectId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -54156,6 +54371,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .create_organization_setup_intent(\"idempotencyKey\".to_owned(), \"organizationId\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Organizations.Billing.CreateOrganizationSetupIntent(ctx, &photonapi.CreateOrganizationSetupIntentParams{\n\tIdempotencyKey: \"idempotencyKey\",\n\tOrganizationID: \"organizationId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -54700,6 +54920,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_organization_terms(\"organizationId\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Organizations.Billing.GetOrganizationTerms(ctx, &photonapi.GetOrganizationTermsParams{\n\tOrganizationID: \"organizationId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -55217,6 +55442,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .list_projects(\"organizationId\".to_owned(), None)\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Organizations.Projects.List(ctx, &photonapi.ListProjectsParams{\n\tOrganizationID: \"organizationId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -55838,6 +56068,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .create_project(\n        \"idempotencyKey\".to_owned(),\n        \"organizationId\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"name\": \"name\",\n            \"slug\": \"slug\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.CreateProjectRequest\nif err := json.Unmarshal([]byte(`{\n\t\"name\": \"name\",\n\t\"slug\": \"slug\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Organizations.Projects.Create(ctx, &photonapi.CreateProjectParams{\n\tIdempotencyKey: \"idempotencyKey\",\n\tOrganizationID: \"organizationId\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -56358,6 +56593,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_project_closure_status(\"organizationId\".to_owned(), \"projectId\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Organizations.Projects.GetProjectClosureStatus(ctx, &photonapi.GetProjectClosureStatusParams{\n\tOrganizationID: \"organizationId\",\n\tProjectID: \"projectId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -56857,6 +57097,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .count_projects(\"organizationId\".to_owned(), None)\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Organizations.Projects.Count(ctx, &photonapi.CountProjectsParams{\n\tOrganizationID: \"organizationId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -57341,6 +57586,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .check_project_slug_availability(\"organizationId\".to_owned(), \"slug\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Organizations.Projects.CheckProjectSlugAvailability(ctx, &photonapi.CheckProjectSlugAvailabilityParams{\n\tOrganizationID: \"organizationId\",\n\tSlug: \"slug\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -57880,6 +58130,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .list_attachments(\"id\".to_owned(), None)\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.ListAttachments(ctx, &photonapi.ListAttachmentsParams{\n\tID: \"id\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -58546,6 +58801,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .upload_attachment(\n        \"id\".to_owned(),\n        \"18\".to_owned(),\n        \"text/plain\".to_owned(),\n        \"idempotency-key\".to_owned(),\n        &\"Hello from Photon.\".into(),\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\t\"strings\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.UploadAttachment(ctx, &photonapi.UploadAttachmentParams{\n\tID: \"id\",\n\tContentLength: 18,\n\tContentType: \"text/plain\",\n\tIdempotencyKey: \"idempotency-key\",\n\tBody: strings.NewReader(\"Hello from Photon.\"),\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -59056,6 +59316,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_attachment(\"attachmentId\".to_owned(), \"id\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.GetAttachment(ctx, &photonapi.GetAttachmentParams{\n\tAttachmentID: \"attachmentId\",\n\tID: \"id\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -59617,6 +59882,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .download_attachment(\"attachmentId\".to_owned(), \"id\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.DownloadAttachment(ctx, &photonapi.DownloadAttachmentParams{\n\tAttachmentID: \"attachmentId\",\n\tID: \"id\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -60259,6 +60529,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .list_messages(\"id\".to_owned(), None)\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.ListMessages(ctx, &photonapi.ListMessagesParams{\n\tID: \"id\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -60942,6 +61217,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .send_message(\n        \"id\".to_owned(),\n        \"idempotency-key\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"content\": {\n                \"type\": \"text\",\n                \"format\": \"format\",\n                \"text\": \"text\",\n            },\n            \"senderId\": \"senderId\",\n            \"spaceId\": \"spaceId\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.SendMessageRequest\nif err := json.Unmarshal([]byte(`{\n\t\"content\": {\n\t\t\"type\": \"text\",\n\t\t\"format\": \"format\",\n\t\t\"text\": \"text\"\n\t},\n\t\"senderId\": \"senderId\",\n\t\"spaceId\": \"spaceId\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Projects.SendMessage(ctx, &photonapi.SendMessageParams{\n\tID: \"id\",\n\tIdempotencyKey: \"idempotency-key\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -61520,6 +61800,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .count_messages(\"id\".to_owned(), None)\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.CountMessages(ctx, &photonapi.CountMessagesParams{\n\tID: \"id\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -62094,6 +62379,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_message(\"id\".to_owned(), \"messageId\".to_owned(), None)\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.GetMessage(ctx, &photonapi.GetMessageParams{\n\tID: \"id\",\n\tMessageID: \"messageId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -62735,6 +63025,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .mark_message_read(\n        \"id\".to_owned(),\n        \"messageId\".to_owned(),\n        \"idempotency-key\".to_owned(),\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.MarkMessageRead(ctx, &photonapi.MarkMessageReadParams{\n\tID: \"id\",\n\tMessageID: \"messageId\",\n\tIdempotencyKey: \"idempotency-key\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -63130,6 +63425,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .list_project_platforms(\"id\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.ListProjectPlatforms(ctx, &photonapi.ListProjectPlatformsParams{\n\tID: \"id\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -63780,6 +64080,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .connect_email_domain(\n        \"idempotencyKey\".to_owned(),\n        \"id\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"domain\": \"domain\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.ConnectEmailDomainRequest\nif err := json.Unmarshal([]byte(`{\n\t\"domain\": \"domain\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Projects.Platforms.ConnectEmailDomain(ctx, &photonapi.ConnectEmailDomainParams{\n\tIdempotencyKey: \"idempotencyKey\",\n\tID: \"id\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -64248,6 +64553,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_email_delivery_metrics(\"id\".to_owned(), None)\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.GetEmailDeliveryMetrics(ctx, &photonapi.GetEmailDeliveryMetricsParams{\n\tID: \"id\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -64727,6 +65037,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .list_email_recommendations(\"id\".to_owned(), None)\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.ListEmailRecommendations(ctx, &photonapi.ListEmailRecommendationsParams{\n\tID: \"id\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -65188,6 +65503,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_email_sending_policies(\"id\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.GetEmailSendingPolicies(ctx, &photonapi.GetEmailSendingPoliciesParams{\n\tID: \"id\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -65732,6 +66052,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .list_filtered_verification_codes(\"id\".to_owned(), None)\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.ListFilteredVerificationCodes(ctx, &photonapi.ListFilteredVerificationCodesParams{\n\tID: \"id\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -66259,6 +66584,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .count_filtered_verification_codes(\"id\".to_owned(), None)\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.CountFilteredVerificationCodes(ctx, &photonapi.CountFilteredVerificationCodesParams{\n\tID: \"id\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -66720,6 +67050,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_project_imessage_platform(\"id\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.GetImessage(ctx, &photonapi.GetProjectImessagePlatformParams{\n\tID: \"id\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -67244,6 +67579,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .list_shared_line_assignments(\"id\".to_owned(), None)\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.Imessage.Assignments.List(ctx, &photonapi.ListSharedLineAssignmentsParams{\n\tID: \"id\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -67842,6 +68182,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .create_shared_line_assignment(\n        \"idempotencyKey\".to_owned(),\n        \"id\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"handle\": \"handle\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.CreateSharedLineAssignmentRequest\nif err := json.Unmarshal([]byte(`{\n\t\"handle\": \"handle\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Projects.Platforms.Imessage.Assignments.Create(ctx, &photonapi.CreateSharedLineAssignmentParams{\n\tIdempotencyKey: \"idempotencyKey\",\n\tID: \"id\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -68389,6 +68734,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .release_shared_line_assignment(\"assignmentId\".to_owned(), \"id\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.Imessage.Assignments.Release(ctx, &photonapi.ReleaseSharedLineAssignmentParams{\n\tAssignmentID: \"assignmentId\",\n\tID: \"id\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -68934,6 +69284,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_shared_line_assignment(\"assignmentId\".to_owned(), \"id\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.Imessage.Assignments.Get(ctx, &photonapi.GetSharedLineAssignmentParams{\n\tAssignmentID: \"assignmentId\",\n\tID: \"id\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -69574,6 +69929,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .provision_imessage_dedicated_line(\"idempotencyKey\".to_owned(), \"id\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.ProvisionImessageDedicatedLine(ctx, &photonapi.ProvisionImessageDedicatedLineParams{\n\tIdempotencyKey: \"idempotencyKey\",\n\tID: \"id\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -70182,6 +70542,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .release_imessage_dedicated_line(\"id\".to_owned(), \"resourceId\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.ReleaseImessageDedicatedLine(ctx, &photonapi.ReleaseImessageDedicatedLineParams{\n\tID: \"id\",\n\tResourceID: \"resourceId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -70730,6 +71095,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .list_operations(\"id\".to_owned(), None)\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.ListOperations(ctx, &photonapi.ListOperationsParams{\n\tID: \"id\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -71288,6 +71658,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_operation(\"id\".to_owned(), \"operationId\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.GetOperation(ctx, &photonapi.GetOperationParams{\n\tID: \"id\",\n\tOperationID: \"operationId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -71874,6 +72249,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .cancel_operation(\"id\".to_owned(), \"operationId\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.CancelOperation(ctx, &photonapi.CancelOperationParams{\n\tID: \"id\",\n\tOperationID: \"operationId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -72415,6 +72795,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .list_resources(\"id\".to_owned(), None)\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.ListResources(ctx, &photonapi.ListResourcesParams{\n\tID: \"id\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -73062,6 +73447,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .release_resource(\"id\".to_owned(), \"resourceId\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.ReleaseResource(ctx, &photonapi.ReleaseResourceParams{\n\tID: \"id\",\n\tResourceID: \"resourceId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -73607,6 +73997,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_resource(\"id\".to_owned(), \"resourceId\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.GetResource(ctx, &photonapi.GetResourceParams{\n\tID: \"id\",\n\tResourceID: \"resourceId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -74198,6 +74593,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .list_resource_filtered_verification_codes(\"id\".to_owned(), \"resourceId\".to_owned(), None)\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.ListResourceFilteredVerificationCodes(ctx, &photonapi.ListResourceFilteredVerificationCodesParams{\n\tID: \"id\",\n\tResourceID: \"resourceId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -74772,6 +75172,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .count_resource_filtered_verification_codes(\"id\".to_owned(), \"resourceId\".to_owned(), None)\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.CountResourceFilteredVerificationCodes(ctx, &photonapi.CountResourceFilteredVerificationCodesParams{\n\tID: \"id\",\n\tResourceID: \"resourceId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -75488,6 +75893,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .unassign_sms_line_campaign(\n        \"idempotencyKey\".to_owned(),\n        \"id\".to_owned(),\n        \"resourceId\".to_owned(),\n        1.0,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.UnassignSmsLineCampaign(ctx, &photonapi.UnassignSmsLineCampaignParams{\n\tIdempotencyKey: \"idempotencyKey\",\n\tID: \"id\",\n\tResourceID: \"resourceId\",\n\tExpectedVersion: 1,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -76079,6 +76489,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_sms_line_campaign_assignment(\"id\".to_owned(), \"resourceId\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.GetSmsLineCampaignAssignment(ctx, &photonapi.GetSmsLineCampaignAssignmentParams{\n\tID: \"id\",\n\tResourceID: \"resourceId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -76795,6 +77210,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .assign_sms_line_campaign(\n        \"idempotencyKey\".to_owned(),\n        \"id\".to_owned(),\n        \"resourceId\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"campaignId\": \"campaignId\",\n            \"expectedVersion\": 1,\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.AssignSmsLineCampaignRequest\nif err := json.Unmarshal([]byte(`{\n\t\"campaignId\": \"campaignId\",\n\t\"expectedVersion\": 1\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Projects.Platforms.AssignSmsLineCampaign(ctx, &photonapi.AssignSmsLineCampaignParams{\n\tIdempotencyKey: \"idempotencyKey\",\n\tID: \"id\",\n\tResourceID: \"resourceId\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -77445,6 +77865,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .purchase_sms_number(\n        \"idempotencyKey\".to_owned(),\n        \"id\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"countryCode\": \"US\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.PurchaseSmsNumberRequest\nif err := json.Unmarshal([]byte(`{\n\t\"countryCode\": \"US\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Projects.Platforms.PurchaseSmsNumber(ctx, &photonapi.PurchaseSmsNumberParams{\n\tIdempotencyKey: \"idempotencyKey\",\n\tID: \"id\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -77960,6 +78385,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .list_number_area_codes(\"id\".to_owned(), \"US\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.ListNumberAreaCodes(ctx, &photonapi.ListNumberAreaCodesParams{\n\tID: \"id\",\n\tCountryCode: \"US\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -78460,6 +78890,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .list_number_countries(\"id\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.ListNumberCountries(ctx, &photonapi.ListNumberCountriesParams{\n\tID: \"id\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -79071,6 +79506,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .connect_telegram_bot(\n        \"idempotencyKey\".to_owned(),\n        \"id\".to_owned(),\n        &serde_json::from_value(serde_json::json!({}))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.ConnectTelegramBotRequest\nif err := json.Unmarshal([]byte(`{}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Projects.Platforms.ConnectTelegramBot(ctx, &photonapi.ConnectTelegramBotParams{\n\tIdempotencyKey: \"idempotencyKey\",\n\tID: \"id\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -79659,6 +80099,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .batch_update_voice_line_profile_assignments(\n        \"id\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"updates\": [\n                {\n                    \"expectedVersion\": 1,\n                    \"profileId\": \"profileId\",\n                    \"resourceId\": \"resourceId\",\n                },\n            ],\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.BatchUpdateVoiceLineProfileAssignmentsRequest\nif err := json.Unmarshal([]byte(`{\n\t\"updates\": [\n\t\t{\n\t\t\t\"expectedVersion\": 1,\n\t\t\t\"profileId\": \"profileId\",\n\t\t\t\"resourceId\": \"resourceId\"\n\t\t}\n\t]\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Projects.Platforms.BatchUpdateVoiceLineProfileAssignments(ctx, &photonapi.BatchUpdateVoiceLineProfileAssignmentsParams{\n\tID: \"id\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -80248,6 +80693,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nclient\n    .unassign_voice_line_profile(\"id\".to_owned(), \"resourceId\".to_owned(), 1)\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?;"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nerr := client.Projects.Platforms.UnassignVoiceLineProfile(ctx, &photonapi.UnassignVoiceLineProfileParams{\n\tID: \"id\",\n\tResourceID: \"resourceId\",\n\tExpectedVersion: 1,\n})\nif err != nil {\n\treturn err\n}"
           }
         ]
       },
@@ -80793,6 +81243,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_voice_line_profile_assignment(\"id\".to_owned(), \"resourceId\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.GetVoiceLineProfileAssignment(ctx, &photonapi.GetVoiceLineProfileAssignmentParams{\n\tID: \"id\",\n\tResourceID: \"resourceId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -81387,6 +81842,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .assign_voice_line_profile(\n        \"id\".to_owned(),\n        \"resourceId\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"expectedVersion\": 1,\n            \"profileId\": \"profileId\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.AssignVoiceLineProfileRequest\nif err := json.Unmarshal([]byte(`{\n\t\"expectedVersion\": 1,\n\t\"profileId\": \"profileId\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Projects.Platforms.AssignVoiceLineProfile(ctx, &photonapi.AssignVoiceLineProfileParams{\n\tID: \"id\",\n\tResourceID: \"resourceId\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -81911,6 +82371,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .list_voice_profiles(\"id\".to_owned(), None)\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.ListVoiceProfiles(ctx, &photonapi.ListVoiceProfilesParams{\n\tID: \"id\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -82458,6 +82923,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .create_voice_profile(\n        \"id\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"name\": \"name\",\n            \"protocol\": \"sip\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.CreateVoiceProfileRequest\nif err := json.Unmarshal([]byte(`{\n\t\"name\": \"name\",\n\t\"protocol\": \"sip\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Projects.Platforms.CreateVoiceProfile(ctx, &photonapi.CreateVoiceProfileParams{\n\tID: \"id\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -82997,6 +83467,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_default_voice_profile(\"id\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.GetDefaultVoiceProfile(ctx, &photonapi.GetDefaultVoiceProfileParams{\n\tID: \"id\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -83583,6 +84058,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .update_default_voice_profile(\n        \"id\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"expectedVersion\": 1,\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.UpdateDefaultVoiceProfileRequest\nif err := json.Unmarshal([]byte(`{\n\t\"expectedVersion\": 1\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Projects.Platforms.UpdateDefaultVoiceProfile(ctx, &photonapi.UpdateDefaultVoiceProfileParams{\n\tID: \"id\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -84169,6 +84649,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .create_default_voice_profile(\n        \"id\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"protocol\": \"sip\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.CreateDefaultVoiceProfileRequest\nif err := json.Unmarshal([]byte(`{\n\t\"protocol\": \"sip\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Projects.Platforms.CreateDefaultVoiceProfile(ctx, &photonapi.CreateDefaultVoiceProfileParams{\n\tID: \"id\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -84765,6 +85250,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nclient\n    .delete_voice_profile(\"id\".to_owned(), \"profileId\".to_owned(), 1, None)\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?;"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nerr := client.Projects.Platforms.DeleteVoiceProfile(ctx, &photonapi.DeleteVoiceProfileParams{\n\tID: \"id\",\n\tProfileID: \"profileId\",\n\tExpectedVersion: 1,\n})\nif err != nil {\n\treturn err\n}"
           }
         ]
       },
@@ -85310,6 +85800,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_voice_profile(\"id\".to_owned(), \"profileId\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.GetVoiceProfile(ctx, &photonapi.GetVoiceProfileParams{\n\tID: \"id\",\n\tProfileID: \"profileId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -85904,6 +86399,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .update_voice_profile(\n        \"id\".to_owned(),\n        \"profileId\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"expectedVersion\": 1,\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.UpdateVoiceProfileRequest\nif err := json.Unmarshal([]byte(`{\n\t\"expectedVersion\": 1\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Projects.Platforms.UpdateVoiceProfile(ctx, &photonapi.UpdateVoiceProfileParams{\n\tID: \"id\",\n\tProfileID: \"profileId\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -86500,6 +87000,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .delete_voice_profile_inbound(\"id\".to_owned(), \"profileId\".to_owned(), 1)\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.DeleteVoiceProfileInbound(ctx, &photonapi.DeleteVoiceProfileInboundParams{\n\tID: \"id\",\n\tProfileID: \"profileId\",\n\tExpectedVersion: 1,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -87097,6 +87602,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .update_voice_profile_inbound(\n        \"id\".to_owned(),\n        \"profileId\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"expectedVersion\": 1,\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.UpdateVoiceProfileInboundRequest\nif err := json.Unmarshal([]byte(`{\n\t\"expectedVersion\": 1\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Projects.Platforms.UpdateVoiceProfileInbound(ctx, &photonapi.UpdateVoiceProfileInboundParams{\n\tID: \"id\",\n\tProfileID: \"profileId\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -87733,6 +88243,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .replace_voice_profile_inbound(\n        \"id\".to_owned(),\n        \"profileId\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"credentials\": {\n                \"password\": \"password\",\n                \"username\": \"username\",\n            },\n            \"destinationUri\": \"destinationUri\",\n            \"expectedVersion\": 1,\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.ReplaceVoiceProfileInboundRequest\nif err := json.Unmarshal([]byte(`{\n\t\"credentials\": {\n\t\t\"password\": \"password\",\n\t\t\"username\": \"username\"\n\t},\n\t\"destinationUri\": \"destinationUri\",\n\t\"expectedVersion\": 1\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Projects.Platforms.ReplaceVoiceProfileInbound(ctx, &photonapi.ReplaceVoiceProfileInboundParams{\n\tID: \"id\",\n\tProfileID: \"profileId\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -88329,6 +88844,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .delete_voice_profile_outbound(\"id\".to_owned(), \"profileId\".to_owned(), 1)\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.DeleteVoiceProfileOutbound(ctx, &photonapi.DeleteVoiceProfileOutboundParams{\n\tID: \"id\",\n\tProfileID: \"profileId\",\n\tExpectedVersion: 1,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -88923,6 +89443,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .update_voice_profile_outbound_authentication(\n        \"id\".to_owned(),\n        \"profileId\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"authentication\": {\n                \"algorithm\": \"sha-256\",\n            },\n            \"expectedVersion\": 1,\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.UpdateVoiceProfileOutboundAuthenticationRequest\nif err := json.Unmarshal([]byte(`{\n\t\"authentication\": {\n\t\t\"algorithm\": \"sha-256\"\n\t},\n\t\"expectedVersion\": 1\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Projects.Platforms.UpdateVoiceProfileOutboundAuthentication(ctx, &photonapi.UpdateVoiceProfileOutboundAuthenticationParams{\n\tID: \"id\",\n\tProfileID: \"profileId\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -89649,6 +90174,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .configure_voice_profile_outbound(\n        \"idempotencyKey\".to_owned(),\n        \"id\".to_owned(),\n        \"profileId\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"authentication\": {\n                \"algorithm\": \"sha-256\",\n            },\n            \"expectedVersion\": 1,\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.ConfigureVoiceProfileOutboundRequest\nif err := json.Unmarshal([]byte(`{\n\t\"authentication\": {\n\t\t\"algorithm\": \"sha-256\"\n\t},\n\t\"expectedVersion\": 1\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Projects.Platforms.ConfigureVoiceProfileOutbound(ctx, &photonapi.ConfigureVoiceProfileOutboundParams{\n\tIdempotencyKey: \"idempotencyKey\",\n\tID: \"id\",\n\tProfileID: \"profileId\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -90299,6 +90829,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .rotate_voice_profile_outbound_credential(\n        \"idempotencyKey\".to_owned(),\n        \"id\".to_owned(),\n        \"profileId\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"expectedVersion\": 1,\n            \"mode\": \"normal\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.RotateVoiceProfileOutboundCredentialRequest\nif err := json.Unmarshal([]byte(`{\n\t\"expectedVersion\": 1,\n\t\"mode\": \"normal\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Projects.Platforms.RotateVoiceProfileOutboundCredential(ctx, &photonapi.RotateVoiceProfileOutboundCredentialParams{\n\tIdempotencyKey: \"idempotencyKey\",\n\tID: \"id\",\n\tProfileID: \"profileId\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -90760,6 +91295,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_project_whatsapp_platform(\"id\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.GetProjectWhatsappPlatform(ctx, &photonapi.GetProjectWhatsappPlatformParams{\n\tID: \"id\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -91439,6 +91979,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .disconnect_whatsapp_business_account(\"idempotencyKey\".to_owned(), \"id\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.DisconnectWhatsappBusinessAccount(ctx, &photonapi.DisconnectWhatsappBusinessAccountParams{\n\tIdempotencyKey: \"idempotencyKey\",\n\tID: \"id\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -91976,6 +92521,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_whatsapp_business_account(\"id\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.GetWhatsappBusinessAccount(ctx, &photonapi.GetWhatsappBusinessAccountParams{\n\tID: \"id\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -92515,6 +93065,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .list_whatsapp_account_phone_numbers(\"id\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.ListWhatsappAccountPhoneNumbers(ctx, &photonapi.ListWhatsappAccountPhoneNumbersParams{\n\tID: \"id\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -93204,6 +93759,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .create_whatsapp_voip_sender(\n        \"idempotencyKey\".to_owned(),\n        \"id\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"voipResourceId\": \"voipResourceId\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.CreateWhatsappVoipSenderRequest\nif err := json.Unmarshal([]byte(`{\n\t\"voipResourceId\": \"voipResourceId\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Projects.Platforms.CreateWhatsappVoipSender(ctx, &photonapi.CreateWhatsappVoipSenderParams{\n\tIdempotencyKey: \"idempotencyKey\",\n\tID: \"id\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -93857,6 +94417,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .connect_whatsapp_business(\n        \"idempotencyKey\".to_owned(),\n        \"id\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"code\": \"code\",\n            \"phoneNumberId\": \"phoneNumberId\",\n            \"wabaId\": \"wabaId\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.ConnectWhatsappBusinessRequest\nif err := json.Unmarshal([]byte(`{\n\t\"code\": \"code\",\n\t\"phoneNumberId\": \"phoneNumberId\",\n\t\"wabaId\": \"wabaId\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Projects.Platforms.ConnectWhatsappBusiness(ctx, &photonapi.ConnectWhatsappBusinessParams{\n\tIdempotencyKey: \"idempotencyKey\",\n\tID: \"id\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -94417,6 +94982,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_whatsapp_business_verification_code(\n        \"id\".to_owned(),\n        \"resourceId\".to_owned(),\n        serde_json::from_value(serde_json::json!(\"2026-01-01T00:00:00Z\"))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.GetWhatsappBusinessVerificationCode(ctx, &photonapi.GetWhatsappBusinessVerificationCodeParams{\n\tID: \"id\",\n\tResourceID: \"resourceId\",\n\tReceivedAfter: \"2026-01-01T00:00:00Z\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -94854,6 +95424,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_whatsapp_signup_config(\"id\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.GetWhatsappSignupConfig(ctx, &photonapi.GetWhatsappSignupConfigParams{\n\tID: \"id\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -95378,6 +95953,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .list_whatsapp_shared_line_assignments(\"id\".to_owned(), None)\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.ListWhatsappSharedLineAssignments(ctx, &photonapi.ListWhatsappSharedLineAssignmentsParams{\n\tID: \"id\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -95976,6 +96556,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .create_whatsapp_shared_line_assignment(\n        \"idempotencyKey\".to_owned(),\n        \"id\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"handle\": \"handle\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.CreateWhatsappSharedLineAssignmentRequest\nif err := json.Unmarshal([]byte(`{\n\t\"handle\": \"handle\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Projects.Platforms.CreateWhatsappSharedLineAssignment(ctx, &photonapi.CreateWhatsappSharedLineAssignmentParams{\n\tIdempotencyKey: \"idempotencyKey\",\n\tID: \"id\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -96523,6 +97108,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .release_whatsapp_shared_line_assignment(\"assignmentId\".to_owned(), \"id\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.ReleaseWhatsappSharedLineAssignment(ctx, &photonapi.ReleaseWhatsappSharedLineAssignmentParams{\n\tAssignmentID: \"assignmentId\",\n\tID: \"id\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -97068,6 +97658,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_whatsapp_shared_line_assignment(\"assignmentId\".to_owned(), \"id\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.GetWhatsappSharedLineAssignment(ctx, &photonapi.GetWhatsappSharedLineAssignmentParams{\n\tAssignmentID: \"assignmentId\",\n\tID: \"id\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -97708,6 +98303,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .provision_whatsapp_dedicated_line(\"idempotencyKey\".to_owned(), \"id\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.ProvisionWhatsappDedicatedLine(ctx, &photonapi.ProvisionWhatsappDedicatedLineParams{\n\tIdempotencyKey: \"idempotencyKey\",\n\tID: \"id\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -98316,6 +98916,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .release_whatsapp_dedicated_line(\"id\".to_owned(), \"resourceId\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Platforms.ReleaseWhatsappDedicatedLine(ctx, &photonapi.ReleaseWhatsappDedicatedLineParams{\n\tID: \"id\",\n\tResourceID: \"resourceId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -98984,6 +99589,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .list_spaces(\"id\".to_owned(), None)\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.ListSpaces(ctx, &photonapi.ListSpacesParams{\n\tID: \"id\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -99688,6 +100298,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .create_or_get_space(\n        \"id\".to_owned(),\n        \"idempotency-key\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"participantIds\": [],\n            \"platform\": \"sms\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.CreateOrGetSpaceRequest\nif err := json.Unmarshal([]byte(`{\n\t\"participantIds\": [],\n\t\"platform\": \"sms\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Projects.CreateOrGetSpace(ctx, &photonapi.CreateOrGetSpaceParams{\n\tID: \"id\",\n\tIdempotencyKey: \"idempotency-key\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -100268,6 +100883,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .count_spaces(\"id\".to_owned(), None)\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.CountSpaces(ctx, &photonapi.CountSpacesParams{\n\tID: \"id\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -100847,6 +101467,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_space(\"id\".to_owned(), \"spaceId\".to_owned(), None)\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.GetSpace(ctx, &photonapi.GetSpaceParams{\n\tID: \"id\",\n\tSpaceID: \"spaceId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -101456,6 +102081,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .set_space_typing(\n        \"id\".to_owned(),\n        \"spaceId\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"senderId\": \"senderId\",\n            \"typing\": true,\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.SetSpaceTypingRequest\nif err := json.Unmarshal([]byte(`{\n\t\"senderId\": \"senderId\",\n\t\"typing\": true\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Projects.SetSpaceTyping(ctx, &photonapi.SetSpaceTypingParams{\n\tID: \"id\",\n\tSpaceID: \"spaceId\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -102105,6 +102735,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .list_users(\"id\".to_owned(), None)\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.ListUsers(ctx, &photonapi.ListUsersParams{\n\tID: \"id\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -102743,6 +103378,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .create_or_get_user(\n        \"id\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"handle\": \"handle\",\n            \"platform\": \"sms\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.CreateOrGetUserRequest\nif err := json.Unmarshal([]byte(`{\n\t\"handle\": \"handle\",\n\t\"platform\": \"sms\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Projects.CreateOrGetUser(ctx, &photonapi.CreateOrGetUserParams{\n\tID: \"id\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -103304,6 +103944,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .count_users(\"id\".to_owned(), None)\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.CountUsers(ctx, &photonapi.CountUsersParams{\n\tID: \"id\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -103922,6 +104567,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_user(\"id\".to_owned(), \"userId\".to_owned(), None)\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.GetUser(ctx, &photonapi.GetUserParams{\n\tID: \"id\",\n\tUserID: \"userId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -104485,6 +105135,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .delete_project(\"idempotencyKey\".to_owned(), \"projectId\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Delete(ctx, &photonapi.DeleteProjectParams{\n\tIdempotencyKey: \"idempotencyKey\",\n\tProjectID: \"projectId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -104995,6 +105650,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_project(\"projectId\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Get(ctx, &photonapi.GetProjectParams{\n\tProjectID: \"projectId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -105605,6 +106265,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .update_project(\n        \"idempotencyKey\".to_owned(),\n        \"projectId\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"name\": \"name\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.UpdateProjectRequest\nif err := json.Unmarshal([]byte(`{\n\t\"name\": \"name\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Projects.Update(ctx, &photonapi.UpdateProjectParams{\n\tIdempotencyKey: \"idempotencyKey\",\n\tProjectID: \"projectId\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -106117,6 +106782,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_agent_profile(\"projectId\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.AgentProfile.Get(ctx, &photonapi.GetAgentProfileParams{\n\tProjectID: \"projectId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -106727,6 +107397,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .update_agent_profile(\n        \"idempotencyKey\".to_owned(),\n        \"projectId\".to_owned(),\n        &serde_json::from_value(serde_json::json!({}))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.UpdateAgentProfileRequest\nif err := json.Unmarshal([]byte(`{}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Projects.AgentProfile.Update(ctx, &photonapi.UpdateAgentProfileParams{\n\tIdempotencyKey: \"idempotencyKey\",\n\tProjectID: \"projectId\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -107290,6 +107965,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .reset_agent_profile_avatar(\"idempotencyKey\".to_owned(), \"projectId\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.AgentProfile.ResetAvatar(ctx, &photonapi.ResetAgentProfileAvatarParams{\n\tIdempotencyKey: \"idempotencyKey\",\n\tProjectID: \"projectId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -107900,6 +108580,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .commit_agent_profile_avatar(\n        \"idempotencyKey\".to_owned(),\n        \"projectId\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"uploadId\": \"uploadId\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.CommitAgentProfileAvatarRequest\nif err := json.Unmarshal([]byte(`{\n\t\"uploadId\": \"uploadId\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Projects.AgentProfile.CommitAvatar(ctx, &photonapi.CommitAgentProfileAvatarParams{\n\tIdempotencyKey: \"idempotencyKey\",\n\tProjectID: \"projectId\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -108422,6 +109107,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .create_agent_profile_avatar_upload(\n        \"projectId\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"contentType\": \"image/jpeg\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.CreateAgentProfileAvatarUploadRequest\nif err := json.Unmarshal([]byte(`{\n\t\"contentType\": \"image/jpeg\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Projects.AgentProfile.CreateAvatarUpload(ctx, &photonapi.CreateAgentProfileAvatarUploadParams{\n\tProjectID: \"projectId\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -108946,6 +109636,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .list_project_api_keys(\"projectId\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.ListProjectApiKeys(ctx, &photonapi.ListProjectApiKeysParams{\n\tProjectID: \"projectId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -109568,6 +110263,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .create_project_api_key(\n        \"idempotencyKey\".to_owned(),\n        \"projectId\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"name\": \"name\",\n            \"permissions\": [\n                \"events:read\",\n            ],\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.CreateProjectApiKeyRequest\nif err := json.Unmarshal([]byte(`{\n\t\"name\": \"name\",\n\t\"permissions\": [\n\t\t\"events:read\"\n\t]\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Projects.CreateProjectApiKey(ctx, &photonapi.CreateProjectApiKeyParams{\n\tIdempotencyKey: \"idempotencyKey\",\n\tProjectID: \"projectId\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -110112,6 +110812,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .revoke_project_api_key(\n        \"idempotencyKey\".to_owned(),\n        \"apiKeyId\".to_owned(),\n        \"projectId\".to_owned(),\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.RevokeProjectApiKey(ctx, &photonapi.RevokeProjectApiKeyParams{\n\tIdempotencyKey: \"idempotencyKey\",\n\tAPIKeyID: \"apiKeyId\",\n\tProjectID: \"projectId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -110742,6 +111447,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .update_project_api_key(\n        \"idempotencyKey\".to_owned(),\n        \"apiKeyId\".to_owned(),\n        \"projectId\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"permissions\": [\n                \"events:read\",\n            ],\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.UpdateProjectApiKeyRequest\nif err := json.Unmarshal([]byte(`{\n\t\"permissions\": [\n\t\t\"events:read\"\n\t]\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Projects.UpdateProjectApiKey(ctx, &photonapi.UpdateProjectApiKeyParams{\n\tIdempotencyKey: \"idempotencyKey\",\n\tAPIKeyID: \"apiKeyId\",\n\tProjectID: \"projectId\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -111287,6 +111997,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_billing_overview(\"projectId\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Billing.GetOverview(ctx, &photonapi.GetBillingOverviewParams{\n\tProjectID: \"projectId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -111881,6 +112596,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_billing_operation(\"projectId\".to_owned(), \"operationId\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Billing.GetOperation(ctx, &photonapi.GetBillingOperationParams{\n\tProjectID: \"projectId\",\n\tOperationID: \"operationId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -112426,6 +113146,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .list_billing_plans(\"projectId\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Billing.ListBillingPlans(ctx, &photonapi.ListBillingPlansParams{\n\tProjectID: \"projectId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -112971,6 +113696,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .list_project_subscriptions(\"projectId\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.Billing.ListProjectSubscriptions(ctx, &photonapi.ListProjectSubscriptionsParams{\n\tProjectID: \"projectId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -113343,6 +114073,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_message_metrics_backfill(\"projectId\".to_owned(), None)\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.GetMessageMetricsBackfill(ctx, &photonapi.GetMessageMetricsBackfillParams{\n\tProjectID: \"projectId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -113688,6 +114423,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_message_metrics_sql_schema(\"projectId\".to_owned(), None)\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.GetMessageMetricsSqlSchema(ctx, &photonapi.GetMessageMetricsSqlSchemaParams{\n\tProjectID: \"projectId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -114224,6 +114964,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .query_message_metrics(\n        \"projectId\".to_owned(),\n        None,\n        &serde_json::from_value(serde_json::json!({\n            \"sql\": \"sql\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.ClickHouseSqlQueryRequest\nif err := json.Unmarshal([]byte(`{\n\t\"sql\": \"sql\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Projects.QueryMessageMetrics(ctx, &photonapi.QueryMessageMetricsParams{\n\tProjectID: \"projectId\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -114691,6 +115436,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .list_webhook_api_versions(\"projectId\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.ListWebhookApiVersions(ctx, &photonapi.ListWebhookApiVersionsParams{\n\tProjectID: \"projectId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -115183,6 +115933,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .list_webhook_destinations(\"projectId\".to_owned(), None)\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.ListWebhookDestinations(ctx, &photonapi.ListWebhookDestinationsParams{\n\tProjectID: \"projectId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -115719,6 +116474,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .create_webhook_destination(\n        \"idempotencyKey\".to_owned(),\n        \"projectId\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"apiVersion\": \"2026-01-01\",\n            \"enabledEvents\": [],\n            \"name\": \"name\",\n            \"url\": \"https://example.com\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.CreateWebhookDestinationRequest\nif err := json.Unmarshal([]byte(`{\n\t\"apiVersion\": \"2026-01-01\",\n\t\"enabledEvents\": [],\n\t\"name\": \"name\",\n\t\"url\": \"https://example.com\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Projects.CreateWebhookDestination(ctx, &photonapi.CreateWebhookDestinationParams{\n\tIdempotencyKey: \"idempotencyKey\",\n\tProjectID: \"projectId\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -116202,6 +116962,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .delete_webhook_destination(\"destinationId\".to_owned(), \"projectId\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.DeleteWebhookDestination(ctx, &photonapi.DeleteWebhookDestinationParams{\n\tDestinationID: \"destinationId\",\n\tProjectID: \"projectId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -116722,6 +117487,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_webhook_destination(\"destinationId\".to_owned(), \"projectId\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.GetWebhookDestination(ctx, &photonapi.GetWebhookDestinationParams{\n\tDestinationID: \"destinationId\",\n\tProjectID: \"projectId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       },
@@ -117342,6 +118112,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .update_webhook_destination(\n        \"idempotencyKey\".to_owned(),\n        \"destinationId\".to_owned(),\n        \"projectId\".to_owned(),\n        &serde_json::from_value(serde_json::json!({}))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.UpdateWebhookDestinationRequest\nif err := json.Unmarshal([]byte(`{}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Projects.UpdateWebhookDestination(ctx, &photonapi.UpdateWebhookDestinationParams{\n\tIdempotencyKey: \"idempotencyKey\",\n\tDestinationID: \"destinationId\",\n\tProjectID: \"projectId\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -117889,6 +118664,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .retry_webhook_delivery(\n        \"idempotencyKey\".to_owned(),\n        \"destinationId\".to_owned(),\n        \"projectId\".to_owned(),\n        &serde_json::from_value(serde_json::json!({\n            \"eventId\": \"eventId\",\n            \"eventType\": \"eventType\",\n            \"expectedAttemptCount\": 0,\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.RetryWebhookDeliveryRequest\nif err := json.Unmarshal([]byte(`{\n\t\"eventId\": \"eventId\",\n\t\"eventType\": \"eventType\",\n\t\"expectedAttemptCount\": 0\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Projects.RetryWebhookDelivery(ctx, &photonapi.RetryWebhookDeliveryParams{\n\tIdempotencyKey: \"idempotencyKey\",\n\tDestinationID: \"destinationId\",\n\tProjectID: \"projectId\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -118514,6 +119294,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .rotate_webhook_signing_secret(\n        \"idempotencyKey\".to_owned(),\n        \"destinationId\".to_owned(),\n        \"projectId\".to_owned(),\n        &serde_json::from_value(serde_json::json!({}))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nvar body photonapi.RotateWebhookSigningSecretRequest\nif err := json.Unmarshal([]byte(`{}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Projects.RotateWebhookSigningSecret(ctx, &photonapi.RotateWebhookSigningSecretParams{\n\tIdempotencyKey: \"idempotencyKey\",\n\tDestinationID: \"destinationId\",\n\tProjectID: \"projectId\",\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -118920,6 +119705,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .list_webhook_egress_addresses(\"projectId\".to_owned())\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.ListWebhookEgressAddresses(ctx, &photonapi.ListWebhookEgressAddressesParams{\n\tProjectID: \"projectId\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -119436,6 +120226,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .list_webhook_event_types(\n        \"projectId\".to_owned(),\n        serde_json::from_value(serde_json::json!(\"2026-01-01\"))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.ListWebhookEventTypes(ctx, &photonapi.ListWebhookEventTypesParams{\n\tProjectID: \"projectId\",\n\tAPIVersion: \"2026-01-01\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }
@@ -119961,6 +120756,11 @@
             "lang": "rust",
             "label": "Rust",
             "source": "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};\n\nlet token = std::env::var(\"PHOTON_API_TOKEN\")?;\nlet client = PhotonClientBuilder::new()\n    .credential(\"accountServiceKey\", Credential::Bearer(SecretString::from(token)))\n    .build()?;\nlet result = client\n    .get_webhook_event_schema(\n        \"projectId\".to_owned(),\n        \"eventType\".to_owned(),\n        serde_json::from_value(serde_json::json!(\"2026-01-01\"))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
+          },
+          {
+            "lang": "go",
+            "label": "Go",
+            "source": "import (\n\t\"context\"\n\t\"os\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv(\"PHOTON_API_TOKEN\")))\nresult, err := client.Projects.GetWebhookEventSchema(ctx, &photonapi.GetWebhookEventSchemaParams{\n\tProjectID: \"projectId\",\n\tEventType: \"eventType\",\n\tAPIVersion: \"2026-01-01\",\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }

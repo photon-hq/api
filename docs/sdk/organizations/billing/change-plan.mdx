@@ -1,7 +1,7 @@
 ---
 title: "Change plan"
 icon: arrow-up-right
-description: "Change plan: changePlan in the TypeScript, Python and Rust clients."
+description: "Change plan: changePlan in the TypeScript, Python, Rust and Go clients."
 ---
 
 `POST /v1/organizations/{organizationId}/billing/projects/{projectId}/purchase`
@@ -22,6 +22,11 @@ photon.organizations.billing.change_plan(input: ChangePlanInput) -> models.Termi
 <Tab title="Rust">
 ```rust Rust
 client.change_plan(idempotency_key: String, organization_id: String, project_id: String, body: &types::ChangePlanRequest).await -> Result<ResponseValue<ChangePlanResponse>, Error<ChangePlanError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.Billing.ChangePlan(ctx context.Context, params *ChangePlanParams, opts ...RequestOption) (*Union, error)
 ```
 </Tab>
 </Tabs>
@@ -92,6 +97,36 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.ChangePlanRequest
+if err := json.Unmarshal([]byte(`{
+	"category": "category",
+	"planCode": "planCode"
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Organizations.Billing.ChangePlan(ctx, &photonapi.ChangePlanParams{
+	IdempotencyKey: "idempotencyKey",
+	OrganizationID: "organizationId",
+	ProjectID: "projectId",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

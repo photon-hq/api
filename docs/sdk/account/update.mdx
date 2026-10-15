@@ -1,7 +1,7 @@
 ---
 title: "Update account"
 icon: pencil
-description: "Update account: updateAccount in the TypeScript, Python and Rust clients."
+description: "Update account: updateAccount in the TypeScript, Python, Rust and Go clients."
 ---
 
 `PATCH /v1/account`
@@ -22,6 +22,11 @@ photon.account.update(input: UpdateAccountInput) -> models.Account
 <Tab title="Rust">
 ```rust Rust
 client.update_account(idempotency_key: String, body: &types::UpdateAccountRequest).await -> Result<ResponseValue<types::Account>, Error<UpdateAccountError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Account.Update(ctx context.Context, params *UpdateAccountParams, opts ...RequestOption) (*Account, error)
 ```
 </Tab>
 </Tabs>
@@ -73,6 +78,31 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.UpdateAccountRequest
+if err := json.Unmarshal([]byte(`{}`), &body); err != nil {
+	return err
+}
+result, err := client.Account.Update(ctx, &photonapi.UpdateAccountParams{
+	IdempotencyKey: "idempotencyKey",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

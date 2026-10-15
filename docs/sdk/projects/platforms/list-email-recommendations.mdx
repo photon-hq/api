@@ -1,7 +1,7 @@
 ---
 title: "List email recommendations"
 icon: arrow-down-left
-description: "List email recommendations: listEmailRecommendations in the TypeScript, Python and Rust clients."
+description: "List email recommendations: listEmailRecommendations in the TypeScript, Python, Rust and Go clients."
 ---
 
 `GET /v1/projects/{id}/platforms/email/recommendations`
@@ -22,6 +22,11 @@ photon.projects.platforms.list_email_recommendations(input: ListEmailRecommendat
 <Tab title="Rust">
 ```rust Rust
 client.list_email_recommendations(id: String, params: Option<ListEmailRecommendationsParams>).await -> Result<ResponseValue<types::EmailRecommendations>, Error<ListEmailRecommendationsError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.Platforms.ListEmailRecommendations(ctx context.Context, params *ListEmailRecommendationsParams, opts ...RequestOption) (*EmailRecommendations, error)
 ```
 </Tab>
 </Tabs>
@@ -68,6 +73,25 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Projects.Platforms.ListEmailRecommendations(ctx, &photonapi.ListEmailRecommendationsParams{
+	ID: "id",
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

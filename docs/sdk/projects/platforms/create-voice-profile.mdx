@@ -1,7 +1,7 @@
 ---
 title: "Create Voice profile"
 icon: arrow-up-right
-description: "Create Voice profile: createVoiceProfile in the TypeScript, Python and Rust clients."
+description: "Create Voice profile: createVoiceProfile in the TypeScript, Python, Rust and Go clients."
 ---
 
 `POST /v1/projects/{id}/platforms/voice/profiles`
@@ -22,6 +22,11 @@ photon.projects.platforms.create_voice_profile(input: CreateVoiceProfileInput) -
 <Tab title="Rust">
 ```rust Rust
 client.create_voice_profile(id: String, body: &types::CreateVoiceProfileRequest).await -> Result<ResponseValue<types::VoiceProfile>, Error<CreateVoiceProfileError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.Platforms.CreateVoiceProfile(ctx context.Context, params *CreateVoiceProfileParams, opts ...RequestOption) (*VoiceProfile, error)
 ```
 </Tab>
 </Tabs>
@@ -82,6 +87,34 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.CreateVoiceProfileRequest
+if err := json.Unmarshal([]byte(`{
+	"name": "name",
+	"protocol": "sip"
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Projects.Platforms.CreateVoiceProfile(ctx, &photonapi.CreateVoiceProfileParams{
+	ID: "id",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

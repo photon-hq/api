@@ -1,7 +1,7 @@
 ---
 title: "Create payment method checkout"
 icon: arrow-up-right
-description: "Create payment method checkout: createOrganizationPaymentMethodCheckout in the TypeScript, Python and Rust clients."
+description: "Create payment method checkout: createOrganizationPaymentMethodCheckout in the TypeScript, Python, Rust and Go clients."
 ---
 
 `POST /v1/organizations/{organizationId}/billing/checkout`
@@ -22,6 +22,11 @@ photon.organizations.billing.create_organization_payment_method_checkout(input: 
 <Tab title="Rust">
 ```rust Rust
 client.create_organization_payment_method_checkout(organization_id: String, params: Option<CreateOrganizationPaymentMethodCheckoutParams>).await -> Result<ResponseValue<types::CreateOrganizationPaymentMethodCheckoutResponse>, Error<CreateOrganizationPaymentMethodCheckoutError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.Billing.CreateOrganizationPaymentMethodCheckout(ctx context.Context, params *CreateOrganizationPaymentMethodCheckoutParams, opts ...RequestOption) (*CreateOrganizationPaymentMethodCheckoutResponse, error)
 ```
 </Tab>
 </Tabs>
@@ -68,6 +73,25 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Organizations.Billing.CreateOrganizationPaymentMethodCheckout(ctx, &photonapi.CreateOrganizationPaymentMethodCheckoutParams{
+	OrganizationID: "organizationId",
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

@@ -1,7 +1,7 @@
 ---
 title: "Count projects"
 icon: arrow-down-left
-description: "Count projects: countProjects in the TypeScript, Python and Rust clients."
+description: "Count projects: countProjects in the TypeScript, Python, Rust and Go clients."
 ---
 
 `GET /v1/organizations/{organizationId}/projects/count`
@@ -22,6 +22,11 @@ photon.organizations.projects.count(input: CountProjectsInput) -> models.Project
 <Tab title="Rust">
 ```rust Rust
 client.count_projects(organization_id: String, params: Option<CountProjectsParams>).await -> Result<ResponseValue<types::ProjectCount>, Error<CountProjectsError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.Projects.Count(ctx context.Context, params *CountProjectsParams, opts ...RequestOption) (*ProjectCount, error)
 ```
 </Tab>
 </Tabs>
@@ -68,6 +73,25 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Organizations.Projects.Count(ctx, &photonapi.CountProjectsParams{
+	OrganizationID: "organizationId",
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

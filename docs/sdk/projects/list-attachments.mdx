@@ -1,7 +1,7 @@
 ---
 title: "List attachments"
 icon: arrow-down-left
-description: "List attachments: listAttachments in the TypeScript, Python and Rust clients."
+description: "List attachments: listAttachments in the TypeScript, Python, Rust and Go clients."
 ---
 
 `GET /v1/projects/{id}/attachments`
@@ -22,6 +22,11 @@ photon.projects.list_attachments(input: ListAttachmentsInput) -> models.Attachme
 <Tab title="Rust">
 ```rust Rust
 client.list_attachments(id: String, params: Option<ListAttachmentsParams>).await -> Result<ResponseValue<types::AttachmentPage>, Error<ListAttachmentsError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.ListAttachments(ctx context.Context, params *ListAttachmentsParams, opts ...RequestOption) (*AttachmentPage, error)
 ```
 </Tab>
 </Tabs>
@@ -68,6 +73,25 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Projects.ListAttachments(ctx, &photonapi.ListAttachmentsParams{
+	ID: "id",
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

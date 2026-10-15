@@ -60,4 +60,4 @@ with `gh attestation verify FILE --repo photon-hq/api`.
   carries the endpoint's summary and description.
 
 The [API reference](/api-reference) on this site describes every endpoint, with
-its call in TypeScript, Python, and Rust.
+its call in TypeScript, Python, Rust, and Go.

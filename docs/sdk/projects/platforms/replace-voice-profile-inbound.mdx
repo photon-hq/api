@@ -1,7 +1,7 @@
 ---
 title: "Replace Voice inbound configuration"
 icon: pencil
-description: "Replace Voice inbound configuration: replaceVoiceProfileInbound in the TypeScript, Python and Rust clients."
+description: "Replace Voice inbound configuration: replaceVoiceProfileInbound in the TypeScript, Python, Rust and Go clients."
 ---
 
 `PUT /v1/projects/{id}/platforms/voice/profiles/{profileId}/inbound`
@@ -22,6 +22,11 @@ photon.projects.platforms.replace_voice_profile_inbound(input: ReplaceVoiceProfi
 <Tab title="Rust">
 ```rust Rust
 client.replace_voice_profile_inbound(id: String, profile_id: String, body: &types::ReplaceVoiceProfileInboundRequest).await -> Result<ResponseValue<ReplaceVoiceProfileInboundResponse>, Error<ReplaceVoiceProfileInboundError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.Platforms.ReplaceVoiceProfileInbound(ctx context.Context, params *ReplaceVoiceProfileInboundParams, opts ...RequestOption) (*VoiceProfileInboundConfiguration, error)
 ```
 </Tab>
 </Tabs>
@@ -97,6 +102,39 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.ReplaceVoiceProfileInboundRequest
+if err := json.Unmarshal([]byte(`{
+	"credentials": {
+		"password": "password",
+		"username": "username"
+	},
+	"destinationUri": "destinationUri",
+	"expectedVersion": 1
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Projects.Platforms.ReplaceVoiceProfileInbound(ctx, &photonapi.ReplaceVoiceProfileInboundParams{
+	ID: "id",
+	ProfileID: "profileId",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

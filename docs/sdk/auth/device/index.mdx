@@ -1,6 +1,6 @@
 ---
 title: "Device"
-description: "The Device resource in the TypeScript, Python and Rust clients."
+description: "The Device resource in the TypeScript, Python, Rust and Go clients."
 ---
 
 ## Methods
@@ -50,6 +50,22 @@ client.device_authorize().await -> Result<ResponseValue<types::DeviceAuthorizeRe
 
 ```rust Rust
 client.device_token(body: &types::DeviceTokenRequest).await -> Result<ResponseValue<types::DeviceTokenResponse>, Error<DeviceTokenError>>
+```
+`POST /v1/auth/device/token`
+
+</Tab>
+<Tab title="Go">
+**[Start device authorization](/api-client/sdk/auth/device/authorize)**
+
+```go Go
+client.Auth.Device.Authorize(ctx context.Context, opts ...RequestOption) (*DeviceAuthorizeResponse, error)
+```
+`POST /v1/auth/device/code`
+
+**[Exchange device code or refresh token](/api-client/sdk/auth/device/token)**
+
+```go Go
+client.Auth.Device.Token(ctx context.Context, params *DeviceTokenParams, opts ...RequestOption) (*DeviceTokenResponse, error)
 ```
 `POST /v1/auth/device/token`
 

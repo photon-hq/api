@@ -1,6 +1,6 @@
 ---
 title: "Account"
-description: "The Account resource in the TypeScript, Python and Rust clients."
+description: "The Account resource in the TypeScript, Python, Rust and Go clients."
 ---
 
 ## Methods
@@ -281,6 +281,99 @@ client.revoke_account_service_key(idempotency_key: String, service_key_id: Strin
 
 ```rust Rust
 client.revoke_authorized_application(application_id: String).await -> Result<ResponseValue<()>, Error<RevokeAuthorizedApplicationError>>
+```
+`DELETE /v1/account/oauth/authorized-applications/{applicationId}`
+
+</Tab>
+<Tab title="Go">
+**[List Account Service Keys](/api-client/sdk/account/list-account-service-keys)**
+
+```go Go
+client.Account.ListAccountServiceKeys(ctx context.Context, opts ...RequestOption) (*ListAccountServiceKeysResponse, error)
+```
+`GET /v1/account/service-keys`
+
+**[List connected applications](/api-client/sdk/account/list-authorized-applications)**
+
+```go Go
+client.Account.ListAuthorizedApplications(ctx context.Context, params *ListAuthorizedApplicationsParams, opts ...RequestOption) (*ListAuthorizedApplicationsResponse, error)
+```
+`GET /v1/account/oauth/authorized-applications`
+
+**[Get account](/api-client/sdk/account/get)**
+
+```go Go
+client.Account.Get(ctx context.Context, opts ...RequestOption) (*Account, error)
+```
+`GET /v1/account`
+
+**[Create Account Service Key](/api-client/sdk/account/create-account-service-key)**
+
+```go Go
+client.Account.CreateAccountServiceKey(ctx context.Context, params *CreateAccountServiceKeyParams, opts ...RequestOption) (*CreateAccountServiceKeyResponse, error)
+```
+`POST /v1/account/service-keys`
+
+**[Create profile picture upload](/api-client/sdk/account/create-profile-picture-upload)**
+
+```go Go
+client.Account.CreateProfilePictureUpload(ctx context.Context, params *CreateAccountProfilePictureUploadParams, opts ...RequestOption) (*ProfilePictureUpload, error)
+```
+`POST /v1/account/profile-picture/uploads`
+
+**[Start phone verification](/api-client/sdk/account/start-phone-verification)**
+
+```go Go
+client.Account.StartPhoneVerification(ctx context.Context, params *StartAccountPhoneVerificationParams, opts ...RequestOption) (*StartAccountPhoneVerificationResponse, error)
+```
+`POST /v1/account/phone/verifications`
+
+**[Commit profile picture](/api-client/sdk/account/commit-profile-picture)**
+
+```go Go
+client.Account.CommitProfilePicture(ctx context.Context, params *CommitAccountProfilePictureParams, opts ...RequestOption) (*Account, error)
+```
+`PUT /v1/account/profile-picture`
+
+**[Confirm phone verification](/api-client/sdk/account/confirm-phone-verification)**
+
+```go Go
+client.Account.ConfirmPhoneVerification(ctx context.Context, params *ConfirmAccountPhoneVerificationParams, opts ...RequestOption) (*Account, error)
+```
+`PUT /v1/account/phone`
+
+**[Update account](/api-client/sdk/account/update)**
+
+```go Go
+client.Account.Update(ctx context.Context, params *UpdateAccountParams, opts ...RequestOption) (*Account, error)
+```
+`PATCH /v1/account`
+
+**[Delete account](/api-client/sdk/account/delete)**
+
+```go Go
+client.Account.Delete(ctx context.Context, opts ...RequestOption) (*Account, error)
+```
+`DELETE /v1/account`
+
+**[Remove profile picture](/api-client/sdk/account/reset-profile-picture)**
+
+```go Go
+client.Account.ResetProfilePicture(ctx context.Context, params *ResetAccountProfilePictureParams, opts ...RequestOption) (*Account, error)
+```
+`DELETE /v1/account/profile-picture`
+
+**[Revoke Account Service Key](/api-client/sdk/account/revoke-account-service-key)**
+
+```go Go
+client.Account.RevokeAccountServiceKey(ctx context.Context, params *RevokeAccountServiceKeyParams, opts ...RequestOption) (*RevokeAccountServiceKeyResponse, error)
+```
+`DELETE /v1/account/service-keys/{serviceKeyId}`
+
+**[Revoke connected application](/api-client/sdk/account/revoke-authorized-application)**
+
+```go Go
+client.Account.RevokeAuthorizedApplication(ctx context.Context, params *RevokeAuthorizedApplicationParams, opts ...RequestOption) error
 ```
 `DELETE /v1/account/oauth/authorized-applications/{applicationId}`
 

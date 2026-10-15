@@ -1,7 +1,7 @@
 ---
 title: "Get organization SSO configuration"
 icon: arrow-down-left
-description: "Get organization SSO configuration: getOrganizationSsoConfiguration in the TypeScript, Python and Rust clients."
+description: "Get organization SSO configuration: getOrganizationSsoConfiguration in the TypeScript, Python, Rust and Go clients."
 ---
 
 `GET /v1/auth/organizations/{orgId}/sso`
@@ -22,6 +22,11 @@ photon.auth.get_organization_sso_configuration(input: GetOrganizationSsoConfigur
 <Tab title="Rust">
 ```rust Rust
 client.get_organization_sso_configuration(org_id: String).await -> Result<ResponseValue<types::OrganizationSsoConfiguration>, Error<GetOrganizationSsoConfigurationError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Auth.GetOrganizationSsoConfiguration(ctx context.Context, params *GetOrganizationSsoConfigurationParams, opts ...RequestOption) (*OrganizationSsoConfiguration, error)
 ```
 </Tab>
 </Tabs>
@@ -68,6 +73,25 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Auth.GetOrganizationSsoConfiguration(ctx, &photonapi.GetOrganizationSsoConfigurationParams{
+	OrgID: "orgId",
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

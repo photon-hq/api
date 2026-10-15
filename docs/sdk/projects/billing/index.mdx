@@ -1,6 +1,6 @@
 ---
 title: "Billing"
-description: "The Billing resource in the TypeScript, Python and Rust clients."
+description: "The Billing resource in the TypeScript, Python, Rust and Go clients."
 ---
 
 ## Methods
@@ -92,6 +92,36 @@ client.get_billing_operation(project_id: String, operation_id: String).await -> 
 
 ```rust Rust
 client.get_billing_overview(project_id: String).await -> Result<ResponseValue<types::GetBillingOverviewResponse>, Error<GetBillingOverviewError>>
+```
+`GET /v1/projects/{projectId}/billing`
+
+</Tab>
+<Tab title="Go">
+**[List billing plans](/api-client/sdk/projects/billing/list-billing-plans)**
+
+```go Go
+client.Projects.Billing.ListBillingPlans(ctx context.Context, params *ListBillingPlansParams, opts ...RequestOption) (*ListBillingPlansResponse, error)
+```
+`GET /v1/projects/{projectId}/billing/plans`
+
+**[List project subscriptions](/api-client/sdk/projects/billing/list-project-subscriptions)**
+
+```go Go
+client.Projects.Billing.ListProjectSubscriptions(ctx context.Context, params *ListProjectSubscriptionsParams, opts ...RequestOption) (*ListProjectSubscriptionsResponse, error)
+```
+`GET /v1/projects/{projectId}/billing/subscriptions`
+
+**[Get billing operation](/api-client/sdk/projects/billing/get-operation)**
+
+```go Go
+client.Projects.Billing.GetOperation(ctx context.Context, params *GetBillingOperationParams, opts ...RequestOption) (*BillingOperation, error)
+```
+`GET /v1/projects/{projectId}/billing/operations/{operationId}`
+
+**[Get project billing overview](/api-client/sdk/projects/billing/get-overview)**
+
+```go Go
+client.Projects.Billing.GetOverview(ctx context.Context, params *GetBillingOverviewParams, opts ...RequestOption) (*GetBillingOverviewResponse, error)
 ```
 `GET /v1/projects/{projectId}/billing`
 

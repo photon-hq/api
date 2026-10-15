@@ -1,7 +1,7 @@
 ---
 title: "Retry webhook delivery"
 icon: arrow-up-right
-description: "Retry webhook delivery: retryWebhookDelivery in the TypeScript, Python and Rust clients."
+description: "Retry webhook delivery: retryWebhookDelivery in the TypeScript, Python, Rust and Go clients."
 ---
 
 `POST /v1/projects/{projectId}/webhooks/destinations/{destinationId}/retries`
@@ -22,6 +22,11 @@ photon.projects.retry_webhook_delivery(input: RetryWebhookDeliveryInput) -> mode
 <Tab title="Rust">
 ```rust Rust
 client.retry_webhook_delivery(idempotency_key: String, destination_id: String, project_id: String, body: &types::RetryWebhookDeliveryRequest).await -> Result<ResponseValue<types::RetryWebhookDeliveryResponse>, Error<RetryWebhookDeliveryError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.RetryWebhookDelivery(ctx context.Context, params *RetryWebhookDeliveryParams, opts ...RequestOption) (*RetryWebhookDeliveryResponse, error)
 ```
 </Tab>
 </Tabs>
@@ -95,6 +100,37 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.RetryWebhookDeliveryRequest
+if err := json.Unmarshal([]byte(`{
+	"eventId": "eventId",
+	"eventType": "eventType",
+	"expectedAttemptCount": 0
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Projects.RetryWebhookDelivery(ctx, &photonapi.RetryWebhookDeliveryParams{
+	IdempotencyKey: "idempotencyKey",
+	DestinationID: "destinationId",
+	ProjectID: "projectId",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

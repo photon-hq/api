@@ -1,7 +1,7 @@
 ---
 title: "Get organization credit"
 icon: arrow-down-left
-description: "Get organization credit: getOrganizationCredit in the TypeScript, Python and Rust clients."
+description: "Get organization credit: getOrganizationCredit in the TypeScript, Python, Rust and Go clients."
 ---
 
 `GET /v1/organizations/{organizationId}/billing/credit`
@@ -22,6 +22,11 @@ photon.organizations.billing.get_organization_credit(input: GetOrganizationCredi
 <Tab title="Rust">
 ```rust Rust
 client.get_organization_credit(organization_id: String).await -> Result<ResponseValue<types::GetOrganizationCreditResponse>, Error<GetOrganizationCreditError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.Billing.GetOrganizationCredit(ctx context.Context, params *GetOrganizationCreditParams, opts ...RequestOption) (*GetOrganizationCreditResponse, error)
 ```
 </Tab>
 </Tabs>
@@ -68,6 +73,25 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Organizations.Billing.GetOrganizationCredit(ctx, &photonapi.GetOrganizationCreditParams{
+	OrganizationID: "organizationId",
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

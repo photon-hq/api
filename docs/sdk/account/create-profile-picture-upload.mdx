@@ -1,7 +1,7 @@
 ---
 title: "Create profile picture upload"
 icon: arrow-up-right
-description: "Create profile picture upload: createAccountProfilePictureUpload in the TypeScript, Python and Rust clients."
+description: "Create profile picture upload: createAccountProfilePictureUpload in the TypeScript, Python, Rust and Go clients."
 ---
 
 `POST /v1/account/profile-picture/uploads`
@@ -22,6 +22,11 @@ photon.account.create_profile_picture_upload(input: CreateAccountProfilePictureU
 <Tab title="Rust">
 ```rust Rust
 client.create_account_profile_picture_upload(body: &types::ProfilePictureUploadRequest).await -> Result<ResponseValue<types::ProfilePictureUpload>, Error<CreateAccountProfilePictureUploadError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Account.CreateProfilePictureUpload(ctx context.Context, params *CreateAccountProfilePictureUploadParams, opts ...RequestOption) (*ProfilePictureUpload, error)
 ```
 </Tab>
 </Tabs>
@@ -72,6 +77,32 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.ProfilePictureUploadRequest
+if err := json.Unmarshal([]byte(`{
+	"contentType": "image/jpeg"
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Account.CreateProfilePictureUpload(ctx, &photonapi.CreateAccountProfilePictureUploadParams{
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

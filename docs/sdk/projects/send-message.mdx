@@ -1,7 +1,7 @@
 ---
 title: "Send a Message"
 icon: arrow-up-right
-description: "Send a Message: sendMessage in the TypeScript, Python and Rust clients."
+description: "Send a Message: sendMessage in the TypeScript, Python, Rust and Go clients."
 ---
 
 `POST /v1/projects/{id}/messages`
@@ -22,6 +22,11 @@ photon.projects.send_message(input: SendMessageInput) -> models.SentMessage
 <Tab title="Rust">
 ```rust Rust
 client.send_message(id: String, idempotency_key: String, body: &types::SendMessageRequest).await -> Result<ResponseValue<types::SentMessage>, Error<SendMessageError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.SendMessage(ctx context.Context, params *SendMessageParams, opts ...RequestOption) (*SentMessage, error)
 ```
 </Tab>
 </Tabs>
@@ -104,6 +109,40 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.SendMessageRequest
+if err := json.Unmarshal([]byte(`{
+	"content": {
+		"type": "text",
+		"format": "format",
+		"text": "text"
+	},
+	"senderId": "senderId",
+	"spaceId": "spaceId"
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Projects.SendMessage(ctx, &photonapi.SendMessageParams{
+	ID: "id",
+	IdempotencyKey: "idempotency-key",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

@@ -1,7 +1,7 @@
 ---
 title: "Unassign Voice line profile"
 icon: x
-description: "Unassign Voice line profile: unassignVoiceLineProfile in the TypeScript, Python and Rust clients."
+description: "Unassign Voice line profile: unassignVoiceLineProfile in the TypeScript, Python, Rust and Go clients."
 ---
 
 `DELETE /v1/projects/{id}/platforms/voice/lines/{resourceId}/profile`
@@ -22,6 +22,11 @@ photon.projects.platforms.unassign_voice_line_profile(input: UnassignVoiceLinePr
 <Tab title="Rust">
 ```rust Rust
 client.unassign_voice_line_profile(id: String, resource_id: String, expected_version: i64).await -> Result<ResponseValue<()>, Error<UnassignVoiceLineProfileError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.Platforms.UnassignVoiceLineProfile(ctx context.Context, params *UnassignVoiceLineProfileParams, opts ...RequestOption) error
 ```
 </Tab>
 </Tabs>
@@ -75,6 +80,26 @@ client
     .unassign_voice_line_profile("id".to_owned(), "resourceId".to_owned(), 1)
     .await
     .map_err(|error| format!("{error:?}"))?;
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+err := client.Projects.Platforms.UnassignVoiceLineProfile(ctx, &photonapi.UnassignVoiceLineProfileParams{
+	ID: "id",
+	ResourceID: "resourceId",
+	ExpectedVersion: 1,
+})
+if err != nil {
+	return err
+}
 ```
 
 </RequestExample>

@@ -1,7 +1,7 @@
 ---
 title: "Preview an organization billing change"
 icon: arrow-up-right
-description: "Preview an organization billing change: previewOrganizationChange in the TypeScript, Python and Rust clients."
+description: "Preview an organization billing change: previewOrganizationChange in the TypeScript, Python, Rust and Go clients."
 ---
 
 `POST /v1/organizations/{organizationId}/billing/preview`
@@ -22,6 +22,11 @@ photon.organizations.billing.preview_organization_change(input: PreviewOrganizat
 <Tab title="Rust">
 ```rust Rust
 client.preview_organization_change(organization_id: String, body: &types::PreviewOrganizationChangeRequest).await -> Result<ResponseValue<types::PreviewOrganizationChangeResponse>, Error<PreviewOrganizationChangeError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.Billing.PreviewOrganizationChange(ctx context.Context, params *PreviewOrganizationChangeParams, opts ...RequestOption) (*PreviewOrganizationChangeResponse, error)
 ```
 </Tab>
 </Tabs>
@@ -88,6 +93,36 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.PreviewOrganizationChangeRequest
+if err := json.Unmarshal([]byte(`{
+	"fixedCharge": {
+		"fixedChargeCode": "fixedChargeCode",
+		"increment": -10000
+	}
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Organizations.Billing.PreviewOrganizationChange(ctx, &photonapi.PreviewOrganizationChangeParams{
+	OrganizationID: "organizationId",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

@@ -1,6 +1,6 @@
 ---
 title: "Assignments"
-description: "The Assignments resource in the TypeScript, Python and Rust clients."
+description: "The Assignments resource in the TypeScript, Python, Rust and Go clients."
 ---
 
 ## Methods
@@ -92,6 +92,36 @@ client.create_shared_line_assignment(idempotency_key: String, id: String, body: 
 
 ```rust Rust
 client.release_shared_line_assignment(assignment_id: String, id: String).await -> Result<ResponseValue<types::SharedLineAssignment>, Error<ReleaseSharedLineAssignmentError>>
+```
+`DELETE /v1/projects/{id}/platforms/imessage/assignments/{assignmentId}`
+
+</Tab>
+<Tab title="Go">
+**[List shared line assignments](/api-client/sdk/projects/platforms/imessage/assignments/list)**
+
+```go Go
+client.Projects.Platforms.Imessage.Assignments.List(ctx context.Context, params *ListSharedLineAssignmentsParams, opts ...RequestOption) (*SharedLineAssignmentPage, error)
+```
+`GET /v1/projects/{id}/platforms/imessage/assignments`
+
+**[Get shared line assignment](/api-client/sdk/projects/platforms/imessage/assignments/get)**
+
+```go Go
+client.Projects.Platforms.Imessage.Assignments.Get(ctx context.Context, params *GetSharedLineAssignmentParams, opts ...RequestOption) (*SharedLineAssignment, error)
+```
+`GET /v1/projects/{id}/platforms/imessage/assignments/{assignmentId}`
+
+**[Create shared line assignment](/api-client/sdk/projects/platforms/imessage/assignments/create)**
+
+```go Go
+client.Projects.Platforms.Imessage.Assignments.Create(ctx context.Context, params *CreateSharedLineAssignmentParams, opts ...RequestOption) (*SharedLineAssignment, error)
+```
+`POST /v1/projects/{id}/platforms/imessage/assignments`
+
+**[Release shared line assignment](/api-client/sdk/projects/platforms/imessage/assignments/release)**
+
+```go Go
+client.Projects.Platforms.Imessage.Assignments.Release(ctx context.Context, params *ReleaseSharedLineAssignmentParams, opts ...RequestOption) (*SharedLineAssignment, error)
 ```
 `DELETE /v1/projects/{id}/platforms/imessage/assignments/{assignmentId}`
 

@@ -318,6 +318,10 @@ jobs:
           test -z "$(gofmt -l packages/go)"
           npm run test:go-codegen
           npm run test:go
+      - name: Check the code samples
+        run: node tools/openapi/check-code-samples.mjs go
+      - name: Check the guide's code examples
+        run: node tools/openapi/check-docs-examples.mjs go
       # The module is consumed by its path, so a clean consumer must build against it.
       - name: Build a clean consumer
         run: |

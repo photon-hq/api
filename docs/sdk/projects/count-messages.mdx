@@ -1,7 +1,7 @@
 ---
 title: "Count Messages"
 icon: arrow-down-left
-description: "Count Messages: countMessages in the TypeScript, Python and Rust clients."
+description: "Count Messages: countMessages in the TypeScript, Python, Rust and Go clients."
 ---
 
 `GET /v1/projects/{id}/messages/count`
@@ -22,6 +22,11 @@ photon.projects.count_messages(input: CountMessagesInput) -> models.CountMessage
 <Tab title="Rust">
 ```rust Rust
 client.count_messages(id: String, params: Option<CountMessagesParams>).await -> Result<ResponseValue<types::CountMessagesResponse>, Error<CountMessagesError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.CountMessages(ctx context.Context, params *CountMessagesParams, opts ...RequestOption) (*CountMessagesResponse, error)
 ```
 </Tab>
 </Tabs>
@@ -68,6 +73,25 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Projects.CountMessages(ctx, &photonapi.CountMessagesParams{
+	ID: "id",
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>
