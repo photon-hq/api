@@ -4,6 +4,202 @@ export type ClientOptions = {
     baseUrl: 'https://api.photon.codes' | (string & {});
 };
 
+export type AcceptedEmailMessage = {
+    acceptance: MessageAcceptance;
+    addressedTo?: UserSnapshot;
+    content: EmailMessageContent;
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    failure?: never;
+    id: MessageId;
+    metadata: ResourceMetadata;
+    parentMessageId?: MessageId;
+    platform: 'email';
+    projectId: ProjectId;
+    receivedBy?: UserSnapshot;
+    sentBy: UserSnapshot;
+    space: SpaceSnapshot;
+    status: 'accepted';
+    timestamp?: never;
+    timestamps: AcceptedMessageTimestamps;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type AcceptedImessageMessage = {
+    acceptance: MessageAcceptance;
+    addressedTo?: UserSnapshot;
+    content: ImessageMessageContent;
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    failure?: never;
+    id: MessageId;
+    metadata: ResourceMetadata;
+    parentMessageId?: MessageId;
+    platform: 'imessage';
+    projectId: ProjectId;
+    receivedBy?: UserSnapshot;
+    sentBy: UserSnapshot;
+    space: SpaceSnapshot;
+    status: 'accepted';
+    timestamp?: never;
+    timestamps: AcceptedMessageTimestamps;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type AcceptedMessageTimestamps = {
+    /**
+     * When Photon finalized terminal acceptance.
+     */
+    acceptedAt: string;
+    deliveredAt?: never;
+    /**
+     * When the emitting service established the public dispatch/send milestone.
+     */
+    dispatchedAt: string;
+    failedAt?: never;
+    receivedAt?: never;
+};
+
+export type AcceptedSmsMessage = {
+    acceptance: MessageAcceptance;
+    addressedTo?: UserSnapshot;
+    content: SmsMessageContent;
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    failure?: never;
+    id: MessageId;
+    metadata: ResourceMetadata;
+    parentMessageId?: MessageId;
+    platform: 'sms';
+    projectId: ProjectId;
+    receivedBy?: UserSnapshot;
+    sentBy: UserSnapshot;
+    space: SpaceSnapshot;
+    status: 'accepted';
+    timestamp?: never;
+    timestamps: AcceptedMessageTimestamps;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type AcceptedTelegramMessage = {
+    acceptance: MessageAcceptance;
+    addressedTo?: UserSnapshot;
+    content: TelegramMessageContent;
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    failure?: never;
+    id: MessageId;
+    metadata: ResourceMetadata;
+    parentMessageId?: MessageId;
+    platform: 'telegram';
+    projectId: ProjectId;
+    receivedBy?: UserSnapshot;
+    sentBy: UserSnapshot;
+    space: SpaceSnapshot;
+    status: 'accepted';
+    timestamp?: never;
+    timestamps: AcceptedMessageTimestamps;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type AcceptedUnknownMessage = {
+    acceptance: MessageAcceptance;
+    addressedTo?: UserSnapshot;
+    content: Content;
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    failure?: never;
+    id: MessageId;
+    metadata: ResourceMetadata;
+    parentMessageId?: MessageId;
+    platform: PlatformIdentifier;
+    projectId: ProjectId;
+    receivedBy?: UserSnapshot;
+    sentBy: UserSnapshot;
+    space: SpaceSnapshot;
+    status: 'accepted';
+    timestamp?: never;
+    timestamps: AcceptedMessageTimestamps;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type AcceptedWhatsappBusinessMessage = {
+    acceptance: MessageAcceptance;
+    addressedTo?: UserSnapshot;
+    content: WhatsappBusinessMessageContent;
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    failure?: never;
+    id: MessageId;
+    metadata: ResourceMetadata;
+    parentMessageId?: MessageId;
+    platform: 'whatsapp_business';
+    projectId: ProjectId;
+    receivedBy?: UserSnapshot;
+    sentBy: UserSnapshot;
+    space: SpaceSnapshot;
+    status: 'accepted';
+    timestamp?: never;
+    timestamps: AcceptedMessageTimestamps;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type AcceptedWhatsappMessage = {
+    acceptance: MessageAcceptance;
+    addressedTo?: UserSnapshot;
+    content: WhatsappMessageContent;
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    failure?: never;
+    id: MessageId;
+    metadata: ResourceMetadata;
+    parentMessageId?: MessageId;
+    platform: 'whatsapp';
+    projectId: ProjectId;
+    receivedBy?: UserSnapshot;
+    sentBy: UserSnapshot;
+    space: SpaceSnapshot;
+    status: 'accepted';
+    timestamp?: never;
+    timestamps: AcceptedMessageTimestamps;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
 export type Account = {
     accountId: string;
     createdAt: string | null;
@@ -292,6 +488,14 @@ export type AttachmentConflictProblem = {
     type: 'https://photon.codes/docs/problems/attachment-conflict';
     [key: string]: JsonValue | 'ATTACHMENT_CONFLICT' | string | never | 409 | 'Attachment Conflict' | 'https://photon.codes/docs/problems/attachment-conflict' | undefined;
 };
+
+export type AttachmentContent = {
+    attachmentId: AttachmentId;
+    metadata?: ContentMetadata;
+    type: 'attachment';
+};
+
+export type AttachmentId = string;
 
 export type AttachmentNotFoundProblem = {
     code: 'ATTACHMENT_NOT_FOUND';
@@ -782,6 +986,18 @@ export type BillingPreviewPlanChange = {
     planCode: string;
 };
 
+export type BillingSuspendedProblem = {
+    code: 'BILLING_SUSPENDED';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 402;
+    title: 'Billing Suspended';
+    type: 'https://photon.codes/docs/problems/billing-suspended';
+    [key: string]: JsonValue | 'BILLING_SUSPENDED' | string | never | 402 | 'Billing Suspended' | 'https://photon.codes/docs/problems/billing-suspended' | undefined;
+};
+
 export type CancelOperationForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type CancelOperationGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
@@ -914,6 +1130,17 @@ export type ConfirmAccountPhoneVerificationRequest = {
     phoneNumber: string;
 };
 
+export type ConfirmedRecipient = {
+    /**
+     * Recipient handle from the original send: an email address for email, or the corresponding address on another platform.
+     */
+    handle: string;
+    /**
+     * Photon User ID of the confirmed recipient.
+     */
+    userId: UserId;
+};
+
 export type ConnectEmailDomainBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
 
 export type ConnectEmailDomainConflictProblem = ProjectClosingProblem | EmailDomainAlreadyConnectedProblem | EmailDomainCapExceededProblem;
@@ -964,11 +1191,38 @@ export type ConnectWhatsappBusinessServiceUnavailableProblem = BillingEntitlemen
 
 export type ConnectWhatsappBusinessUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
+export type Content = TextContent | TextUpdateContent | AttachmentContent | VoiceContent | ReactionContent | MessageDeleteContent | MessageReadContent | SpaceParticipantsUpdateContent | SpaceTypingUpdateContent | PollContent | PollVoteContent | PollUpdateContent | GroupContent;
+
+export type ContentIssue = {
+    code: ContentIssueCode;
+    location: 'json';
+    message: string;
+    path: string;
+};
+
+export type ContentIssueCode = 'metadata_server_owned' | 'markdown_html_forbidden' | 'voice_requires_audio' | 'attachment_mime_type_mismatch' | 'attachment_size_mismatch' | (string & {});
+
+export type ContentMetadata = {
+    email?: EmailMetadata;
+    voice?: VoiceMetadata;
+    [key: string]: {
+        [key: string]: JsonValue;
+    } | EmailMetadata | VoiceMetadata | undefined;
+};
+
 export type CountFilteredVerificationCodesForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type CountFilteredVerificationCodesGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
 
 export type CountFilteredVerificationCodesInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type CountMessagesForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type CountMessagesGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type CountMessagesInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type CountMessagesResponse = MessageCount | DailyMessageCount;
 
 export type CountProjectsForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -979,6 +1233,18 @@ export type CountResourceFilteredVerificationCodesForbiddenProblem = ForbiddenPr
 export type CountResourceFilteredVerificationCodesGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
 
 export type CountResourceFilteredVerificationCodesInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type CountSpacesForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type CountSpacesGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type CountSpacesInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type CountUsersForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type CountUsersGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type CountUsersInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
 export type CreateAccountProfilePictureUploadForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -1047,6 +1313,39 @@ export type CreateDefaultVoiceProfileRequest = {
     mediaEncryption?: VoiceProfileMediaEncryption;
     protocol: 'sip';
 };
+
+export type CreateOrGetSpaceBadRequestProblem = HttpErrorProblem | InvalidRequestProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+
+export type CreateOrGetSpaceForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type CreateOrGetSpaceGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type CreateOrGetSpaceInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type CreateOrGetSpaceRequest = {
+    /**
+     * Canonical Photon User IDs from this project and platform. iMessage uses the first participant as creator when a new chat is needed; remaining order is ignored. Other platforms ignore all participant order. Counts: iMessage 2-1000; both WhatsApp platforms exactly 2; email 1-51; SMS 2-9. Every Space requires a currently project-owned Agent.
+     */
+    participantIds: Array<UserId>;
+    platform: Platform;
+};
+
+export type CreateOrGetSpaceServiceUnavailableProblem = IdempotencyUnavailableProblem | UpstreamUnavailableProblem;
+
+export type CreateOrGetSpaceUnprocessableEntityProblem = SpaceRequiresOwnedAgentProblem | IdempotencyKeyReusedProblem | OperationUnavailableProblem | ValidationFailedProblem;
+
+export type CreateOrGetUserForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type CreateOrGetUserGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type CreateOrGetUserInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type CreateOrGetUserRequest = {
+    handle: string;
+    platform: Platform;
+};
+
+export type CreateOrGetUserUnprocessableEntityProblem = OperationUnavailableProblem | ValidationFailedProblem;
 
 export type CreateOrganizationPaymentMethodCheckoutBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
 
@@ -1323,6 +1622,10 @@ export type CreditSource = {
      * Null for a grant.
      */
     chargeName: string | null;
+    /**
+     * What Photon called a grant when it granted it, such as "Welcome credit". Null for a credit note, and for a grant without one.
+     */
+    description: string | null;
     kind: CreditSourceKind;
     /**
      * Whose subscription the charge was on: the organization's own, or a project's. Null when it is none Billing knows.
@@ -1333,6 +1636,14 @@ export type CreditSource = {
 export type CreditSourceKind = 'release' | 'unused_time' | 'other' | 'grant' | (string & {});
 
 export type CreditSubject = OrganizationCreditSubject | ProjectCreditSubject;
+
+export type DailyMessageCount = {
+    buckets: Array<MessageCountBucket>;
+    count: number;
+    groups: Array<MessageStatusCount>;
+    interval: 'day';
+    timeZone: string;
+};
 
 export type DedicatedProjectPlatformSettings = {
     dedicatedLineAvailableNow: boolean;
@@ -1387,6 +1698,244 @@ export type DeleteVoiceProfileOutboundResponse = {
 export type DeleteWebhookDestinationForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type DeleteWebhookDestinationGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
+
+export type DeliveredEmailMessage = {
+    acceptance?: never;
+    addressedTo?: UserSnapshot;
+    content: EmailMessageContent;
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    failure?: never;
+    id: MessageId;
+    metadata: ResourceMetadata;
+    parentMessageId?: MessageId;
+    platform: 'email';
+    projectId: ProjectId;
+    receivedBy?: UserSnapshot;
+    sentBy: UserSnapshot;
+    space: SpaceSnapshot;
+    status: 'delivered';
+    timestamp?: never;
+    timestamps: DeliveredMessageTimestamps;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type DeliveredImessageMessage = {
+    acceptance?: never;
+    addressedTo?: UserSnapshot;
+    content: ImessageMessageContent;
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    failure?: never;
+    id: MessageId;
+    metadata: ResourceMetadata;
+    parentMessageId?: MessageId;
+    platform: 'imessage';
+    projectId: ProjectId;
+    receivedBy?: UserSnapshot;
+    sentBy: UserSnapshot;
+    space: SpaceSnapshot;
+    status: 'delivered';
+    timestamp?: never;
+    timestamps: DeliveredMessageTimestamps;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type DeliveredMessageTimestamps = {
+    acceptedAt?: never;
+    /**
+     * When Photon finalized delivery based on authoritative confirmation.
+     */
+    deliveredAt: string;
+    /**
+     * When the emitting service established the public dispatch/send milestone.
+     */
+    dispatchedAt: string;
+    failedAt?: never;
+    receivedAt?: never;
+};
+
+export type DeliveredSmsMessage = {
+    acceptance?: never;
+    addressedTo?: UserSnapshot;
+    content: SmsMessageContent;
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    failure?: never;
+    id: MessageId;
+    metadata: ResourceMetadata;
+    parentMessageId?: MessageId;
+    platform: 'sms';
+    projectId: ProjectId;
+    receivedBy?: UserSnapshot;
+    sentBy: UserSnapshot;
+    space: SpaceSnapshot;
+    status: 'delivered';
+    timestamp?: never;
+    timestamps: DeliveredMessageTimestamps;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type DeliveredTelegramMessage = {
+    acceptance?: never;
+    addressedTo?: UserSnapshot;
+    content: TelegramMessageContent;
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    failure?: never;
+    id: MessageId;
+    metadata: ResourceMetadata;
+    parentMessageId?: MessageId;
+    platform: 'telegram';
+    projectId: ProjectId;
+    receivedBy?: UserSnapshot;
+    sentBy: UserSnapshot;
+    space: SpaceSnapshot;
+    status: 'delivered';
+    timestamp?: never;
+    timestamps: DeliveredMessageTimestamps;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type DeliveredUnknownMessage = {
+    acceptance?: never;
+    addressedTo?: UserSnapshot;
+    content: Content;
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    failure?: never;
+    id: MessageId;
+    metadata: ResourceMetadata;
+    parentMessageId?: MessageId;
+    platform: PlatformIdentifier;
+    projectId: ProjectId;
+    receivedBy?: UserSnapshot;
+    sentBy: UserSnapshot;
+    space: SpaceSnapshot;
+    status: 'delivered';
+    timestamp?: never;
+    timestamps: DeliveredMessageTimestamps;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type DeliveredWhatsappBusinessMessage = {
+    acceptance?: never;
+    addressedTo?: UserSnapshot;
+    content: WhatsappBusinessMessageContent;
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    failure?: never;
+    id: MessageId;
+    metadata: ResourceMetadata;
+    parentMessageId?: MessageId;
+    platform: 'whatsapp_business';
+    projectId: ProjectId;
+    receivedBy?: UserSnapshot;
+    sentBy: UserSnapshot;
+    space: SpaceSnapshot;
+    status: 'delivered';
+    timestamp?: never;
+    timestamps: DeliveredMessageTimestamps;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type DeliveredWhatsappMessage = {
+    acceptance?: never;
+    addressedTo?: UserSnapshot;
+    content: WhatsappMessageContent;
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    failure?: never;
+    id: MessageId;
+    metadata: ResourceMetadata;
+    parentMessageId?: MessageId;
+    platform: 'whatsapp';
+    projectId: ProjectId;
+    receivedBy?: UserSnapshot;
+    sentBy: UserSnapshot;
+    space: SpaceSnapshot;
+    status: 'delivered';
+    timestamp?: never;
+    timestamps: DeliveredMessageTimestamps;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type DeliveryConfirmationNotApplicableAcceptance = {
+    acceptedAt?: never;
+    code: 'delivery_confirmation_not_applicable';
+    confirmedRecipientCount?: never;
+    confirmedRecipients?: never;
+    failedAt?: never;
+    message: string;
+};
+
+export type DeliveryConfirmationTimedOutAcceptance = {
+    acceptedAt?: never;
+    code: 'delivery_confirmation_timed_out';
+    confirmedRecipientCount?: never;
+    confirmedRecipients?: never;
+    failedAt?: never;
+    message: string;
+};
+
+export type DeliveryConfirmationUnavailableAcceptance = {
+    acceptedAt?: never;
+    code: 'delivery_confirmation_unavailable';
+    confirmedRecipientCount?: never;
+    confirmedRecipients?: never;
+    failedAt?: never;
+    message: string;
+};
+
+export type DeliveryPartiallyConfirmedAcceptance = {
+    acceptedAt?: never;
+    code: 'delivery_partially_confirmed';
+    /**
+     * Unique recipients with authoritative delivery confirmation for the original send.
+     */
+    confirmedRecipientCount: number;
+    /**
+     * Optional complete list of confirmed recipient snapshots, each with a Photon userId and the handle used for the original send. User IDs must be unique, and both fields must be visible to the caller. The list length must equal confirmedRecipientCount. Persist the snapshots with the terminal outcome. Omit when the full confirmed set cannot be identified or disclosed; omission does not mean zero deliveries.
+     */
+    confirmedRecipients?: Array<ConfirmedRecipient>;
+    failedAt?: never;
+    message: string;
+};
 
 export type DeprecatedWebhookApiVersion = {
     retirement: WebhookApiVersionRetirement;
@@ -1536,6 +2085,199 @@ export type DisconnectWhatsappBusinessAccountInternalServerErrorProblem = Intern
 
 export type DisconnectWhatsappBusinessAccountUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
+export type DispatchedEmailMessage = {
+    acceptance?: never;
+    addressedTo?: UserSnapshot;
+    content: EmailMessageContent;
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    failure?: never;
+    id: MessageId;
+    metadata: ResourceMetadata;
+    parentMessageId?: MessageId;
+    platform: 'email';
+    projectId: ProjectId;
+    receivedBy?: UserSnapshot;
+    sentBy: UserSnapshot;
+    space: SpaceSnapshot;
+    status: 'dispatched';
+    timestamp?: never;
+    timestamps: DispatchedMessageTimestamps;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type DispatchedImessageMessage = {
+    acceptance?: never;
+    addressedTo?: UserSnapshot;
+    content: ImessageMessageContent;
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    failure?: never;
+    id: MessageId;
+    metadata: ResourceMetadata;
+    parentMessageId?: MessageId;
+    platform: 'imessage';
+    projectId: ProjectId;
+    receivedBy?: UserSnapshot;
+    sentBy: UserSnapshot;
+    space: SpaceSnapshot;
+    status: 'dispatched';
+    timestamp?: never;
+    timestamps: DispatchedMessageTimestamps;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type DispatchedMessageTimestamps = {
+    acceptedAt?: never;
+    deliveredAt?: never;
+    /**
+     * When the emitting service established the public dispatch/send milestone.
+     */
+    dispatchedAt: string;
+    failedAt?: never;
+    receivedAt?: never;
+};
+
+export type DispatchedSmsMessage = {
+    acceptance?: never;
+    addressedTo?: UserSnapshot;
+    content: SmsMessageContent;
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    failure?: never;
+    id: MessageId;
+    metadata: ResourceMetadata;
+    parentMessageId?: MessageId;
+    platform: 'sms';
+    projectId: ProjectId;
+    receivedBy?: UserSnapshot;
+    sentBy: UserSnapshot;
+    space: SpaceSnapshot;
+    status: 'dispatched';
+    timestamp?: never;
+    timestamps: DispatchedMessageTimestamps;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type DispatchedTelegramMessage = {
+    acceptance?: never;
+    addressedTo?: UserSnapshot;
+    content: TelegramMessageContent;
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    failure?: never;
+    id: MessageId;
+    metadata: ResourceMetadata;
+    parentMessageId?: MessageId;
+    platform: 'telegram';
+    projectId: ProjectId;
+    receivedBy?: UserSnapshot;
+    sentBy: UserSnapshot;
+    space: SpaceSnapshot;
+    status: 'dispatched';
+    timestamp?: never;
+    timestamps: DispatchedMessageTimestamps;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type DispatchedUnknownMessage = {
+    acceptance?: never;
+    addressedTo?: UserSnapshot;
+    content: Content;
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    failure?: never;
+    id: MessageId;
+    metadata: ResourceMetadata;
+    parentMessageId?: MessageId;
+    platform: PlatformIdentifier;
+    projectId: ProjectId;
+    receivedBy?: UserSnapshot;
+    sentBy: UserSnapshot;
+    space: SpaceSnapshot;
+    status: 'dispatched';
+    timestamp?: never;
+    timestamps: DispatchedMessageTimestamps;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type DispatchedWhatsappBusinessMessage = {
+    acceptance?: never;
+    addressedTo?: UserSnapshot;
+    content: WhatsappBusinessMessageContent;
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    failure?: never;
+    id: MessageId;
+    metadata: ResourceMetadata;
+    parentMessageId?: MessageId;
+    platform: 'whatsapp_business';
+    projectId: ProjectId;
+    receivedBy?: UserSnapshot;
+    sentBy: UserSnapshot;
+    space: SpaceSnapshot;
+    status: 'dispatched';
+    timestamp?: never;
+    timestamps: DispatchedMessageTimestamps;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type DispatchedWhatsappMessage = {
+    acceptance?: never;
+    addressedTo?: UserSnapshot;
+    content: WhatsappMessageContent;
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    failure?: never;
+    id: MessageId;
+    metadata: ResourceMetadata;
+    parentMessageId?: MessageId;
+    platform: 'whatsapp';
+    projectId: ProjectId;
+    receivedBy?: UserSnapshot;
+    sentBy: UserSnapshot;
+    space: SpaceSnapshot;
+    status: 'dispatched';
+    timestamp?: never;
+    timestamps: DispatchedMessageTimestamps;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
 export type DownloadAttachmentForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type DownloadAttachmentGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
@@ -1543,6 +2285,82 @@ export type DownloadAttachmentGatewayTimeoutProblem = UpstreamTimeoutProblem | R
 export type DownloadAttachmentInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
 export type DownloadAttachmentResponse = unknown;
+
+export type EmailAddressing = {
+    /**
+     * Omitted means unavailable or undisclosed; an empty array means known empty. Never infer hidden recipients from another observation.
+     */
+    bcc?: Array<EmailMailbox>;
+    /**
+     * Omitted means unavailable or undisclosed; an empty array means known empty. Never infer hidden recipients from another observation.
+     */
+    cc?: Array<EmailMailbox>;
+    /**
+     * The captured sender mailbox. Its address and resolved User ID must agree with the source Message's sentBy.
+     */
+    from: EmailMailbox;
+    /**
+     * Omitted means unavailable or undisclosed; an empty array means known empty. Never infer hidden recipients from another observation.
+     */
+    replyTo?: Array<EmailMailbox>;
+    /**
+     * The Message that supplied this observation. In a Message Space snapshot this is the containing Message's own ID, not its parent ID.
+     */
+    sourceMessageId: MessageId;
+    /**
+     * Omitted means unavailable or undisclosed; an empty array means known empty. Never infer hidden recipients from another observation.
+     */
+    to?: Array<EmailMailbox>;
+};
+
+export type EmailContentDisposition = 'inline' | 'attachment' | (string & {});
+
+export type EmailDeliveryMetrics = {
+    availability: EmailDeliveryMetricsAvailability;
+    collectedAt?: string;
+    complaintVisibility: 'reported_feedback_only';
+    coverage: 'eligible_single_recipient_messages';
+    freshness: EmailDeliveryMetricsFreshness;
+    interval?: EmailDeliveryMetricsInterval;
+    period: EmailDeliveryMetricsPeriod;
+    readAt: string;
+    series: Array<EmailDeliveryMetricsSeries>;
+    source: 'supplementary_delivery';
+};
+
+export type EmailDeliveryMetricsAvailability = 'available' | 'partial' | 'no_data' | 'unavailable' | (string & {});
+
+export type EmailDeliveryMetricsFreshness = 'current' | 'stale' | 'unavailable' | (string & {});
+
+export type EmailDeliveryMetricsInterval = {
+    end: string;
+    start: string;
+};
+
+export type EmailDeliveryMetricsPeriod = 'day' | 'week' | (string & {});
+
+/**
+ * @default "day"
+ */
+export type EmailDeliveryMetricsPeriodParameter = 'day' | 'week' | (string & {});
+
+export type EmailDeliveryMetricsSeries = {
+    metric: EmailDeliveryMetricsSeriesMetric;
+    points: Array<EmailDeliveryMetricsSeriesPoint>;
+    status: EmailDeliveryMetricsSeriesStatus;
+    unit: EmailDeliveryMetricsSeriesUnit;
+};
+
+export type EmailDeliveryMetricsSeriesMetric = 'sent' | 'delivered' | 'permanent_bounces' | 'temporary_bounces' | 'observed_complaints' | (string & {});
+
+export type EmailDeliveryMetricsSeriesPoint = {
+    at: string;
+    count: number;
+};
+
+export type EmailDeliveryMetricsSeriesStatus = 'available' | 'no_data' | 'unavailable' | (string & {});
+
+export type EmailDeliveryMetricsSeriesUnit = 'messages' | 'reports' | (string & {});
 
 export type EmailDomainAlreadyConnectedProblem = {
     code: 'EMAIL_DOMAIN_ALREADY_CONNECTED';
@@ -1566,6 +2384,235 @@ export type EmailDomainCapExceededProblem = {
     title: 'Email Domain Cap Exceeded';
     type: 'https://photon.codes/docs/problems/email-domain-cap-exceeded';
     [key: string]: JsonValue | 'EMAIL_DOMAIN_CAP_EXCEEDED' | string | never | 409 | 'Email Domain Cap Exceeded' | 'https://photon.codes/docs/problems/email-domain-cap-exceeded' | undefined;
+};
+
+export type EmailDomainObservation = {
+    observationStatus: EmailObservationStatus;
+    observedAt?: string;
+    resourceId: string;
+};
+
+export type EmailGroupContent = {
+    metadata?: ContentMetadata;
+    parts: Array<EmailGroupContentPart>;
+    type: 'group';
+};
+
+export type EmailGroupContentPart = TextContent | TextUpdateContent | AttachmentContent | VoiceContent | ReactionContent | MessageDeleteContent | MessageReadContent | SpaceParticipantsUpdateContent | SpaceTypingUpdateContent | PollContent | PollVoteContent | PollUpdateContent;
+
+export type EmailMailbox = {
+    address: EmailMailboxAddress;
+    /**
+     * The captured display name, when known.
+     */
+    name?: string;
+    /**
+     * The resolved Photon User ID, when available. Outbound admission must resolve every mailbox before capture.
+     */
+    userId?: UserId;
+};
+
+/**
+ * The captured mailbox address. Preserve local-part case; admission services own normalization and sending restrictions.
+ */
+export type EmailMailboxAddress = string;
+
+export type EmailMessage = ReceivedEmailMessage | DispatchedEmailMessage | AcceptedEmailMessage | DeliveredEmailMessage | FailedEmailMessage;
+
+export type EmailMessageContent = TextContent | TextUpdateContent | AttachmentContent | VoiceContent | ReactionContent | MessageDeleteContent | MessageReadContent | SpaceParticipantsUpdateContent | SpaceTypingUpdateContent | PollContent | PollVoteContent | PollUpdateContent | EmailGroupContent;
+
+export type EmailMetadata = {
+    contentDisposition?: EmailContentDisposition;
+    contentId?: string;
+    originalHtml?: string;
+    related?: boolean;
+    sourceMediaType?: string;
+    subject?: string;
+};
+
+export type EmailObservationStatus = 'current' | 'partial' | 'stale' | 'unavailable' | (string & {});
+
+export type EmailOrganizationSendingPolicy = {
+    /**
+     * Whether this Photon sending policy is paused. Other send eligibility checks still apply.
+     */
+    paused: boolean;
+    /**
+     * Organization recipient allowance shared by all Projects in a rolling 24-hour window.
+     */
+    recipientsPer24Hours: number;
+    /**
+     * Organization recipient allowance shared by all Projects in a rolling 60-second window.
+     */
+    recipientsPerMinute: number;
+    reviewStatus: EmailSendingPolicyReviewStatus;
+    updatedAt: string;
+};
+
+export type EmailRecommendation = {
+    action: EmailRecommendationAction;
+    category: EmailRecommendationCategory;
+    code: EmailRecommendationCode;
+    description: string;
+    observationStatus: EmailObservationStatus;
+    observedAt?: string;
+    scope: EmailRecommendationScope;
+    severity: EmailRecommendationSeverity;
+    /**
+     * Current fact-derived recommendations. Absence is not a resolved finding or proof that sending is allowed.
+     */
+    status: 'active';
+    title: string;
+};
+
+export type EmailRecommendationAction = EmailRecommendationContactSupportAction | EmailRecommendationReviewDomainDnsAction | EmailRecommendationReviewDomainChecksAction;
+
+export type EmailRecommendationCategory = 'sending_restriction' | 'domain_health' | 'data_availability' | (string & {});
+
+export type EmailRecommendationCode = 'project_sending_paused' | 'organization_sending_paused' | 'sending_review_required' | 'sending_checks_unavailable' | 'domain_dns_records' | 'domain_verification' | 'domain_checks_unavailable' | 'domain_settings_unavailable' | 'domain_unavailable' | (string & {});
+
+export type EmailRecommendationContactSupportAction = {
+    code: 'contact_support';
+};
+
+export type EmailRecommendationDomainScope = {
+    resourceId: string;
+    type: 'domain';
+};
+
+export type EmailRecommendationOrganizationScope = {
+    type: 'organization';
+};
+
+export type EmailRecommendationProjectScope = {
+    type: 'project';
+};
+
+export type EmailRecommendationReviewDomainChecksAction = {
+    code: 'review_domain_checks';
+    resourceId: string;
+};
+
+export type EmailRecommendationReviewDomainDnsAction = {
+    code: 'review_domain_dns';
+    resourceId: string;
+};
+
+export type EmailRecommendationScope = EmailRecommendationProjectScope | EmailRecommendationOrganizationScope | EmailRecommendationDomainScope;
+
+export type EmailRecommendationSeverity = 'info' | 'warning' | (string & {});
+
+export type EmailRecommendations = {
+    coverage: EmailRecommendationsCoverage;
+    domainPage: EmailRecommendationsDomainPage;
+    readAt: string;
+    recommendations: Array<EmailRecommendation>;
+};
+
+export type EmailRecommendationsCoverage = {
+    deliveryAdvice: 'unavailable';
+    reputation: 'unavailable';
+    sendingPolicies: 'available';
+    sendingSetup: EmailSendingSetupCoverage;
+};
+
+export type EmailRecommendationsDomainPage = {
+    hasMore: boolean;
+    nextPageToken?: string;
+    observations: Array<EmailDomainObservation>;
+};
+
+export type EmailSendingPolicies = {
+    organization: EmailOrganizationSendingPolicy;
+    project: EmailSendingPolicy;
+};
+
+export type EmailSendingPolicy = {
+    /**
+     * Whether this Photon sending policy is paused. Other send eligibility checks still apply.
+     */
+    paused: boolean;
+    reviewStatus: EmailSendingPolicyReviewStatus;
+    updatedAt: string;
+};
+
+export type EmailSendingPolicyReviewStatus = 'new' | 'reviewed' | (string & {});
+
+export type EmailSendingSetupCoverage = {
+    observationStatus: EmailObservationStatus;
+    observedAt?: string;
+};
+
+export type EmailSpace = {
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    details: EmailSpaceDetails;
+    id: SpaceId;
+    kind: string;
+    metadata: ResourceMetadata;
+    participantIds: Array<UserId>;
+    platform: 'email';
+    projectId: ProjectId;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type EmailSpaceDetails = {
+    /**
+     * The latest eligible whole observation on a canonical Space, or this Message's immutable capture in an embedded Space. Absent when no observation is available.
+     */
+    latestAddressing?: EmailAddressing;
+};
+
+export type EmailSpaceSnapshot = {
+    createdAt?: never;
+    details: EmailSpaceDetails;
+    id: SpaceId;
+    kind: string;
+    metadata: ResourceMetadata;
+    participantIds: Array<UserId>;
+    platform: 'email';
+    projectId: ProjectId;
+    updatedAt?: never;
+};
+
+export type EmailUser = {
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    details: EmailUserDetails;
+    handle: string;
+    id: UserId;
+    kind: string;
+    metadata: ResourceMetadata;
+    platform: 'email';
+    projectId: ProjectId;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type EmailUserDetails = {
+    managedBy?: ManagerId;
+    resourceId?: ResourceId;
+};
+
+export type EmailUserSnapshot = {
+    createdAt?: never;
+    details: EmailUserDetails;
+    handle: string;
+    id: UserId;
+    kind: string;
+    metadata: ResourceMetadata;
+    platform: 'email';
+    projectId: ProjectId;
+    updatedAt?: never;
 };
 
 export type EntitlementRejectionReason = 'billing_restricted' | 'business_plan_required' | 'card_required' | 'email_required' | 'plan_change_scheduled' | 'subscription_not_billable' | (string & {});
@@ -1607,6 +2654,72 @@ export type FailedBillingOperation = {
     submittedAt: string | null;
 };
 
+export type FailedEmailMessage = {
+    acceptance?: never;
+    addressedTo?: UserSnapshot;
+    content: EmailMessageContent;
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    failure: MessageFailure;
+    id: MessageId;
+    metadata: ResourceMetadata;
+    parentMessageId?: MessageId;
+    platform: 'email';
+    projectId: ProjectId;
+    receivedBy?: UserSnapshot;
+    sentBy: UserSnapshot;
+    space: SpaceSnapshot;
+    status: 'failed';
+    timestamp?: never;
+    timestamps: FailedMessageTimestamps;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type FailedImessageMessage = {
+    acceptance?: never;
+    addressedTo?: UserSnapshot;
+    content: ImessageMessageContent;
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    failure: MessageFailure;
+    id: MessageId;
+    metadata: ResourceMetadata;
+    parentMessageId?: MessageId;
+    platform: 'imessage';
+    projectId: ProjectId;
+    receivedBy?: UserSnapshot;
+    sentBy: UserSnapshot;
+    space: SpaceSnapshot;
+    status: 'failed';
+    timestamp?: never;
+    timestamps: FailedMessageTimestamps;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type FailedMessageTimestamps = {
+    acceptedAt?: never;
+    deliveredAt?: never;
+    /**
+     * When the emitting service established the public dispatch/send milestone.
+     */
+    dispatchedAt?: string;
+    /**
+     * When Photon finalized terminal failure.
+     */
+    failedAt: string;
+    receivedAt?: never;
+};
+
 export type FailedPreconditionProblem = {
     code: 'FAILED_PRECONDITION';
     detail?: string;
@@ -1617,6 +2730,136 @@ export type FailedPreconditionProblem = {
     title: 'Failed Precondition';
     type: 'https://photon.codes/docs/problems/failed-precondition';
     [key: string]: JsonValue | 'FAILED_PRECONDITION' | string | never | 409 | 'Failed Precondition' | 'https://photon.codes/docs/problems/failed-precondition' | undefined;
+};
+
+export type FailedSmsMessage = {
+    acceptance?: never;
+    addressedTo?: UserSnapshot;
+    content: SmsMessageContent;
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    failure: MessageFailure;
+    id: MessageId;
+    metadata: ResourceMetadata;
+    parentMessageId?: MessageId;
+    platform: 'sms';
+    projectId: ProjectId;
+    receivedBy?: UserSnapshot;
+    sentBy: UserSnapshot;
+    space: SpaceSnapshot;
+    status: 'failed';
+    timestamp?: never;
+    timestamps: FailedMessageTimestamps;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type FailedTelegramMessage = {
+    acceptance?: never;
+    addressedTo?: UserSnapshot;
+    content: TelegramMessageContent;
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    failure: MessageFailure;
+    id: MessageId;
+    metadata: ResourceMetadata;
+    parentMessageId?: MessageId;
+    platform: 'telegram';
+    projectId: ProjectId;
+    receivedBy?: UserSnapshot;
+    sentBy: UserSnapshot;
+    space: SpaceSnapshot;
+    status: 'failed';
+    timestamp?: never;
+    timestamps: FailedMessageTimestamps;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type FailedUnknownMessage = {
+    acceptance?: never;
+    addressedTo?: UserSnapshot;
+    content: Content;
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    failure: MessageFailure;
+    id: MessageId;
+    metadata: ResourceMetadata;
+    parentMessageId?: MessageId;
+    platform: PlatformIdentifier;
+    projectId: ProjectId;
+    receivedBy?: UserSnapshot;
+    sentBy: UserSnapshot;
+    space: SpaceSnapshot;
+    status: 'failed';
+    timestamp?: never;
+    timestamps: FailedMessageTimestamps;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type FailedWhatsappBusinessMessage = {
+    acceptance?: never;
+    addressedTo?: UserSnapshot;
+    content: WhatsappBusinessMessageContent;
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    failure: MessageFailure;
+    id: MessageId;
+    metadata: ResourceMetadata;
+    parentMessageId?: MessageId;
+    platform: 'whatsapp_business';
+    projectId: ProjectId;
+    receivedBy?: UserSnapshot;
+    sentBy: UserSnapshot;
+    space: SpaceSnapshot;
+    status: 'failed';
+    timestamp?: never;
+    timestamps: FailedMessageTimestamps;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type FailedWhatsappMessage = {
+    acceptance?: never;
+    addressedTo?: UserSnapshot;
+    content: WhatsappMessageContent;
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    failure: MessageFailure;
+    id: MessageId;
+    metadata: ResourceMetadata;
+    parentMessageId?: MessageId;
+    platform: 'whatsapp';
+    projectId: ProjectId;
+    receivedBy?: UserSnapshot;
+    sentBy: UserSnapshot;
+    space: SpaceSnapshot;
+    status: 'failed';
+    timestamp?: never;
+    timestamps: FailedMessageTimestamps;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
 };
 
 export type FilteredVerificationCode = {
@@ -1799,6 +3042,24 @@ export type GetEffectiveTermsResponse = {
      */
     timeZone: string;
 };
+
+export type GetEmailDeliveryMetricsForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type GetEmailDeliveryMetricsGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
+
+export type GetEmailDeliveryMetricsInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type GetEmailSendingPoliciesForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type GetEmailSendingPoliciesGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
+
+export type GetEmailSendingPoliciesInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type GetMessageForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type GetMessageGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type GetMessageInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
 export type GetMessageMetricsBackfillForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -1983,6 +3244,22 @@ export type GetSmsLineCampaignAssignmentResponse = {
 
 export type GetSmsLineCampaignAssignmentServiceUnavailableProblem = SmsCampaignContextUnavailableProblem | UpstreamUnavailableProblem;
 
+export type GetSpaceForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type GetSpaceGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type GetSpaceInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type GetSpaceUnprocessableEntityProblem = OperationUnavailableProblem | ValidationFailedProblem;
+
+export type GetUserForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type GetUserGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type GetUserInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type GetUserUnprocessableEntityProblem = OperationUnavailableProblem | ValidationFailedProblem;
+
 export type GetVoiceLineProfileAssignmentForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type GetVoiceLineProfileAssignmentGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
@@ -2039,6 +3316,14 @@ export type GetWhatsappSignupConfigResponse = {
     graphVersion: string;
     scopes: Array<string>;
 };
+
+export type GroupContent = {
+    metadata?: ContentMetadata;
+    parts: Array<GroupContentPart>;
+    type: 'group';
+};
+
+export type GroupContentPart = TextContent | TextUpdateContent | AttachmentContent | VoiceContent | ReactionContent | MessageDeleteContent | MessageReadContent | SpaceParticipantsUpdateContent | SpaceTypingUpdateContent | PollContent | PollVoteContent | PollUpdateContent;
 
 export type HttpErrorProblem = {
     code: 'HTTP_ERROR';
@@ -2112,7 +3397,21 @@ export type IdempotencyUnavailableProblem = {
     [key: string]: JsonValue | 'IDEMPOTENCY_UNAVAILABLE' | string | never | 503 | 'Idempotency Unavailable' | 'https://photon.codes/docs/problems/idempotency-unavailable' | undefined;
 };
 
+export type IdempotentReplayedValue = 'true' | 'false' | (string & {});
+
+export type ImessageGroupContent = {
+    metadata?: ContentMetadata;
+    parts: Array<ImessageGroupContentPart>;
+    type: 'group';
+};
+
+export type ImessageGroupContentPart = TextContent | AttachmentContent | MessageReadContent | SpaceTypingUpdateContent;
+
 export type ImessageHandle = string;
+
+export type ImessageMessage = ReceivedImessageMessage | DispatchedImessageMessage | AcceptedImessageMessage | DeliveredImessageMessage | FailedImessageMessage;
+
+export type ImessageMessageContent = TextContent | AttachmentContent | MessageReadContent | SpaceTypingUpdateContent | ImessageGroupContent;
 
 export type ImessageModeDedicatedProblem = {
     code: 'IMESSAGE_MODE_DEDICATED';
@@ -2124,6 +3423,74 @@ export type ImessageModeDedicatedProblem = {
     title: 'iMessage Mode Is Dedicated';
     type: 'https://photon.codes/docs/problems/imessage-mode-dedicated';
     [key: string]: JsonValue | 'IMESSAGE_MODE_DEDICATED' | string | never | 409 | 'iMessage Mode Is Dedicated' | 'https://photon.codes/docs/problems/imessage-mode-dedicated' | undefined;
+};
+
+export type ImessageSpace = {
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    details: ImessageSpaceDetails;
+    id: SpaceId;
+    kind: string;
+    metadata: ResourceMetadata;
+    participantIds: Array<UserId>;
+    platform: 'imessage';
+    projectId: ProjectId;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type ImessageSpaceDetails = Record<string, unknown>;
+
+export type ImessageSpaceSnapshot = {
+    createdAt?: never;
+    details: ImessageSpaceDetails;
+    id: SpaceId;
+    kind: string;
+    metadata: ResourceMetadata;
+    participantIds: Array<UserId>;
+    platform: 'imessage';
+    projectId: ProjectId;
+    updatedAt?: never;
+};
+
+export type ImessageUser = {
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    details: ImessageUserDetails;
+    handle: string;
+    id: UserId;
+    kind: string;
+    metadata: ResourceMetadata;
+    platform: 'imessage';
+    projectId: ProjectId;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type ImessageUserDetails = {
+    managedBy?: ManagerId;
+    resourceId?: ResourceId;
+    type?: UserLineType;
+};
+
+export type ImessageUserSnapshot = {
+    createdAt?: never;
+    details: ImessageUserDetails;
+    handle: string;
+    id: UserId;
+    kind: string;
+    metadata: ResourceMetadata;
+    platform: 'imessage';
+    projectId: ProjectId;
+    updatedAt?: never;
 };
 
 export type InsufficientScopeProblem = {
@@ -2184,6 +3551,43 @@ export type InvalidAuthContextProblem = {
     title: 'Invalid Authentication Context';
     type: 'https://photon.codes/docs/problems/invalid-auth-context';
     [key: string]: JsonValue | 'INVALID_AUTH_CONTEXT' | string | never | 500 | 'Invalid Authentication Context' | 'https://photon.codes/docs/problems/invalid-auth-context' | undefined;
+};
+
+export type InvalidContentProblem = {
+    code: 'INVALID_CONTENT';
+    detail?: string;
+    instance?: string;
+    issues: Array<ContentIssue>;
+    remediation?: never;
+    requestId?: string;
+    status: 422;
+    title: 'Invalid Content';
+    type: 'https://photon.codes/docs/problems/invalid-content';
+    [key: string]: JsonValue | 'INVALID_CONTENT' | string | Array<ContentIssue> | never | 422 | 'Invalid Content' | 'https://photon.codes/docs/problems/invalid-content' | undefined;
+};
+
+export type InvalidPageTokenProblem = {
+    code: 'INVALID_PAGE_TOKEN';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 400;
+    title: 'Invalid Page Token';
+    type: 'https://photon.codes/docs/problems/invalid-page-token';
+    [key: string]: JsonValue | 'INVALID_PAGE_TOKEN' | string | never | 400 | 'Invalid Page Token' | 'https://photon.codes/docs/problems/invalid-page-token' | undefined;
+};
+
+export type InvalidRequestProblem = {
+    code: 'INVALID_REQUEST';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 400;
+    title: 'Invalid Request';
+    type: 'https://photon.codes/docs/problems/invalid-request';
+    [key: string]: JsonValue | 'INVALID_REQUEST' | string | never | 400 | 'Invalid Request' | 'https://photon.codes/docs/problems/invalid-request' | undefined;
 };
 
 export type InvalidReturnToProblem = {
@@ -2338,6 +3742,12 @@ export type ListCreditActivityResponse = {
     nextPage: number | null;
 };
 
+export type ListEmailRecommendationsForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type ListEmailRecommendationsGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
+
+export type ListEmailRecommendationsInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
 export type ListFilteredVerificationCodesForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type ListFilteredVerificationCodesGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
@@ -2361,6 +3771,12 @@ export type ListInvoicesResponse = {
 export type ListInvoicesSubjectParam = ListInvoicesSubjectParamOrganization | string;
 
 export type ListInvoicesSubjectParamOrganization = 'organization';
+
+export type ListMessagesForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type ListMessagesGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type ListMessagesInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
 export type ListNumberAreaCodesForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -2413,6 +3829,19 @@ export type ListProjectPlatformsResponse = {
     platforms: Array<SupportedPlatform>;
 };
 
+export type ListProjectSubscriptionsForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type ListProjectSubscriptionsGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
+
+export type ListProjectSubscriptionsInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type ListProjectSubscriptionsResponse = {
+    /**
+     * One entry per category that currently holds a subscription. Empty means none do — cancelled, or never opened.
+     */
+    subscriptions: Array<ProjectHeldPlan>;
+};
+
 export type ListProjectsForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type ListProjectsGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
@@ -2434,6 +3863,18 @@ export type ListSharedLineAssignmentsForbiddenProblem = ForbiddenProblem | Insuf
 export type ListSharedLineAssignmentsGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
 
 export type ListSharedLineAssignmentsInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type ListSpacesForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type ListSpacesGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type ListSpacesInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type ListUsersForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type ListUsersGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type ListUsersInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
 export type ListVoiceProfilesDefaultInput = 'true' | 'false' | (string & {});
 
@@ -2488,6 +3929,105 @@ export type ListWhatsappSharedLineAssignmentsForbiddenProblem = ForbiddenProblem
 export type ListWhatsappSharedLineAssignmentsGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
 
 export type ListWhatsappSharedLineAssignmentsInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type ManagerId = string;
+
+export type MarkMessageReadConflictProblem = SenderNotSendableProblem | SpaceNotSendableProblem | MessageNotReadableProblem;
+
+export type MarkMessageReadForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type MarkMessageReadGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
+
+export type MarkMessageReadInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type MarkMessageReadNotFoundProblem = SenderNotFoundProblem | SpaceNotFoundProblem | MessageNotFoundProblem;
+
+export type MarkMessageReadResponse = Message & SupportedPlatformConstraint & SentMessageConstraint;
+
+export type MarkMessageReadUnprocessableEntityProblem = IdempotencyKeyReusedProblem | OperationUnavailableProblem | ValidationFailedProblem;
+
+export type Message = SmsMessage | WhatsappMessage | WhatsappBusinessMessage | EmailMessage | ImessageMessage | TelegramMessage | {
+    platform: 'UNKNOWN';
+    raw: UnknownMessage;
+};
+
+export type MessageAcceptance = DeliveryConfirmationUnavailableAcceptance | DeliveryConfirmationNotApplicableAcceptance | DeliveryConfirmationTimedOutAcceptance | DeliveryPartiallyConfirmedAcceptance;
+
+export type MessageBlockedByCarrierFailure = {
+    acceptedAt?: never;
+    code: 'message_blocked_by_carrier';
+    confirmedRecipientCount?: never;
+    failedAt?: never;
+    message: string;
+};
+
+export type MessageBlockedFailure = {
+    acceptedAt?: never;
+    code: 'message_blocked';
+    confirmedRecipientCount?: never;
+    failedAt?: never;
+    message: string;
+};
+
+export type MessageContentInvalidFailure = {
+    acceptedAt?: never;
+    code: 'message_content_invalid';
+    confirmedRecipientCount?: never;
+    failedAt?: never;
+    message: string;
+};
+
+export type MessageCount = {
+    count: number;
+    groups: Array<MessageStatusCount>;
+};
+
+export type MessageCountBucket = {
+    count: number;
+    end: string;
+    groups: Array<MessageStatusCount>;
+    start: string;
+};
+
+export type MessageDeleteContent = {
+    metadata?: ContentMetadata;
+    reason?: string;
+    scope?: string;
+    type: 'message.delete';
+};
+
+export type MessageDeliveryFailedFailure = {
+    acceptedAt?: never;
+    code: 'message_delivery_failed';
+    /**
+     * Unique recipients with authoritative delivery confirmation for the original send; omission means evidence is not supplied.
+     */
+    confirmedRecipientCount?: number;
+    failedAt?: never;
+    message: string;
+};
+
+export type MessageDirection = 'received' | 'sent' | (string & {});
+
+export type MessageExpiredFailure = {
+    acceptedAt?: never;
+    code: 'message_expired';
+    confirmedRecipientCount?: never;
+    failedAt?: never;
+    message: string;
+};
+
+export type MessageFailedFailure = {
+    acceptedAt?: never;
+    code: 'message_failed';
+    confirmedRecipientCount?: never;
+    failedAt?: never;
+    message: string;
+};
+
+export type MessageFailure = SenderNotAuthorizedFailure | SenderUnavailableFailure | SenderRegistrationRequiredFailure | RecipientInvalidFailure | RecipientUnreachableFailure | RecipientOptedOutFailure | MessageTypeUnsupportedFailure | MessageContentInvalidFailure | MessageTooLargeFailure | MessageBlockedFailure | MessageBlockedByCarrierFailure | MessageRateLimitedFailure | MessageRejectedFailure | MessageExpiredFailure | MessageDeliveryFailedFailure | MessageSubmissionUnknownFailure | MessagingUnavailableFailure | MessageFailedFailure;
+
+export type MessageId = string;
 
 export type MessageMetricsBackfillState = 'disabled' | 'pending' | 'running' | 'verifying' | 'completed' | 'paused' | 'failed' | (string & {});
 
@@ -2582,6 +4122,113 @@ export type MessageMetricsSqlTable = {
 };
 
 export type MessageMetricsSqlTableName = 'message_events' | 'call_events' | (string & {});
+
+export type MessageNotFoundProblem = {
+    code: 'MESSAGE_NOT_FOUND';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 404;
+    title: 'Message Not Found';
+    type: 'https://photon.codes/docs/problems/message-not-found';
+    [key: string]: JsonValue | 'MESSAGE_NOT_FOUND' | string | never | 404 | 'Message Not Found' | 'https://photon.codes/docs/problems/message-not-found' | undefined;
+};
+
+export type MessageNotReadableProblem = {
+    code: 'MESSAGE_NOT_READABLE';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'Message Not Readable';
+    type: 'https://photon.codes/docs/problems/message-not-readable';
+    [key: string]: JsonValue | 'MESSAGE_NOT_READABLE' | string | never | 409 | 'Message Not Readable' | 'https://photon.codes/docs/problems/message-not-readable' | undefined;
+};
+
+export type MessagePage = {
+    /**
+     * Unsupported platforms and records with unsupported data are omitted.
+     */
+    items: Array<PlatformMessage>;
+    /**
+     * Continue with this token, even if items is empty. Omitted when no more pages remain.
+     */
+    nextPageToken?: string;
+};
+
+export type MessageRateLimitedFailure = {
+    acceptedAt?: never;
+    code: 'message_rate_limited';
+    confirmedRecipientCount?: never;
+    failedAt?: never;
+    message: string;
+};
+
+export type MessageReadContent = {
+    metadata?: ContentMetadata;
+    type: 'message.read';
+};
+
+export type MessageRejectedFailure = {
+    acceptedAt?: never;
+    code: 'message_rejected';
+    confirmedRecipientCount?: never;
+    failedAt?: never;
+    message: string;
+};
+
+export type MessageStatus = 'received' | 'dispatched' | 'accepted' | 'delivered' | 'failed' | (string & {});
+
+export type MessageStatusCount = {
+    count: number;
+    status: MessageStatus;
+};
+
+export type MessageSubmissionUnknownFailure = {
+    acceptedAt?: never;
+    code: 'message_submission_unknown';
+    confirmedRecipientCount?: never;
+    failedAt?: never;
+    message: string;
+};
+
+export type MessageTooLargeFailure = {
+    acceptedAt?: never;
+    code: 'message_too_large';
+    confirmedRecipientCount?: never;
+    failedAt?: never;
+    message: string;
+};
+
+export type MessageTooLongProblem = {
+    code: 'MESSAGE_TOO_LONG';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 422;
+    title: 'Message Too Long';
+    type: 'https://photon.codes/docs/problems/message-too-long';
+    [key: string]: JsonValue | 'MESSAGE_TOO_LONG' | string | never | 422 | 'Message Too Long' | 'https://photon.codes/docs/problems/message-too-long' | undefined;
+};
+
+export type MessageTypeUnsupportedFailure = {
+    acceptedAt?: never;
+    code: 'message_type_unsupported';
+    confirmedRecipientCount?: never;
+    failedAt?: never;
+    message: string;
+};
+
+export type MessagingUnavailableFailure = {
+    acceptedAt?: never;
+    code: 'messaging_unavailable';
+    confirmedRecipientCount?: never;
+    failedAt?: never;
+    message: string;
+};
 
 export type MeteredUsage = {
     /**
@@ -2702,6 +4349,18 @@ export type OperationReason = 'charge_refused' | 'entitlement_lost' | 'project_d
 export type OperationState = 'pending' | 'running' | 'succeeded' | 'failed' | 'cancelled' | (string & {});
 
 export type OperationType = 'resource.provision' | 'resource.release' | 'whatsapp.account.disconnect' | 'sms.campaign.assign' | 'sms.campaign.unassign' | (string & {});
+
+export type OperationUnavailableProblem = {
+    code: 'OPERATION_UNAVAILABLE';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 422;
+    title: 'Operation Unavailable';
+    type: 'https://photon.codes/docs/problems/operation-unavailable';
+    [key: string]: JsonValue | 'OPERATION_UNAVAILABLE' | string | never | 422 | 'Operation Unavailable' | 'https://photon.codes/docs/problems/operation-unavailable' | undefined;
+};
 
 export type OrganizationAuthenticationRedirect = {
     url: string;
@@ -2981,12 +4640,59 @@ export type PendingBillingOperation = {
     submittedAt: string | null;
 };
 
+export type PhoneCarrier = {
+    lineType?: string;
+    mobileCountryCode?: string;
+    mobileNetworkCode?: string;
+    name?: string;
+    normalizedName?: string;
+};
+
 export type PhoneVerificationCaptcha = {
     challengeContext: string;
     token: string;
 };
 
 export type PlanSource = 'catalog' | 'override' | (string & {});
+
+export type Platform = 'sms' | 'email' | 'whatsapp' | 'whatsapp_business' | 'imessage' | 'telegram' | (string & {});
+
+export type PlatformIdentifier = string;
+
+export type PlatformMessage = Message & SupportedPlatformConstraint;
+
+export type PlatformSpace = Space & SupportedPlatformConstraint;
+
+export type PlatformUser = User & SupportedPlatformConstraint;
+
+export type PollContent = {
+    metadata?: ContentMetadata;
+    options: Array<PollOption>;
+    question: string;
+    selectionMode: PollSelectionMode;
+    type: 'poll';
+};
+
+export type PollOption = {
+    id: string;
+    text: string;
+};
+
+export type PollSelectionMode = 'single' | 'multiple' | (string & {});
+
+export type PollUpdateContent = {
+    metadata?: ContentMetadata;
+    options: Array<PollOption>;
+    question: string;
+    selectionMode: PollSelectionMode;
+    type: 'poll.update';
+};
+
+export type PollVoteContent = {
+    metadata?: ContentMetadata;
+    selectedOptions: Array<PollOption>;
+    type: 'poll.vote';
+};
 
 export type PreviewOrganizationChangeForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -3123,6 +4829,41 @@ export type ProjectDeletedProblem = {
     type: 'https://photon.codes/docs/problems/project-deleted';
     [key: string]: JsonValue | 'PROJECT_DELETED' | string | never | 410 | 'Project Deleted' | 'https://photon.codes/docs/problems/project-deleted' | undefined;
 };
+
+export type ProjectHeldPlan = {
+    /**
+     * The plan's recurring base fee in whole cents.
+     */
+    baseAmountCents: number;
+    /**
+     * Category slug, e.g. analytics or messaging.
+     */
+    category: string;
+    /**
+     * Display name for the subscription category; absent or null when unconfigured.
+     */
+    categoryDisplayName?: string | null;
+    /**
+     * ISO currency code.
+     */
+    currency: string;
+    minimumCommitment: BillingPlanMinimumCommitment | null;
+    /**
+     * This category's plan.
+     */
+    planCode: string;
+    /**
+     * The plan's customer-facing name, e.g. Messaging Pro.
+     */
+    planName: string;
+    status: SubscriptionStatus;
+    /**
+     * The plan's tier as customers see it, e.g. Pro for Messaging Pro, where the category is already clear. Null when unconfigured.
+     */
+    tierDisplayName: string | null;
+};
+
+export type ProjectId = string;
 
 export type ProjectInvoiceSubject = {
     projectId: string;
@@ -3297,6 +5038,232 @@ export type RateLimitedProblem = {
     [key: string]: JsonValue | 'RATE_LIMITED' | string | never | 429 | 'Too Many Requests' | 'https://photon.codes/docs/problems/rate-limited' | undefined;
 };
 
+export type ReactionAction = 'add' | 'remove' | (string & {});
+
+export type ReactionContent = {
+    action: ReactionAction;
+    metadata?: ContentMetadata;
+    reaction: string;
+    type: 'reaction';
+};
+
+export type ReceivedEmailMessage = {
+    acceptance?: never;
+    addressedTo?: UserSnapshot;
+    content: EmailMessageContent;
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    failure?: never;
+    id: MessageId;
+    metadata: ResourceMetadata;
+    parentMessageId?: MessageId;
+    platform: 'email';
+    projectId: ProjectId;
+    receivedBy?: UserSnapshot;
+    sentBy: UserSnapshot;
+    space: SpaceSnapshot;
+    status: 'received';
+    timestamp?: never;
+    timestamps: ReceivedMessageTimestamps;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type ReceivedImessageMessage = {
+    acceptance?: never;
+    addressedTo?: UserSnapshot;
+    content: ImessageMessageContent;
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    failure?: never;
+    id: MessageId;
+    metadata: ResourceMetadata;
+    parentMessageId?: MessageId;
+    platform: 'imessage';
+    projectId: ProjectId;
+    receivedBy?: UserSnapshot;
+    sentBy: UserSnapshot;
+    space: SpaceSnapshot;
+    status: 'received';
+    timestamp?: never;
+    timestamps: ReceivedMessageTimestamps;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type ReceivedMessageTimestamps = {
+    acceptedAt?: never;
+    deliveredAt?: never;
+    dispatchedAt?: never;
+    failedAt?: never;
+    /**
+     * Authoritative source receipt or observation time, preserved across replay.
+     */
+    receivedAt: string;
+};
+
+export type ReceivedSmsMessage = {
+    acceptance?: never;
+    addressedTo?: UserSnapshot;
+    content: SmsMessageContent;
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    failure?: never;
+    id: MessageId;
+    metadata: ResourceMetadata;
+    parentMessageId?: MessageId;
+    platform: 'sms';
+    projectId: ProjectId;
+    receivedBy?: UserSnapshot;
+    sentBy: UserSnapshot;
+    space: SpaceSnapshot;
+    status: 'received';
+    timestamp?: never;
+    timestamps: ReceivedMessageTimestamps;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type ReceivedTelegramMessage = {
+    acceptance?: never;
+    addressedTo?: UserSnapshot;
+    content: TelegramMessageContent;
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    failure?: never;
+    id: MessageId;
+    metadata: ResourceMetadata;
+    parentMessageId?: MessageId;
+    platform: 'telegram';
+    projectId: ProjectId;
+    receivedBy?: UserSnapshot;
+    sentBy: UserSnapshot;
+    space: SpaceSnapshot;
+    status: 'received';
+    timestamp?: never;
+    timestamps: ReceivedMessageTimestamps;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type ReceivedUnknownMessage = {
+    acceptance?: never;
+    addressedTo?: UserSnapshot;
+    content: Content;
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    failure?: never;
+    id: MessageId;
+    metadata: ResourceMetadata;
+    parentMessageId?: MessageId;
+    platform: PlatformIdentifier;
+    projectId: ProjectId;
+    receivedBy?: UserSnapshot;
+    sentBy: UserSnapshot;
+    space: SpaceSnapshot;
+    status: 'received';
+    timestamp?: never;
+    timestamps: ReceivedMessageTimestamps;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type ReceivedWhatsappBusinessMessage = {
+    acceptance?: never;
+    addressedTo?: UserSnapshot;
+    content: WhatsappBusinessMessageContent;
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    failure?: never;
+    id: MessageId;
+    metadata: ResourceMetadata;
+    parentMessageId?: MessageId;
+    platform: 'whatsapp_business';
+    projectId: ProjectId;
+    receivedBy?: UserSnapshot;
+    sentBy: UserSnapshot;
+    space: SpaceSnapshot;
+    status: 'received';
+    timestamp?: never;
+    timestamps: ReceivedMessageTimestamps;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type ReceivedWhatsappMessage = {
+    acceptance?: never;
+    addressedTo?: UserSnapshot;
+    content: WhatsappMessageContent;
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    failure?: never;
+    id: MessageId;
+    metadata: ResourceMetadata;
+    parentMessageId?: MessageId;
+    platform: 'whatsapp';
+    projectId: ProjectId;
+    receivedBy?: UserSnapshot;
+    sentBy: UserSnapshot;
+    space: SpaceSnapshot;
+    status: 'received';
+    timestamp?: never;
+    timestamps: ReceivedMessageTimestamps;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type RecipientInvalidFailure = {
+    acceptedAt?: never;
+    code: 'recipient_invalid';
+    confirmedRecipientCount?: never;
+    failedAt?: never;
+    message: string;
+};
+
+export type RecipientOptedOutFailure = {
+    acceptedAt?: never;
+    code: 'recipient_opted_out';
+    confirmedRecipientCount?: never;
+    failedAt?: never;
+    message: string;
+};
+
+export type RecipientUnreachableFailure = {
+    acceptedAt?: never;
+    code: 'recipient_unreachable';
+    confirmedRecipientCount?: never;
+    failedAt?: never;
+    message: string;
+};
+
 export type RedeemAppInstallationDeliveryGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
 
 export type RedeemAppInstallationDeliveryRequest = {
@@ -3416,6 +5383,15 @@ export type Resource = {
     state: ResourceState;
     type: string;
     updatedAt: string;
+};
+
+export type ResourceId = string;
+
+export type ResourceMetadata = {
+    displayName?: string;
+    email?: EmailMetadata;
+    spam?: SpamClassification;
+    [key: string]: JsonValue | string | EmailMetadata | SpamClassification | undefined;
 };
 
 export type ResourceMismatchProblem = {
@@ -3575,6 +5551,228 @@ export type SelectableWebhookEventCatalog = {
     successor: string | null;
 };
 
+/**
+ * Text shown with the attachment. Accepted on: telegram.
+ */
+export type SendAttachmentCaption = {
+    format: string;
+    text: string;
+};
+
+export type SendAttachmentContent = {
+    attachmentId: AttachmentId;
+    metadata?: SendAttachmentMetadata;
+    type: 'attachment';
+};
+
+export type SendAttachmentMetadata = {
+    caption?: SendAttachmentCaption;
+};
+
+export type SendContent = SendTextContent | SendTextUpdateContent | SendAttachmentContent | SendVoiceContent | SendReactionContent | SendMessageDeleteContent | SendMessageReadContent | SendSpaceParticipantsUpdateContent | SendSpaceTypingUpdateContent | SendPollContent | SendPollVoteContent | SendPollUpdateContent | SendGroupContent;
+
+export type SendContentPart = SendTextContent | SendTextUpdateContent | SendAttachmentContent | SendVoiceContent | SendReactionContent | SendMessageDeleteContent | SendMessageReadContent | SendSpaceParticipantsUpdateContent | SendSpaceTypingUpdateContent | SendPollContent | SendPollVoteContent | SendPollUpdateContent;
+
+export type SendEmailMailbox = {
+    address: string;
+    name?: string;
+};
+
+export type SendEmailOptions = {
+    bcc?: Array<SendEmailMailbox>;
+    cc?: Array<SendEmailMailbox>;
+    replyTo?: Array<SendEmailMailbox>;
+    subject?: string;
+    to?: Array<SendEmailMailbox>;
+};
+
+export type SendGroupContent = {
+    parts: Array<SendContentPart>;
+    type: 'group';
+};
+
+export type SendMessageConflictProblem = AttachmentNotReadyProblem | SenderNotSendableProblem | SmsCampaignNotEligibleProblem | SpaceNotSendableProblem;
+
+export type SendMessageDeleteContent = {
+    reason?: string;
+    scope?: string;
+    type: 'message.delete';
+};
+
+export type SendMessageForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem | SharedLineInboundRequiredProblem | SharedLineNotAssignedProblem;
+
+export type SendMessageGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type SendMessageInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type SendMessageNotFoundProblem = SpaceNotFoundProblem | MessageNotFoundProblem | AttachmentNotFoundProblem | SenderNotFoundProblem;
+
+export type SendMessageReadContent = {
+    type: 'message.read';
+};
+
+export type SendMessageRequest = {
+    content: SendContent;
+    email?: SendEmailOptions;
+    parentMessageId?: string;
+    senderId: string;
+    spaceId: string;
+    telegram?: SendTelegramOptions;
+};
+
+export type SendMessageUnprocessableEntityProblem = SharedLineGroupUnsupportedProblem | ValidationFailedProblem | InvalidContentProblem | UnsupportedContentProblem | MessageTooLongProblem | IdempotencyKeyReusedProblem;
+
+export type SendPollContent = {
+    options: Array<PollOption>;
+    question: string;
+    selectionMode: PollSelectionMode;
+    type: 'poll';
+};
+
+export type SendPollUpdateContent = {
+    options: Array<PollOption>;
+    question: string;
+    selectionMode: PollSelectionMode;
+    type: 'poll.update';
+};
+
+export type SendPollVoteContent = {
+    selectedOptions: Array<PollOption>;
+    type: 'poll.vote';
+};
+
+export type SendReactionContent = {
+    action: ReactionAction;
+    reaction: string;
+    type: 'reaction';
+};
+
+export type SendSpaceParticipantsUpdateContent = {
+    added: Array<UserSnapshotInput>;
+    removed: Array<UserSnapshotInput>;
+    type: 'space.participants.update';
+};
+
+export type SendSpaceTypingUpdateContent = {
+    type: 'space.typing.update';
+    /**
+     * True starts or refreshes typing; false stops it or reports a stop.
+     */
+    typing: boolean;
+};
+
+export type SendTelegramOptions = {
+    /**
+     * Whether standalone text is sent as a Telegram rich message. Defaults to true; false sends a regular message. Not accepted with attachments.
+     */
+    richMessage?: boolean;
+};
+
+export type SendTextContent = {
+    format: string;
+    text: string;
+    type: 'text';
+};
+
+export type SendTextUpdateContent = {
+    format: string;
+    text: string;
+    type: 'text.update';
+};
+
+export type SendVoiceContent = {
+    attachmentId: AttachmentId;
+    type: 'voice';
+};
+
+export type SenderNotAuthorizedFailure = {
+    acceptedAt?: never;
+    code: 'sender_not_authorized';
+    confirmedRecipientCount?: never;
+    failedAt?: never;
+    message: string;
+};
+
+export type SenderNotFoundProblem = {
+    code: 'SENDER_NOT_FOUND';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 404;
+    title: 'Sender Not Found';
+    type: 'https://photon.codes/docs/problems/sender-not-found';
+    [key: string]: JsonValue | 'SENDER_NOT_FOUND' | string | never | 404 | 'Sender Not Found' | 'https://photon.codes/docs/problems/sender-not-found' | undefined;
+};
+
+export type SenderNotSendableProblem = {
+    code: 'SENDER_NOT_SENDABLE';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'Sender Not Sendable';
+    type: 'https://photon.codes/docs/problems/sender-not-sendable';
+    [key: string]: JsonValue | 'SENDER_NOT_SENDABLE' | string | never | 409 | 'Sender Not Sendable' | 'https://photon.codes/docs/problems/sender-not-sendable' | undefined;
+};
+
+export type SenderRegistrationRequiredFailure = {
+    acceptedAt?: never;
+    code: 'sender_registration_required';
+    confirmedRecipientCount?: never;
+    failedAt?: never;
+    message: string;
+};
+
+export type SenderUnavailableFailure = {
+    acceptedAt?: never;
+    code: 'sender_unavailable';
+    confirmedRecipientCount?: never;
+    failedAt?: never;
+    message: string;
+};
+
+export type SentMessage = Message & SupportedPlatformConstraint & SentMessageConstraint;
+
+export type SentMessageConstraint = {
+    status: SentMessageStatus;
+    [key: string]: unknown;
+};
+
+export type SentMessageStatus = 'dispatched' | 'accepted' | 'delivered' | 'failed' | (string & {});
+
+export type SetSpaceTypingConstraint = {
+    content: SetSpaceTypingContent;
+    status: 'dispatched';
+    [key: string]: unknown;
+};
+
+export type SetSpaceTypingContent = {
+    type: 'space.typing.update';
+    typing: boolean;
+};
+
+export type SetSpaceTypingForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type SetSpaceTypingGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
+
+export type SetSpaceTypingInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type SetSpaceTypingNotFoundProblem = SpaceNotFoundProblem | UserNotFoundProblem;
+
+export type SetSpaceTypingRequest = {
+    senderId: string;
+    /**
+     * True starts or refreshes typing; false stops it.
+     */
+    typing: boolean;
+};
+
+export type SetSpaceTypingResponse = Message & SetSpaceTypingConstraint;
+
+export type SetSpaceTypingUnprocessableEntityProblem = OperationUnavailableProblem | ValidationFailedProblem;
+
 export type SharedLineAssignment = {
     assignedPhoneNumber: string;
     assignmentId: string;
@@ -3606,6 +5804,42 @@ export type SharedLineCapExceededProblem = {
     title: 'Shared Line Cap Exceeded';
     type: 'https://photon.codes/docs/problems/shared-line-cap-exceeded';
     [key: string]: JsonValue | 'SHARED_LINE_CAP_EXCEEDED' | string | never | 409 | 'Shared Line Cap Exceeded' | 'https://photon.codes/docs/problems/shared-line-cap-exceeded' | undefined;
+};
+
+export type SharedLineGroupUnsupportedProblem = {
+    code: 'SHARED_LINE_GROUP_UNSUPPORTED';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 422;
+    title: 'Shared Line Group Unsupported';
+    type: 'https://photon.codes/docs/problems/shared-line-group-unsupported';
+    [key: string]: JsonValue | 'SHARED_LINE_GROUP_UNSUPPORTED' | string | never | 422 | 'Shared Line Group Unsupported' | 'https://photon.codes/docs/problems/shared-line-group-unsupported' | undefined;
+};
+
+export type SharedLineInboundRequiredProblem = {
+    code: 'SHARED_LINE_INBOUND_REQUIRED';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 403;
+    title: 'Shared Line Inbound Required';
+    type: 'https://photon.codes/docs/problems/shared-line-inbound-required';
+    [key: string]: JsonValue | 'SHARED_LINE_INBOUND_REQUIRED' | string | never | 403 | 'Shared Line Inbound Required' | 'https://photon.codes/docs/problems/shared-line-inbound-required' | undefined;
+};
+
+export type SharedLineNotAssignedProblem = {
+    code: 'SHARED_LINE_NOT_ASSIGNED';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 403;
+    title: 'Shared Line Not Assigned';
+    type: 'https://photon.codes/docs/problems/shared-line-not-assigned';
+    [key: string]: JsonValue | 'SHARED_LINE_NOT_ASSIGNED' | string | never | 403 | 'Shared Line Not Assigned' | 'https://photon.codes/docs/problems/shared-line-not-assigned' | undefined;
 };
 
 export type SharedLinePoolExhaustedProblem = {
@@ -3734,6 +5968,18 @@ export type SmsCampaignMutationInProgressProblem = {
     [key: string]: JsonValue | 'SMS_CAMPAIGN_MUTATION_IN_PROGRESS' | string | never | 409 | 'Assignment mutation in progress' | 'https://photon.codes/docs/problems/sms-campaign-mutation-in-progress' | undefined;
 };
 
+export type SmsCampaignNotEligibleProblem = {
+    code: 'SMS_CAMPAIGN_NOT_ELIGIBLE';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'SMS Campaign Not Eligible';
+    type: 'https://photon.codes/docs/problems/sms-campaign-not-eligible';
+    [key: string]: JsonValue | 'SMS_CAMPAIGN_NOT_ELIGIBLE' | string | never | 409 | 'SMS Campaign Not Eligible' | 'https://photon.codes/docs/problems/sms-campaign-not-eligible' | undefined;
+};
+
 export type SmsCampaignNotFoundProblem = {
     code: 'SMS_CAMPAIGN_NOT_FOUND';
     detail?: string;
@@ -3794,6 +6040,14 @@ export type SmsCampaignVersionConflictProblem = {
     [key: string]: JsonValue | 'SMS_CAMPAIGN_VERSION_CONFLICT' | string | never | 409 | 'Assignment version conflict' | 'https://photon.codes/docs/problems/sms-campaign-version-conflict' | undefined;
 };
 
+export type SmsGroupContent = {
+    metadata?: ContentMetadata;
+    parts: Array<SmsGroupContentPart>;
+    type: 'group';
+};
+
+export type SmsGroupContentPart = TextContent | TextUpdateContent | AttachmentContent | VoiceContent | ReactionContent | MessageDeleteContent | MessageReadContent | SpaceParticipantsUpdateContent | SpaceTypingUpdateContent | PollContent | PollVoteContent | PollUpdateContent;
+
 export type SmsLineCampaign = {
     id: string;
     organizationId: string;
@@ -3826,7 +6080,183 @@ export type SmsLineUnsupportedProblem = {
     [key: string]: JsonValue | 'SMS_LINE_UNSUPPORTED' | string | never | 409 | 'SMS line unsupported' | 'https://photon.codes/docs/problems/sms-line-unsupported' | undefined;
 };
 
+export type SmsMessage = ReceivedSmsMessage | DispatchedSmsMessage | AcceptedSmsMessage | DeliveredSmsMessage | FailedSmsMessage;
+
+export type SmsMessageContent = TextContent | TextUpdateContent | AttachmentContent | VoiceContent | ReactionContent | MessageDeleteContent | MessageReadContent | SpaceParticipantsUpdateContent | SpaceTypingUpdateContent | PollContent | PollVoteContent | PollUpdateContent | SmsGroupContent;
+
+export type SmsSpace = {
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    details: SmsSpaceDetails;
+    id: SpaceId;
+    kind: string;
+    metadata: ResourceMetadata;
+    participantIds: Array<UserId>;
+    platform: 'sms';
+    projectId: ProjectId;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type SmsSpaceDetails = Record<string, unknown>;
+
+export type SmsSpaceSnapshot = {
+    createdAt?: never;
+    details: SmsSpaceDetails;
+    id: SpaceId;
+    kind: string;
+    metadata: ResourceMetadata;
+    participantIds: Array<UserId>;
+    platform: 'sms';
+    projectId: ProjectId;
+    updatedAt?: never;
+};
+
+export type SmsUser = {
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    details: SmsUserDetails;
+    handle: string;
+    id: UserId;
+    kind: string;
+    metadata: ResourceMetadata;
+    platform: 'sms';
+    projectId: ProjectId;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type SmsUserDetails = {
+    carrier?: PhoneCarrier;
+    countryCode?: string;
+    managedBy?: ManagerId;
+    nationalFormat?: string;
+    resourceId?: ResourceId;
+};
+
+export type SmsUserSnapshot = {
+    createdAt?: never;
+    details: SmsUserDetails;
+    handle: string;
+    id: UserId;
+    kind: string;
+    metadata: ResourceMetadata;
+    platform: 'sms';
+    projectId: ProjectId;
+    updatedAt?: never;
+};
+
 export type SortOrder = 'asc' | 'desc' | (string & {});
+
+export type Space = SmsSpace | WhatsappSpace | WhatsappBusinessSpace | EmailSpace | VoiceSpace | ImessageSpace | TelegramSpace | {
+    platform: 'UNKNOWN';
+    raw: UnknownSpace;
+};
+
+export type SpaceAmbiguousProblem = {
+    code: 'SPACE_AMBIGUOUS';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'Multiple Matching Spaces';
+    type: 'https://photon.codes/docs/problems/space-ambiguous';
+    [key: string]: JsonValue | 'SPACE_AMBIGUOUS' | string | never | 409 | 'Multiple Matching Spaces' | 'https://photon.codes/docs/problems/space-ambiguous' | undefined;
+};
+
+export type SpaceCount = {
+    count: number;
+};
+
+export type SpaceId = string;
+
+export type SpaceNotFoundProblem = {
+    code: 'SPACE_NOT_FOUND';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 404;
+    title: 'Space Not Found';
+    type: 'https://photon.codes/docs/problems/space-not-found';
+    [key: string]: JsonValue | 'SPACE_NOT_FOUND' | string | never | 404 | 'Space Not Found' | 'https://photon.codes/docs/problems/space-not-found' | undefined;
+};
+
+export type SpaceNotSendableProblem = {
+    code: 'SPACE_NOT_SENDABLE';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'Space Not Sendable';
+    type: 'https://photon.codes/docs/problems/space-not-sendable';
+    [key: string]: JsonValue | 'SPACE_NOT_SENDABLE' | string | never | 409 | 'Space Not Sendable' | 'https://photon.codes/docs/problems/space-not-sendable' | undefined;
+};
+
+export type SpaceOrderBy = 'created_at' | 'updated_at' | 'last_message_created_at' | (string & {});
+
+export type SpacePage = {
+    /**
+     * Unsupported platforms and records with unsupported data are omitted.
+     */
+    items: Array<PlatformSpace>;
+    /**
+     * Continue with this token, even if items is empty. Omitted when no more pages remain.
+     */
+    nextPageToken?: string;
+};
+
+export type SpaceParticipantsUpdateContent = {
+    added: Array<UserSnapshot>;
+    metadata?: ContentMetadata;
+    removed: Array<UserSnapshot>;
+    type: 'space.participants.update';
+};
+
+export type SpaceRequiresOwnedAgentProblem = {
+    code: 'SPACE_REQUIRES_OWNED_AGENT';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 422;
+    title: 'Space Requires Owned Agent';
+    type: 'https://photon.codes/docs/problems/space-requires-owned-agent';
+    [key: string]: JsonValue | 'SPACE_REQUIRES_OWNED_AGENT' | string | never | 422 | 'Space Requires Owned Agent' | 'https://photon.codes/docs/problems/space-requires-owned-agent' | undefined;
+};
+
+export type SpaceSnapshot = SmsSpaceSnapshot | WhatsappSpaceSnapshot | WhatsappBusinessSpaceSnapshot | EmailSpaceSnapshot | VoiceSpaceSnapshot | ImessageSpaceSnapshot | TelegramSpaceSnapshot | {
+    platform: 'UNKNOWN';
+    raw: UnknownSpaceSnapshot;
+};
+
+export type SpaceTypingCacheControl = 'no-store';
+
+export type SpaceTypingUpdateContent = {
+    metadata?: ContentMetadata;
+    type: 'space.typing.update';
+    /**
+     * True starts or refreshes typing; false stops it or reports a stop.
+     */
+    typing: boolean;
+};
+
+export type SpamClassification = {
+    classifiedAt?: string;
+    confidence?: number;
+    source: string;
+    status: string;
+};
 
 export type SsoSubscriptionRequiredProblem = {
     code: 'SSO_SUBSCRIPTION_REQUIRED';
@@ -3924,6 +6354,23 @@ export type SupportedPlatform = {
     type: string;
 };
 
+export type SupportedPlatformConstraint = {
+    platform: Platform;
+    [key: string]: unknown;
+};
+
+export type TelegramGroupContent = {
+    metadata?: ContentMetadata;
+    parts: Array<TelegramGroupContentPart>;
+    type: 'group';
+};
+
+export type TelegramGroupContentPart = TextContent | AttachmentContent | VoiceContent;
+
+export type TelegramMessage = ReceivedTelegramMessage | DispatchedTelegramMessage | AcceptedTelegramMessage | DeliveredTelegramMessage | FailedTelegramMessage;
+
+export type TelegramMessageContent = TextContent | AttachmentContent | VoiceContent | TelegramGroupContent;
+
 export type TelegramProjectDeletedProblem = {
     code: 'TELEGRAM_PROJECT_DELETED';
     detail?: string;
@@ -3950,7 +6397,87 @@ export type TelegramProvisionInProgressProblem = {
     [key: string]: JsonValue | 'TELEGRAM_PROVISION_IN_PROGRESS' | string | never | 409 | 'Telegram Provision In Progress' | 'https://photon.codes/docs/problems/telegram-provision-in-progress' | undefined;
 };
 
+export type TelegramSpace = {
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    details: TelegramSpaceDetails;
+    id: SpaceId;
+    kind: string;
+    metadata: ResourceMetadata;
+    participantIds: Array<UserId>;
+    platform: 'telegram';
+    projectId: ProjectId;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type TelegramSpaceDetails = Record<string, unknown>;
+
+export type TelegramSpaceSnapshot = {
+    createdAt?: never;
+    details: TelegramSpaceDetails;
+    id: SpaceId;
+    kind: string;
+    metadata: ResourceMetadata;
+    participantIds: Array<UserId>;
+    platform: 'telegram';
+    projectId: ProjectId;
+    updatedAt?: never;
+};
+
+export type TelegramUser = {
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    details: TelegramUserDetails;
+    handle: string;
+    id: UserId;
+    kind: string;
+    metadata: ResourceMetadata;
+    platform: 'telegram';
+    projectId: ProjectId;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type TelegramUserDetails = {
+    resourceId?: ResourceId;
+};
+
+export type TelegramUserSnapshot = {
+    createdAt?: never;
+    details: TelegramUserDetails;
+    handle: string;
+    id: UserId;
+    kind: string;
+    metadata: ResourceMetadata;
+    platform: 'telegram';
+    projectId: ProjectId;
+    updatedAt?: never;
+};
+
 export type TerminalBillingOperation = SucceededBillingOperation | FailedBillingOperation;
+
+export type TextContent = {
+    format: string;
+    metadata?: ContentMetadata;
+    text: string;
+    type: 'text';
+};
+
+export type TextUpdateContent = {
+    format: string;
+    metadata?: ContentMetadata;
+    text: string;
+    type: 'text.update';
+};
 
 export type TimestampOrderBy = 'created_at' | 'updated_at' | (string & {});
 
@@ -3982,6 +6509,91 @@ export type UnavailableProjectSlug = {
 };
 
 export type UnavailableProjectSlugReason = 'reserved' | 'retired' | 'taken' | 'too_short' | (string & {});
+
+export type UnknownContent = {
+    metadata?: ContentMetadata;
+    type: string;
+};
+
+export type UnknownMessage = ReceivedUnknownMessage | DispatchedUnknownMessage | AcceptedUnknownMessage | DeliveredUnknownMessage | FailedUnknownMessage;
+
+export type UnknownSpace = {
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    details: {
+        [key: string]: JsonValue;
+    };
+    id: SpaceId;
+    kind: string;
+    metadata: ResourceMetadata;
+    participantIds: Array<UserId>;
+    platform: PlatformIdentifier;
+    projectId: ProjectId;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type UnknownSpaceSnapshot = {
+    createdAt?: never;
+    details: {
+        [key: string]: JsonValue;
+    };
+    id: SpaceId;
+    kind: string;
+    metadata: ResourceMetadata;
+    participantIds: Array<UserId>;
+    platform: PlatformIdentifier;
+    projectId: ProjectId;
+    updatedAt?: never;
+};
+
+export type UnknownUser = {
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    details: {
+        [key: string]: JsonValue;
+    };
+    id: UserId;
+    kind: string;
+    metadata: ResourceMetadata;
+    platform: PlatformIdentifier;
+    projectId: ProjectId;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type UnknownUserSnapshot = {
+    createdAt?: never;
+    details: {
+        [key: string]: JsonValue;
+    };
+    id: UserId;
+    kind: string;
+    metadata: ResourceMetadata;
+    platform: PlatformIdentifier;
+    projectId: ProjectId;
+    updatedAt?: never;
+};
+
+export type UnsupportedContentProblem = {
+    code: 'UNSUPPORTED_CONTENT';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 422;
+    title: 'Unsupported Content';
+    type: 'https://photon.codes/docs/problems/unsupported-content';
+    [key: string]: JsonValue | 'UNSUPPORTED_CONTENT' | string | never | 422 | 'Unsupported Content' | 'https://photon.codes/docs/problems/unsupported-content' | undefined;
+};
 
 export type UpdateAccountBadRequestProblem = HttpErrorProblem | InvalidArgumentProblem | IdempotencyKeyInvalidProblem | IdempotencyKeyRequiredProblem;
 
@@ -4252,6 +6864,61 @@ export type UsageChargeTier = {
     toUnit: number | null;
 };
 
+export type User = SmsUser | WhatsappUser | WhatsappBusinessUser | EmailUser | VoiceUser | ImessageUser | TelegramUser | {
+    platform: 'UNKNOWN';
+    raw: UnknownUser;
+};
+
+export type UserCount = {
+    count: number;
+};
+
+export type UserId = string;
+
+export type UserIdentityConflictProblem = {
+    code: 'USER_IDENTITY_CONFLICT';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'User Identity Conflict';
+    type: 'https://photon.codes/docs/problems/user-identity-conflict';
+    [key: string]: JsonValue | 'USER_IDENTITY_CONFLICT' | string | never | 409 | 'User Identity Conflict' | 'https://photon.codes/docs/problems/user-identity-conflict' | undefined;
+};
+
+export type UserLineType = 'shared' | 'dedicated' | (string & {});
+
+export type UserNotFoundProblem = {
+    code: 'USER_NOT_FOUND';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 404;
+    title: 'User Not Found';
+    type: 'https://photon.codes/docs/problems/user-not-found';
+    [key: string]: JsonValue | 'USER_NOT_FOUND' | string | never | 404 | 'User Not Found' | 'https://photon.codes/docs/problems/user-not-found' | undefined;
+};
+
+export type UserPage = {
+    /**
+     * Unsupported platforms and records with unsupported data are omitted.
+     */
+    items: Array<PlatformUser>;
+    /**
+     * Continue with this token, even if items is empty. Omitted when no more pages remain.
+     */
+    nextPageToken?: string;
+};
+
+export type UserSnapshot = SmsUserSnapshot | WhatsappUserSnapshot | WhatsappBusinessUserSnapshot | EmailUserSnapshot | VoiceUserSnapshot | ImessageUserSnapshot | TelegramUserSnapshot | {
+    platform: 'UNKNOWN';
+    raw: UnknownUserSnapshot;
+};
+
+export type UserSnapshotInput = SmsUserSnapshot | WhatsappUserSnapshot | WhatsappBusinessUserSnapshot | EmailUserSnapshot | VoiceUserSnapshot | ImessageUserSnapshot | TelegramUserSnapshot;
+
 export type ValidationFailedProblem = {
     code: 'VALIDATION_FAILED';
     detail?: string;
@@ -4273,6 +6940,12 @@ export type ValidationIssue = {
 };
 
 export type ValidationLocation = 'body' | 'cookie' | 'form' | 'header' | 'json' | 'param' | 'query' | (string & {});
+
+export type VoiceContent = {
+    attachmentId: AttachmentId;
+    metadata?: ContentMetadata;
+    type: 'voice';
+};
 
 export type VoiceDefaultProfileAssignmentForbiddenProblem = {
     code: 'VOICE_DEFAULT_PROFILE_ASSIGNMENT_FORBIDDEN';
@@ -4335,6 +7008,17 @@ export type VoiceLineProfileAssignmentUpdate = {
     expectedVersion: number;
     profileId: string | null;
     resourceId: string;
+};
+
+export type VoiceMetadata = {
+    /**
+     * Server-observed recording duration in milliseconds, when known.
+     */
+    durationMs?: number;
+    /**
+     * Server-provided normalized waveform samples for optional display.
+     */
+    waveform?: Array<number>;
 };
 
 export type VoiceOutboundConfiguredProblem = {
@@ -4452,6 +7136,73 @@ export type VoiceProfileVersionConflictProblem = {
     title: 'Voice Profile Version Conflict';
     type: 'https://photon.codes/docs/problems/voice-profile-version-conflict';
     [key: string]: JsonValue | 'VOICE_PROFILE_VERSION_CONFLICT' | string | never | 409 | 'Voice Profile Version Conflict' | 'https://photon.codes/docs/problems/voice-profile-version-conflict' | undefined;
+};
+
+export type VoiceSpace = {
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    details: VoiceSpaceDetails;
+    id: SpaceId;
+    kind: string;
+    metadata: ResourceMetadata;
+    participantIds: Array<UserId>;
+    platform: 'voice';
+    projectId: ProjectId;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type VoiceSpaceDetails = Record<string, unknown>;
+
+export type VoiceSpaceSnapshot = {
+    createdAt?: never;
+    details: VoiceSpaceDetails;
+    id: SpaceId;
+    kind: string;
+    metadata: ResourceMetadata;
+    participantIds: Array<UserId>;
+    platform: 'voice';
+    projectId: ProjectId;
+    updatedAt?: never;
+};
+
+export type VoiceUser = {
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    details: VoiceUserDetails;
+    handle: string;
+    id: UserId;
+    kind: string;
+    metadata: ResourceMetadata;
+    platform: 'voice';
+    projectId: ProjectId;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type VoiceUserDetails = {
+    managedBy?: ManagerId;
+    resourceId?: ResourceId;
+};
+
+export type VoiceUserSnapshot = {
+    createdAt?: never;
+    details: VoiceUserDetails;
+    handle: string;
+    id: UserId;
+    kind: string;
+    metadata: ResourceMetadata;
+    platform: 'voice';
+    projectId: ProjectId;
+    updatedAt?: never;
 };
 
 export type WebhookApiVersion = SelectableWebhookApiVersion | DeprecatedWebhookApiVersion;
@@ -4591,6 +7342,86 @@ export type WhatsappBusinessAccountRestriction = {
     status: WhatsappRestrictionStatus;
 };
 
+export type WhatsappBusinessGroupContent = {
+    metadata?: ContentMetadata;
+    parts: Array<WhatsappBusinessGroupContentPart>;
+    type: 'group';
+};
+
+export type WhatsappBusinessGroupContentPart = TextContent | TextUpdateContent | AttachmentContent | VoiceContent | ReactionContent | MessageDeleteContent | MessageReadContent | SpaceParticipantsUpdateContent | SpaceTypingUpdateContent | PollContent | PollVoteContent | PollUpdateContent;
+
+export type WhatsappBusinessMessage = ReceivedWhatsappBusinessMessage | DispatchedWhatsappBusinessMessage | AcceptedWhatsappBusinessMessage | DeliveredWhatsappBusinessMessage | FailedWhatsappBusinessMessage;
+
+export type WhatsappBusinessMessageContent = TextContent | TextUpdateContent | AttachmentContent | VoiceContent | ReactionContent | MessageDeleteContent | MessageReadContent | SpaceParticipantsUpdateContent | SpaceTypingUpdateContent | PollContent | PollVoteContent | PollUpdateContent | WhatsappBusinessGroupContent;
+
+export type WhatsappBusinessSpace = {
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    details: WhatsappBusinessSpaceDetails;
+    id: SpaceId;
+    kind: string;
+    metadata: ResourceMetadata;
+    participantIds: Array<UserId>;
+    platform: 'whatsapp_business';
+    projectId: ProjectId;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type WhatsappBusinessSpaceDetails = Record<string, unknown>;
+
+export type WhatsappBusinessSpaceSnapshot = {
+    createdAt?: never;
+    details: WhatsappBusinessSpaceDetails;
+    id: SpaceId;
+    kind: string;
+    metadata: ResourceMetadata;
+    participantIds: Array<UserId>;
+    platform: 'whatsapp_business';
+    projectId: ProjectId;
+    updatedAt?: never;
+};
+
+export type WhatsappBusinessUser = {
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    details: WhatsappBusinessUserDetails;
+    handle: string;
+    id: UserId;
+    kind: string;
+    metadata: ResourceMetadata;
+    platform: 'whatsapp_business';
+    projectId: ProjectId;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type WhatsappBusinessUserDetails = {
+    managedBy?: ManagerId;
+    phoneNumber?: string;
+    resourceId?: ResourceId;
+};
+
+export type WhatsappBusinessUserSnapshot = {
+    createdAt?: never;
+    details: WhatsappBusinessUserDetails;
+    handle: string;
+    id: UserId;
+    kind: string;
+    metadata: ResourceMetadata;
+    platform: 'whatsapp_business';
+    projectId: ProjectId;
+    updatedAt?: never;
+};
+
 export type WhatsappDisplayNameUnavailableProblem = {
     code: 'WHATSAPP_DISPLAY_NAME_UNAVAILABLE';
     detail?: string;
@@ -4602,6 +7433,18 @@ export type WhatsappDisplayNameUnavailableProblem = {
     type: 'https://photon.codes/docs/problems/whatsapp-display-name-unavailable';
     [key: string]: JsonValue | 'WHATSAPP_DISPLAY_NAME_UNAVAILABLE' | string | never | 422 | 'WhatsApp Display Name Unavailable' | 'https://photon.codes/docs/problems/whatsapp-display-name-unavailable' | undefined;
 };
+
+export type WhatsappGroupContent = {
+    metadata?: ContentMetadata;
+    parts: Array<WhatsappGroupContentPart>;
+    type: 'group';
+};
+
+export type WhatsappGroupContentPart = TextContent | TextUpdateContent | AttachmentContent | VoiceContent | ReactionContent | MessageDeleteContent | MessageReadContent | SpaceParticipantsUpdateContent | SpaceTypingUpdateContent | PollContent | PollVoteContent | PollUpdateContent;
+
+export type WhatsappMessage = ReceivedWhatsappMessage | DispatchedWhatsappMessage | AcceptedWhatsappMessage | DeliveredWhatsappMessage | FailedWhatsappMessage;
+
+export type WhatsappMessageContent = TextContent | TextUpdateContent | AttachmentContent | VoiceContent | ReactionContent | MessageDeleteContent | MessageReadContent | SpaceParticipantsUpdateContent | SpaceTypingUpdateContent | PollContent | PollVoteContent | PollUpdateContent | WhatsappGroupContent;
 
 export type WhatsappModeDedicatedProblem = {
     code: 'WHATSAPP_MODE_DEDICATED';
@@ -4645,6 +7488,75 @@ export type WhatsappSenderProvisioningProblem = {
     title: 'WhatsApp Sender Provisioning';
     type: 'https://photon.codes/docs/problems/whatsapp-sender-provisioning';
     [key: string]: JsonValue | 'WHATSAPP_SENDER_PROVISIONING' | string | never | 409 | 'WhatsApp Sender Provisioning' | 'https://photon.codes/docs/problems/whatsapp-sender-provisioning' | undefined;
+};
+
+export type WhatsappSpace = {
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    details: WhatsappSpaceDetails;
+    id: SpaceId;
+    kind: string;
+    metadata: ResourceMetadata;
+    participantIds: Array<UserId>;
+    platform: 'whatsapp';
+    projectId: ProjectId;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type WhatsappSpaceDetails = Record<string, unknown>;
+
+export type WhatsappSpaceSnapshot = {
+    createdAt?: never;
+    details: WhatsappSpaceDetails;
+    id: SpaceId;
+    kind: string;
+    metadata: ResourceMetadata;
+    participantIds: Array<UserId>;
+    platform: 'whatsapp';
+    projectId: ProjectId;
+    updatedAt?: never;
+};
+
+export type WhatsappUser = {
+    /**
+     * When Photon first persisted this resource.
+     */
+    createdAt: string;
+    details: WhatsappUserDetails;
+    handle: string;
+    id: UserId;
+    kind: string;
+    metadata: ResourceMetadata;
+    platform: 'whatsapp';
+    projectId: ProjectId;
+    /**
+     * When Photon last persisted a change to this resource's public state.
+     */
+    updatedAt: string;
+};
+
+export type WhatsappUserDetails = {
+    managedBy?: ManagerId;
+    phoneNumber?: string;
+    resourceId?: ResourceId;
+    type?: UserLineType;
+};
+
+export type WhatsappUserSnapshot = {
+    createdAt?: never;
+    details: WhatsappUserDetails;
+    handle: string;
+    id: UserId;
+    kind: string;
+    metadata: ResourceMetadata;
+    platform: 'whatsapp';
+    projectId: ProjectId;
+    updatedAt?: never;
 };
 
 export type WhatsappVerificationCodeNotFoundProblem = {
@@ -8204,6 +11116,442 @@ export type DownloadAttachmentResponses = {
 
 export type DownloadAttachmentResult = DownloadAttachmentResponses[keyof DownloadAttachmentResponses];
 
+export type ListMessagesData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: {
+        /**
+         * Exclusive upper bound on createdAt, RFC 3339. Cannot combine with updatedAt bounds.
+         */
+        createdBefore?: string;
+        /**
+         * Inclusive lower bound on createdAt, RFC 3339. Cannot combine with updatedAt bounds.
+         */
+        createdSince?: string;
+        /**
+         * Message origin: received or dispatched, including later delivery outcomes
+         */
+        direction?: MessageDirection;
+        /**
+         * Comma-separated content types to exclude from resource-scoped Message lists and counts. Requires resourceId. A group is excluded when group is selected or all of its parts are excluded; retained Messages are unchanged. Supported values: attachment, group, message.delete, message.read, poll, poll.update, poll.vote, reaction, space.participants.update, space.typing.update, text, text.update, voice.
+         */
+        excludeContentTypes?: string;
+        /**
+         * Direction along orderBy; desc, the default, is newest first
+         */
+        order?: SortOrder;
+        /**
+         * Sort timestamp; defaults to the filtered timestamp, otherwise created_at. Must match the time bounds.
+         */
+        orderBy?: TimestampOrderBy;
+        /**
+         * Items per page. A value above 200 returns at most 200 items.
+         */
+        pageSize?: number;
+        /**
+         * Token from nextPageToken. Keep the same Project and query.
+         */
+        pageToken?: string;
+        /**
+         * Selects this User's sent or received Messages. Requires spaceId; cannot combine with resourceId.
+         */
+        perspectiveUserId?: string;
+        /**
+         * Restricts the page to one platform
+         */
+        platform?: Platform;
+        /**
+         * Resource associated with the Message when sent or received. Can combine with spaceId, but not perspectiveUserId.
+         */
+        resourceId?: string;
+        /**
+         * Requires resourceId or perspectiveUserId. User perspectives use created_at order and exclude time bounds and platform filters.
+         */
+        spaceId?: string;
+        /**
+         * Exclusive upper bound on updatedAt, RFC 3339. Cannot combine with createdAt bounds.
+         */
+        updatedBefore?: string;
+        /**
+         * Inclusive lower bound on updatedAt, RFC 3339. Cannot combine with createdAt bounds.
+         */
+        updatedSince?: string;
+    };
+    url: '/v1/projects/{id}/messages';
+};
+
+export type ListMessagesErrors = {
+    /**
+     * INVALID_PAGE_TOKEN: Invalid Page Token
+     */
+    400: InvalidPageTokenProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: ListMessagesForbiddenProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: ListMessagesInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: ListMessagesGatewayTimeoutProblem;
+};
+
+export type ListMessagesError = ListMessagesErrors[keyof ListMessagesErrors];
+
+export type ListMessagesResponses = {
+    /**
+     * A page of Messages in the requested order.
+     */
+    200: MessagePage;
+};
+
+export type ListMessagesResult = ListMessagesResponses[keyof ListMessagesResponses];
+
+export type SendMessageData = {
+    body: SendMessageRequest;
+    headers: {
+        'idempotency-key': string;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/v1/projects/{id}/messages';
+};
+
+export type SendMessageErrors = {
+    /**
+     * INVALID_REQUEST: Invalid Request
+     */
+    400: InvalidRequestProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * BILLING_SUSPENDED: Billing Suspended
+     */
+    402: BillingSuspendedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch; SHARED_LINE_NOT_ASSIGNED: Shared Line Not Assigned; SHARED_LINE_INBOUND_REQUIRED: Shared Line Inbound Required
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: SendMessageForbiddenProblem;
+    /**
+     * SPACE_NOT_FOUND: Space Not Found; MESSAGE_NOT_FOUND: Message Not Found; ATTACHMENT_NOT_FOUND: Attachment Not Found; SENDER_NOT_FOUND: Sender Not Found
+     */
+    404: SendMessageNotFoundProblem;
+    /**
+     * ATTACHMENT_NOT_READY: Attachment Not Ready; SENDER_NOT_SENDABLE: Sender Not Sendable; SMS_CAMPAIGN_NOT_ELIGIBLE: SMS Campaign Not Eligible; SPACE_NOT_SENDABLE: Space Not Sendable
+     */
+    409: SendMessageConflictProblem;
+    /**
+     * PAYLOAD_TOO_LARGE: Payload Too Large
+     */
+    413: PayloadTooLargeProblem;
+    /**
+     * SHARED_LINE_GROUP_UNSUPPORTED: Shared Line Group Unsupported; VALIDATION_FAILED: Request Validation Failed; INVALID_CONTENT: Invalid Content; UNSUPPORTED_CONTENT: Unsupported Content; MESSAGE_TOO_LONG: Message Too Long; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
+     */
+    422: SendMessageUnprocessableEntityProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: SendMessageInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: SendMessageGatewayTimeoutProblem;
+};
+
+export type SendMessageError = SendMessageErrors[keyof SendMessageErrors];
+
+export type SendMessageResponses = {
+    /**
+     * The Message was persisted for asynchronous delivery. Idempotent-Replayed indicates that this request reused an existing Message.
+     */
+    202: SentMessage;
+};
+
+export type SendMessageResult = SendMessageResponses[keyof SendMessageResponses];
+
+export type CountMessagesData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: {
+        /**
+         * Exclusive upper bound on createdAt, RFC 3339. Cannot combine with updatedAt bounds.
+         */
+        createdBefore?: string;
+        /**
+         * Inclusive lower bound on createdAt, RFC 3339. Cannot combine with updatedAt bounds.
+         */
+        createdSince?: string;
+        /**
+         * Message origin: received or dispatched, including later delivery outcomes
+         */
+        direction?: MessageDirection;
+        /**
+         * Comma-separated content types to exclude from resource-scoped Message lists and counts. Requires resourceId. A group is excluded when group is selected or all of its parts are excluded; retained Messages are unchanged. Supported values: attachment, group, message.delete, message.read, poll, poll.update, poll.vote, reaction, space.participants.update, space.typing.update, text, text.update, voice.
+         */
+        excludeContentTypes?: string;
+        /**
+         * Selects this User's sent or received Messages. Requires spaceId; cannot combine with resourceId.
+         */
+        perspectiveUserId?: string;
+        /**
+         * Restricts the page to one platform
+         */
+        platform?: Platform;
+        /**
+         * Resource associated with the Message when sent or received. Can combine with spaceId, but not perspectiveUserId.
+         */
+        resourceId?: string;
+        /**
+         * Requires resourceId or perspectiveUserId. User perspectives use created_at order and exclude time bounds and platform filters.
+         */
+        spaceId?: string;
+        /**
+         * Exclusive upper bound on updatedAt, RFC 3339. Cannot combine with createdAt bounds.
+         */
+        updatedBefore?: string;
+        /**
+         * Inclusive lower bound on updatedAt, RFC 3339. Cannot combine with createdAt bounds.
+         */
+        updatedSince?: string;
+        /**
+         * Calendar-day counts by Message.createdAt
+         */
+        interval?: 'day';
+        /**
+         * IANA zone for calendar-day buckets; defaults to UTC; requires interval
+         */
+        timeZone?: string;
+    };
+    url: '/v1/projects/{id}/messages/count';
+};
+
+export type CountMessagesErrors = {
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: CountMessagesForbiddenProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: CountMessagesInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: CountMessagesGatewayTimeoutProblem;
+};
+
+export type CountMessagesError = CountMessagesErrors[keyof CountMessagesErrors];
+
+export type CountMessagesResponses = {
+    /**
+     * Matching Message count, optional direction groups and daily buckets
+     */
+    200: CountMessagesResponse;
+};
+
+export type CountMessagesResult = CountMessagesResponses[keyof CountMessagesResponses];
+
+export type GetMessageData = {
+    body?: never;
+    headers?: {
+        'if-none-match'?: string;
+    };
+    path: {
+        id: string;
+        messageId: string;
+    };
+    query?: never;
+    url: '/v1/projects/{id}/messages/{messageId}';
+};
+
+export type GetMessageErrors = {
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: GetMessageForbiddenProblem;
+    /**
+     * MESSAGE_NOT_FOUND: Message Not Found
+     */
+    404: MessageNotFoundProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: GetMessageInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: GetMessageGatewayTimeoutProblem;
+};
+
+export type GetMessageError = GetMessageErrors[keyof GetMessageErrors];
+
+export type GetMessageResponses = {
+    /**
+     * The requested Message.
+     */
+    200: PlatformMessage;
+};
+
+export type GetMessageResult = GetMessageResponses[keyof GetMessageResponses];
+
+export type MarkMessageReadData = {
+    body?: never;
+    headers: {
+        'idempotency-key': string;
+    };
+    path: {
+        id: string;
+        messageId: string;
+    };
+    query?: never;
+    url: '/v1/projects/{id}/messages/{messageId}/read';
+};
+
+export type MarkMessageReadErrors = {
+    /**
+     * INVALID_REQUEST: Invalid Request
+     */
+    400: InvalidRequestProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: MarkMessageReadForbiddenProblem;
+    /**
+     * SENDER_NOT_FOUND: Sender Not Found; SPACE_NOT_FOUND: Space Not Found; MESSAGE_NOT_FOUND: Message Not Found
+     */
+    404: MarkMessageReadNotFoundProblem;
+    /**
+     * SENDER_NOT_SENDABLE: Sender Not Sendable; SPACE_NOT_SENDABLE: Space Not Sendable; MESSAGE_NOT_READABLE: Message Not Readable
+     */
+    409: MarkMessageReadConflictProblem;
+    /**
+     * PAYLOAD_TOO_LARGE: Payload Too Large
+     */
+    413: PayloadTooLargeProblem;
+    /**
+     * IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused; OPERATION_UNAVAILABLE: Operation Unavailable; VALIDATION_FAILED: Request Validation Failed
+     */
+    422: MarkMessageReadUnprocessableEntityProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: MarkMessageReadInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * REQUEST_TIMEOUT: Request Timeout; UPSTREAM_TIMEOUT: Upstream Service Timeout
+     */
+    504: MarkMessageReadGatewayTimeoutProblem;
+};
+
+export type MarkMessageReadError = MarkMessageReadErrors[keyof MarkMessageReadErrors];
+
+export type MarkMessageReadResponses = {
+    /**
+     * The read request was persisted for execution.
+     */
+    202: MarkMessageReadResponse;
+};
+
+export type MarkMessageReadResult = MarkMessageReadResponses[keyof MarkMessageReadResponses];
+
 export type ListProjectPlatformsData = {
     body?: never;
     path: {
@@ -8333,6 +11681,176 @@ export type ConnectEmailDomainResponses = {
 };
 
 export type ConnectEmailDomainResult = ConnectEmailDomainResponses[keyof ConnectEmailDomainResponses];
+
+export type GetEmailDeliveryMetricsData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: {
+        period?: EmailDeliveryMetricsPeriodParameter;
+    };
+    url: '/v1/projects/{id}/platforms/email/metrics';
+};
+
+export type GetEmailDeliveryMetricsErrors = {
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: GetEmailDeliveryMetricsForbiddenProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: GetEmailDeliveryMetricsInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * REQUEST_TIMEOUT: Request Timeout; UPSTREAM_TIMEOUT: Upstream Service Timeout
+     */
+    504: GetEmailDeliveryMetricsGatewayTimeoutProblem;
+};
+
+export type GetEmailDeliveryMetricsError = GetEmailDeliveryMetricsErrors[keyof GetEmailDeliveryMetricsErrors];
+
+export type GetEmailDeliveryMetricsResponses = {
+    /**
+     * Cached supplementary metrics with explicit coverage and freshness.
+     */
+    200: EmailDeliveryMetrics;
+};
+
+export type GetEmailDeliveryMetricsResult = GetEmailDeliveryMetricsResponses[keyof GetEmailDeliveryMetricsResponses];
+
+export type ListEmailRecommendationsData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: {
+        pageSize?: number;
+        pageToken?: string;
+    };
+    url: '/v1/projects/{id}/platforms/email/recommendations';
+};
+
+export type ListEmailRecommendationsErrors = {
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: ListEmailRecommendationsForbiddenProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: ListEmailRecommendationsInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * REQUEST_TIMEOUT: Request Timeout; UPSTREAM_TIMEOUT: Upstream Service Timeout
+     */
+    504: ListEmailRecommendationsGatewayTimeoutProblem;
+};
+
+export type ListEmailRecommendationsError = ListEmailRecommendationsErrors[keyof ListEmailRecommendationsErrors];
+
+export type ListEmailRecommendationsResponses = {
+    /**
+     * Scoped recommendations and explicit observation coverage.
+     */
+    200: EmailRecommendations;
+};
+
+export type ListEmailRecommendationsResult = ListEmailRecommendationsResponses[keyof ListEmailRecommendationsResponses];
+
+export type GetEmailSendingPoliciesData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/v1/projects/{id}/platforms/email/sending-policy';
+};
+
+export type GetEmailSendingPoliciesErrors = {
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: GetEmailSendingPoliciesForbiddenProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: GetEmailSendingPoliciesInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * REQUEST_TIMEOUT: Request Timeout; UPSTREAM_TIMEOUT: Upstream Service Timeout
+     */
+    504: GetEmailSendingPoliciesGatewayTimeoutProblem;
+};
+
+export type GetEmailSendingPoliciesError = GetEmailSendingPoliciesErrors[keyof GetEmailSendingPoliciesErrors];
+
+export type GetEmailSendingPoliciesResponses = {
+    /**
+     * The Project and Organization sending policies.
+     */
+    200: EmailSendingPolicies;
+};
+
+export type GetEmailSendingPoliciesResult = GetEmailSendingPoliciesResponses[keyof GetEmailSendingPoliciesResponses];
 
 export type ListFilteredVerificationCodesData = {
     body?: never;
@@ -12248,6 +15766,798 @@ export type ReleaseWhatsappDedicatedLineResponses = {
 
 export type ReleaseWhatsappDedicatedLineResult = ReleaseWhatsappDedicatedLineResponses[keyof ReleaseWhatsappDedicatedLineResponses];
 
+export type ListSpacesData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: {
+        /**
+         * Exclusive creation-time bound on a matching Message
+         */
+        messageCreatedBefore?: string;
+        /**
+         * Inclusive creation-time bound on a matching Message
+         */
+        messageCreatedSince?: string;
+        /**
+         * Received or sent Message. All message-prefixed filters must match the same Message.
+         */
+        messageDirection?: MessageDirection;
+        /**
+         * Comma-separated public content types to exclude from matching Messages. Requires messageResourceId. A group is excluded when its type or all its parts are excluded.
+         */
+        messageExcludeContentTypes?: string;
+        /**
+         * Resource ownership captured by a matching Message
+         */
+        messageResourceId?: string;
+        /**
+         * Exclusive upper bound on createdAt, RFC 3339. Cannot combine with updatedAt bounds.
+         */
+        createdBefore?: string;
+        /**
+         * Inclusive lower bound on createdAt, RFC 3339. Cannot combine with updatedAt bounds.
+         */
+        createdSince?: string;
+        /**
+         * Direction along orderBy; desc, the default, is newest first
+         */
+        order?: SortOrder;
+        /**
+         * Defaults to the filtered timestamp or created_at. Must match Space time bounds. last_message_created_at uses the latest Message creation time, accepts no Space time bounds, and puts empty Spaces last when descending. With messageResourceId, only that resource's non-control Messages affect ordering.
+         */
+        orderBy?: SpaceOrderBy;
+        /**
+         * Items per page. A value above 100 returns at most 100 items.
+         */
+        pageSize?: number;
+        /**
+         * Token from nextPageToken. Keep the same Project and query.
+         */
+        pageToken?: string;
+        /**
+         * Matches participant phone or email handles case-insensitively, excluding participantId. Phone formatting characters are optional.
+         */
+        participantHandle?: string;
+        /**
+         * Restricts the page to Spaces this User participates in
+         */
+        participantId?: string;
+        /**
+         * Restricts the page to one platform
+         */
+        platform?: Platform;
+        /**
+         * Exclusive upper bound on updatedAt, RFC 3339. Cannot combine with createdAt bounds.
+         */
+        updatedBefore?: string;
+        /**
+         * Inclusive lower bound on updatedAt, RFC 3339. Cannot combine with createdAt bounds.
+         */
+        updatedSince?: string;
+    };
+    url: '/v1/projects/{id}/spaces';
+};
+
+export type ListSpacesErrors = {
+    /**
+     * INVALID_PAGE_TOKEN: Invalid Page Token
+     */
+    400: InvalidPageTokenProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: ListSpacesForbiddenProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: ListSpacesInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: ListSpacesGatewayTimeoutProblem;
+};
+
+export type ListSpacesError = ListSpacesErrors[keyof ListSpacesErrors];
+
+export type ListSpacesResponses = {
+    /**
+     * A page of Spaces in the requested order.
+     */
+    200: SpacePage;
+};
+
+export type ListSpacesResult = ListSpacesResponses[keyof ListSpacesResponses];
+
+export type CreateOrGetSpaceData = {
+    body: CreateOrGetSpaceRequest;
+    headers: {
+        /**
+         * Required for every platform; 1-255 visible ASCII characters. Reuse for retries. For email, the same key and initial participants retrieve the same Space, and a new key starts a separate conversation. SMS identifies its Space by participants, even with a new key. iMessage binds the key to the first participant as creator and the remaining unordered User IDs. Existing matching Spaces are reused.
+         */
+        'idempotency-key': string;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/v1/projects/{id}/spaces';
+};
+
+export type CreateOrGetSpaceErrors = {
+    /**
+     * HTTP_ERROR: Request Failed; INVALID_REQUEST: Invalid Request; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     */
+    400: CreateOrGetSpaceBadRequestProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: CreateOrGetSpaceForbiddenProblem;
+    /**
+     * USER_NOT_FOUND: User Not Found
+     */
+    404: UserNotFoundProblem;
+    /**
+     * SPACE_AMBIGUOUS: Multiple Matching Spaces
+     */
+    409: SpaceAmbiguousProblem;
+    /**
+     * PAYLOAD_TOO_LARGE: Payload Too Large
+     */
+    413: PayloadTooLargeProblem;
+    /**
+     * SPACE_REQUIRES_OWNED_AGENT: Space Requires Owned Agent; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused; OPERATION_UNAVAILABLE: Operation Unavailable; VALIDATION_FAILED: Request Validation Failed
+     */
+    422: CreateOrGetSpaceUnprocessableEntityProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: CreateOrGetSpaceInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * IDEMPOTENCY_UNAVAILABLE: Idempotency Unavailable; UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     *
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: CreateOrGetSpaceServiceUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: CreateOrGetSpaceGatewayTimeoutProblem;
+};
+
+export type CreateOrGetSpaceError = CreateOrGetSpaceErrors[keyof CreateOrGetSpaceErrors];
+
+export type CreateOrGetSpaceResponses = {
+    /**
+     * The Space already existed and is returned in its authoritative stored state.
+     */
+    200: PlatformSpace;
+    /**
+     * The Space was created.
+     */
+    201: PlatformSpace;
+};
+
+export type CreateOrGetSpaceResult = CreateOrGetSpaceResponses[keyof CreateOrGetSpaceResponses];
+
+export type CountSpacesData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: {
+        /**
+         * Exclusive creation-time bound on a matching Message
+         */
+        messageCreatedBefore?: string;
+        /**
+         * Inclusive creation-time bound on a matching Message
+         */
+        messageCreatedSince?: string;
+        /**
+         * Received or sent Message. All message-prefixed filters must match the same Message.
+         */
+        messageDirection?: MessageDirection;
+        /**
+         * Comma-separated public content types to exclude from matching Messages. Requires messageResourceId. A group is excluded when its type or all its parts are excluded.
+         */
+        messageExcludeContentTypes?: string;
+        /**
+         * Resource ownership captured by a matching Message
+         */
+        messageResourceId?: string;
+        /**
+         * Exclusive upper bound on createdAt, RFC 3339. Cannot combine with updatedAt bounds.
+         */
+        createdBefore?: string;
+        /**
+         * Inclusive lower bound on createdAt, RFC 3339. Cannot combine with updatedAt bounds.
+         */
+        createdSince?: string;
+        /**
+         * Matches participant phone or email handles case-insensitively, excluding participantId. Phone formatting characters are optional.
+         */
+        participantHandle?: string;
+        /**
+         * Restricts the page to Spaces this User participates in
+         */
+        participantId?: string;
+        /**
+         * Restricts the page to one platform
+         */
+        platform?: Platform;
+        /**
+         * Exclusive upper bound on updatedAt, RFC 3339. Cannot combine with createdAt bounds.
+         */
+        updatedBefore?: string;
+        /**
+         * Inclusive lower bound on updatedAt, RFC 3339. Cannot combine with createdAt bounds.
+         */
+        updatedSince?: string;
+    };
+    url: '/v1/projects/{id}/spaces/count';
+};
+
+export type CountSpacesErrors = {
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: CountSpacesForbiddenProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: CountSpacesInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: CountSpacesGatewayTimeoutProblem;
+};
+
+export type CountSpacesError = CountSpacesErrors[keyof CountSpacesErrors];
+
+export type CountSpacesResponses = {
+    /**
+     * Number of matching Spaces
+     */
+    200: SpaceCount;
+};
+
+export type CountSpacesResult = CountSpacesResponses[keyof CountSpacesResponses];
+
+export type GetSpaceData = {
+    body?: never;
+    headers?: {
+        'if-none-match'?: string;
+    };
+    path: {
+        id: string;
+        spaceId: string;
+    };
+    query?: never;
+    url: '/v1/projects/{id}/spaces/{spaceId}';
+};
+
+export type GetSpaceErrors = {
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: GetSpaceForbiddenProblem;
+    /**
+     * SPACE_NOT_FOUND: Space Not Found
+     */
+    404: SpaceNotFoundProblem;
+    /**
+     * OPERATION_UNAVAILABLE: Operation Unavailable; VALIDATION_FAILED: Request Validation Failed
+     */
+    422: GetSpaceUnprocessableEntityProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: GetSpaceInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: GetSpaceGatewayTimeoutProblem;
+};
+
+export type GetSpaceError = GetSpaceErrors[keyof GetSpaceErrors];
+
+export type GetSpaceResponses = {
+    /**
+     * The requested Space.
+     */
+    200: PlatformSpace;
+};
+
+export type GetSpaceResult = GetSpaceResponses[keyof GetSpaceResponses];
+
+export type SetSpaceTypingData = {
+    body: SetSpaceTypingRequest;
+    path: {
+        id: string;
+        spaceId: string;
+    };
+    query?: never;
+    url: '/v1/projects/{id}/spaces/{spaceId}/typing';
+};
+
+export type SetSpaceTypingErrors = {
+    /**
+     * HTTP_ERROR: Request Failed
+     */
+    400: HttpErrorProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: SetSpaceTypingForbiddenProblem;
+    /**
+     * SPACE_NOT_FOUND: Space Not Found; USER_NOT_FOUND: User Not Found
+     */
+    404: SetSpaceTypingNotFoundProblem;
+    /**
+     * PAYLOAD_TOO_LARGE: Payload Too Large
+     */
+    413: PayloadTooLargeProblem;
+    /**
+     * OPERATION_UNAVAILABLE: Operation Unavailable; VALIDATION_FAILED: Request Validation Failed
+     */
+    422: SetSpaceTypingUnprocessableEntityProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: SetSpaceTypingInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * REQUEST_TIMEOUT: Request Timeout; UPSTREAM_TIMEOUT: Upstream Service Timeout
+     */
+    504: SetSpaceTypingGatewayTimeoutProblem;
+};
+
+export type SetSpaceTypingError = SetSpaceTypingErrors[keyof SetSpaceTypingErrors];
+
+export type SetSpaceTypingResponses = {
+    /**
+     * The typing Message was dispatched.
+     */
+    202: SetSpaceTypingResponse;
+};
+
+export type SetSpaceTypingResult = SetSpaceTypingResponses[keyof SetSpaceTypingResponses];
+
+export type ListUsersData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: {
+        /**
+         * Exclusive creation-time bound on a matching Message
+         */
+        messageCreatedBefore?: string;
+        /**
+         * Inclusive creation-time bound on a matching Message
+         */
+        messageCreatedSince?: string;
+        /**
+         * Received or sent Message. All message-prefixed filters must match the same Message.
+         */
+        messageDirection?: MessageDirection;
+        /**
+         * Comma-separated public content types to exclude from matching Messages. Requires messageResourceId. A group is excluded when its type or all its parts are excluded.
+         */
+        messageExcludeContentTypes?: string;
+        /**
+         * Resource ownership captured by a matching Message
+         */
+        messageResourceId?: string;
+        /**
+         * Exclusive upper bound on createdAt, RFC 3339. Cannot combine with updatedAt bounds.
+         */
+        createdBefore?: string;
+        /**
+         * Inclusive lower bound on createdAt, RFC 3339. Cannot combine with updatedAt bounds.
+         */
+        createdSince?: string;
+        /**
+         * Direction along orderBy; desc, the default, is newest first
+         */
+        order?: SortOrder;
+        /**
+         * Sort timestamp; defaults to the filtered timestamp, otherwise created_at. Must match the time bounds.
+         */
+        orderBy?: TimestampOrderBy;
+        /**
+         * Items per page. A value above 100 returns at most 100 items.
+         */
+        pageSize?: number;
+        /**
+         * Token from nextPageToken. Keep the same Project and query.
+         */
+        pageToken?: string;
+        /**
+         * Restricts the page to one platform
+         */
+        platform?: Platform;
+        /**
+         * Exclusive upper bound on updatedAt, RFC 3339. Cannot combine with createdAt bounds.
+         */
+        updatedBefore?: string;
+        /**
+         * Inclusive lower bound on updatedAt, RFC 3339. Cannot combine with createdAt bounds.
+         */
+        updatedSince?: string;
+    };
+    url: '/v1/projects/{id}/users';
+};
+
+export type ListUsersErrors = {
+    /**
+     * INVALID_PAGE_TOKEN: Invalid Page Token
+     */
+    400: InvalidPageTokenProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: ListUsersForbiddenProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: ListUsersInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: ListUsersGatewayTimeoutProblem;
+};
+
+export type ListUsersError = ListUsersErrors[keyof ListUsersErrors];
+
+export type ListUsersResponses = {
+    /**
+     * A page of persisted Users in the requested order.
+     */
+    200: UserPage;
+};
+
+export type ListUsersResult = ListUsersResponses[keyof ListUsersResponses];
+
+export type CreateOrGetUserData = {
+    body: CreateOrGetUserRequest;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/v1/projects/{id}/users';
+};
+
+export type CreateOrGetUserErrors = {
+    /**
+     * HTTP_ERROR: Request Failed
+     */
+    400: HttpErrorProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: CreateOrGetUserForbiddenProblem;
+    /**
+     * USER_IDENTITY_CONFLICT: User Identity Conflict
+     */
+    409: UserIdentityConflictProblem;
+    /**
+     * PAYLOAD_TOO_LARGE: Payload Too Large
+     */
+    413: PayloadTooLargeProblem;
+    /**
+     * OPERATION_UNAVAILABLE: Operation Unavailable; VALIDATION_FAILED: Request Validation Failed
+     */
+    422: CreateOrGetUserUnprocessableEntityProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: CreateOrGetUserInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: CreateOrGetUserGatewayTimeoutProblem;
+};
+
+export type CreateOrGetUserError = CreateOrGetUserErrors[keyof CreateOrGetUserErrors];
+
+export type CreateOrGetUserResponses = {
+    /**
+     * The existing User after authoritative classification and any required repair.
+     */
+    200: PlatformUser;
+    /**
+     * The User was created from the platform’s resolved identity and authoritative observations.
+     */
+    201: PlatformUser;
+};
+
+export type CreateOrGetUserResult = CreateOrGetUserResponses[keyof CreateOrGetUserResponses];
+
+export type CountUsersData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: {
+        /**
+         * Exclusive creation-time bound on a matching Message
+         */
+        messageCreatedBefore?: string;
+        /**
+         * Inclusive creation-time bound on a matching Message
+         */
+        messageCreatedSince?: string;
+        /**
+         * Received or sent Message. All message-prefixed filters must match the same Message.
+         */
+        messageDirection?: MessageDirection;
+        /**
+         * Comma-separated public content types to exclude from matching Messages. Requires messageResourceId. A group is excluded when its type or all its parts are excluded.
+         */
+        messageExcludeContentTypes?: string;
+        /**
+         * Resource ownership captured by a matching Message
+         */
+        messageResourceId?: string;
+        /**
+         * Exclusive upper bound on createdAt, RFC 3339. Cannot combine with updatedAt bounds.
+         */
+        createdBefore?: string;
+        /**
+         * Inclusive lower bound on createdAt, RFC 3339. Cannot combine with updatedAt bounds.
+         */
+        createdSince?: string;
+        /**
+         * Restricts the page to one platform
+         */
+        platform?: Platform;
+        /**
+         * Exclusive upper bound on updatedAt, RFC 3339. Cannot combine with createdAt bounds.
+         */
+        updatedBefore?: string;
+        /**
+         * Inclusive lower bound on updatedAt, RFC 3339. Cannot combine with createdAt bounds.
+         */
+        updatedSince?: string;
+    };
+    url: '/v1/projects/{id}/users/count';
+};
+
+export type CountUsersErrors = {
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: CountUsersForbiddenProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: CountUsersInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: CountUsersGatewayTimeoutProblem;
+};
+
+export type CountUsersError = CountUsersErrors[keyof CountUsersErrors];
+
+export type CountUsersResponses = {
+    /**
+     * Number of matching Users
+     */
+    200: UserCount;
+};
+
+export type CountUsersResult = CountUsersResponses[keyof CountUsersResponses];
+
+export type GetUserData = {
+    body?: never;
+    headers?: {
+        'if-none-match'?: string;
+    };
+    path: {
+        id: string;
+        userId: string;
+    };
+    query?: never;
+    url: '/v1/projects/{id}/users/{userId}';
+};
+
+export type GetUserErrors = {
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: GetUserForbiddenProblem;
+    /**
+     * USER_NOT_FOUND: User Not Found
+     */
+    404: UserNotFoundProblem;
+    /**
+     * USER_IDENTITY_CONFLICT: User Identity Conflict
+     */
+    409: UserIdentityConflictProblem;
+    /**
+     * OPERATION_UNAVAILABLE: Operation Unavailable; VALIDATION_FAILED: Request Validation Failed
+     */
+    422: GetUserUnprocessableEntityProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: GetUserInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: GetUserGatewayTimeoutProblem;
+};
+
+export type GetUserError = GetUserErrors[keyof GetUserErrors];
+
+export type GetUserResponses = {
+    /**
+     * The reconciled User.
+     */
+    200: PlatformUser;
+};
+
+export type GetUserResult = GetUserResponses[keyof GetUserResponses];
+
 export type DeleteProjectData = {
     body?: never;
     headers: {
@@ -13299,6 +17609,72 @@ export type ListBillingPlansResponses = {
 };
 
 export type ListBillingPlansResult = ListBillingPlansResponses[keyof ListBillingPlansResponses];
+
+export type ListProjectSubscriptionsData = {
+    body?: never;
+    path: {
+        /**
+         * The project being billed.
+         */
+        projectId: string;
+    };
+    query?: never;
+    url: '/v1/projects/{projectId}/billing/subscriptions';
+};
+
+export type ListProjectSubscriptionsErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument
+     */
+    400: InvalidArgumentProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: ListProjectSubscriptionsForbiddenProblem;
+    /**
+     * FAILED_PRECONDITION: Failed Precondition
+     */
+    409: FailedPreconditionProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: ListProjectSubscriptionsInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * REQUEST_TIMEOUT: Request Timeout; UPSTREAM_TIMEOUT: Upstream Service Timeout
+     */
+    504: ListProjectSubscriptionsGatewayTimeoutProblem;
+};
+
+export type ListProjectSubscriptionsError = ListProjectSubscriptionsErrors[keyof ListProjectSubscriptionsErrors];
+
+export type ListProjectSubscriptionsResponses = {
+    /**
+     * The plan each category holds.
+     */
+    200: ListProjectSubscriptionsResponse;
+};
+
+export type ListProjectSubscriptionsResult = ListProjectSubscriptionsResponses[keyof ListProjectSubscriptionsResponses];
 
 export type GetMessageMetricsBackfillData = {
     body?: never;

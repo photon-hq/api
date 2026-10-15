@@ -1,0 +1,216 @@
+---
+title: "Get a Message"
+icon: arrow-down-left
+description: "Get a Message: getMessage in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{id}/messages/{messageId}`
+
+Returns one stored Message by canonical Photon Message ID on any supported contract platform. The globally unique Message ID is resolved within the authorized Project. Unsupported platform Messages are outside this collection and return MESSAGE_NOT_FOUND.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.getMessage(input: GetMessageInput, options?: RequestOptions): Promise<GetMessageOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.get_message(input: GetMessageInput) -> models.PlatformMessage | None
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.get_message(id: String, message_id: String, params: Option<GetMessageParams>).await -> Result<ResponseValue<GetMessageResponse>, Error<GetMessageError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.getMessage({
+  path: {
+    id: "id",
+    messageId: "messageId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import GetMessageInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.get_message(
+    GetMessageInput.model_validate({
+        "path": {
+            "id": "id",
+            "messageId": "messageId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .get_message("id".to_owned(), "messageId".to_owned(), None)
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "content": {
+    "format": "plain",
+    "text": "Hello from Photon.",
+    "type": "text"
+  },
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "id": "pho_msg_00000000000000000000000001",
+  "metadata": {},
+  "platform": "whatsapp",
+  "projectId": "pho_prj_00000000000000000000000001",
+  "sentBy": {
+    "details": {
+      "resourceId": "pho_res_00000000000000000000000001",
+      "type": "dedicated"
+    },
+    "handle": "+14155550123",
+    "id": "pho_usr_00000000000000000000000001",
+    "kind": "agent",
+    "metadata": {},
+    "platform": "whatsapp",
+    "projectId": "pho_prj_00000000000000000000000001"
+  },
+  "space": {
+    "details": {},
+    "id": "pho_spc_00000000000000000000000001",
+    "kind": "direct",
+    "metadata": {},
+    "participantIds": [
+      "pho_usr_00000000000000000000000001",
+      "pho_usr_00000000000000000000000002"
+    ],
+    "platform": "whatsapp",
+    "projectId": "pho_prj_00000000000000000000000001"
+  },
+  "status": "dispatched",
+  "timestamps": {
+    "dispatchedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "updatedAt": "2026-01-01T00:00:00.000Z"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+<ParamField path="messageId" type={"string"} required>
+
+</ParamField>
+
+<ParamField header="if-none-match" type={"string"}>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The requested Message. PlatformMessage
+
+Headers: `Cache-Control`, `ETag`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
+<ResponseField name="acceptance" type={"object"} required>
+
+</ResponseField>
+
+<ResponseField name="addressedTo" type={"UserSnapshot"}>
+
+</ResponseField>
+
+<ResponseField name="content" type={"TelegramMessageContent"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+When Photon first persisted this resource.
+</ResponseField>
+
+<ResponseField name="failure" type={"MessageFailure"} required>
+
+</ResponseField>
+
+<ResponseField name="id" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="metadata" type={"ResourceMetadata"} required>
+
+</ResponseField>
+
+<ResponseField name="parentMessageId" type={"string"}>
+
+</ResponseField>
+
+<ResponseField name="platform" type={"Platform"} required>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="receivedBy" type={"UserSnapshot"}>
+
+</ResponseField>
+
+<ResponseField name="sentBy" type={"UserSnapshot"} required>
+
+</ResponseField>
+
+<ResponseField name="space" type={"SpaceSnapshot"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"\"failed\""} required>
+
+</ResponseField>
+
+<ResponseField name="timestamp" type={"object"}>
+
+</ResponseField>
+
+<ResponseField name="timestamps" type={"FailedMessageTimestamps"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+When Photon last persisted a change to this resource's public state.
+</ResponseField>
+
+**`304`** The request's If-None-Match validator matches the current representation. No body.
+
+Headers: `Cache-Control`, `ETag`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+

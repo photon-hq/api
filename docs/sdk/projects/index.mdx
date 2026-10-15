@@ -14,12 +14,33 @@ photon.projects.listAttachments(input: ListAttachmentsInput, options?: RequestOp
 ```
 `GET /v1/projects/{id}/attachments`
 
+**[List Messages](/api-client/sdk/projects/list-messages)**
+
+```typescript TypeScript
+photon.projects.listMessages(input: ListMessagesInput, options?: RequestOptions): Promise<ListMessagesOutput>
+```
+`GET /v1/projects/{id}/messages`
+
 **[List project API keys](/api-client/sdk/projects/list-project-api-keys)**
 
 ```typescript TypeScript
 photon.projects.listProjectApiKeys(input: ListProjectApiKeysInput, options?: RequestOptions): Promise<ListProjectApiKeysOutput>
 ```
 `GET /v1/projects/{projectId}/api-keys`
+
+**[List Spaces](/api-client/sdk/projects/list-spaces)**
+
+```typescript TypeScript
+photon.projects.listSpaces(input: ListSpacesInput, options?: RequestOptions): Promise<ListSpacesOutput>
+```
+`GET /v1/projects/{id}/spaces`
+
+**[List Users](/api-client/sdk/projects/list-users)**
+
+```typescript TypeScript
+photon.projects.listUsers(input: ListUsersInput, options?: RequestOptions): Promise<ListUsersOutput>
+```
+`GET /v1/projects/{id}/users`
 
 **[List webhook API versions](/api-client/sdk/projects/list-webhook-api-versions)**
 
@@ -49,6 +70,27 @@ photon.projects.listWebhookEventTypes(input: ListWebhookEventTypesInput, options
 ```
 `GET /v1/projects/{projectId}/webhooks/event-types`
 
+**[Count Messages](/api-client/sdk/projects/count-messages)**
+
+```typescript TypeScript
+photon.projects.countMessages(input: CountMessagesInput, options?: RequestOptions): Promise<CountMessagesOutput>
+```
+`GET /v1/projects/{id}/messages/count`
+
+**[Count Spaces](/api-client/sdk/projects/count-spaces)**
+
+```typescript TypeScript
+photon.projects.countSpaces(input: CountSpacesInput, options?: RequestOptions): Promise<CountSpacesOutput>
+```
+`GET /v1/projects/{id}/spaces/count`
+
+**[Count Users](/api-client/sdk/projects/count-users)**
+
+```typescript TypeScript
+photon.projects.countUsers(input: CountUsersInput, options?: RequestOptions): Promise<CountUsersOutput>
+```
+`GET /v1/projects/{id}/users/count`
+
 **[Download attachment](/api-client/sdk/projects/download-attachment)**
 
 ```typescript TypeScript
@@ -70,6 +112,13 @@ photon.projects.getAttachment(input: GetAttachmentInput, options?: RequestOption
 ```
 `GET /v1/projects/{id}/attachments/{attachmentId}`
 
+**[Get a Message](/api-client/sdk/projects/get-message)**
+
+```typescript TypeScript
+photon.projects.getMessage(input: GetMessageInput, options?: RequestOptions): Promise<GetMessageOutput>
+```
+`GET /v1/projects/{id}/messages/{messageId}`
+
 **[Get metrics backfill status](/api-client/sdk/projects/get-message-metrics-backfill)**
 
 ```typescript TypeScript
@@ -83,6 +132,20 @@ photon.projects.getMessageMetricsBackfill(input: GetMessageMetricsBackfillInput,
 photon.projects.getMessageMetricsSqlSchema(input: GetMessageMetricsSqlSchemaInput, options?: RequestOptions): Promise<GetMessageMetricsSqlSchemaOutput>
 ```
 `GET /v1/projects/{projectId}/metrics/query`
+
+**[Get a Space](/api-client/sdk/projects/get-space)**
+
+```typescript TypeScript
+photon.projects.getSpace(input: GetSpaceInput, options?: RequestOptions): Promise<GetSpaceOutput>
+```
+`GET /v1/projects/{id}/spaces/{spaceId}`
+
+**[Get an User](/api-client/sdk/projects/get-user)**
+
+```typescript TypeScript
+photon.projects.getUser(input: GetUserInput, options?: RequestOptions): Promise<GetUserOutput>
+```
+`GET /v1/projects/{id}/users/{userId}`
 
 **[Get webhook destination](/api-client/sdk/projects/get-webhook-destination)**
 
@@ -98,6 +161,20 @@ photon.projects.getWebhookEventSchema(input: GetWebhookEventSchemaInput, options
 ```
 `GET /v1/projects/{projectId}/webhooks/event-types/{eventType}/schema`
 
+**[Create or get a Space](/api-client/sdk/projects/create-or-get-space)**
+
+```typescript TypeScript
+photon.projects.createOrGetSpace(input: CreateOrGetSpaceInput, options?: RequestOptions): Promise<CreateOrGetSpaceOutput>
+```
+`POST /v1/projects/{id}/spaces`
+
+**[Create or get a User](/api-client/sdk/projects/create-or-get-user)**
+
+```typescript TypeScript
+photon.projects.createOrGetUser(input: CreateOrGetUserInput, options?: RequestOptions): Promise<CreateOrGetUserOutput>
+```
+`POST /v1/projects/{id}/users`
+
 **[Create project API key](/api-client/sdk/projects/create-project-api-key)**
 
 ```typescript TypeScript
@@ -111,6 +188,13 @@ photon.projects.createProjectApiKey(input: CreateProjectApiKeyInput, options?: R
 photon.projects.createWebhookDestination(input: CreateWebhookDestinationInput, options?: RequestOptions): Promise<CreateWebhookDestinationOutput>
 ```
 `POST /v1/projects/{projectId}/webhooks/destinations`
+
+**[Mark a Message as read](/api-client/sdk/projects/mark-message-read)**
+
+```typescript TypeScript
+photon.projects.markMessageRead(input: MarkMessageReadInput, options?: RequestOptions): Promise<MarkMessageReadOutput>
+```
+`POST /v1/projects/{id}/messages/{messageId}/read`
 
 **[Query metrics](/api-client/sdk/projects/query-message-metrics)**
 
@@ -132,6 +216,20 @@ photon.projects.retryWebhookDelivery(input: RetryWebhookDeliveryInput, options?:
 photon.projects.rotateWebhookSigningSecret(input: RotateWebhookSigningSecretInput, options?: RequestOptions): Promise<RotateWebhookSigningSecretOutput>
 ```
 `POST /v1/projects/{projectId}/webhooks/destinations/{destinationId}/secret-rotations`
+
+**[Send a Message](/api-client/sdk/projects/send-message)**
+
+```typescript TypeScript
+photon.projects.sendMessage(input: SendMessageInput, options?: RequestOptions): Promise<SendMessageOutput>
+```
+`POST /v1/projects/{id}/messages`
+
+**[Set typing in a Space](/api-client/sdk/projects/set-space-typing)**
+
+```typescript TypeScript
+photon.projects.setSpaceTyping(input: SetSpaceTypingInput, options?: RequestOptions): Promise<SetSpaceTypingOutput>
+```
+`POST /v1/projects/{id}/spaces/{spaceId}/typing`
 
 **[Upload attachment](/api-client/sdk/projects/upload-attachment)**
 
@@ -191,12 +289,33 @@ photon.projects.list_attachments(input: ListAttachmentsInput) -> models.Attachme
 ```
 `GET /v1/projects/{id}/attachments`
 
+**[List Messages](/api-client/sdk/projects/list-messages)**
+
+```python Python
+photon.projects.list_messages(input: ListMessagesInput) -> models.MessagePage
+```
+`GET /v1/projects/{id}/messages`
+
 **[List project API keys](/api-client/sdk/projects/list-project-api-keys)**
 
 ```python Python
 photon.projects.list_project_api_keys(input: ListProjectApiKeysInput) -> models.ListProjectApiKeysResponse
 ```
 `GET /v1/projects/{projectId}/api-keys`
+
+**[List Spaces](/api-client/sdk/projects/list-spaces)**
+
+```python Python
+photon.projects.list_spaces(input: ListSpacesInput) -> models.SpacePage
+```
+`GET /v1/projects/{id}/spaces`
+
+**[List Users](/api-client/sdk/projects/list-users)**
+
+```python Python
+photon.projects.list_users(input: ListUsersInput) -> models.UserPage
+```
+`GET /v1/projects/{id}/users`
 
 **[List webhook API versions](/api-client/sdk/projects/list-webhook-api-versions)**
 
@@ -226,6 +345,27 @@ photon.projects.list_webhook_event_types(input: ListWebhookEventTypesInput) -> m
 ```
 `GET /v1/projects/{projectId}/webhooks/event-types`
 
+**[Count Messages](/api-client/sdk/projects/count-messages)**
+
+```python Python
+photon.projects.count_messages(input: CountMessagesInput) -> models.CountMessagesResponse
+```
+`GET /v1/projects/{id}/messages/count`
+
+**[Count Spaces](/api-client/sdk/projects/count-spaces)**
+
+```python Python
+photon.projects.count_spaces(input: CountSpacesInput) -> models.SpaceCount
+```
+`GET /v1/projects/{id}/spaces/count`
+
+**[Count Users](/api-client/sdk/projects/count-users)**
+
+```python Python
+photon.projects.count_users(input: CountUsersInput) -> models.UserCount
+```
+`GET /v1/projects/{id}/users/count`
+
 **[Download attachment](/api-client/sdk/projects/download-attachment)**
 
 ```python Python
@@ -247,6 +387,13 @@ photon.projects.get_attachment(input: GetAttachmentInput) -> models.Attachment
 ```
 `GET /v1/projects/{id}/attachments/{attachmentId}`
 
+**[Get a Message](/api-client/sdk/projects/get-message)**
+
+```python Python
+photon.projects.get_message(input: GetMessageInput) -> models.PlatformMessage | None
+```
+`GET /v1/projects/{id}/messages/{messageId}`
+
 **[Get metrics backfill status](/api-client/sdk/projects/get-message-metrics-backfill)**
 
 ```python Python
@@ -260,6 +407,20 @@ photon.projects.get_message_metrics_backfill(input: GetMessageMetricsBackfillInp
 photon.projects.get_message_metrics_sql_schema(input: GetMessageMetricsSqlSchemaInput) -> models.GetMessageMetricsSqlSchemaResponse
 ```
 `GET /v1/projects/{projectId}/metrics/query`
+
+**[Get a Space](/api-client/sdk/projects/get-space)**
+
+```python Python
+photon.projects.get_space(input: GetSpaceInput) -> models.PlatformSpace | None
+```
+`GET /v1/projects/{id}/spaces/{spaceId}`
+
+**[Get an User](/api-client/sdk/projects/get-user)**
+
+```python Python
+photon.projects.get_user(input: GetUserInput) -> models.PlatformUser | None
+```
+`GET /v1/projects/{id}/users/{userId}`
 
 **[Get webhook destination](/api-client/sdk/projects/get-webhook-destination)**
 
@@ -275,6 +436,20 @@ photon.projects.get_webhook_event_schema(input: GetWebhookEventSchemaInput) -> m
 ```
 `GET /v1/projects/{projectId}/webhooks/event-types/{eventType}/schema`
 
+**[Create or get a Space](/api-client/sdk/projects/create-or-get-space)**
+
+```python Python
+photon.projects.create_or_get_space(input: CreateOrGetSpaceInput) -> models.PlatformSpace
+```
+`POST /v1/projects/{id}/spaces`
+
+**[Create or get a User](/api-client/sdk/projects/create-or-get-user)**
+
+```python Python
+photon.projects.create_or_get_user(input: CreateOrGetUserInput) -> models.PlatformUser
+```
+`POST /v1/projects/{id}/users`
+
 **[Create project API key](/api-client/sdk/projects/create-project-api-key)**
 
 ```python Python
@@ -288,6 +463,13 @@ photon.projects.create_project_api_key(input: CreateProjectApiKeyInput) -> model
 photon.projects.create_webhook_destination(input: CreateWebhookDestinationInput) -> models.CreateWebhookDestinationResponse
 ```
 `POST /v1/projects/{projectId}/webhooks/destinations`
+
+**[Mark a Message as read](/api-client/sdk/projects/mark-message-read)**
+
+```python Python
+photon.projects.mark_message_read(input: MarkMessageReadInput) -> models.MarkMessageReadResponse
+```
+`POST /v1/projects/{id}/messages/{messageId}/read`
 
 **[Query metrics](/api-client/sdk/projects/query-message-metrics)**
 
@@ -309,6 +491,20 @@ photon.projects.retry_webhook_delivery(input: RetryWebhookDeliveryInput) -> mode
 photon.projects.rotate_webhook_signing_secret(input: RotateWebhookSigningSecretInput) -> models.RotateWebhookSigningSecretResponse
 ```
 `POST /v1/projects/{projectId}/webhooks/destinations/{destinationId}/secret-rotations`
+
+**[Send a Message](/api-client/sdk/projects/send-message)**
+
+```python Python
+photon.projects.send_message(input: SendMessageInput) -> models.SentMessage
+```
+`POST /v1/projects/{id}/messages`
+
+**[Set typing in a Space](/api-client/sdk/projects/set-space-typing)**
+
+```python Python
+photon.projects.set_space_typing(input: SetSpaceTypingInput) -> models.SetSpaceTypingResponse
+```
+`POST /v1/projects/{id}/spaces/{spaceId}/typing`
 
 **[Upload attachment](/api-client/sdk/projects/upload-attachment)**
 
@@ -368,12 +564,33 @@ client.list_attachments(id: String, params: Option<ListAttachmentsParams>).await
 ```
 `GET /v1/projects/{id}/attachments`
 
+**[List Messages](/api-client/sdk/projects/list-messages)**
+
+```rust Rust
+client.list_messages(id: String, params: Option<ListMessagesParams>).await -> Result<ResponseValue<types::MessagePage>, Error<ListMessagesError>>
+```
+`GET /v1/projects/{id}/messages`
+
 **[List project API keys](/api-client/sdk/projects/list-project-api-keys)**
 
 ```rust Rust
 client.list_project_api_keys(project_id: String).await -> Result<ResponseValue<types::ListProjectApiKeysResponse>, Error<ListProjectApiKeysError>>
 ```
 `GET /v1/projects/{projectId}/api-keys`
+
+**[List Spaces](/api-client/sdk/projects/list-spaces)**
+
+```rust Rust
+client.list_spaces(id: String, params: Option<ListSpacesParams>).await -> Result<ResponseValue<types::SpacePage>, Error<ListSpacesError>>
+```
+`GET /v1/projects/{id}/spaces`
+
+**[List Users](/api-client/sdk/projects/list-users)**
+
+```rust Rust
+client.list_users(id: String, params: Option<ListUsersParams>).await -> Result<ResponseValue<types::UserPage>, Error<ListUsersError>>
+```
+`GET /v1/projects/{id}/users`
 
 **[List webhook API versions](/api-client/sdk/projects/list-webhook-api-versions)**
 
@@ -403,6 +620,27 @@ client.list_webhook_event_types(project_id: String, api_version: Date).await -> 
 ```
 `GET /v1/projects/{projectId}/webhooks/event-types`
 
+**[Count Messages](/api-client/sdk/projects/count-messages)**
+
+```rust Rust
+client.count_messages(id: String, params: Option<CountMessagesParams>).await -> Result<ResponseValue<types::CountMessagesResponse>, Error<CountMessagesError>>
+```
+`GET /v1/projects/{id}/messages/count`
+
+**[Count Spaces](/api-client/sdk/projects/count-spaces)**
+
+```rust Rust
+client.count_spaces(id: String, params: Option<CountSpacesParams>).await -> Result<ResponseValue<types::SpaceCount>, Error<CountSpacesError>>
+```
+`GET /v1/projects/{id}/spaces/count`
+
+**[Count Users](/api-client/sdk/projects/count-users)**
+
+```rust Rust
+client.count_users(id: String, params: Option<CountUsersParams>).await -> Result<ResponseValue<types::UserCount>, Error<CountUsersError>>
+```
+`GET /v1/projects/{id}/users/count`
+
 **[Download attachment](/api-client/sdk/projects/download-attachment)**
 
 ```rust Rust
@@ -424,6 +662,13 @@ client.get_attachment(attachment_id: String, id: String).await -> Result<Respons
 ```
 `GET /v1/projects/{id}/attachments/{attachmentId}`
 
+**[Get a Message](/api-client/sdk/projects/get-message)**
+
+```rust Rust
+client.get_message(id: String, message_id: String, params: Option<GetMessageParams>).await -> Result<ResponseValue<GetMessageResponse>, Error<GetMessageError>>
+```
+`GET /v1/projects/{id}/messages/{messageId}`
+
 **[Get metrics backfill status](/api-client/sdk/projects/get-message-metrics-backfill)**
 
 ```rust Rust
@@ -437,6 +682,20 @@ client.get_message_metrics_backfill(project_id: String, params: Option<GetMessag
 client.get_message_metrics_sql_schema(project_id: String, params: Option<GetMessageMetricsSqlSchemaParams>).await -> Result<ResponseValue<types::GetMessageMetricsSqlSchemaResponse>, Error<GetMessageMetricsSqlSchemaError>>
 ```
 `GET /v1/projects/{projectId}/metrics/query`
+
+**[Get a Space](/api-client/sdk/projects/get-space)**
+
+```rust Rust
+client.get_space(id: String, space_id: String, params: Option<GetSpaceParams>).await -> Result<ResponseValue<GetSpaceResponse>, Error<GetSpaceError>>
+```
+`GET /v1/projects/{id}/spaces/{spaceId}`
+
+**[Get an User](/api-client/sdk/projects/get-user)**
+
+```rust Rust
+client.get_user(id: String, user_id: String, params: Option<GetUserParams>).await -> Result<ResponseValue<GetUserResponse>, Error<GetUserError>>
+```
+`GET /v1/projects/{id}/users/{userId}`
 
 **[Get webhook destination](/api-client/sdk/projects/get-webhook-destination)**
 
@@ -452,6 +711,20 @@ client.get_webhook_event_schema(project_id: String, event_type: String, api_vers
 ```
 `GET /v1/projects/{projectId}/webhooks/event-types/{eventType}/schema`
 
+**[Create or get a Space](/api-client/sdk/projects/create-or-get-space)**
+
+```rust Rust
+client.create_or_get_space(id: String, idempotency_key: String, body: &types::CreateOrGetSpaceRequest).await -> Result<ResponseValue<CreateOrGetSpaceResponse>, Error<CreateOrGetSpaceError>>
+```
+`POST /v1/projects/{id}/spaces`
+
+**[Create or get a User](/api-client/sdk/projects/create-or-get-user)**
+
+```rust Rust
+client.create_or_get_user(id: String, body: &types::CreateOrGetUserRequest).await -> Result<ResponseValue<CreateOrGetUserResponse>, Error<CreateOrGetUserError>>
+```
+`POST /v1/projects/{id}/users`
+
 **[Create project API key](/api-client/sdk/projects/create-project-api-key)**
 
 ```rust Rust
@@ -465,6 +738,13 @@ client.create_project_api_key(idempotency_key: String, project_id: String, body:
 client.create_webhook_destination(idempotency_key: String, project_id: String, body: &types::CreateWebhookDestinationRequest).await -> Result<ResponseValue<types::CreateWebhookDestinationResponse>, Error<CreateWebhookDestinationError>>
 ```
 `POST /v1/projects/{projectId}/webhooks/destinations`
+
+**[Mark a Message as read](/api-client/sdk/projects/mark-message-read)**
+
+```rust Rust
+client.mark_message_read(id: String, message_id: String, idempotency_key: String).await -> Result<ResponseValue<types::MarkMessageReadResponse>, Error<MarkMessageReadError>>
+```
+`POST /v1/projects/{id}/messages/{messageId}/read`
 
 **[Query metrics](/api-client/sdk/projects/query-message-metrics)**
 
@@ -486,6 +766,20 @@ client.retry_webhook_delivery(idempotency_key: String, destination_id: String, p
 client.rotate_webhook_signing_secret(idempotency_key: String, destination_id: String, project_id: String, body: &types::RotateWebhookSigningSecretRequest).await -> Result<ResponseValue<types::RotateWebhookSigningSecretResponse>, Error<RotateWebhookSigningSecretError>>
 ```
 `POST /v1/projects/{projectId}/webhooks/destinations/{destinationId}/secret-rotations`
+
+**[Send a Message](/api-client/sdk/projects/send-message)**
+
+```rust Rust
+client.send_message(id: String, idempotency_key: String, body: &types::SendMessageRequest).await -> Result<ResponseValue<types::SentMessage>, Error<SendMessageError>>
+```
+`POST /v1/projects/{id}/messages`
+
+**[Set typing in a Space](/api-client/sdk/projects/set-space-typing)**
+
+```rust Rust
+client.set_space_typing(id: String, space_id: String, body: &types::SetSpaceTypingRequest).await -> Result<ResponseValue<types::SetSpaceTypingResponse>, Error<SetSpaceTypingError>>
+```
+`POST /v1/projects/{id}/spaces/{spaceId}/typing`
 
 **[Upload attachment](/api-client/sdk/projects/upload-attachment)**
 
@@ -560,12 +854,51 @@ Continue with this token, even if items is empty. Omitted when no more pages rem
 </ResponseField>
 
 
+### MessagePage
+
+
+
+<ResponseField name="items" type={"array of PlatformMessage"} required>
+Unsupported platforms and records with unsupported data are omitted.
+</ResponseField>
+
+<ResponseField name="nextPageToken" type={"string"}>
+Continue with this token, even if items is empty. Omitted when no more pages remain.
+</ResponseField>
+
+
 ### ListProjectApiKeysResponse
 
 
 
 <ResponseField name="apiKeys" type={"array of ApiKey"} required>
 
+</ResponseField>
+
+
+### SpacePage
+
+
+
+<ResponseField name="items" type={"array of PlatformSpace"} required>
+Unsupported platforms and records with unsupported data are omitted.
+</ResponseField>
+
+<ResponseField name="nextPageToken" type={"string"}>
+Continue with this token, even if items is empty. Omitted when no more pages remain.
+</ResponseField>
+
+
+### UserPage
+
+
+
+<ResponseField name="items" type={"array of PlatformUser"} required>
+Unsupported platforms and records with unsupported data are omitted.
+</ResponseField>
+
+<ResponseField name="nextPageToken" type={"string"}>
+Continue with this token, even if items is empty. Omitted when no more pages remain.
 </ResponseField>
 
 
@@ -681,6 +1014,61 @@ Every public IPv4 address webhook deliveries can originate from. Allow-list all 
 </ResponseField>
 
 
+### CountMessagesResponse
+
+
+
+**One of: MessageCount**
+
+<ResponseField name="count" type={"integer"} required>
+
+</ResponseField>
+
+<ResponseField name="groups" type={"array of MessageStatusCount"} required>
+
+</ResponseField>
+
+**One of: DailyMessageCount**
+
+<ResponseField name="buckets" type={"array of MessageCountBucket"} required>
+
+</ResponseField>
+
+<ResponseField name="count" type={"integer"} required>
+
+</ResponseField>
+
+<ResponseField name="groups" type={"array of MessageStatusCount"} required>
+
+</ResponseField>
+
+<ResponseField name="interval" type={"\"day\""} required>
+
+</ResponseField>
+
+<ResponseField name="timeZone" type={"string"} required>
+
+</ResponseField>
+
+
+### SpaceCount
+
+
+
+<ResponseField name="count" type={"integer"} required>
+
+</ResponseField>
+
+
+### UserCount
+
+
+
+<ResponseField name="count" type={"integer"} required>
+
+</ResponseField>
+
+
 ### Project
 
 
@@ -771,6 +1159,79 @@ Every public IPv4 address webhook deliveries can originate from. Allow-list all 
 </ResponseField>
 
 
+### PlatformMessage
+
+
+
+<ResponseField name="acceptance" type={"object"} required>
+
+</ResponseField>
+
+<ResponseField name="addressedTo" type={"UserSnapshot"}>
+
+</ResponseField>
+
+<ResponseField name="content" type={"TelegramMessageContent"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+When Photon first persisted this resource.
+</ResponseField>
+
+<ResponseField name="failure" type={"MessageFailure"} required>
+
+</ResponseField>
+
+<ResponseField name="id" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="metadata" type={"ResourceMetadata"} required>
+
+</ResponseField>
+
+<ResponseField name="parentMessageId" type={"string"}>
+
+</ResponseField>
+
+<ResponseField name="platform" type={"Platform"} required>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="receivedBy" type={"UserSnapshot"}>
+
+</ResponseField>
+
+<ResponseField name="sentBy" type={"UserSnapshot"} required>
+
+</ResponseField>
+
+<ResponseField name="space" type={"SpaceSnapshot"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"\"failed\""} required>
+
+</ResponseField>
+
+<ResponseField name="timestamp" type={"object"}>
+
+</ResponseField>
+
+<ResponseField name="timestamps" type={"FailedMessageTimestamps"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+When Photon last persisted a change to this resource's public state.
+</ResponseField>
+
+
 ### GetMessageMetricsBackfillResponse
 
 
@@ -822,6 +1283,88 @@ Every public IPv4 address webhook deliveries can originate from. Allow-list all 
 
 <ResponseField name="version" type={"string (date)"} required>
 
+</ResponseField>
+
+
+### PlatformSpace
+
+
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+When Photon first persisted this resource.
+</ResponseField>
+
+<ResponseField name="details" type={"TelegramSpaceDetails"} required>
+
+</ResponseField>
+
+<ResponseField name="id" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="kind" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="metadata" type={"ResourceMetadata"} required>
+
+</ResponseField>
+
+<ResponseField name="participantIds" type={"array of string"} required>
+
+</ResponseField>
+
+<ResponseField name="platform" type={"Platform"} required>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+When Photon last persisted a change to this resource's public state.
+</ResponseField>
+
+
+### PlatformUser
+
+
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+When Photon first persisted this resource.
+</ResponseField>
+
+<ResponseField name="details" type={"TelegramUserDetails"} required>
+
+</ResponseField>
+
+<ResponseField name="handle" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="id" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="kind" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="metadata" type={"ResourceMetadata"} required>
+
+</ResponseField>
+
+<ResponseField name="platform" type={"Platform"} required>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+When Photon last persisted a change to this resource's public state.
 </ResponseField>
 
 
@@ -900,6 +1443,79 @@ Every public IPv4 address webhook deliveries can originate from. Allow-list all 
 </ResponseField>
 
 
+### MarkMessageReadResponse
+
+
+
+<ResponseField name="acceptance" type={"object"} required>
+
+</ResponseField>
+
+<ResponseField name="addressedTo" type={"UserSnapshot"}>
+
+</ResponseField>
+
+<ResponseField name="content" type={"TelegramMessageContent"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+When Photon first persisted this resource.
+</ResponseField>
+
+<ResponseField name="failure" type={"MessageFailure"} required>
+
+</ResponseField>
+
+<ResponseField name="id" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="metadata" type={"ResourceMetadata"} required>
+
+</ResponseField>
+
+<ResponseField name="parentMessageId" type={"string"}>
+
+</ResponseField>
+
+<ResponseField name="platform" type={"Platform"} required>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="receivedBy" type={"UserSnapshot"}>
+
+</ResponseField>
+
+<ResponseField name="sentBy" type={"UserSnapshot"} required>
+
+</ResponseField>
+
+<ResponseField name="space" type={"SpaceSnapshot"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"SentMessageStatus"} required>
+
+</ResponseField>
+
+<ResponseField name="timestamp" type={"object"}>
+
+</ResponseField>
+
+<ResponseField name="timestamps" type={"FailedMessageTimestamps"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+When Photon last persisted a change to this resource's public state.
+</ResponseField>
+
+
 ### QueryMessageMetricsResponse
 
 
@@ -936,6 +1552,152 @@ Every public IPv4 address webhook deliveries can originate from. Allow-list all 
 
 <ResponseField name="signingSecret" type={"string"} required>
 
+</ResponseField>
+
+
+### SentMessage
+
+
+
+<ResponseField name="acceptance" type={"object"} required>
+
+</ResponseField>
+
+<ResponseField name="addressedTo" type={"UserSnapshot"}>
+
+</ResponseField>
+
+<ResponseField name="content" type={"TelegramMessageContent"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+When Photon first persisted this resource.
+</ResponseField>
+
+<ResponseField name="failure" type={"MessageFailure"} required>
+
+</ResponseField>
+
+<ResponseField name="id" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="metadata" type={"ResourceMetadata"} required>
+
+</ResponseField>
+
+<ResponseField name="parentMessageId" type={"string"}>
+
+</ResponseField>
+
+<ResponseField name="platform" type={"Platform"} required>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="receivedBy" type={"UserSnapshot"}>
+
+</ResponseField>
+
+<ResponseField name="sentBy" type={"UserSnapshot"} required>
+
+</ResponseField>
+
+<ResponseField name="space" type={"SpaceSnapshot"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"SentMessageStatus"} required>
+
+</ResponseField>
+
+<ResponseField name="timestamp" type={"object"}>
+
+</ResponseField>
+
+<ResponseField name="timestamps" type={"FailedMessageTimestamps"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+When Photon last persisted a change to this resource's public state.
+</ResponseField>
+
+
+### SetSpaceTypingResponse
+
+
+
+<ResponseField name="acceptance" type={"object"} required>
+
+</ResponseField>
+
+<ResponseField name="addressedTo" type={"UserSnapshot"}>
+
+</ResponseField>
+
+<ResponseField name="content" type={"SetSpaceTypingContent"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+When Photon first persisted this resource.
+</ResponseField>
+
+<ResponseField name="failure" type={"MessageFailure"} required>
+
+</ResponseField>
+
+<ResponseField name="id" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="metadata" type={"ResourceMetadata"} required>
+
+</ResponseField>
+
+<ResponseField name="parentMessageId" type={"string"}>
+
+</ResponseField>
+
+<ResponseField name="platform" type={"\"telegram\""} required>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="receivedBy" type={"UserSnapshot"}>
+
+</ResponseField>
+
+<ResponseField name="sentBy" type={"UserSnapshot"} required>
+
+</ResponseField>
+
+<ResponseField name="space" type={"SpaceSnapshot"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"\"dispatched\""} required>
+
+</ResponseField>
+
+<ResponseField name="timestamp" type={"object"}>
+
+</ResponseField>
+
+<ResponseField name="timestamps" type={"FailedMessageTimestamps"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+When Photon last persisted a change to this resource's public state.
 </ResponseField>
 
 

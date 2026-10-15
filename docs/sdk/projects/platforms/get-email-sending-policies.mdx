@@ -1,0 +1,113 @@
+---
+title: "Get email sending policies"
+icon: arrow-down-left
+description: "Get email sending policies: getEmailSendingPolicies in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{id}/platforms/email/sending-policy`
+
+Reads Organization email recipient allowances shared across all its Projects, with rolling 60-second and 24-hour windows. Also returns Project and Organization review status and Photon policy pauses. Projects have no separate recipient quota. These limits are independent of subscription allowances. A policy pause blocks sending; an unpaused policy does not guarantee that every domain, suppression or account check permits a send. Requires platforms:read for the path Project.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.platforms.getEmailSendingPolicies(input: GetEmailSendingPoliciesInput, options?: RequestOptions): Promise<GetEmailSendingPoliciesOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.platforms.get_email_sending_policies(input: GetEmailSendingPoliciesInput) -> models.EmailSendingPolicies
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.get_email_sending_policies(id: String).await -> Result<ResponseValue<types::EmailSendingPolicies>, Error<GetEmailSendingPoliciesError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.platforms.getEmailSendingPolicies({
+  path: {
+    id: "id",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import GetEmailSendingPoliciesInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.platforms.get_email_sending_policies(
+    GetEmailSendingPoliciesInput.model_validate({
+        "path": {
+            "id": "id",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .get_email_sending_policies("id".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "organization": {
+    "paused": true,
+    "recipientsPer24Hours": 1,
+    "recipientsPerMinute": 1,
+    "reviewStatus": "new",
+    "updatedAt": "2026-01-01T00:00:00Z"
+  },
+  "project": {
+    "paused": true,
+    "reviewStatus": "new",
+    "updatedAt": "2026-01-01T00:00:00Z"
+  }
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The Project and Organization sending policies. EmailSendingPolicies
+
+<ResponseField name="organization" type={"EmailOrganizationSendingPolicy"} required>
+
+</ResponseField>
+
+<ResponseField name="project" type={"EmailSendingPolicy"} required>
+
+</ResponseField>
+

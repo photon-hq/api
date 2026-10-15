@@ -7,6 +7,13 @@ description: "The Platforms resource in the TypeScript, Python and Rust clients.
 
 <Tabs>
 <Tab title="TypeScript">
+**[List email recommendations](/api-client/sdk/projects/platforms/list-email-recommendations)**
+
+```typescript TypeScript
+photon.projects.platforms.listEmailRecommendations(input: ListEmailRecommendationsInput, options?: RequestOptions): Promise<ListEmailRecommendationsOutput>
+```
+`GET /v1/projects/{id}/platforms/email/recommendations`
+
 **[List filtered verification codes](/api-client/sdk/projects/platforms/list-filtered-verification-codes)**
 
 ```typescript TypeScript
@@ -97,6 +104,20 @@ photon.projects.platforms.countResourceFilteredVerificationCodes(input: CountRes
 photon.projects.platforms.getDefaultVoiceProfile(input: GetDefaultVoiceProfileInput, options?: RequestOptions): Promise<GetDefaultVoiceProfileOutput>
 ```
 `GET /v1/projects/{id}/platforms/voice/profiles/default`
+
+**[Get email delivery metrics](/api-client/sdk/projects/platforms/get-email-delivery-metrics)**
+
+```typescript TypeScript
+photon.projects.platforms.getEmailDeliveryMetrics(input: GetEmailDeliveryMetricsInput, options?: RequestOptions): Promise<GetEmailDeliveryMetricsOutput>
+```
+`GET /v1/projects/{id}/platforms/email/metrics`
+
+**[Get email sending policies](/api-client/sdk/projects/platforms/get-email-sending-policies)**
+
+```typescript TypeScript
+photon.projects.platforms.getEmailSendingPolicies(input: GetEmailSendingPoliciesInput, options?: RequestOptions): Promise<GetEmailSendingPoliciesOutput>
+```
+`GET /v1/projects/{id}/platforms/email/sending-policy`
 
 **[Get project iMessage platform](/api-client/sdk/projects/platforms/get-imessage)**
 
@@ -394,6 +415,13 @@ photon.projects.platforms.unassignVoiceLineProfile(input: UnassignVoiceLineProfi
 
 </Tab>
 <Tab title="Python">
+**[List email recommendations](/api-client/sdk/projects/platforms/list-email-recommendations)**
+
+```python Python
+photon.projects.platforms.list_email_recommendations(input: ListEmailRecommendationsInput) -> models.EmailRecommendations
+```
+`GET /v1/projects/{id}/platforms/email/recommendations`
+
 **[List filtered verification codes](/api-client/sdk/projects/platforms/list-filtered-verification-codes)**
 
 ```python Python
@@ -484,6 +512,20 @@ photon.projects.platforms.count_resource_filtered_verification_codes(input: Coun
 photon.projects.platforms.get_default_voice_profile(input: GetDefaultVoiceProfileInput) -> models.VoiceProfile
 ```
 `GET /v1/projects/{id}/platforms/voice/profiles/default`
+
+**[Get email delivery metrics](/api-client/sdk/projects/platforms/get-email-delivery-metrics)**
+
+```python Python
+photon.projects.platforms.get_email_delivery_metrics(input: GetEmailDeliveryMetricsInput) -> models.EmailDeliveryMetrics
+```
+`GET /v1/projects/{id}/platforms/email/metrics`
+
+**[Get email sending policies](/api-client/sdk/projects/platforms/get-email-sending-policies)**
+
+```python Python
+photon.projects.platforms.get_email_sending_policies(input: GetEmailSendingPoliciesInput) -> models.EmailSendingPolicies
+```
+`GET /v1/projects/{id}/platforms/email/sending-policy`
 
 **[Get project iMessage platform](/api-client/sdk/projects/platforms/get-imessage)**
 
@@ -781,6 +823,13 @@ photon.projects.platforms.unassign_voice_line_profile(input: UnassignVoiceLinePr
 
 </Tab>
 <Tab title="Rust">
+**[List email recommendations](/api-client/sdk/projects/platforms/list-email-recommendations)**
+
+```rust Rust
+client.list_email_recommendations(id: String, params: Option<ListEmailRecommendationsParams>).await -> Result<ResponseValue<types::EmailRecommendations>, Error<ListEmailRecommendationsError>>
+```
+`GET /v1/projects/{id}/platforms/email/recommendations`
+
 **[List filtered verification codes](/api-client/sdk/projects/platforms/list-filtered-verification-codes)**
 
 ```rust Rust
@@ -871,6 +920,20 @@ client.count_resource_filtered_verification_codes(id: String, resource_id: Strin
 client.get_default_voice_profile(id: String).await -> Result<ResponseValue<types::VoiceProfile>, Error<GetDefaultVoiceProfileError>>
 ```
 `GET /v1/projects/{id}/platforms/voice/profiles/default`
+
+**[Get email delivery metrics](/api-client/sdk/projects/platforms/get-email-delivery-metrics)**
+
+```rust Rust
+client.get_email_delivery_metrics(id: String, params: Option<GetEmailDeliveryMetricsParams>).await -> Result<ResponseValue<types::EmailDeliveryMetrics>, Error<GetEmailDeliveryMetricsError>>
+```
+`GET /v1/projects/{id}/platforms/email/metrics`
+
+**[Get email sending policies](/api-client/sdk/projects/platforms/get-email-sending-policies)**
+
+```rust Rust
+client.get_email_sending_policies(id: String).await -> Result<ResponseValue<types::EmailSendingPolicies>, Error<GetEmailSendingPoliciesError>>
+```
+`GET /v1/projects/{id}/platforms/email/sending-policy`
 
 **[Get project iMessage platform](/api-client/sdk/projects/platforms/get-imessage)**
 
@@ -1175,6 +1238,27 @@ client.unassign_voice_line_profile(id: String, resource_id: String, expected_ver
 
 ## Models
 
+### EmailRecommendations
+
+
+
+<ResponseField name="coverage" type={"EmailRecommendationsCoverage"} required>
+
+</ResponseField>
+
+<ResponseField name="domainPage" type={"EmailRecommendationsDomainPage"} required>
+
+</ResponseField>
+
+<ResponseField name="readAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="recommendations" type={"array of EmailRecommendation"} required>
+
+</ResponseField>
+
+
 ### FilteredVerificationCodePage
 
 
@@ -1346,6 +1430,64 @@ client.unassign_voice_line_profile(id: String, resource_id: String, expected_ver
 </ResponseField>
 
 <ResponseField name="version" type={"integer"} required>
+
+</ResponseField>
+
+
+### EmailDeliveryMetrics
+
+
+
+<ResponseField name="availability" type={"EmailDeliveryMetricsAvailability"} required>
+
+</ResponseField>
+
+<ResponseField name="collectedAt" type={"string (date-time)"}>
+
+</ResponseField>
+
+<ResponseField name="complaintVisibility" type={"\"reported_feedback_only\""} required>
+
+</ResponseField>
+
+<ResponseField name="coverage" type={"\"eligible_single_recipient_messages\""} required>
+
+</ResponseField>
+
+<ResponseField name="freshness" type={"EmailDeliveryMetricsFreshness"} required>
+
+</ResponseField>
+
+<ResponseField name="interval" type={"EmailDeliveryMetricsInterval"}>
+
+</ResponseField>
+
+<ResponseField name="period" type={"EmailDeliveryMetricsPeriod"} required>
+
+</ResponseField>
+
+<ResponseField name="readAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="series" type={"array of EmailDeliveryMetricsSeries"} required>
+
+</ResponseField>
+
+<ResponseField name="source" type={"\"supplementary_delivery\""} required>
+
+</ResponseField>
+
+
+### EmailSendingPolicies
+
+
+
+<ResponseField name="organization" type={"EmailOrganizationSendingPolicy"} required>
+
+</ResponseField>
+
+<ResponseField name="project" type={"EmailSendingPolicy"} required>
 
 </ResponseField>
 

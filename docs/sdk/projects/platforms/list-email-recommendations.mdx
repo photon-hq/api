@@ -1,0 +1,156 @@
+---
+title: "List email recommendations"
+icon: arrow-down-left
+description: "List email recommendations: listEmailRecommendations in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{id}/platforms/email/recommendations`
+
+Reads Photon guidance from stored sending policies, sending setup and domain checks. Project and Organization restrictions repeat on each page of domain observations. Follow nextPageToken until hasMore is false; observations describe only the current page. Recommendations are advisory reads, never permission to send or resume. Reputation-rate guidance and supplementary delivery advice are explicitly unavailable until their sources are integrated. An empty list does not indicate healthy reputation or resolved findings. Requires platforms:read for the path Project.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.platforms.listEmailRecommendations(input: ListEmailRecommendationsInput, options?: RequestOptions): Promise<ListEmailRecommendationsOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.platforms.list_email_recommendations(input: ListEmailRecommendationsInput) -> models.EmailRecommendations
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.list_email_recommendations(id: String, params: Option<ListEmailRecommendationsParams>).await -> Result<ResponseValue<types::EmailRecommendations>, Error<ListEmailRecommendationsError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.platforms.listEmailRecommendations({
+  path: {
+    id: "id",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import ListEmailRecommendationsInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.platforms.list_email_recommendations(
+    ListEmailRecommendationsInput.model_validate({
+        "path": {
+            "id": "id",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .list_email_recommendations("id".to_owned(), None)
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "coverage": {
+    "deliveryAdvice": "unavailable",
+    "reputation": "unavailable",
+    "sendingPolicies": "available",
+    "sendingSetup": {
+      "observationStatus": "current",
+      "observedAt": "2026-01-01T00:00:00Z"
+    }
+  },
+  "domainPage": {
+    "hasMore": true,
+    "nextPageToken": "string",
+    "observations": [
+      {
+        "observationStatus": "current",
+        "observedAt": "2026-01-01T00:00:00Z",
+        "resourceId": "string"
+      }
+    ]
+  },
+  "readAt": "2026-01-01T00:00:00Z",
+  "recommendations": [
+    {
+      "action": {
+        "code": "contact_support"
+      },
+      "category": "sending_restriction",
+      "code": "project_sending_paused",
+      "description": "string",
+      "observationStatus": "current",
+      "observedAt": "2026-01-01T00:00:00Z",
+      "scope": {
+        "type": "project"
+      },
+      "severity": "info",
+      "status": "active",
+      "title": "string"
+    }
+  ]
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+<ParamField query="pageSize" type={"integer"}>
+
+</ParamField>
+
+<ParamField query="pageToken" type={"string"}>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** Scoped recommendations and explicit observation coverage. EmailRecommendations
+
+<ResponseField name="coverage" type={"EmailRecommendationsCoverage"} required>
+
+</ResponseField>
+
+<ResponseField name="domainPage" type={"EmailRecommendationsDomainPage"} required>
+
+</ResponseField>
+
+<ResponseField name="readAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="recommendations" type={"array of EmailRecommendation"} required>
+
+</ResponseField>
+

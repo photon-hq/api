@@ -1,0 +1,162 @@
+---
+title: "Get email delivery metrics"
+icon: arrow-down-left
+description: "Get email delivery metrics: getEmailDeliveryMetrics in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{id}/platforms/email/metrics`
+
+Reads cached supplementary email series for the exact Project and rolling day or week. Coverage is eligible single-recipient messages; multi-recipient and simulator traffic is excluded. Observed complaints include reported feedback only. Missing data is distinct from zero. Original timestamps and availability are preserved; freshness describes retrieval, not complete event coverage. These series are not complete recipient totals, billing totals or Photon reputation rates. This read never queries the delivery provider or authorizes sending. Requires platforms:read for the path Project.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.platforms.getEmailDeliveryMetrics(input: GetEmailDeliveryMetricsInput, options?: RequestOptions): Promise<GetEmailDeliveryMetricsOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.platforms.get_email_delivery_metrics(input: GetEmailDeliveryMetricsInput) -> models.EmailDeliveryMetrics
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.get_email_delivery_metrics(id: String, params: Option<GetEmailDeliveryMetricsParams>).await -> Result<ResponseValue<types::EmailDeliveryMetrics>, Error<GetEmailDeliveryMetricsError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.platforms.getEmailDeliveryMetrics({
+  path: {
+    id: "id",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import GetEmailDeliveryMetricsInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.platforms.get_email_delivery_metrics(
+    GetEmailDeliveryMetricsInput.model_validate({
+        "path": {
+            "id": "id",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .get_email_delivery_metrics("id".to_owned(), None)
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "availability": "available",
+  "collectedAt": "2026-01-01T00:00:00Z",
+  "complaintVisibility": "reported_feedback_only",
+  "coverage": "eligible_single_recipient_messages",
+  "freshness": "current",
+  "interval": {
+    "end": "2026-01-01T00:00:00Z",
+    "start": "2026-01-01T00:00:00Z"
+  },
+  "period": "day",
+  "readAt": "2026-01-01T00:00:00Z",
+  "series": [
+    {
+      "metric": "sent",
+      "points": [
+        {
+          "at": "2026-01-01T00:00:00Z",
+          "count": 0
+        }
+      ],
+      "status": "available",
+      "unit": "messages"
+    }
+  ],
+  "source": "supplementary_delivery"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+<ParamField query="period" type={"EmailDeliveryMetricsPeriodParameter"}>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** Cached supplementary metrics with explicit coverage and freshness. EmailDeliveryMetrics
+
+<ResponseField name="availability" type={"EmailDeliveryMetricsAvailability"} required>
+
+</ResponseField>
+
+<ResponseField name="collectedAt" type={"string (date-time)"}>
+
+</ResponseField>
+
+<ResponseField name="complaintVisibility" type={"\"reported_feedback_only\""} required>
+
+</ResponseField>
+
+<ResponseField name="coverage" type={"\"eligible_single_recipient_messages\""} required>
+
+</ResponseField>
+
+<ResponseField name="freshness" type={"EmailDeliveryMetricsFreshness"} required>
+
+</ResponseField>
+
+<ResponseField name="interval" type={"EmailDeliveryMetricsInterval"}>
+
+</ResponseField>
+
+<ResponseField name="period" type={"EmailDeliveryMetricsPeriod"} required>
+
+</ResponseField>
+
+<ResponseField name="readAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="series" type={"array of EmailDeliveryMetricsSeries"} required>
+
+</ResponseField>
+
+<ResponseField name="source" type={"\"supplementary_delivery\""} required>
+
+</ResponseField>
+

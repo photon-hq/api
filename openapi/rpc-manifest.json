@@ -1,6 +1,6 @@
 {
-  "sourceSha256": "a978aabca91c090ff39970c4795aa515f1b54cac10d7cbad1717f9ce4b08d53d",
-  "operationCount": 142,
+  "sourceSha256": "018800a2ef2de8678360a24ec79c2fdb9efce56e868dd34a89588b660267b3b9",
+  "operationCount": 160,
   "operations": [
     {
       "operationId": "assignSmsLineCampaign",
@@ -1418,6 +1418,180 @@
       "description": "Counts the verification codes Photon kept from this project's dedicated lines and numbers, optionally for one `platform`. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Requires the platforms:read permission bound to the project resource in the path."
     },
     {
+      "operationId": "countMessages",
+      "rpcMethod": "countMessages",
+      "namespace": [
+        "projects"
+      ],
+      "httpMethod": "GET",
+      "path": "/v1/projects/{id}/messages/count",
+      "safe": true,
+      "idempotencyKeyRequired": false,
+      "parameters": [
+        {
+          "name": "id",
+          "wireName": "id",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "pattern": "^pho_prj_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "createdBefore",
+          "wireName": "createdBefore",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "createdSince",
+          "wireName": "createdSince",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "direction",
+          "wireName": "direction",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/MessageDirection"
+          }
+        },
+        {
+          "name": "excludeContentTypes",
+          "wireName": "excludeContentTypes",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "maxLength": 1024,
+            "type": "string"
+          }
+        },
+        {
+          "name": "perspectiveUserId",
+          "wireName": "perspectiveUserId",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "pattern": "^pho_usr_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "platform",
+          "wireName": "platform",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/Platform"
+          }
+        },
+        {
+          "name": "resourceId",
+          "wireName": "resourceId",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "pattern": "^pho_res_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "spaceId",
+          "wireName": "spaceId",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "pattern": "^pho_spc_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "updatedBefore",
+          "wireName": "updatedBefore",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "updatedSince",
+          "wireName": "updatedSince",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "interval",
+          "wireName": "interval",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "const": "day",
+            "type": "string"
+          }
+        },
+        {
+          "name": "timeZone",
+          "wireName": "timeZone",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "application/json": "#/components/schemas/CountMessagesResponse"
+        },
+        "401": {
+          "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
+        },
+        "403": {
+          "application/problem+json": "#/components/schemas/CountMessagesForbiddenProblem"
+        },
+        "422": {
+          "application/problem+json": "#/components/schemas/ValidationFailedProblem"
+        },
+        "500": {
+          "application/problem+json": "#/components/schemas/CountMessagesInternalServerErrorProblem"
+        },
+        "502": {
+          "application/problem+json": "#/components/schemas/UpstreamFailureProblem"
+        },
+        "503": {
+          "application/problem+json": "#/components/schemas/UpstreamUnavailableProblem"
+        },
+        "504": {
+          "application/problem+json": "#/components/schemas/CountMessagesGatewayTimeoutProblem"
+        }
+      },
+      "summary": "Count Messages",
+      "description": "Counts matching Messages before pagination. Delivery updates do not add Messages; results are eventually consistent."
+    },
+    {
       "operationId": "countProjects",
       "rpcMethod": "count",
       "namespace": [
@@ -1601,6 +1775,337 @@
       },
       "summary": "Count a line's filtered verification codes",
       "description": "Counts the verification codes Photon kept from one dedicated line or number. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a number receives both SMS and WhatsApp. Requires the platforms:read permission bound to the project resource in the path."
+    },
+    {
+      "operationId": "countSpaces",
+      "rpcMethod": "countSpaces",
+      "namespace": [
+        "projects"
+      ],
+      "httpMethod": "GET",
+      "path": "/v1/projects/{id}/spaces/count",
+      "safe": true,
+      "idempotencyKeyRequired": false,
+      "parameters": [
+        {
+          "name": "id",
+          "wireName": "id",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "pattern": "^pho_prj_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "messageCreatedBefore",
+          "wireName": "messageCreatedBefore",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "messageCreatedSince",
+          "wireName": "messageCreatedSince",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "messageDirection",
+          "wireName": "messageDirection",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/MessageDirection"
+          }
+        },
+        {
+          "name": "messageExcludeContentTypes",
+          "wireName": "messageExcludeContentTypes",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "maxLength": 1024,
+            "type": "string"
+          }
+        },
+        {
+          "name": "messageResourceId",
+          "wireName": "messageResourceId",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "pattern": "^pho_res_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "createdBefore",
+          "wireName": "createdBefore",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "createdSince",
+          "wireName": "createdSince",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "participantHandle",
+          "wireName": "participantHandle",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "maxLength": 320,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        {
+          "name": "participantId",
+          "wireName": "participantId",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "pattern": "^pho_usr_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "platform",
+          "wireName": "platform",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/Platform"
+          }
+        },
+        {
+          "name": "updatedBefore",
+          "wireName": "updatedBefore",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "updatedSince",
+          "wireName": "updatedSince",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "application/json": "#/components/schemas/SpaceCount"
+        },
+        "401": {
+          "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
+        },
+        "403": {
+          "application/problem+json": "#/components/schemas/CountSpacesForbiddenProblem"
+        },
+        "422": {
+          "application/problem+json": "#/components/schemas/ValidationFailedProblem"
+        },
+        "500": {
+          "application/problem+json": "#/components/schemas/CountSpacesInternalServerErrorProblem"
+        },
+        "502": {
+          "application/problem+json": "#/components/schemas/UpstreamFailureProblem"
+        },
+        "503": {
+          "application/problem+json": "#/components/schemas/UpstreamUnavailableProblem"
+        },
+        "504": {
+          "application/problem+json": "#/components/schemas/CountSpacesGatewayTimeoutProblem"
+        }
+      },
+      "summary": "Count Spaces",
+      "description": "Counts distinct Spaces matching the list filters; multiple matching Messages count once. Results are eventually consistent."
+    },
+    {
+      "operationId": "countUsers",
+      "rpcMethod": "countUsers",
+      "namespace": [
+        "projects"
+      ],
+      "httpMethod": "GET",
+      "path": "/v1/projects/{id}/users/count",
+      "safe": true,
+      "idempotencyKeyRequired": false,
+      "parameters": [
+        {
+          "name": "id",
+          "wireName": "id",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "pattern": "^pho_prj_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "messageCreatedBefore",
+          "wireName": "messageCreatedBefore",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "messageCreatedSince",
+          "wireName": "messageCreatedSince",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "messageDirection",
+          "wireName": "messageDirection",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/MessageDirection"
+          }
+        },
+        {
+          "name": "messageExcludeContentTypes",
+          "wireName": "messageExcludeContentTypes",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "maxLength": 1024,
+            "type": "string"
+          }
+        },
+        {
+          "name": "messageResourceId",
+          "wireName": "messageResourceId",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "pattern": "^pho_res_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "createdBefore",
+          "wireName": "createdBefore",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "createdSince",
+          "wireName": "createdSince",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "platform",
+          "wireName": "platform",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/Platform"
+          }
+        },
+        {
+          "name": "updatedBefore",
+          "wireName": "updatedBefore",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "updatedSince",
+          "wireName": "updatedSince",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "application/json": "#/components/schemas/UserCount"
+        },
+        "401": {
+          "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
+        },
+        "403": {
+          "application/problem+json": "#/components/schemas/CountUsersForbiddenProblem"
+        },
+        "422": {
+          "application/problem+json": "#/components/schemas/ValidationFailedProblem"
+        },
+        "500": {
+          "application/problem+json": "#/components/schemas/CountUsersInternalServerErrorProblem"
+        },
+        "502": {
+          "application/problem+json": "#/components/schemas/UpstreamFailureProblem"
+        },
+        "503": {
+          "application/problem+json": "#/components/schemas/UpstreamUnavailableProblem"
+        },
+        "504": {
+          "application/problem+json": "#/components/schemas/CountUsersGatewayTimeoutProblem"
+        }
+      },
+      "summary": "Count Users",
+      "description": "Counts distinct Users matching the list filters, including incoming senders or outgoing recipients selected by Message filters. Results are eventually consistent."
     },
     {
       "operationId": "createAccountProfilePictureUpload",
@@ -2113,6 +2618,159 @@
         "required": true,
         "content": {
           "application/json": "#/components/schemas/CreateOrganizationSsoPortalLinkRequest"
+        }
+      }
+    },
+    {
+      "operationId": "createOrGetSpace",
+      "rpcMethod": "createOrGetSpace",
+      "namespace": [
+        "projects"
+      ],
+      "httpMethod": "POST",
+      "path": "/v1/projects/{id}/spaces",
+      "safe": false,
+      "idempotencyKeyRequired": true,
+      "parameters": [
+        {
+          "name": "id",
+          "wireName": "id",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "pattern": "^pho_prj_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "idempotency-key",
+          "wireName": "idempotency-key",
+          "location": "header",
+          "required": true,
+          "schema": {
+            "maxLength": 255,
+            "minLength": 1,
+            "pattern": "^[\\x21-\\x7e]+$",
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "application/json": "#/components/schemas/PlatformSpace"
+        },
+        "201": {
+          "application/json": "#/components/schemas/PlatformSpace"
+        },
+        "400": {
+          "application/problem+json": "#/components/schemas/CreateOrGetSpaceBadRequestProblem"
+        },
+        "401": {
+          "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
+        },
+        "403": {
+          "application/problem+json": "#/components/schemas/CreateOrGetSpaceForbiddenProblem"
+        },
+        "404": {
+          "application/problem+json": "#/components/schemas/UserNotFoundProblem"
+        },
+        "409": {
+          "application/problem+json": "#/components/schemas/SpaceAmbiguousProblem"
+        },
+        "413": {
+          "application/problem+json": "#/components/schemas/PayloadTooLargeProblem"
+        },
+        "422": {
+          "application/problem+json": "#/components/schemas/CreateOrGetSpaceUnprocessableEntityProblem"
+        },
+        "500": {
+          "application/problem+json": "#/components/schemas/CreateOrGetSpaceInternalServerErrorProblem"
+        },
+        "502": {
+          "application/problem+json": "#/components/schemas/UpstreamFailureProblem"
+        },
+        "503": {
+          "application/problem+json": "#/components/schemas/CreateOrGetSpaceServiceUnavailableProblem"
+        },
+        "504": {
+          "application/problem+json": "#/components/schemas/CreateOrGetSpaceGatewayTimeoutProblem"
+        }
+      },
+      "summary": "Create or get a Space",
+      "description": "Creates or returns a project Space. Idempotency-Key is required for every platform and binds the project, platform and initial User IDs (unordered except the iMessage creator in first position) for 24 hours after workflow completion. Concurrent matching requests join the same operation; conflicting reuse returns 422 once its outcome is available. A new email key creates a new thread; direct Spaces and SMS groups converge by participants. Every creation and successful replay requires at least one currently project-owned Agent, or for iMessage a shared-line Agent in a direct Space whose peer has an active Assignment of this project on that line. For iMessage, an existing exact match is reused; otherwise the first participant must be a project-owned dedicated phone Agent and creates the native direct chat or group. Multiple matching native groups return SPACE_AMBIGUOUS; incomplete group membership cannot establish an exact match. Replays return 200 and the current stored Space, with Idempotent-Replayed: true. A timeout does not cancel accepted work: retry the same key and input.",
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": "#/components/schemas/CreateOrGetSpaceRequest"
+        }
+      }
+    },
+    {
+      "operationId": "createOrGetUser",
+      "rpcMethod": "createOrGetUser",
+      "namespace": [
+        "projects"
+      ],
+      "httpMethod": "POST",
+      "path": "/v1/projects/{id}/users",
+      "safe": false,
+      "idempotencyKeyRequired": false,
+      "parameters": [
+        {
+          "name": "id",
+          "wireName": "id",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "pattern": "^pho_prj_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "application/json": "#/components/schemas/PlatformUser"
+        },
+        "201": {
+          "application/json": "#/components/schemas/PlatformUser"
+        },
+        "400": {
+          "application/problem+json": "#/components/schemas/HttpErrorProblem"
+        },
+        "401": {
+          "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
+        },
+        "403": {
+          "application/problem+json": "#/components/schemas/CreateOrGetUserForbiddenProblem"
+        },
+        "409": {
+          "application/problem+json": "#/components/schemas/UserIdentityConflictProblem"
+        },
+        "413": {
+          "application/problem+json": "#/components/schemas/PayloadTooLargeProblem"
+        },
+        "422": {
+          "application/problem+json": "#/components/schemas/CreateOrGetUserUnprocessableEntityProblem"
+        },
+        "500": {
+          "application/problem+json": "#/components/schemas/CreateOrGetUserInternalServerErrorProblem"
+        },
+        "502": {
+          "application/problem+json": "#/components/schemas/UpstreamFailureProblem"
+        },
+        "503": {
+          "application/problem+json": "#/components/schemas/UpstreamUnavailableProblem"
+        },
+        "504": {
+          "application/problem+json": "#/components/schemas/CreateOrGetUserGatewayTimeoutProblem"
+        }
+      },
+      "summary": "Create or get a User",
+      "description": "Creates or reconciles a User by normalized handle. WhatsApp and iMessage phone classification uses line allocation and project ownership; New iMessage email handles start as Human without lookup; existing email identities retain their producer-observed classification and ownership. WhatsApp Business uses project ownership. These three platforms perform no provider profile or enrichment fetch. Shared Agents expose type=shared without ownership IDs; dedicated Agents expose resourceId for this project or pairwise managedBy for another project. Dedicated lines without an active owner are unavailable. SMS retains its existing ownership and phone number enrichment behavior. Email retains domain ownership resolution, lowercase ASCII domains and case-preserved local parts. Dependency failures fail before classification writes. The natural identity is the project path ID, platform, and handle. Retrying after a committed creation whose response was lost returns the same User with 200 rather than replaying 201.",
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": "#/components/schemas/CreateOrGetUserRequest"
         }
       }
     },
@@ -3829,6 +4487,192 @@
       "description": "Returns what the selected project is billed on now, per category it holds: the plan as its subscription has it, with any override applied, each fixed charge at the subscription's price and quantity, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. Supply both organizationId and projectId; the organization must pay for the project. This operation does not change billing."
     },
     {
+      "operationId": "getEmailDeliveryMetrics",
+      "rpcMethod": "getEmailDeliveryMetrics",
+      "namespace": [
+        "projects",
+        "platforms"
+      ],
+      "httpMethod": "GET",
+      "path": "/v1/projects/{id}/platforms/email/metrics",
+      "safe": true,
+      "idempotencyKeyRequired": false,
+      "parameters": [
+        {
+          "name": "id",
+          "wireName": "id",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "period",
+          "wireName": "period",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/EmailDeliveryMetricsPeriodParameter"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "application/json": "#/components/schemas/EmailDeliveryMetrics"
+        },
+        "401": {
+          "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
+        },
+        "403": {
+          "application/problem+json": "#/components/schemas/GetEmailDeliveryMetricsForbiddenProblem"
+        },
+        "422": {
+          "application/problem+json": "#/components/schemas/ValidationFailedProblem"
+        },
+        "500": {
+          "application/problem+json": "#/components/schemas/GetEmailDeliveryMetricsInternalServerErrorProblem"
+        },
+        "502": {
+          "application/problem+json": "#/components/schemas/UpstreamFailureProblem"
+        },
+        "503": {
+          "application/problem+json": "#/components/schemas/UpstreamUnavailableProblem"
+        },
+        "504": {
+          "application/problem+json": "#/components/schemas/GetEmailDeliveryMetricsGatewayTimeoutProblem"
+        }
+      },
+      "summary": "Get email delivery metrics",
+      "description": "Reads cached supplementary email series for the exact Project and rolling day or week. Coverage is eligible single-recipient messages; multi-recipient and simulator traffic is excluded. Observed complaints include reported feedback only. Missing data is distinct from zero. Original timestamps and availability are preserved; freshness describes retrieval, not complete event coverage. These series are not complete recipient totals, billing totals or Photon reputation rates. This read never queries the delivery provider or authorizes sending. Requires platforms:read for the path Project."
+    },
+    {
+      "operationId": "getEmailSendingPolicies",
+      "rpcMethod": "getEmailSendingPolicies",
+      "namespace": [
+        "projects",
+        "platforms"
+      ],
+      "httpMethod": "GET",
+      "path": "/v1/projects/{id}/platforms/email/sending-policy",
+      "safe": true,
+      "idempotencyKeyRequired": false,
+      "parameters": [
+        {
+          "name": "id",
+          "wireName": "id",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "application/json": "#/components/schemas/EmailSendingPolicies"
+        },
+        "401": {
+          "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
+        },
+        "403": {
+          "application/problem+json": "#/components/schemas/GetEmailSendingPoliciesForbiddenProblem"
+        },
+        "422": {
+          "application/problem+json": "#/components/schemas/ValidationFailedProblem"
+        },
+        "500": {
+          "application/problem+json": "#/components/schemas/GetEmailSendingPoliciesInternalServerErrorProblem"
+        },
+        "502": {
+          "application/problem+json": "#/components/schemas/UpstreamFailureProblem"
+        },
+        "503": {
+          "application/problem+json": "#/components/schemas/UpstreamUnavailableProblem"
+        },
+        "504": {
+          "application/problem+json": "#/components/schemas/GetEmailSendingPoliciesGatewayTimeoutProblem"
+        }
+      },
+      "summary": "Get email sending policies",
+      "description": "Reads Organization email recipient allowances shared across all its Projects, with rolling 60-second and 24-hour windows. Also returns Project and Organization review status and Photon policy pauses. Projects have no separate recipient quota. These limits are independent of subscription allowances. A policy pause blocks sending; an unpaused policy does not guarantee that every domain, suppression or account check permits a send. Requires platforms:read for the path Project."
+    },
+    {
+      "operationId": "getMessage",
+      "rpcMethod": "getMessage",
+      "namespace": [
+        "projects"
+      ],
+      "httpMethod": "GET",
+      "path": "/v1/projects/{id}/messages/{messageId}",
+      "safe": true,
+      "idempotencyKeyRequired": false,
+      "parameters": [
+        {
+          "name": "id",
+          "wireName": "id",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "pattern": "^pho_prj_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "messageId",
+          "wireName": "messageId",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "pattern": "^pho_msg_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "if-none-match",
+          "wireName": "if-none-match",
+          "location": "header",
+          "required": false,
+          "schema": {
+            "minLength": 1,
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "application/json": "#/components/schemas/PlatformMessage"
+        },
+        "304": {},
+        "401": {
+          "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
+        },
+        "403": {
+          "application/problem+json": "#/components/schemas/GetMessageForbiddenProblem"
+        },
+        "404": {
+          "application/problem+json": "#/components/schemas/MessageNotFoundProblem"
+        },
+        "422": {
+          "application/problem+json": "#/components/schemas/ValidationFailedProblem"
+        },
+        "500": {
+          "application/problem+json": "#/components/schemas/GetMessageInternalServerErrorProblem"
+        },
+        "502": {
+          "application/problem+json": "#/components/schemas/UpstreamFailureProblem"
+        },
+        "503": {
+          "application/problem+json": "#/components/schemas/UpstreamUnavailableProblem"
+        },
+        "504": {
+          "application/problem+json": "#/components/schemas/GetMessageGatewayTimeoutProblem"
+        }
+      },
+      "summary": "Get a Message",
+      "description": "Returns one stored Message by canonical Photon Message ID on any supported contract platform. The globally unique Message ID is resolved within the authorized Project. Unsupported platform Messages are outside this collection and return MESSAGE_NOT_FOUND."
+    },
+    {
       "operationId": "getMessageMetricsBackfill",
       "rpcMethod": "getMessageMetricsBackfill",
       "namespace": [
@@ -4785,6 +5629,159 @@
       "description": "Read the last confirmed campaign and current eligibility. Follow changes through their operations. Eligibility is a control-plane assessment, not a delivery or recipient-consent guarantee."
     },
     {
+      "operationId": "getSpace",
+      "rpcMethod": "getSpace",
+      "namespace": [
+        "projects"
+      ],
+      "httpMethod": "GET",
+      "path": "/v1/projects/{id}/spaces/{spaceId}",
+      "safe": true,
+      "idempotencyKeyRequired": false,
+      "parameters": [
+        {
+          "name": "id",
+          "wireName": "id",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "pattern": "^pho_prj_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "spaceId",
+          "wireName": "spaceId",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "pattern": "^pho_spc_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "if-none-match",
+          "wireName": "if-none-match",
+          "location": "header",
+          "required": false,
+          "schema": {
+            "minLength": 1,
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "application/json": "#/components/schemas/PlatformSpace"
+        },
+        "304": {},
+        "401": {
+          "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
+        },
+        "403": {
+          "application/problem+json": "#/components/schemas/GetSpaceForbiddenProblem"
+        },
+        "404": {
+          "application/problem+json": "#/components/schemas/SpaceNotFoundProblem"
+        },
+        "422": {
+          "application/problem+json": "#/components/schemas/GetSpaceUnprocessableEntityProblem"
+        },
+        "500": {
+          "application/problem+json": "#/components/schemas/GetSpaceInternalServerErrorProblem"
+        },
+        "502": {
+          "application/problem+json": "#/components/schemas/UpstreamFailureProblem"
+        },
+        "503": {
+          "application/problem+json": "#/components/schemas/UpstreamUnavailableProblem"
+        },
+        "504": {
+          "application/problem+json": "#/components/schemas/GetSpaceGatewayTimeoutProblem"
+        }
+      },
+      "summary": "Get a Space",
+      "description": "Returns one stored Space by canonical Photon Space ID. A Space of a kind its platform does not support returns OPERATION_UNAVAILABLE."
+    },
+    {
+      "operationId": "getUser",
+      "rpcMethod": "getUser",
+      "namespace": [
+        "projects"
+      ],
+      "httpMethod": "GET",
+      "path": "/v1/projects/{id}/users/{userId}",
+      "safe": true,
+      "idempotencyKeyRequired": false,
+      "parameters": [
+        {
+          "name": "id",
+          "wireName": "id",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "pattern": "^pho_prj_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "userId",
+          "wireName": "userId",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "pattern": "^pho_usr_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "if-none-match",
+          "wireName": "if-none-match",
+          "location": "header",
+          "required": false,
+          "schema": {
+            "minLength": 1,
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "application/json": "#/components/schemas/PlatformUser"
+        },
+        "304": {},
+        "401": {
+          "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
+        },
+        "403": {
+          "application/problem+json": "#/components/schemas/GetUserForbiddenProblem"
+        },
+        "404": {
+          "application/problem+json": "#/components/schemas/UserNotFoundProblem"
+        },
+        "409": {
+          "application/problem+json": "#/components/schemas/UserIdentityConflictProblem"
+        },
+        "422": {
+          "application/problem+json": "#/components/schemas/GetUserUnprocessableEntityProblem"
+        },
+        "500": {
+          "application/problem+json": "#/components/schemas/GetUserInternalServerErrorProblem"
+        },
+        "502": {
+          "application/problem+json": "#/components/schemas/UpstreamFailureProblem"
+        },
+        "503": {
+          "application/problem+json": "#/components/schemas/UpstreamUnavailableProblem"
+        },
+        "504": {
+          "application/problem+json": "#/components/schemas/GetUserGatewayTimeoutProblem"
+        }
+      },
+      "summary": "Get an User",
+      "description": "Returns one User after refreshing its Human or Agent classification and project ownership where supported. iMessage email identities retain their producer-observed classification and ownership because no current email ownership lookup is available. WhatsApp, WhatsApp Business and iMessage perform no provider fetch; only SMS Human classifications perform a phone number lookup. Current-project Agents expose resourceId; external-project Agents expose only pairwise managedBy. Conditional response evaluation uses the post-reconciliation representation. Stored reads use each platform definition; projection requires adapter support."
+    },
+    {
       "operationId": "getVoiceLineProfileAssignment",
       "rpcMethod": "getVoiceLineProfileAssignment",
       "namespace": [
@@ -5698,6 +6695,79 @@
       "description": "Returns one page of how the selected organization's credit balance changed, newest first: credit notes issued and credit granted, credit applied to invoices, credit restored when the change an invoice paid for never applied, and credit voided. Each entry names the credit note (none for granted credit), the invoice when there is one, and the charge and subscription the credit note credits, or that the credit was a grant. Pass nextPage as page to read further. This operation does not change billing."
     },
     {
+      "operationId": "listEmailRecommendations",
+      "rpcMethod": "listEmailRecommendations",
+      "namespace": [
+        "projects",
+        "platforms"
+      ],
+      "httpMethod": "GET",
+      "path": "/v1/projects/{id}/platforms/email/recommendations",
+      "safe": true,
+      "idempotencyKeyRequired": false,
+      "parameters": [
+        {
+          "name": "id",
+          "wireName": "id",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "pageSize",
+          "wireName": "pageSize",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "maximum": 200,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        {
+          "name": "pageToken",
+          "wireName": "pageToken",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "maxLength": 8192,
+            "minLength": 1,
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "application/json": "#/components/schemas/EmailRecommendations"
+        },
+        "401": {
+          "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
+        },
+        "403": {
+          "application/problem+json": "#/components/schemas/ListEmailRecommendationsForbiddenProblem"
+        },
+        "422": {
+          "application/problem+json": "#/components/schemas/ValidationFailedProblem"
+        },
+        "500": {
+          "application/problem+json": "#/components/schemas/ListEmailRecommendationsInternalServerErrorProblem"
+        },
+        "502": {
+          "application/problem+json": "#/components/schemas/UpstreamFailureProblem"
+        },
+        "503": {
+          "application/problem+json": "#/components/schemas/UpstreamUnavailableProblem"
+        },
+        "504": {
+          "application/problem+json": "#/components/schemas/ListEmailRecommendationsGatewayTimeoutProblem"
+        }
+      },
+      "summary": "List email recommendations",
+      "description": "Reads Photon guidance from stored sending policies, sending setup and domain checks. Project and Organization restrictions repeat on each page of domain observations. Follow nextPageToken until hasMore is false; observations describe only the current page. Recommendations are advisory reads, never permission to send or resume. Reputation-rate guidance and supplementary delivery advice are explicitly unavailable until their sources are integrated. An empty list does not indicate healthy reputation or resolved findings. Requires platforms:read for the path Project."
+    },
+    {
       "operationId": "listFilteredVerificationCodes",
       "rpcMethod": "listFilteredVerificationCodes",
       "namespace": [
@@ -5892,6 +6962,203 @@
       },
       "summary": "List invoices",
       "description": "Returns one page of the selected organization's invoices, newest first: every invoice issued to it with a nonzero total or actual charges, including charges fully paid by credit; drafts and empty invoices are excluded. Each names what it charged the organization's own subscription and each project. Pass subject to list only the invoices that charge the organization itself or one of its projects, and nextCursor as cursor to read further. Listing invoices does not make a payment or modify a subscription."
+    },
+    {
+      "operationId": "listMessages",
+      "rpcMethod": "listMessages",
+      "namespace": [
+        "projects"
+      ],
+      "httpMethod": "GET",
+      "path": "/v1/projects/{id}/messages",
+      "safe": true,
+      "idempotencyKeyRequired": false,
+      "parameters": [
+        {
+          "name": "id",
+          "wireName": "id",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "pattern": "^pho_prj_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "createdBefore",
+          "wireName": "createdBefore",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "createdSince",
+          "wireName": "createdSince",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "direction",
+          "wireName": "direction",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/MessageDirection"
+          }
+        },
+        {
+          "name": "excludeContentTypes",
+          "wireName": "excludeContentTypes",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "maxLength": 1024,
+            "type": "string"
+          }
+        },
+        {
+          "name": "order",
+          "wireName": "order",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/SortOrder"
+          }
+        },
+        {
+          "name": "orderBy",
+          "wireName": "orderBy",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/TimestampOrderBy"
+          }
+        },
+        {
+          "name": "pageSize",
+          "wireName": "pageSize",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        {
+          "name": "pageToken",
+          "wireName": "pageToken",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "maxLength": 4096,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "perspectiveUserId",
+          "wireName": "perspectiveUserId",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "pattern": "^pho_usr_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "platform",
+          "wireName": "platform",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/Platform"
+          }
+        },
+        {
+          "name": "resourceId",
+          "wireName": "resourceId",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "pattern": "^pho_res_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "spaceId",
+          "wireName": "spaceId",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "pattern": "^pho_spc_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "updatedBefore",
+          "wireName": "updatedBefore",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "updatedSince",
+          "wireName": "updatedSince",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "application/json": "#/components/schemas/MessagePage"
+        },
+        "400": {
+          "application/problem+json": "#/components/schemas/InvalidPageTokenProblem"
+        },
+        "401": {
+          "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
+        },
+        "403": {
+          "application/problem+json": "#/components/schemas/ListMessagesForbiddenProblem"
+        },
+        "422": {
+          "application/problem+json": "#/components/schemas/ValidationFailedProblem"
+        },
+        "500": {
+          "application/problem+json": "#/components/schemas/ListMessagesInternalServerErrorProblem"
+        },
+        "502": {
+          "application/problem+json": "#/components/schemas/UpstreamFailureProblem"
+        },
+        "503": {
+          "application/problem+json": "#/components/schemas/UpstreamUnavailableProblem"
+        },
+        "504": {
+          "application/problem+json": "#/components/schemas/ListMessagesGatewayTimeoutProblem"
+        }
+      },
+      "summary": "List Messages",
+      "description": "Lists the Project's Messages, with optional resource, conversation, and time filters. Results are eventually consistent."
     },
     {
       "operationId": "listNumberAreaCodes",
@@ -6366,6 +7633,63 @@
       "description": "Returns a cursor-paginated page of the active projects in organizationId. Filter using query and the documented creation-time bounds, and navigate with pageSize and pageToken. Project roles are not returned and role is not a supported filter."
     },
     {
+      "operationId": "listProjectSubscriptions",
+      "rpcMethod": "listProjectSubscriptions",
+      "namespace": [
+        "projects",
+        "billing"
+      ],
+      "httpMethod": "GET",
+      "path": "/v1/projects/{projectId}/billing/subscriptions",
+      "safe": true,
+      "idempotencyKeyRequired": false,
+      "parameters": [
+        {
+          "name": "projectId",
+          "wireName": "projectId",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "application/json": "#/components/schemas/ListProjectSubscriptionsResponse"
+        },
+        "400": {
+          "application/problem+json": "#/components/schemas/InvalidArgumentProblem"
+        },
+        "401": {
+          "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
+        },
+        "403": {
+          "application/problem+json": "#/components/schemas/ListProjectSubscriptionsForbiddenProblem"
+        },
+        "409": {
+          "application/problem+json": "#/components/schemas/FailedPreconditionProblem"
+        },
+        "422": {
+          "application/problem+json": "#/components/schemas/ValidationFailedProblem"
+        },
+        "500": {
+          "application/problem+json": "#/components/schemas/ListProjectSubscriptionsInternalServerErrorProblem"
+        },
+        "502": {
+          "application/problem+json": "#/components/schemas/UpstreamFailureProblem"
+        },
+        "503": {
+          "application/problem+json": "#/components/schemas/UpstreamUnavailableProblem"
+        },
+        "504": {
+          "application/problem+json": "#/components/schemas/ListProjectSubscriptionsGatewayTimeoutProblem"
+        }
+      },
+      "summary": "List project subscriptions",
+      "description": "Lists the plan each of the selected project's categories holds, with its price and the payer's standing. It suits showing a project's plan wherever projects are listed; the billing overview adds billing periods, fixed charges, entitlements and usage."
+    },
+    {
       "operationId": "listResourceFilteredVerificationCodes",
       "rpcMethod": "listResourceFilteredVerificationCodes",
       "namespace": [
@@ -6588,7 +7912,7 @@
         }
       },
       "summary": "List resources",
-      "description": "Lists everything the project holds, oldest first, whatever kind of thing it is — one endpoint and one id shape for numbers, dedicated lines and whatever ships next. Nothing half-built appears here: a resource exists only once it is real, so anything still being provisioned is an operation rather than a resource with a pending flag. Filter by `type`, by `ability` (which matches only abilities that are currently enabled), and by `state` — comma-separated, and absent means every state, including retired ones. `detail` carries a per-type public view: an SMS number's number, a dedicated line's number and its per-capability health (`imessageHealth`, `whatsappHealth`, each with an `overallStatus` of `available`, `degraded`, `unavailable` or `unknown`; `imessageHealth` also carries `account`, `photonSystemComponents`, `newConversations`, `sms`, `mms` and `outboundPhoneCalling`, each a `status` with the `cause` that decided it: `account`, `photonSystemComponents`, or null for the item's own state. `outboundPhoneCalling` is whether the line's number can place outbound phone calls: `available`, `unavailable` when its caller ID is not verified (the line is then `degraded`), or `unknown` when it has not been checked yet; it does not depend on the account or the Photon system components, so its `cause` is always null). Requires the platforms:read permission bound to the project resource in the path."
+      "description": "Lists the project's resources, oldest first, including retired ones unless `state` filters them out. Filter by `type`, by enabled `ability` and by comma-separated `state`. `detail` is a per-type public view. Requires the platforms:read permission bound to the project resource in the path."
     },
     {
       "operationId": "listSharedLineAssignments",
@@ -6675,6 +7999,425 @@
       },
       "summary": "List shared line assignments",
       "description": "Lists the project's shared line assignments, oldest first. Released assignments are excluded unless includeReleased is set. Requires the platforms:read permission bound to the project resource in the path."
+    },
+    {
+      "operationId": "listSpaces",
+      "rpcMethod": "listSpaces",
+      "namespace": [
+        "projects"
+      ],
+      "httpMethod": "GET",
+      "path": "/v1/projects/{id}/spaces",
+      "safe": true,
+      "idempotencyKeyRequired": false,
+      "parameters": [
+        {
+          "name": "id",
+          "wireName": "id",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "pattern": "^pho_prj_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "messageCreatedBefore",
+          "wireName": "messageCreatedBefore",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "messageCreatedSince",
+          "wireName": "messageCreatedSince",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "messageDirection",
+          "wireName": "messageDirection",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/MessageDirection"
+          }
+        },
+        {
+          "name": "messageExcludeContentTypes",
+          "wireName": "messageExcludeContentTypes",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "maxLength": 1024,
+            "type": "string"
+          }
+        },
+        {
+          "name": "messageResourceId",
+          "wireName": "messageResourceId",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "pattern": "^pho_res_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "createdBefore",
+          "wireName": "createdBefore",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "createdSince",
+          "wireName": "createdSince",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "order",
+          "wireName": "order",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/SortOrder"
+          }
+        },
+        {
+          "name": "orderBy",
+          "wireName": "orderBy",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/SpaceOrderBy"
+          }
+        },
+        {
+          "name": "pageSize",
+          "wireName": "pageSize",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        {
+          "name": "pageToken",
+          "wireName": "pageToken",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "maxLength": 4096,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "participantHandle",
+          "wireName": "participantHandle",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "maxLength": 320,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        {
+          "name": "participantId",
+          "wireName": "participantId",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "pattern": "^pho_usr_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "platform",
+          "wireName": "platform",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/Platform"
+          }
+        },
+        {
+          "name": "updatedBefore",
+          "wireName": "updatedBefore",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "updatedSince",
+          "wireName": "updatedSince",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "application/json": "#/components/schemas/SpacePage"
+        },
+        "400": {
+          "application/problem+json": "#/components/schemas/InvalidPageTokenProblem"
+        },
+        "401": {
+          "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
+        },
+        "403": {
+          "application/problem+json": "#/components/schemas/ListSpacesForbiddenProblem"
+        },
+        "422": {
+          "application/problem+json": "#/components/schemas/ValidationFailedProblem"
+        },
+        "500": {
+          "application/problem+json": "#/components/schemas/ListSpacesInternalServerErrorProblem"
+        },
+        "502": {
+          "application/problem+json": "#/components/schemas/UpstreamFailureProblem"
+        },
+        "503": {
+          "application/problem+json": "#/components/schemas/UpstreamUnavailableProblem"
+        },
+        "504": {
+          "application/problem+json": "#/components/schemas/ListSpacesGatewayTimeoutProblem"
+        }
+      },
+      "summary": "List Spaces",
+      "description": "Lists the Project's stored Spaces, with optional participant and Message filters. Results are eventually consistent."
+    },
+    {
+      "operationId": "listUsers",
+      "rpcMethod": "listUsers",
+      "namespace": [
+        "projects"
+      ],
+      "httpMethod": "GET",
+      "path": "/v1/projects/{id}/users",
+      "safe": true,
+      "idempotencyKeyRequired": false,
+      "parameters": [
+        {
+          "name": "id",
+          "wireName": "id",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "pattern": "^pho_prj_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "messageCreatedBefore",
+          "wireName": "messageCreatedBefore",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "messageCreatedSince",
+          "wireName": "messageCreatedSince",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "messageDirection",
+          "wireName": "messageDirection",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/MessageDirection"
+          }
+        },
+        {
+          "name": "messageExcludeContentTypes",
+          "wireName": "messageExcludeContentTypes",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "maxLength": 1024,
+            "type": "string"
+          }
+        },
+        {
+          "name": "messageResourceId",
+          "wireName": "messageResourceId",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "pattern": "^pho_res_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "createdBefore",
+          "wireName": "createdBefore",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "createdSince",
+          "wireName": "createdSince",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "order",
+          "wireName": "order",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/SortOrder"
+          }
+        },
+        {
+          "name": "orderBy",
+          "wireName": "orderBy",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/TimestampOrderBy"
+          }
+        },
+        {
+          "name": "pageSize",
+          "wireName": "pageSize",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        {
+          "name": "pageToken",
+          "wireName": "pageToken",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "maxLength": 4096,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "platform",
+          "wireName": "platform",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/Platform"
+          }
+        },
+        {
+          "name": "updatedBefore",
+          "wireName": "updatedBefore",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "updatedSince",
+          "wireName": "updatedSince",
+          "location": "query",
+          "required": false,
+          "schema": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "application/json": "#/components/schemas/UserPage"
+        },
+        "400": {
+          "application/problem+json": "#/components/schemas/InvalidPageTokenProblem"
+        },
+        "401": {
+          "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
+        },
+        "403": {
+          "application/problem+json": "#/components/schemas/ListUsersForbiddenProblem"
+        },
+        "422": {
+          "application/problem+json": "#/components/schemas/ValidationFailedProblem"
+        },
+        "500": {
+          "application/problem+json": "#/components/schemas/ListUsersInternalServerErrorProblem"
+        },
+        "502": {
+          "application/problem+json": "#/components/schemas/UpstreamFailureProblem"
+        },
+        "503": {
+          "application/problem+json": "#/components/schemas/UpstreamUnavailableProblem"
+        },
+        "504": {
+          "application/problem+json": "#/components/schemas/ListUsersGatewayTimeoutProblem"
+        }
+      },
+      "summary": "List Users",
+      "description": "Lists stored Users without refreshing their classification; use Get User for current details. Message filters select incoming senders or outgoing recipients, excluding the Message's own endpoint."
     },
     {
       "operationId": "listVoiceProfiles",
@@ -7143,6 +8886,89 @@
       },
       "summary": "List WhatsApp shared line assignments",
       "description": "Lists the project's WhatsApp shared line assignments, oldest first. Released assignments are excluded unless includeReleased is set. Requires the platforms:read permission bound to the project resource in the path."
+    },
+    {
+      "operationId": "markMessageRead",
+      "rpcMethod": "markMessageRead",
+      "namespace": [
+        "projects"
+      ],
+      "httpMethod": "POST",
+      "path": "/v1/projects/{id}/messages/{messageId}/read",
+      "safe": false,
+      "idempotencyKeyRequired": true,
+      "parameters": [
+        {
+          "name": "id",
+          "wireName": "id",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "pattern": "^pho_prj_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "messageId",
+          "wireName": "messageId",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "pattern": "^pho_msg_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "idempotency-key",
+          "wireName": "idempotency-key",
+          "location": "header",
+          "required": true,
+          "schema": {
+            "pattern": "^[\\x21-\\x7e]{1,255}$",
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "202": {
+          "application/json": "#/components/schemas/MarkMessageReadResponse"
+        },
+        "400": {
+          "application/problem+json": "#/components/schemas/InvalidRequestProblem"
+        },
+        "401": {
+          "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
+        },
+        "403": {
+          "application/problem+json": "#/components/schemas/MarkMessageReadForbiddenProblem"
+        },
+        "404": {
+          "application/problem+json": "#/components/schemas/MarkMessageReadNotFoundProblem"
+        },
+        "409": {
+          "application/problem+json": "#/components/schemas/MarkMessageReadConflictProblem"
+        },
+        "413": {
+          "application/problem+json": "#/components/schemas/PayloadTooLargeProblem"
+        },
+        "422": {
+          "application/problem+json": "#/components/schemas/MarkMessageReadUnprocessableEntityProblem"
+        },
+        "500": {
+          "application/problem+json": "#/components/schemas/MarkMessageReadInternalServerErrorProblem"
+        },
+        "502": {
+          "application/problem+json": "#/components/schemas/UpstreamFailureProblem"
+        },
+        "503": {
+          "application/problem+json": "#/components/schemas/UpstreamUnavailableProblem"
+        },
+        "504": {
+          "application/problem+json": "#/components/schemas/MarkMessageReadGatewayTimeoutProblem"
+        }
+      },
+      "summary": "Mark a Message as read",
+      "description": "Persists a request to mark one incoming Message as read using its receiving account. A 202 means accepted for asynchronous execution, not handled by the provider. Requires Idempotency-Key. The returned action Message tracks its outcome; privacy settings may suppress remote visibility."
     },
     {
       "operationId": "previewOrganizationChange",
@@ -8780,6 +10606,164 @@
         "required": true,
         "content": {
           "application/json": "#/components/schemas/RotateWebhookSigningSecretRequest"
+        }
+      }
+    },
+    {
+      "operationId": "sendMessage",
+      "rpcMethod": "sendMessage",
+      "namespace": [
+        "projects"
+      ],
+      "httpMethod": "POST",
+      "path": "/v1/projects/{id}/messages",
+      "safe": false,
+      "idempotencyKeyRequired": true,
+      "parameters": [
+        {
+          "name": "id",
+          "wireName": "id",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "pattern": "^pho_prj_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "idempotency-key",
+          "wireName": "idempotency-key",
+          "location": "header",
+          "required": true,
+          "schema": {
+            "pattern": "^[\\x21-\\x7e]{1,255}$",
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "202": {
+          "application/json": "#/components/schemas/SentMessage"
+        },
+        "400": {
+          "application/problem+json": "#/components/schemas/InvalidRequestProblem"
+        },
+        "401": {
+          "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
+        },
+        "402": {
+          "application/problem+json": "#/components/schemas/BillingSuspendedProblem"
+        },
+        "403": {
+          "application/problem+json": "#/components/schemas/SendMessageForbiddenProblem"
+        },
+        "404": {
+          "application/problem+json": "#/components/schemas/SendMessageNotFoundProblem"
+        },
+        "409": {
+          "application/problem+json": "#/components/schemas/SendMessageConflictProblem"
+        },
+        "413": {
+          "application/problem+json": "#/components/schemas/PayloadTooLargeProblem"
+        },
+        "422": {
+          "application/problem+json": "#/components/schemas/SendMessageUnprocessableEntityProblem"
+        },
+        "500": {
+          "application/problem+json": "#/components/schemas/SendMessageInternalServerErrorProblem"
+        },
+        "502": {
+          "application/problem+json": "#/components/schemas/UpstreamFailureProblem"
+        },
+        "503": {
+          "application/problem+json": "#/components/schemas/UpstreamUnavailableProblem"
+        },
+        "504": {
+          "application/problem+json": "#/components/schemas/SendMessageGatewayTimeoutProblem"
+        }
+      },
+      "summary": "Send a Message",
+      "description": "Sends SMS, email, WhatsApp Personal, WhatsApp Business, iMessage, or Telegram text and image messages. A shared iMessage line sends only in direct Spaces, only to a peer with an active Assignment who has messaged it since that Assignment. SMS and MMS require current Platforms authorization for the sender and every recipient; campaign eligibility is required unless every recipient is in-network.",
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": "#/components/schemas/SendMessageRequest"
+        }
+      }
+    },
+    {
+      "operationId": "setSpaceTyping",
+      "rpcMethod": "setSpaceTyping",
+      "namespace": [
+        "projects"
+      ],
+      "httpMethod": "POST",
+      "path": "/v1/projects/{id}/spaces/{spaceId}/typing",
+      "safe": false,
+      "idempotencyKeyRequired": false,
+      "parameters": [
+        {
+          "name": "id",
+          "wireName": "id",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "pattern": "^pho_prj_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "type": "string"
+          }
+        },
+        {
+          "name": "spaceId",
+          "wireName": "spaceId",
+          "location": "path",
+          "required": true,
+          "schema": {
+            "pattern": "^pho_spc_[0-7][0-9a-hjkmnp-tv-z]{25}$",
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "202": {
+          "application/json": "#/components/schemas/SetSpaceTypingResponse"
+        },
+        "400": {
+          "application/problem+json": "#/components/schemas/HttpErrorProblem"
+        },
+        "401": {
+          "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
+        },
+        "403": {
+          "application/problem+json": "#/components/schemas/SetSpaceTypingForbiddenProblem"
+        },
+        "404": {
+          "application/problem+json": "#/components/schemas/SetSpaceTypingNotFoundProblem"
+        },
+        "413": {
+          "application/problem+json": "#/components/schemas/PayloadTooLargeProblem"
+        },
+        "422": {
+          "application/problem+json": "#/components/schemas/SetSpaceTypingUnprocessableEntityProblem"
+        },
+        "500": {
+          "application/problem+json": "#/components/schemas/SetSpaceTypingInternalServerErrorProblem"
+        },
+        "502": {
+          "application/problem+json": "#/components/schemas/UpstreamFailureProblem"
+        },
+        "503": {
+          "application/problem+json": "#/components/schemas/UpstreamUnavailableProblem"
+        },
+        "504": {
+          "application/problem+json": "#/components/schemas/SetSpaceTypingGatewayTimeoutProblem"
+        }
+      },
+      "summary": "Set typing in a Space",
+      "description": "Saves one transient typing update as an authorized Agent in this Space. Returns the dispatched Message with HTTP 202. Successful provider handoff ends in accepted; rejection or expiry ends in failed. Repeat true to refresh; false stops where supported. Callers control refreshes. Unsupported platforms return OPERATION_UNAVAILABLE.",
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": "#/components/schemas/SetSpaceTypingRequest"
         }
       }
     },

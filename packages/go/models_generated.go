@@ -2,6 +2,153 @@
 
 package photonapi
 
+type AcceptedEmailMessage struct {
+	Acceptance  MessageAcceptance   `json:"acceptance"`
+	AddressedTo *UserSnapshot       `json:"addressedTo,omitempty"`
+	Content     EmailMessageContent `json:"content"`
+	// When Photon first persisted this resource.
+	CreatedAt       Timestamp                 `json:"createdAt"`
+	ID              MessageId                 `json:"id"`
+	Metadata        ResourceMetadata          `json:"metadata"`
+	ParentMessageID *MessageId                `json:"parentMessageId,omitempty"`
+	Platform        string                    `json:"platform"`
+	ProjectID       ProjectId                 `json:"projectId"`
+	ReceivedBy      *UserSnapshot             `json:"receivedBy,omitempty"`
+	SentBy          UserSnapshot              `json:"sentBy"`
+	Space           SpaceSnapshot             `json:"space"`
+	Status          string                    `json:"status"`
+	Timestamps      AcceptedMessageTimestamps `json:"timestamps"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type AcceptedImessageMessage struct {
+	Acceptance  MessageAcceptance      `json:"acceptance"`
+	AddressedTo *UserSnapshot          `json:"addressedTo,omitempty"`
+	Content     ImessageMessageContent `json:"content"`
+	// When Photon first persisted this resource.
+	CreatedAt       Timestamp                 `json:"createdAt"`
+	ID              MessageId                 `json:"id"`
+	Metadata        ResourceMetadata          `json:"metadata"`
+	ParentMessageID *MessageId                `json:"parentMessageId,omitempty"`
+	Platform        string                    `json:"platform"`
+	ProjectID       ProjectId                 `json:"projectId"`
+	ReceivedBy      *UserSnapshot             `json:"receivedBy,omitempty"`
+	SentBy          UserSnapshot              `json:"sentBy"`
+	Space           SpaceSnapshot             `json:"space"`
+	Status          string                    `json:"status"`
+	Timestamps      AcceptedMessageTimestamps `json:"timestamps"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type AcceptedMessageTimestamps struct {
+	// When Photon finalized terminal acceptance.
+	AcceptedAt Timestamp `json:"acceptedAt"`
+	// When the emitting service established the public dispatch/send milestone.
+	DispatchedAt Timestamp `json:"dispatchedAt"`
+}
+
+type AcceptedSmsMessage struct {
+	Acceptance  MessageAcceptance `json:"acceptance"`
+	AddressedTo *UserSnapshot     `json:"addressedTo,omitempty"`
+	Content     SmsMessageContent `json:"content"`
+	// When Photon first persisted this resource.
+	CreatedAt       Timestamp                 `json:"createdAt"`
+	ID              MessageId                 `json:"id"`
+	Metadata        ResourceMetadata          `json:"metadata"`
+	ParentMessageID *MessageId                `json:"parentMessageId,omitempty"`
+	Platform        string                    `json:"platform"`
+	ProjectID       ProjectId                 `json:"projectId"`
+	ReceivedBy      *UserSnapshot             `json:"receivedBy,omitempty"`
+	SentBy          UserSnapshot              `json:"sentBy"`
+	Space           SpaceSnapshot             `json:"space"`
+	Status          string                    `json:"status"`
+	Timestamps      AcceptedMessageTimestamps `json:"timestamps"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type AcceptedTelegramMessage struct {
+	Acceptance  MessageAcceptance      `json:"acceptance"`
+	AddressedTo *UserSnapshot          `json:"addressedTo,omitempty"`
+	Content     TelegramMessageContent `json:"content"`
+	// When Photon first persisted this resource.
+	CreatedAt       Timestamp                 `json:"createdAt"`
+	ID              MessageId                 `json:"id"`
+	Metadata        ResourceMetadata          `json:"metadata"`
+	ParentMessageID *MessageId                `json:"parentMessageId,omitempty"`
+	Platform        string                    `json:"platform"`
+	ProjectID       ProjectId                 `json:"projectId"`
+	ReceivedBy      *UserSnapshot             `json:"receivedBy,omitempty"`
+	SentBy          UserSnapshot              `json:"sentBy"`
+	Space           SpaceSnapshot             `json:"space"`
+	Status          string                    `json:"status"`
+	Timestamps      AcceptedMessageTimestamps `json:"timestamps"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type AcceptedUnknownMessage struct {
+	Acceptance  MessageAcceptance `json:"acceptance"`
+	AddressedTo *UserSnapshot     `json:"addressedTo,omitempty"`
+	Content     Content           `json:"content"`
+	// When Photon first persisted this resource.
+	CreatedAt       Timestamp                 `json:"createdAt"`
+	ID              MessageId                 `json:"id"`
+	Metadata        ResourceMetadata          `json:"metadata"`
+	ParentMessageID *MessageId                `json:"parentMessageId,omitempty"`
+	Platform        PlatformIdentifier        `json:"platform"`
+	ProjectID       ProjectId                 `json:"projectId"`
+	ReceivedBy      *UserSnapshot             `json:"receivedBy,omitempty"`
+	SentBy          UserSnapshot              `json:"sentBy"`
+	Space           SpaceSnapshot             `json:"space"`
+	Status          string                    `json:"status"`
+	Timestamps      AcceptedMessageTimestamps `json:"timestamps"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type AcceptedWhatsappBusinessMessage struct {
+	Acceptance  MessageAcceptance              `json:"acceptance"`
+	AddressedTo *UserSnapshot                  `json:"addressedTo,omitempty"`
+	Content     WhatsappBusinessMessageContent `json:"content"`
+	// When Photon first persisted this resource.
+	CreatedAt       Timestamp                 `json:"createdAt"`
+	ID              MessageId                 `json:"id"`
+	Metadata        ResourceMetadata          `json:"metadata"`
+	ParentMessageID *MessageId                `json:"parentMessageId,omitempty"`
+	Platform        string                    `json:"platform"`
+	ProjectID       ProjectId                 `json:"projectId"`
+	ReceivedBy      *UserSnapshot             `json:"receivedBy,omitempty"`
+	SentBy          UserSnapshot              `json:"sentBy"`
+	Space           SpaceSnapshot             `json:"space"`
+	Status          string                    `json:"status"`
+	Timestamps      AcceptedMessageTimestamps `json:"timestamps"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type AcceptedWhatsappMessage struct {
+	Acceptance  MessageAcceptance      `json:"acceptance"`
+	AddressedTo *UserSnapshot          `json:"addressedTo,omitempty"`
+	Content     WhatsappMessageContent `json:"content"`
+	// When Photon first persisted this resource.
+	CreatedAt       Timestamp                 `json:"createdAt"`
+	ID              MessageId                 `json:"id"`
+	Metadata        ResourceMetadata          `json:"metadata"`
+	ParentMessageID *MessageId                `json:"parentMessageId,omitempty"`
+	Platform        string                    `json:"platform"`
+	ProjectID       ProjectId                 `json:"projectId"`
+	ReceivedBy      *UserSnapshot             `json:"receivedBy,omitempty"`
+	SentBy          UserSnapshot              `json:"sentBy"`
+	Space           SpaceSnapshot             `json:"space"`
+	Status          string                    `json:"status"`
+	Timestamps      AcceptedMessageTimestamps `json:"timestamps"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
 type Account struct {
 	AccountID       string     `json:"accountId"`
 	CreatedAt       *Timestamp `json:"createdAt"`
@@ -111,6 +258,14 @@ type Attachment struct {
 	SizeBytes   int64          `json:"sizeBytes"`
 	UpdatedAt   Timestamp      `json:"updatedAt"`
 }
+
+type AttachmentContent struct {
+	AttachmentID AttachmentId     `json:"attachmentId"`
+	Metadata     *ContentMetadata `json:"metadata,omitempty"`
+	Type         string           `json:"type"`
+}
+
+type AttachmentId string
 
 type AttachmentPage struct {
 	Items []Attachment `json:"items"`
@@ -483,6 +638,13 @@ type ConfirmAccountPhoneVerificationRequest struct {
 	PhoneNumber string `json:"phoneNumber"`
 }
 
+type ConfirmedRecipient struct {
+	// Recipient handle from the original send: an email address for email, or the corresponding address on another platform.
+	Handle string `json:"handle"`
+	// Photon User ID of the confirmed recipient.
+	UserID UserId `json:"userId"`
+}
+
 type ConnectEmailDomainRequest struct {
 	Domain string `json:"domain"`
 }
@@ -493,6 +655,85 @@ type ConnectWhatsappBusinessRequest struct {
 	Code          string `json:"code"`
 	PhoneNumberID string `json:"phoneNumberId"`
 	WabaID        string `json:"wabaId"`
+}
+
+type Content struct{ Union }
+
+// Kind returns the "type" discriminator, or "" when absent.
+func (u Content) Kind() string { return u.Discriminator("type") }
+
+// AsTextContent decodes the value as TextContent.
+func (u Content) AsTextContent() (TextContent, error) { return UnionAs[TextContent](u.Union) }
+
+// AsTextUpdateContent decodes the value as TextUpdateContent.
+func (u Content) AsTextUpdateContent() (TextUpdateContent, error) {
+	return UnionAs[TextUpdateContent](u.Union)
+}
+
+// AsAttachmentContent decodes the value as AttachmentContent.
+func (u Content) AsAttachmentContent() (AttachmentContent, error) {
+	return UnionAs[AttachmentContent](u.Union)
+}
+
+// AsVoiceContent decodes the value as VoiceContent.
+func (u Content) AsVoiceContent() (VoiceContent, error) { return UnionAs[VoiceContent](u.Union) }
+
+// AsReactionContent decodes the value as ReactionContent.
+func (u Content) AsReactionContent() (ReactionContent, error) {
+	return UnionAs[ReactionContent](u.Union)
+}
+
+// AsMessageDeleteContent decodes the value as MessageDeleteContent.
+func (u Content) AsMessageDeleteContent() (MessageDeleteContent, error) {
+	return UnionAs[MessageDeleteContent](u.Union)
+}
+
+// AsMessageReadContent decodes the value as MessageReadContent.
+func (u Content) AsMessageReadContent() (MessageReadContent, error) {
+	return UnionAs[MessageReadContent](u.Union)
+}
+
+// AsSpaceParticipantsUpdateContent decodes the value as SpaceParticipantsUpdateContent.
+func (u Content) AsSpaceParticipantsUpdateContent() (SpaceParticipantsUpdateContent, error) {
+	return UnionAs[SpaceParticipantsUpdateContent](u.Union)
+}
+
+// AsSpaceTypingUpdateContent decodes the value as SpaceTypingUpdateContent.
+func (u Content) AsSpaceTypingUpdateContent() (SpaceTypingUpdateContent, error) {
+	return UnionAs[SpaceTypingUpdateContent](u.Union)
+}
+
+// AsPollContent decodes the value as PollContent.
+func (u Content) AsPollContent() (PollContent, error) { return UnionAs[PollContent](u.Union) }
+
+// AsPollVoteContent decodes the value as PollVoteContent.
+func (u Content) AsPollVoteContent() (PollVoteContent, error) {
+	return UnionAs[PollVoteContent](u.Union)
+}
+
+// AsPollUpdateContent decodes the value as PollUpdateContent.
+func (u Content) AsPollUpdateContent() (PollUpdateContent, error) {
+	return UnionAs[PollUpdateContent](u.Union)
+}
+
+// AsGroupContent decodes the value as GroupContent.
+func (u Content) AsGroupContent() (GroupContent, error) { return UnionAs[GroupContent](u.Union) }
+
+type ContentMetadata struct {
+	Email *EmailMetadata `json:"email,omitempty"`
+	Voice *VoiceMetadata `json:"voice,omitempty"`
+}
+
+type CountMessagesResponse struct{ Union }
+
+// AsMessageCount decodes the value as MessageCount.
+func (u CountMessagesResponse) AsMessageCount() (MessageCount, error) {
+	return UnionAs[MessageCount](u.Union)
+}
+
+// AsDailyMessageCount decodes the value as DailyMessageCount.
+func (u CountMessagesResponse) AsDailyMessageCount() (DailyMessageCount, error) {
+	return UnionAs[DailyMessageCount](u.Union)
 }
 
 type CreateAccountServiceKeyRequest struct {
@@ -528,6 +769,17 @@ type CreateAppInstallationRequestResponse struct {
 type CreateDefaultVoiceProfileRequest struct {
 	MediaEncryption *VoiceProfileMediaEncryption `json:"mediaEncryption,omitempty"`
 	Protocol        string                       `json:"protocol"`
+}
+
+type CreateOrGetSpaceRequest struct {
+	// Canonical Photon User IDs from this project and platform. iMessage uses the first participant as creator when a new chat is needed; remaining order is ignored. Other platforms ignore all participant order. Counts: iMessage 2-1000; both WhatsApp platforms exactly 2; email 1-51; SMS 2-9. Every Space requires a currently project-owned Agent.
+	ParticipantIds []UserId `json:"participantIds"`
+	Platform       Platform `json:"platform"`
+}
+
+type CreateOrGetUserRequest struct {
+	Handle   string   `json:"handle"`
+	Platform Platform `json:"platform"`
 }
 
 type CreateOrganizationPaymentMethodCheckoutResponse struct {
@@ -660,10 +912,11 @@ type CreditDocument struct {
 }
 
 type CreditSource struct {
-	ChargeCode *string          `json:"chargeCode"`
-	ChargeName *string          `json:"chargeName"`
-	Kind       CreditSourceKind `json:"kind"`
-	Subject    *CreditSubject   `json:"subject"`
+	ChargeCode  *string          `json:"chargeCode"`
+	ChargeName  *string          `json:"chargeName"`
+	Description *string          `json:"description"`
+	Kind        CreditSourceKind `json:"kind"`
+	Subject     *CreditSubject   `json:"subject"`
 }
 
 type CreditSourceKind string
@@ -687,6 +940,14 @@ func (u CreditSubject) AsProjectCreditSubject() (ProjectCreditSubject, error) {
 	return UnionAs[ProjectCreditSubject](u.Union)
 }
 
+type DailyMessageCount struct {
+	Buckets  []MessageCountBucket `json:"buckets"`
+	Count    int64                `json:"count"`
+	Groups   []MessageStatusCount `json:"groups"`
+	Interval string               `json:"interval"`
+	TimeZone string               `json:"timeZone"`
+}
+
 type DedicatedProjectPlatformSettings struct {
 	DedicatedLineAvailableNow bool   `json:"dedicatedLineAvailableNow"`
 	Mode                      string `json:"mode"`
@@ -702,6 +963,170 @@ const (
 type DeleteVoiceProfileOutboundResponse struct {
 	Outbound       any   `json:"outbound"`
 	ProfileVersion int64 `json:"profileVersion"`
+}
+
+type DeliveredEmailMessage struct {
+	AddressedTo *UserSnapshot       `json:"addressedTo,omitempty"`
+	Content     EmailMessageContent `json:"content"`
+	// When Photon first persisted this resource.
+	CreatedAt       Timestamp                  `json:"createdAt"`
+	ID              MessageId                  `json:"id"`
+	Metadata        ResourceMetadata           `json:"metadata"`
+	ParentMessageID *MessageId                 `json:"parentMessageId,omitempty"`
+	Platform        string                     `json:"platform"`
+	ProjectID       ProjectId                  `json:"projectId"`
+	ReceivedBy      *UserSnapshot              `json:"receivedBy,omitempty"`
+	SentBy          UserSnapshot               `json:"sentBy"`
+	Space           SpaceSnapshot              `json:"space"`
+	Status          string                     `json:"status"`
+	Timestamps      DeliveredMessageTimestamps `json:"timestamps"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type DeliveredImessageMessage struct {
+	AddressedTo *UserSnapshot          `json:"addressedTo,omitempty"`
+	Content     ImessageMessageContent `json:"content"`
+	// When Photon first persisted this resource.
+	CreatedAt       Timestamp                  `json:"createdAt"`
+	ID              MessageId                  `json:"id"`
+	Metadata        ResourceMetadata           `json:"metadata"`
+	ParentMessageID *MessageId                 `json:"parentMessageId,omitempty"`
+	Platform        string                     `json:"platform"`
+	ProjectID       ProjectId                  `json:"projectId"`
+	ReceivedBy      *UserSnapshot              `json:"receivedBy,omitempty"`
+	SentBy          UserSnapshot               `json:"sentBy"`
+	Space           SpaceSnapshot              `json:"space"`
+	Status          string                     `json:"status"`
+	Timestamps      DeliveredMessageTimestamps `json:"timestamps"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type DeliveredMessageTimestamps struct {
+	// When Photon finalized delivery based on authoritative confirmation.
+	DeliveredAt Timestamp `json:"deliveredAt"`
+	// When the emitting service established the public dispatch/send milestone.
+	DispatchedAt Timestamp `json:"dispatchedAt"`
+}
+
+type DeliveredSmsMessage struct {
+	AddressedTo *UserSnapshot     `json:"addressedTo,omitempty"`
+	Content     SmsMessageContent `json:"content"`
+	// When Photon first persisted this resource.
+	CreatedAt       Timestamp                  `json:"createdAt"`
+	ID              MessageId                  `json:"id"`
+	Metadata        ResourceMetadata           `json:"metadata"`
+	ParentMessageID *MessageId                 `json:"parentMessageId,omitempty"`
+	Platform        string                     `json:"platform"`
+	ProjectID       ProjectId                  `json:"projectId"`
+	ReceivedBy      *UserSnapshot              `json:"receivedBy,omitempty"`
+	SentBy          UserSnapshot               `json:"sentBy"`
+	Space           SpaceSnapshot              `json:"space"`
+	Status          string                     `json:"status"`
+	Timestamps      DeliveredMessageTimestamps `json:"timestamps"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type DeliveredTelegramMessage struct {
+	AddressedTo *UserSnapshot          `json:"addressedTo,omitempty"`
+	Content     TelegramMessageContent `json:"content"`
+	// When Photon first persisted this resource.
+	CreatedAt       Timestamp                  `json:"createdAt"`
+	ID              MessageId                  `json:"id"`
+	Metadata        ResourceMetadata           `json:"metadata"`
+	ParentMessageID *MessageId                 `json:"parentMessageId,omitempty"`
+	Platform        string                     `json:"platform"`
+	ProjectID       ProjectId                  `json:"projectId"`
+	ReceivedBy      *UserSnapshot              `json:"receivedBy,omitempty"`
+	SentBy          UserSnapshot               `json:"sentBy"`
+	Space           SpaceSnapshot              `json:"space"`
+	Status          string                     `json:"status"`
+	Timestamps      DeliveredMessageTimestamps `json:"timestamps"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type DeliveredUnknownMessage struct {
+	AddressedTo *UserSnapshot `json:"addressedTo,omitempty"`
+	Content     Content       `json:"content"`
+	// When Photon first persisted this resource.
+	CreatedAt       Timestamp                  `json:"createdAt"`
+	ID              MessageId                  `json:"id"`
+	Metadata        ResourceMetadata           `json:"metadata"`
+	ParentMessageID *MessageId                 `json:"parentMessageId,omitempty"`
+	Platform        PlatformIdentifier         `json:"platform"`
+	ProjectID       ProjectId                  `json:"projectId"`
+	ReceivedBy      *UserSnapshot              `json:"receivedBy,omitempty"`
+	SentBy          UserSnapshot               `json:"sentBy"`
+	Space           SpaceSnapshot              `json:"space"`
+	Status          string                     `json:"status"`
+	Timestamps      DeliveredMessageTimestamps `json:"timestamps"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type DeliveredWhatsappBusinessMessage struct {
+	AddressedTo *UserSnapshot                  `json:"addressedTo,omitempty"`
+	Content     WhatsappBusinessMessageContent `json:"content"`
+	// When Photon first persisted this resource.
+	CreatedAt       Timestamp                  `json:"createdAt"`
+	ID              MessageId                  `json:"id"`
+	Metadata        ResourceMetadata           `json:"metadata"`
+	ParentMessageID *MessageId                 `json:"parentMessageId,omitempty"`
+	Platform        string                     `json:"platform"`
+	ProjectID       ProjectId                  `json:"projectId"`
+	ReceivedBy      *UserSnapshot              `json:"receivedBy,omitempty"`
+	SentBy          UserSnapshot               `json:"sentBy"`
+	Space           SpaceSnapshot              `json:"space"`
+	Status          string                     `json:"status"`
+	Timestamps      DeliveredMessageTimestamps `json:"timestamps"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type DeliveredWhatsappMessage struct {
+	AddressedTo *UserSnapshot          `json:"addressedTo,omitempty"`
+	Content     WhatsappMessageContent `json:"content"`
+	// When Photon first persisted this resource.
+	CreatedAt       Timestamp                  `json:"createdAt"`
+	ID              MessageId                  `json:"id"`
+	Metadata        ResourceMetadata           `json:"metadata"`
+	ParentMessageID *MessageId                 `json:"parentMessageId,omitempty"`
+	Platform        string                     `json:"platform"`
+	ProjectID       ProjectId                  `json:"projectId"`
+	ReceivedBy      *UserSnapshot              `json:"receivedBy,omitempty"`
+	SentBy          UserSnapshot               `json:"sentBy"`
+	Space           SpaceSnapshot              `json:"space"`
+	Status          string                     `json:"status"`
+	Timestamps      DeliveredMessageTimestamps `json:"timestamps"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type DeliveryConfirmationNotApplicableAcceptance struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+}
+
+type DeliveryConfirmationTimedOutAcceptance struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+}
+
+type DeliveryConfirmationUnavailableAcceptance struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+}
+
+type DeliveryPartiallyConfirmedAcceptance struct {
+	Code string `json:"code"`
+	// Unique recipients with authoritative delivery confirmation for the original send.
+	ConfirmedRecipientCount int64 `json:"confirmedRecipientCount"`
+	// Optional complete list of confirmed recipient snapshots, each with a Photon userId and the handle used for the original send. User IDs must be unique, and both fields must be visible to the caller. The list length must equal confirmedRecipientCount. Persist the snapshots with the terminal outcome. Omit when the full confirmed set cannot be identified or disclosed; omission does not mean zero deliveries.
+	ConfirmedRecipients []ConfirmedRecipient `json:"confirmedRecipients,omitempty"`
+	Message             string               `json:"message"`
 }
 
 type DeprecatedWebhookApiVersion struct {
@@ -784,7 +1209,673 @@ type DisableOrganizationSsoRequest struct {
 	ExpectedVersion string   `json:"expectedVersion"`
 }
 
+type DispatchedEmailMessage struct {
+	AddressedTo *UserSnapshot       `json:"addressedTo,omitempty"`
+	Content     EmailMessageContent `json:"content"`
+	// When Photon first persisted this resource.
+	CreatedAt       Timestamp                   `json:"createdAt"`
+	ID              MessageId                   `json:"id"`
+	Metadata        ResourceMetadata            `json:"metadata"`
+	ParentMessageID *MessageId                  `json:"parentMessageId,omitempty"`
+	Platform        string                      `json:"platform"`
+	ProjectID       ProjectId                   `json:"projectId"`
+	ReceivedBy      *UserSnapshot               `json:"receivedBy,omitempty"`
+	SentBy          UserSnapshot                `json:"sentBy"`
+	Space           SpaceSnapshot               `json:"space"`
+	Status          string                      `json:"status"`
+	Timestamps      DispatchedMessageTimestamps `json:"timestamps"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type DispatchedImessageMessage struct {
+	AddressedTo *UserSnapshot          `json:"addressedTo,omitempty"`
+	Content     ImessageMessageContent `json:"content"`
+	// When Photon first persisted this resource.
+	CreatedAt       Timestamp                   `json:"createdAt"`
+	ID              MessageId                   `json:"id"`
+	Metadata        ResourceMetadata            `json:"metadata"`
+	ParentMessageID *MessageId                  `json:"parentMessageId,omitempty"`
+	Platform        string                      `json:"platform"`
+	ProjectID       ProjectId                   `json:"projectId"`
+	ReceivedBy      *UserSnapshot               `json:"receivedBy,omitempty"`
+	SentBy          UserSnapshot                `json:"sentBy"`
+	Space           SpaceSnapshot               `json:"space"`
+	Status          string                      `json:"status"`
+	Timestamps      DispatchedMessageTimestamps `json:"timestamps"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type DispatchedMessageTimestamps struct {
+	// When the emitting service established the public dispatch/send milestone.
+	DispatchedAt Timestamp `json:"dispatchedAt"`
+}
+
+type DispatchedSmsMessage struct {
+	AddressedTo *UserSnapshot     `json:"addressedTo,omitempty"`
+	Content     SmsMessageContent `json:"content"`
+	// When Photon first persisted this resource.
+	CreatedAt       Timestamp                   `json:"createdAt"`
+	ID              MessageId                   `json:"id"`
+	Metadata        ResourceMetadata            `json:"metadata"`
+	ParentMessageID *MessageId                  `json:"parentMessageId,omitempty"`
+	Platform        string                      `json:"platform"`
+	ProjectID       ProjectId                   `json:"projectId"`
+	ReceivedBy      *UserSnapshot               `json:"receivedBy,omitempty"`
+	SentBy          UserSnapshot                `json:"sentBy"`
+	Space           SpaceSnapshot               `json:"space"`
+	Status          string                      `json:"status"`
+	Timestamps      DispatchedMessageTimestamps `json:"timestamps"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type DispatchedTelegramMessage struct {
+	AddressedTo *UserSnapshot          `json:"addressedTo,omitempty"`
+	Content     TelegramMessageContent `json:"content"`
+	// When Photon first persisted this resource.
+	CreatedAt       Timestamp                   `json:"createdAt"`
+	ID              MessageId                   `json:"id"`
+	Metadata        ResourceMetadata            `json:"metadata"`
+	ParentMessageID *MessageId                  `json:"parentMessageId,omitempty"`
+	Platform        string                      `json:"platform"`
+	ProjectID       ProjectId                   `json:"projectId"`
+	ReceivedBy      *UserSnapshot               `json:"receivedBy,omitempty"`
+	SentBy          UserSnapshot                `json:"sentBy"`
+	Space           SpaceSnapshot               `json:"space"`
+	Status          string                      `json:"status"`
+	Timestamps      DispatchedMessageTimestamps `json:"timestamps"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type DispatchedUnknownMessage struct {
+	AddressedTo *UserSnapshot `json:"addressedTo,omitempty"`
+	Content     Content       `json:"content"`
+	// When Photon first persisted this resource.
+	CreatedAt       Timestamp                   `json:"createdAt"`
+	ID              MessageId                   `json:"id"`
+	Metadata        ResourceMetadata            `json:"metadata"`
+	ParentMessageID *MessageId                  `json:"parentMessageId,omitempty"`
+	Platform        PlatformIdentifier          `json:"platform"`
+	ProjectID       ProjectId                   `json:"projectId"`
+	ReceivedBy      *UserSnapshot               `json:"receivedBy,omitempty"`
+	SentBy          UserSnapshot                `json:"sentBy"`
+	Space           SpaceSnapshot               `json:"space"`
+	Status          string                      `json:"status"`
+	Timestamps      DispatchedMessageTimestamps `json:"timestamps"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type DispatchedWhatsappBusinessMessage struct {
+	AddressedTo *UserSnapshot                  `json:"addressedTo,omitempty"`
+	Content     WhatsappBusinessMessageContent `json:"content"`
+	// When Photon first persisted this resource.
+	CreatedAt       Timestamp                   `json:"createdAt"`
+	ID              MessageId                   `json:"id"`
+	Metadata        ResourceMetadata            `json:"metadata"`
+	ParentMessageID *MessageId                  `json:"parentMessageId,omitempty"`
+	Platform        string                      `json:"platform"`
+	ProjectID       ProjectId                   `json:"projectId"`
+	ReceivedBy      *UserSnapshot               `json:"receivedBy,omitempty"`
+	SentBy          UserSnapshot                `json:"sentBy"`
+	Space           SpaceSnapshot               `json:"space"`
+	Status          string                      `json:"status"`
+	Timestamps      DispatchedMessageTimestamps `json:"timestamps"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type DispatchedWhatsappMessage struct {
+	AddressedTo *UserSnapshot          `json:"addressedTo,omitempty"`
+	Content     WhatsappMessageContent `json:"content"`
+	// When Photon first persisted this resource.
+	CreatedAt       Timestamp                   `json:"createdAt"`
+	ID              MessageId                   `json:"id"`
+	Metadata        ResourceMetadata            `json:"metadata"`
+	ParentMessageID *MessageId                  `json:"parentMessageId,omitempty"`
+	Platform        string                      `json:"platform"`
+	ProjectID       ProjectId                   `json:"projectId"`
+	ReceivedBy      *UserSnapshot               `json:"receivedBy,omitempty"`
+	SentBy          UserSnapshot                `json:"sentBy"`
+	Space           SpaceSnapshot               `json:"space"`
+	Status          string                      `json:"status"`
+	Timestamps      DispatchedMessageTimestamps `json:"timestamps"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
 type DownloadAttachmentResponse = any
+
+type EmailAddressing struct {
+	// Omitted means unavailable or undisclosed; an empty array means known empty. Never infer hidden recipients from another observation.
+	Bcc []EmailMailbox `json:"bcc,omitempty"`
+	// Omitted means unavailable or undisclosed; an empty array means known empty. Never infer hidden recipients from another observation.
+	Cc []EmailMailbox `json:"cc,omitempty"`
+	// The captured sender mailbox. Its address and resolved User ID must agree with the source Message's sentBy.
+	From EmailMailbox `json:"from"`
+	// Omitted means unavailable or undisclosed; an empty array means known empty. Never infer hidden recipients from another observation.
+	ReplyTo []EmailMailbox `json:"replyTo,omitempty"`
+	// The Message that supplied this observation. In a Message Space snapshot this is the containing Message's own ID, not its parent ID.
+	SourceMessageID MessageId `json:"sourceMessageId"`
+	// Omitted means unavailable or undisclosed; an empty array means known empty. Never infer hidden recipients from another observation.
+	To []EmailMailbox `json:"to,omitempty"`
+}
+
+type EmailContentDisposition string
+
+const (
+	EmailContentDispositionInline     EmailContentDisposition = "inline"
+	EmailContentDispositionAttachment EmailContentDisposition = "attachment"
+)
+
+type EmailDeliveryMetrics struct {
+	Availability        EmailDeliveryMetricsAvailability `json:"availability"`
+	CollectedAt         *Timestamp                       `json:"collectedAt,omitempty"`
+	ComplaintVisibility string                           `json:"complaintVisibility"`
+	Coverage            string                           `json:"coverage"`
+	Freshness           EmailDeliveryMetricsFreshness    `json:"freshness"`
+	Interval            *EmailDeliveryMetricsInterval    `json:"interval,omitempty"`
+	Period              EmailDeliveryMetricsPeriod       `json:"period"`
+	ReadAt              Timestamp                        `json:"readAt"`
+	Series              []EmailDeliveryMetricsSeries     `json:"series"`
+	Source              string                           `json:"source"`
+}
+
+type EmailDeliveryMetricsAvailability string
+
+const (
+	EmailDeliveryMetricsAvailabilityAvailable   EmailDeliveryMetricsAvailability = "available"
+	EmailDeliveryMetricsAvailabilityPartial     EmailDeliveryMetricsAvailability = "partial"
+	EmailDeliveryMetricsAvailabilityNoData      EmailDeliveryMetricsAvailability = "no_data"
+	EmailDeliveryMetricsAvailabilityUnavailable EmailDeliveryMetricsAvailability = "unavailable"
+)
+
+type EmailDeliveryMetricsFreshness string
+
+const (
+	EmailDeliveryMetricsFreshnessCurrent     EmailDeliveryMetricsFreshness = "current"
+	EmailDeliveryMetricsFreshnessStale       EmailDeliveryMetricsFreshness = "stale"
+	EmailDeliveryMetricsFreshnessUnavailable EmailDeliveryMetricsFreshness = "unavailable"
+)
+
+type EmailDeliveryMetricsInterval struct {
+	End   Timestamp `json:"end"`
+	Start Timestamp `json:"start"`
+}
+
+type EmailDeliveryMetricsPeriod string
+
+const (
+	EmailDeliveryMetricsPeriodDay  EmailDeliveryMetricsPeriod = "day"
+	EmailDeliveryMetricsPeriodWeek EmailDeliveryMetricsPeriod = "week"
+)
+
+type EmailDeliveryMetricsPeriodParameter string
+
+const (
+	EmailDeliveryMetricsPeriodParameterDay  EmailDeliveryMetricsPeriodParameter = "day"
+	EmailDeliveryMetricsPeriodParameterWeek EmailDeliveryMetricsPeriodParameter = "week"
+)
+
+type EmailDeliveryMetricsSeries struct {
+	Metric EmailDeliveryMetricsSeriesMetric  `json:"metric"`
+	Points []EmailDeliveryMetricsSeriesPoint `json:"points"`
+	Status EmailDeliveryMetricsSeriesStatus  `json:"status"`
+	Unit   EmailDeliveryMetricsSeriesUnit    `json:"unit"`
+}
+
+type EmailDeliveryMetricsSeriesMetric string
+
+const (
+	EmailDeliveryMetricsSeriesMetricSent               EmailDeliveryMetricsSeriesMetric = "sent"
+	EmailDeliveryMetricsSeriesMetricDelivered          EmailDeliveryMetricsSeriesMetric = "delivered"
+	EmailDeliveryMetricsSeriesMetricPermanentBounces   EmailDeliveryMetricsSeriesMetric = "permanent_bounces"
+	EmailDeliveryMetricsSeriesMetricTemporaryBounces   EmailDeliveryMetricsSeriesMetric = "temporary_bounces"
+	EmailDeliveryMetricsSeriesMetricObservedComplaints EmailDeliveryMetricsSeriesMetric = "observed_complaints"
+)
+
+type EmailDeliveryMetricsSeriesPoint struct {
+	At    Timestamp `json:"at"`
+	Count int64     `json:"count"`
+}
+
+type EmailDeliveryMetricsSeriesStatus string
+
+const (
+	EmailDeliveryMetricsSeriesStatusAvailable   EmailDeliveryMetricsSeriesStatus = "available"
+	EmailDeliveryMetricsSeriesStatusNoData      EmailDeliveryMetricsSeriesStatus = "no_data"
+	EmailDeliveryMetricsSeriesStatusUnavailable EmailDeliveryMetricsSeriesStatus = "unavailable"
+)
+
+type EmailDeliveryMetricsSeriesUnit string
+
+const (
+	EmailDeliveryMetricsSeriesUnitMessages EmailDeliveryMetricsSeriesUnit = "messages"
+	EmailDeliveryMetricsSeriesUnitReports  EmailDeliveryMetricsSeriesUnit = "reports"
+)
+
+type EmailDomainObservation struct {
+	ObservationStatus EmailObservationStatus `json:"observationStatus"`
+	ObservedAt        *Timestamp             `json:"observedAt,omitempty"`
+	ResourceID        string                 `json:"resourceId"`
+}
+
+type EmailGroupContent struct {
+	Metadata *ContentMetadata        `json:"metadata,omitempty"`
+	Parts    []EmailGroupContentPart `json:"parts"`
+	Type     string                  `json:"type"`
+}
+
+type EmailGroupContentPart struct{ Union }
+
+// Kind returns the "type" discriminator, or "" when absent.
+func (u EmailGroupContentPart) Kind() string { return u.Discriminator("type") }
+
+// AsTextContent decodes the value as TextContent.
+func (u EmailGroupContentPart) AsTextContent() (TextContent, error) {
+	return UnionAs[TextContent](u.Union)
+}
+
+// AsTextUpdateContent decodes the value as TextUpdateContent.
+func (u EmailGroupContentPart) AsTextUpdateContent() (TextUpdateContent, error) {
+	return UnionAs[TextUpdateContent](u.Union)
+}
+
+// AsAttachmentContent decodes the value as AttachmentContent.
+func (u EmailGroupContentPart) AsAttachmentContent() (AttachmentContent, error) {
+	return UnionAs[AttachmentContent](u.Union)
+}
+
+// AsVoiceContent decodes the value as VoiceContent.
+func (u EmailGroupContentPart) AsVoiceContent() (VoiceContent, error) {
+	return UnionAs[VoiceContent](u.Union)
+}
+
+// AsReactionContent decodes the value as ReactionContent.
+func (u EmailGroupContentPart) AsReactionContent() (ReactionContent, error) {
+	return UnionAs[ReactionContent](u.Union)
+}
+
+// AsMessageDeleteContent decodes the value as MessageDeleteContent.
+func (u EmailGroupContentPart) AsMessageDeleteContent() (MessageDeleteContent, error) {
+	return UnionAs[MessageDeleteContent](u.Union)
+}
+
+// AsMessageReadContent decodes the value as MessageReadContent.
+func (u EmailGroupContentPart) AsMessageReadContent() (MessageReadContent, error) {
+	return UnionAs[MessageReadContent](u.Union)
+}
+
+// AsSpaceParticipantsUpdateContent decodes the value as SpaceParticipantsUpdateContent.
+func (u EmailGroupContentPart) AsSpaceParticipantsUpdateContent() (SpaceParticipantsUpdateContent, error) {
+	return UnionAs[SpaceParticipantsUpdateContent](u.Union)
+}
+
+// AsSpaceTypingUpdateContent decodes the value as SpaceTypingUpdateContent.
+func (u EmailGroupContentPart) AsSpaceTypingUpdateContent() (SpaceTypingUpdateContent, error) {
+	return UnionAs[SpaceTypingUpdateContent](u.Union)
+}
+
+// AsPollContent decodes the value as PollContent.
+func (u EmailGroupContentPart) AsPollContent() (PollContent, error) {
+	return UnionAs[PollContent](u.Union)
+}
+
+// AsPollVoteContent decodes the value as PollVoteContent.
+func (u EmailGroupContentPart) AsPollVoteContent() (PollVoteContent, error) {
+	return UnionAs[PollVoteContent](u.Union)
+}
+
+// AsPollUpdateContent decodes the value as PollUpdateContent.
+func (u EmailGroupContentPart) AsPollUpdateContent() (PollUpdateContent, error) {
+	return UnionAs[PollUpdateContent](u.Union)
+}
+
+type EmailMailbox struct {
+	Address EmailMailboxAddress `json:"address"`
+	// The captured display name, when known.
+	Name *string `json:"name,omitempty"`
+	// The resolved Photon User ID, when available. Outbound admission must resolve every mailbox before capture.
+	UserID *UserId `json:"userId,omitempty"`
+}
+
+// The captured mailbox address. Preserve local-part case; admission services own normalization and sending restrictions.
+type EmailMailboxAddress string
+
+type EmailMessage struct{ Union }
+
+// AsReceivedEmailMessage decodes the value as ReceivedEmailMessage.
+func (u EmailMessage) AsReceivedEmailMessage() (ReceivedEmailMessage, error) {
+	return UnionAs[ReceivedEmailMessage](u.Union)
+}
+
+// AsDispatchedEmailMessage decodes the value as DispatchedEmailMessage.
+func (u EmailMessage) AsDispatchedEmailMessage() (DispatchedEmailMessage, error) {
+	return UnionAs[DispatchedEmailMessage](u.Union)
+}
+
+// AsAcceptedEmailMessage decodes the value as AcceptedEmailMessage.
+func (u EmailMessage) AsAcceptedEmailMessage() (AcceptedEmailMessage, error) {
+	return UnionAs[AcceptedEmailMessage](u.Union)
+}
+
+// AsDeliveredEmailMessage decodes the value as DeliveredEmailMessage.
+func (u EmailMessage) AsDeliveredEmailMessage() (DeliveredEmailMessage, error) {
+	return UnionAs[DeliveredEmailMessage](u.Union)
+}
+
+// AsFailedEmailMessage decodes the value as FailedEmailMessage.
+func (u EmailMessage) AsFailedEmailMessage() (FailedEmailMessage, error) {
+	return UnionAs[FailedEmailMessage](u.Union)
+}
+
+type EmailMessageContent struct{ Union }
+
+// Kind returns the "type" discriminator, or "" when absent.
+func (u EmailMessageContent) Kind() string { return u.Discriminator("type") }
+
+// AsTextContent decodes the value as TextContent.
+func (u EmailMessageContent) AsTextContent() (TextContent, error) {
+	return UnionAs[TextContent](u.Union)
+}
+
+// AsTextUpdateContent decodes the value as TextUpdateContent.
+func (u EmailMessageContent) AsTextUpdateContent() (TextUpdateContent, error) {
+	return UnionAs[TextUpdateContent](u.Union)
+}
+
+// AsAttachmentContent decodes the value as AttachmentContent.
+func (u EmailMessageContent) AsAttachmentContent() (AttachmentContent, error) {
+	return UnionAs[AttachmentContent](u.Union)
+}
+
+// AsVoiceContent decodes the value as VoiceContent.
+func (u EmailMessageContent) AsVoiceContent() (VoiceContent, error) {
+	return UnionAs[VoiceContent](u.Union)
+}
+
+// AsReactionContent decodes the value as ReactionContent.
+func (u EmailMessageContent) AsReactionContent() (ReactionContent, error) {
+	return UnionAs[ReactionContent](u.Union)
+}
+
+// AsMessageDeleteContent decodes the value as MessageDeleteContent.
+func (u EmailMessageContent) AsMessageDeleteContent() (MessageDeleteContent, error) {
+	return UnionAs[MessageDeleteContent](u.Union)
+}
+
+// AsMessageReadContent decodes the value as MessageReadContent.
+func (u EmailMessageContent) AsMessageReadContent() (MessageReadContent, error) {
+	return UnionAs[MessageReadContent](u.Union)
+}
+
+// AsSpaceParticipantsUpdateContent decodes the value as SpaceParticipantsUpdateContent.
+func (u EmailMessageContent) AsSpaceParticipantsUpdateContent() (SpaceParticipantsUpdateContent, error) {
+	return UnionAs[SpaceParticipantsUpdateContent](u.Union)
+}
+
+// AsSpaceTypingUpdateContent decodes the value as SpaceTypingUpdateContent.
+func (u EmailMessageContent) AsSpaceTypingUpdateContent() (SpaceTypingUpdateContent, error) {
+	return UnionAs[SpaceTypingUpdateContent](u.Union)
+}
+
+// AsPollContent decodes the value as PollContent.
+func (u EmailMessageContent) AsPollContent() (PollContent, error) {
+	return UnionAs[PollContent](u.Union)
+}
+
+// AsPollVoteContent decodes the value as PollVoteContent.
+func (u EmailMessageContent) AsPollVoteContent() (PollVoteContent, error) {
+	return UnionAs[PollVoteContent](u.Union)
+}
+
+// AsPollUpdateContent decodes the value as PollUpdateContent.
+func (u EmailMessageContent) AsPollUpdateContent() (PollUpdateContent, error) {
+	return UnionAs[PollUpdateContent](u.Union)
+}
+
+// AsEmailGroupContent decodes the value as EmailGroupContent.
+func (u EmailMessageContent) AsEmailGroupContent() (EmailGroupContent, error) {
+	return UnionAs[EmailGroupContent](u.Union)
+}
+
+type EmailMetadata struct {
+	ContentDisposition *EmailContentDisposition `json:"contentDisposition,omitempty"`
+	ContentID          *string                  `json:"contentId,omitempty"`
+	OriginalHtml       *string                  `json:"originalHtml,omitempty"`
+	Related            *bool                    `json:"related,omitempty"`
+	SourceMediaType    *string                  `json:"sourceMediaType,omitempty"`
+	Subject            *string                  `json:"subject,omitempty"`
+}
+
+type EmailObservationStatus string
+
+const (
+	EmailObservationStatusCurrent     EmailObservationStatus = "current"
+	EmailObservationStatusPartial     EmailObservationStatus = "partial"
+	EmailObservationStatusStale       EmailObservationStatus = "stale"
+	EmailObservationStatusUnavailable EmailObservationStatus = "unavailable"
+)
+
+type EmailOrganizationSendingPolicy struct {
+	// Whether this Photon sending policy is paused. Other send eligibility checks still apply.
+	Paused bool `json:"paused"`
+	// Organization recipient allowance shared by all Projects in a rolling 24-hour window.
+	RecipientsPer24Hours int64 `json:"recipientsPer24Hours"`
+	// Organization recipient allowance shared by all Projects in a rolling 60-second window.
+	RecipientsPerMinute int64                          `json:"recipientsPerMinute"`
+	ReviewStatus        EmailSendingPolicyReviewStatus `json:"reviewStatus"`
+	UpdatedAt           Timestamp                      `json:"updatedAt"`
+}
+
+type EmailRecommendation struct {
+	Action            EmailRecommendationAction   `json:"action"`
+	Category          EmailRecommendationCategory `json:"category"`
+	Code              EmailRecommendationCode     `json:"code"`
+	Description       string                      `json:"description"`
+	ObservationStatus EmailObservationStatus      `json:"observationStatus"`
+	ObservedAt        *Timestamp                  `json:"observedAt,omitempty"`
+	Scope             EmailRecommendationScope    `json:"scope"`
+	Severity          EmailRecommendationSeverity `json:"severity"`
+	// Current fact-derived recommendations. Absence is not a resolved finding or proof that sending is allowed.
+	Status string `json:"status"`
+	Title  string `json:"title"`
+}
+
+type EmailRecommendationAction struct{ Union }
+
+// AsEmailRecommendationContactSupportAction decodes the value as EmailRecommendationContactSupportAction.
+func (u EmailRecommendationAction) AsEmailRecommendationContactSupportAction() (EmailRecommendationContactSupportAction, error) {
+	return UnionAs[EmailRecommendationContactSupportAction](u.Union)
+}
+
+// AsEmailRecommendationReviewDomainDnsAction decodes the value as EmailRecommendationReviewDomainDnsAction.
+func (u EmailRecommendationAction) AsEmailRecommendationReviewDomainDnsAction() (EmailRecommendationReviewDomainDnsAction, error) {
+	return UnionAs[EmailRecommendationReviewDomainDnsAction](u.Union)
+}
+
+// AsEmailRecommendationReviewDomainChecksAction decodes the value as EmailRecommendationReviewDomainChecksAction.
+func (u EmailRecommendationAction) AsEmailRecommendationReviewDomainChecksAction() (EmailRecommendationReviewDomainChecksAction, error) {
+	return UnionAs[EmailRecommendationReviewDomainChecksAction](u.Union)
+}
+
+type EmailRecommendationCategory string
+
+const (
+	EmailRecommendationCategorySendingRestriction EmailRecommendationCategory = "sending_restriction"
+	EmailRecommendationCategoryDomainHealth       EmailRecommendationCategory = "domain_health"
+	EmailRecommendationCategoryDataAvailability   EmailRecommendationCategory = "data_availability"
+)
+
+type EmailRecommendationCode string
+
+const (
+	EmailRecommendationCodeProjectSendingPaused      EmailRecommendationCode = "project_sending_paused"
+	EmailRecommendationCodeOrganizationSendingPaused EmailRecommendationCode = "organization_sending_paused"
+	EmailRecommendationCodeSendingReviewRequired     EmailRecommendationCode = "sending_review_required"
+	EmailRecommendationCodeSendingChecksUnavailable  EmailRecommendationCode = "sending_checks_unavailable"
+	EmailRecommendationCodeDomainDnsRecords          EmailRecommendationCode = "domain_dns_records"
+	EmailRecommendationCodeDomainVerification        EmailRecommendationCode = "domain_verification"
+	EmailRecommendationCodeDomainChecksUnavailable   EmailRecommendationCode = "domain_checks_unavailable"
+	EmailRecommendationCodeDomainSettingsUnavailable EmailRecommendationCode = "domain_settings_unavailable"
+	EmailRecommendationCodeDomainUnavailable         EmailRecommendationCode = "domain_unavailable"
+)
+
+type EmailRecommendationContactSupportAction struct {
+	Code string `json:"code"`
+}
+
+type EmailRecommendationDomainScope struct {
+	ResourceID string `json:"resourceId"`
+	Type       string `json:"type"`
+}
+
+type EmailRecommendationOrganizationScope struct {
+	Type string `json:"type"`
+}
+
+type EmailRecommendationProjectScope struct {
+	Type string `json:"type"`
+}
+
+type EmailRecommendationReviewDomainChecksAction struct {
+	Code       string `json:"code"`
+	ResourceID string `json:"resourceId"`
+}
+
+type EmailRecommendationReviewDomainDnsAction struct {
+	Code       string `json:"code"`
+	ResourceID string `json:"resourceId"`
+}
+
+type EmailRecommendationScope struct{ Union }
+
+// AsEmailRecommendationProjectScope decodes the value as EmailRecommendationProjectScope.
+func (u EmailRecommendationScope) AsEmailRecommendationProjectScope() (EmailRecommendationProjectScope, error) {
+	return UnionAs[EmailRecommendationProjectScope](u.Union)
+}
+
+// AsEmailRecommendationOrganizationScope decodes the value as EmailRecommendationOrganizationScope.
+func (u EmailRecommendationScope) AsEmailRecommendationOrganizationScope() (EmailRecommendationOrganizationScope, error) {
+	return UnionAs[EmailRecommendationOrganizationScope](u.Union)
+}
+
+// AsEmailRecommendationDomainScope decodes the value as EmailRecommendationDomainScope.
+func (u EmailRecommendationScope) AsEmailRecommendationDomainScope() (EmailRecommendationDomainScope, error) {
+	return UnionAs[EmailRecommendationDomainScope](u.Union)
+}
+
+type EmailRecommendationSeverity string
+
+const (
+	EmailRecommendationSeverityInfo    EmailRecommendationSeverity = "info"
+	EmailRecommendationSeverityWarning EmailRecommendationSeverity = "warning"
+)
+
+type EmailRecommendations struct {
+	Coverage        EmailRecommendationsCoverage   `json:"coverage"`
+	DomainPage      EmailRecommendationsDomainPage `json:"domainPage"`
+	ReadAt          Timestamp                      `json:"readAt"`
+	Recommendations []EmailRecommendation          `json:"recommendations"`
+}
+
+type EmailRecommendationsCoverage struct {
+	DeliveryAdvice  string                    `json:"deliveryAdvice"`
+	Reputation      string                    `json:"reputation"`
+	SendingPolicies string                    `json:"sendingPolicies"`
+	SendingSetup    EmailSendingSetupCoverage `json:"sendingSetup"`
+}
+
+type EmailRecommendationsDomainPage struct {
+	HasMore       bool                     `json:"hasMore"`
+	NextPageToken *string                  `json:"nextPageToken,omitempty"`
+	Observations  []EmailDomainObservation `json:"observations"`
+}
+
+type EmailSendingPolicies struct {
+	Organization EmailOrganizationSendingPolicy `json:"organization"`
+	Project      EmailSendingPolicy             `json:"project"`
+}
+
+type EmailSendingPolicy struct {
+	// Whether this Photon sending policy is paused. Other send eligibility checks still apply.
+	Paused       bool                           `json:"paused"`
+	ReviewStatus EmailSendingPolicyReviewStatus `json:"reviewStatus"`
+	UpdatedAt    Timestamp                      `json:"updatedAt"`
+}
+
+type EmailSendingPolicyReviewStatus string
+
+const (
+	EmailSendingPolicyReviewStatusNew      EmailSendingPolicyReviewStatus = "new"
+	EmailSendingPolicyReviewStatusReviewed EmailSendingPolicyReviewStatus = "reviewed"
+)
+
+type EmailSendingSetupCoverage struct {
+	ObservationStatus EmailObservationStatus `json:"observationStatus"`
+	ObservedAt        *Timestamp             `json:"observedAt,omitempty"`
+}
+
+type EmailSpace struct {
+	// When Photon first persisted this resource.
+	CreatedAt      Timestamp         `json:"createdAt"`
+	Details        EmailSpaceDetails `json:"details"`
+	ID             SpaceId           `json:"id"`
+	Kind           string            `json:"kind"`
+	Metadata       ResourceMetadata  `json:"metadata"`
+	ParticipantIds []UserId          `json:"participantIds"`
+	Platform       string            `json:"platform"`
+	ProjectID      ProjectId         `json:"projectId"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type EmailSpaceDetails struct {
+	// The latest eligible whole observation on a canonical Space, or this Message's immutable capture in an embedded Space. Absent when no observation is available.
+	LatestAddressing *EmailAddressing `json:"latestAddressing,omitempty"`
+}
+
+type EmailSpaceSnapshot struct {
+	Details        EmailSpaceDetails `json:"details"`
+	ID             SpaceId           `json:"id"`
+	Kind           string            `json:"kind"`
+	Metadata       ResourceMetadata  `json:"metadata"`
+	ParticipantIds []UserId          `json:"participantIds"`
+	Platform       string            `json:"platform"`
+	ProjectID      ProjectId         `json:"projectId"`
+}
+
+type EmailUser struct {
+	// When Photon first persisted this resource.
+	CreatedAt Timestamp        `json:"createdAt"`
+	Details   EmailUserDetails `json:"details"`
+	Handle    string           `json:"handle"`
+	ID        UserId           `json:"id"`
+	Kind      string           `json:"kind"`
+	Metadata  ResourceMetadata `json:"metadata"`
+	Platform  string           `json:"platform"`
+	ProjectID ProjectId        `json:"projectId"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type EmailUserDetails struct {
+	ManagedBy  *ManagerId  `json:"managedBy,omitempty"`
+	ResourceID *ResourceId `json:"resourceId,omitempty"`
+}
+
+type EmailUserSnapshot struct {
+	Details   EmailUserDetails `json:"details"`
+	Handle    string           `json:"handle"`
+	ID        UserId           `json:"id"`
+	Kind      string           `json:"kind"`
+	Metadata  ResourceMetadata `json:"metadata"`
+	Platform  string           `json:"platform"`
+	ProjectID ProjectId        `json:"projectId"`
+}
 
 type ExistingAppInstallationDelivery struct {
 	InstallationID string                                `json:"installationId"`
@@ -810,6 +1901,153 @@ type FailedBillingOperation struct {
 	// Terminal. Failure contains a stable code and retryability.
 	Status      string  `json:"status"`
 	SubmittedAt *string `json:"submittedAt"`
+}
+
+type FailedEmailMessage struct {
+	AddressedTo *UserSnapshot       `json:"addressedTo,omitempty"`
+	Content     EmailMessageContent `json:"content"`
+	// When Photon first persisted this resource.
+	CreatedAt       Timestamp               `json:"createdAt"`
+	Failure         MessageFailure          `json:"failure"`
+	ID              MessageId               `json:"id"`
+	Metadata        ResourceMetadata        `json:"metadata"`
+	ParentMessageID *MessageId              `json:"parentMessageId,omitempty"`
+	Platform        string                  `json:"platform"`
+	ProjectID       ProjectId               `json:"projectId"`
+	ReceivedBy      *UserSnapshot           `json:"receivedBy,omitempty"`
+	SentBy          UserSnapshot            `json:"sentBy"`
+	Space           SpaceSnapshot           `json:"space"`
+	Status          string                  `json:"status"`
+	Timestamps      FailedMessageTimestamps `json:"timestamps"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type FailedImessageMessage struct {
+	AddressedTo *UserSnapshot          `json:"addressedTo,omitempty"`
+	Content     ImessageMessageContent `json:"content"`
+	// When Photon first persisted this resource.
+	CreatedAt       Timestamp               `json:"createdAt"`
+	Failure         MessageFailure          `json:"failure"`
+	ID              MessageId               `json:"id"`
+	Metadata        ResourceMetadata        `json:"metadata"`
+	ParentMessageID *MessageId              `json:"parentMessageId,omitempty"`
+	Platform        string                  `json:"platform"`
+	ProjectID       ProjectId               `json:"projectId"`
+	ReceivedBy      *UserSnapshot           `json:"receivedBy,omitempty"`
+	SentBy          UserSnapshot            `json:"sentBy"`
+	Space           SpaceSnapshot           `json:"space"`
+	Status          string                  `json:"status"`
+	Timestamps      FailedMessageTimestamps `json:"timestamps"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type FailedMessageTimestamps struct {
+	// When the emitting service established the public dispatch/send milestone.
+	DispatchedAt *Timestamp `json:"dispatchedAt,omitempty"`
+	// When Photon finalized terminal failure.
+	FailedAt Timestamp `json:"failedAt"`
+}
+
+type FailedSmsMessage struct {
+	AddressedTo *UserSnapshot     `json:"addressedTo,omitempty"`
+	Content     SmsMessageContent `json:"content"`
+	// When Photon first persisted this resource.
+	CreatedAt       Timestamp               `json:"createdAt"`
+	Failure         MessageFailure          `json:"failure"`
+	ID              MessageId               `json:"id"`
+	Metadata        ResourceMetadata        `json:"metadata"`
+	ParentMessageID *MessageId              `json:"parentMessageId,omitempty"`
+	Platform        string                  `json:"platform"`
+	ProjectID       ProjectId               `json:"projectId"`
+	ReceivedBy      *UserSnapshot           `json:"receivedBy,omitempty"`
+	SentBy          UserSnapshot            `json:"sentBy"`
+	Space           SpaceSnapshot           `json:"space"`
+	Status          string                  `json:"status"`
+	Timestamps      FailedMessageTimestamps `json:"timestamps"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type FailedTelegramMessage struct {
+	AddressedTo *UserSnapshot          `json:"addressedTo,omitempty"`
+	Content     TelegramMessageContent `json:"content"`
+	// When Photon first persisted this resource.
+	CreatedAt       Timestamp               `json:"createdAt"`
+	Failure         MessageFailure          `json:"failure"`
+	ID              MessageId               `json:"id"`
+	Metadata        ResourceMetadata        `json:"metadata"`
+	ParentMessageID *MessageId              `json:"parentMessageId,omitempty"`
+	Platform        string                  `json:"platform"`
+	ProjectID       ProjectId               `json:"projectId"`
+	ReceivedBy      *UserSnapshot           `json:"receivedBy,omitempty"`
+	SentBy          UserSnapshot            `json:"sentBy"`
+	Space           SpaceSnapshot           `json:"space"`
+	Status          string                  `json:"status"`
+	Timestamps      FailedMessageTimestamps `json:"timestamps"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type FailedUnknownMessage struct {
+	AddressedTo *UserSnapshot `json:"addressedTo,omitempty"`
+	Content     Content       `json:"content"`
+	// When Photon first persisted this resource.
+	CreatedAt       Timestamp               `json:"createdAt"`
+	Failure         MessageFailure          `json:"failure"`
+	ID              MessageId               `json:"id"`
+	Metadata        ResourceMetadata        `json:"metadata"`
+	ParentMessageID *MessageId              `json:"parentMessageId,omitempty"`
+	Platform        PlatformIdentifier      `json:"platform"`
+	ProjectID       ProjectId               `json:"projectId"`
+	ReceivedBy      *UserSnapshot           `json:"receivedBy,omitempty"`
+	SentBy          UserSnapshot            `json:"sentBy"`
+	Space           SpaceSnapshot           `json:"space"`
+	Status          string                  `json:"status"`
+	Timestamps      FailedMessageTimestamps `json:"timestamps"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type FailedWhatsappBusinessMessage struct {
+	AddressedTo *UserSnapshot                  `json:"addressedTo,omitempty"`
+	Content     WhatsappBusinessMessageContent `json:"content"`
+	// When Photon first persisted this resource.
+	CreatedAt       Timestamp               `json:"createdAt"`
+	Failure         MessageFailure          `json:"failure"`
+	ID              MessageId               `json:"id"`
+	Metadata        ResourceMetadata        `json:"metadata"`
+	ParentMessageID *MessageId              `json:"parentMessageId,omitempty"`
+	Platform        string                  `json:"platform"`
+	ProjectID       ProjectId               `json:"projectId"`
+	ReceivedBy      *UserSnapshot           `json:"receivedBy,omitempty"`
+	SentBy          UserSnapshot            `json:"sentBy"`
+	Space           SpaceSnapshot           `json:"space"`
+	Status          string                  `json:"status"`
+	Timestamps      FailedMessageTimestamps `json:"timestamps"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type FailedWhatsappMessage struct {
+	AddressedTo *UserSnapshot          `json:"addressedTo,omitempty"`
+	Content     WhatsappMessageContent `json:"content"`
+	// When Photon first persisted this resource.
+	CreatedAt       Timestamp               `json:"createdAt"`
+	Failure         MessageFailure          `json:"failure"`
+	ID              MessageId               `json:"id"`
+	Metadata        ResourceMetadata        `json:"metadata"`
+	ParentMessageID *MessageId              `json:"parentMessageId,omitempty"`
+	Platform        string                  `json:"platform"`
+	ProjectID       ProjectId               `json:"projectId"`
+	ReceivedBy      *UserSnapshot           `json:"receivedBy,omitempty"`
+	SentBy          UserSnapshot            `json:"sentBy"`
+	Space           SpaceSnapshot           `json:"space"`
+	Status          string                  `json:"status"`
+	Timestamps      FailedMessageTimestamps `json:"timestamps"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
 }
 
 type FilteredVerificationCode struct {
@@ -995,7 +2233,218 @@ type GetWhatsappSignupConfigResponse struct {
 	Scopes       []string `json:"scopes"`
 }
 
+type GroupContent struct {
+	Metadata *ContentMetadata   `json:"metadata,omitempty"`
+	Parts    []GroupContentPart `json:"parts"`
+	Type     string             `json:"type"`
+}
+
+type GroupContentPart struct{ Union }
+
+// Kind returns the "type" discriminator, or "" when absent.
+func (u GroupContentPart) Kind() string { return u.Discriminator("type") }
+
+// AsTextContent decodes the value as TextContent.
+func (u GroupContentPart) AsTextContent() (TextContent, error) { return UnionAs[TextContent](u.Union) }
+
+// AsTextUpdateContent decodes the value as TextUpdateContent.
+func (u GroupContentPart) AsTextUpdateContent() (TextUpdateContent, error) {
+	return UnionAs[TextUpdateContent](u.Union)
+}
+
+// AsAttachmentContent decodes the value as AttachmentContent.
+func (u GroupContentPart) AsAttachmentContent() (AttachmentContent, error) {
+	return UnionAs[AttachmentContent](u.Union)
+}
+
+// AsVoiceContent decodes the value as VoiceContent.
+func (u GroupContentPart) AsVoiceContent() (VoiceContent, error) {
+	return UnionAs[VoiceContent](u.Union)
+}
+
+// AsReactionContent decodes the value as ReactionContent.
+func (u GroupContentPart) AsReactionContent() (ReactionContent, error) {
+	return UnionAs[ReactionContent](u.Union)
+}
+
+// AsMessageDeleteContent decodes the value as MessageDeleteContent.
+func (u GroupContentPart) AsMessageDeleteContent() (MessageDeleteContent, error) {
+	return UnionAs[MessageDeleteContent](u.Union)
+}
+
+// AsMessageReadContent decodes the value as MessageReadContent.
+func (u GroupContentPart) AsMessageReadContent() (MessageReadContent, error) {
+	return UnionAs[MessageReadContent](u.Union)
+}
+
+// AsSpaceParticipantsUpdateContent decodes the value as SpaceParticipantsUpdateContent.
+func (u GroupContentPart) AsSpaceParticipantsUpdateContent() (SpaceParticipantsUpdateContent, error) {
+	return UnionAs[SpaceParticipantsUpdateContent](u.Union)
+}
+
+// AsSpaceTypingUpdateContent decodes the value as SpaceTypingUpdateContent.
+func (u GroupContentPart) AsSpaceTypingUpdateContent() (SpaceTypingUpdateContent, error) {
+	return UnionAs[SpaceTypingUpdateContent](u.Union)
+}
+
+// AsPollContent decodes the value as PollContent.
+func (u GroupContentPart) AsPollContent() (PollContent, error) { return UnionAs[PollContent](u.Union) }
+
+// AsPollVoteContent decodes the value as PollVoteContent.
+func (u GroupContentPart) AsPollVoteContent() (PollVoteContent, error) {
+	return UnionAs[PollVoteContent](u.Union)
+}
+
+// AsPollUpdateContent decodes the value as PollUpdateContent.
+func (u GroupContentPart) AsPollUpdateContent() (PollUpdateContent, error) {
+	return UnionAs[PollUpdateContent](u.Union)
+}
+
+type ImessageGroupContent struct {
+	Metadata *ContentMetadata           `json:"metadata,omitempty"`
+	Parts    []ImessageGroupContentPart `json:"parts"`
+	Type     string                     `json:"type"`
+}
+
+type ImessageGroupContentPart struct{ Union }
+
+// Kind returns the "type" discriminator, or "" when absent.
+func (u ImessageGroupContentPart) Kind() string { return u.Discriminator("type") }
+
+// AsTextContent decodes the value as TextContent.
+func (u ImessageGroupContentPart) AsTextContent() (TextContent, error) {
+	return UnionAs[TextContent](u.Union)
+}
+
+// AsAttachmentContent decodes the value as AttachmentContent.
+func (u ImessageGroupContentPart) AsAttachmentContent() (AttachmentContent, error) {
+	return UnionAs[AttachmentContent](u.Union)
+}
+
+// AsMessageReadContent decodes the value as MessageReadContent.
+func (u ImessageGroupContentPart) AsMessageReadContent() (MessageReadContent, error) {
+	return UnionAs[MessageReadContent](u.Union)
+}
+
+// AsSpaceTypingUpdateContent decodes the value as SpaceTypingUpdateContent.
+func (u ImessageGroupContentPart) AsSpaceTypingUpdateContent() (SpaceTypingUpdateContent, error) {
+	return UnionAs[SpaceTypingUpdateContent](u.Union)
+}
+
 type ImessageHandle string
+
+type ImessageMessage struct{ Union }
+
+// AsReceivedImessageMessage decodes the value as ReceivedImessageMessage.
+func (u ImessageMessage) AsReceivedImessageMessage() (ReceivedImessageMessage, error) {
+	return UnionAs[ReceivedImessageMessage](u.Union)
+}
+
+// AsDispatchedImessageMessage decodes the value as DispatchedImessageMessage.
+func (u ImessageMessage) AsDispatchedImessageMessage() (DispatchedImessageMessage, error) {
+	return UnionAs[DispatchedImessageMessage](u.Union)
+}
+
+// AsAcceptedImessageMessage decodes the value as AcceptedImessageMessage.
+func (u ImessageMessage) AsAcceptedImessageMessage() (AcceptedImessageMessage, error) {
+	return UnionAs[AcceptedImessageMessage](u.Union)
+}
+
+// AsDeliveredImessageMessage decodes the value as DeliveredImessageMessage.
+func (u ImessageMessage) AsDeliveredImessageMessage() (DeliveredImessageMessage, error) {
+	return UnionAs[DeliveredImessageMessage](u.Union)
+}
+
+// AsFailedImessageMessage decodes the value as FailedImessageMessage.
+func (u ImessageMessage) AsFailedImessageMessage() (FailedImessageMessage, error) {
+	return UnionAs[FailedImessageMessage](u.Union)
+}
+
+type ImessageMessageContent struct{ Union }
+
+// Kind returns the "type" discriminator, or "" when absent.
+func (u ImessageMessageContent) Kind() string { return u.Discriminator("type") }
+
+// AsTextContent decodes the value as TextContent.
+func (u ImessageMessageContent) AsTextContent() (TextContent, error) {
+	return UnionAs[TextContent](u.Union)
+}
+
+// AsAttachmentContent decodes the value as AttachmentContent.
+func (u ImessageMessageContent) AsAttachmentContent() (AttachmentContent, error) {
+	return UnionAs[AttachmentContent](u.Union)
+}
+
+// AsMessageReadContent decodes the value as MessageReadContent.
+func (u ImessageMessageContent) AsMessageReadContent() (MessageReadContent, error) {
+	return UnionAs[MessageReadContent](u.Union)
+}
+
+// AsSpaceTypingUpdateContent decodes the value as SpaceTypingUpdateContent.
+func (u ImessageMessageContent) AsSpaceTypingUpdateContent() (SpaceTypingUpdateContent, error) {
+	return UnionAs[SpaceTypingUpdateContent](u.Union)
+}
+
+// AsImessageGroupContent decodes the value as ImessageGroupContent.
+func (u ImessageMessageContent) AsImessageGroupContent() (ImessageGroupContent, error) {
+	return UnionAs[ImessageGroupContent](u.Union)
+}
+
+type ImessageSpace struct {
+	// When Photon first persisted this resource.
+	CreatedAt      Timestamp            `json:"createdAt"`
+	Details        ImessageSpaceDetails `json:"details"`
+	ID             SpaceId              `json:"id"`
+	Kind           string               `json:"kind"`
+	Metadata       ResourceMetadata     `json:"metadata"`
+	ParticipantIds []UserId             `json:"participantIds"`
+	Platform       string               `json:"platform"`
+	ProjectID      ProjectId            `json:"projectId"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type ImessageSpaceDetails map[string]any
+
+type ImessageSpaceSnapshot struct {
+	Details        ImessageSpaceDetails `json:"details"`
+	ID             SpaceId              `json:"id"`
+	Kind           string               `json:"kind"`
+	Metadata       ResourceMetadata     `json:"metadata"`
+	ParticipantIds []UserId             `json:"participantIds"`
+	Platform       string               `json:"platform"`
+	ProjectID      ProjectId            `json:"projectId"`
+}
+
+type ImessageUser struct {
+	// When Photon first persisted this resource.
+	CreatedAt Timestamp           `json:"createdAt"`
+	Details   ImessageUserDetails `json:"details"`
+	Handle    string              `json:"handle"`
+	ID        UserId              `json:"id"`
+	Kind      string              `json:"kind"`
+	Metadata  ResourceMetadata    `json:"metadata"`
+	Platform  string              `json:"platform"`
+	ProjectID ProjectId           `json:"projectId"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type ImessageUserDetails struct {
+	ManagedBy  *ManagerId    `json:"managedBy,omitempty"`
+	ResourceID *ResourceId   `json:"resourceId,omitempty"`
+	Type       *UserLineType `json:"type,omitempty"`
+}
+
+type ImessageUserSnapshot struct {
+	Details   ImessageUserDetails `json:"details"`
+	Handle    string              `json:"handle"`
+	ID        UserId              `json:"id"`
+	Kind      string              `json:"kind"`
+	Metadata  ResourceMetadata    `json:"metadata"`
+	Platform  string              `json:"platform"`
+	ProjectID ProjectId           `json:"projectId"`
+}
 
 type InvitationEnterpriseLoginRequest struct {
 	InvitationToken string `json:"invitationToken"`
@@ -1129,6 +2578,11 @@ type ListProjectPlatformsResponse struct {
 	Platforms []SupportedPlatform `json:"platforms"`
 }
 
+type ListProjectSubscriptionsResponse struct {
+	// One entry per category that currently holds a subscription. Empty means none do — cancelled, or never opened.
+	Subscriptions []ProjectHeldPlan `json:"subscriptions"`
+}
+
 type ListVoiceProfilesDefaultInput string
 
 const (
@@ -1163,6 +2617,221 @@ type ListWhatsappAccountPhoneNumbersResponse struct {
 	PhoneNumbers []WhatsappAccountPhoneNumber `json:"phoneNumbers"`
 	WabaID       string                       `json:"wabaId"`
 }
+
+type ManagerId string
+
+type MarkMessageReadResponse struct {
+	Platform Platform          `json:"platform"`
+	Status   SentMessageStatus `json:"status"`
+}
+
+type Message struct{ Union }
+
+// Kind returns the "platform" discriminator, or "" when absent.
+func (u Message) Kind() string { return u.Discriminator("platform") }
+
+// AsSmsMessage decodes the value as SmsMessage.
+func (u Message) AsSmsMessage() (SmsMessage, error) { return UnionAs[SmsMessage](u.Union) }
+
+// AsWhatsappMessage decodes the value as WhatsappMessage.
+func (u Message) AsWhatsappMessage() (WhatsappMessage, error) {
+	return UnionAs[WhatsappMessage](u.Union)
+}
+
+// AsWhatsappBusinessMessage decodes the value as WhatsappBusinessMessage.
+func (u Message) AsWhatsappBusinessMessage() (WhatsappBusinessMessage, error) {
+	return UnionAs[WhatsappBusinessMessage](u.Union)
+}
+
+// AsEmailMessage decodes the value as EmailMessage.
+func (u Message) AsEmailMessage() (EmailMessage, error) { return UnionAs[EmailMessage](u.Union) }
+
+// AsImessageMessage decodes the value as ImessageMessage.
+func (u Message) AsImessageMessage() (ImessageMessage, error) {
+	return UnionAs[ImessageMessage](u.Union)
+}
+
+// AsTelegramMessage decodes the value as TelegramMessage.
+func (u Message) AsTelegramMessage() (TelegramMessage, error) {
+	return UnionAs[TelegramMessage](u.Union)
+}
+
+// AsUnknownMessage decodes the value as UnknownMessage.
+func (u Message) AsUnknownMessage() (UnknownMessage, error) { return UnionAs[UnknownMessage](u.Union) }
+
+type MessageAcceptance struct{ Union }
+
+// AsDeliveryConfirmationUnavailableAcceptance decodes the value as DeliveryConfirmationUnavailableAcceptance.
+func (u MessageAcceptance) AsDeliveryConfirmationUnavailableAcceptance() (DeliveryConfirmationUnavailableAcceptance, error) {
+	return UnionAs[DeliveryConfirmationUnavailableAcceptance](u.Union)
+}
+
+// AsDeliveryConfirmationNotApplicableAcceptance decodes the value as DeliveryConfirmationNotApplicableAcceptance.
+func (u MessageAcceptance) AsDeliveryConfirmationNotApplicableAcceptance() (DeliveryConfirmationNotApplicableAcceptance, error) {
+	return UnionAs[DeliveryConfirmationNotApplicableAcceptance](u.Union)
+}
+
+// AsDeliveryConfirmationTimedOutAcceptance decodes the value as DeliveryConfirmationTimedOutAcceptance.
+func (u MessageAcceptance) AsDeliveryConfirmationTimedOutAcceptance() (DeliveryConfirmationTimedOutAcceptance, error) {
+	return UnionAs[DeliveryConfirmationTimedOutAcceptance](u.Union)
+}
+
+// AsDeliveryPartiallyConfirmedAcceptance decodes the value as DeliveryPartiallyConfirmedAcceptance.
+func (u MessageAcceptance) AsDeliveryPartiallyConfirmedAcceptance() (DeliveryPartiallyConfirmedAcceptance, error) {
+	return UnionAs[DeliveryPartiallyConfirmedAcceptance](u.Union)
+}
+
+type MessageBlockedByCarrierFailure struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+}
+
+type MessageBlockedFailure struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+}
+
+type MessageContentInvalidFailure struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+}
+
+type MessageCount struct {
+	Count  int64                `json:"count"`
+	Groups []MessageStatusCount `json:"groups"`
+}
+
+type MessageCountBucket struct {
+	Count  int64                `json:"count"`
+	End    Timestamp            `json:"end"`
+	Groups []MessageStatusCount `json:"groups"`
+	Start  Timestamp            `json:"start"`
+}
+
+type MessageDeleteContent struct {
+	Metadata *ContentMetadata `json:"metadata,omitempty"`
+	Reason   *string          `json:"reason,omitempty"`
+	Scope    *string          `json:"scope,omitempty"`
+	Type     string           `json:"type"`
+}
+
+type MessageDeliveryFailedFailure struct {
+	Code string `json:"code"`
+	// Unique recipients with authoritative delivery confirmation for the original send; omission means evidence is not supplied.
+	ConfirmedRecipientCount *int64 `json:"confirmedRecipientCount,omitempty"`
+	Message                 string `json:"message"`
+}
+
+type MessageDirection string
+
+const (
+	MessageDirectionReceived MessageDirection = "received"
+	MessageDirectionSent     MessageDirection = "sent"
+)
+
+type MessageExpiredFailure struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+}
+
+type MessageFailedFailure struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+}
+
+type MessageFailure struct{ Union }
+
+// AsSenderNotAuthorizedFailure decodes the value as SenderNotAuthorizedFailure.
+func (u MessageFailure) AsSenderNotAuthorizedFailure() (SenderNotAuthorizedFailure, error) {
+	return UnionAs[SenderNotAuthorizedFailure](u.Union)
+}
+
+// AsSenderUnavailableFailure decodes the value as SenderUnavailableFailure.
+func (u MessageFailure) AsSenderUnavailableFailure() (SenderUnavailableFailure, error) {
+	return UnionAs[SenderUnavailableFailure](u.Union)
+}
+
+// AsSenderRegistrationRequiredFailure decodes the value as SenderRegistrationRequiredFailure.
+func (u MessageFailure) AsSenderRegistrationRequiredFailure() (SenderRegistrationRequiredFailure, error) {
+	return UnionAs[SenderRegistrationRequiredFailure](u.Union)
+}
+
+// AsRecipientInvalidFailure decodes the value as RecipientInvalidFailure.
+func (u MessageFailure) AsRecipientInvalidFailure() (RecipientInvalidFailure, error) {
+	return UnionAs[RecipientInvalidFailure](u.Union)
+}
+
+// AsRecipientUnreachableFailure decodes the value as RecipientUnreachableFailure.
+func (u MessageFailure) AsRecipientUnreachableFailure() (RecipientUnreachableFailure, error) {
+	return UnionAs[RecipientUnreachableFailure](u.Union)
+}
+
+// AsRecipientOptedOutFailure decodes the value as RecipientOptedOutFailure.
+func (u MessageFailure) AsRecipientOptedOutFailure() (RecipientOptedOutFailure, error) {
+	return UnionAs[RecipientOptedOutFailure](u.Union)
+}
+
+// AsMessageTypeUnsupportedFailure decodes the value as MessageTypeUnsupportedFailure.
+func (u MessageFailure) AsMessageTypeUnsupportedFailure() (MessageTypeUnsupportedFailure, error) {
+	return UnionAs[MessageTypeUnsupportedFailure](u.Union)
+}
+
+// AsMessageContentInvalidFailure decodes the value as MessageContentInvalidFailure.
+func (u MessageFailure) AsMessageContentInvalidFailure() (MessageContentInvalidFailure, error) {
+	return UnionAs[MessageContentInvalidFailure](u.Union)
+}
+
+// AsMessageTooLargeFailure decodes the value as MessageTooLargeFailure.
+func (u MessageFailure) AsMessageTooLargeFailure() (MessageTooLargeFailure, error) {
+	return UnionAs[MessageTooLargeFailure](u.Union)
+}
+
+// AsMessageBlockedFailure decodes the value as MessageBlockedFailure.
+func (u MessageFailure) AsMessageBlockedFailure() (MessageBlockedFailure, error) {
+	return UnionAs[MessageBlockedFailure](u.Union)
+}
+
+// AsMessageBlockedByCarrierFailure decodes the value as MessageBlockedByCarrierFailure.
+func (u MessageFailure) AsMessageBlockedByCarrierFailure() (MessageBlockedByCarrierFailure, error) {
+	return UnionAs[MessageBlockedByCarrierFailure](u.Union)
+}
+
+// AsMessageRateLimitedFailure decodes the value as MessageRateLimitedFailure.
+func (u MessageFailure) AsMessageRateLimitedFailure() (MessageRateLimitedFailure, error) {
+	return UnionAs[MessageRateLimitedFailure](u.Union)
+}
+
+// AsMessageRejectedFailure decodes the value as MessageRejectedFailure.
+func (u MessageFailure) AsMessageRejectedFailure() (MessageRejectedFailure, error) {
+	return UnionAs[MessageRejectedFailure](u.Union)
+}
+
+// AsMessageExpiredFailure decodes the value as MessageExpiredFailure.
+func (u MessageFailure) AsMessageExpiredFailure() (MessageExpiredFailure, error) {
+	return UnionAs[MessageExpiredFailure](u.Union)
+}
+
+// AsMessageDeliveryFailedFailure decodes the value as MessageDeliveryFailedFailure.
+func (u MessageFailure) AsMessageDeliveryFailedFailure() (MessageDeliveryFailedFailure, error) {
+	return UnionAs[MessageDeliveryFailedFailure](u.Union)
+}
+
+// AsMessageSubmissionUnknownFailure decodes the value as MessageSubmissionUnknownFailure.
+func (u MessageFailure) AsMessageSubmissionUnknownFailure() (MessageSubmissionUnknownFailure, error) {
+	return UnionAs[MessageSubmissionUnknownFailure](u.Union)
+}
+
+// AsMessagingUnavailableFailure decodes the value as MessagingUnavailableFailure.
+func (u MessageFailure) AsMessagingUnavailableFailure() (MessagingUnavailableFailure, error) {
+	return UnionAs[MessagingUnavailableFailure](u.Union)
+}
+
+// AsMessageFailedFailure decodes the value as MessageFailedFailure.
+func (u MessageFailure) AsMessageFailedFailure() (MessageFailedFailure, error) {
+	return UnionAs[MessageFailedFailure](u.Union)
+}
+
+type MessageId string
 
 type MessageMetricsBackfillState string
 
@@ -1302,6 +2971,63 @@ const (
 	MessageMetricsSqlTableNameMessageEvents MessageMetricsSqlTableName = "message_events"
 	MessageMetricsSqlTableNameCallEvents    MessageMetricsSqlTableName = "call_events"
 )
+
+type MessagePage struct {
+	// Unsupported platforms and records with unsupported data are omitted.
+	Items []PlatformMessage `json:"items"`
+	// Continue with this token, even if items is empty. Omitted when no more pages remain.
+	NextPageToken *string `json:"nextPageToken,omitempty"`
+}
+
+type MessageRateLimitedFailure struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+}
+
+type MessageReadContent struct {
+	Metadata *ContentMetadata `json:"metadata,omitempty"`
+	Type     string           `json:"type"`
+}
+
+type MessageRejectedFailure struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+}
+
+type MessageStatus string
+
+const (
+	MessageStatusReceived   MessageStatus = "received"
+	MessageStatusDispatched MessageStatus = "dispatched"
+	MessageStatusAccepted   MessageStatus = "accepted"
+	MessageStatusDelivered  MessageStatus = "delivered"
+	MessageStatusFailed     MessageStatus = "failed"
+)
+
+type MessageStatusCount struct {
+	Count  int64         `json:"count"`
+	Status MessageStatus `json:"status"`
+}
+
+type MessageSubmissionUnknownFailure struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+}
+
+type MessageTooLargeFailure struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+}
+
+type MessageTypeUnsupportedFailure struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+}
+
+type MessagingUnavailableFailure struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+}
 
 type MeteredUsage struct {
 	// Cost accrued so far.
@@ -1541,6 +3267,14 @@ type PendingBillingOperation struct {
 	SubmittedAt *string `json:"submittedAt"`
 }
 
+type PhoneCarrier struct {
+	LineType          *string `json:"lineType,omitempty"`
+	MobileCountryCode *string `json:"mobileCountryCode,omitempty"`
+	MobileNetworkCode *string `json:"mobileNetworkCode,omitempty"`
+	Name              *string `json:"name,omitempty"`
+	NormalizedName    *string `json:"normalizedName,omitempty"`
+}
+
 type PhoneVerificationCaptcha struct {
 	ChallengeContext string `json:"challengeContext"`
 	Token            string `json:"token"`
@@ -1552,6 +3286,65 @@ const (
 	PlanSourceCatalog  PlanSource = "catalog"
 	PlanSourceOverride PlanSource = "override"
 )
+
+type Platform string
+
+const (
+	PlatformSms              Platform = "sms"
+	PlatformEmail            Platform = "email"
+	PlatformWhatsapp         Platform = "whatsapp"
+	PlatformWhatsappBusiness Platform = "whatsapp_business"
+	PlatformImessage         Platform = "imessage"
+	PlatformTelegram         Platform = "telegram"
+)
+
+type PlatformIdentifier string
+
+type PlatformMessage struct {
+	Platform Platform `json:"platform"`
+}
+
+type PlatformSpace struct {
+	Platform Platform `json:"platform"`
+}
+
+type PlatformUser struct {
+	Platform Platform `json:"platform"`
+}
+
+type PollContent struct {
+	Metadata      *ContentMetadata  `json:"metadata,omitempty"`
+	Options       []PollOption      `json:"options"`
+	Question      string            `json:"question"`
+	SelectionMode PollSelectionMode `json:"selectionMode"`
+	Type          string            `json:"type"`
+}
+
+type PollOption struct {
+	ID   string `json:"id"`
+	Text string `json:"text"`
+}
+
+type PollSelectionMode string
+
+const (
+	PollSelectionModeSingle   PollSelectionMode = "single"
+	PollSelectionModeMultiple PollSelectionMode = "multiple"
+)
+
+type PollUpdateContent struct {
+	Metadata      *ContentMetadata  `json:"metadata,omitempty"`
+	Options       []PollOption      `json:"options"`
+	Question      string            `json:"question"`
+	SelectionMode PollSelectionMode `json:"selectionMode"`
+	Type          string            `json:"type"`
+}
+
+type PollVoteContent struct {
+	Metadata        *ContentMetadata `json:"metadata,omitempty"`
+	SelectedOptions []PollOption     `json:"selectedOptions"`
+	Type            string           `json:"type"`
+}
 
 type PreviewOrganizationChangeRequest struct {
 	FixedCharge FixedChargeChange `json:"fixedCharge"`
@@ -1669,6 +3462,25 @@ type ProjectCreditSubject struct {
 	Type      string `json:"type"`
 }
 
+type ProjectHeldPlan struct {
+	// The plan's recurring base fee in whole cents.
+	BaseAmountCents int64 `json:"baseAmountCents"`
+	// Category slug, e.g. analytics or messaging.
+	Category            string           `json:"category"`
+	CategoryDisplayName Nullable[string] `json:"categoryDisplayName,omitzero"`
+	// ISO currency code.
+	Currency          string                        `json:"currency"`
+	MinimumCommitment *BillingPlanMinimumCommitment `json:"minimumCommitment"`
+	// This category's plan.
+	PlanCode string `json:"planCode"`
+	// The plan's customer-facing name, e.g. Messaging Pro.
+	PlanName        string             `json:"planName"`
+	Status          SubscriptionStatus `json:"status"`
+	TierDisplayName *string            `json:"tierDisplayName"`
+}
+
+type ProjectId string
+
 type ProjectInvoiceSubject struct {
 	ProjectID string `json:"projectId"`
 	Type      string `json:"type"`
@@ -1732,6 +3544,173 @@ type QueryMessageMetricsResponse struct {
 	Statistics MessageMetricsQueryStatistics `json:"statistics"`
 }
 
+type ReactionAction string
+
+const (
+	ReactionActionAdd    ReactionAction = "add"
+	ReactionActionRemove ReactionAction = "remove"
+)
+
+type ReactionContent struct {
+	Action   ReactionAction   `json:"action"`
+	Metadata *ContentMetadata `json:"metadata,omitempty"`
+	Reaction string           `json:"reaction"`
+	Type     string           `json:"type"`
+}
+
+type ReceivedEmailMessage struct {
+	AddressedTo *UserSnapshot       `json:"addressedTo,omitempty"`
+	Content     EmailMessageContent `json:"content"`
+	// When Photon first persisted this resource.
+	CreatedAt       Timestamp                 `json:"createdAt"`
+	ID              MessageId                 `json:"id"`
+	Metadata        ResourceMetadata          `json:"metadata"`
+	ParentMessageID *MessageId                `json:"parentMessageId,omitempty"`
+	Platform        string                    `json:"platform"`
+	ProjectID       ProjectId                 `json:"projectId"`
+	ReceivedBy      *UserSnapshot             `json:"receivedBy,omitempty"`
+	SentBy          UserSnapshot              `json:"sentBy"`
+	Space           SpaceSnapshot             `json:"space"`
+	Status          string                    `json:"status"`
+	Timestamps      ReceivedMessageTimestamps `json:"timestamps"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type ReceivedImessageMessage struct {
+	AddressedTo *UserSnapshot          `json:"addressedTo,omitempty"`
+	Content     ImessageMessageContent `json:"content"`
+	// When Photon first persisted this resource.
+	CreatedAt       Timestamp                 `json:"createdAt"`
+	ID              MessageId                 `json:"id"`
+	Metadata        ResourceMetadata          `json:"metadata"`
+	ParentMessageID *MessageId                `json:"parentMessageId,omitempty"`
+	Platform        string                    `json:"platform"`
+	ProjectID       ProjectId                 `json:"projectId"`
+	ReceivedBy      *UserSnapshot             `json:"receivedBy,omitempty"`
+	SentBy          UserSnapshot              `json:"sentBy"`
+	Space           SpaceSnapshot             `json:"space"`
+	Status          string                    `json:"status"`
+	Timestamps      ReceivedMessageTimestamps `json:"timestamps"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type ReceivedMessageTimestamps struct {
+	// Authoritative source receipt or observation time, preserved across replay.
+	ReceivedAt Timestamp `json:"receivedAt"`
+}
+
+type ReceivedSmsMessage struct {
+	AddressedTo *UserSnapshot     `json:"addressedTo,omitempty"`
+	Content     SmsMessageContent `json:"content"`
+	// When Photon first persisted this resource.
+	CreatedAt       Timestamp                 `json:"createdAt"`
+	ID              MessageId                 `json:"id"`
+	Metadata        ResourceMetadata          `json:"metadata"`
+	ParentMessageID *MessageId                `json:"parentMessageId,omitempty"`
+	Platform        string                    `json:"platform"`
+	ProjectID       ProjectId                 `json:"projectId"`
+	ReceivedBy      *UserSnapshot             `json:"receivedBy,omitempty"`
+	SentBy          UserSnapshot              `json:"sentBy"`
+	Space           SpaceSnapshot             `json:"space"`
+	Status          string                    `json:"status"`
+	Timestamps      ReceivedMessageTimestamps `json:"timestamps"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type ReceivedTelegramMessage struct {
+	AddressedTo *UserSnapshot          `json:"addressedTo,omitempty"`
+	Content     TelegramMessageContent `json:"content"`
+	// When Photon first persisted this resource.
+	CreatedAt       Timestamp                 `json:"createdAt"`
+	ID              MessageId                 `json:"id"`
+	Metadata        ResourceMetadata          `json:"metadata"`
+	ParentMessageID *MessageId                `json:"parentMessageId,omitempty"`
+	Platform        string                    `json:"platform"`
+	ProjectID       ProjectId                 `json:"projectId"`
+	ReceivedBy      *UserSnapshot             `json:"receivedBy,omitempty"`
+	SentBy          UserSnapshot              `json:"sentBy"`
+	Space           SpaceSnapshot             `json:"space"`
+	Status          string                    `json:"status"`
+	Timestamps      ReceivedMessageTimestamps `json:"timestamps"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type ReceivedUnknownMessage struct {
+	AddressedTo *UserSnapshot `json:"addressedTo,omitempty"`
+	Content     Content       `json:"content"`
+	// When Photon first persisted this resource.
+	CreatedAt       Timestamp                 `json:"createdAt"`
+	ID              MessageId                 `json:"id"`
+	Metadata        ResourceMetadata          `json:"metadata"`
+	ParentMessageID *MessageId                `json:"parentMessageId,omitempty"`
+	Platform        PlatformIdentifier        `json:"platform"`
+	ProjectID       ProjectId                 `json:"projectId"`
+	ReceivedBy      *UserSnapshot             `json:"receivedBy,omitempty"`
+	SentBy          UserSnapshot              `json:"sentBy"`
+	Space           SpaceSnapshot             `json:"space"`
+	Status          string                    `json:"status"`
+	Timestamps      ReceivedMessageTimestamps `json:"timestamps"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type ReceivedWhatsappBusinessMessage struct {
+	AddressedTo *UserSnapshot                  `json:"addressedTo,omitempty"`
+	Content     WhatsappBusinessMessageContent `json:"content"`
+	// When Photon first persisted this resource.
+	CreatedAt       Timestamp                 `json:"createdAt"`
+	ID              MessageId                 `json:"id"`
+	Metadata        ResourceMetadata          `json:"metadata"`
+	ParentMessageID *MessageId                `json:"parentMessageId,omitempty"`
+	Platform        string                    `json:"platform"`
+	ProjectID       ProjectId                 `json:"projectId"`
+	ReceivedBy      *UserSnapshot             `json:"receivedBy,omitempty"`
+	SentBy          UserSnapshot              `json:"sentBy"`
+	Space           SpaceSnapshot             `json:"space"`
+	Status          string                    `json:"status"`
+	Timestamps      ReceivedMessageTimestamps `json:"timestamps"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type ReceivedWhatsappMessage struct {
+	AddressedTo *UserSnapshot          `json:"addressedTo,omitempty"`
+	Content     WhatsappMessageContent `json:"content"`
+	// When Photon first persisted this resource.
+	CreatedAt       Timestamp                 `json:"createdAt"`
+	ID              MessageId                 `json:"id"`
+	Metadata        ResourceMetadata          `json:"metadata"`
+	ParentMessageID *MessageId                `json:"parentMessageId,omitempty"`
+	Platform        string                    `json:"platform"`
+	ProjectID       ProjectId                 `json:"projectId"`
+	ReceivedBy      *UserSnapshot             `json:"receivedBy,omitempty"`
+	SentBy          UserSnapshot              `json:"sentBy"`
+	Space           SpaceSnapshot             `json:"space"`
+	Status          string                    `json:"status"`
+	Timestamps      ReceivedMessageTimestamps `json:"timestamps"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type RecipientInvalidFailure struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+}
+
+type RecipientOptedOutFailure struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+}
+
+type RecipientUnreachableFailure struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+}
+
 type RedeemAppInstallationDeliveryRequest struct {
 	AppID           string `json:"appId"`
 	ClientAssertion string `json:"clientAssertion"`
@@ -1773,6 +3752,14 @@ type Resource struct {
 	State      ResourceState  `json:"state"`
 	Type       string         `json:"type"`
 	UpdatedAt  Timestamp      `json:"updatedAt"`
+}
+
+type ResourceId string
+
+type ResourceMetadata struct {
+	DisplayName *string             `json:"displayName,omitempty"`
+	Email       *EmailMetadata      `json:"email,omitempty"`
+	Spam        *SpamClassification `json:"spam,omitempty"`
 }
 
 type ResourcePage struct {
@@ -1857,6 +3844,307 @@ type SelectableWebhookEventCatalog struct {
 	Selectable        bool                              `json:"selectable"`
 	Status            SelectableWebhookApiVersionStatus `json:"status"`
 	Successor         *string                           `json:"successor"`
+}
+
+// Text shown with the attachment. Accepted on: telegram.
+type SendAttachmentCaption struct {
+	Format string `json:"format"`
+	Text   string `json:"text"`
+}
+
+type SendAttachmentContent struct {
+	AttachmentID AttachmentId            `json:"attachmentId"`
+	Metadata     *SendAttachmentMetadata `json:"metadata,omitempty"`
+	Type         string                  `json:"type"`
+}
+
+type SendAttachmentMetadata struct {
+	Caption *SendAttachmentCaption `json:"caption,omitempty"`
+}
+
+type SendContent struct{ Union }
+
+// Kind returns the "type" discriminator, or "" when absent.
+func (u SendContent) Kind() string { return u.Discriminator("type") }
+
+// AsSendTextContent decodes the value as SendTextContent.
+func (u SendContent) AsSendTextContent() (SendTextContent, error) {
+	return UnionAs[SendTextContent](u.Union)
+}
+
+// AsSendTextUpdateContent decodes the value as SendTextUpdateContent.
+func (u SendContent) AsSendTextUpdateContent() (SendTextUpdateContent, error) {
+	return UnionAs[SendTextUpdateContent](u.Union)
+}
+
+// AsSendAttachmentContent decodes the value as SendAttachmentContent.
+func (u SendContent) AsSendAttachmentContent() (SendAttachmentContent, error) {
+	return UnionAs[SendAttachmentContent](u.Union)
+}
+
+// AsSendVoiceContent decodes the value as SendVoiceContent.
+func (u SendContent) AsSendVoiceContent() (SendVoiceContent, error) {
+	return UnionAs[SendVoiceContent](u.Union)
+}
+
+// AsSendReactionContent decodes the value as SendReactionContent.
+func (u SendContent) AsSendReactionContent() (SendReactionContent, error) {
+	return UnionAs[SendReactionContent](u.Union)
+}
+
+// AsSendMessageDeleteContent decodes the value as SendMessageDeleteContent.
+func (u SendContent) AsSendMessageDeleteContent() (SendMessageDeleteContent, error) {
+	return UnionAs[SendMessageDeleteContent](u.Union)
+}
+
+// AsSendMessageReadContent decodes the value as SendMessageReadContent.
+func (u SendContent) AsSendMessageReadContent() (SendMessageReadContent, error) {
+	return UnionAs[SendMessageReadContent](u.Union)
+}
+
+// AsSendSpaceParticipantsUpdateContent decodes the value as SendSpaceParticipantsUpdateContent.
+func (u SendContent) AsSendSpaceParticipantsUpdateContent() (SendSpaceParticipantsUpdateContent, error) {
+	return UnionAs[SendSpaceParticipantsUpdateContent](u.Union)
+}
+
+// AsSendSpaceTypingUpdateContent decodes the value as SendSpaceTypingUpdateContent.
+func (u SendContent) AsSendSpaceTypingUpdateContent() (SendSpaceTypingUpdateContent, error) {
+	return UnionAs[SendSpaceTypingUpdateContent](u.Union)
+}
+
+// AsSendPollContent decodes the value as SendPollContent.
+func (u SendContent) AsSendPollContent() (SendPollContent, error) {
+	return UnionAs[SendPollContent](u.Union)
+}
+
+// AsSendPollVoteContent decodes the value as SendPollVoteContent.
+func (u SendContent) AsSendPollVoteContent() (SendPollVoteContent, error) {
+	return UnionAs[SendPollVoteContent](u.Union)
+}
+
+// AsSendPollUpdateContent decodes the value as SendPollUpdateContent.
+func (u SendContent) AsSendPollUpdateContent() (SendPollUpdateContent, error) {
+	return UnionAs[SendPollUpdateContent](u.Union)
+}
+
+// AsSendGroupContent decodes the value as SendGroupContent.
+func (u SendContent) AsSendGroupContent() (SendGroupContent, error) {
+	return UnionAs[SendGroupContent](u.Union)
+}
+
+type SendContentPart struct{ Union }
+
+// Kind returns the "type" discriminator, or "" when absent.
+func (u SendContentPart) Kind() string { return u.Discriminator("type") }
+
+// AsSendTextContent decodes the value as SendTextContent.
+func (u SendContentPart) AsSendTextContent() (SendTextContent, error) {
+	return UnionAs[SendTextContent](u.Union)
+}
+
+// AsSendTextUpdateContent decodes the value as SendTextUpdateContent.
+func (u SendContentPart) AsSendTextUpdateContent() (SendTextUpdateContent, error) {
+	return UnionAs[SendTextUpdateContent](u.Union)
+}
+
+// AsSendAttachmentContent decodes the value as SendAttachmentContent.
+func (u SendContentPart) AsSendAttachmentContent() (SendAttachmentContent, error) {
+	return UnionAs[SendAttachmentContent](u.Union)
+}
+
+// AsSendVoiceContent decodes the value as SendVoiceContent.
+func (u SendContentPart) AsSendVoiceContent() (SendVoiceContent, error) {
+	return UnionAs[SendVoiceContent](u.Union)
+}
+
+// AsSendReactionContent decodes the value as SendReactionContent.
+func (u SendContentPart) AsSendReactionContent() (SendReactionContent, error) {
+	return UnionAs[SendReactionContent](u.Union)
+}
+
+// AsSendMessageDeleteContent decodes the value as SendMessageDeleteContent.
+func (u SendContentPart) AsSendMessageDeleteContent() (SendMessageDeleteContent, error) {
+	return UnionAs[SendMessageDeleteContent](u.Union)
+}
+
+// AsSendMessageReadContent decodes the value as SendMessageReadContent.
+func (u SendContentPart) AsSendMessageReadContent() (SendMessageReadContent, error) {
+	return UnionAs[SendMessageReadContent](u.Union)
+}
+
+// AsSendSpaceParticipantsUpdateContent decodes the value as SendSpaceParticipantsUpdateContent.
+func (u SendContentPart) AsSendSpaceParticipantsUpdateContent() (SendSpaceParticipantsUpdateContent, error) {
+	return UnionAs[SendSpaceParticipantsUpdateContent](u.Union)
+}
+
+// AsSendSpaceTypingUpdateContent decodes the value as SendSpaceTypingUpdateContent.
+func (u SendContentPart) AsSendSpaceTypingUpdateContent() (SendSpaceTypingUpdateContent, error) {
+	return UnionAs[SendSpaceTypingUpdateContent](u.Union)
+}
+
+// AsSendPollContent decodes the value as SendPollContent.
+func (u SendContentPart) AsSendPollContent() (SendPollContent, error) {
+	return UnionAs[SendPollContent](u.Union)
+}
+
+// AsSendPollVoteContent decodes the value as SendPollVoteContent.
+func (u SendContentPart) AsSendPollVoteContent() (SendPollVoteContent, error) {
+	return UnionAs[SendPollVoteContent](u.Union)
+}
+
+// AsSendPollUpdateContent decodes the value as SendPollUpdateContent.
+func (u SendContentPart) AsSendPollUpdateContent() (SendPollUpdateContent, error) {
+	return UnionAs[SendPollUpdateContent](u.Union)
+}
+
+type SendEmailMailbox struct {
+	Address string  `json:"address"`
+	Name    *string `json:"name,omitempty"`
+}
+
+type SendEmailOptions struct {
+	Bcc     []SendEmailMailbox `json:"bcc,omitempty"`
+	Cc      []SendEmailMailbox `json:"cc,omitempty"`
+	ReplyTo []SendEmailMailbox `json:"replyTo,omitempty"`
+	Subject *string            `json:"subject,omitempty"`
+	To      []SendEmailMailbox `json:"to,omitempty"`
+}
+
+type SendGroupContent struct {
+	Parts []SendContentPart `json:"parts"`
+	Type  string            `json:"type"`
+}
+
+type SendMessageDeleteContent struct {
+	Reason *string `json:"reason,omitempty"`
+	Scope  *string `json:"scope,omitempty"`
+	Type   string  `json:"type"`
+}
+
+type SendMessageReadContent struct {
+	Type string `json:"type"`
+}
+
+type SendMessageRequest struct {
+	Content         SendContent          `json:"content"`
+	Email           *SendEmailOptions    `json:"email,omitempty"`
+	ParentMessageID *string              `json:"parentMessageId,omitempty"`
+	SenderID        string               `json:"senderId"`
+	SpaceID         string               `json:"spaceId"`
+	Telegram        *SendTelegramOptions `json:"telegram,omitempty"`
+}
+
+type SendPollContent struct {
+	Options       []PollOption      `json:"options"`
+	Question      string            `json:"question"`
+	SelectionMode PollSelectionMode `json:"selectionMode"`
+	Type          string            `json:"type"`
+}
+
+type SendPollUpdateContent struct {
+	Options       []PollOption      `json:"options"`
+	Question      string            `json:"question"`
+	SelectionMode PollSelectionMode `json:"selectionMode"`
+	Type          string            `json:"type"`
+}
+
+type SendPollVoteContent struct {
+	SelectedOptions []PollOption `json:"selectedOptions"`
+	Type            string       `json:"type"`
+}
+
+type SendReactionContent struct {
+	Action   ReactionAction `json:"action"`
+	Reaction string         `json:"reaction"`
+	Type     string         `json:"type"`
+}
+
+type SendSpaceParticipantsUpdateContent struct {
+	Added   []UserSnapshotInput `json:"added"`
+	Removed []UserSnapshotInput `json:"removed"`
+	Type    string              `json:"type"`
+}
+
+type SendSpaceTypingUpdateContent struct {
+	Type string `json:"type"`
+	// True starts or refreshes typing; false stops it or reports a stop.
+	Typing bool `json:"typing"`
+}
+
+type SendTelegramOptions struct {
+	// Whether standalone text is sent as a Telegram rich message. Defaults to true; false sends a regular message. Not accepted with attachments.
+	RichMessage *bool `json:"richMessage,omitempty"`
+}
+
+type SendTextContent struct {
+	Format string `json:"format"`
+	Text   string `json:"text"`
+	Type   string `json:"type"`
+}
+
+type SendTextUpdateContent struct {
+	Format string `json:"format"`
+	Text   string `json:"text"`
+	Type   string `json:"type"`
+}
+
+type SendVoiceContent struct {
+	AttachmentID AttachmentId `json:"attachmentId"`
+	Type         string       `json:"type"`
+}
+
+type SenderNotAuthorizedFailure struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+}
+
+type SenderRegistrationRequiredFailure struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+}
+
+type SenderUnavailableFailure struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+}
+
+type SentMessage struct {
+	Platform Platform          `json:"platform"`
+	Status   SentMessageStatus `json:"status"`
+}
+
+type SentMessageConstraint struct {
+	Status SentMessageStatus `json:"status"`
+}
+
+type SentMessageStatus string
+
+const (
+	SentMessageStatusDispatched SentMessageStatus = "dispatched"
+	SentMessageStatusAccepted   SentMessageStatus = "accepted"
+	SentMessageStatusDelivered  SentMessageStatus = "delivered"
+	SentMessageStatusFailed     SentMessageStatus = "failed"
+)
+
+type SetSpaceTypingConstraint struct {
+	Content SetSpaceTypingContent `json:"content"`
+	Status  string                `json:"status"`
+}
+
+type SetSpaceTypingContent struct {
+	Type   string `json:"type"`
+	Typing bool   `json:"typing"`
+}
+
+type SetSpaceTypingRequest struct {
+	SenderID string `json:"senderId"`
+	// True starts or refreshes typing; false stops it.
+	Typing bool `json:"typing"`
+}
+
+type SetSpaceTypingResponse struct {
+	Content SetSpaceTypingContent `json:"content"`
+	Status  string                `json:"status"`
 }
 
 type SharedLineAssignment struct {
@@ -1947,6 +4235,77 @@ const (
 	SipTransportTls SipTransport = "tls"
 )
 
+type SmsGroupContent struct {
+	Metadata *ContentMetadata      `json:"metadata,omitempty"`
+	Parts    []SmsGroupContentPart `json:"parts"`
+	Type     string                `json:"type"`
+}
+
+type SmsGroupContentPart struct{ Union }
+
+// Kind returns the "type" discriminator, or "" when absent.
+func (u SmsGroupContentPart) Kind() string { return u.Discriminator("type") }
+
+// AsTextContent decodes the value as TextContent.
+func (u SmsGroupContentPart) AsTextContent() (TextContent, error) {
+	return UnionAs[TextContent](u.Union)
+}
+
+// AsTextUpdateContent decodes the value as TextUpdateContent.
+func (u SmsGroupContentPart) AsTextUpdateContent() (TextUpdateContent, error) {
+	return UnionAs[TextUpdateContent](u.Union)
+}
+
+// AsAttachmentContent decodes the value as AttachmentContent.
+func (u SmsGroupContentPart) AsAttachmentContent() (AttachmentContent, error) {
+	return UnionAs[AttachmentContent](u.Union)
+}
+
+// AsVoiceContent decodes the value as VoiceContent.
+func (u SmsGroupContentPart) AsVoiceContent() (VoiceContent, error) {
+	return UnionAs[VoiceContent](u.Union)
+}
+
+// AsReactionContent decodes the value as ReactionContent.
+func (u SmsGroupContentPart) AsReactionContent() (ReactionContent, error) {
+	return UnionAs[ReactionContent](u.Union)
+}
+
+// AsMessageDeleteContent decodes the value as MessageDeleteContent.
+func (u SmsGroupContentPart) AsMessageDeleteContent() (MessageDeleteContent, error) {
+	return UnionAs[MessageDeleteContent](u.Union)
+}
+
+// AsMessageReadContent decodes the value as MessageReadContent.
+func (u SmsGroupContentPart) AsMessageReadContent() (MessageReadContent, error) {
+	return UnionAs[MessageReadContent](u.Union)
+}
+
+// AsSpaceParticipantsUpdateContent decodes the value as SpaceParticipantsUpdateContent.
+func (u SmsGroupContentPart) AsSpaceParticipantsUpdateContent() (SpaceParticipantsUpdateContent, error) {
+	return UnionAs[SpaceParticipantsUpdateContent](u.Union)
+}
+
+// AsSpaceTypingUpdateContent decodes the value as SpaceTypingUpdateContent.
+func (u SmsGroupContentPart) AsSpaceTypingUpdateContent() (SpaceTypingUpdateContent, error) {
+	return UnionAs[SpaceTypingUpdateContent](u.Union)
+}
+
+// AsPollContent decodes the value as PollContent.
+func (u SmsGroupContentPart) AsPollContent() (PollContent, error) {
+	return UnionAs[PollContent](u.Union)
+}
+
+// AsPollVoteContent decodes the value as PollVoteContent.
+func (u SmsGroupContentPart) AsPollVoteContent() (PollVoteContent, error) {
+	return UnionAs[PollVoteContent](u.Union)
+}
+
+// AsPollUpdateContent decodes the value as PollUpdateContent.
+func (u SmsGroupContentPart) AsPollUpdateContent() (PollUpdateContent, error) {
+	return UnionAs[PollUpdateContent](u.Union)
+}
+
 type SmsLineCampaign struct {
 	ID             string `json:"id"`
 	OrganizationID string `json:"organizationId"`
@@ -1960,12 +4319,281 @@ const (
 	SmsLineCampaignEligibilityUnknown  SmsLineCampaignEligibility = "unknown"
 )
 
+type SmsMessage struct{ Union }
+
+// AsReceivedSmsMessage decodes the value as ReceivedSmsMessage.
+func (u SmsMessage) AsReceivedSmsMessage() (ReceivedSmsMessage, error) {
+	return UnionAs[ReceivedSmsMessage](u.Union)
+}
+
+// AsDispatchedSmsMessage decodes the value as DispatchedSmsMessage.
+func (u SmsMessage) AsDispatchedSmsMessage() (DispatchedSmsMessage, error) {
+	return UnionAs[DispatchedSmsMessage](u.Union)
+}
+
+// AsAcceptedSmsMessage decodes the value as AcceptedSmsMessage.
+func (u SmsMessage) AsAcceptedSmsMessage() (AcceptedSmsMessage, error) {
+	return UnionAs[AcceptedSmsMessage](u.Union)
+}
+
+// AsDeliveredSmsMessage decodes the value as DeliveredSmsMessage.
+func (u SmsMessage) AsDeliveredSmsMessage() (DeliveredSmsMessage, error) {
+	return UnionAs[DeliveredSmsMessage](u.Union)
+}
+
+// AsFailedSmsMessage decodes the value as FailedSmsMessage.
+func (u SmsMessage) AsFailedSmsMessage() (FailedSmsMessage, error) {
+	return UnionAs[FailedSmsMessage](u.Union)
+}
+
+type SmsMessageContent struct{ Union }
+
+// Kind returns the "type" discriminator, or "" when absent.
+func (u SmsMessageContent) Kind() string { return u.Discriminator("type") }
+
+// AsTextContent decodes the value as TextContent.
+func (u SmsMessageContent) AsTextContent() (TextContent, error) { return UnionAs[TextContent](u.Union) }
+
+// AsTextUpdateContent decodes the value as TextUpdateContent.
+func (u SmsMessageContent) AsTextUpdateContent() (TextUpdateContent, error) {
+	return UnionAs[TextUpdateContent](u.Union)
+}
+
+// AsAttachmentContent decodes the value as AttachmentContent.
+func (u SmsMessageContent) AsAttachmentContent() (AttachmentContent, error) {
+	return UnionAs[AttachmentContent](u.Union)
+}
+
+// AsVoiceContent decodes the value as VoiceContent.
+func (u SmsMessageContent) AsVoiceContent() (VoiceContent, error) {
+	return UnionAs[VoiceContent](u.Union)
+}
+
+// AsReactionContent decodes the value as ReactionContent.
+func (u SmsMessageContent) AsReactionContent() (ReactionContent, error) {
+	return UnionAs[ReactionContent](u.Union)
+}
+
+// AsMessageDeleteContent decodes the value as MessageDeleteContent.
+func (u SmsMessageContent) AsMessageDeleteContent() (MessageDeleteContent, error) {
+	return UnionAs[MessageDeleteContent](u.Union)
+}
+
+// AsMessageReadContent decodes the value as MessageReadContent.
+func (u SmsMessageContent) AsMessageReadContent() (MessageReadContent, error) {
+	return UnionAs[MessageReadContent](u.Union)
+}
+
+// AsSpaceParticipantsUpdateContent decodes the value as SpaceParticipantsUpdateContent.
+func (u SmsMessageContent) AsSpaceParticipantsUpdateContent() (SpaceParticipantsUpdateContent, error) {
+	return UnionAs[SpaceParticipantsUpdateContent](u.Union)
+}
+
+// AsSpaceTypingUpdateContent decodes the value as SpaceTypingUpdateContent.
+func (u SmsMessageContent) AsSpaceTypingUpdateContent() (SpaceTypingUpdateContent, error) {
+	return UnionAs[SpaceTypingUpdateContent](u.Union)
+}
+
+// AsPollContent decodes the value as PollContent.
+func (u SmsMessageContent) AsPollContent() (PollContent, error) { return UnionAs[PollContent](u.Union) }
+
+// AsPollVoteContent decodes the value as PollVoteContent.
+func (u SmsMessageContent) AsPollVoteContent() (PollVoteContent, error) {
+	return UnionAs[PollVoteContent](u.Union)
+}
+
+// AsPollUpdateContent decodes the value as PollUpdateContent.
+func (u SmsMessageContent) AsPollUpdateContent() (PollUpdateContent, error) {
+	return UnionAs[PollUpdateContent](u.Union)
+}
+
+// AsSmsGroupContent decodes the value as SmsGroupContent.
+func (u SmsMessageContent) AsSmsGroupContent() (SmsGroupContent, error) {
+	return UnionAs[SmsGroupContent](u.Union)
+}
+
+type SmsSpace struct {
+	// When Photon first persisted this resource.
+	CreatedAt      Timestamp        `json:"createdAt"`
+	Details        SmsSpaceDetails  `json:"details"`
+	ID             SpaceId          `json:"id"`
+	Kind           string           `json:"kind"`
+	Metadata       ResourceMetadata `json:"metadata"`
+	ParticipantIds []UserId         `json:"participantIds"`
+	Platform       string           `json:"platform"`
+	ProjectID      ProjectId        `json:"projectId"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type SmsSpaceDetails map[string]any
+
+type SmsSpaceSnapshot struct {
+	Details        SmsSpaceDetails  `json:"details"`
+	ID             SpaceId          `json:"id"`
+	Kind           string           `json:"kind"`
+	Metadata       ResourceMetadata `json:"metadata"`
+	ParticipantIds []UserId         `json:"participantIds"`
+	Platform       string           `json:"platform"`
+	ProjectID      ProjectId        `json:"projectId"`
+}
+
+type SmsUser struct {
+	// When Photon first persisted this resource.
+	CreatedAt Timestamp        `json:"createdAt"`
+	Details   SmsUserDetails   `json:"details"`
+	Handle    string           `json:"handle"`
+	ID        UserId           `json:"id"`
+	Kind      string           `json:"kind"`
+	Metadata  ResourceMetadata `json:"metadata"`
+	Platform  string           `json:"platform"`
+	ProjectID ProjectId        `json:"projectId"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type SmsUserDetails struct {
+	Carrier        *PhoneCarrier `json:"carrier,omitempty"`
+	CountryCode    *string       `json:"countryCode,omitempty"`
+	ManagedBy      *ManagerId    `json:"managedBy,omitempty"`
+	NationalFormat *string       `json:"nationalFormat,omitempty"`
+	ResourceID     *ResourceId   `json:"resourceId,omitempty"`
+}
+
+type SmsUserSnapshot struct {
+	Details   SmsUserDetails   `json:"details"`
+	Handle    string           `json:"handle"`
+	ID        UserId           `json:"id"`
+	Kind      string           `json:"kind"`
+	Metadata  ResourceMetadata `json:"metadata"`
+	Platform  string           `json:"platform"`
+	ProjectID ProjectId        `json:"projectId"`
+}
+
 type SortOrder string
 
 const (
 	SortOrderAsc  SortOrder = "asc"
 	SortOrderDesc SortOrder = "desc"
 )
+
+type Space struct{ Union }
+
+// Kind returns the "platform" discriminator, or "" when absent.
+func (u Space) Kind() string { return u.Discriminator("platform") }
+
+// AsSmsSpace decodes the value as SmsSpace.
+func (u Space) AsSmsSpace() (SmsSpace, error) { return UnionAs[SmsSpace](u.Union) }
+
+// AsWhatsappSpace decodes the value as WhatsappSpace.
+func (u Space) AsWhatsappSpace() (WhatsappSpace, error) { return UnionAs[WhatsappSpace](u.Union) }
+
+// AsWhatsappBusinessSpace decodes the value as WhatsappBusinessSpace.
+func (u Space) AsWhatsappBusinessSpace() (WhatsappBusinessSpace, error) {
+	return UnionAs[WhatsappBusinessSpace](u.Union)
+}
+
+// AsEmailSpace decodes the value as EmailSpace.
+func (u Space) AsEmailSpace() (EmailSpace, error) { return UnionAs[EmailSpace](u.Union) }
+
+// AsVoiceSpace decodes the value as VoiceSpace.
+func (u Space) AsVoiceSpace() (VoiceSpace, error) { return UnionAs[VoiceSpace](u.Union) }
+
+// AsImessageSpace decodes the value as ImessageSpace.
+func (u Space) AsImessageSpace() (ImessageSpace, error) { return UnionAs[ImessageSpace](u.Union) }
+
+// AsTelegramSpace decodes the value as TelegramSpace.
+func (u Space) AsTelegramSpace() (TelegramSpace, error) { return UnionAs[TelegramSpace](u.Union) }
+
+// AsUnknownSpace decodes the value as UnknownSpace.
+func (u Space) AsUnknownSpace() (UnknownSpace, error) { return UnionAs[UnknownSpace](u.Union) }
+
+type SpaceCount struct {
+	Count int64 `json:"count"`
+}
+
+type SpaceId string
+
+type SpaceOrderBy string
+
+const (
+	SpaceOrderByCreatedAt            SpaceOrderBy = "created_at"
+	SpaceOrderByUpdatedAt            SpaceOrderBy = "updated_at"
+	SpaceOrderByLastMessageCreatedAt SpaceOrderBy = "last_message_created_at"
+)
+
+type SpacePage struct {
+	// Unsupported platforms and records with unsupported data are omitted.
+	Items []PlatformSpace `json:"items"`
+	// Continue with this token, even if items is empty. Omitted when no more pages remain.
+	NextPageToken *string `json:"nextPageToken,omitempty"`
+}
+
+type SpaceParticipantsUpdateContent struct {
+	Added    []UserSnapshot   `json:"added"`
+	Metadata *ContentMetadata `json:"metadata,omitempty"`
+	Removed  []UserSnapshot   `json:"removed"`
+	Type     string           `json:"type"`
+}
+
+type SpaceSnapshot struct{ Union }
+
+// Kind returns the "platform" discriminator, or "" when absent.
+func (u SpaceSnapshot) Kind() string { return u.Discriminator("platform") }
+
+// AsSmsSpaceSnapshot decodes the value as SmsSpaceSnapshot.
+func (u SpaceSnapshot) AsSmsSpaceSnapshot() (SmsSpaceSnapshot, error) {
+	return UnionAs[SmsSpaceSnapshot](u.Union)
+}
+
+// AsWhatsappSpaceSnapshot decodes the value as WhatsappSpaceSnapshot.
+func (u SpaceSnapshot) AsWhatsappSpaceSnapshot() (WhatsappSpaceSnapshot, error) {
+	return UnionAs[WhatsappSpaceSnapshot](u.Union)
+}
+
+// AsWhatsappBusinessSpaceSnapshot decodes the value as WhatsappBusinessSpaceSnapshot.
+func (u SpaceSnapshot) AsWhatsappBusinessSpaceSnapshot() (WhatsappBusinessSpaceSnapshot, error) {
+	return UnionAs[WhatsappBusinessSpaceSnapshot](u.Union)
+}
+
+// AsEmailSpaceSnapshot decodes the value as EmailSpaceSnapshot.
+func (u SpaceSnapshot) AsEmailSpaceSnapshot() (EmailSpaceSnapshot, error) {
+	return UnionAs[EmailSpaceSnapshot](u.Union)
+}
+
+// AsVoiceSpaceSnapshot decodes the value as VoiceSpaceSnapshot.
+func (u SpaceSnapshot) AsVoiceSpaceSnapshot() (VoiceSpaceSnapshot, error) {
+	return UnionAs[VoiceSpaceSnapshot](u.Union)
+}
+
+// AsImessageSpaceSnapshot decodes the value as ImessageSpaceSnapshot.
+func (u SpaceSnapshot) AsImessageSpaceSnapshot() (ImessageSpaceSnapshot, error) {
+	return UnionAs[ImessageSpaceSnapshot](u.Union)
+}
+
+// AsTelegramSpaceSnapshot decodes the value as TelegramSpaceSnapshot.
+func (u SpaceSnapshot) AsTelegramSpaceSnapshot() (TelegramSpaceSnapshot, error) {
+	return UnionAs[TelegramSpaceSnapshot](u.Union)
+}
+
+// AsUnknownSpaceSnapshot decodes the value as UnknownSpaceSnapshot.
+func (u SpaceSnapshot) AsUnknownSpaceSnapshot() (UnknownSpaceSnapshot, error) {
+	return UnionAs[UnknownSpaceSnapshot](u.Union)
+}
+
+type SpaceTypingUpdateContent struct {
+	Metadata *ContentMetadata `json:"metadata,omitempty"`
+	Type     string           `json:"type"`
+	// True starts or refreshes typing; false stops it or reports a stop.
+	Typing bool `json:"typing"`
+}
+
+type SpamClassification struct {
+	ClassifiedAt *Timestamp `json:"classifiedAt,omitempty"`
+	Confidence   *float64   `json:"confidence,omitempty"`
+	Source       string     `json:"source"`
+	Status       string     `json:"status"`
+}
 
 type StartAccountPhoneVerificationRequest struct {
 	Captcha     *PhoneVerificationCaptcha `json:"captcha,omitempty"`
@@ -2046,6 +4674,142 @@ type SupportedPlatform struct {
 	Type        string `json:"type"`
 }
 
+type SupportedPlatformConstraint struct {
+	Platform Platform `json:"platform"`
+}
+
+type TelegramGroupContent struct {
+	Metadata *ContentMetadata           `json:"metadata,omitempty"`
+	Parts    []TelegramGroupContentPart `json:"parts"`
+	Type     string                     `json:"type"`
+}
+
+type TelegramGroupContentPart struct{ Union }
+
+// Kind returns the "type" discriminator, or "" when absent.
+func (u TelegramGroupContentPart) Kind() string { return u.Discriminator("type") }
+
+// AsTextContent decodes the value as TextContent.
+func (u TelegramGroupContentPart) AsTextContent() (TextContent, error) {
+	return UnionAs[TextContent](u.Union)
+}
+
+// AsAttachmentContent decodes the value as AttachmentContent.
+func (u TelegramGroupContentPart) AsAttachmentContent() (AttachmentContent, error) {
+	return UnionAs[AttachmentContent](u.Union)
+}
+
+// AsVoiceContent decodes the value as VoiceContent.
+func (u TelegramGroupContentPart) AsVoiceContent() (VoiceContent, error) {
+	return UnionAs[VoiceContent](u.Union)
+}
+
+type TelegramMessage struct{ Union }
+
+// AsReceivedTelegramMessage decodes the value as ReceivedTelegramMessage.
+func (u TelegramMessage) AsReceivedTelegramMessage() (ReceivedTelegramMessage, error) {
+	return UnionAs[ReceivedTelegramMessage](u.Union)
+}
+
+// AsDispatchedTelegramMessage decodes the value as DispatchedTelegramMessage.
+func (u TelegramMessage) AsDispatchedTelegramMessage() (DispatchedTelegramMessage, error) {
+	return UnionAs[DispatchedTelegramMessage](u.Union)
+}
+
+// AsAcceptedTelegramMessage decodes the value as AcceptedTelegramMessage.
+func (u TelegramMessage) AsAcceptedTelegramMessage() (AcceptedTelegramMessage, error) {
+	return UnionAs[AcceptedTelegramMessage](u.Union)
+}
+
+// AsDeliveredTelegramMessage decodes the value as DeliveredTelegramMessage.
+func (u TelegramMessage) AsDeliveredTelegramMessage() (DeliveredTelegramMessage, error) {
+	return UnionAs[DeliveredTelegramMessage](u.Union)
+}
+
+// AsFailedTelegramMessage decodes the value as FailedTelegramMessage.
+func (u TelegramMessage) AsFailedTelegramMessage() (FailedTelegramMessage, error) {
+	return UnionAs[FailedTelegramMessage](u.Union)
+}
+
+type TelegramMessageContent struct{ Union }
+
+// Kind returns the "type" discriminator, or "" when absent.
+func (u TelegramMessageContent) Kind() string { return u.Discriminator("type") }
+
+// AsTextContent decodes the value as TextContent.
+func (u TelegramMessageContent) AsTextContent() (TextContent, error) {
+	return UnionAs[TextContent](u.Union)
+}
+
+// AsAttachmentContent decodes the value as AttachmentContent.
+func (u TelegramMessageContent) AsAttachmentContent() (AttachmentContent, error) {
+	return UnionAs[AttachmentContent](u.Union)
+}
+
+// AsVoiceContent decodes the value as VoiceContent.
+func (u TelegramMessageContent) AsVoiceContent() (VoiceContent, error) {
+	return UnionAs[VoiceContent](u.Union)
+}
+
+// AsTelegramGroupContent decodes the value as TelegramGroupContent.
+func (u TelegramMessageContent) AsTelegramGroupContent() (TelegramGroupContent, error) {
+	return UnionAs[TelegramGroupContent](u.Union)
+}
+
+type TelegramSpace struct {
+	// When Photon first persisted this resource.
+	CreatedAt      Timestamp            `json:"createdAt"`
+	Details        TelegramSpaceDetails `json:"details"`
+	ID             SpaceId              `json:"id"`
+	Kind           string               `json:"kind"`
+	Metadata       ResourceMetadata     `json:"metadata"`
+	ParticipantIds []UserId             `json:"participantIds"`
+	Platform       string               `json:"platform"`
+	ProjectID      ProjectId            `json:"projectId"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type TelegramSpaceDetails map[string]any
+
+type TelegramSpaceSnapshot struct {
+	Details        TelegramSpaceDetails `json:"details"`
+	ID             SpaceId              `json:"id"`
+	Kind           string               `json:"kind"`
+	Metadata       ResourceMetadata     `json:"metadata"`
+	ParticipantIds []UserId             `json:"participantIds"`
+	Platform       string               `json:"platform"`
+	ProjectID      ProjectId            `json:"projectId"`
+}
+
+type TelegramUser struct {
+	// When Photon first persisted this resource.
+	CreatedAt Timestamp           `json:"createdAt"`
+	Details   TelegramUserDetails `json:"details"`
+	Handle    string              `json:"handle"`
+	ID        UserId              `json:"id"`
+	Kind      string              `json:"kind"`
+	Metadata  ResourceMetadata    `json:"metadata"`
+	Platform  string              `json:"platform"`
+	ProjectID ProjectId           `json:"projectId"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type TelegramUserDetails struct {
+	ResourceID *ResourceId `json:"resourceId,omitempty"`
+}
+
+type TelegramUserSnapshot struct {
+	Details   TelegramUserDetails `json:"details"`
+	Handle    string              `json:"handle"`
+	ID        UserId              `json:"id"`
+	Kind      string              `json:"kind"`
+	Metadata  ResourceMetadata    `json:"metadata"`
+	Platform  string              `json:"platform"`
+	ProjectID ProjectId           `json:"projectId"`
+}
+
 type TerminalBillingOperation struct{ Union }
 
 // AsSucceededBillingOperation decodes the value as SucceededBillingOperation.
@@ -2056,6 +4820,20 @@ func (u TerminalBillingOperation) AsSucceededBillingOperation() (SucceededBillin
 // AsFailedBillingOperation decodes the value as FailedBillingOperation.
 func (u TerminalBillingOperation) AsFailedBillingOperation() (FailedBillingOperation, error) {
 	return UnionAs[FailedBillingOperation](u.Union)
+}
+
+type TextContent struct {
+	Format   string           `json:"format"`
+	Metadata *ContentMetadata `json:"metadata,omitempty"`
+	Text     string           `json:"text"`
+	Type     string           `json:"type"`
+}
+
+type TextUpdateContent struct {
+	Format   string           `json:"format"`
+	Metadata *ContentMetadata `json:"metadata,omitempty"`
+	Text     string           `json:"text"`
+	Type     string           `json:"type"`
 }
 
 type TimestampOrderBy string
@@ -2080,6 +4858,79 @@ const (
 	UnavailableProjectSlugReasonTaken    UnavailableProjectSlugReason = "taken"
 	UnavailableProjectSlugReasonTooShort UnavailableProjectSlugReason = "too_short"
 )
+
+type UnknownMessage struct{ Union }
+
+// AsReceivedUnknownMessage decodes the value as ReceivedUnknownMessage.
+func (u UnknownMessage) AsReceivedUnknownMessage() (ReceivedUnknownMessage, error) {
+	return UnionAs[ReceivedUnknownMessage](u.Union)
+}
+
+// AsDispatchedUnknownMessage decodes the value as DispatchedUnknownMessage.
+func (u UnknownMessage) AsDispatchedUnknownMessage() (DispatchedUnknownMessage, error) {
+	return UnionAs[DispatchedUnknownMessage](u.Union)
+}
+
+// AsAcceptedUnknownMessage decodes the value as AcceptedUnknownMessage.
+func (u UnknownMessage) AsAcceptedUnknownMessage() (AcceptedUnknownMessage, error) {
+	return UnionAs[AcceptedUnknownMessage](u.Union)
+}
+
+// AsDeliveredUnknownMessage decodes the value as DeliveredUnknownMessage.
+func (u UnknownMessage) AsDeliveredUnknownMessage() (DeliveredUnknownMessage, error) {
+	return UnionAs[DeliveredUnknownMessage](u.Union)
+}
+
+// AsFailedUnknownMessage decodes the value as FailedUnknownMessage.
+func (u UnknownMessage) AsFailedUnknownMessage() (FailedUnknownMessage, error) {
+	return UnionAs[FailedUnknownMessage](u.Union)
+}
+
+type UnknownSpace struct {
+	// When Photon first persisted this resource.
+	CreatedAt      Timestamp            `json:"createdAt"`
+	Details        map[string]JsonValue `json:"details"`
+	ID             SpaceId              `json:"id"`
+	Kind           string               `json:"kind"`
+	Metadata       ResourceMetadata     `json:"metadata"`
+	ParticipantIds []UserId             `json:"participantIds"`
+	Platform       PlatformIdentifier   `json:"platform"`
+	ProjectID      ProjectId            `json:"projectId"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type UnknownSpaceSnapshot struct {
+	Details        map[string]JsonValue `json:"details"`
+	ID             SpaceId              `json:"id"`
+	Kind           string               `json:"kind"`
+	Metadata       ResourceMetadata     `json:"metadata"`
+	ParticipantIds []UserId             `json:"participantIds"`
+	Platform       PlatformIdentifier   `json:"platform"`
+	ProjectID      ProjectId            `json:"projectId"`
+}
+
+type UnknownUser struct {
+	// When Photon first persisted this resource.
+	CreatedAt Timestamp            `json:"createdAt"`
+	Details   map[string]JsonValue `json:"details"`
+	ID        UserId               `json:"id"`
+	Kind      string               `json:"kind"`
+	Metadata  ResourceMetadata     `json:"metadata"`
+	Platform  PlatformIdentifier   `json:"platform"`
+	ProjectID ProjectId            `json:"projectId"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type UnknownUserSnapshot struct {
+	Details   map[string]JsonValue `json:"details"`
+	ID        UserId               `json:"id"`
+	Kind      string               `json:"kind"`
+	Metadata  ResourceMetadata     `json:"metadata"`
+	Platform  PlatformIdentifier   `json:"platform"`
+	ProjectID ProjectId            `json:"projectId"`
+}
 
 type UpdateAccountOnboardingRequest struct {
 	Background     Nullable[AccountOnboardingBackground] `json:"background,omitzero"`
@@ -2226,6 +5077,148 @@ type UsageChargeTier struct {
 	ToUnit *int64  `json:"toUnit"`
 }
 
+type User struct{ Union }
+
+// Kind returns the "platform" discriminator, or "" when absent.
+func (u User) Kind() string { return u.Discriminator("platform") }
+
+// AsSmsUser decodes the value as SmsUser.
+func (u User) AsSmsUser() (SmsUser, error) { return UnionAs[SmsUser](u.Union) }
+
+// AsWhatsappUser decodes the value as WhatsappUser.
+func (u User) AsWhatsappUser() (WhatsappUser, error) { return UnionAs[WhatsappUser](u.Union) }
+
+// AsWhatsappBusinessUser decodes the value as WhatsappBusinessUser.
+func (u User) AsWhatsappBusinessUser() (WhatsappBusinessUser, error) {
+	return UnionAs[WhatsappBusinessUser](u.Union)
+}
+
+// AsEmailUser decodes the value as EmailUser.
+func (u User) AsEmailUser() (EmailUser, error) { return UnionAs[EmailUser](u.Union) }
+
+// AsVoiceUser decodes the value as VoiceUser.
+func (u User) AsVoiceUser() (VoiceUser, error) { return UnionAs[VoiceUser](u.Union) }
+
+// AsImessageUser decodes the value as ImessageUser.
+func (u User) AsImessageUser() (ImessageUser, error) { return UnionAs[ImessageUser](u.Union) }
+
+// AsTelegramUser decodes the value as TelegramUser.
+func (u User) AsTelegramUser() (TelegramUser, error) { return UnionAs[TelegramUser](u.Union) }
+
+// AsUnknownUser decodes the value as UnknownUser.
+func (u User) AsUnknownUser() (UnknownUser, error) { return UnionAs[UnknownUser](u.Union) }
+
+type UserCount struct {
+	Count int64 `json:"count"`
+}
+
+type UserId string
+
+type UserLineType string
+
+const (
+	UserLineTypeShared    UserLineType = "shared"
+	UserLineTypeDedicated UserLineType = "dedicated"
+)
+
+type UserPage struct {
+	// Unsupported platforms and records with unsupported data are omitted.
+	Items []PlatformUser `json:"items"`
+	// Continue with this token, even if items is empty. Omitted when no more pages remain.
+	NextPageToken *string `json:"nextPageToken,omitempty"`
+}
+
+type UserSnapshot struct{ Union }
+
+// Kind returns the "platform" discriminator, or "" when absent.
+func (u UserSnapshot) Kind() string { return u.Discriminator("platform") }
+
+// AsSmsUserSnapshot decodes the value as SmsUserSnapshot.
+func (u UserSnapshot) AsSmsUserSnapshot() (SmsUserSnapshot, error) {
+	return UnionAs[SmsUserSnapshot](u.Union)
+}
+
+// AsWhatsappUserSnapshot decodes the value as WhatsappUserSnapshot.
+func (u UserSnapshot) AsWhatsappUserSnapshot() (WhatsappUserSnapshot, error) {
+	return UnionAs[WhatsappUserSnapshot](u.Union)
+}
+
+// AsWhatsappBusinessUserSnapshot decodes the value as WhatsappBusinessUserSnapshot.
+func (u UserSnapshot) AsWhatsappBusinessUserSnapshot() (WhatsappBusinessUserSnapshot, error) {
+	return UnionAs[WhatsappBusinessUserSnapshot](u.Union)
+}
+
+// AsEmailUserSnapshot decodes the value as EmailUserSnapshot.
+func (u UserSnapshot) AsEmailUserSnapshot() (EmailUserSnapshot, error) {
+	return UnionAs[EmailUserSnapshot](u.Union)
+}
+
+// AsVoiceUserSnapshot decodes the value as VoiceUserSnapshot.
+func (u UserSnapshot) AsVoiceUserSnapshot() (VoiceUserSnapshot, error) {
+	return UnionAs[VoiceUserSnapshot](u.Union)
+}
+
+// AsImessageUserSnapshot decodes the value as ImessageUserSnapshot.
+func (u UserSnapshot) AsImessageUserSnapshot() (ImessageUserSnapshot, error) {
+	return UnionAs[ImessageUserSnapshot](u.Union)
+}
+
+// AsTelegramUserSnapshot decodes the value as TelegramUserSnapshot.
+func (u UserSnapshot) AsTelegramUserSnapshot() (TelegramUserSnapshot, error) {
+	return UnionAs[TelegramUserSnapshot](u.Union)
+}
+
+// AsUnknownUserSnapshot decodes the value as UnknownUserSnapshot.
+func (u UserSnapshot) AsUnknownUserSnapshot() (UnknownUserSnapshot, error) {
+	return UnionAs[UnknownUserSnapshot](u.Union)
+}
+
+type UserSnapshotInput struct{ Union }
+
+// Kind returns the "platform" discriminator, or "" when absent.
+func (u UserSnapshotInput) Kind() string { return u.Discriminator("platform") }
+
+// AsSmsUserSnapshot decodes the value as SmsUserSnapshot.
+func (u UserSnapshotInput) AsSmsUserSnapshot() (SmsUserSnapshot, error) {
+	return UnionAs[SmsUserSnapshot](u.Union)
+}
+
+// AsWhatsappUserSnapshot decodes the value as WhatsappUserSnapshot.
+func (u UserSnapshotInput) AsWhatsappUserSnapshot() (WhatsappUserSnapshot, error) {
+	return UnionAs[WhatsappUserSnapshot](u.Union)
+}
+
+// AsWhatsappBusinessUserSnapshot decodes the value as WhatsappBusinessUserSnapshot.
+func (u UserSnapshotInput) AsWhatsappBusinessUserSnapshot() (WhatsappBusinessUserSnapshot, error) {
+	return UnionAs[WhatsappBusinessUserSnapshot](u.Union)
+}
+
+// AsEmailUserSnapshot decodes the value as EmailUserSnapshot.
+func (u UserSnapshotInput) AsEmailUserSnapshot() (EmailUserSnapshot, error) {
+	return UnionAs[EmailUserSnapshot](u.Union)
+}
+
+// AsVoiceUserSnapshot decodes the value as VoiceUserSnapshot.
+func (u UserSnapshotInput) AsVoiceUserSnapshot() (VoiceUserSnapshot, error) {
+	return UnionAs[VoiceUserSnapshot](u.Union)
+}
+
+// AsImessageUserSnapshot decodes the value as ImessageUserSnapshot.
+func (u UserSnapshotInput) AsImessageUserSnapshot() (ImessageUserSnapshot, error) {
+	return UnionAs[ImessageUserSnapshot](u.Union)
+}
+
+// AsTelegramUserSnapshot decodes the value as TelegramUserSnapshot.
+func (u UserSnapshotInput) AsTelegramUserSnapshot() (TelegramUserSnapshot, error) {
+	return UnionAs[TelegramUserSnapshot](u.Union)
+}
+
+type VoiceContent struct {
+	AttachmentID AttachmentId     `json:"attachmentId"`
+	Metadata     *ContentMetadata `json:"metadata,omitempty"`
+	Type         string           `json:"type"`
+}
+
 type VoiceLineProfileAssignment struct {
 	ProfileID       *string   `json:"profileId,omitempty"`
 	ProfileVersion  *int64    `json:"profileVersion,omitempty"`
@@ -2239,6 +5232,13 @@ type VoiceLineProfileAssignmentUpdate struct {
 	ExpectedVersion int64   `json:"expectedVersion"`
 	ProfileID       *string `json:"profileId"`
 	ResourceID      string  `json:"resourceId"`
+}
+
+type VoiceMetadata struct {
+	// Server-observed recording duration in milliseconds, when known.
+	DurationMs *int64 `json:"durationMs,omitempty"`
+	// Server-provided normalized waveform samples for optional display.
+	Waveform []float64 `json:"waveform,omitempty"`
 }
 
 type VoiceOutboundCredentialRotationMode string
@@ -2282,6 +5282,61 @@ const (
 type VoiceProfilePage struct {
 	NextPageToken *string        `json:"nextPageToken,omitempty"`
 	Profiles      []VoiceProfile `json:"profiles"`
+}
+
+type VoiceSpace struct {
+	// When Photon first persisted this resource.
+	CreatedAt      Timestamp         `json:"createdAt"`
+	Details        VoiceSpaceDetails `json:"details"`
+	ID             SpaceId           `json:"id"`
+	Kind           string            `json:"kind"`
+	Metadata       ResourceMetadata  `json:"metadata"`
+	ParticipantIds []UserId          `json:"participantIds"`
+	Platform       string            `json:"platform"`
+	ProjectID      ProjectId         `json:"projectId"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type VoiceSpaceDetails map[string]any
+
+type VoiceSpaceSnapshot struct {
+	Details        VoiceSpaceDetails `json:"details"`
+	ID             SpaceId           `json:"id"`
+	Kind           string            `json:"kind"`
+	Metadata       ResourceMetadata  `json:"metadata"`
+	ParticipantIds []UserId          `json:"participantIds"`
+	Platform       string            `json:"platform"`
+	ProjectID      ProjectId         `json:"projectId"`
+}
+
+type VoiceUser struct {
+	// When Photon first persisted this resource.
+	CreatedAt Timestamp        `json:"createdAt"`
+	Details   VoiceUserDetails `json:"details"`
+	Handle    string           `json:"handle"`
+	ID        UserId           `json:"id"`
+	Kind      string           `json:"kind"`
+	Metadata  ResourceMetadata `json:"metadata"`
+	Platform  string           `json:"platform"`
+	ProjectID ProjectId        `json:"projectId"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type VoiceUserDetails struct {
+	ManagedBy  *ManagerId  `json:"managedBy,omitempty"`
+	ResourceID *ResourceId `json:"resourceId,omitempty"`
+}
+
+type VoiceUserSnapshot struct {
+	Details   VoiceUserDetails `json:"details"`
+	Handle    string           `json:"handle"`
+	ID        UserId           `json:"id"`
+	Kind      string           `json:"kind"`
+	Metadata  ResourceMetadata `json:"metadata"`
+	Platform  string           `json:"platform"`
+	ProjectID ProjectId        `json:"projectId"`
 }
 
 type WebhookApiVersion struct{ Union }
@@ -2401,6 +5456,398 @@ type WhatsappBusinessAccountRestriction struct {
 	Status     WhatsappRestrictionStatus `json:"status"`
 }
 
+type WhatsappBusinessGroupContent struct {
+	Metadata *ContentMetadata                   `json:"metadata,omitempty"`
+	Parts    []WhatsappBusinessGroupContentPart `json:"parts"`
+	Type     string                             `json:"type"`
+}
+
+type WhatsappBusinessGroupContentPart struct{ Union }
+
+// Kind returns the "type" discriminator, or "" when absent.
+func (u WhatsappBusinessGroupContentPart) Kind() string { return u.Discriminator("type") }
+
+// AsTextContent decodes the value as TextContent.
+func (u WhatsappBusinessGroupContentPart) AsTextContent() (TextContent, error) {
+	return UnionAs[TextContent](u.Union)
+}
+
+// AsTextUpdateContent decodes the value as TextUpdateContent.
+func (u WhatsappBusinessGroupContentPart) AsTextUpdateContent() (TextUpdateContent, error) {
+	return UnionAs[TextUpdateContent](u.Union)
+}
+
+// AsAttachmentContent decodes the value as AttachmentContent.
+func (u WhatsappBusinessGroupContentPart) AsAttachmentContent() (AttachmentContent, error) {
+	return UnionAs[AttachmentContent](u.Union)
+}
+
+// AsVoiceContent decodes the value as VoiceContent.
+func (u WhatsappBusinessGroupContentPart) AsVoiceContent() (VoiceContent, error) {
+	return UnionAs[VoiceContent](u.Union)
+}
+
+// AsReactionContent decodes the value as ReactionContent.
+func (u WhatsappBusinessGroupContentPart) AsReactionContent() (ReactionContent, error) {
+	return UnionAs[ReactionContent](u.Union)
+}
+
+// AsMessageDeleteContent decodes the value as MessageDeleteContent.
+func (u WhatsappBusinessGroupContentPart) AsMessageDeleteContent() (MessageDeleteContent, error) {
+	return UnionAs[MessageDeleteContent](u.Union)
+}
+
+// AsMessageReadContent decodes the value as MessageReadContent.
+func (u WhatsappBusinessGroupContentPart) AsMessageReadContent() (MessageReadContent, error) {
+	return UnionAs[MessageReadContent](u.Union)
+}
+
+// AsSpaceParticipantsUpdateContent decodes the value as SpaceParticipantsUpdateContent.
+func (u WhatsappBusinessGroupContentPart) AsSpaceParticipantsUpdateContent() (SpaceParticipantsUpdateContent, error) {
+	return UnionAs[SpaceParticipantsUpdateContent](u.Union)
+}
+
+// AsSpaceTypingUpdateContent decodes the value as SpaceTypingUpdateContent.
+func (u WhatsappBusinessGroupContentPart) AsSpaceTypingUpdateContent() (SpaceTypingUpdateContent, error) {
+	return UnionAs[SpaceTypingUpdateContent](u.Union)
+}
+
+// AsPollContent decodes the value as PollContent.
+func (u WhatsappBusinessGroupContentPart) AsPollContent() (PollContent, error) {
+	return UnionAs[PollContent](u.Union)
+}
+
+// AsPollVoteContent decodes the value as PollVoteContent.
+func (u WhatsappBusinessGroupContentPart) AsPollVoteContent() (PollVoteContent, error) {
+	return UnionAs[PollVoteContent](u.Union)
+}
+
+// AsPollUpdateContent decodes the value as PollUpdateContent.
+func (u WhatsappBusinessGroupContentPart) AsPollUpdateContent() (PollUpdateContent, error) {
+	return UnionAs[PollUpdateContent](u.Union)
+}
+
+type WhatsappBusinessMessage struct{ Union }
+
+// AsReceivedWhatsappBusinessMessage decodes the value as ReceivedWhatsappBusinessMessage.
+func (u WhatsappBusinessMessage) AsReceivedWhatsappBusinessMessage() (ReceivedWhatsappBusinessMessage, error) {
+	return UnionAs[ReceivedWhatsappBusinessMessage](u.Union)
+}
+
+// AsDispatchedWhatsappBusinessMessage decodes the value as DispatchedWhatsappBusinessMessage.
+func (u WhatsappBusinessMessage) AsDispatchedWhatsappBusinessMessage() (DispatchedWhatsappBusinessMessage, error) {
+	return UnionAs[DispatchedWhatsappBusinessMessage](u.Union)
+}
+
+// AsAcceptedWhatsappBusinessMessage decodes the value as AcceptedWhatsappBusinessMessage.
+func (u WhatsappBusinessMessage) AsAcceptedWhatsappBusinessMessage() (AcceptedWhatsappBusinessMessage, error) {
+	return UnionAs[AcceptedWhatsappBusinessMessage](u.Union)
+}
+
+// AsDeliveredWhatsappBusinessMessage decodes the value as DeliveredWhatsappBusinessMessage.
+func (u WhatsappBusinessMessage) AsDeliveredWhatsappBusinessMessage() (DeliveredWhatsappBusinessMessage, error) {
+	return UnionAs[DeliveredWhatsappBusinessMessage](u.Union)
+}
+
+// AsFailedWhatsappBusinessMessage decodes the value as FailedWhatsappBusinessMessage.
+func (u WhatsappBusinessMessage) AsFailedWhatsappBusinessMessage() (FailedWhatsappBusinessMessage, error) {
+	return UnionAs[FailedWhatsappBusinessMessage](u.Union)
+}
+
+type WhatsappBusinessMessageContent struct{ Union }
+
+// Kind returns the "type" discriminator, or "" when absent.
+func (u WhatsappBusinessMessageContent) Kind() string { return u.Discriminator("type") }
+
+// AsTextContent decodes the value as TextContent.
+func (u WhatsappBusinessMessageContent) AsTextContent() (TextContent, error) {
+	return UnionAs[TextContent](u.Union)
+}
+
+// AsTextUpdateContent decodes the value as TextUpdateContent.
+func (u WhatsappBusinessMessageContent) AsTextUpdateContent() (TextUpdateContent, error) {
+	return UnionAs[TextUpdateContent](u.Union)
+}
+
+// AsAttachmentContent decodes the value as AttachmentContent.
+func (u WhatsappBusinessMessageContent) AsAttachmentContent() (AttachmentContent, error) {
+	return UnionAs[AttachmentContent](u.Union)
+}
+
+// AsVoiceContent decodes the value as VoiceContent.
+func (u WhatsappBusinessMessageContent) AsVoiceContent() (VoiceContent, error) {
+	return UnionAs[VoiceContent](u.Union)
+}
+
+// AsReactionContent decodes the value as ReactionContent.
+func (u WhatsappBusinessMessageContent) AsReactionContent() (ReactionContent, error) {
+	return UnionAs[ReactionContent](u.Union)
+}
+
+// AsMessageDeleteContent decodes the value as MessageDeleteContent.
+func (u WhatsappBusinessMessageContent) AsMessageDeleteContent() (MessageDeleteContent, error) {
+	return UnionAs[MessageDeleteContent](u.Union)
+}
+
+// AsMessageReadContent decodes the value as MessageReadContent.
+func (u WhatsappBusinessMessageContent) AsMessageReadContent() (MessageReadContent, error) {
+	return UnionAs[MessageReadContent](u.Union)
+}
+
+// AsSpaceParticipantsUpdateContent decodes the value as SpaceParticipantsUpdateContent.
+func (u WhatsappBusinessMessageContent) AsSpaceParticipantsUpdateContent() (SpaceParticipantsUpdateContent, error) {
+	return UnionAs[SpaceParticipantsUpdateContent](u.Union)
+}
+
+// AsSpaceTypingUpdateContent decodes the value as SpaceTypingUpdateContent.
+func (u WhatsappBusinessMessageContent) AsSpaceTypingUpdateContent() (SpaceTypingUpdateContent, error) {
+	return UnionAs[SpaceTypingUpdateContent](u.Union)
+}
+
+// AsPollContent decodes the value as PollContent.
+func (u WhatsappBusinessMessageContent) AsPollContent() (PollContent, error) {
+	return UnionAs[PollContent](u.Union)
+}
+
+// AsPollVoteContent decodes the value as PollVoteContent.
+func (u WhatsappBusinessMessageContent) AsPollVoteContent() (PollVoteContent, error) {
+	return UnionAs[PollVoteContent](u.Union)
+}
+
+// AsPollUpdateContent decodes the value as PollUpdateContent.
+func (u WhatsappBusinessMessageContent) AsPollUpdateContent() (PollUpdateContent, error) {
+	return UnionAs[PollUpdateContent](u.Union)
+}
+
+// AsWhatsappBusinessGroupContent decodes the value as WhatsappBusinessGroupContent.
+func (u WhatsappBusinessMessageContent) AsWhatsappBusinessGroupContent() (WhatsappBusinessGroupContent, error) {
+	return UnionAs[WhatsappBusinessGroupContent](u.Union)
+}
+
+type WhatsappBusinessSpace struct {
+	// When Photon first persisted this resource.
+	CreatedAt      Timestamp                    `json:"createdAt"`
+	Details        WhatsappBusinessSpaceDetails `json:"details"`
+	ID             SpaceId                      `json:"id"`
+	Kind           string                       `json:"kind"`
+	Metadata       ResourceMetadata             `json:"metadata"`
+	ParticipantIds []UserId                     `json:"participantIds"`
+	Platform       string                       `json:"platform"`
+	ProjectID      ProjectId                    `json:"projectId"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type WhatsappBusinessSpaceDetails map[string]any
+
+type WhatsappBusinessSpaceSnapshot struct {
+	Details        WhatsappBusinessSpaceDetails `json:"details"`
+	ID             SpaceId                      `json:"id"`
+	Kind           string                       `json:"kind"`
+	Metadata       ResourceMetadata             `json:"metadata"`
+	ParticipantIds []UserId                     `json:"participantIds"`
+	Platform       string                       `json:"platform"`
+	ProjectID      ProjectId                    `json:"projectId"`
+}
+
+type WhatsappBusinessUser struct {
+	// When Photon first persisted this resource.
+	CreatedAt Timestamp                   `json:"createdAt"`
+	Details   WhatsappBusinessUserDetails `json:"details"`
+	Handle    string                      `json:"handle"`
+	ID        UserId                      `json:"id"`
+	Kind      string                      `json:"kind"`
+	Metadata  ResourceMetadata            `json:"metadata"`
+	Platform  string                      `json:"platform"`
+	ProjectID ProjectId                   `json:"projectId"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type WhatsappBusinessUserDetails struct {
+	ManagedBy   *ManagerId  `json:"managedBy,omitempty"`
+	PhoneNumber *string     `json:"phoneNumber,omitempty"`
+	ResourceID  *ResourceId `json:"resourceId,omitempty"`
+}
+
+type WhatsappBusinessUserSnapshot struct {
+	Details   WhatsappBusinessUserDetails `json:"details"`
+	Handle    string                      `json:"handle"`
+	ID        UserId                      `json:"id"`
+	Kind      string                      `json:"kind"`
+	Metadata  ResourceMetadata            `json:"metadata"`
+	Platform  string                      `json:"platform"`
+	ProjectID ProjectId                   `json:"projectId"`
+}
+
+type WhatsappGroupContent struct {
+	Metadata *ContentMetadata           `json:"metadata,omitempty"`
+	Parts    []WhatsappGroupContentPart `json:"parts"`
+	Type     string                     `json:"type"`
+}
+
+type WhatsappGroupContentPart struct{ Union }
+
+// Kind returns the "type" discriminator, or "" when absent.
+func (u WhatsappGroupContentPart) Kind() string { return u.Discriminator("type") }
+
+// AsTextContent decodes the value as TextContent.
+func (u WhatsappGroupContentPart) AsTextContent() (TextContent, error) {
+	return UnionAs[TextContent](u.Union)
+}
+
+// AsTextUpdateContent decodes the value as TextUpdateContent.
+func (u WhatsappGroupContentPart) AsTextUpdateContent() (TextUpdateContent, error) {
+	return UnionAs[TextUpdateContent](u.Union)
+}
+
+// AsAttachmentContent decodes the value as AttachmentContent.
+func (u WhatsappGroupContentPart) AsAttachmentContent() (AttachmentContent, error) {
+	return UnionAs[AttachmentContent](u.Union)
+}
+
+// AsVoiceContent decodes the value as VoiceContent.
+func (u WhatsappGroupContentPart) AsVoiceContent() (VoiceContent, error) {
+	return UnionAs[VoiceContent](u.Union)
+}
+
+// AsReactionContent decodes the value as ReactionContent.
+func (u WhatsappGroupContentPart) AsReactionContent() (ReactionContent, error) {
+	return UnionAs[ReactionContent](u.Union)
+}
+
+// AsMessageDeleteContent decodes the value as MessageDeleteContent.
+func (u WhatsappGroupContentPart) AsMessageDeleteContent() (MessageDeleteContent, error) {
+	return UnionAs[MessageDeleteContent](u.Union)
+}
+
+// AsMessageReadContent decodes the value as MessageReadContent.
+func (u WhatsappGroupContentPart) AsMessageReadContent() (MessageReadContent, error) {
+	return UnionAs[MessageReadContent](u.Union)
+}
+
+// AsSpaceParticipantsUpdateContent decodes the value as SpaceParticipantsUpdateContent.
+func (u WhatsappGroupContentPart) AsSpaceParticipantsUpdateContent() (SpaceParticipantsUpdateContent, error) {
+	return UnionAs[SpaceParticipantsUpdateContent](u.Union)
+}
+
+// AsSpaceTypingUpdateContent decodes the value as SpaceTypingUpdateContent.
+func (u WhatsappGroupContentPart) AsSpaceTypingUpdateContent() (SpaceTypingUpdateContent, error) {
+	return UnionAs[SpaceTypingUpdateContent](u.Union)
+}
+
+// AsPollContent decodes the value as PollContent.
+func (u WhatsappGroupContentPart) AsPollContent() (PollContent, error) {
+	return UnionAs[PollContent](u.Union)
+}
+
+// AsPollVoteContent decodes the value as PollVoteContent.
+func (u WhatsappGroupContentPart) AsPollVoteContent() (PollVoteContent, error) {
+	return UnionAs[PollVoteContent](u.Union)
+}
+
+// AsPollUpdateContent decodes the value as PollUpdateContent.
+func (u WhatsappGroupContentPart) AsPollUpdateContent() (PollUpdateContent, error) {
+	return UnionAs[PollUpdateContent](u.Union)
+}
+
+type WhatsappMessage struct{ Union }
+
+// AsReceivedWhatsappMessage decodes the value as ReceivedWhatsappMessage.
+func (u WhatsappMessage) AsReceivedWhatsappMessage() (ReceivedWhatsappMessage, error) {
+	return UnionAs[ReceivedWhatsappMessage](u.Union)
+}
+
+// AsDispatchedWhatsappMessage decodes the value as DispatchedWhatsappMessage.
+func (u WhatsappMessage) AsDispatchedWhatsappMessage() (DispatchedWhatsappMessage, error) {
+	return UnionAs[DispatchedWhatsappMessage](u.Union)
+}
+
+// AsAcceptedWhatsappMessage decodes the value as AcceptedWhatsappMessage.
+func (u WhatsappMessage) AsAcceptedWhatsappMessage() (AcceptedWhatsappMessage, error) {
+	return UnionAs[AcceptedWhatsappMessage](u.Union)
+}
+
+// AsDeliveredWhatsappMessage decodes the value as DeliveredWhatsappMessage.
+func (u WhatsappMessage) AsDeliveredWhatsappMessage() (DeliveredWhatsappMessage, error) {
+	return UnionAs[DeliveredWhatsappMessage](u.Union)
+}
+
+// AsFailedWhatsappMessage decodes the value as FailedWhatsappMessage.
+func (u WhatsappMessage) AsFailedWhatsappMessage() (FailedWhatsappMessage, error) {
+	return UnionAs[FailedWhatsappMessage](u.Union)
+}
+
+type WhatsappMessageContent struct{ Union }
+
+// Kind returns the "type" discriminator, or "" when absent.
+func (u WhatsappMessageContent) Kind() string { return u.Discriminator("type") }
+
+// AsTextContent decodes the value as TextContent.
+func (u WhatsappMessageContent) AsTextContent() (TextContent, error) {
+	return UnionAs[TextContent](u.Union)
+}
+
+// AsTextUpdateContent decodes the value as TextUpdateContent.
+func (u WhatsappMessageContent) AsTextUpdateContent() (TextUpdateContent, error) {
+	return UnionAs[TextUpdateContent](u.Union)
+}
+
+// AsAttachmentContent decodes the value as AttachmentContent.
+func (u WhatsappMessageContent) AsAttachmentContent() (AttachmentContent, error) {
+	return UnionAs[AttachmentContent](u.Union)
+}
+
+// AsVoiceContent decodes the value as VoiceContent.
+func (u WhatsappMessageContent) AsVoiceContent() (VoiceContent, error) {
+	return UnionAs[VoiceContent](u.Union)
+}
+
+// AsReactionContent decodes the value as ReactionContent.
+func (u WhatsappMessageContent) AsReactionContent() (ReactionContent, error) {
+	return UnionAs[ReactionContent](u.Union)
+}
+
+// AsMessageDeleteContent decodes the value as MessageDeleteContent.
+func (u WhatsappMessageContent) AsMessageDeleteContent() (MessageDeleteContent, error) {
+	return UnionAs[MessageDeleteContent](u.Union)
+}
+
+// AsMessageReadContent decodes the value as MessageReadContent.
+func (u WhatsappMessageContent) AsMessageReadContent() (MessageReadContent, error) {
+	return UnionAs[MessageReadContent](u.Union)
+}
+
+// AsSpaceParticipantsUpdateContent decodes the value as SpaceParticipantsUpdateContent.
+func (u WhatsappMessageContent) AsSpaceParticipantsUpdateContent() (SpaceParticipantsUpdateContent, error) {
+	return UnionAs[SpaceParticipantsUpdateContent](u.Union)
+}
+
+// AsSpaceTypingUpdateContent decodes the value as SpaceTypingUpdateContent.
+func (u WhatsappMessageContent) AsSpaceTypingUpdateContent() (SpaceTypingUpdateContent, error) {
+	return UnionAs[SpaceTypingUpdateContent](u.Union)
+}
+
+// AsPollContent decodes the value as PollContent.
+func (u WhatsappMessageContent) AsPollContent() (PollContent, error) {
+	return UnionAs[PollContent](u.Union)
+}
+
+// AsPollVoteContent decodes the value as PollVoteContent.
+func (u WhatsappMessageContent) AsPollVoteContent() (PollVoteContent, error) {
+	return UnionAs[PollVoteContent](u.Union)
+}
+
+// AsPollUpdateContent decodes the value as PollUpdateContent.
+func (u WhatsappMessageContent) AsPollUpdateContent() (PollUpdateContent, error) {
+	return UnionAs[PollUpdateContent](u.Union)
+}
+
+// AsWhatsappGroupContent decodes the value as WhatsappGroupContent.
+func (u WhatsappMessageContent) AsWhatsappGroupContent() (WhatsappGroupContent, error) {
+	return UnionAs[WhatsappGroupContent](u.Union)
+}
+
 type WhatsappOutboundCapacity string
 
 const (
@@ -2439,3 +5886,60 @@ const (
 	WhatsappReviewStatusREJECTED WhatsappReviewStatus = "REJECTED"
 	WhatsappReviewStatusUNKNOWN  WhatsappReviewStatus = "UNKNOWN"
 )
+
+type WhatsappSpace struct {
+	// When Photon first persisted this resource.
+	CreatedAt      Timestamp            `json:"createdAt"`
+	Details        WhatsappSpaceDetails `json:"details"`
+	ID             SpaceId              `json:"id"`
+	Kind           string               `json:"kind"`
+	Metadata       ResourceMetadata     `json:"metadata"`
+	ParticipantIds []UserId             `json:"participantIds"`
+	Platform       string               `json:"platform"`
+	ProjectID      ProjectId            `json:"projectId"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type WhatsappSpaceDetails map[string]any
+
+type WhatsappSpaceSnapshot struct {
+	Details        WhatsappSpaceDetails `json:"details"`
+	ID             SpaceId              `json:"id"`
+	Kind           string               `json:"kind"`
+	Metadata       ResourceMetadata     `json:"metadata"`
+	ParticipantIds []UserId             `json:"participantIds"`
+	Platform       string               `json:"platform"`
+	ProjectID      ProjectId            `json:"projectId"`
+}
+
+type WhatsappUser struct {
+	// When Photon first persisted this resource.
+	CreatedAt Timestamp           `json:"createdAt"`
+	Details   WhatsappUserDetails `json:"details"`
+	Handle    string              `json:"handle"`
+	ID        UserId              `json:"id"`
+	Kind      string              `json:"kind"`
+	Metadata  ResourceMetadata    `json:"metadata"`
+	Platform  string              `json:"platform"`
+	ProjectID ProjectId           `json:"projectId"`
+	// When Photon last persisted a change to this resource's public state.
+	UpdatedAt Timestamp `json:"updatedAt"`
+}
+
+type WhatsappUserDetails struct {
+	ManagedBy   *ManagerId    `json:"managedBy,omitempty"`
+	PhoneNumber *string       `json:"phoneNumber,omitempty"`
+	ResourceID  *ResourceId   `json:"resourceId,omitempty"`
+	Type        *UserLineType `json:"type,omitempty"`
+}
+
+type WhatsappUserSnapshot struct {
+	Details   WhatsappUserDetails `json:"details"`
+	Handle    string              `json:"handle"`
+	ID        UserId              `json:"id"`
+	Kind      string              `json:"kind"`
+	Metadata  ResourceMetadata    `json:"metadata"`
+	Platform  string              `json:"platform"`
+	ProjectID ProjectId           `json:"projectId"`
+}

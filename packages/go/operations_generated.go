@@ -7,6 +7,110 @@ import (
 	"io"
 )
 
+// CountMessagesParams holds the parameters of CountMessages.
+type CountMessagesParams struct {
+	// ID is the path parameter id.
+	ID string
+	// CreatedBefore is the query parameter createdBefore.
+	CreatedBefore *string
+	// CreatedSince is the query parameter createdSince.
+	CreatedSince *string
+	// Direction is the query parameter direction.
+	Direction *MessageDirection
+	// ExcludeContentTypes is the query parameter excludeContentTypes.
+	ExcludeContentTypes *string
+	// PerspectiveUserID is the query parameter perspectiveUserId.
+	PerspectiveUserID *string
+	// Platform is the query parameter platform.
+	Platform *Platform
+	// ResourceID is the query parameter resourceId.
+	ResourceID *string
+	// SpaceID is the query parameter spaceId.
+	SpaceID *string
+	// UpdatedBefore is the query parameter updatedBefore.
+	UpdatedBefore *string
+	// UpdatedSince is the query parameter updatedSince.
+	UpdatedSince *string
+	// Interval is the query parameter interval.
+	Interval *string
+	// TimeZone is the query parameter timeZone.
+	TimeZone *string
+}
+
+// CountSpacesParams holds the parameters of CountSpaces.
+type CountSpacesParams struct {
+	// ID is the path parameter id.
+	ID string
+	// MessageCreatedBefore is the query parameter messageCreatedBefore.
+	MessageCreatedBefore *string
+	// MessageCreatedSince is the query parameter messageCreatedSince.
+	MessageCreatedSince *string
+	// MessageDirection is the query parameter messageDirection.
+	MessageDirection *MessageDirection
+	// MessageExcludeContentTypes is the query parameter messageExcludeContentTypes.
+	MessageExcludeContentTypes *string
+	// MessageResourceID is the query parameter messageResourceId.
+	MessageResourceID *string
+	// CreatedBefore is the query parameter createdBefore.
+	CreatedBefore *string
+	// CreatedSince is the query parameter createdSince.
+	CreatedSince *string
+	// ParticipantHandle is the query parameter participantHandle.
+	ParticipantHandle *string
+	// ParticipantID is the query parameter participantId.
+	ParticipantID *string
+	// Platform is the query parameter platform.
+	Platform *Platform
+	// UpdatedBefore is the query parameter updatedBefore.
+	UpdatedBefore *string
+	// UpdatedSince is the query parameter updatedSince.
+	UpdatedSince *string
+}
+
+// CountUsersParams holds the parameters of CountUsers.
+type CountUsersParams struct {
+	// ID is the path parameter id.
+	ID string
+	// MessageCreatedBefore is the query parameter messageCreatedBefore.
+	MessageCreatedBefore *string
+	// MessageCreatedSince is the query parameter messageCreatedSince.
+	MessageCreatedSince *string
+	// MessageDirection is the query parameter messageDirection.
+	MessageDirection *MessageDirection
+	// MessageExcludeContentTypes is the query parameter messageExcludeContentTypes.
+	MessageExcludeContentTypes *string
+	// MessageResourceID is the query parameter messageResourceId.
+	MessageResourceID *string
+	// CreatedBefore is the query parameter createdBefore.
+	CreatedBefore *string
+	// CreatedSince is the query parameter createdSince.
+	CreatedSince *string
+	// Platform is the query parameter platform.
+	Platform *Platform
+	// UpdatedBefore is the query parameter updatedBefore.
+	UpdatedBefore *string
+	// UpdatedSince is the query parameter updatedSince.
+	UpdatedSince *string
+}
+
+// CreateOrGetSpaceParams holds the parameters of CreateOrGetSpace.
+type CreateOrGetSpaceParams struct {
+	// ID is the path parameter id.
+	ID string
+	// IdempotencyKey is the header parameter idempotency-key. Generated when empty.
+	IdempotencyKey string
+	// Body is the request body.
+	Body CreateOrGetSpaceRequest
+}
+
+// CreateOrGetUserParams holds the parameters of CreateOrGetUser.
+type CreateOrGetUserParams struct {
+	// ID is the path parameter id.
+	ID string
+	// Body is the request body.
+	Body CreateOrGetUserRequest
+}
+
 // CreateProjectApiKeyParams holds the parameters of CreateProjectApiKey.
 type CreateProjectApiKeyParams struct {
 	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
@@ -59,6 +163,16 @@ type GetAttachmentParams struct {
 	ID string
 }
 
+// GetMessageParams holds the parameters of GetMessage.
+type GetMessageParams struct {
+	// ID is the path parameter id.
+	ID string
+	// MessageID is the path parameter messageId.
+	MessageID string
+	// IfNoneMatch is the header parameter if-none-match.
+	IfNoneMatch *string
+}
+
 // GetMessageMetricsBackfillParams holds the parameters of GetMessageMetricsBackfill.
 type GetMessageMetricsBackfillParams struct {
 	// ProjectID is the path parameter projectId.
@@ -79,6 +193,26 @@ type GetMessageMetricsSqlSchemaParams struct {
 type GetProjectParams struct {
 	// ProjectID is the path parameter projectId.
 	ProjectID string
+}
+
+// GetSpaceParams holds the parameters of GetSpace.
+type GetSpaceParams struct {
+	// ID is the path parameter id.
+	ID string
+	// SpaceID is the path parameter spaceId.
+	SpaceID string
+	// IfNoneMatch is the header parameter if-none-match.
+	IfNoneMatch *string
+}
+
+// GetUserParams holds the parameters of GetUser.
+type GetUserParams struct {
+	// ID is the path parameter id.
+	ID string
+	// UserID is the path parameter userId.
+	UserID string
+	// IfNoneMatch is the header parameter if-none-match.
+	IfNoneMatch *string
 }
 
 // GetWebhookDestinationParams holds the parameters of GetWebhookDestination.
@@ -121,10 +255,116 @@ type ListAttachmentsParams struct {
 	UpdatedSince *string
 }
 
+// ListMessagesParams holds the parameters of ListMessages.
+type ListMessagesParams struct {
+	// ID is the path parameter id.
+	ID string
+	// CreatedBefore is the query parameter createdBefore.
+	CreatedBefore *string
+	// CreatedSince is the query parameter createdSince.
+	CreatedSince *string
+	// Direction is the query parameter direction.
+	Direction *MessageDirection
+	// ExcludeContentTypes is the query parameter excludeContentTypes.
+	ExcludeContentTypes *string
+	// Order is the query parameter order.
+	Order *SortOrder
+	// OrderBy is the query parameter orderBy.
+	OrderBy *TimestampOrderBy
+	// PageSize is the query parameter pageSize.
+	PageSize *int64
+	// PageToken is the query parameter pageToken.
+	PageToken *string
+	// PerspectiveUserID is the query parameter perspectiveUserId.
+	PerspectiveUserID *string
+	// Platform is the query parameter platform.
+	Platform *Platform
+	// ResourceID is the query parameter resourceId.
+	ResourceID *string
+	// SpaceID is the query parameter spaceId.
+	SpaceID *string
+	// UpdatedBefore is the query parameter updatedBefore.
+	UpdatedBefore *string
+	// UpdatedSince is the query parameter updatedSince.
+	UpdatedSince *string
+}
+
 // ListProjectApiKeysParams holds the parameters of ListProjectApiKeys.
 type ListProjectApiKeysParams struct {
 	// ProjectID is the path parameter projectId.
 	ProjectID string
+}
+
+// ListSpacesParams holds the parameters of ListSpaces.
+type ListSpacesParams struct {
+	// ID is the path parameter id.
+	ID string
+	// MessageCreatedBefore is the query parameter messageCreatedBefore.
+	MessageCreatedBefore *string
+	// MessageCreatedSince is the query parameter messageCreatedSince.
+	MessageCreatedSince *string
+	// MessageDirection is the query parameter messageDirection.
+	MessageDirection *MessageDirection
+	// MessageExcludeContentTypes is the query parameter messageExcludeContentTypes.
+	MessageExcludeContentTypes *string
+	// MessageResourceID is the query parameter messageResourceId.
+	MessageResourceID *string
+	// CreatedBefore is the query parameter createdBefore.
+	CreatedBefore *string
+	// CreatedSince is the query parameter createdSince.
+	CreatedSince *string
+	// Order is the query parameter order.
+	Order *SortOrder
+	// OrderBy is the query parameter orderBy.
+	OrderBy *SpaceOrderBy
+	// PageSize is the query parameter pageSize.
+	PageSize *int64
+	// PageToken is the query parameter pageToken.
+	PageToken *string
+	// ParticipantHandle is the query parameter participantHandle.
+	ParticipantHandle *string
+	// ParticipantID is the query parameter participantId.
+	ParticipantID *string
+	// Platform is the query parameter platform.
+	Platform *Platform
+	// UpdatedBefore is the query parameter updatedBefore.
+	UpdatedBefore *string
+	// UpdatedSince is the query parameter updatedSince.
+	UpdatedSince *string
+}
+
+// ListUsersParams holds the parameters of ListUsers.
+type ListUsersParams struct {
+	// ID is the path parameter id.
+	ID string
+	// MessageCreatedBefore is the query parameter messageCreatedBefore.
+	MessageCreatedBefore *string
+	// MessageCreatedSince is the query parameter messageCreatedSince.
+	MessageCreatedSince *string
+	// MessageDirection is the query parameter messageDirection.
+	MessageDirection *MessageDirection
+	// MessageExcludeContentTypes is the query parameter messageExcludeContentTypes.
+	MessageExcludeContentTypes *string
+	// MessageResourceID is the query parameter messageResourceId.
+	MessageResourceID *string
+	// CreatedBefore is the query parameter createdBefore.
+	CreatedBefore *string
+	// CreatedSince is the query parameter createdSince.
+	CreatedSince *string
+	// Order is the query parameter order.
+	Order *SortOrder
+	// OrderBy is the query parameter orderBy.
+	OrderBy *TimestampOrderBy
+	// PageSize is the query parameter pageSize.
+	PageSize *int64
+	// PageToken is the query parameter pageToken.
+	PageToken *string
+	// Platform is the query parameter platform.
+	Platform *Platform
+	// UpdatedBefore is the query parameter updatedBefore.
+	UpdatedBefore *string
+	// UpdatedSince is the query parameter updatedSince.
+	UpdatedSince *string
 }
 
 // ListWebhookApiVersionsParams holds the parameters of ListWebhookApiVersions.
@@ -155,6 +395,16 @@ type ListWebhookEventTypesParams struct {
 	ProjectID string
 	// APIVersion is the query parameter apiVersion.
 	APIVersion string
+}
+
+// MarkMessageReadParams holds the parameters of MarkMessageRead.
+type MarkMessageReadParams struct {
+	// ID is the path parameter id.
+	ID string
+	// MessageID is the path parameter messageId.
+	MessageID string
+	// IdempotencyKey is the header parameter idempotency-key. Generated when empty.
+	IdempotencyKey string
 }
 
 // QueryMessageMetricsParams holds the parameters of QueryMessageMetrics.
@@ -199,6 +449,26 @@ type RotateWebhookSigningSecretParams struct {
 	ProjectID string
 	// Body is the request body.
 	Body RotateWebhookSigningSecretRequest
+}
+
+// SendMessageParams holds the parameters of SendMessage.
+type SendMessageParams struct {
+	// ID is the path parameter id.
+	ID string
+	// IdempotencyKey is the header parameter idempotency-key. Generated when empty.
+	IdempotencyKey string
+	// Body is the request body.
+	Body SendMessageRequest
+}
+
+// SetSpaceTypingParams holds the parameters of SetSpaceTyping.
+type SetSpaceTypingParams struct {
+	// ID is the path parameter id.
+	ID string
+	// SpaceID is the path parameter spaceId.
+	SpaceID string
+	// Body is the request body.
+	Body SetSpaceTypingRequest
 }
 
 // UpdateProjectParams holds the parameters of Update.
@@ -437,6 +707,20 @@ type GetDefaultVoiceProfileParams struct {
 	ID string
 }
 
+// GetEmailDeliveryMetricsParams holds the parameters of GetEmailDeliveryMetrics.
+type GetEmailDeliveryMetricsParams struct {
+	// ID is the path parameter id.
+	ID string
+	// Period is the query parameter period.
+	Period *EmailDeliveryMetricsPeriodParameter
+}
+
+// GetEmailSendingPoliciesParams holds the parameters of GetEmailSendingPolicies.
+type GetEmailSendingPoliciesParams struct {
+	// ID is the path parameter id.
+	ID string
+}
+
 // GetOperationParams holds the parameters of GetOperation.
 type GetOperationParams struct {
 	// ID is the path parameter id.
@@ -517,6 +801,16 @@ type GetWhatsappSharedLineAssignmentParams struct {
 type GetWhatsappSignupConfigParams struct {
 	// ID is the path parameter id.
 	ID string
+}
+
+// ListEmailRecommendationsParams holds the parameters of ListEmailRecommendations.
+type ListEmailRecommendationsParams struct {
+	// ID is the path parameter id.
+	ID string
+	// PageSize is the query parameter pageSize.
+	PageSize *int64
+	// PageToken is the query parameter pageToken.
+	PageToken *string
 }
 
 // ListFilteredVerificationCodesParams holds the parameters of ListFilteredVerificationCodes.
@@ -873,6 +1167,12 @@ type GetBillingOverviewParams struct {
 
 // ListBillingPlansParams holds the parameters of ListBillingPlans.
 type ListBillingPlansParams struct {
+	// ProjectID is the path parameter projectId.
+	ProjectID string
+}
+
+// ListProjectSubscriptionsParams holds the parameters of ListProjectSubscriptions.
+type ListProjectSubscriptionsParams struct {
 	// ProjectID is the path parameter projectId.
 	ProjectID string
 }
@@ -1253,6 +1553,127 @@ func newProjectsService(c *core) *ProjectsService {
 	return s
 }
 
+// Count Messages
+//
+// Counts matching Messages before pagination. Delivery updates do not add Messages; results are eventually consistent.
+func (s *ProjectsService) CountMessages(ctx context.Context, params *CountMessagesParams, opts ...RequestOption) (*CountMessagesResponse, error) {
+	if params == nil {
+		params = &CountMessagesParams{}
+	}
+	spec := newSpec("countMessages", "GET", "/v1/projects/{id}/messages/count")
+	spec.safe = true
+	spec.setPath("id", params.ID)
+	spec.addQuery("createdBefore", params.CreatedBefore)
+	spec.addQuery("createdSince", params.CreatedSince)
+	spec.addQuery("direction", params.Direction)
+	spec.addQuery("excludeContentTypes", params.ExcludeContentTypes)
+	spec.addQuery("perspectiveUserId", params.PerspectiveUserID)
+	spec.addQuery("platform", params.Platform)
+	spec.addQuery("resourceId", params.ResourceID)
+	spec.addQuery("spaceId", params.SpaceID)
+	spec.addQuery("updatedBefore", params.UpdatedBefore)
+	spec.addQuery("updatedSince", params.UpdatedSince)
+	spec.addQuery("interval", params.Interval)
+	spec.addQuery("timeZone", params.TimeZone)
+	var out CountMessagesResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Count Spaces
+//
+// Counts distinct Spaces matching the list filters; multiple matching Messages count once. Results are eventually consistent.
+func (s *ProjectsService) CountSpaces(ctx context.Context, params *CountSpacesParams, opts ...RequestOption) (*SpaceCount, error) {
+	if params == nil {
+		params = &CountSpacesParams{}
+	}
+	spec := newSpec("countSpaces", "GET", "/v1/projects/{id}/spaces/count")
+	spec.safe = true
+	spec.setPath("id", params.ID)
+	spec.addQuery("messageCreatedBefore", params.MessageCreatedBefore)
+	spec.addQuery("messageCreatedSince", params.MessageCreatedSince)
+	spec.addQuery("messageDirection", params.MessageDirection)
+	spec.addQuery("messageExcludeContentTypes", params.MessageExcludeContentTypes)
+	spec.addQuery("messageResourceId", params.MessageResourceID)
+	spec.addQuery("createdBefore", params.CreatedBefore)
+	spec.addQuery("createdSince", params.CreatedSince)
+	spec.addQuery("participantHandle", params.ParticipantHandle)
+	spec.addQuery("participantId", params.ParticipantID)
+	spec.addQuery("platform", params.Platform)
+	spec.addQuery("updatedBefore", params.UpdatedBefore)
+	spec.addQuery("updatedSince", params.UpdatedSince)
+	var out SpaceCount
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Count Users
+//
+// Counts distinct Users matching the list filters, including incoming senders or outgoing recipients selected by Message filters. Results are eventually consistent.
+func (s *ProjectsService) CountUsers(ctx context.Context, params *CountUsersParams, opts ...RequestOption) (*UserCount, error) {
+	if params == nil {
+		params = &CountUsersParams{}
+	}
+	spec := newSpec("countUsers", "GET", "/v1/projects/{id}/users/count")
+	spec.safe = true
+	spec.setPath("id", params.ID)
+	spec.addQuery("messageCreatedBefore", params.MessageCreatedBefore)
+	spec.addQuery("messageCreatedSince", params.MessageCreatedSince)
+	spec.addQuery("messageDirection", params.MessageDirection)
+	spec.addQuery("messageExcludeContentTypes", params.MessageExcludeContentTypes)
+	spec.addQuery("messageResourceId", params.MessageResourceID)
+	spec.addQuery("createdBefore", params.CreatedBefore)
+	spec.addQuery("createdSince", params.CreatedSince)
+	spec.addQuery("platform", params.Platform)
+	spec.addQuery("updatedBefore", params.UpdatedBefore)
+	spec.addQuery("updatedSince", params.UpdatedSince)
+	var out UserCount
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Create or get a Space
+//
+// Creates or returns a project Space. Idempotency-Key is required for every platform and binds the project, platform and initial User IDs (unordered except the iMessage creator in first position) for 24 hours after workflow completion. Concurrent matching requests join the same operation; conflicting reuse returns 422 once its outcome is available. A new email key creates a new thread; direct Spaces and SMS groups converge by participants. Every creation and successful replay requires at least one currently project-owned Agent, or for iMessage a shared-line Agent in a direct Space whose peer has an active Assignment of this project on that line. For iMessage, an existing exact match is reused; otherwise the first participant must be a project-owned dedicated phone Agent and creates the native direct chat or group. Multiple matching native groups return SPACE_AMBIGUOUS; incomplete group membership cannot establish an exact match. Replays return 200 and the current stored Space, with Idempotent-Replayed: true. A timeout does not cancel accepted work: retry the same key and input.
+func (s *ProjectsService) CreateOrGetSpace(ctx context.Context, params *CreateOrGetSpaceParams, opts ...RequestOption) (*PlatformSpace, error) {
+	if params == nil {
+		params = &CreateOrGetSpaceParams{}
+	}
+	spec := newSpec("createOrGetSpace", "POST", "/v1/projects/{id}/spaces")
+	spec.idempotent = true
+	spec.setPath("id", params.ID)
+	spec.setHeader("idempotency-key", params.IdempotencyKey)
+	spec.setJSON(params.Body)
+	var out PlatformSpace
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Create or get a User
+//
+// Creates or reconciles a User by normalized handle. WhatsApp and iMessage phone classification uses line allocation and project ownership; New iMessage email handles start as Human without lookup; existing email identities retain their producer-observed classification and ownership. WhatsApp Business uses project ownership. These three platforms perform no provider profile or enrichment fetch. Shared Agents expose type=shared without ownership IDs; dedicated Agents expose resourceId for this project or pairwise managedBy for another project. Dedicated lines without an active owner are unavailable. SMS retains its existing ownership and phone number enrichment behavior. Email retains domain ownership resolution, lowercase ASCII domains and case-preserved local parts. Dependency failures fail before classification writes. The natural identity is the project path ID, platform, and handle. Retrying after a committed creation whose response was lost returns the same User with 200 rather than replaying 201.
+func (s *ProjectsService) CreateOrGetUser(ctx context.Context, params *CreateOrGetUserParams, opts ...RequestOption) (*PlatformUser, error) {
+	if params == nil {
+		params = &CreateOrGetUserParams{}
+	}
+	spec := newSpec("createOrGetUser", "POST", "/v1/projects/{id}/users")
+	spec.setPath("id", params.ID)
+	spec.setJSON(params.Body)
+	var out PlatformUser
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
 // Create project API key
 //
 // Creates a key bound to the selected project using the supplied name, permissions and optional expiry. The secret is returned only in this response and in idempotent replays of it; store it securely because other reads never return it. The key is scoped to this project and does not grant account-level access. Supply the required Idempotency-Key header.
@@ -1363,6 +1784,26 @@ func (s *ProjectsService) GetAttachment(ctx context.Context, params *GetAttachme
 	return &out, nil
 }
 
+// Get a Message
+//
+// Returns one stored Message by canonical Photon Message ID on any supported contract platform. The globally unique Message ID is resolved within the authorized Project. Unsupported platform Messages are outside this collection and return MESSAGE_NOT_FOUND.
+func (s *ProjectsService) GetMessage(ctx context.Context, params *GetMessageParams, opts ...RequestOption) (*PlatformMessage, error) {
+	if params == nil {
+		params = &GetMessageParams{}
+	}
+	spec := newSpec("getMessage", "GET", "/v1/projects/{id}/messages/{messageId}")
+	spec.safe = true
+	spec.notModified = true
+	spec.setPath("id", params.ID)
+	spec.setPath("messageId", params.MessageID)
+	spec.setHeader("if-none-match", params.IfNoneMatch)
+	var out PlatformMessage
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
 // Get metrics backfill status
 //
 // Returns historical metrics update progress. Completion reflects lastVerifiedAt; queries remain available during updates.
@@ -1410,6 +1851,46 @@ func (s *ProjectsService) Get(ctx context.Context, params *GetProjectParams, opt
 	spec.safe = true
 	spec.setPath("projectId", params.ProjectID)
 	var out Project
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Get a Space
+//
+// Returns one stored Space by canonical Photon Space ID. A Space of a kind its platform does not support returns OPERATION_UNAVAILABLE.
+func (s *ProjectsService) GetSpace(ctx context.Context, params *GetSpaceParams, opts ...RequestOption) (*PlatformSpace, error) {
+	if params == nil {
+		params = &GetSpaceParams{}
+	}
+	spec := newSpec("getSpace", "GET", "/v1/projects/{id}/spaces/{spaceId}")
+	spec.safe = true
+	spec.notModified = true
+	spec.setPath("id", params.ID)
+	spec.setPath("spaceId", params.SpaceID)
+	spec.setHeader("if-none-match", params.IfNoneMatch)
+	var out PlatformSpace
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Get an User
+//
+// Returns one User after refreshing its Human or Agent classification and project ownership where supported. iMessage email identities retain their producer-observed classification and ownership because no current email ownership lookup is available. WhatsApp, WhatsApp Business and iMessage perform no provider fetch; only SMS Human classifications perform a phone number lookup. Current-project Agents expose resourceId; external-project Agents expose only pairwise managedBy. Conditional response evaluation uses the post-reconciliation representation. Stored reads use each platform definition; projection requires adapter support.
+func (s *ProjectsService) GetUser(ctx context.Context, params *GetUserParams, opts ...RequestOption) (*PlatformUser, error) {
+	if params == nil {
+		params = &GetUserParams{}
+	}
+	spec := newSpec("getUser", "GET", "/v1/projects/{id}/users/{userId}")
+	spec.safe = true
+	spec.notModified = true
+	spec.setPath("id", params.ID)
+	spec.setPath("userId", params.UserID)
+	spec.setHeader("if-none-match", params.IfNoneMatch)
+	var out PlatformUser
 	if err := s.c.do(ctx, spec, &out, opts); err != nil {
 		return nil, err
 	}
@@ -1479,6 +1960,37 @@ func (s *ProjectsService) ListAttachments(ctx context.Context, params *ListAttac
 	return &out, nil
 }
 
+// List Messages
+//
+// Lists the Project's Messages, with optional resource, conversation, and time filters. Results are eventually consistent.
+func (s *ProjectsService) ListMessages(ctx context.Context, params *ListMessagesParams, opts ...RequestOption) (*MessagePage, error) {
+	if params == nil {
+		params = &ListMessagesParams{}
+	}
+	spec := newSpec("listMessages", "GET", "/v1/projects/{id}/messages")
+	spec.safe = true
+	spec.setPath("id", params.ID)
+	spec.addQuery("createdBefore", params.CreatedBefore)
+	spec.addQuery("createdSince", params.CreatedSince)
+	spec.addQuery("direction", params.Direction)
+	spec.addQuery("excludeContentTypes", params.ExcludeContentTypes)
+	spec.addQuery("order", params.Order)
+	spec.addQuery("orderBy", params.OrderBy)
+	spec.addQuery("pageSize", params.PageSize)
+	spec.addQuery("pageToken", params.PageToken)
+	spec.addQuery("perspectiveUserId", params.PerspectiveUserID)
+	spec.addQuery("platform", params.Platform)
+	spec.addQuery("resourceId", params.ResourceID)
+	spec.addQuery("spaceId", params.SpaceID)
+	spec.addQuery("updatedBefore", params.UpdatedBefore)
+	spec.addQuery("updatedSince", params.UpdatedSince)
+	var out MessagePage
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
 // List project API keys
 //
 // Lists the API keys on the selected project, ordered newest first. Revoked keys are not listed; expired keys stay listed until they are revoked. Entries contain key metadata and permissions, never secret values. Use the returned identifiers to manage an existing key; lost secrets cannot be recovered through this operation.
@@ -1490,6 +2002,70 @@ func (s *ProjectsService) ListProjectApiKeys(ctx context.Context, params *ListPr
 	spec.safe = true
 	spec.setPath("projectId", params.ProjectID)
 	var out ListProjectApiKeysResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// List Spaces
+//
+// Lists the Project's stored Spaces, with optional participant and Message filters. Results are eventually consistent.
+func (s *ProjectsService) ListSpaces(ctx context.Context, params *ListSpacesParams, opts ...RequestOption) (*SpacePage, error) {
+	if params == nil {
+		params = &ListSpacesParams{}
+	}
+	spec := newSpec("listSpaces", "GET", "/v1/projects/{id}/spaces")
+	spec.safe = true
+	spec.setPath("id", params.ID)
+	spec.addQuery("messageCreatedBefore", params.MessageCreatedBefore)
+	spec.addQuery("messageCreatedSince", params.MessageCreatedSince)
+	spec.addQuery("messageDirection", params.MessageDirection)
+	spec.addQuery("messageExcludeContentTypes", params.MessageExcludeContentTypes)
+	spec.addQuery("messageResourceId", params.MessageResourceID)
+	spec.addQuery("createdBefore", params.CreatedBefore)
+	spec.addQuery("createdSince", params.CreatedSince)
+	spec.addQuery("order", params.Order)
+	spec.addQuery("orderBy", params.OrderBy)
+	spec.addQuery("pageSize", params.PageSize)
+	spec.addQuery("pageToken", params.PageToken)
+	spec.addQuery("participantHandle", params.ParticipantHandle)
+	spec.addQuery("participantId", params.ParticipantID)
+	spec.addQuery("platform", params.Platform)
+	spec.addQuery("updatedBefore", params.UpdatedBefore)
+	spec.addQuery("updatedSince", params.UpdatedSince)
+	var out SpacePage
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// List Users
+//
+// Lists stored Users without refreshing their classification; use Get User for current details. Message filters select incoming senders or outgoing recipients, excluding the Message's own endpoint.
+func (s *ProjectsService) ListUsers(ctx context.Context, params *ListUsersParams, opts ...RequestOption) (*UserPage, error) {
+	if params == nil {
+		params = &ListUsersParams{}
+	}
+	spec := newSpec("listUsers", "GET", "/v1/projects/{id}/users")
+	spec.safe = true
+	spec.setPath("id", params.ID)
+	spec.addQuery("messageCreatedBefore", params.MessageCreatedBefore)
+	spec.addQuery("messageCreatedSince", params.MessageCreatedSince)
+	spec.addQuery("messageDirection", params.MessageDirection)
+	spec.addQuery("messageExcludeContentTypes", params.MessageExcludeContentTypes)
+	spec.addQuery("messageResourceId", params.MessageResourceID)
+	spec.addQuery("createdBefore", params.CreatedBefore)
+	spec.addQuery("createdSince", params.CreatedSince)
+	spec.addQuery("order", params.Order)
+	spec.addQuery("orderBy", params.OrderBy)
+	spec.addQuery("pageSize", params.PageSize)
+	spec.addQuery("pageToken", params.PageToken)
+	spec.addQuery("platform", params.Platform)
+	spec.addQuery("updatedBefore", params.UpdatedBefore)
+	spec.addQuery("updatedSince", params.UpdatedSince)
+	var out UserPage
 	if err := s.c.do(ctx, spec, &out, opts); err != nil {
 		return nil, err
 	}
@@ -1570,6 +2146,25 @@ func (s *ProjectsService) ListWebhookEventTypes(ctx context.Context, params *Lis
 	return &out, nil
 }
 
+// Mark a Message as read
+//
+// Persists a request to mark one incoming Message as read using its receiving account. A 202 means accepted for asynchronous execution, not handled by the provider. Requires Idempotency-Key. The returned action Message tracks its outcome; privacy settings may suppress remote visibility.
+func (s *ProjectsService) MarkMessageRead(ctx context.Context, params *MarkMessageReadParams, opts ...RequestOption) (*MarkMessageReadResponse, error) {
+	if params == nil {
+		params = &MarkMessageReadParams{}
+	}
+	spec := newSpec("markMessageRead", "POST", "/v1/projects/{id}/messages/{messageId}/read")
+	spec.idempotent = true
+	spec.setPath("id", params.ID)
+	spec.setPath("messageId", params.MessageID)
+	spec.setHeader("idempotency-key", params.IdempotencyKey)
+	var out MarkMessageReadResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
 // Query metrics
 //
 // Runs read-only SQL over the Project's message_events or call_events table. Get the SQL schema for supported columns, capabilities, and limits.
@@ -1641,6 +2236,43 @@ func (s *ProjectsService) RotateWebhookSigningSecret(ctx context.Context, params
 	spec.setPath("projectId", params.ProjectID)
 	spec.setJSON(params.Body)
 	var out RotateWebhookSigningSecretResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Send a Message
+//
+// Sends SMS, email, WhatsApp Personal, WhatsApp Business, iMessage, or Telegram text and image messages. A shared iMessage line sends only in direct Spaces, only to a peer with an active Assignment who has messaged it since that Assignment. SMS and MMS require current Platforms authorization for the sender and every recipient; campaign eligibility is required unless every recipient is in-network.
+func (s *ProjectsService) SendMessage(ctx context.Context, params *SendMessageParams, opts ...RequestOption) (*SentMessage, error) {
+	if params == nil {
+		params = &SendMessageParams{}
+	}
+	spec := newSpec("sendMessage", "POST", "/v1/projects/{id}/messages")
+	spec.idempotent = true
+	spec.setPath("id", params.ID)
+	spec.setHeader("idempotency-key", params.IdempotencyKey)
+	spec.setJSON(params.Body)
+	var out SentMessage
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Set typing in a Space
+//
+// Saves one transient typing update as an authorized Agent in this Space. Returns the dispatched Message with HTTP 202. Successful provider handoff ends in accepted; rejection or expiry ends in failed. Repeat true to refresh; false stops where supported. Callers control refreshes. Unsupported platforms return OPERATION_UNAVAILABLE.
+func (s *ProjectsService) SetSpaceTyping(ctx context.Context, params *SetSpaceTypingParams, opts ...RequestOption) (*SetSpaceTypingResponse, error) {
+	if params == nil {
+		params = &SetSpaceTypingParams{}
+	}
+	spec := newSpec("setSpaceTyping", "POST", "/v1/projects/{id}/spaces/{spaceId}/typing")
+	spec.setPath("id", params.ID)
+	spec.setPath("spaceId", params.SpaceID)
+	spec.setJSON(params.Body)
+	var out SetSpaceTypingResponse
 	if err := s.c.do(ctx, spec, &out, opts); err != nil {
 		return nil, err
 	}
@@ -2087,6 +2719,41 @@ func (s *ProjectsPlatformsService) GetDefaultVoiceProfile(ctx context.Context, p
 	return &out, nil
 }
 
+// Get email delivery metrics
+//
+// Reads cached supplementary email series for the exact Project and rolling day or week. Coverage is eligible single-recipient messages; multi-recipient and simulator traffic is excluded. Observed complaints include reported feedback only. Missing data is distinct from zero. Original timestamps and availability are preserved; freshness describes retrieval, not complete event coverage. These series are not complete recipient totals, billing totals or Photon reputation rates. This read never queries the delivery provider or authorizes sending. Requires platforms:read for the path Project.
+func (s *ProjectsPlatformsService) GetEmailDeliveryMetrics(ctx context.Context, params *GetEmailDeliveryMetricsParams, opts ...RequestOption) (*EmailDeliveryMetrics, error) {
+	if params == nil {
+		params = &GetEmailDeliveryMetricsParams{}
+	}
+	spec := newSpec("getEmailDeliveryMetrics", "GET", "/v1/projects/{id}/platforms/email/metrics")
+	spec.safe = true
+	spec.setPath("id", params.ID)
+	spec.addQuery("period", params.Period)
+	var out EmailDeliveryMetrics
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Get email sending policies
+//
+// Reads Organization email recipient allowances shared across all its Projects, with rolling 60-second and 24-hour windows. Also returns Project and Organization review status and Photon policy pauses. Projects have no separate recipient quota. These limits are independent of subscription allowances. A policy pause blocks sending; an unpaused policy does not guarantee that every domain, suppression or account check permits a send. Requires platforms:read for the path Project.
+func (s *ProjectsPlatformsService) GetEmailSendingPolicies(ctx context.Context, params *GetEmailSendingPoliciesParams, opts ...RequestOption) (*EmailSendingPolicies, error) {
+	if params == nil {
+		params = &GetEmailSendingPoliciesParams{}
+	}
+	spec := newSpec("getEmailSendingPolicies", "GET", "/v1/projects/{id}/platforms/email/sending-policy")
+	spec.safe = true
+	spec.setPath("id", params.ID)
+	var out EmailSendingPolicies
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
 // Get operation
 //
 // Reads one operation using the same operation representation as creation and list. The API includes detail.setupUrl only with platforms:write for this project. This is the polling endpoint every asynchronous request here points its Location at, and it resolves from the moment that request is accepted — an operation is committed before its work is dispatched, so there is no window in which the URL 404s. Poll until `state` is one of `succeeded`, `failed` or `cancelled`, pacing from the Retry-After the accepting response returned. While an email domain waits for DNS, `detail` always contains the manual records and may additionally contain `automaticSetup` with a signed provider URL to open separately. Once the operation has produced a resource, the response carries that resource too, so the poll that finishes is also the one that tells you what you got. `succeeded` means the work is done; billing runs behind it and is not something the caller waits on. Operations are never purged, so a 404 means the id was never this project's. Requires the platforms:read permission bound to the project resource in the path.
@@ -2282,6 +2949,25 @@ func (s *ProjectsPlatformsService) GetWhatsappSignupConfig(ctx context.Context, 
 	return &out, nil
 }
 
+// List email recommendations
+//
+// Reads Photon guidance from stored sending policies, sending setup and domain checks. Project and Organization restrictions repeat on each page of domain observations. Follow nextPageToken until hasMore is false; observations describe only the current page. Recommendations are advisory reads, never permission to send or resume. Reputation-rate guidance and supplementary delivery advice are explicitly unavailable until their sources are integrated. An empty list does not indicate healthy reputation or resolved findings. Requires platforms:read for the path Project.
+func (s *ProjectsPlatformsService) ListEmailRecommendations(ctx context.Context, params *ListEmailRecommendationsParams, opts ...RequestOption) (*EmailRecommendations, error) {
+	if params == nil {
+		params = &ListEmailRecommendationsParams{}
+	}
+	spec := newSpec("listEmailRecommendations", "GET", "/v1/projects/{id}/platforms/email/recommendations")
+	spec.safe = true
+	spec.setPath("id", params.ID)
+	spec.addQuery("pageSize", params.PageSize)
+	spec.addQuery("pageToken", params.PageToken)
+	var out EmailRecommendations
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
 // List filtered verification codes
 //
 // Lists the verification codes Photon kept from this project's dedicated lines and numbers. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line or number (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Filter by `platform`; to read one line, use its own filtered-otp path. Requires the platforms:read permission bound to the project resource in the path.
@@ -2404,7 +3090,7 @@ func (s *ProjectsPlatformsService) ListResourceFilteredVerificationCodes(ctx con
 
 // List resources
 //
-// Lists everything the project holds, oldest first, whatever kind of thing it is — one endpoint and one id shape for numbers, dedicated lines and whatever ships next. Nothing half-built appears here: a resource exists only once it is real, so anything still being provisioned is an operation rather than a resource with a pending flag. Filter by `type`, by `ability` (which matches only abilities that are currently enabled), and by `state` — comma-separated, and absent means every state, including retired ones. `detail` carries a per-type public view: an SMS number's number, a dedicated line's number and its per-capability health (`imessageHealth`, `whatsappHealth`, each with an `overallStatus` of `available`, `degraded`, `unavailable` or `unknown`; `imessageHealth` also carries `account`, `photonSystemComponents`, `newConversations`, `sms`, `mms` and `outboundPhoneCalling`, each a `status` with the `cause` that decided it: `account`, `photonSystemComponents`, or null for the item's own state. `outboundPhoneCalling` is whether the line's number can place outbound phone calls: `available`, `unavailable` when its caller ID is not verified (the line is then `degraded`), or `unknown` when it has not been checked yet; it does not depend on the account or the Photon system components, so its `cause` is always null). Requires the platforms:read permission bound to the project resource in the path.
+// Lists the project's resources, oldest first, including retired ones unless `state` filters them out. Filter by `type`, by enabled `ability` and by comma-separated `state`. `detail` is a per-type public view. Requires the platforms:read permission bound to the project resource in the path.
 func (s *ProjectsPlatformsService) ListResources(ctx context.Context, params *ListResourcesParams, opts ...RequestOption) (*ResourcePage, error) {
 	if params == nil {
 		params = &ListResourcesParams{}
@@ -2999,6 +3685,23 @@ func (s *ProjectsBillingService) ListBillingPlans(ctx context.Context, params *L
 	spec.safe = true
 	spec.setPath("projectId", params.ProjectID)
 	var out ListBillingPlansResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// List project subscriptions
+//
+// Lists the plan each of the selected project's categories holds, with its price and the payer's standing. It suits showing a project's plan wherever projects are listed; the billing overview adds billing periods, fixed charges, entitlements and usage.
+func (s *ProjectsBillingService) ListProjectSubscriptions(ctx context.Context, params *ListProjectSubscriptionsParams, opts ...RequestOption) (*ListProjectSubscriptionsResponse, error) {
+	if params == nil {
+		params = &ListProjectSubscriptionsParams{}
+	}
+	spec := newSpec("listProjectSubscriptions", "GET", "/v1/projects/{projectId}/billing/subscriptions")
+	spec.safe = true
+	spec.setPath("projectId", params.ProjectID)
+	var out ListProjectSubscriptionsResponse
 	if err := s.c.do(ctx, spec, &out, opts); err != nil {
 		return nil, err
 	}

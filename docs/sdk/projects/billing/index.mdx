@@ -14,6 +14,13 @@ photon.projects.billing.listBillingPlans(input: ListBillingPlansInput, options?:
 ```
 `GET /v1/projects/{projectId}/billing/plans`
 
+**[List project subscriptions](/api-client/sdk/projects/billing/list-project-subscriptions)**
+
+```typescript TypeScript
+photon.projects.billing.listProjectSubscriptions(input: ListProjectSubscriptionsInput, options?: RequestOptions): Promise<ListProjectSubscriptionsOutput>
+```
+`GET /v1/projects/{projectId}/billing/subscriptions`
+
 **[Get billing operation](/api-client/sdk/projects/billing/get-operation)**
 
 ```typescript TypeScript
@@ -37,6 +44,13 @@ photon.projects.billing.list_billing_plans(input: ListBillingPlansInput) -> mode
 ```
 `GET /v1/projects/{projectId}/billing/plans`
 
+**[List project subscriptions](/api-client/sdk/projects/billing/list-project-subscriptions)**
+
+```python Python
+photon.projects.billing.list_project_subscriptions(input: ListProjectSubscriptionsInput) -> models.ListProjectSubscriptionsResponse
+```
+`GET /v1/projects/{projectId}/billing/subscriptions`
+
 **[Get billing operation](/api-client/sdk/projects/billing/get-operation)**
 
 ```python Python
@@ -59,6 +73,13 @@ photon.projects.billing.get_overview(input: GetBillingOverviewInput) -> models.G
 client.list_billing_plans(project_id: String).await -> Result<ResponseValue<types::ListBillingPlansResponse>, Error<ListBillingPlansError>>
 ```
 `GET /v1/projects/{projectId}/billing/plans`
+
+**[List project subscriptions](/api-client/sdk/projects/billing/list-project-subscriptions)**
+
+```rust Rust
+client.list_project_subscriptions(project_id: String).await -> Result<ResponseValue<types::ListProjectSubscriptionsResponse>, Error<ListProjectSubscriptionsError>>
+```
+`GET /v1/projects/{projectId}/billing/subscriptions`
 
 **[Get billing operation](/api-client/sdk/projects/billing/get-operation)**
 
@@ -85,6 +106,15 @@ client.get_billing_overview(project_id: String).await -> Result<ResponseValue<ty
 
 <ResponseField name="plans" type={"object"} required>
 Plans grouped by valid metadata type and explicitly published with visible="true". Each group is in display order: by tier, plans without one last, then by planCode.
+</ResponseField>
+
+
+### ListProjectSubscriptionsResponse
+
+
+
+<ResponseField name="subscriptions" type={"array of ProjectHeldPlan"} required>
+One entry per category that currently holds a subscription. Empty means none do — cancelled, or never opened.
 </ResponseField>
 
 

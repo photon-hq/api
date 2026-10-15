@@ -1,0 +1,219 @@
+---
+title: "Mark a Message as read"
+icon: arrow-up-right
+description: "Mark a Message as read: markMessageRead in the TypeScript, Python and Rust clients."
+---
+
+`POST /v1/projects/{id}/messages/{messageId}/read`
+
+Persists a request to mark one incoming Message as read using its receiving account. A 202 means accepted for asynchronous execution, not handled by the provider. Requires Idempotency-Key. The returned action Message tracks its outcome; privacy settings may suppress remote visibility.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.markMessageRead(input: MarkMessageReadInput, options?: RequestOptions): Promise<MarkMessageReadOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.mark_message_read(input: MarkMessageReadInput) -> models.MarkMessageReadResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.mark_message_read(id: String, message_id: String, idempotency_key: String).await -> Result<ResponseValue<types::MarkMessageReadResponse>, Error<MarkMessageReadError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.markMessageRead({
+  path: {
+    id: "id",
+    messageId: "messageId",
+  },
+  headers: {
+    "idempotency-key": "idempotency-key",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import MarkMessageReadInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.mark_message_read(
+    MarkMessageReadInput.model_validate({
+        "path": {
+            "id": "id",
+            "messageId": "messageId",
+        },
+        "headers": {
+            "idempotency-key": "idempotency-key",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .mark_message_read(
+        "id".to_owned(),
+        "messageId".to_owned(),
+        "idempotency-key".to_owned(),
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 202
+{
+  "content": {
+    "type": "message.read"
+  },
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "id": "pho_msg_00000000000000000000000001",
+  "metadata": {},
+  "parentMessageId": "pho_msg_00000000000000000000000002",
+  "platform": "whatsapp",
+  "projectId": "pho_prj_00000000000000000000000001",
+  "sentBy": {
+    "details": {
+      "resourceId": "pho_res_00000000000000000000000001",
+      "type": "dedicated"
+    },
+    "handle": "+14155550123",
+    "id": "pho_usr_00000000000000000000000001",
+    "kind": "agent",
+    "metadata": {},
+    "platform": "whatsapp",
+    "projectId": "pho_prj_00000000000000000000000001"
+  },
+  "space": {
+    "details": {},
+    "id": "pho_spc_00000000000000000000000001",
+    "kind": "direct",
+    "metadata": {},
+    "participantIds": [
+      "pho_usr_00000000000000000000000001",
+      "pho_usr_00000000000000000000000002"
+    ],
+    "platform": "whatsapp",
+    "projectId": "pho_prj_00000000000000000000000001"
+  },
+  "status": "dispatched",
+  "timestamps": {
+    "dispatchedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "updatedAt": "2026-01-01T00:00:00.000Z"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+<ParamField path="messageId" type={"string"} required>
+
+</ParamField>
+
+<ParamField header="idempotency-key" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`202`** The read request was persisted for execution. MarkMessageReadResponse
+
+<ResponseField name="acceptance" type={"object"} required>
+
+</ResponseField>
+
+<ResponseField name="addressedTo" type={"UserSnapshot"}>
+
+</ResponseField>
+
+<ResponseField name="content" type={"TelegramMessageContent"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+When Photon first persisted this resource.
+</ResponseField>
+
+<ResponseField name="failure" type={"MessageFailure"} required>
+
+</ResponseField>
+
+<ResponseField name="id" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="metadata" type={"ResourceMetadata"} required>
+
+</ResponseField>
+
+<ResponseField name="parentMessageId" type={"string"}>
+
+</ResponseField>
+
+<ResponseField name="platform" type={"Platform"} required>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="receivedBy" type={"UserSnapshot"}>
+
+</ResponseField>
+
+<ResponseField name="sentBy" type={"UserSnapshot"} required>
+
+</ResponseField>
+
+<ResponseField name="space" type={"SpaceSnapshot"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"SentMessageStatus"} required>
+
+</ResponseField>
+
+<ResponseField name="timestamp" type={"object"}>
+
+</ResponseField>
+
+<ResponseField name="timestamps" type={"FailedMessageTimestamps"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+When Photon last persisted a change to this resource's public state.
+</ResponseField>
+

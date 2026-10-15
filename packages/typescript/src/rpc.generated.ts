@@ -250,6 +250,18 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "200": "json"
     }
   },
+  "countMessages": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
   "countProjects": {
     "responses": [
       "application/json"
@@ -263,6 +275,30 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
     }
   },
   "countResourceFilteredVerificationCodes": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
+  "countSpaces": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
+  "countUsers": {
     "responses": [
       "application/json"
     ],
@@ -375,6 +411,34 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
     ],
     "responseKinds": {
       "200": "json"
+    }
+  },
+  "createOrGetSpace": {
+    "request": "application/json",
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json",
+      "201": "json"
+    }
+  },
+  "createOrGetUser": {
+    "request": "application/json",
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json",
+      "201": "json"
     }
   },
   "createProject": {
@@ -697,6 +761,43 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "200": "json"
     }
   },
+  "getEmailDeliveryMetrics": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
+  "getEmailSendingPolicies": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
+  "getMessage": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json",
+      "304": "empty"
+    }
+  },
   "getMessageMetricsBackfill": {
     "responses": [
       "application/json"
@@ -889,6 +990,32 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "200": "json"
     }
   },
+  "getSpace": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json",
+      "304": "empty"
+    }
+  },
+  "getUser": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json",
+      "304": "empty"
+    }
+  },
   "getVoiceLineProfileAssignment": {
     "responses": [
       "application/json"
@@ -1046,6 +1173,18 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "200": "json"
     }
   },
+  "listEmailRecommendations": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
   "listFilteredVerificationCodes": {
     "responses": [
       "application/json"
@@ -1059,6 +1198,18 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
     }
   },
   "listInvoices": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
+  "listMessages": {
     "responses": [
       "application/json"
     ],
@@ -1154,6 +1305,18 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "200": "json"
     }
   },
+  "listProjectSubscriptions": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
   "listResourceFilteredVerificationCodes": {
     "responses": [
       "application/json"
@@ -1179,6 +1342,30 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
     }
   },
   "listSharedLineAssignments": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
+  "listSpaces": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
+  "listUsers": {
     "responses": [
       "application/json"
     ],
@@ -1275,6 +1462,18 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
     ],
     "responseKinds": {
       "200": "json"
+    }
+  },
+  "markMessageRead": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "202": "json"
     }
   },
   "previewOrganizationChange": {
@@ -1561,6 +1760,32 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
     ],
     "responseKinds": {
       "200": "json"
+    }
+  },
+  "sendMessage": {
+    "request": "application/json",
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "202": "json"
+    }
+  },
+  "setSpaceTyping": {
+    "request": "application/json",
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "202": "json"
     }
   },
   "startAccountPhoneVerification": {
@@ -2498,6 +2723,18 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 input,
                 options,
             ),
+            /**
+             * List project subscriptions
+             *
+             * Lists the plan each of the selected project's categories holds, with its price and the payer's standing. It suits showing a project's plan wherever projects are listed; the billing overview adds billing periods, fixed charges, entitlements and usage.
+             */
+            listProjectSubscriptions: (input: Schemas.ListProjectSubscriptionsInput, options?: RequestOptions) => invokers.data<Schemas.ListProjectSubscriptionsInput, Schemas.ListProjectSubscriptionsOutput>(
+                "listProjectSubscriptions",
+                Sdk.listProjectSubscriptions,
+                Schemas.ListProjectSubscriptionsOutputSchemas,
+                input,
+                options,
+            ),
         },
         platforms: {
             imessage: {
@@ -2781,6 +3018,30 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
+             * Get email delivery metrics
+             *
+             * Reads cached supplementary email series for the exact Project and rolling day or week. Coverage is eligible single-recipient messages; multi-recipient and simulator traffic is excluded. Observed complaints include reported feedback only. Missing data is distinct from zero. Original timestamps and availability are preserved; freshness describes retrieval, not complete event coverage. These series are not complete recipient totals, billing totals or Photon reputation rates. This read never queries the delivery provider or authorizes sending. Requires platforms:read for the path Project.
+             */
+            getEmailDeliveryMetrics: (input: Schemas.GetEmailDeliveryMetricsInput, options?: RequestOptions) => invokers.data<Schemas.GetEmailDeliveryMetricsInput, Schemas.GetEmailDeliveryMetricsOutput>(
+                "getEmailDeliveryMetrics",
+                Sdk.getEmailDeliveryMetrics,
+                Schemas.GetEmailDeliveryMetricsOutputSchemas,
+                input,
+                options,
+            ),
+            /**
+             * Get email sending policies
+             *
+             * Reads Organization email recipient allowances shared across all its Projects, with rolling 60-second and 24-hour windows. Also returns Project and Organization review status and Photon policy pauses. Projects have no separate recipient quota. These limits are independent of subscription allowances. A policy pause blocks sending; an unpaused policy does not guarantee that every domain, suppression or account check permits a send. Requires platforms:read for the path Project.
+             */
+            getEmailSendingPolicies: (input: Schemas.GetEmailSendingPoliciesInput, options?: RequestOptions) => invokers.data<Schemas.GetEmailSendingPoliciesInput, Schemas.GetEmailSendingPoliciesOutput>(
+                "getEmailSendingPolicies",
+                Sdk.getEmailSendingPolicies,
+                Schemas.GetEmailSendingPoliciesOutputSchemas,
+                input,
+                options,
+            ),
+            /**
              * Get project iMessage platform
              *
              * Reports whether the project is on shared or dedicated iMessage lines, derived from its billing entitlements. Shared mode carries the seat cap. Both say whether a dedicated line requested now would be assigned without waiting. Requires the platforms:read permission bound to the project resource in the path.
@@ -2913,6 +3174,18 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
+             * List email recommendations
+             *
+             * Reads Photon guidance from stored sending policies, sending setup and domain checks. Project and Organization restrictions repeat on each page of domain observations. Follow nextPageToken until hasMore is false; observations describe only the current page. Recommendations are advisory reads, never permission to send or resume. Reputation-rate guidance and supplementary delivery advice are explicitly unavailable until their sources are integrated. An empty list does not indicate healthy reputation or resolved findings. Requires platforms:read for the path Project.
+             */
+            listEmailRecommendations: (input: Schemas.ListEmailRecommendationsInput, options?: RequestOptions) => invokers.data<Schemas.ListEmailRecommendationsInput, Schemas.ListEmailRecommendationsOutput>(
+                "listEmailRecommendations",
+                Sdk.listEmailRecommendations,
+                Schemas.ListEmailRecommendationsOutputSchemas,
+                input,
+                options,
+            ),
+            /**
              * List filtered verification codes
              *
              * Lists the verification codes Photon kept from this project's dedicated lines and numbers. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line or number (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Filter by `platform`; to read one line, use its own filtered-otp path. Requires the platforms:read permission bound to the project resource in the path.
@@ -2987,7 +3260,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * List resources
              *
-             * Lists everything the project holds, oldest first, whatever kind of thing it is — one endpoint and one id shape for numbers, dedicated lines and whatever ships next. Nothing half-built appears here: a resource exists only once it is real, so anything still being provisioned is an operation rather than a resource with a pending flag. Filter by `type`, by `ability` (which matches only abilities that are currently enabled), and by `state` — comma-separated, and absent means every state, including retired ones. `detail` carries a per-type public view: an SMS number's number, a dedicated line's number and its per-capability health (`imessageHealth`, `whatsappHealth`, each with an `overallStatus` of `available`, `degraded`, `unavailable` or `unknown`; `imessageHealth` also carries `account`, `photonSystemComponents`, `newConversations`, `sms`, `mms` and `outboundPhoneCalling`, each a `status` with the `cause` that decided it: `account`, `photonSystemComponents`, or null for the item's own state. `outboundPhoneCalling` is whether the line's number can place outbound phone calls: `available`, `unavailable` when its caller ID is not verified (the line is then `degraded`), or `unknown` when it has not been checked yet; it does not depend on the account or the Photon system components, so its `cause` is always null). Requires the platforms:read permission bound to the project resource in the path.
+             * Lists the project's resources, oldest first, including retired ones unless `state` filters them out. Filter by `type`, by enabled `ability` and by comma-separated `state`. `detail` is a per-type public view. Requires the platforms:read permission bound to the project resource in the path.
              */
             listResources: (input: Schemas.ListResourcesInput, options?: RequestOptions) => invokers.data<Schemas.ListResourcesInput, Schemas.ListResourcesOutput>(
                 "listResources",
@@ -3214,6 +3487,66 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             ),
         },
         /**
+         * Count Messages
+         *
+         * Counts matching Messages before pagination. Delivery updates do not add Messages; results are eventually consistent.
+         */
+        countMessages: (input: Schemas.CountMessagesInput, options?: RequestOptions) => invokers.data<Schemas.CountMessagesInput, Schemas.CountMessagesOutput>(
+            "countMessages",
+            Sdk.countMessages,
+            Schemas.CountMessagesOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Count Spaces
+         *
+         * Counts distinct Spaces matching the list filters; multiple matching Messages count once. Results are eventually consistent.
+         */
+        countSpaces: (input: Schemas.CountSpacesInput, options?: RequestOptions) => invokers.data<Schemas.CountSpacesInput, Schemas.CountSpacesOutput>(
+            "countSpaces",
+            Sdk.countSpaces,
+            Schemas.CountSpacesOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Count Users
+         *
+         * Counts distinct Users matching the list filters, including incoming senders or outgoing recipients selected by Message filters. Results are eventually consistent.
+         */
+        countUsers: (input: Schemas.CountUsersInput, options?: RequestOptions) => invokers.data<Schemas.CountUsersInput, Schemas.CountUsersOutput>(
+            "countUsers",
+            Sdk.countUsers,
+            Schemas.CountUsersOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Create or get a Space
+         *
+         * Creates or returns a project Space. Idempotency-Key is required for every platform and binds the project, platform and initial User IDs (unordered except the iMessage creator in first position) for 24 hours after workflow completion. Concurrent matching requests join the same operation; conflicting reuse returns 422 once its outcome is available. A new email key creates a new thread; direct Spaces and SMS groups converge by participants. Every creation and successful replay requires at least one currently project-owned Agent, or for iMessage a shared-line Agent in a direct Space whose peer has an active Assignment of this project on that line. For iMessage, an existing exact match is reused; otherwise the first participant must be a project-owned dedicated phone Agent and creates the native direct chat or group. Multiple matching native groups return SPACE_AMBIGUOUS; incomplete group membership cannot establish an exact match. Replays return 200 and the current stored Space, with Idempotent-Replayed: true. A timeout does not cancel accepted work: retry the same key and input.
+         */
+        createOrGetSpace: (input: Schemas.CreateOrGetSpaceInput, options?: RequestOptions) => invokers.data<Schemas.CreateOrGetSpaceInput, Schemas.CreateOrGetSpaceOutput>(
+            "createOrGetSpace",
+            Sdk.createOrGetSpace,
+            Schemas.CreateOrGetSpaceOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Create or get a User
+         *
+         * Creates or reconciles a User by normalized handle. WhatsApp and iMessage phone classification uses line allocation and project ownership; New iMessage email handles start as Human without lookup; existing email identities retain their producer-observed classification and ownership. WhatsApp Business uses project ownership. These three platforms perform no provider profile or enrichment fetch. Shared Agents expose type=shared without ownership IDs; dedicated Agents expose resourceId for this project or pairwise managedBy for another project. Dedicated lines without an active owner are unavailable. SMS retains its existing ownership and phone number enrichment behavior. Email retains domain ownership resolution, lowercase ASCII domains and case-preserved local parts. Dependency failures fail before classification writes. The natural identity is the project path ID, platform, and handle. Retrying after a committed creation whose response was lost returns the same User with 200 rather than replaying 201.
+         */
+        createOrGetUser: (input: Schemas.CreateOrGetUserInput, options?: RequestOptions) => invokers.data<Schemas.CreateOrGetUserInput, Schemas.CreateOrGetUserOutput>(
+            "createOrGetUser",
+            Sdk.createOrGetUser,
+            Schemas.CreateOrGetUserOutputSchemas,
+            input,
+            options,
+        ),
+        /**
          * Create project API key
          *
          * Creates a key bound to the selected project using the supplied name, permissions and optional expiry. The secret is returned only in this response and in idempotent replays of it; store it securely because other reads never return it. The key is scoped to this project and does not grant account-level access. Supply the required Idempotency-Key header.
@@ -3298,6 +3631,18 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
+         * Get a Message
+         *
+         * Returns one stored Message by canonical Photon Message ID on any supported contract platform. The globally unique Message ID is resolved within the authorized Project. Unsupported platform Messages are outside this collection and return MESSAGE_NOT_FOUND.
+         */
+        getMessage: (input: Schemas.GetMessageInput, options?: RequestOptions) => invokers.data<Schemas.GetMessageInput, Schemas.GetMessageOutput>(
+            "getMessage",
+            Sdk.getMessage,
+            Schemas.GetMessageOutputSchemas,
+            input,
+            options,
+        ),
+        /**
          * Get metrics backfill status
          *
          * Returns historical metrics update progress. Completion reflects lastVerifiedAt; queries remain available during updates.
@@ -3318,6 +3663,30 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             "getMessageMetricsSqlSchema",
             Sdk.getMessageMetricsSqlSchema,
             Schemas.GetMessageMetricsSqlSchemaOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Get a Space
+         *
+         * Returns one stored Space by canonical Photon Space ID. A Space of a kind its platform does not support returns OPERATION_UNAVAILABLE.
+         */
+        getSpace: (input: Schemas.GetSpaceInput, options?: RequestOptions) => invokers.data<Schemas.GetSpaceInput, Schemas.GetSpaceOutput>(
+            "getSpace",
+            Sdk.getSpace,
+            Schemas.GetSpaceOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Get an User
+         *
+         * Returns one User after refreshing its Human or Agent classification and project ownership where supported. iMessage email identities retain their producer-observed classification and ownership because no current email ownership lookup is available. WhatsApp, WhatsApp Business and iMessage perform no provider fetch; only SMS Human classifications perform a phone number lookup. Current-project Agents expose resourceId; external-project Agents expose only pairwise managedBy. Conditional response evaluation uses the post-reconciliation representation. Stored reads use each platform definition; projection requires adapter support.
+         */
+        getUser: (input: Schemas.GetUserInput, options?: RequestOptions) => invokers.data<Schemas.GetUserInput, Schemas.GetUserOutput>(
+            "getUser",
+            Sdk.getUser,
+            Schemas.GetUserOutputSchemas,
             input,
             options,
         ),
@@ -3358,6 +3727,18 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
+         * List Messages
+         *
+         * Lists the Project's Messages, with optional resource, conversation, and time filters. Results are eventually consistent.
+         */
+        listMessages: (input: Schemas.ListMessagesInput, options?: RequestOptions) => invokers.data<Schemas.ListMessagesInput, Schemas.ListMessagesOutput>(
+            "listMessages",
+            Sdk.listMessages,
+            Schemas.ListMessagesOutputSchemas,
+            input,
+            options,
+        ),
+        /**
          * List project API keys
          *
          * Lists the API keys on the selected project, ordered newest first. Revoked keys are not listed; expired keys stay listed until they are revoked. Entries contain key metadata and permissions, never secret values. Use the returned identifiers to manage an existing key; lost secrets cannot be recovered through this operation.
@@ -3366,6 +3747,30 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             "listProjectApiKeys",
             Sdk.listProjectApiKeys,
             Schemas.ListProjectApiKeysOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * List Spaces
+         *
+         * Lists the Project's stored Spaces, with optional participant and Message filters. Results are eventually consistent.
+         */
+        listSpaces: (input: Schemas.ListSpacesInput, options?: RequestOptions) => invokers.data<Schemas.ListSpacesInput, Schemas.ListSpacesOutput>(
+            "listSpaces",
+            Sdk.listSpaces,
+            Schemas.ListSpacesOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * List Users
+         *
+         * Lists stored Users without refreshing their classification; use Get User for current details. Message filters select incoming senders or outgoing recipients, excluding the Message's own endpoint.
+         */
+        listUsers: (input: Schemas.ListUsersInput, options?: RequestOptions) => invokers.data<Schemas.ListUsersInput, Schemas.ListUsersOutput>(
+            "listUsers",
+            Sdk.listUsers,
+            Schemas.ListUsersOutputSchemas,
             input,
             options,
         ),
@@ -3418,6 +3823,18 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
+         * Mark a Message as read
+         *
+         * Persists a request to mark one incoming Message as read using its receiving account. A 202 means accepted for asynchronous execution, not handled by the provider. Requires Idempotency-Key. The returned action Message tracks its outcome; privacy settings may suppress remote visibility.
+         */
+        markMessageRead: (input: Schemas.MarkMessageReadInput, options?: RequestOptions) => invokers.data<Schemas.MarkMessageReadInput, Schemas.MarkMessageReadOutput>(
+            "markMessageRead",
+            Sdk.markMessageRead,
+            Schemas.MarkMessageReadOutputSchemas,
+            input,
+            options,
+        ),
+        /**
          * Query metrics
          *
          * Runs read-only SQL over the Project's message_events or call_events table. Get the SQL schema for supported columns, capabilities, and limits.
@@ -3462,6 +3879,30 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             "rotateWebhookSigningSecret",
             Sdk.rotateWebhookSigningSecret,
             Schemas.RotateWebhookSigningSecretOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Send a Message
+         *
+         * Sends SMS, email, WhatsApp Personal, WhatsApp Business, iMessage, or Telegram text and image messages. A shared iMessage line sends only in direct Spaces, only to a peer with an active Assignment who has messaged it since that Assignment. SMS and MMS require current Platforms authorization for the sender and every recipient; campaign eligibility is required unless every recipient is in-network.
+         */
+        sendMessage: (input: Schemas.SendMessageInput, options?: RequestOptions) => invokers.data<Schemas.SendMessageInput, Schemas.SendMessageOutput>(
+            "sendMessage",
+            Sdk.sendMessage,
+            Schemas.SendMessageOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Set typing in a Space
+         *
+         * Saves one transient typing update as an authorized Agent in this Space. Returns the dispatched Message with HTTP 202. Successful provider handoff ends in accepted; rejection or expiry ends in failed. Repeat true to refresh; false stops where supported. Callers control refreshes. Unsupported platforms return OPERATION_UNAVAILABLE.
+         */
+        setSpaceTyping: (input: Schemas.SetSpaceTypingInput, options?: RequestOptions) => invokers.data<Schemas.SetSpaceTypingInput, Schemas.SetSpaceTypingOutput>(
+            "setSpaceTyping",
+            Sdk.setSpaceTyping,
+            Schemas.SetSpaceTypingOutputSchemas,
             input,
             options,
         ),
@@ -4234,6 +4675,18 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 input,
                 options,
             ),
+            /**
+             * List project subscriptions
+             *
+             * Lists the plan each of the selected project's categories holds, with its price and the payer's standing. It suits showing a project's plan wherever projects are listed; the billing overview adds billing periods, fixed charges, entitlements and usage.
+             */
+            listProjectSubscriptions: (input: Schemas.ListProjectSubscriptionsInput, options?: RequestOptions) => invokers.raw<Schemas.ListProjectSubscriptionsInput, Schemas.ListProjectSubscriptionsOutput>(
+                "listProjectSubscriptions",
+                Sdk.listProjectSubscriptions,
+                Schemas.ListProjectSubscriptionsOutputSchemas,
+                input,
+                options,
+            ),
         },
         platforms: {
             imessage: {
@@ -4517,6 +4970,30 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
+             * Get email delivery metrics
+             *
+             * Reads cached supplementary email series for the exact Project and rolling day or week. Coverage is eligible single-recipient messages; multi-recipient and simulator traffic is excluded. Observed complaints include reported feedback only. Missing data is distinct from zero. Original timestamps and availability are preserved; freshness describes retrieval, not complete event coverage. These series are not complete recipient totals, billing totals or Photon reputation rates. This read never queries the delivery provider or authorizes sending. Requires platforms:read for the path Project.
+             */
+            getEmailDeliveryMetrics: (input: Schemas.GetEmailDeliveryMetricsInput, options?: RequestOptions) => invokers.raw<Schemas.GetEmailDeliveryMetricsInput, Schemas.GetEmailDeliveryMetricsOutput>(
+                "getEmailDeliveryMetrics",
+                Sdk.getEmailDeliveryMetrics,
+                Schemas.GetEmailDeliveryMetricsOutputSchemas,
+                input,
+                options,
+            ),
+            /**
+             * Get email sending policies
+             *
+             * Reads Organization email recipient allowances shared across all its Projects, with rolling 60-second and 24-hour windows. Also returns Project and Organization review status and Photon policy pauses. Projects have no separate recipient quota. These limits are independent of subscription allowances. A policy pause blocks sending; an unpaused policy does not guarantee that every domain, suppression or account check permits a send. Requires platforms:read for the path Project.
+             */
+            getEmailSendingPolicies: (input: Schemas.GetEmailSendingPoliciesInput, options?: RequestOptions) => invokers.raw<Schemas.GetEmailSendingPoliciesInput, Schemas.GetEmailSendingPoliciesOutput>(
+                "getEmailSendingPolicies",
+                Sdk.getEmailSendingPolicies,
+                Schemas.GetEmailSendingPoliciesOutputSchemas,
+                input,
+                options,
+            ),
+            /**
              * Get project iMessage platform
              *
              * Reports whether the project is on shared or dedicated iMessage lines, derived from its billing entitlements. Shared mode carries the seat cap. Both say whether a dedicated line requested now would be assigned without waiting. Requires the platforms:read permission bound to the project resource in the path.
@@ -4649,6 +5126,18 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
             /**
+             * List email recommendations
+             *
+             * Reads Photon guidance from stored sending policies, sending setup and domain checks. Project and Organization restrictions repeat on each page of domain observations. Follow nextPageToken until hasMore is false; observations describe only the current page. Recommendations are advisory reads, never permission to send or resume. Reputation-rate guidance and supplementary delivery advice are explicitly unavailable until their sources are integrated. An empty list does not indicate healthy reputation or resolved findings. Requires platforms:read for the path Project.
+             */
+            listEmailRecommendations: (input: Schemas.ListEmailRecommendationsInput, options?: RequestOptions) => invokers.raw<Schemas.ListEmailRecommendationsInput, Schemas.ListEmailRecommendationsOutput>(
+                "listEmailRecommendations",
+                Sdk.listEmailRecommendations,
+                Schemas.ListEmailRecommendationsOutputSchemas,
+                input,
+                options,
+            ),
+            /**
              * List filtered verification codes
              *
              * Lists the verification codes Photon kept from this project's dedicated lines and numbers. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line or number (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Filter by `platform`; to read one line, use its own filtered-otp path. Requires the platforms:read permission bound to the project resource in the path.
@@ -4723,7 +5212,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * List resources
              *
-             * Lists everything the project holds, oldest first, whatever kind of thing it is — one endpoint and one id shape for numbers, dedicated lines and whatever ships next. Nothing half-built appears here: a resource exists only once it is real, so anything still being provisioned is an operation rather than a resource with a pending flag. Filter by `type`, by `ability` (which matches only abilities that are currently enabled), and by `state` — comma-separated, and absent means every state, including retired ones. `detail` carries a per-type public view: an SMS number's number, a dedicated line's number and its per-capability health (`imessageHealth`, `whatsappHealth`, each with an `overallStatus` of `available`, `degraded`, `unavailable` or `unknown`; `imessageHealth` also carries `account`, `photonSystemComponents`, `newConversations`, `sms`, `mms` and `outboundPhoneCalling`, each a `status` with the `cause` that decided it: `account`, `photonSystemComponents`, or null for the item's own state. `outboundPhoneCalling` is whether the line's number can place outbound phone calls: `available`, `unavailable` when its caller ID is not verified (the line is then `degraded`), or `unknown` when it has not been checked yet; it does not depend on the account or the Photon system components, so its `cause` is always null). Requires the platforms:read permission bound to the project resource in the path.
+             * Lists the project's resources, oldest first, including retired ones unless `state` filters them out. Filter by `type`, by enabled `ability` and by comma-separated `state`. `detail` is a per-type public view. Requires the platforms:read permission bound to the project resource in the path.
              */
             listResources: (input: Schemas.ListResourcesInput, options?: RequestOptions) => invokers.raw<Schemas.ListResourcesInput, Schemas.ListResourcesOutput>(
                 "listResources",
@@ -4950,6 +5439,66 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             ),
         },
         /**
+         * Count Messages
+         *
+         * Counts matching Messages before pagination. Delivery updates do not add Messages; results are eventually consistent.
+         */
+        countMessages: (input: Schemas.CountMessagesInput, options?: RequestOptions) => invokers.raw<Schemas.CountMessagesInput, Schemas.CountMessagesOutput>(
+            "countMessages",
+            Sdk.countMessages,
+            Schemas.CountMessagesOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Count Spaces
+         *
+         * Counts distinct Spaces matching the list filters; multiple matching Messages count once. Results are eventually consistent.
+         */
+        countSpaces: (input: Schemas.CountSpacesInput, options?: RequestOptions) => invokers.raw<Schemas.CountSpacesInput, Schemas.CountSpacesOutput>(
+            "countSpaces",
+            Sdk.countSpaces,
+            Schemas.CountSpacesOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Count Users
+         *
+         * Counts distinct Users matching the list filters, including incoming senders or outgoing recipients selected by Message filters. Results are eventually consistent.
+         */
+        countUsers: (input: Schemas.CountUsersInput, options?: RequestOptions) => invokers.raw<Schemas.CountUsersInput, Schemas.CountUsersOutput>(
+            "countUsers",
+            Sdk.countUsers,
+            Schemas.CountUsersOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Create or get a Space
+         *
+         * Creates or returns a project Space. Idempotency-Key is required for every platform and binds the project, platform and initial User IDs (unordered except the iMessage creator in first position) for 24 hours after workflow completion. Concurrent matching requests join the same operation; conflicting reuse returns 422 once its outcome is available. A new email key creates a new thread; direct Spaces and SMS groups converge by participants. Every creation and successful replay requires at least one currently project-owned Agent, or for iMessage a shared-line Agent in a direct Space whose peer has an active Assignment of this project on that line. For iMessage, an existing exact match is reused; otherwise the first participant must be a project-owned dedicated phone Agent and creates the native direct chat or group. Multiple matching native groups return SPACE_AMBIGUOUS; incomplete group membership cannot establish an exact match. Replays return 200 and the current stored Space, with Idempotent-Replayed: true. A timeout does not cancel accepted work: retry the same key and input.
+         */
+        createOrGetSpace: (input: Schemas.CreateOrGetSpaceInput, options?: RequestOptions) => invokers.raw<Schemas.CreateOrGetSpaceInput, Schemas.CreateOrGetSpaceOutput>(
+            "createOrGetSpace",
+            Sdk.createOrGetSpace,
+            Schemas.CreateOrGetSpaceOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Create or get a User
+         *
+         * Creates or reconciles a User by normalized handle. WhatsApp and iMessage phone classification uses line allocation and project ownership; New iMessage email handles start as Human without lookup; existing email identities retain their producer-observed classification and ownership. WhatsApp Business uses project ownership. These three platforms perform no provider profile or enrichment fetch. Shared Agents expose type=shared without ownership IDs; dedicated Agents expose resourceId for this project or pairwise managedBy for another project. Dedicated lines without an active owner are unavailable. SMS retains its existing ownership and phone number enrichment behavior. Email retains domain ownership resolution, lowercase ASCII domains and case-preserved local parts. Dependency failures fail before classification writes. The natural identity is the project path ID, platform, and handle. Retrying after a committed creation whose response was lost returns the same User with 200 rather than replaying 201.
+         */
+        createOrGetUser: (input: Schemas.CreateOrGetUserInput, options?: RequestOptions) => invokers.raw<Schemas.CreateOrGetUserInput, Schemas.CreateOrGetUserOutput>(
+            "createOrGetUser",
+            Sdk.createOrGetUser,
+            Schemas.CreateOrGetUserOutputSchemas,
+            input,
+            options,
+        ),
+        /**
          * Create project API key
          *
          * Creates a key bound to the selected project using the supplied name, permissions and optional expiry. The secret is returned only in this response and in idempotent replays of it; store it securely because other reads never return it. The key is scoped to this project and does not grant account-level access. Supply the required Idempotency-Key header.
@@ -5034,6 +5583,18 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
+         * Get a Message
+         *
+         * Returns one stored Message by canonical Photon Message ID on any supported contract platform. The globally unique Message ID is resolved within the authorized Project. Unsupported platform Messages are outside this collection and return MESSAGE_NOT_FOUND.
+         */
+        getMessage: (input: Schemas.GetMessageInput, options?: RequestOptions) => invokers.raw<Schemas.GetMessageInput, Schemas.GetMessageOutput>(
+            "getMessage",
+            Sdk.getMessage,
+            Schemas.GetMessageOutputSchemas,
+            input,
+            options,
+        ),
+        /**
          * Get metrics backfill status
          *
          * Returns historical metrics update progress. Completion reflects lastVerifiedAt; queries remain available during updates.
@@ -5054,6 +5615,30 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             "getMessageMetricsSqlSchema",
             Sdk.getMessageMetricsSqlSchema,
             Schemas.GetMessageMetricsSqlSchemaOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Get a Space
+         *
+         * Returns one stored Space by canonical Photon Space ID. A Space of a kind its platform does not support returns OPERATION_UNAVAILABLE.
+         */
+        getSpace: (input: Schemas.GetSpaceInput, options?: RequestOptions) => invokers.raw<Schemas.GetSpaceInput, Schemas.GetSpaceOutput>(
+            "getSpace",
+            Sdk.getSpace,
+            Schemas.GetSpaceOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Get an User
+         *
+         * Returns one User after refreshing its Human or Agent classification and project ownership where supported. iMessage email identities retain their producer-observed classification and ownership because no current email ownership lookup is available. WhatsApp, WhatsApp Business and iMessage perform no provider fetch; only SMS Human classifications perform a phone number lookup. Current-project Agents expose resourceId; external-project Agents expose only pairwise managedBy. Conditional response evaluation uses the post-reconciliation representation. Stored reads use each platform definition; projection requires adapter support.
+         */
+        getUser: (input: Schemas.GetUserInput, options?: RequestOptions) => invokers.raw<Schemas.GetUserInput, Schemas.GetUserOutput>(
+            "getUser",
+            Sdk.getUser,
+            Schemas.GetUserOutputSchemas,
             input,
             options,
         ),
@@ -5094,6 +5679,18 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
+         * List Messages
+         *
+         * Lists the Project's Messages, with optional resource, conversation, and time filters. Results are eventually consistent.
+         */
+        listMessages: (input: Schemas.ListMessagesInput, options?: RequestOptions) => invokers.raw<Schemas.ListMessagesInput, Schemas.ListMessagesOutput>(
+            "listMessages",
+            Sdk.listMessages,
+            Schemas.ListMessagesOutputSchemas,
+            input,
+            options,
+        ),
+        /**
          * List project API keys
          *
          * Lists the API keys on the selected project, ordered newest first. Revoked keys are not listed; expired keys stay listed until they are revoked. Entries contain key metadata and permissions, never secret values. Use the returned identifiers to manage an existing key; lost secrets cannot be recovered through this operation.
@@ -5102,6 +5699,30 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             "listProjectApiKeys",
             Sdk.listProjectApiKeys,
             Schemas.ListProjectApiKeysOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * List Spaces
+         *
+         * Lists the Project's stored Spaces, with optional participant and Message filters. Results are eventually consistent.
+         */
+        listSpaces: (input: Schemas.ListSpacesInput, options?: RequestOptions) => invokers.raw<Schemas.ListSpacesInput, Schemas.ListSpacesOutput>(
+            "listSpaces",
+            Sdk.listSpaces,
+            Schemas.ListSpacesOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * List Users
+         *
+         * Lists stored Users without refreshing their classification; use Get User for current details. Message filters select incoming senders or outgoing recipients, excluding the Message's own endpoint.
+         */
+        listUsers: (input: Schemas.ListUsersInput, options?: RequestOptions) => invokers.raw<Schemas.ListUsersInput, Schemas.ListUsersOutput>(
+            "listUsers",
+            Sdk.listUsers,
+            Schemas.ListUsersOutputSchemas,
             input,
             options,
         ),
@@ -5154,6 +5775,18 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
+         * Mark a Message as read
+         *
+         * Persists a request to mark one incoming Message as read using its receiving account. A 202 means accepted for asynchronous execution, not handled by the provider. Requires Idempotency-Key. The returned action Message tracks its outcome; privacy settings may suppress remote visibility.
+         */
+        markMessageRead: (input: Schemas.MarkMessageReadInput, options?: RequestOptions) => invokers.raw<Schemas.MarkMessageReadInput, Schemas.MarkMessageReadOutput>(
+            "markMessageRead",
+            Sdk.markMessageRead,
+            Schemas.MarkMessageReadOutputSchemas,
+            input,
+            options,
+        ),
+        /**
          * Query metrics
          *
          * Runs read-only SQL over the Project's message_events or call_events table. Get the SQL schema for supported columns, capabilities, and limits.
@@ -5198,6 +5831,30 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             "rotateWebhookSigningSecret",
             Sdk.rotateWebhookSigningSecret,
             Schemas.RotateWebhookSigningSecretOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Send a Message
+         *
+         * Sends SMS, email, WhatsApp Personal, WhatsApp Business, iMessage, or Telegram text and image messages. A shared iMessage line sends only in direct Spaces, only to a peer with an active Assignment who has messaged it since that Assignment. SMS and MMS require current Platforms authorization for the sender and every recipient; campaign eligibility is required unless every recipient is in-network.
+         */
+        sendMessage: (input: Schemas.SendMessageInput, options?: RequestOptions) => invokers.raw<Schemas.SendMessageInput, Schemas.SendMessageOutput>(
+            "sendMessage",
+            Sdk.sendMessage,
+            Schemas.SendMessageOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Set typing in a Space
+         *
+         * Saves one transient typing update as an authorized Agent in this Space. Returns the dispatched Message with HTTP 202. Successful provider handoff ends in accepted; rejection or expiry ends in failed. Repeat true to refresh; false stops where supported. Callers control refreshes. Unsupported platforms return OPERATION_UNAVAILABLE.
+         */
+        setSpaceTyping: (input: Schemas.SetSpaceTypingInput, options?: RequestOptions) => invokers.raw<Schemas.SetSpaceTypingInput, Schemas.SetSpaceTypingOutput>(
+            "setSpaceTyping",
+            Sdk.setSpaceTyping,
+            Schemas.SetSpaceTypingOutputSchemas,
             input,
             options,
         ),

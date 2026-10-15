@@ -1,0 +1,157 @@
+---
+title: "Get a Space"
+icon: arrow-down-left
+description: "Get a Space: getSpace in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{id}/spaces/{spaceId}`
+
+Returns one stored Space by canonical Photon Space ID. A Space of a kind its platform does not support returns OPERATION_UNAVAILABLE.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.getSpace(input: GetSpaceInput, options?: RequestOptions): Promise<GetSpaceOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.get_space(input: GetSpaceInput) -> models.PlatformSpace | None
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.get_space(id: String, space_id: String, params: Option<GetSpaceParams>).await -> Result<ResponseValue<GetSpaceResponse>, Error<GetSpaceError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.getSpace({
+  path: {
+    id: "id",
+    spaceId: "spaceId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import GetSpaceInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.get_space(
+    GetSpaceInput.model_validate({
+        "path": {
+            "id": "id",
+            "spaceId": "spaceId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .get_space("id".to_owned(), "spaceId".to_owned(), None)
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "details": {},
+  "id": "pho_spc_00000000000000000000000001",
+  "kind": "direct",
+  "metadata": {},
+  "participantIds": [
+    "pho_usr_00000000000000000000000001",
+    "pho_usr_00000000000000000000000002"
+  ],
+  "platform": "whatsapp",
+  "projectId": "pho_prj_00000000000000000000000001",
+  "updatedAt": "2026-01-01T00:00:00.000Z"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+<ParamField path="spaceId" type={"string"} required>
+
+</ParamField>
+
+<ParamField header="if-none-match" type={"string"}>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The requested Space. PlatformSpace
+
+Headers: `Cache-Control`, `ETag`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+When Photon first persisted this resource.
+</ResponseField>
+
+<ResponseField name="details" type={"TelegramSpaceDetails"} required>
+
+</ResponseField>
+
+<ResponseField name="id" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="kind" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="metadata" type={"ResourceMetadata"} required>
+
+</ResponseField>
+
+<ResponseField name="participantIds" type={"array of string"} required>
+
+</ResponseField>
+
+<ResponseField name="platform" type={"Platform"} required>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+When Photon last persisted a change to this resource's public state.
+</ResponseField>
+
+**`304`** The request's If-None-Match validator matches the current representation. No body.
+
+Headers: `Cache-Control`, `ETag`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+

@@ -1,0 +1,138 @@
+---
+title: "Count Users"
+icon: arrow-down-left
+description: "Count Users: countUsers in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{id}/users/count`
+
+Counts distinct Users matching the list filters, including incoming senders or outgoing recipients selected by Message filters. Results are eventually consistent.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.countUsers(input: CountUsersInput, options?: RequestOptions): Promise<CountUsersOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.count_users(input: CountUsersInput) -> models.UserCount
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.count_users(id: String, params: Option<CountUsersParams>).await -> Result<ResponseValue<types::UserCount>, Error<CountUsersError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.countUsers({
+  path: {
+    id: "id",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import CountUsersInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.count_users(
+    CountUsersInput.model_validate({
+        "path": {
+            "id": "id",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .count_users("id".to_owned(), None)
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "count": 0
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+<ParamField query="messageCreatedBefore" type={"string (date-time)"}>
+Exclusive creation-time bound on a matching Message
+</ParamField>
+
+<ParamField query="messageCreatedSince" type={"string (date-time)"}>
+Inclusive creation-time bound on a matching Message
+</ParamField>
+
+<ParamField query="messageDirection" type={"MessageDirection"}>
+Received or sent Message. All message-prefixed filters must match the same Message.
+</ParamField>
+
+<ParamField query="messageExcludeContentTypes" type={"string"}>
+Comma-separated public content types to exclude from matching Messages. Requires messageResourceId. A group is excluded when its type or all its parts are excluded.
+</ParamField>
+
+<ParamField query="messageResourceId" type={"string"}>
+Resource ownership captured by a matching Message
+</ParamField>
+
+<ParamField query="createdBefore" type={"string (date-time)"}>
+Exclusive upper bound on createdAt, RFC 3339. Cannot combine with updatedAt bounds.
+</ParamField>
+
+<ParamField query="createdSince" type={"string (date-time)"}>
+Inclusive lower bound on createdAt, RFC 3339. Cannot combine with updatedAt bounds.
+</ParamField>
+
+<ParamField query="platform" type={"Platform"}>
+Restricts the page to one platform
+</ParamField>
+
+<ParamField query="updatedBefore" type={"string (date-time)"}>
+Exclusive upper bound on updatedAt, RFC 3339. Cannot combine with createdAt bounds.
+</ParamField>
+
+<ParamField query="updatedSince" type={"string (date-time)"}>
+Inclusive lower bound on updatedAt, RFC 3339. Cannot combine with createdAt bounds.
+</ParamField>
+
+
+## Returns
+
+**`200`** Number of matching Users UserCount
+
+<ResponseField name="count" type={"integer"} required>
+
+</ResponseField>
+

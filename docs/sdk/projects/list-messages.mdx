@@ -1,0 +1,202 @@
+---
+title: "List Messages"
+icon: arrow-down-left
+description: "List Messages: listMessages in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{id}/messages`
+
+Lists the Project's Messages, with optional resource, conversation, and time filters. Results are eventually consistent.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.listMessages(input: ListMessagesInput, options?: RequestOptions): Promise<ListMessagesOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.list_messages(input: ListMessagesInput) -> models.MessagePage
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.list_messages(id: String, params: Option<ListMessagesParams>).await -> Result<ResponseValue<types::MessagePage>, Error<ListMessagesError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.listMessages({
+  path: {
+    id: "id",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import ListMessagesInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.list_messages(
+    ListMessagesInput.model_validate({
+        "path": {
+            "id": "id",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .list_messages("id".to_owned(), None)
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "items": [
+    {
+      "content": {
+        "format": "plain",
+        "text": "Hello from Photon.",
+        "type": "text"
+      },
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "id": "pho_msg_00000000000000000000000001",
+      "metadata": {},
+      "platform": "whatsapp",
+      "projectId": "pho_prj_00000000000000000000000001",
+      "sentBy": {
+        "details": {
+          "resourceId": "pho_res_00000000000000000000000001",
+          "type": "dedicated"
+        },
+        "handle": "+14155550123",
+        "id": "pho_usr_00000000000000000000000001",
+        "kind": "agent",
+        "metadata": {},
+        "platform": "whatsapp",
+        "projectId": "pho_prj_00000000000000000000000001"
+      },
+      "space": {
+        "details": {},
+        "id": "pho_spc_00000000000000000000000001",
+        "kind": "direct",
+        "metadata": {},
+        "participantIds": [
+          "pho_usr_00000000000000000000000001",
+          "pho_usr_00000000000000000000000002"
+        ],
+        "platform": "whatsapp",
+        "projectId": "pho_prj_00000000000000000000000001"
+      },
+      "status": "dispatched",
+      "timestamps": {
+        "dispatchedAt": "2026-01-01T00:00:00.000Z"
+      },
+      "updatedAt": "2026-01-01T00:00:00.000Z"
+    }
+  ]
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+<ParamField query="createdBefore" type={"string (date-time)"}>
+Exclusive upper bound on createdAt, RFC 3339. Cannot combine with updatedAt bounds.
+</ParamField>
+
+<ParamField query="createdSince" type={"string (date-time)"}>
+Inclusive lower bound on createdAt, RFC 3339. Cannot combine with updatedAt bounds.
+</ParamField>
+
+<ParamField query="direction" type={"MessageDirection"}>
+Message origin: received or dispatched, including later delivery outcomes
+</ParamField>
+
+<ParamField query="excludeContentTypes" type={"string"}>
+Comma-separated content types to exclude from resource-scoped Message lists and counts. Requires resourceId. A group is excluded when group is selected or all of its parts are excluded; retained Messages are unchanged. Supported values: attachment, group, message.delete, message.read, poll, poll.update, poll.vote, reaction, space.participants.update, space.typing.update, text, text.update, voice.
+</ParamField>
+
+<ParamField query="order" type={"SortOrder"}>
+Direction along orderBy; desc, the default, is newest first
+</ParamField>
+
+<ParamField query="orderBy" type={"TimestampOrderBy"}>
+Sort timestamp; defaults to the filtered timestamp, otherwise created_at. Must match the time bounds.
+</ParamField>
+
+<ParamField query="pageSize" type={"integer"}>
+Items per page. A value above 200 returns at most 200 items.
+</ParamField>
+
+<ParamField query="pageToken" type={"string"}>
+Token from nextPageToken. Keep the same Project and query.
+</ParamField>
+
+<ParamField query="perspectiveUserId" type={"string"}>
+Selects this User's sent or received Messages. Requires spaceId; cannot combine with resourceId.
+</ParamField>
+
+<ParamField query="platform" type={"Platform"}>
+Restricts the page to one platform
+</ParamField>
+
+<ParamField query="resourceId" type={"string"}>
+Resource associated with the Message when sent or received. Can combine with spaceId, but not perspectiveUserId.
+</ParamField>
+
+<ParamField query="spaceId" type={"string"}>
+Requires resourceId or perspectiveUserId. User perspectives use created_at order and exclude time bounds and platform filters.
+</ParamField>
+
+<ParamField query="updatedBefore" type={"string (date-time)"}>
+Exclusive upper bound on updatedAt, RFC 3339. Cannot combine with createdAt bounds.
+</ParamField>
+
+<ParamField query="updatedSince" type={"string (date-time)"}>
+Inclusive lower bound on updatedAt, RFC 3339. Cannot combine with createdAt bounds.
+</ParamField>
+
+
+## Returns
+
+**`200`** A page of Messages in the requested order. MessagePage
+
+Headers: `Cache-Control`, `ETag`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
+<ResponseField name="items" type={"array of PlatformMessage"} required>
+Unsupported platforms and records with unsupported data are omitted.
+</ResponseField>
+
+<ResponseField name="nextPageToken" type={"string"}>
+Continue with this token, even if items is empty. Omitted when no more pages remain.
+</ResponseField>
+
