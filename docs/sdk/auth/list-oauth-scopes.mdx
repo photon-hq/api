@@ -1,7 +1,7 @@
 ---
 title: "List OAuth scopes"
 icon: arrow-down-left
-description: "List OAuth scopes: listOauthScopes in the TypeScript, Python and Rust clients."
+description: "List OAuth scopes: listOauthScopes in the TypeScript, Python, Rust and Go clients."
 ---
 
 `GET /v1/auth/oauth/scopes`
@@ -22,6 +22,11 @@ photon.auth.list_oauth_scopes(input: ListOauthScopesInput | None = None) -> mode
 <Tab title="Rust">
 ```rust Rust
 client.list_oauth_scopes().await -> Result<ResponseValue<types::ListOauthScopesResponse>, Error<ListOauthScopesError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Auth.ListOauthScopes(ctx context.Context, opts ...RequestOption) (*ListOauthScopesResponse, error)
 ```
 </Tab>
 </Tabs>
@@ -50,6 +55,22 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient()
+result, err := client.Auth.ListOauthScopes(ctx)
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 // Checks the code examples in the guide pages (docs/**/*.mdx.vel) against the
 // packages in this repository. Every fenced block whose language is
-// `typescript`/`ts`, `python`/`py` or `rust`/`rs` is a complete program: it must
-// type-check (TypeScript `tsc --strict`, Python pyright) or compile (Rust),
+// `typescript`/`ts`, `python`/`py`, `rust`/`rs` or `go` is a complete program: it
+// must type-check (TypeScript `tsc --strict`, Python pyright) or compile (Rust, Go),
 // then run to completion against a local mock of the API and send at least
 // one request, and only requests the mock knows. Blocks in other languages
 // (`sh`, `json`, ...) are not checked; put `{/* docs-check: skip */}` on the
@@ -12,8 +12,9 @@
 // tools/openapi/check-code-samples.mjs compiles and runs.
 // Nothing reaches the API: TypeScript examples run with a fetch that sends
 // every request to the mock, Python examples with the client's base URL set
-// to it, and Rust examples with `.base_url(...)` added before `.build()`.
-// Usage: node tools/openapi/check-docs-examples.mjs typescript|python|rust
+// to it, Rust examples with `.base_url(...)` added before `.build()`, and Go
+// examples with a `WithBaseURL` option appended after the author's own options.
+// Usage: node tools/openapi/check-docs-examples.mjs typescript|python|rust|go
 // TypeScript needs `npm ci` and `npm run build:typescript` first (it uses the
 // repository's node_modules); Python needs the package
 // installed in the active interpreter (pip install -e packages/python) and
@@ -32,6 +33,7 @@ export const LANGUAGES = {
   typescript: ["typescript", "ts"],
   python: ["python", "py"],
   rust: ["rust", "rs"],
+  go: ["go", "golang"],
 };
 export const SKIP_MARKER = "{/* docs-check: skip */}";
 
@@ -335,14 +337,62 @@ tokio = { version = "=${crateVersion("tokio")}", features = ["macros", "rt-multi
   return runExamples(examples, mock, ({ name }) => [join(targetDir, "debug", name), [], { cwd: work }]);
 }
 
+/**
+ * Append a `WithBaseURL(<mock>)` option to each `photonapi.NewClient(...)` call,
+ * after the author's own options, so a base URL an example sets never wins over
+ * the mock. Needs `"os"` imported, which every example's env reads already do.
+ */
+export function redirectClients(code, location) {
+  const marker = "photonapi.NewClient(";
+  assert.ok(code.includes(marker), `${location}: no photonapi.NewClient( to redirect`);
+  assert.match(code, /^\t"os"$/m, `${location}: import "os" so the check can redirect the client`);
+  const override = 'photonapi.WithBaseURL(os.Getenv("DOCS_CHECK_BASE_URL"))';
+  let result = "";
+  let from = 0;
+  for (let start = code.indexOf(marker); start >= 0; start = code.indexOf(marker, from)) {
+    let index = start + marker.length;
+    for (let depth = 1; depth > 0; index += 1) {
+      assert.ok(index < code.length, `${location}: an unbalanced photonapi.NewClient call`);
+      if (code[index] === "(") depth += 1;
+      else if (code[index] === ")") depth -= 1;
+    }
+    const close = index - 1;
+    let previous = close - 1;
+    while (previous > start && /\s/.test(code[previous])) previous -= 1;
+    const insertion = code[previous] === "(" ? override : code[previous] === "," ? ` ${override},` : `, ${override}`;
+    result += code.slice(from, close) + insertion;
+    from = close;
+  }
+  return result + code.slice(from);
+}
+
+async function checkGo(examples, work, mock) {
+  const module = /^module (\S+)$/m.exec(readFileSync(join(root, "packages/go/go.mod"), "utf8"))?.[1];
+  assert.ok(module, "packages/go/go.mod has no module line");
+  mkdirSync(join(work, "examples"));
+  mkdirSync(join(work, "fmt"));
+  for (const { name, location, code } of examples) {
+    mkdirSync(join(work, "examples", name));
+    writeFileSync(join(work, "examples", name, "main.go"), redirectClients(code, location));
+    // Formatting is checked on the block as written, not the redirected copy.
+    writeFileSync(join(work, "fmt", `${name}.go`), code);
+  }
+  const unformatted = execFileSync("gofmt", ["-l", "fmt"], { cwd: work, encoding: "utf8" }).trim();
+  assert.equal(unformatted, "", `Go examples are not gofmt-formatted:\n${unformatted}`);
+  writeFileSync(join(work, "go.mod"), `module photon-docs-examples\n\ngo 1.25\n\nrequire ${module} v0.0.0-00010101000000-000000000000\n\nreplace ${module} => ${join(root, "packages/go")}\n`);
+  run("go", ["mod", "tidy"], { cwd: work });
+  for (const { name } of examples) run("go", ["build", `./examples/${name}`], { cwd: work });
+  return runExamples(examples, mock, ({ name }) => ["go", ["run", `./examples/${name}`], { cwd: work }]);
+}
+
 export async function checkDocsExamples(language, { docs = join(root, "docs") } = {}) {
-  assert.ok(Object.hasOwn(LANGUAGES, language), "Usage: check-docs-examples.mjs typescript|python|rust");
+  assert.ok(Object.hasOwn(LANGUAGES, language), "Usage: check-docs-examples.mjs typescript|python|rust|go");
   const examples = collectExamples(docs, language);
   assert.ok(examples.length > 0, `No ${language} examples in ${docs}`);
   const work = mkdtempSync(join(tmpdir(), `photon-docs-${language}-`));
   const mock = await startMock();
   try {
-    const check = { typescript: checkTypeScript, python: checkPython, rust: checkRust }[language];
+    const check = { typescript: checkTypeScript, python: checkPython, rust: checkRust, go: checkGo }[language];
     const failures = await check(examples, work, mock);
     assert.equal(failures.length, 0, `Documentation examples failed:\n${failures.join("\n")}`);
     return examples.length;

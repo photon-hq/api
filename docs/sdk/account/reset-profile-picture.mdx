@@ -1,7 +1,7 @@
 ---
 title: "Remove profile picture"
 icon: x
-description: "Remove profile picture: resetAccountProfilePicture in the TypeScript, Python and Rust clients."
+description: "Remove profile picture: resetAccountProfilePicture in the TypeScript, Python, Rust and Go clients."
 ---
 
 `DELETE /v1/account/profile-picture`
@@ -22,6 +22,11 @@ photon.account.reset_profile_picture(input: ResetAccountProfilePictureInput) -> 
 <Tab title="Rust">
 ```rust Rust
 client.reset_account_profile_picture(idempotency_key: String).await -> Result<ResponseValue<types::Account>, Error<ResetAccountProfilePictureError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Account.ResetProfilePicture(ctx context.Context, params *ResetAccountProfilePictureParams, opts ...RequestOption) (*Account, error)
 ```
 </Tab>
 </Tabs>
@@ -68,6 +73,25 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Account.ResetProfilePicture(ctx, &photonapi.ResetAccountProfilePictureParams{
+	IdempotencyKey: "idempotencyKey",
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

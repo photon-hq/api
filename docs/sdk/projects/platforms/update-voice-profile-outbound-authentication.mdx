@@ -1,7 +1,7 @@
 ---
 title: "Update Voice outbound authentication"
 icon: pencil
-description: "Update Voice outbound authentication: updateVoiceProfileOutboundAuthentication in the TypeScript, Python and Rust clients."
+description: "Update Voice outbound authentication: updateVoiceProfileOutboundAuthentication in the TypeScript, Python, Rust and Go clients."
 ---
 
 `PATCH /v1/projects/{id}/platforms/voice/profiles/{profileId}/outbound`
@@ -22,6 +22,11 @@ photon.projects.platforms.update_voice_profile_outbound_authentication(input: Up
 <Tab title="Rust">
 ```rust Rust
 client.update_voice_profile_outbound_authentication(id: String, profile_id: String, body: &types::UpdateVoiceProfileOutboundAuthenticationRequest).await -> Result<ResponseValue<types::UpdateVoiceProfileOutboundAuthenticationResponse>, Error<UpdateVoiceProfileOutboundAuthenticationError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.Platforms.UpdateVoiceProfileOutboundAuthentication(ctx context.Context, params *UpdateVoiceProfileOutboundAuthenticationParams, opts ...RequestOption) (*UpdateVoiceProfileOutboundAuthenticationResponse, error)
 ```
 </Tab>
 </Tabs>
@@ -91,6 +96,37 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.UpdateVoiceProfileOutboundAuthenticationRequest
+if err := json.Unmarshal([]byte(`{
+	"authentication": {
+		"algorithm": "sha-256"
+	},
+	"expectedVersion": 1
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Projects.Platforms.UpdateVoiceProfileOutboundAuthentication(ctx, &photonapi.UpdateVoiceProfileOutboundAuthenticationParams{
+	ID: "id",
+	ProfileID: "profileId",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

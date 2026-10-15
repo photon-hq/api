@@ -1,7 +1,7 @@
 ---
 title: "Mark a Message as read"
 icon: arrow-up-right
-description: "Mark a Message as read: markMessageRead in the TypeScript, Python and Rust clients."
+description: "Mark a Message as read: markMessageRead in the TypeScript, Python, Rust and Go clients."
 ---
 
 `POST /v1/projects/{id}/messages/{messageId}/read`
@@ -22,6 +22,11 @@ photon.projects.mark_message_read(input: MarkMessageReadInput) -> models.MarkMes
 <Tab title="Rust">
 ```rust Rust
 client.mark_message_read(id: String, message_id: String, idempotency_key: String).await -> Result<ResponseValue<types::MarkMessageReadResponse>, Error<MarkMessageReadError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.MarkMessageRead(ctx context.Context, params *MarkMessageReadParams, opts ...RequestOption) (*MarkMessageReadResponse, error)
 ```
 </Tab>
 </Tabs>
@@ -80,6 +85,27 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Projects.MarkMessageRead(ctx, &photonapi.MarkMessageReadParams{
+	ID: "id",
+	MessageID: "messageId",
+	IdempotencyKey: "idempotency-key",
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

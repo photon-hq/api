@@ -1,7 +1,7 @@
 ---
 title: "Count a line's filtered verification codes"
 icon: arrow-down-left
-description: "Count a line's filtered verification codes: countResourceFilteredVerificationCodes in the TypeScript, Python and Rust clients."
+description: "Count a line's filtered verification codes: countResourceFilteredVerificationCodes in the TypeScript, Python, Rust and Go clients."
 ---
 
 `GET /v1/projects/{id}/platforms/resources/{resourceId}/filtered-otp/count`
@@ -22,6 +22,11 @@ photon.projects.platforms.count_resource_filtered_verification_codes(input: Coun
 <Tab title="Rust">
 ```rust Rust
 client.count_resource_filtered_verification_codes(id: String, resource_id: String, params: Option<CountResourceFilteredVerificationCodesParams>).await -> Result<ResponseValue<types::FilteredVerificationCodeCount>, Error<CountResourceFilteredVerificationCodesError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.Platforms.CountResourceFilteredVerificationCodes(ctx context.Context, params *CountResourceFilteredVerificationCodesParams, opts ...RequestOption) (*FilteredVerificationCodeCount, error)
 ```
 </Tab>
 </Tabs>
@@ -70,6 +75,26 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Projects.Platforms.CountResourceFilteredVerificationCodes(ctx, &photonapi.CountResourceFilteredVerificationCodesParams{
+	ID: "id",
+	ResourceID: "resourceId",
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

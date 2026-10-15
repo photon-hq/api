@@ -1,7 +1,7 @@
 ---
 title: "List credit activity"
 icon: arrow-down-left
-description: "List credit activity: listCreditActivity in the TypeScript, Python and Rust clients."
+description: "List credit activity: listCreditActivity in the TypeScript, Python, Rust and Go clients."
 ---
 
 `GET /v1/organizations/{organizationId}/billing/credit/activity`
@@ -22,6 +22,11 @@ photon.organizations.billing.list_credit_activity(input: ListCreditActivityInput
 <Tab title="Rust">
 ```rust Rust
 client.list_credit_activity(organization_id: String, params: Option<ListCreditActivityParams>).await -> Result<ResponseValue<types::ListCreditActivityResponse>, Error<ListCreditActivityError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.Billing.ListCreditActivity(ctx context.Context, params *ListCreditActivityParams, opts ...RequestOption) (*ListCreditActivityResponse, error)
 ```
 </Tab>
 </Tabs>
@@ -68,6 +73,25 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Organizations.Billing.ListCreditActivity(ctx, &photonapi.ListCreditActivityParams{
+	OrganizationID: "organizationId",
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

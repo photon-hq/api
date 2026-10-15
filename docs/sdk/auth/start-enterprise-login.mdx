@@ -1,7 +1,7 @@
 ---
 title: "Start company sign-in"
 icon: arrow-up-right
-description: "Start company sign-in: startEnterpriseLogin in the TypeScript, Python and Rust clients."
+description: "Start company sign-in: startEnterpriseLogin in the TypeScript, Python, Rust and Go clients."
 ---
 
 `POST /v1/auth/login/enrollment`
@@ -22,6 +22,11 @@ photon.auth.start_enterprise_login(input: StartEnterpriseLoginInput) -> models.S
 <Tab title="Rust">
 ```rust Rust
 client.start_enterprise_login(body: &types::StartEnterpriseLoginRequest).await -> Result<ResponseValue<types::StartEnterpriseLoginResponse>, Error<StartEnterpriseLoginError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Auth.StartEnterpriseLogin(ctx context.Context, params *StartEnterpriseLoginParams, opts ...RequestOption) (*StartEnterpriseLoginResponse, error)
 ```
 </Tab>
 </Tabs>
@@ -68,6 +73,32 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient()
+var body photonapi.StartEnterpriseLoginRequest
+if err := json.Unmarshal([]byte(`{
+	"organizationId": "organizationId",
+	"returnTo": "returnTo"
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Auth.StartEnterpriseLogin(ctx, &photonapi.StartEnterpriseLoginParams{
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

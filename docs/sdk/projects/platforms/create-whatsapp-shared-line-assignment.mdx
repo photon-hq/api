@@ -1,7 +1,7 @@
 ---
 title: "Create WhatsApp shared line assignment"
 icon: arrow-up-right
-description: "Create WhatsApp shared line assignment: createWhatsappSharedLineAssignment in the TypeScript, Python and Rust clients."
+description: "Create WhatsApp shared line assignment: createWhatsappSharedLineAssignment in the TypeScript, Python, Rust and Go clients."
 ---
 
 `POST /v1/projects/{id}/platforms/whatsapp/assignments`
@@ -22,6 +22,11 @@ photon.projects.platforms.create_whatsapp_shared_line_assignment(input: CreateWh
 <Tab title="Rust">
 ```rust Rust
 client.create_whatsapp_shared_line_assignment(idempotency_key: String, id: String, body: &types::CreateWhatsappSharedLineAssignmentRequest).await -> Result<ResponseValue<types::SharedLineAssignment>, Error<CreateWhatsappSharedLineAssignmentError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.Platforms.CreateWhatsappSharedLineAssignment(ctx context.Context, params *CreateWhatsappSharedLineAssignmentParams, opts ...RequestOption) (*SharedLineAssignment, error)
 ```
 </Tab>
 </Tabs>
@@ -86,6 +91,34 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.CreateWhatsappSharedLineAssignmentRequest
+if err := json.Unmarshal([]byte(`{
+	"handle": "handle"
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Projects.Platforms.CreateWhatsappSharedLineAssignment(ctx, &photonapi.CreateWhatsappSharedLineAssignmentParams{
+	IdempotencyKey: "idempotencyKey",
+	ID: "id",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

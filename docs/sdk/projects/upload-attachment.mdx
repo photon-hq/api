@@ -1,7 +1,7 @@
 ---
 title: "Upload attachment"
 icon: arrow-up-right
-description: "Upload attachment: uploadAttachment in the TypeScript, Python and Rust clients."
+description: "Upload attachment: uploadAttachment in the TypeScript, Python, Rust and Go clients."
 ---
 
 `POST /v1/projects/{id}/attachments`
@@ -22,6 +22,11 @@ photon.projects.upload_attachment(input: UploadAttachmentInput) -> models.Attach
 <Tab title="Rust">
 ```rust Rust
 client.upload_attachment(id: String, content_length: String, content_type: String, idempotency_key: String, body: &bytes::Bytes).await -> Result<ResponseValue<UploadAttachmentResponse>, Error<UploadAttachmentError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.UploadAttachment(ctx context.Context, params *UploadAttachmentParams, opts ...RequestOption) (*Attachment, error)
 ```
 </Tab>
 </Tabs>
@@ -86,6 +91,30 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+	"strings"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Projects.UploadAttachment(ctx, &photonapi.UploadAttachmentParams{
+	ID: "id",
+	ContentLength: 18,
+	ContentType: "text/plain",
+	IdempotencyKey: "idempotency-key",
+	Body: strings.NewReader("Hello from Photon."),
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

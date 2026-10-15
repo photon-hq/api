@@ -1,8 +1,8 @@
 // SDK reference pages for the documentation site's API Client tab, in the style
 // of Cloudflare's: one page per SDK method, and per resource (SDK namespace) a
 // page that lists its methods and the models they return, which opens from the
-// resource's sidebar group. Every page shows the TypeScript, Python and Rust
-// form of a call in synced tabs.
+// resource's sidebar group. Every page shows the TypeScript, Python, Rust and
+// Go form of a call in synced tabs.
 //
 // Reads the public contract with its code samples (openapi/openapi.mintlify.json),
 // the RPC manifest and the generated clients, so a signature is always the one
@@ -11,7 +11,7 @@
 import { mkdir, readFile, rm } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
-import { MINTLIFY_CONTRACT_PATH, pythonMethods, rustMethods, type CodeSample } from "./code-samples.js";
+import { goMethods, MINTLIFY_CONTRACT_PATH, pythonMethods, rustMethods, type CodeSample } from "./code-samples.js";
 import type { ManifestOperation, RpcManifest } from "./generate-facades.js";
 import {
   assert,
@@ -33,6 +33,7 @@ const LANGUAGES = [
   { label: "TypeScript", lang: "typescript" },
   { label: "Python", lang: "python" },
   { label: "Rust", lang: "rust" },
+  { label: "Go", lang: "go" },
 ] as const;
 type Language = (typeof LANGUAGES)[number]["lang"];
 
@@ -46,6 +47,7 @@ export interface SdkSources {
   typescriptClient: string;
   pythonClient: string;
   rustClient: string;
+  goClient: string;
 }
 
 export interface Method {
@@ -94,6 +96,7 @@ export function resources(document: JsonObject, manifest: RpcManifest, sources: 
   const typescript = typescriptSignatures(sources.typescriptClient, manifest);
   const python = pythonMethods(sources.pythonClient);
   const rust = rustMethods(sources.rustClient);
+  const go = goMethods(sources.goClient);
   const contract = operationsById(document);
   const roots: Resource[] = [];
   const nodeFor = (namespace: string[]): Resource => {
@@ -116,10 +119,12 @@ export function resources(document: JsonObject, manifest: RpcManifest, sources: 
     assert(source, `Operation ${operation.operationId} is not in ${MINTLIFY_CONTRACT_PATH}`);
     const pythonMethod = python.get(pascalCase(operation.operationId));
     const rustMethod = rust.get(snakeCase(operation.operationId));
+    const goMethod = go.get(`${operation.namespace.join(".")}.${pascalCase(operation.rpcMethod)}`);
     const typescriptSignature = typescript.get(operation.operationId);
     assert(typescriptSignature, `TypeScript client has no method for ${operation.operationId}`);
     assert(pythonMethod, `Python client has no method for ${operation.operationId}`);
     assert(rustMethod, `Rust client has no method for ${operation.operationId}`);
+    assert(goMethod, `Go client has no method for ${operation.operationId}`);
     const samples = Object.fromEntries(((source["x-codeSamples"] ?? []) as unknown as CodeSample[]).map((sample) => [sample.lang, sample.source]));
     for (const { lang } of LANGUAGES) assert(samples[lang], `${operation.operationId} has no ${lang} code sample`);
     const rustArguments = rustMethod.arguments.map((argument) => `${argument.name}: ${argument.type}`).join(", ");
@@ -131,6 +136,7 @@ export function resources(document: JsonObject, manifest: RpcManifest, sources: 
         typescript: typescriptSignature,
         python: `${pythonMethod.path}(${pythonMethod.parameter}) -> ${pythonMethod.returns}`,
         rust: `client.${snakeCase(operation.operationId)}(${rustArguments}).await -> ${rustMethod.returns}`,
+        go: `${goMethod.path}(ctx context.Context${goMethod.params ? `, params *${goMethod.params}` : ""}, opts ...RequestOption) ${goMethod.returns}`,
       },
       samples: samples as Record<Language, string>,
     });
@@ -350,7 +356,7 @@ export function methodPage(document: JsonObject, method: Method): string {
   const operation = operationsById(document).get(method.operation.operationId)!;
   const { httpMethod, path, operationId } = method.operation;
   const lines = [
-    ...frontmatter(method.summary, `${method.summary}: ${operationId} in the TypeScript, Python and Rust clients.`, ICONS[httpMethod]),
+    ...frontmatter(method.summary, `${method.summary}: ${operationId} in the TypeScript, Python, Rust and Go clients.`, ICONS[httpMethod]),
     `\`${httpMethod} ${path}\``,
     "",
     prose(operation.description),
@@ -402,7 +408,7 @@ export function methodPage(document: JsonObject, method: Method): string {
 /** The resource page: its methods in each language, then the models they return. */
 export function resourcePage(document: JsonObject, resource: Resource): string {
   const contract = operationsById(document);
-  const lines = [...frontmatter(resource.title, `The ${resource.title} resource in the TypeScript, Python and Rust clients.`)];
+  const lines = [...frontmatter(resource.title, `The ${resource.title} resource in the TypeScript, Python, Rust and Go clients.`)];
   if (resource.methods.length) {
     lines.push("## Methods", "", "<Tabs>");
     for (const { label, lang } of LANGUAGES) {
@@ -473,6 +479,7 @@ async function main(): Promise<void> {
     typescriptClient: await readFile(resolve(root, "packages/typescript/src/rpc.generated.ts"), "utf8"),
     pythonClient: await readFile(resolve(root, "packages/python/src/photon_api/rpc_generated.py"), "utf8"),
     rustClient: await readFile(resolve(root, "packages/rust/src/generated.rs"), "utf8"),
+    goClient: await readFile(resolve(root, "packages/go/operations_generated.go"), "utf8"),
   });
   const pages = sdkReferencePages(document, tree);
   await rm(resolve(root, SDK_REFERENCE_DIR), { recursive: true, force: true });

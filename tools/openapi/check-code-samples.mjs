@@ -4,10 +4,11 @@
 // type-check (TypeScript, Python) or compile (Rust), validate its input and
 // send exactly one request. Requests go to a local server that answers with a
 // problem, so nothing reaches the API.
-// Usage: node tools/openapi/check-code-samples.mjs typescript|python|rust
+// Usage: node tools/openapi/check-code-samples.mjs typescript|python|rust|go
 // TypeScript needs `npm run build:typescript` first; Python needs the package
 // installed in the active interpreter (pip install -e packages/python) and
-// pyright from tools/python-codegen/requirements-dev.txt.
+// pyright from tools/python-codegen/requirements-dev.txt. Go compiles the
+// samples against packages/go through a replace directive.
 import assert from "node:assert/strict";
 import { execFileSync, spawn } from "node:child_process";
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
@@ -17,7 +18,7 @@ import { join, resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "../..");
 const language = process.argv[2];
-assert.ok(["typescript", "python", "rust"].includes(language), "Usage: check-code-samples.mjs typescript|python|rust");
+assert.ok(["typescript", "python", "rust", "go"].includes(language), "Usage: check-code-samples.mjs typescript|python|rust|go");
 
 const document = JSON.parse(readFileSync(join(root, "openapi/openapi.mintlify.json"), "utf8"));
 const samples = [];
@@ -185,10 +186,91 @@ tokio = { version = "=${crateVersion("tokio")}", features = ["macros", "rt-multi
   assert.equal(received, samples.length, `Rust code samples sent ${received} requests, expected ${samples.length}`);
 }
 
+async function checkGo() {
+  // The samples import the released module path; the local package may declare
+  // another (the internal repository), so imports follow its go.mod.
+  const module = /^module (\S+)$/m.exec(readFileSync(join(root, "packages/go/go.mod"), "utf8"))?.[1];
+  assert.ok(module, "packages/go/go.mod has no module line");
+  const functions = samples.map(({ source }, index) => {
+    const lines = source
+      .replace(/^import \([\s\S]*?\n\)\n\n/, "")
+      .replaceAll("photonapi.NewClient()", 'photonapi.NewClient(photonapi.WithBaseURL(os.Getenv("SAMPLE_BASE_URL")))')
+      .replaceAll("photonapi.NewClient(photonapi.", 'photonapi.NewClient(photonapi.WithBaseURL(os.Getenv("SAMPLE_BASE_URL")), photonapi.')
+      .split("\n");
+    return `func sample${index}() error {\n\t${lines.join("\n\t")}\n\treturn nil\n}\n`;
+  });
+  const calls = samples.map(({ operationId }, index) => `\tcheck("${operationId}", sample${index})`);
+  writeFileSync(join(work, "main.go"), `package main
+
+import (
+	"encoding/json"
+	"errors"
+	"fmt"
+	"os"
+	"strings"
+
+	"context"
+
+	photonapi ${JSON.stringify(module)}
+)
+
+var _ = json.Unmarshal
+var _ = fmt.Println
+var _ = strings.NewReader
+
+var failures []string
+
+func check(operationId string, sample func() error) {
+	err := sample()
+	var apiError *photonapi.APIError
+	if err == nil {
+		failures = append(failures, operationId+": the 418 answer raised no error")
+	} else if !errors.As(err, &apiError) || apiError.StatusCode != 418 {
+		failures = append(failures, operationId+": "+err.Error())
+	}
+}
+
+${functions.join("\n")}
+func main() {
+${calls.join("\n")}
+	if len(failures) > 0 {
+		fmt.Fprintln(os.Stderr, strings.Join(failures, "\\n"))
+		os.Exit(1)
+	}
+}
+`);
+  run("go", ["mod", "init", "photon-code-samples"], { cwd: work, stdio: "ignore" });
+  run("go", ["mod", "edit", "-require", `${module}@v0.0.0-00010101000000-000000000000`, "-replace", `${module}=${join(root, "packages/go")}`], { cwd: work });
+  let received = 0;
+  const server = createServer((request, response) => {
+    received += 1;
+    request.resume();
+    request.on("end", () => {
+      response.writeHead(418, { "content-type": "application/problem+json", "content-length": Buffer.byteLength(problem) });
+      response.end(problem);
+    });
+  });
+  await new Promise((done) => server.listen(0, "127.0.0.1", done));
+  const { port } = server.address();
+  const status = await new Promise((done, fail) => {
+    const child = spawn("go", ["run", "."], {
+      cwd: work,
+      stdio: "inherit",
+      env: { ...process.env, PHOTON_API_TOKEN: "pho_ask_sample", SAMPLE_BASE_URL: `http://127.0.0.1:${port}` },
+    });
+    child.on("error", fail);
+    child.on("close", done);
+  });
+  server.close();
+  assert.equal(status, 0, "Go code samples failed");
+  assert.equal(received, samples.length, `Go code samples sent ${received} requests, expected ${samples.length}`);
+}
+
 try {
   if (language === "typescript") checkTypeScript();
   if (language === "python") checkPython();
   if (language === "rust") await checkRust();
+  if (language === "go") await checkGo();
   console.log(`${samples.length} ${language} code samples compile and send their request.`);
 } finally {
   rmSync(work, { recursive: true, force: true });

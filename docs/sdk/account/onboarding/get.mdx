@@ -1,7 +1,7 @@
 ---
 title: "Get onboarding state"
 icon: arrow-down-left
-description: "Get onboarding state: getAccountOnboarding in the TypeScript, Python and Rust clients."
+description: "Get onboarding state: getAccountOnboarding in the TypeScript, Python, Rust and Go clients."
 ---
 
 `GET /v1/account/onboarding`
@@ -22,6 +22,11 @@ photon.account.onboarding.get(input: GetAccountOnboardingInput | None = None) ->
 <Tab title="Rust">
 ```rust Rust
 client.get_account_onboarding().await -> Result<ResponseValue<types::GetAccountOnboardingResponse>, Error<GetAccountOnboardingError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Account.Onboarding.Get(ctx context.Context, opts ...RequestOption) (*GetAccountOnboardingResponse, error)
 ```
 </Tab>
 </Tabs>
@@ -57,6 +62,23 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Account.Onboarding.Get(ctx)
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

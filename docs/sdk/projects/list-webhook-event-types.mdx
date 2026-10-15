@@ -1,7 +1,7 @@
 ---
 title: "List webhook event types"
 icon: arrow-down-left
-description: "List webhook event types: listWebhookEventTypes in the TypeScript, Python and Rust clients."
+description: "List webhook event types: listWebhookEventTypes in the TypeScript, Python, Rust and Go clients."
 ---
 
 `GET /v1/projects/{projectId}/webhooks/event-types`
@@ -22,6 +22,11 @@ photon.projects.list_webhook_event_types(input: ListWebhookEventTypesInput) -> m
 <Tab title="Rust">
 ```rust Rust
 client.list_webhook_event_types(project_id: String, api_version: Date).await -> Result<ResponseValue<ListWebhookEventTypesResponse>, Error<ListWebhookEventTypesError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.ListWebhookEventTypes(ctx context.Context, params *ListWebhookEventTypesParams, opts ...RequestOption) (*ListWebhookEventTypesResponse, error)
 ```
 </Tab>
 </Tabs>
@@ -77,6 +82,26 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Projects.ListWebhookEventTypes(ctx, &photonapi.ListWebhookEventTypesParams{
+	ProjectID: "projectId",
+	APIVersion: "2026-01-01",
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

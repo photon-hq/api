@@ -1,7 +1,7 @@
 ---
 title: "Delete webhook destination"
 icon: x
-description: "Delete webhook destination: deleteWebhookDestination in the TypeScript, Python and Rust clients."
+description: "Delete webhook destination: deleteWebhookDestination in the TypeScript, Python, Rust and Go clients."
 ---
 
 `DELETE /v1/projects/{projectId}/webhooks/destinations/{destinationId}`
@@ -22,6 +22,11 @@ photon.projects.delete_webhook_destination(input: DeleteWebhookDestinationInput)
 <Tab title="Rust">
 ```rust Rust
 client.delete_webhook_destination(destination_id: String, project_id: String).await -> Result<ResponseValue<types::WebhookDestination>, Error<DeleteWebhookDestinationError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.DeleteWebhookDestination(ctx context.Context, params *DeleteWebhookDestinationParams, opts ...RequestOption) (*WebhookDestination, error)
 ```
 </Tab>
 </Tabs>
@@ -70,6 +75,26 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Projects.DeleteWebhookDestination(ctx, &photonapi.DeleteWebhookDestinationParams{
+	DestinationID: "destinationId",
+	ProjectID: "projectId",
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

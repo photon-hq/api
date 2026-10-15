@@ -1,6 +1,6 @@
 ---
 title: "Projects"
-description: "The Projects resource in the TypeScript, Python and Rust clients."
+description: "The Projects resource in the TypeScript, Python, Rust and Go clients."
 ---
 
 ## Methods
@@ -827,6 +827,281 @@ client.delete_webhook_destination(destination_id: String, project_id: String).aw
 
 ```rust Rust
 client.revoke_project_api_key(idempotency_key: String, api_key_id: String, project_id: String).await -> Result<ResponseValue<types::ProjectApiKeyResponse>, Error<RevokeProjectApiKeyError>>
+```
+`DELETE /v1/projects/{projectId}/api-keys/{apiKeyId}`
+
+</Tab>
+<Tab title="Go">
+**[List attachments](/api-client/sdk/projects/list-attachments)**
+
+```go Go
+client.Projects.ListAttachments(ctx context.Context, params *ListAttachmentsParams, opts ...RequestOption) (*AttachmentPage, error)
+```
+`GET /v1/projects/{id}/attachments`
+
+**[List Messages](/api-client/sdk/projects/list-messages)**
+
+```go Go
+client.Projects.ListMessages(ctx context.Context, params *ListMessagesParams, opts ...RequestOption) (*MessagePage, error)
+```
+`GET /v1/projects/{id}/messages`
+
+**[List project API keys](/api-client/sdk/projects/list-project-api-keys)**
+
+```go Go
+client.Projects.ListProjectApiKeys(ctx context.Context, params *ListProjectApiKeysParams, opts ...RequestOption) (*ListProjectApiKeysResponse, error)
+```
+`GET /v1/projects/{projectId}/api-keys`
+
+**[List Spaces](/api-client/sdk/projects/list-spaces)**
+
+```go Go
+client.Projects.ListSpaces(ctx context.Context, params *ListSpacesParams, opts ...RequestOption) (*SpacePage, error)
+```
+`GET /v1/projects/{id}/spaces`
+
+**[List Users](/api-client/sdk/projects/list-users)**
+
+```go Go
+client.Projects.ListUsers(ctx context.Context, params *ListUsersParams, opts ...RequestOption) (*UserPage, error)
+```
+`GET /v1/projects/{id}/users`
+
+**[List webhook API versions](/api-client/sdk/projects/list-webhook-api-versions)**
+
+```go Go
+client.Projects.ListWebhookApiVersions(ctx context.Context, params *ListWebhookApiVersionsParams, opts ...RequestOption) (*ListWebhookApiVersionsResponse, error)
+```
+`GET /v1/projects/{projectId}/webhooks/api-versions`
+
+**[List webhook destinations](/api-client/sdk/projects/list-webhook-destinations)**
+
+```go Go
+client.Projects.ListWebhookDestinations(ctx context.Context, params *ListWebhookDestinationsParams, opts ...RequestOption) (*WebhookDestinationPage, error)
+```
+`GET /v1/projects/{projectId}/webhooks/destinations`
+
+**[List webhook egress addresses](/api-client/sdk/projects/list-webhook-egress-addresses)**
+
+```go Go
+client.Projects.ListWebhookEgressAddresses(ctx context.Context, params *ListWebhookEgressAddressesParams, opts ...RequestOption) (*ListWebhookEgressAddressesResponse, error)
+```
+`GET /v1/projects/{projectId}/webhooks/egress-addresses`
+
+**[List webhook event types](/api-client/sdk/projects/list-webhook-event-types)**
+
+```go Go
+client.Projects.ListWebhookEventTypes(ctx context.Context, params *ListWebhookEventTypesParams, opts ...RequestOption) (*ListWebhookEventTypesResponse, error)
+```
+`GET /v1/projects/{projectId}/webhooks/event-types`
+
+**[Count Messages](/api-client/sdk/projects/count-messages)**
+
+```go Go
+client.Projects.CountMessages(ctx context.Context, params *CountMessagesParams, opts ...RequestOption) (*CountMessagesResponse, error)
+```
+`GET /v1/projects/{id}/messages/count`
+
+**[Count Spaces](/api-client/sdk/projects/count-spaces)**
+
+```go Go
+client.Projects.CountSpaces(ctx context.Context, params *CountSpacesParams, opts ...RequestOption) (*SpaceCount, error)
+```
+`GET /v1/projects/{id}/spaces/count`
+
+**[Count Users](/api-client/sdk/projects/count-users)**
+
+```go Go
+client.Projects.CountUsers(ctx context.Context, params *CountUsersParams, opts ...RequestOption) (*UserCount, error)
+```
+`GET /v1/projects/{id}/users/count`
+
+**[Download attachment](/api-client/sdk/projects/download-attachment)**
+
+```go Go
+client.Projects.DownloadAttachment(ctx context.Context, params *DownloadAttachmentParams, opts ...RequestOption) (*BinaryResponse, error)
+```
+`GET /v1/projects/{id}/attachments/{attachmentId}/content`
+
+**[Get project](/api-client/sdk/projects/get)**
+
+```go Go
+client.Projects.Get(ctx context.Context, params *GetProjectParams, opts ...RequestOption) (*Project, error)
+```
+`GET /v1/projects/{projectId}`
+
+**[Get attachment](/api-client/sdk/projects/get-attachment)**
+
+```go Go
+client.Projects.GetAttachment(ctx context.Context, params *GetAttachmentParams, opts ...RequestOption) (*Attachment, error)
+```
+`GET /v1/projects/{id}/attachments/{attachmentId}`
+
+**[Get a Message](/api-client/sdk/projects/get-message)**
+
+```go Go
+client.Projects.GetMessage(ctx context.Context, params *GetMessageParams, opts ...RequestOption) (*PlatformMessage, error)
+```
+`GET /v1/projects/{id}/messages/{messageId}`
+
+**[Get metrics backfill status](/api-client/sdk/projects/get-message-metrics-backfill)**
+
+```go Go
+client.Projects.GetMessageMetricsBackfill(ctx context.Context, params *GetMessageMetricsBackfillParams, opts ...RequestOption) (*GetMessageMetricsBackfillResponse, error)
+```
+`GET /v1/projects/{projectId}/metrics/backfill`
+
+**[Get metrics SQL schema](/api-client/sdk/projects/get-message-metrics-sql-schema)**
+
+```go Go
+client.Projects.GetMessageMetricsSqlSchema(ctx context.Context, params *GetMessageMetricsSqlSchemaParams, opts ...RequestOption) (*GetMessageMetricsSqlSchemaResponse, error)
+```
+`GET /v1/projects/{projectId}/metrics/query`
+
+**[Get a Space](/api-client/sdk/projects/get-space)**
+
+```go Go
+client.Projects.GetSpace(ctx context.Context, params *GetSpaceParams, opts ...RequestOption) (*PlatformSpace, error)
+```
+`GET /v1/projects/{id}/spaces/{spaceId}`
+
+**[Get an User](/api-client/sdk/projects/get-user)**
+
+```go Go
+client.Projects.GetUser(ctx context.Context, params *GetUserParams, opts ...RequestOption) (*PlatformUser, error)
+```
+`GET /v1/projects/{id}/users/{userId}`
+
+**[Get webhook destination](/api-client/sdk/projects/get-webhook-destination)**
+
+```go Go
+client.Projects.GetWebhookDestination(ctx context.Context, params *GetWebhookDestinationParams, opts ...RequestOption) (*WebhookDestination, error)
+```
+`GET /v1/projects/{projectId}/webhooks/destinations/{destinationId}`
+
+**[Get webhook event schema](/api-client/sdk/projects/get-webhook-event-schema)**
+
+```go Go
+client.Projects.GetWebhookEventSchema(ctx context.Context, params *GetWebhookEventSchemaParams, opts ...RequestOption) (*WebhookEventSchema, error)
+```
+`GET /v1/projects/{projectId}/webhooks/event-types/{eventType}/schema`
+
+**[Create or get a Space](/api-client/sdk/projects/create-or-get-space)**
+
+```go Go
+client.Projects.CreateOrGetSpace(ctx context.Context, params *CreateOrGetSpaceParams, opts ...RequestOption) (*PlatformSpace, error)
+```
+`POST /v1/projects/{id}/spaces`
+
+**[Create or get a User](/api-client/sdk/projects/create-or-get-user)**
+
+```go Go
+client.Projects.CreateOrGetUser(ctx context.Context, params *CreateOrGetUserParams, opts ...RequestOption) (*PlatformUser, error)
+```
+`POST /v1/projects/{id}/users`
+
+**[Create project API key](/api-client/sdk/projects/create-project-api-key)**
+
+```go Go
+client.Projects.CreateProjectApiKey(ctx context.Context, params *CreateProjectApiKeyParams, opts ...RequestOption) (*CreateProjectApiKeyResponse, error)
+```
+`POST /v1/projects/{projectId}/api-keys`
+
+**[Create webhook destination](/api-client/sdk/projects/create-webhook-destination)**
+
+```go Go
+client.Projects.CreateWebhookDestination(ctx context.Context, params *CreateWebhookDestinationParams, opts ...RequestOption) (*CreateWebhookDestinationResponse, error)
+```
+`POST /v1/projects/{projectId}/webhooks/destinations`
+
+**[Mark a Message as read](/api-client/sdk/projects/mark-message-read)**
+
+```go Go
+client.Projects.MarkMessageRead(ctx context.Context, params *MarkMessageReadParams, opts ...RequestOption) (*MarkMessageReadResponse, error)
+```
+`POST /v1/projects/{id}/messages/{messageId}/read`
+
+**[Query metrics](/api-client/sdk/projects/query-message-metrics)**
+
+```go Go
+client.Projects.QueryMessageMetrics(ctx context.Context, params *QueryMessageMetricsParams, opts ...RequestOption) (*QueryMessageMetricsResponse, error)
+```
+`POST /v1/projects/{projectId}/metrics/query`
+
+**[Retry webhook delivery](/api-client/sdk/projects/retry-webhook-delivery)**
+
+```go Go
+client.Projects.RetryWebhookDelivery(ctx context.Context, params *RetryWebhookDeliveryParams, opts ...RequestOption) (*RetryWebhookDeliveryResponse, error)
+```
+`POST /v1/projects/{projectId}/webhooks/destinations/{destinationId}/retries`
+
+**[Rotate webhook signing secret](/api-client/sdk/projects/rotate-webhook-signing-secret)**
+
+```go Go
+client.Projects.RotateWebhookSigningSecret(ctx context.Context, params *RotateWebhookSigningSecretParams, opts ...RequestOption) (*RotateWebhookSigningSecretResponse, error)
+```
+`POST /v1/projects/{projectId}/webhooks/destinations/{destinationId}/secret-rotations`
+
+**[Send a Message](/api-client/sdk/projects/send-message)**
+
+```go Go
+client.Projects.SendMessage(ctx context.Context, params *SendMessageParams, opts ...RequestOption) (*SentMessage, error)
+```
+`POST /v1/projects/{id}/messages`
+
+**[Set typing in a Space](/api-client/sdk/projects/set-space-typing)**
+
+```go Go
+client.Projects.SetSpaceTyping(ctx context.Context, params *SetSpaceTypingParams, opts ...RequestOption) (*SetSpaceTypingResponse, error)
+```
+`POST /v1/projects/{id}/spaces/{spaceId}/typing`
+
+**[Upload attachment](/api-client/sdk/projects/upload-attachment)**
+
+```go Go
+client.Projects.UploadAttachment(ctx context.Context, params *UploadAttachmentParams, opts ...RequestOption) (*Attachment, error)
+```
+`POST /v1/projects/{id}/attachments`
+
+**[Update project](/api-client/sdk/projects/update)**
+
+```go Go
+client.Projects.Update(ctx context.Context, params *UpdateProjectParams, opts ...RequestOption) (*Project, error)
+```
+`PATCH /v1/projects/{projectId}`
+
+**[Update project API key permissions](/api-client/sdk/projects/update-project-api-key)**
+
+```go Go
+client.Projects.UpdateProjectApiKey(ctx context.Context, params *UpdateProjectApiKeyParams, opts ...RequestOption) (*ProjectApiKeyResponse, error)
+```
+`PATCH /v1/projects/{projectId}/api-keys/{apiKeyId}`
+
+**[Update webhook destination](/api-client/sdk/projects/update-webhook-destination)**
+
+```go Go
+client.Projects.UpdateWebhookDestination(ctx context.Context, params *UpdateWebhookDestinationParams, opts ...RequestOption) (*WebhookDestination, error)
+```
+`PATCH /v1/projects/{projectId}/webhooks/destinations/{destinationId}`
+
+**[Delete project](/api-client/sdk/projects/delete)**
+
+```go Go
+client.Projects.Delete(ctx context.Context, params *DeleteProjectParams, opts ...RequestOption) (*Project, error)
+```
+`DELETE /v1/projects/{projectId}`
+
+**[Delete webhook destination](/api-client/sdk/projects/delete-webhook-destination)**
+
+```go Go
+client.Projects.DeleteWebhookDestination(ctx context.Context, params *DeleteWebhookDestinationParams, opts ...RequestOption) (*WebhookDestination, error)
+```
+`DELETE /v1/projects/{projectId}/webhooks/destinations/{destinationId}`
+
+**[Revoke project API key](/api-client/sdk/projects/revoke-project-api-key)**
+
+```go Go
+client.Projects.RevokeProjectApiKey(ctx context.Context, params *RevokeProjectApiKeyParams, opts ...RequestOption) (*ProjectApiKeyResponse, error)
 ```
 `DELETE /v1/projects/{projectId}/api-keys/{apiKeyId}`
 

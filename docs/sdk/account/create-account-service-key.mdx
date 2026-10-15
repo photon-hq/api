@@ -1,7 +1,7 @@
 ---
 title: "Create Account Service Key"
 icon: arrow-up-right
-description: "Create Account Service Key: createAccountServiceKey in the TypeScript, Python and Rust clients."
+description: "Create Account Service Key: createAccountServiceKey in the TypeScript, Python, Rust and Go clients."
 ---
 
 `POST /v1/account/service-keys`
@@ -22,6 +22,11 @@ photon.account.create_account_service_key(input: CreateAccountServiceKeyInput) -
 <Tab title="Rust">
 ```rust Rust
 client.create_account_service_key(idempotency_key: String, body: &types::CreateAccountServiceKeyRequest).await -> Result<ResponseValue<types::CreateAccountServiceKeyResponse>, Error<CreateAccountServiceKeyError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Account.CreateAccountServiceKey(ctx context.Context, params *CreateAccountServiceKeyParams, opts ...RequestOption) (*CreateAccountServiceKeyResponse, error)
 ```
 </Tab>
 </Tabs>
@@ -79,6 +84,33 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.CreateAccountServiceKeyRequest
+if err := json.Unmarshal([]byte(`{
+	"name": "name"
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Account.CreateAccountServiceKey(ctx, &photonapi.CreateAccountServiceKeyParams{
+	IdempotencyKey: "idempotencyKey",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

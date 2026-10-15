@@ -1,7 +1,7 @@
 ---
 title: "Get a Message"
 icon: arrow-down-left
-description: "Get a Message: getMessage in the TypeScript, Python and Rust clients."
+description: "Get a Message: getMessage in the TypeScript, Python, Rust and Go clients."
 ---
 
 `GET /v1/projects/{id}/messages/{messageId}`
@@ -22,6 +22,11 @@ photon.projects.get_message(input: GetMessageInput) -> models.PlatformMessage | 
 <Tab title="Rust">
 ```rust Rust
 client.get_message(id: String, message_id: String, params: Option<GetMessageParams>).await -> Result<ResponseValue<GetMessageResponse>, Error<GetMessageError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.GetMessage(ctx context.Context, params *GetMessageParams, opts ...RequestOption) (*PlatformMessage, error)
 ```
 </Tab>
 </Tabs>
@@ -70,6 +75,26 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Projects.GetMessage(ctx, &photonapi.GetMessageParams{
+	ID: "id",
+	MessageID: "messageId",
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

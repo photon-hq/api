@@ -1,6 +1,6 @@
 ---
 title: "System"
-description: "The System resource in the TypeScript, Python and Rust clients."
+description: "The System resource in the TypeScript, Python, Rust and Go clients."
 ---
 
 ## Methods
@@ -50,6 +50,22 @@ client.create_app_installation_request(body: &types::CreateAppInstallationReques
 
 ```rust Rust
 client.redeem_app_installation_delivery(body: &types::RedeemAppInstallationDeliveryRequest).await -> Result<ResponseValue<types::RedeemAppInstallationDeliveryResponse>, Error<RedeemAppInstallationDeliveryError>>
+```
+`POST /v1/installation-requests/redeem`
+
+</Tab>
+<Tab title="Go">
+**[Request app installation](/api-client/sdk/system/create-app-installation-request)**
+
+```go Go
+client.System.CreateAppInstallationRequest(ctx context.Context, params *CreateAppInstallationRequestParams, opts ...RequestOption) (*CreateAppInstallationRequestResponse, error)
+```
+`POST /v1/installation-requests`
+
+**[Redeem installation credential](/api-client/sdk/system/redeem-app-installation-delivery)**
+
+```go Go
+client.System.RedeemAppInstallationDelivery(ctx context.Context, params *RedeemAppInstallationDeliveryParams, opts ...RequestOption) (*RedeemAppInstallationDeliveryResponse, error)
 ```
 `POST /v1/installation-requests/redeem`
 

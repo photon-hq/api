@@ -1,7 +1,7 @@
 ---
 title: "Redeem installation credential"
 icon: arrow-up-right
-description: "Redeem installation credential: redeemAppInstallationDelivery in the TypeScript, Python and Rust clients."
+description: "Redeem installation credential: redeemAppInstallationDelivery in the TypeScript, Python, Rust and Go clients."
 ---
 
 `POST /v1/installation-requests/redeem`
@@ -22,6 +22,11 @@ photon.system.redeem_app_installation_delivery(input: RedeemAppInstallationDeliv
 <Tab title="Rust">
 ```rust Rust
 client.redeem_app_installation_delivery(body: &types::RedeemAppInstallationDeliveryRequest).await -> Result<ResponseValue<types::RedeemAppInstallationDeliveryResponse>, Error<RedeemAppInstallationDeliveryError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.System.RedeemAppInstallationDelivery(ctx context.Context, params *RedeemAppInstallationDeliveryParams, opts ...RequestOption) (*RedeemAppInstallationDeliveryResponse, error)
 ```
 </Tab>
 </Tabs>
@@ -71,6 +76,33 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient()
+var body photonapi.RedeemAppInstallationDeliveryRequest
+if err := json.Unmarshal([]byte(`{
+	"appId": "appId",
+	"clientAssertion": "clientAssertion",
+	"code": "code"
+}`), &body); err != nil {
+	return err
+}
+result, err := client.System.RedeemAppInstallationDelivery(ctx, &photonapi.RedeemAppInstallationDeliveryParams{
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

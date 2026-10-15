@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.3 (2026-10-15)
+
+
+### Features
+
+* **docs:** add Go to the SDK reference, code samples and guides
+
 ## 0.4.2 (2026-10-15)
 
 

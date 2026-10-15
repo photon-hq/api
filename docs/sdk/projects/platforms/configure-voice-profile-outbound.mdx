@@ -1,7 +1,7 @@
 ---
 title: "Configure Voice outbound credential"
 icon: pencil
-description: "Configure Voice outbound credential: configureVoiceProfileOutbound in the TypeScript, Python and Rust clients."
+description: "Configure Voice outbound credential: configureVoiceProfileOutbound in the TypeScript, Python, Rust and Go clients."
 ---
 
 `PUT /v1/projects/{id}/platforms/voice/profiles/{profileId}/outbound`
@@ -22,6 +22,11 @@ photon.projects.platforms.configure_voice_profile_outbound(input: ConfigureVoice
 <Tab title="Rust">
 ```rust Rust
 client.configure_voice_profile_outbound(idempotency_key: String, id: String, profile_id: String, body: &types::ConfigureVoiceProfileOutboundRequest).await -> Result<ResponseValue<ConfigureVoiceProfileOutboundResponse>, Error<ConfigureVoiceProfileOutboundError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.Platforms.ConfigureVoiceProfileOutbound(ctx context.Context, params *ConfigureVoiceProfileOutboundParams, opts ...RequestOption) (*ConfigureVoiceProfileOutboundResponse, error)
 ```
 </Tab>
 </Tabs>
@@ -98,6 +103,38 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.ConfigureVoiceProfileOutboundRequest
+if err := json.Unmarshal([]byte(`{
+	"authentication": {
+		"algorithm": "sha-256"
+	},
+	"expectedVersion": 1
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Projects.Platforms.ConfigureVoiceProfileOutbound(ctx, &photonapi.ConfigureVoiceProfileOutboundParams{
+	IdempotencyKey: "idempotencyKey",
+	ID: "id",
+	ProfileID: "profileId",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

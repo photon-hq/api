@@ -1,7 +1,7 @@
 ---
 title: "Check project slug availability"
 icon: arrow-down-left
-description: "Check project slug availability: checkProjectSlugAvailability in the TypeScript, Python and Rust clients."
+description: "Check project slug availability: checkProjectSlugAvailability in the TypeScript, Python, Rust and Go clients."
 ---
 
 `GET /v1/organizations/{organizationId}/projects/slug-availability`
@@ -22,6 +22,11 @@ photon.organizations.projects.check_project_slug_availability(input: CheckProjec
 <Tab title="Rust">
 ```rust Rust
 client.check_project_slug_availability(organization_id: String, slug: String).await -> Result<ResponseValue<types::CheckProjectSlugAvailabilityResponse>, Error<CheckProjectSlugAvailabilityError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.Projects.CheckProjectSlugAvailability(ctx context.Context, params *CheckProjectSlugAvailabilityParams, opts ...RequestOption) (*CheckProjectSlugAvailabilityResponse, error)
 ```
 </Tab>
 </Tabs>
@@ -74,6 +79,26 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Organizations.Projects.CheckProjectSlugAvailability(ctx, &photonapi.CheckProjectSlugAvailabilityParams{
+	OrganizationID: "organizationId",
+	Slug: "slug",
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

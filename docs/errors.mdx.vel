@@ -74,6 +74,18 @@ Operation error types implement `Debug` but not `Display` or
 `Box<dyn std::error::Error>` directly. Match on the error, or convert it first,
 for example with `.map_err(|error| format!("{error:?}"))?`.
 </Tab>
+<Tab title="Go">
+Operations return an `error`; inspect it with `errors.As`.
+
+| Type | Returned when | Fields |
+| --- | --- | --- |
+| `*APIError` | The API returns an error status. | `StatusCode`, `Problem` (the parsed problem document, `nil` when the body is not one), `RequestID`, `Header`, `Body` (the raw body, capped at 64 KiB). `Code()` returns the problem's code, or `""`. |
+| `*TransportError` | The request did not complete: a network failure, a cancelled context, or a timeout on the `http.Client`, on its last attempt. | `OperationID`, `Err` (the underlying error). |
+| `*ResponseDecodeError` | A successful response could not be read as the contract describes. | `OperationID`, `StatusCode`, `Body` (capped), `RequestID`, `Err`. |
+
+Problem documents are not generated as per-operation types: read
+`APIError.Problem` and match on its `Code`.
+</Tab>
 </Tabs>
 
 ## Handle an API error
@@ -164,6 +176,45 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 ```
+
+```go Go
+package main
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"log"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+func main() {
+	apiKey := os.Getenv("PHOTON_API_KEY")
+	if apiKey == "" {
+		log.Fatal("Set PHOTON_API_KEY")
+	}
+
+	client := photonapi.NewClient(photonapi.WithAPIKey(apiKey))
+
+	// A project ID that does not exist.
+	projectID := "pho_prj_00000000000000000000000000"
+
+	project, err := client.Projects.Get(context.Background(), &photonapi.GetProjectParams{
+		ProjectID: projectID,
+	})
+	var apiErr *photonapi.APIError
+	switch {
+	case err == nil:
+		fmt.Println(project.Name)
+	case errors.As(err, &apiErr) && apiErr.Code() == "PROJECT_NOT_FOUND":
+		fmt.Printf("No such project (request %s)\n", apiErr.RequestID)
+	default:
+		log.Fatal(err)
+	}
+}
+```
 </CodeGroup>
 
 ## Request IDs
@@ -178,6 +229,8 @@ retried a call, the request ID is the one from the last attempt.
 - **Rust**: `response.headers().get("x-request-id")` on the `ResponseValue` in
   `Error::Api`, `headers` in `Error::UnexpectedStatus` and `Error::Decode`, or
   the problem's `request_id` field.
+- **Go**: `RequestID` on `*APIError`; for successful calls, pass
+  `photonapi.WithResponseInfo(&info)` to the call and read `info.RequestID`.
 
 For successful calls, read the request ID from the
 [raw response](/api-client/raw-responses).

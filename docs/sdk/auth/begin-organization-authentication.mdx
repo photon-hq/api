@@ -1,7 +1,7 @@
 ---
 title: "Sign in with organization SSO"
 icon: arrow-up-right
-description: "Sign in with organization SSO: beginOrganizationAuthentication in the TypeScript, Python and Rust clients."
+description: "Sign in with organization SSO: beginOrganizationAuthentication in the TypeScript, Python, Rust and Go clients."
 ---
 
 `POST /v1/auth/organizations/{orgId}/sso/authenticate`
@@ -22,6 +22,11 @@ photon.auth.begin_organization_authentication(input: BeginOrganizationAuthentica
 <Tab title="Rust">
 ```rust Rust
 client.begin_organization_authentication(org_id: String, body: &types::OrganizationAuthenticationRequest).await -> Result<ResponseValue<types::OrganizationAuthenticationRedirect>, Error<BeginOrganizationAuthenticationError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Auth.BeginOrganizationAuthentication(ctx context.Context, params *BeginOrganizationAuthenticationParams, opts ...RequestOption) (*OrganizationAuthenticationRedirect, error)
 ```
 </Tab>
 </Tabs>
@@ -79,6 +84,33 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.OrganizationAuthenticationRequest
+if err := json.Unmarshal([]byte(`{
+	"returnTo": "returnTo"
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Auth.BeginOrganizationAuthentication(ctx, &photonapi.BeginOrganizationAuthenticationParams{
+	OrgID: "orgId",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

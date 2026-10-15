@@ -1,7 +1,7 @@
 ---
 title: "List shared line assignments"
 icon: arrow-down-left
-description: "List shared line assignments: listSharedLineAssignments in the TypeScript, Python and Rust clients."
+description: "List shared line assignments: listSharedLineAssignments in the TypeScript, Python, Rust and Go clients."
 ---
 
 `GET /v1/projects/{id}/platforms/imessage/assignments`
@@ -22,6 +22,11 @@ photon.projects.platforms.imessage.assignments.list(input: ListSharedLineAssignm
 <Tab title="Rust">
 ```rust Rust
 client.list_shared_line_assignments(id: String, params: Option<ListSharedLineAssignmentsParams>).await -> Result<ResponseValue<types::SharedLineAssignmentPage>, Error<ListSharedLineAssignmentsError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.Platforms.Imessage.Assignments.List(ctx context.Context, params *ListSharedLineAssignmentsParams, opts ...RequestOption) (*SharedLineAssignmentPage, error)
 ```
 </Tab>
 </Tabs>
@@ -68,6 +73,25 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Projects.Platforms.Imessage.Assignments.List(ctx, &photonapi.ListSharedLineAssignmentsParams{
+	ID: "id",
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

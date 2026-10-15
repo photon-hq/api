@@ -1,7 +1,7 @@
 ---
 title: "Assign or replace SMS line campaign"
 icon: pencil
-description: "Assign or replace SMS line campaign: assignSmsLineCampaign in the TypeScript, Python and Rust clients."
+description: "Assign or replace SMS line campaign: assignSmsLineCampaign in the TypeScript, Python, Rust and Go clients."
 ---
 
 `PUT /v1/projects/{id}/platforms/sms/lines/{resourceId}/campaign`
@@ -22,6 +22,11 @@ photon.projects.platforms.assign_sms_line_campaign(input: AssignSmsLineCampaignI
 <Tab title="Rust">
 ```rust Rust
 client.assign_sms_line_campaign(idempotency_key: String, id: String, resource_id: String, body: &types::AssignSmsLineCampaignRequest).await -> Result<ResponseValue<AssignSmsLineCampaignResponse>, Error<AssignSmsLineCampaignError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.Platforms.AssignSmsLineCampaign(ctx context.Context, params *AssignSmsLineCampaignParams, opts ...RequestOption) (*Operation, error)
 ```
 </Tab>
 </Tabs>
@@ -92,6 +97,36 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.AssignSmsLineCampaignRequest
+if err := json.Unmarshal([]byte(`{
+	"campaignId": "campaignId",
+	"expectedVersion": 1
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Projects.Platforms.AssignSmsLineCampaign(ctx, &photonapi.AssignSmsLineCampaignParams{
+	IdempotencyKey: "idempotencyKey",
+	ID: "id",
+	ResourceID: "resourceId",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

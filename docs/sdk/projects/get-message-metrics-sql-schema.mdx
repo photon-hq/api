@@ -1,7 +1,7 @@
 ---
 title: "Get metrics SQL schema"
 icon: arrow-down-left
-description: "Get metrics SQL schema: getMessageMetricsSqlSchema in the TypeScript, Python and Rust clients."
+description: "Get metrics SQL schema: getMessageMetricsSqlSchema in the TypeScript, Python, Rust and Go clients."
 ---
 
 `GET /v1/projects/{projectId}/metrics/query`
@@ -22,6 +22,11 @@ photon.projects.get_message_metrics_sql_schema(input: GetMessageMetricsSqlSchema
 <Tab title="Rust">
 ```rust Rust
 client.get_message_metrics_sql_schema(project_id: String, params: Option<GetMessageMetricsSqlSchemaParams>).await -> Result<ResponseValue<types::GetMessageMetricsSqlSchemaResponse>, Error<GetMessageMetricsSqlSchemaError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.GetMessageMetricsSqlSchema(ctx context.Context, params *GetMessageMetricsSqlSchemaParams, opts ...RequestOption) (*GetMessageMetricsSqlSchemaResponse, error)
 ```
 </Tab>
 </Tabs>
@@ -68,6 +73,25 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Projects.GetMessageMetricsSqlSchema(ctx, &photonapi.GetMessageMetricsSqlSchemaParams{
+	ProjectID: "projectId",
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

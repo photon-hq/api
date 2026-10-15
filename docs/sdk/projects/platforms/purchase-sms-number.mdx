@@ -1,7 +1,7 @@
 ---
 title: "Purchase SMS number"
 icon: arrow-up-right
-description: "Purchase SMS number: purchaseSmsNumber in the TypeScript, Python and Rust clients."
+description: "Purchase SMS number: purchaseSmsNumber in the TypeScript, Python, Rust and Go clients."
 ---
 
 `POST /v1/projects/{id}/platforms/sms/numbers`
@@ -22,6 +22,11 @@ photon.projects.platforms.purchase_sms_number(input: PurchaseSmsNumberInput) -> 
 <Tab title="Rust">
 ```rust Rust
 client.purchase_sms_number(idempotency_key: String, id: String, body: &types::PurchaseSmsNumberRequest).await -> Result<ResponseValue<types::Operation>, Error<PurchaseSmsNumberError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.Platforms.PurchaseSmsNumber(ctx context.Context, params *PurchaseSmsNumberParams, opts ...RequestOption) (*Operation, error)
 ```
 </Tab>
 </Tabs>
@@ -86,6 +91,34 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.PurchaseSmsNumberRequest
+if err := json.Unmarshal([]byte(`{
+	"countryCode": "US"
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Projects.Platforms.PurchaseSmsNumber(ctx, &photonapi.PurchaseSmsNumberParams{
+	IdempotencyKey: "idempotencyKey",
+	ID: "id",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

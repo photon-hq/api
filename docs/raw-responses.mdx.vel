@@ -11,6 +11,7 @@ status, the response headers, or the request ID, use the raw form of the call:
 | TypeScript | `photon.raw.<namespace>.<method>(...)` | `{ data, status, headers, requestId }`. `headers` is a `Headers` object; `requestId` is `undefined` when the response has no `X-Request-ID`. |
 | Python | `photon.raw.<namespace>.<method>(...)` | A `RawResponse` with `data`, `status`, `headers`, and `request_id`. `headers` is a `dict` with lowercase names; `request_id` is `None` when the response has no `X-Request-ID`. |
 | Rust | Every call | A `ResponseValue<T>`: `status()`, `headers()` (a `reqwest` `HeaderMap`), `inner()` or `into_inner()` for the body, and `map()` to transform the body while keeping the rest. |
+| Go | `photonapi.WithResponseInfo(&info)` as a `RequestOption` on any call | Fills a `ResponseInfo` with `StatusCode`, `Header` (an `http.Header`), `RequestID` (empty when the response has no `X-Request-ID`), and `Replayed` (an `Idempotent-Replayed` response). |
 
 `raw` has the same namespaces and methods as the client, takes the same input,
 and applies the same retries and errors. `data` is the same body the normal call
@@ -81,6 +82,42 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("{} {request_id}", response.status());
     println!("{} projects on this page", response.inner().projects.len());
     Ok(())
+}
+```
+
+```go Go
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+func main() {
+	apiKey := os.Getenv("PHOTON_API_KEY")
+	organizationID := os.Getenv("PHOTON_ORGANIZATION_ID")
+	if apiKey == "" || organizationID == "" {
+		log.Fatal("Set PHOTON_API_KEY and PHOTON_ORGANIZATION_ID")
+	}
+
+	client := photonapi.NewClient(photonapi.WithAPIKey(apiKey))
+
+	var info photonapi.ResponseInfo
+	page, err := client.Organizations.Projects.List(
+		context.Background(),
+		&photonapi.ListProjectsParams{OrganizationID: organizationID},
+		photonapi.WithResponseInfo(&info),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(info.StatusCode, info.RequestID)
+	fmt.Println(info.Header.Get("content-type"))
+	fmt.Printf("%d projects on this page\n", len(page.Projects))
 }
 ```
 </CodeGroup>

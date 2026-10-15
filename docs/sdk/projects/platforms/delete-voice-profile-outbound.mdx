@@ -1,7 +1,7 @@
 ---
 title: "Revoke Voice outbound credential"
 icon: x
-description: "Revoke Voice outbound credential: deleteVoiceProfileOutbound in the TypeScript, Python and Rust clients."
+description: "Revoke Voice outbound credential: deleteVoiceProfileOutbound in the TypeScript, Python, Rust and Go clients."
 ---
 
 `DELETE /v1/projects/{id}/platforms/voice/profiles/{profileId}/outbound`
@@ -22,6 +22,11 @@ photon.projects.platforms.delete_voice_profile_outbound(input: DeleteVoiceProfil
 <Tab title="Rust">
 ```rust Rust
 client.delete_voice_profile_outbound(id: String, profile_id: String, expected_version: i64).await -> Result<ResponseValue<types::DeleteVoiceProfileOutboundResponse>, Error<DeleteVoiceProfileOutboundError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.Platforms.DeleteVoiceProfileOutbound(ctx context.Context, params *DeleteVoiceProfileOutboundParams, opts ...RequestOption) (*DeleteVoiceProfileOutboundResponse, error)
 ```
 </Tab>
 </Tabs>
@@ -76,6 +81,27 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Projects.Platforms.DeleteVoiceProfileOutbound(ctx, &photonapi.DeleteVoiceProfileOutboundParams{
+	ID: "id",
+	ProfileID: "profileId",
+	ExpectedVersion: 1,
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

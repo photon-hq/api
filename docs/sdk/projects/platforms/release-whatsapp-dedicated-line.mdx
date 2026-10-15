@@ -1,7 +1,7 @@
 ---
 title: "Release dedicated WhatsApp line"
 icon: x
-description: "Release dedicated WhatsApp line: releaseWhatsappDedicatedLine in the TypeScript, Python and Rust clients."
+description: "Release dedicated WhatsApp line: releaseWhatsappDedicatedLine in the TypeScript, Python, Rust and Go clients."
 ---
 
 `DELETE /v1/projects/{id}/platforms/whatsapp/dedicated/{resourceId}`
@@ -22,6 +22,11 @@ photon.projects.platforms.release_whatsapp_dedicated_line(input: ReleaseWhatsapp
 <Tab title="Rust">
 ```rust Rust
 client.release_whatsapp_dedicated_line(id: String, resource_id: String).await -> Result<ResponseValue<ReleaseWhatsappDedicatedLineResponse>, Error<ReleaseWhatsappDedicatedLineError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.Platforms.ReleaseWhatsappDedicatedLine(ctx context.Context, params *ReleaseWhatsappDedicatedLineParams, opts ...RequestOption) (*Operation, error)
 ```
 </Tab>
 </Tabs>
@@ -70,6 +75,26 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Projects.Platforms.ReleaseWhatsappDedicatedLine(ctx, &photonapi.ReleaseWhatsappDedicatedLineParams{
+	ID: "id",
+	ResourceID: "resourceId",
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

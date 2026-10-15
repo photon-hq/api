@@ -1,7 +1,7 @@
 ---
 title: "Provision dedicated WhatsApp line"
 icon: arrow-up-right
-description: "Provision dedicated WhatsApp line: provisionWhatsappDedicatedLine in the TypeScript, Python and Rust clients."
+description: "Provision dedicated WhatsApp line: provisionWhatsappDedicatedLine in the TypeScript, Python, Rust and Go clients."
 ---
 
 `POST /v1/projects/{id}/platforms/whatsapp/dedicated`
@@ -22,6 +22,11 @@ photon.projects.platforms.provision_whatsapp_dedicated_line(input: ProvisionWhat
 <Tab title="Rust">
 ```rust Rust
 client.provision_whatsapp_dedicated_line(idempotency_key: String, id: String).await -> Result<ResponseValue<types::Operation>, Error<ProvisionWhatsappDedicatedLineError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.Platforms.ProvisionWhatsappDedicatedLine(ctx context.Context, params *ProvisionWhatsappDedicatedLineParams, opts ...RequestOption) (*Operation, error)
 ```
 </Tab>
 </Tabs>
@@ -74,6 +79,26 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Projects.Platforms.ProvisionWhatsappDedicatedLine(ctx, &photonapi.ProvisionWhatsappDedicatedLineParams{
+	IdempotencyKey: "idempotencyKey",
+	ID: "id",
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

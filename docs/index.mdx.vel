@@ -75,7 +75,7 @@ are in [photon-hq/api](https://github.com/photon-hq/api) on GitHub. Report
 bugs there as [issues](https://github.com/photon-hq/api/issues).
 
 Every endpoint page in the [API reference](/api-reference) shows the call in
-TypeScript, Python, and Rust.
+TypeScript, Python, Rust, and Go.
 
 ## Next steps
 

@@ -1,7 +1,7 @@
 ---
 title: "Connect Telegram bot"
 icon: arrow-up-right
-description: "Connect Telegram bot: connectTelegramBot in the TypeScript, Python and Rust clients."
+description: "Connect Telegram bot: connectTelegramBot in the TypeScript, Python, Rust and Go clients."
 ---
 
 `POST /v1/projects/{id}/platforms/telegram/bots`
@@ -22,6 +22,11 @@ photon.projects.platforms.connect_telegram_bot(input: ConnectTelegramBotInput) -
 <Tab title="Rust">
 ```rust Rust
 client.connect_telegram_bot(idempotency_key: String, id: String, body: &types::ConnectTelegramBotRequest).await -> Result<ResponseValue<types::Operation>, Error<ConnectTelegramBotError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.Platforms.ConnectTelegramBot(ctx context.Context, params *ConnectTelegramBotParams, opts ...RequestOption) (*Operation, error)
 ```
 </Tab>
 </Tabs>
@@ -80,6 +85,32 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.ConnectTelegramBotRequest
+if err := json.Unmarshal([]byte(`{}`), &body); err != nil {
+	return err
+}
+result, err := client.Projects.Platforms.ConnectTelegramBot(ctx, &photonapi.ConnectTelegramBotParams{
+	IdempotencyKey: "idempotencyKey",
+	ID: "id",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

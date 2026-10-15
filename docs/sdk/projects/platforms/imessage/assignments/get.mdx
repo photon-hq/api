@@ -1,7 +1,7 @@
 ---
 title: "Get shared line assignment"
 icon: arrow-down-left
-description: "Get shared line assignment: getSharedLineAssignment in the TypeScript, Python and Rust clients."
+description: "Get shared line assignment: getSharedLineAssignment in the TypeScript, Python, Rust and Go clients."
 ---
 
 `GET /v1/projects/{id}/platforms/imessage/assignments/{assignmentId}`
@@ -22,6 +22,11 @@ photon.projects.platforms.imessage.assignments.get(input: GetSharedLineAssignmen
 <Tab title="Rust">
 ```rust Rust
 client.get_shared_line_assignment(assignment_id: String, id: String).await -> Result<ResponseValue<types::SharedLineAssignment>, Error<GetSharedLineAssignmentError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.Platforms.Imessage.Assignments.Get(ctx context.Context, params *GetSharedLineAssignmentParams, opts ...RequestOption) (*SharedLineAssignment, error)
 ```
 </Tab>
 </Tabs>
@@ -70,6 +75,26 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Projects.Platforms.Imessage.Assignments.Get(ctx, &photonapi.GetSharedLineAssignmentParams{
+	AssignmentID: "assignmentId",
+	ID: "id",
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

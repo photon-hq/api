@@ -1,7 +1,7 @@
 ---
 title: "Disable organization SSO"
 icon: arrow-up-right
-description: "Disable organization SSO: disableOrganizationSso in the TypeScript, Python and Rust clients."
+description: "Disable organization SSO: disableOrganizationSso in the TypeScript, Python, Rust and Go clients."
 ---
 
 `POST /v1/auth/organizations/{orgId}/sso/disable`
@@ -22,6 +22,11 @@ photon.auth.disable_organization_sso(input: DisableOrganizationSsoInput) -> mode
 <Tab title="Rust">
 ```rust Rust
 client.disable_organization_sso(idempotency_key: String, org_id: String, body: &types::DisableOrganizationSsoRequest).await -> Result<ResponseValue<types::OrganizationSsoConfiguration>, Error<DisableOrganizationSsoError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Auth.DisableOrganizationSso(ctx context.Context, params *DisableOrganizationSsoParams, opts ...RequestOption) (*OrganizationSsoConfiguration, error)
 ```
 </Tab>
 </Tabs>
@@ -86,6 +91,34 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.DisableOrganizationSsoRequest
+if err := json.Unmarshal([]byte(`{
+	"expectedVersion": "expectedVersion"
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Auth.DisableOrganizationSso(ctx, &photonapi.DisableOrganizationSsoParams{
+	IdempotencyKey: "idempotencyKey",
+	OrgID: "orgId",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

@@ -1,7 +1,7 @@
 ---
 title: "Connect email domain"
 icon: arrow-up-right
-description: "Connect email domain: connectEmailDomain in the TypeScript, Python and Rust clients."
+description: "Connect email domain: connectEmailDomain in the TypeScript, Python, Rust and Go clients."
 ---
 
 `POST /v1/projects/{id}/platforms/email/domains`
@@ -22,6 +22,11 @@ photon.projects.platforms.connect_email_domain(input: ConnectEmailDomainInput) -
 <Tab title="Rust">
 ```rust Rust
 client.connect_email_domain(idempotency_key: String, id: String, body: &types::ConnectEmailDomainRequest).await -> Result<ResponseValue<types::Operation>, Error<ConnectEmailDomainError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.Platforms.ConnectEmailDomain(ctx context.Context, params *ConnectEmailDomainParams, opts ...RequestOption) (*Operation, error)
 ```
 </Tab>
 </Tabs>
@@ -86,6 +91,34 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.ConnectEmailDomainRequest
+if err := json.Unmarshal([]byte(`{
+	"domain": "domain"
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Projects.Platforms.ConnectEmailDomain(ctx, &photonapi.ConnectEmailDomainParams{
+	IdempotencyKey: "idempotencyKey",
+	ID: "id",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

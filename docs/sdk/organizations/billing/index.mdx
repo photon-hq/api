@@ -1,6 +1,6 @@
 ---
 title: "Billing"
-description: "The Billing resource in the TypeScript, Python and Rust clients."
+description: "The Billing resource in the TypeScript, Python, Rust and Go clients."
 ---
 
 ## Methods
@@ -260,6 +260,92 @@ client.preview_organization_change(organization_id: String, body: &types::Previe
 
 ```rust Rust
 client.preview_project_change(organization_id: String, project_id: String, body: &types::PreviewProjectChangeRequest).await -> Result<ResponseValue<types::PreviewProjectChangeResponse>, Error<PreviewProjectChangeError>>
+```
+`POST /v1/organizations/{organizationId}/billing/projects/{projectId}/preview`
+
+</Tab>
+<Tab title="Go">
+**[List credit activity](/api-client/sdk/organizations/billing/list-credit-activity)**
+
+```go Go
+client.Organizations.Billing.ListCreditActivity(ctx context.Context, params *ListCreditActivityParams, opts ...RequestOption) (*ListCreditActivityResponse, error)
+```
+`GET /v1/organizations/{organizationId}/billing/credit/activity`
+
+**[List invoices](/api-client/sdk/organizations/billing/list-invoices)**
+
+```go Go
+client.Organizations.Billing.ListInvoices(ctx context.Context, params *ListInvoicesParams, opts ...RequestOption) (*ListInvoicesResponse, error)
+```
+`GET /v1/organizations/{organizationId}/billing/invoices`
+
+**[Get the project's effective billing terms](/api-client/sdk/organizations/billing/get-effective-terms)**
+
+```go Go
+client.Organizations.Billing.GetEffectiveTerms(ctx context.Context, params *GetEffectiveTermsParams, opts ...RequestOption) (*GetEffectiveTermsResponse, error)
+```
+`GET /v1/organizations/{organizationId}/billing/projects/{projectId}/terms`
+
+**[Get organization billing overview](/api-client/sdk/organizations/billing/get-organization-billing-overview)**
+
+```go Go
+client.Organizations.Billing.GetOrganizationBillingOverview(ctx context.Context, params *GetOrganizationBillingOverviewParams, opts ...RequestOption) (*GetOrganizationBillingOverviewResponse, error)
+```
+`GET /v1/organizations/{organizationId}/billing`
+
+**[Get organization credit](/api-client/sdk/organizations/billing/get-organization-credit)**
+
+```go Go
+client.Organizations.Billing.GetOrganizationCredit(ctx context.Context, params *GetOrganizationCreditParams, opts ...RequestOption) (*GetOrganizationCreditResponse, error)
+```
+`GET /v1/organizations/{organizationId}/billing/credit`
+
+**[Get organization payment method](/api-client/sdk/organizations/billing/get-organization-payment-method)**
+
+```go Go
+client.Organizations.Billing.GetOrganizationPaymentMethod(ctx context.Context, params *GetOrganizationPaymentMethodParams, opts ...RequestOption) (*GetOrganizationPaymentMethodResponse, error)
+```
+`GET /v1/organizations/{organizationId}/billing/payment-method`
+
+**[Get the organization's effective billing terms](/api-client/sdk/organizations/billing/get-organization-terms)**
+
+```go Go
+client.Organizations.Billing.GetOrganizationTerms(ctx context.Context, params *GetOrganizationTermsParams, opts ...RequestOption) (*GetOrganizationTermsResponse, error)
+```
+`GET /v1/organizations/{organizationId}/billing/terms`
+
+**[Change plan](/api-client/sdk/organizations/billing/change-plan)**
+
+```go Go
+client.Organizations.Billing.ChangePlan(ctx context.Context, params *ChangePlanParams, opts ...RequestOption) (*Union, error)
+```
+`POST /v1/organizations/{organizationId}/billing/projects/{projectId}/purchase`
+
+**[Create payment method checkout](/api-client/sdk/organizations/billing/create-organization-payment-method-checkout)**
+
+```go Go
+client.Organizations.Billing.CreateOrganizationPaymentMethodCheckout(ctx context.Context, params *CreateOrganizationPaymentMethodCheckoutParams, opts ...RequestOption) (*CreateOrganizationPaymentMethodCheckoutResponse, error)
+```
+`POST /v1/organizations/{organizationId}/billing/checkout`
+
+**[Create card setup intent](/api-client/sdk/organizations/billing/create-organization-setup-intent)**
+
+```go Go
+client.Organizations.Billing.CreateOrganizationSetupIntent(ctx context.Context, params *CreateOrganizationSetupIntentParams, opts ...RequestOption) (*CreateOrganizationSetupIntentResponse, error)
+```
+`POST /v1/organizations/{organizationId}/billing/setup-intent`
+
+**[Preview an organization billing change](/api-client/sdk/organizations/billing/preview-organization-change)**
+
+```go Go
+client.Organizations.Billing.PreviewOrganizationChange(ctx context.Context, params *PreviewOrganizationChangeParams, opts ...RequestOption) (*PreviewOrganizationChangeResponse, error)
+```
+`POST /v1/organizations/{organizationId}/billing/preview`
+
+**[Preview a project billing change](/api-client/sdk/organizations/billing/preview-project-change)**
+
+```go Go
+client.Organizations.Billing.PreviewProjectChange(ctx context.Context, params *PreviewProjectChangeParams, opts ...RequestOption) (*PreviewProjectChangeResponse, error)
 ```
 `POST /v1/organizations/{organizationId}/billing/projects/{projectId}/preview`
 

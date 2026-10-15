@@ -103,6 +103,48 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 ```
+
+```go Go
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+func main() {
+	apiKey := os.Getenv("PHOTON_API_KEY")
+	organizationID := os.Getenv("PHOTON_ORGANIZATION_ID")
+	if apiKey == "" || organizationID == "" {
+		log.Fatal("Set PHOTON_API_KEY and PHOTON_ORGANIZATION_ID")
+	}
+
+	client := photonapi.NewClient(photonapi.WithAPIKey(apiKey))
+
+	params := &photonapi.ListProjectsParams{
+		OrganizationID: organizationID,
+		PageSize:       photonapi.Ptr(int64(100)),
+	}
+	for {
+		page, err := client.Organizations.Projects.List(context.Background(), params)
+		if err != nil {
+			log.Fatal(err)
+		}
+		for _, project := range page.Projects {
+			fmt.Println(project.ProjectID, project.Name)
+		}
+		// NextPageToken is nil on the last page.
+		if page.NextPageToken == nil {
+			break
+		}
+		params.PageToken = page.NextPageToken
+	}
+}
+```
 </CodeGroup>
 
 Each page is a separate request, so each one is retried, and can fail, on its

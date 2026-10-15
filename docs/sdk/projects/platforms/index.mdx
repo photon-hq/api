@@ -1,6 +1,6 @@
 ---
 title: "Platforms"
-description: "The Platforms resource in the TypeScript, Python and Rust clients."
+description: "The Platforms resource in the TypeScript, Python, Rust and Go clients."
 ---
 
 ## Methods
@@ -1226,6 +1226,414 @@ client.unassign_sms_line_campaign(idempotency_key: String, id: String, resource_
 
 ```rust Rust
 client.unassign_voice_line_profile(id: String, resource_id: String, expected_version: i64).await -> Result<ResponseValue<()>, Error<UnassignVoiceLineProfileError>>
+```
+`DELETE /v1/projects/{id}/platforms/voice/lines/{resourceId}/profile`
+
+</Tab>
+<Tab title="Go">
+**[List email recommendations](/api-client/sdk/projects/platforms/list-email-recommendations)**
+
+```go Go
+client.Projects.Platforms.ListEmailRecommendations(ctx context.Context, params *ListEmailRecommendationsParams, opts ...RequestOption) (*EmailRecommendations, error)
+```
+`GET /v1/projects/{id}/platforms/email/recommendations`
+
+**[List filtered verification codes](/api-client/sdk/projects/platforms/list-filtered-verification-codes)**
+
+```go Go
+client.Projects.Platforms.ListFilteredVerificationCodes(ctx context.Context, params *ListFilteredVerificationCodesParams, opts ...RequestOption) (*FilteredVerificationCodePage, error)
+```
+`GET /v1/projects/{id}/platforms/filtered-otp`
+
+**[List number area codes](/api-client/sdk/projects/platforms/list-number-area-codes)**
+
+```go Go
+client.Projects.Platforms.ListNumberAreaCodes(ctx context.Context, params *ListNumberAreaCodesParams, opts ...RequestOption) (*ListNumberAreaCodesResponse, error)
+```
+`GET /v1/projects/{id}/platforms/sms/numbers/area-codes`
+
+**[List number countries](/api-client/sdk/projects/platforms/list-number-countries)**
+
+```go Go
+client.Projects.Platforms.ListNumberCountries(ctx context.Context, params *ListNumberCountriesParams, opts ...RequestOption) (*ListNumberCountriesResponse, error)
+```
+`GET /v1/projects/{id}/platforms/sms/numbers/countries`
+
+**[List operations](/api-client/sdk/projects/platforms/list-operations)**
+
+```go Go
+client.Projects.Platforms.ListOperations(ctx context.Context, params *ListOperationsParams, opts ...RequestOption) (*OperationPage, error)
+```
+`GET /v1/projects/{id}/platforms/operations`
+
+**[List project platforms](/api-client/sdk/projects/platforms/list-project-platforms)**
+
+```go Go
+client.Projects.Platforms.ListProjectPlatforms(ctx context.Context, params *ListProjectPlatformsParams, opts ...RequestOption) (*ListProjectPlatformsResponse, error)
+```
+`GET /v1/projects/{id}/platforms`
+
+**[List a line's filtered verification codes](/api-client/sdk/projects/platforms/list-resource-filtered-verification-codes)**
+
+```go Go
+client.Projects.Platforms.ListResourceFilteredVerificationCodes(ctx context.Context, params *ListResourceFilteredVerificationCodesParams, opts ...RequestOption) (*FilteredVerificationCodePage, error)
+```
+`GET /v1/projects/{id}/platforms/resources/{resourceId}/filtered-otp`
+
+**[List resources](/api-client/sdk/projects/platforms/list-resources)**
+
+```go Go
+client.Projects.Platforms.ListResources(ctx context.Context, params *ListResourcesParams, opts ...RequestOption) (*ResourcePage, error)
+```
+`GET /v1/projects/{id}/platforms/resources`
+
+**[List Voice profiles](/api-client/sdk/projects/platforms/list-voice-profiles)**
+
+```go Go
+client.Projects.Platforms.ListVoiceProfiles(ctx context.Context, params *ListVoiceProfilesParams, opts ...RequestOption) (*VoiceProfilePage, error)
+```
+`GET /v1/projects/{id}/platforms/voice/profiles`
+
+**[List WhatsApp account phone numbers](/api-client/sdk/projects/platforms/list-whatsapp-account-phone-numbers)**
+
+```go Go
+client.Projects.Platforms.ListWhatsappAccountPhoneNumbers(ctx context.Context, params *ListWhatsappAccountPhoneNumbersParams, opts ...RequestOption) (*ListWhatsappAccountPhoneNumbersResponse, error)
+```
+`GET /v1/projects/{id}/platforms/whatsapp-business/account/phone-numbers`
+
+**[List WhatsApp shared line assignments](/api-client/sdk/projects/platforms/list-whatsapp-shared-line-assignments)**
+
+```go Go
+client.Projects.Platforms.ListWhatsappSharedLineAssignments(ctx context.Context, params *ListWhatsappSharedLineAssignmentsParams, opts ...RequestOption) (*SharedLineAssignmentPage, error)
+```
+`GET /v1/projects/{id}/platforms/whatsapp/assignments`
+
+**[Count filtered verification codes](/api-client/sdk/projects/platforms/count-filtered-verification-codes)**
+
+```go Go
+client.Projects.Platforms.CountFilteredVerificationCodes(ctx context.Context, params *CountFilteredVerificationCodesParams, opts ...RequestOption) (*FilteredVerificationCodeCount, error)
+```
+`GET /v1/projects/{id}/platforms/filtered-otp/count`
+
+**[Count a line's filtered verification codes](/api-client/sdk/projects/platforms/count-resource-filtered-verification-codes)**
+
+```go Go
+client.Projects.Platforms.CountResourceFilteredVerificationCodes(ctx context.Context, params *CountResourceFilteredVerificationCodesParams, opts ...RequestOption) (*FilteredVerificationCodeCount, error)
+```
+`GET /v1/projects/{id}/platforms/resources/{resourceId}/filtered-otp/count`
+
+**[Get default Voice profile](/api-client/sdk/projects/platforms/get-default-voice-profile)**
+
+```go Go
+client.Projects.Platforms.GetDefaultVoiceProfile(ctx context.Context, params *GetDefaultVoiceProfileParams, opts ...RequestOption) (*VoiceProfile, error)
+```
+`GET /v1/projects/{id}/platforms/voice/profiles/default`
+
+**[Get email delivery metrics](/api-client/sdk/projects/platforms/get-email-delivery-metrics)**
+
+```go Go
+client.Projects.Platforms.GetEmailDeliveryMetrics(ctx context.Context, params *GetEmailDeliveryMetricsParams, opts ...RequestOption) (*EmailDeliveryMetrics, error)
+```
+`GET /v1/projects/{id}/platforms/email/metrics`
+
+**[Get email sending policies](/api-client/sdk/projects/platforms/get-email-sending-policies)**
+
+```go Go
+client.Projects.Platforms.GetEmailSendingPolicies(ctx context.Context, params *GetEmailSendingPoliciesParams, opts ...RequestOption) (*EmailSendingPolicies, error)
+```
+`GET /v1/projects/{id}/platforms/email/sending-policy`
+
+**[Get project iMessage platform](/api-client/sdk/projects/platforms/get-imessage)**
+
+```go Go
+client.Projects.Platforms.GetImessage(ctx context.Context, params *GetProjectImessagePlatformParams, opts ...RequestOption) (*ProjectPlatformSettings, error)
+```
+`GET /v1/projects/{id}/platforms/imessage`
+
+**[Get operation](/api-client/sdk/projects/platforms/get-operation)**
+
+```go Go
+client.Projects.Platforms.GetOperation(ctx context.Context, params *GetOperationParams, opts ...RequestOption) (*GetOperationResponse, error)
+```
+`GET /v1/projects/{id}/platforms/operations/{operationId}`
+
+**[Get project WhatsApp platform](/api-client/sdk/projects/platforms/get-project-whatsapp-platform)**
+
+```go Go
+client.Projects.Platforms.GetProjectWhatsappPlatform(ctx context.Context, params *GetProjectWhatsappPlatformParams, opts ...RequestOption) (*ProjectPlatformSettings, error)
+```
+`GET /v1/projects/{id}/platforms/whatsapp`
+
+**[Get resource](/api-client/sdk/projects/platforms/get-resource)**
+
+```go Go
+client.Projects.Platforms.GetResource(ctx context.Context, params *GetResourceParams, opts ...RequestOption) (*Resource, error)
+```
+`GET /v1/projects/{id}/platforms/resources/{resourceId}`
+
+**[Get SMS line campaign assignment](/api-client/sdk/projects/platforms/get-sms-line-campaign-assignment)**
+
+```go Go
+client.Projects.Platforms.GetSmsLineCampaignAssignment(ctx context.Context, params *GetSmsLineCampaignAssignmentParams, opts ...RequestOption) (*GetSmsLineCampaignAssignmentResponse, error)
+```
+`GET /v1/projects/{id}/platforms/sms/lines/{resourceId}/campaign`
+
+**[Get Voice line profile assignment](/api-client/sdk/projects/platforms/get-voice-line-profile-assignment)**
+
+```go Go
+client.Projects.Platforms.GetVoiceLineProfileAssignment(ctx context.Context, params *GetVoiceLineProfileAssignmentParams, opts ...RequestOption) (*VoiceLineProfileAssignment, error)
+```
+`GET /v1/projects/{id}/platforms/voice/lines/{resourceId}/profile`
+
+**[Get Voice profile](/api-client/sdk/projects/platforms/get-voice-profile)**
+
+```go Go
+client.Projects.Platforms.GetVoiceProfile(ctx context.Context, params *GetVoiceProfileParams, opts ...RequestOption) (*VoiceProfile, error)
+```
+`GET /v1/projects/{id}/platforms/voice/profiles/{profileId}`
+
+**[Get WhatsApp Business account](/api-client/sdk/projects/platforms/get-whatsapp-business-account)**
+
+```go Go
+client.Projects.Platforms.GetWhatsappBusinessAccount(ctx context.Context, params *GetWhatsappBusinessAccountParams, opts ...RequestOption) (*WhatsappBusinessAccount, error)
+```
+`GET /v1/projects/{id}/platforms/whatsapp-business/account`
+
+**[Get WhatsApp Business verification code](/api-client/sdk/projects/platforms/get-whatsapp-business-verification-code)**
+
+```go Go
+client.Projects.Platforms.GetWhatsappBusinessVerificationCode(ctx context.Context, params *GetWhatsappBusinessVerificationCodeParams, opts ...RequestOption) (*GetWhatsappBusinessVerificationCodeResponse, error)
+```
+`GET /v1/projects/{id}/platforms/whatsapp-business/numbers/{resourceId}/verification-code`
+
+**[Get WhatsApp shared line assignment](/api-client/sdk/projects/platforms/get-whatsapp-shared-line-assignment)**
+
+```go Go
+client.Projects.Platforms.GetWhatsappSharedLineAssignment(ctx context.Context, params *GetWhatsappSharedLineAssignmentParams, opts ...RequestOption) (*SharedLineAssignment, error)
+```
+`GET /v1/projects/{id}/platforms/whatsapp/assignments/{assignmentId}`
+
+**[Get WhatsApp signup config](/api-client/sdk/projects/platforms/get-whatsapp-signup-config)**
+
+```go Go
+client.Projects.Platforms.GetWhatsappSignupConfig(ctx context.Context, params *GetWhatsappSignupConfigParams, opts ...RequestOption) (*GetWhatsappSignupConfigResponse, error)
+```
+`GET /v1/projects/{id}/platforms/whatsapp-business/signup-config`
+
+**[Batch update Voice line assignments](/api-client/sdk/projects/platforms/batch-update-voice-line-profile-assignments)**
+
+```go Go
+client.Projects.Platforms.BatchUpdateVoiceLineProfileAssignments(ctx context.Context, params *BatchUpdateVoiceLineProfileAssignmentsParams, opts ...RequestOption) (*BatchUpdateVoiceLineProfileAssignmentsResponse, error)
+```
+`POST /v1/projects/{id}/platforms/voice/lines/profile-assignments/batch`
+
+**[Cancel operation](/api-client/sdk/projects/platforms/cancel-operation)**
+
+```go Go
+client.Projects.Platforms.CancelOperation(ctx context.Context, params *CancelOperationParams, opts ...RequestOption) (*Operation, error)
+```
+`POST /v1/projects/{id}/platforms/operations/{operationId}/cancel`
+
+**[Connect email domain](/api-client/sdk/projects/platforms/connect-email-domain)**
+
+```go Go
+client.Projects.Platforms.ConnectEmailDomain(ctx context.Context, params *ConnectEmailDomainParams, opts ...RequestOption) (*Operation, error)
+```
+`POST /v1/projects/{id}/platforms/email/domains`
+
+**[Connect Telegram bot](/api-client/sdk/projects/platforms/connect-telegram-bot)**
+
+```go Go
+client.Projects.Platforms.ConnectTelegramBot(ctx context.Context, params *ConnectTelegramBotParams, opts ...RequestOption) (*Operation, error)
+```
+`POST /v1/projects/{id}/platforms/telegram/bots`
+
+**[Connect WhatsApp Business](/api-client/sdk/projects/platforms/connect-whatsapp-business)**
+
+```go Go
+client.Projects.Platforms.ConnectWhatsappBusiness(ctx context.Context, params *ConnectWhatsappBusinessParams, opts ...RequestOption) (*Operation, error)
+```
+`POST /v1/projects/{id}/platforms/whatsapp-business/numbers`
+
+**[Create Voice profile](/api-client/sdk/projects/platforms/create-voice-profile)**
+
+```go Go
+client.Projects.Platforms.CreateVoiceProfile(ctx context.Context, params *CreateVoiceProfileParams, opts ...RequestOption) (*VoiceProfile, error)
+```
+`POST /v1/projects/{id}/platforms/voice/profiles`
+
+**[Create WhatsApp shared line assignment](/api-client/sdk/projects/platforms/create-whatsapp-shared-line-assignment)**
+
+```go Go
+client.Projects.Platforms.CreateWhatsappSharedLineAssignment(ctx context.Context, params *CreateWhatsappSharedLineAssignmentParams, opts ...RequestOption) (*SharedLineAssignment, error)
+```
+`POST /v1/projects/{id}/platforms/whatsapp/assignments`
+
+**[Create WhatsApp VoIP sender](/api-client/sdk/projects/platforms/create-whatsapp-voip-sender)**
+
+```go Go
+client.Projects.Platforms.CreateWhatsappVoipSender(ctx context.Context, params *CreateWhatsappVoipSenderParams, opts ...RequestOption) (*Operation, error)
+```
+`POST /v1/projects/{id}/platforms/whatsapp-business/account/senders`
+
+**[Provision dedicated iMessage line](/api-client/sdk/projects/platforms/provision-imessage-dedicated-line)**
+
+```go Go
+client.Projects.Platforms.ProvisionImessageDedicatedLine(ctx context.Context, params *ProvisionImessageDedicatedLineParams, opts ...RequestOption) (*Operation, error)
+```
+`POST /v1/projects/{id}/platforms/imessage/dedicated`
+
+**[Provision dedicated WhatsApp line](/api-client/sdk/projects/platforms/provision-whatsapp-dedicated-line)**
+
+```go Go
+client.Projects.Platforms.ProvisionWhatsappDedicatedLine(ctx context.Context, params *ProvisionWhatsappDedicatedLineParams, opts ...RequestOption) (*Operation, error)
+```
+`POST /v1/projects/{id}/platforms/whatsapp/dedicated`
+
+**[Purchase SMS number](/api-client/sdk/projects/platforms/purchase-sms-number)**
+
+```go Go
+client.Projects.Platforms.PurchaseSmsNumber(ctx context.Context, params *PurchaseSmsNumberParams, opts ...RequestOption) (*Operation, error)
+```
+`POST /v1/projects/{id}/platforms/sms/numbers`
+
+**[Rotate Voice outbound credential](/api-client/sdk/projects/platforms/rotate-voice-profile-outbound-credential)**
+
+```go Go
+client.Projects.Platforms.RotateVoiceProfileOutboundCredential(ctx context.Context, params *RotateVoiceProfileOutboundCredentialParams, opts ...RequestOption) (*RotateVoiceProfileOutboundCredentialResponse, error)
+```
+`POST /v1/projects/{id}/platforms/voice/profiles/{profileId}/outbound/rotate`
+
+**[Assign or replace SMS line campaign](/api-client/sdk/projects/platforms/assign-sms-line-campaign)**
+
+```go Go
+client.Projects.Platforms.AssignSmsLineCampaign(ctx context.Context, params *AssignSmsLineCampaignParams, opts ...RequestOption) (*Operation, error)
+```
+`PUT /v1/projects/{id}/platforms/sms/lines/{resourceId}/campaign`
+
+**[Assign Voice line profile](/api-client/sdk/projects/platforms/assign-voice-line-profile)**
+
+```go Go
+client.Projects.Platforms.AssignVoiceLineProfile(ctx context.Context, params *AssignVoiceLineProfileParams, opts ...RequestOption) (*VoiceLineProfileAssignment, error)
+```
+`PUT /v1/projects/{id}/platforms/voice/lines/{resourceId}/profile`
+
+**[Configure Voice outbound credential](/api-client/sdk/projects/platforms/configure-voice-profile-outbound)**
+
+```go Go
+client.Projects.Platforms.ConfigureVoiceProfileOutbound(ctx context.Context, params *ConfigureVoiceProfileOutboundParams, opts ...RequestOption) (*ConfigureVoiceProfileOutboundResponse, error)
+```
+`PUT /v1/projects/{id}/platforms/voice/profiles/{profileId}/outbound`
+
+**[Create default Voice profile](/api-client/sdk/projects/platforms/create-default-voice-profile)**
+
+```go Go
+client.Projects.Platforms.CreateDefaultVoiceProfile(ctx context.Context, params *CreateDefaultVoiceProfileParams, opts ...RequestOption) (*VoiceProfile, error)
+```
+`PUT /v1/projects/{id}/platforms/voice/profiles/default`
+
+**[Replace Voice inbound configuration](/api-client/sdk/projects/platforms/replace-voice-profile-inbound)**
+
+```go Go
+client.Projects.Platforms.ReplaceVoiceProfileInbound(ctx context.Context, params *ReplaceVoiceProfileInboundParams, opts ...RequestOption) (*VoiceProfileInboundConfiguration, error)
+```
+`PUT /v1/projects/{id}/platforms/voice/profiles/{profileId}/inbound`
+
+**[Update default Voice profile](/api-client/sdk/projects/platforms/update-default-voice-profile)**
+
+```go Go
+client.Projects.Platforms.UpdateDefaultVoiceProfile(ctx context.Context, params *UpdateDefaultVoiceProfileParams, opts ...RequestOption) (*VoiceProfile, error)
+```
+`PATCH /v1/projects/{id}/platforms/voice/profiles/default`
+
+**[Update Voice profile](/api-client/sdk/projects/platforms/update-voice-profile)**
+
+```go Go
+client.Projects.Platforms.UpdateVoiceProfile(ctx context.Context, params *UpdateVoiceProfileParams, opts ...RequestOption) (*VoiceProfile, error)
+```
+`PATCH /v1/projects/{id}/platforms/voice/profiles/{profileId}`
+
+**[Update Voice inbound configuration](/api-client/sdk/projects/platforms/update-voice-profile-inbound)**
+
+```go Go
+client.Projects.Platforms.UpdateVoiceProfileInbound(ctx context.Context, params *UpdateVoiceProfileInboundParams, opts ...RequestOption) (*VoiceProfileInboundConfiguration, error)
+```
+`PATCH /v1/projects/{id}/platforms/voice/profiles/{profileId}/inbound`
+
+**[Update Voice outbound authentication](/api-client/sdk/projects/platforms/update-voice-profile-outbound-authentication)**
+
+```go Go
+client.Projects.Platforms.UpdateVoiceProfileOutboundAuthentication(ctx context.Context, params *UpdateVoiceProfileOutboundAuthenticationParams, opts ...RequestOption) (*UpdateVoiceProfileOutboundAuthenticationResponse, error)
+```
+`PATCH /v1/projects/{id}/platforms/voice/profiles/{profileId}/outbound`
+
+**[Delete Voice profile](/api-client/sdk/projects/platforms/delete-voice-profile)**
+
+```go Go
+client.Projects.Platforms.DeleteVoiceProfile(ctx context.Context, params *DeleteVoiceProfileParams, opts ...RequestOption) error
+```
+`DELETE /v1/projects/{id}/platforms/voice/profiles/{profileId}`
+
+**[Delete Voice inbound configuration](/api-client/sdk/projects/platforms/delete-voice-profile-inbound)**
+
+```go Go
+client.Projects.Platforms.DeleteVoiceProfileInbound(ctx context.Context, params *DeleteVoiceProfileInboundParams, opts ...RequestOption) (*VoiceProfileInboundConfiguration, error)
+```
+`DELETE /v1/projects/{id}/platforms/voice/profiles/{profileId}/inbound`
+
+**[Revoke Voice outbound credential](/api-client/sdk/projects/platforms/delete-voice-profile-outbound)**
+
+```go Go
+client.Projects.Platforms.DeleteVoiceProfileOutbound(ctx context.Context, params *DeleteVoiceProfileOutboundParams, opts ...RequestOption) (*DeleteVoiceProfileOutboundResponse, error)
+```
+`DELETE /v1/projects/{id}/platforms/voice/profiles/{profileId}/outbound`
+
+**[Disconnect WhatsApp Business account](/api-client/sdk/projects/platforms/disconnect-whatsapp-business-account)**
+
+```go Go
+client.Projects.Platforms.DisconnectWhatsappBusinessAccount(ctx context.Context, params *DisconnectWhatsappBusinessAccountParams, opts ...RequestOption) (*Operation, error)
+```
+`DELETE /v1/projects/{id}/platforms/whatsapp-business/account`
+
+**[Release dedicated iMessage line](/api-client/sdk/projects/platforms/release-imessage-dedicated-line)**
+
+```go Go
+client.Projects.Platforms.ReleaseImessageDedicatedLine(ctx context.Context, params *ReleaseImessageDedicatedLineParams, opts ...RequestOption) (*Operation, error)
+```
+`DELETE /v1/projects/{id}/platforms/imessage/dedicated/{resourceId}`
+
+**[Release resource](/api-client/sdk/projects/platforms/release-resource)**
+
+```go Go
+client.Projects.Platforms.ReleaseResource(ctx context.Context, params *ReleaseResourceParams, opts ...RequestOption) (*Operation, error)
+```
+`DELETE /v1/projects/{id}/platforms/resources/{resourceId}`
+
+**[Release dedicated WhatsApp line](/api-client/sdk/projects/platforms/release-whatsapp-dedicated-line)**
+
+```go Go
+client.Projects.Platforms.ReleaseWhatsappDedicatedLine(ctx context.Context, params *ReleaseWhatsappDedicatedLineParams, opts ...RequestOption) (*Operation, error)
+```
+`DELETE /v1/projects/{id}/platforms/whatsapp/dedicated/{resourceId}`
+
+**[Release WhatsApp shared line assignment](/api-client/sdk/projects/platforms/release-whatsapp-shared-line-assignment)**
+
+```go Go
+client.Projects.Platforms.ReleaseWhatsappSharedLineAssignment(ctx context.Context, params *ReleaseWhatsappSharedLineAssignmentParams, opts ...RequestOption) (*SharedLineAssignment, error)
+```
+`DELETE /v1/projects/{id}/platforms/whatsapp/assignments/{assignmentId}`
+
+**[Unassign SMS line campaign](/api-client/sdk/projects/platforms/unassign-sms-line-campaign)**
+
+```go Go
+client.Projects.Platforms.UnassignSmsLineCampaign(ctx context.Context, params *UnassignSmsLineCampaignParams, opts ...RequestOption) (*Operation, error)
+```
+`DELETE /v1/projects/{id}/platforms/sms/lines/{resourceId}/campaign`
+
+**[Unassign Voice line profile](/api-client/sdk/projects/platforms/unassign-voice-line-profile)**
+
+```go Go
+client.Projects.Platforms.UnassignVoiceLineProfile(ctx context.Context, params *UnassignVoiceLineProfileParams, opts ...RequestOption) error
 ```
 `DELETE /v1/projects/{id}/platforms/voice/lines/{resourceId}/profile`
 

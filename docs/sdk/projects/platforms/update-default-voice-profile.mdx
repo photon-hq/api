@@ -1,7 +1,7 @@
 ---
 title: "Update default Voice profile"
 icon: pencil
-description: "Update default Voice profile: updateDefaultVoiceProfile in the TypeScript, Python and Rust clients."
+description: "Update default Voice profile: updateDefaultVoiceProfile in the TypeScript, Python, Rust and Go clients."
 ---
 
 `PATCH /v1/projects/{id}/platforms/voice/profiles/default`
@@ -22,6 +22,11 @@ photon.projects.platforms.update_default_voice_profile(input: UpdateDefaultVoice
 <Tab title="Rust">
 ```rust Rust
 client.update_default_voice_profile(id: String, body: &types::UpdateDefaultVoiceProfileRequest).await -> Result<ResponseValue<types::VoiceProfile>, Error<UpdateDefaultVoiceProfileError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.Platforms.UpdateDefaultVoiceProfile(ctx context.Context, params *UpdateDefaultVoiceProfileParams, opts ...RequestOption) (*VoiceProfile, error)
 ```
 </Tab>
 </Tabs>
@@ -79,6 +84,33 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.UpdateDefaultVoiceProfileRequest
+if err := json.Unmarshal([]byte(`{
+	"expectedVersion": 1
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Projects.Platforms.UpdateDefaultVoiceProfile(ctx, &photonapi.UpdateDefaultVoiceProfileParams{
+	ID: "id",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

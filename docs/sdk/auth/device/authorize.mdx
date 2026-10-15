@@ -1,7 +1,7 @@
 ---
 title: "Start device authorization"
 icon: arrow-up-right
-description: "Start device authorization: deviceAuthorize in the TypeScript, Python and Rust clients."
+description: "Start device authorization: deviceAuthorize in the TypeScript, Python, Rust and Go clients."
 ---
 
 `POST /v1/auth/device/code`
@@ -22,6 +22,11 @@ photon.auth.device.authorize(input: DeviceAuthorizeInput | None = None) -> model
 <Tab title="Rust">
 ```rust Rust
 client.device_authorize().await -> Result<ResponseValue<types::DeviceAuthorizeResponse>, Error<DeviceAuthorizeError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Auth.Device.Authorize(ctx context.Context, opts ...RequestOption) (*DeviceAuthorizeResponse, error)
 ```
 </Tab>
 </Tabs>
@@ -50,6 +55,22 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient()
+result, err := client.Auth.Device.Authorize(ctx)
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

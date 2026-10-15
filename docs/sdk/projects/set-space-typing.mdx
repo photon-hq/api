@@ -1,7 +1,7 @@
 ---
 title: "Set typing in a Space"
 icon: arrow-up-right
-description: "Set typing in a Space: setSpaceTyping in the TypeScript, Python and Rust clients."
+description: "Set typing in a Space: setSpaceTyping in the TypeScript, Python, Rust and Go clients."
 ---
 
 `POST /v1/projects/{id}/spaces/{spaceId}/typing`
@@ -22,6 +22,11 @@ photon.projects.set_space_typing(input: SetSpaceTypingInput) -> models.SetSpaceT
 <Tab title="Rust">
 ```rust Rust
 client.set_space_typing(id: String, space_id: String, body: &types::SetSpaceTypingRequest).await -> Result<ResponseValue<types::SetSpaceTypingResponse>, Error<SetSpaceTypingError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.SetSpaceTyping(ctx context.Context, params *SetSpaceTypingParams, opts ...RequestOption) (*SetSpaceTypingResponse, error)
 ```
 </Tab>
 </Tabs>
@@ -85,6 +90,35 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.SetSpaceTypingRequest
+if err := json.Unmarshal([]byte(`{
+	"senderId": "senderId",
+	"typing": true
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Projects.SetSpaceTyping(ctx, &photonapi.SetSpaceTypingParams{
+	ID: "id",
+	SpaceID: "spaceId",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

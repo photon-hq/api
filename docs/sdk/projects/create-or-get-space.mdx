@@ -1,7 +1,7 @@
 ---
 title: "Create or get a Space"
 icon: arrow-up-right
-description: "Create or get a Space: createOrGetSpace in the TypeScript, Python and Rust clients."
+description: "Create or get a Space: createOrGetSpace in the TypeScript, Python, Rust and Go clients."
 ---
 
 `POST /v1/projects/{id}/spaces`
@@ -22,6 +22,11 @@ photon.projects.create_or_get_space(input: CreateOrGetSpaceInput) -> models.Plat
 <Tab title="Rust">
 ```rust Rust
 client.create_or_get_space(id: String, idempotency_key: String, body: &types::CreateOrGetSpaceRequest).await -> Result<ResponseValue<CreateOrGetSpaceResponse>, Error<CreateOrGetSpaceError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.CreateOrGetSpace(ctx context.Context, params *CreateOrGetSpaceParams, opts ...RequestOption) (*PlatformSpace, error)
 ```
 </Tab>
 </Tabs>
@@ -89,6 +94,35 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.CreateOrGetSpaceRequest
+if err := json.Unmarshal([]byte(`{
+	"participantIds": [],
+	"platform": "sms"
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Projects.CreateOrGetSpace(ctx, &photonapi.CreateOrGetSpaceParams{
+	ID: "id",
+	IdempotencyKey: "idempotency-key",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

@@ -1,5 +1,5 @@
 // SDK code samples for the documentation site. Writes openapi/openapi.mintlify.json:
-// the public contract with an `x-codeSamples` list (TypeScript, Python, Rust) on
+// the public contract with an `x-codeSamples` list (TypeScript, Python, Rust, Go) on
 // every operation, the format Mintlify renders beside each endpoint. Method
 // names come from the generated SDKs themselves, so a sample always calls the
 // method the released package has. Arguments are the operation's required
@@ -29,7 +29,7 @@ const TOKEN_TS = "process.env.PHOTON_API_TOKEN";
 const DATE_TIME = "2026-01-01T00:00:00Z";
 
 export interface CodeSample {
-  lang: "typescript" | "python" | "rust";
+  lang: "typescript" | "python" | "rust" | "go";
   label: string;
   source: string;
 }
@@ -106,6 +106,80 @@ export function rustMethods(source: string): Map<string, RustMethod> {
 /** Arguments of each generated Rust client method (photonhq-api src/generated.rs), by method name. */
 export function rustSignatures(source: string): Map<string, RustArgument[]> {
   return new Map([...rustMethods(source)].map(([name, method]) => [name, method.arguments]));
+}
+
+export interface GoField {
+  /** Go struct field name, e.g. `IdempotencyKey`. */
+  name: string;
+  location: "path" | "query" | "header";
+  /** The contract parameter's wire name, from the generated field comment. */
+  wireName: string;
+  /** Go type with any pointer stripped. */
+  type: string;
+  /** Pointer fields are the contract's optional inputs. */
+  optional: boolean;
+}
+
+export interface GoMethod {
+  /** Call path from the client, e.g. `client.Projects.SendMessage`. */
+  path: string;
+  /** The params struct type name, e.g. `SendMessageParams`; absent when the method takes only ctx. */
+  params?: string | undefined;
+  fields: GoField[];
+  /** The body field's Go type (`SendMessageRequest`, or `io.Reader` for a binary body). */
+  bodyType?: string | undefined;
+  /** The declared return, e.g. `(*SentMessage, error)` or `error`. */
+  returns: string;
+}
+
+/**
+ * Each generated Go client method (packages/go/operations_generated.go), by
+ * `namespace.MethodName` (e.g. `account.onboarding.Get`). The namespace comes
+ * from each service's "groups the X operations" comment and the call path from
+ * the client's own service fields, so both always match the released package.
+ */
+export function goMethods(source: string): Map<string, GoMethod> {
+  const namespaces = new Map<string, string>();
+  for (const match of source.matchAll(/\/\/ (\w+Service) groups the ([\w.]+) operations\./g)) namespaces.set(match[1]!, match[2]!);
+  // The client's service tree: `client.X = newYService(c)`, then `s.X = newYService(c)` per service.
+  const paths = new Map<string, string>();
+  const root = /\nfunc newClient\(c \*core\) \*Client \{([\s\S]*?)\n\}/.exec(source);
+  assert(root, "Go client constructor not found");
+  const pending: Array<[string, string]> = [...root[1]!.matchAll(/client\.(\w+) = new(\w+Service)\(c\)/g)].map((match) => [match[2]!, `client.${match[1]!}`]);
+  while (pending.length) {
+    const [service, path] = pending.pop()!;
+    paths.set(service, path);
+    const constructor = new RegExp(`\\nfunc new${service}\\(c \\*core\\) \\*${service} \\{([\\s\\S]*?)\\n\\}`).exec(source);
+    assert(constructor, `Go service constructor new${service} not found`);
+    for (const match of constructor[1]!.matchAll(/s\.(\w+) = new(\w+Service)\(c\)/g)) pending.push([match[2]!, `${path}.${match[1]!}`]);
+  }
+  const structs = new Map<string, { fields: GoField[]; bodyType?: string | undefined }>();
+  for (const match of source.matchAll(/\ntype (\w+Params) struct \{([\s\S]*?)\n\}/g)) {
+    const fields: GoField[] = [];
+    for (const field of match[2]!.matchAll(/\n\t\/\/ (\w+) is the (path|query|header) parameter ([^.\n]+)\.[^\n]*\n\t\w+ ([^\n]+)/g)) {
+      const type = field[4]!.trim();
+      fields.push({ name: field[1]!, location: field[2] as GoField["location"], wireName: field[3]!, type: type.replace(/^\*/, ""), optional: type.startsWith("*") });
+    }
+    const body = /\n\t\/\/ Body is the request body\.[^\n]*\n\tBody ([^\n]+)/.exec(match[2]!);
+    structs.set(match[1]!, { fields, bodyType: body?.[1]?.trim() });
+  }
+  const methods = new Map<string, GoMethod>();
+  for (const match of source.matchAll(/\nfunc \(s \*(\w+Service)\) (\w+)\(ctx context\.Context(?:, params \*(\w+Params))?, opts \.\.\.RequestOption\) ((?:\([^)]*\))|error) \{/g)) {
+    const [, service, method, paramsType, returns] = match;
+    const namespace = namespaces.get(service!);
+    const path = paths.get(service!);
+    assert(namespace && path, `Go service ${service} has no namespace comment or client field`);
+    const struct = paramsType ? structs.get(paramsType) : undefined;
+    assert(!paramsType || struct, `Go params struct ${paramsType} not found`);
+    methods.set(`${namespace}.${method}`, {
+      path: `${path}.${method}`,
+      params: paramsType ?? undefined,
+      fields: struct?.fields ?? [],
+      bodyType: struct?.bodyType,
+      returns: returns!,
+    });
+  }
+  return methods;
 }
 
 function resolveSchema(document: JsonObject, schema: JsonValue | undefined): JsonValue | undefined {
@@ -361,9 +435,67 @@ export function rustSample(document: JsonObject, operation: ManifestOperation, s
   return lines.join("\n");
 }
 
+export function goSample(document: JsonObject, operation: ManifestOperation, method: GoMethod): string {
+  const inputs = operationInputs(document, operation);
+  const scheme = credentialScheme(document, operation.operationId);
+  const returnsResult = method.returns !== "error";
+  const jsonBody = inputs.body && !inputs.body.binary;
+  const stdlib = [
+    "context",
+    ...(jsonBody ? ["encoding/json"] : []),
+    ...(scheme ? ["os"] : []),
+    ...(inputs.body?.binary ? ["strings"] : []),
+  ].sort();
+  const lines = [
+    "import (",
+    ...stdlib.map((name) => `\t"${name}"`),
+    "",
+    '\tphotonapi "github.com/photon-hq/api/packages/go"',
+    ")",
+    "",
+    "ctx := context.Background()",
+    scheme
+      ? 'client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))'
+      : "client := photonapi.NewClient()",
+  ];
+  const sets: string[] = [];
+  const groups = { path: inputs.groups.path, query: inputs.groups.query, header: inputs.groups.headers } as Record<string, JsonObject>;
+  for (const field of method.fields) {
+    if (field.optional) continue;
+    const value = groups[field.location]?.[field.wireName];
+    assert(value !== undefined, `${operation.operationId}: no required input for Go field ${field.name}`);
+    assert(["string", "int64", "float64"].includes(field.type), `${operation.operationId}: Go field ${field.name} has unhandled type ${field.type}`);
+    sets.push(`\t${field.name}: ${field.type === "string" ? JSON.stringify(value) : String(value)},`);
+  }
+  if (inputs.body) {
+    assert(method.bodyType, `${operation.operationId}: Go takes no body the contract requires`);
+    if (inputs.body.binary) {
+      sets.push(`\tBody: strings.NewReader(${JSON.stringify(inputs.body.value)}),`);
+    } else {
+      const literal = JSON.stringify(inputs.body.value, null, "\t");
+      assert(!literal.includes("`"), `${operation.operationId}: body placeholder contains a backquote`);
+      lines.push(
+        `var body photonapi.${method.bodyType}`,
+        `if err := json.Unmarshal([]byte(\`${literal}\`), &body); err != nil {`,
+        "\treturn err",
+        "}",
+      );
+      sets.push("\tBody: body,");
+    }
+  }
+  const argument = method.params ? (sets.length ? `, &photonapi.${method.params}{\n${sets.join("\n")}\n}` : ", nil") : "";
+  const call = `${method.path}(ctx${argument})`;
+  lines.push(returnsResult ? `result, err := ${call}` : `err := ${call}`, "if err != nil {", "\treturn err", "}");
+  // The result stays unprinted: some operations return one-time credentials,
+  // and the TypeScript, Python and Rust samples do not print theirs either.
+  if (returnsResult) lines.push("_ = result");
+  return lines.join("\n");
+}
+
 export interface SampleSources {
   pythonClient: string;
   rustClient: string;
+  goClient: string;
 }
 
 /** The contract with `x-codeSamples` on every operation the SDKs expose. */
@@ -371,6 +503,7 @@ export function withCodeSamples(document: JsonObject, manifest: RpcManifest, sou
   const result = structuredClone(document);
   const python = pythonCallPaths(sources.pythonClient);
   const rust = rustSignatures(sources.rustClient);
+  const go = goMethods(sources.goClient);
   const operations = new Map(manifest.operations.map((operation) => [operation.operationId, operation]));
   for (const item of Object.values(result.paths as JsonObject)) {
     if (!isObject(item)) continue;
@@ -380,12 +513,15 @@ export function withCodeSamples(document: JsonObject, manifest: RpcManifest, sou
       assert(manifestOperation, `Operation ${operation.operationId} is not in the RPC manifest`);
       const pythonPath = python.get(pascalCase(operation.operationId));
       const rustSignature = rust.get(snakeCase(operation.operationId));
+      const goMethod = go.get(`${manifestOperation.namespace.join(".")}.${pascalCase(manifestOperation.rpcMethod)}`);
       assert(pythonPath, `Python client has no method for ${operation.operationId}`);
       assert(rustSignature, `Rust client has no method for ${operation.operationId}`);
+      assert(goMethod, `Go client has no method for ${operation.operationId}`);
       const samples: CodeSample[] = [
         { lang: "typescript", label: "TypeScript", source: typescriptSample(document, manifestOperation) },
         { lang: "python", label: "Python", source: pythonSample(document, manifestOperation, pythonPath) },
         { lang: "rust", label: "Rust", source: rustSample(document, manifestOperation, rustSignature) },
+        { lang: "go", label: "Go", source: goSample(document, manifestOperation, goMethod) },
       ];
       operation["x-codeSamples"] = samples as unknown as JsonValue;
     }
@@ -402,6 +538,7 @@ async function main(): Promise<void> {
   const sources = {
     pythonClient: await readFile(resolve(root, "packages/python/src/photon_api/rpc_generated.py"), "utf8"),
     rustClient: await readFile(resolve(root, "packages/rust/src/generated.rs"), "utf8"),
+    goClient: await readFile(resolve(root, "packages/go/operations_generated.go"), "utf8"),
   };
   const output = withCodeSamples(document, manifest, sources);
   await writeAtomic(resolve(root, MINTLIFY_CONTRACT_PATH), `${JSON.stringify(output, null, 2)}\n`);

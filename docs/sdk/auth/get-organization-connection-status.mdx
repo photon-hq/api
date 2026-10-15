@@ -1,7 +1,7 @@
 ---
 title: "Get organization connection status"
 icon: arrow-down-left
-description: "Get organization connection status: getOrganizationConnectionStatus in the TypeScript, Python and Rust clients."
+description: "Get organization connection status: getOrganizationConnectionStatus in the TypeScript, Python, Rust and Go clients."
 ---
 
 `GET /v1/auth/organizations/{orgId}/connection-status`
@@ -22,6 +22,11 @@ photon.auth.get_organization_connection_status(input: GetOrganizationConnectionS
 <Tab title="Rust">
 ```rust Rust
 client.get_organization_connection_status(org_id: String).await -> Result<ResponseValue<types::OrganizationConnectionStatus>, Error<GetOrganizationConnectionStatusError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Auth.GetOrganizationConnectionStatus(ctx context.Context, params *GetOrganizationConnectionStatusParams, opts ...RequestOption) (*OrganizationConnectionStatus, error)
 ```
 </Tab>
 </Tabs>
@@ -68,6 +73,25 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Auth.GetOrganizationConnectionStatus(ctx, &photonapi.GetOrganizationConnectionStatusParams{
+	OrgID: "orgId",
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

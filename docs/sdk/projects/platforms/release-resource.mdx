@@ -1,7 +1,7 @@
 ---
 title: "Release resource"
 icon: x
-description: "Release resource: releaseResource in the TypeScript, Python and Rust clients."
+description: "Release resource: releaseResource in the TypeScript, Python, Rust and Go clients."
 ---
 
 `DELETE /v1/projects/{id}/platforms/resources/{resourceId}`
@@ -22,6 +22,11 @@ photon.projects.platforms.release_resource(input: ReleaseResourceInput) -> model
 <Tab title="Rust">
 ```rust Rust
 client.release_resource(id: String, resource_id: String).await -> Result<ResponseValue<ReleaseResourceResponse>, Error<ReleaseResourceError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.Platforms.ReleaseResource(ctx context.Context, params *ReleaseResourceParams, opts ...RequestOption) (*Operation, error)
 ```
 </Tab>
 </Tabs>
@@ -70,6 +75,26 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Projects.Platforms.ReleaseResource(ctx, &photonapi.ReleaseResourceParams{
+	ID: "id",
+	ResourceID: "resourceId",
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

@@ -1,11 +1,11 @@
 ---
 title: "Making requests"
-description: "Call Photon API endpoints from TypeScript, Python, and Rust, and read the responses."
+description: "Call Photon API endpoints from TypeScript, Python, Rust, and Go, and read the responses."
 ---
 
 Create one client and reuse it for every call. Each endpoint in the
 [API reference](/api-reference) is a method on the client, and each endpoint
-page shows its call in all three languages.
+page shows its call in all four languages.
 
 ## Your first request
 
@@ -85,6 +85,40 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 ```
+
+```go Go
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+func main() {
+	apiKey := os.Getenv("PHOTON_API_KEY")
+	organizationID := os.Getenv("PHOTON_ORGANIZATION_ID")
+	if apiKey == "" || organizationID == "" {
+		log.Fatal("Set PHOTON_API_KEY and PHOTON_ORGANIZATION_ID")
+	}
+
+	client := photonapi.NewClient(photonapi.WithAPIKey(apiKey))
+
+	page, err := client.Organizations.Projects.List(context.Background(), &photonapi.ListProjectsParams{
+		OrganizationID: organizationID,
+		PageSize:       photonapi.Ptr(int64(10)),
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, project := range page.Projects {
+		fmt.Println(project.ProjectID, project.Name)
+	}
+}
+```
 </CodeGroup>
 
 If you use a service identity credential in Rust, register it as
@@ -155,13 +189,28 @@ a synchronous wrapper. It is built directly rather than with
 `PhotonClientBuilder`, so the builder's timeout and retry settings do not apply
 to it.
 </Tab>
+<Tab title="Go">
+Services mirror the API namespaces: `client.Organizations.Projects.List`,
+`client.Projects.Get`. A method takes a `context.Context`, a pointer to its
+`<Operation>Params` struct when the operation has parameters or a body, and
+optional `RequestOption`s; it returns the typed response body and an `error`.
+Path, query, and header parameters and `Body` are the params struct's fields,
+under the contract's names in Go's exported casing (`organizationId` becomes
+`OrganizationID`). Optional parameters are pointers; set them with
+`photonapi.Ptr`.
+
+Enums are plain string types, so unknown values pass through. Unions keep
+their raw JSON: branch on `Kind()` and decode with the union's `As<Member>`
+methods. Timestamps are `photonapi.Timestamp` values in UTC with millisecond
+precision.
+</Tab>
 </Tabs>
 
-| Operation | TypeScript | Python | Rust |
-| --- | --- | --- | --- |
-| `listProjects` | `photon.organizations.projects.list` | `photon.organizations.projects.list` | `client.list_projects` |
-| `createProject` | `photon.organizations.projects.create` | `photon.organizations.projects.create` | `client.create_project` |
-| `getProject` | `photon.projects.get` | `photon.projects.get` | `client.get_project` |
+| Operation | TypeScript | Python | Rust | Go |
+| --- | --- | --- | --- | --- |
+| `listProjects` | `photon.organizations.projects.list` | `photon.organizations.projects.list` | `client.list_projects` | `client.Organizations.Projects.List` |
+| `createProject` | `photon.organizations.projects.create` | `photon.organizations.projects.create` | `client.create_project` | `client.Organizations.Projects.Create` |
+| `getProject` | `photon.projects.get` | `photon.projects.get` | `client.get_project` | `client.Projects.Get` |
 
 Request values are typed by the contract and sent as given. Rules such as
 patterns, lengths, and ranges are checked by the API, which answers with an
@@ -174,6 +223,8 @@ Creating a project takes a path parameter, an `Idempotency-Key` header, and a
 JSON body. [Retries and timeouts](/api-client/retries-and-timeouts#idempotency-keys)
 explains the idempotency key. The Rust example generates the key with the
 [`rand`](https://crates.io/crates/rand) crate; add it with `cargo add rand`.
+The Go client generates a key itself when the params leave the field empty,
+and reuses it across its own retries.
 
 <CodeGroup>
 ```typescript TypeScript
@@ -255,6 +306,42 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 ```
+
+```go Go
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+func main() {
+	apiKey := os.Getenv("PHOTON_API_KEY")
+	organizationID := os.Getenv("PHOTON_ORGANIZATION_ID")
+	if apiKey == "" || organizationID == "" {
+		log.Fatal("Set PHOTON_API_KEY and PHOTON_ORGANIZATION_ID")
+	}
+
+	client := photonapi.NewClient(photonapi.WithAPIKey(apiKey))
+
+	// IdempotencyKey is left empty, so the client generates one.
+	project, err := client.Organizations.Projects.Create(context.Background(), &photonapi.CreateProjectParams{
+		OrganizationID: organizationID,
+		Body: photonapi.CreateProjectRequest{
+			Name: "Support",
+			Slug: "support",
+		},
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(project.ProjectID)
+}
+```
 </CodeGroup>
 
 ## Change the base URL
@@ -322,11 +409,47 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 ```
+
+```go Go
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+func main() {
+	apiKey := os.Getenv("PHOTON_API_KEY")
+	organizationID := os.Getenv("PHOTON_ORGANIZATION_ID")
+	if apiKey == "" || organizationID == "" {
+		log.Fatal("Set PHOTON_API_KEY and PHOTON_ORGANIZATION_ID")
+	}
+
+	client := photonapi.NewClient(
+		photonapi.WithBaseURL("http://localhost:8080"),
+		photonapi.WithAPIKey(apiKey),
+	)
+
+	result, err := client.Organizations.Projects.Count(context.Background(), &photonapi.CountProjectsParams{
+		OrganizationID: organizationID,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(result.Count)
+}
+```
 </CodeGroup>
 
 You can also bring your own HTTP client: the `fetch` option in TypeScript,
 `client=` (an `httpx.Client` for `Photon`, an `httpx.AsyncClient` for
-`AsyncPhoton`) in Python, and `reqwest_client` on the Rust builder. The base URL,
+`AsyncPhoton`) in Python, `reqwest_client` on the Rust builder, and
+`WithHTTPClient` (an `*http.Client`, which is also where a Go timeout lives)
+in Go. The base URL,
 timeout, and retry settings still apply, except that in Rust the builder's
 timeout is no longer also the connect timeout: configure that on your
 `reqwest::Client`. In Python, a client you pass in is not closed for you.

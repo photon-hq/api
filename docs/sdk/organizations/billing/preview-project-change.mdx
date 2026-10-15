@@ -1,7 +1,7 @@
 ---
 title: "Preview a project billing change"
 icon: arrow-up-right
-description: "Preview a project billing change: previewProjectChange in the TypeScript, Python and Rust clients."
+description: "Preview a project billing change: previewProjectChange in the TypeScript, Python, Rust and Go clients."
 ---
 
 `POST /v1/organizations/{organizationId}/billing/projects/{projectId}/preview`
@@ -22,6 +22,11 @@ photon.organizations.billing.preview_project_change(input: PreviewProjectChangeI
 <Tab title="Rust">
 ```rust Rust
 client.preview_project_change(organization_id: String, project_id: String, body: &types::PreviewProjectChangeRequest).await -> Result<ResponseValue<types::PreviewProjectChangeResponse>, Error<PreviewProjectChangeError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.Billing.PreviewProjectChange(ctx context.Context, params *PreviewProjectChangeParams, opts ...RequestOption) (*PreviewProjectChangeResponse, error)
 ```
 </Tab>
 </Tabs>
@@ -94,6 +99,38 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.PreviewProjectChangeRequest
+if err := json.Unmarshal([]byte(`{
+	"category": "category",
+	"fixedCharge": {
+		"fixedChargeCode": "fixedChargeCode",
+		"increment": -10000
+	}
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Organizations.Billing.PreviewProjectChange(ctx, &photonapi.PreviewProjectChangeParams{
+	OrganizationID: "organizationId",
+	ProjectID: "projectId",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

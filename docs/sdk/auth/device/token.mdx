@@ -1,7 +1,7 @@
 ---
 title: "Exchange device code or refresh token"
 icon: arrow-up-right
-description: "Exchange device code or refresh token: deviceToken in the TypeScript, Python and Rust clients."
+description: "Exchange device code or refresh token: deviceToken in the TypeScript, Python, Rust and Go clients."
 ---
 
 `POST /v1/auth/device/token`
@@ -22,6 +22,11 @@ photon.auth.device.token(input: DeviceTokenInput) -> models.DeviceTokenResponse
 <Tab title="Rust">
 ```rust Rust
 client.device_token(body: &types::DeviceTokenRequest).await -> Result<ResponseValue<types::DeviceTokenResponse>, Error<DeviceTokenError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Auth.Device.Token(ctx context.Context, params *DeviceTokenParams, opts ...RequestOption) (*DeviceTokenResponse, error)
 ```
 </Tab>
 </Tabs>
@@ -68,6 +73,32 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient()
+var body photonapi.DeviceTokenRequest
+if err := json.Unmarshal([]byte(`{
+	"device_code": "device_code",
+	"grant_type": "urn:ietf:params:oauth:grant-type:device_code"
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Auth.Device.Token(ctx, &photonapi.DeviceTokenParams{
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

@@ -1,7 +1,7 @@
 ---
 title: "Request app installation"
 icon: arrow-up-right
-description: "Request app installation: createAppInstallationRequest in the TypeScript, Python and Rust clients."
+description: "Request app installation: createAppInstallationRequest in the TypeScript, Python, Rust and Go clients."
 ---
 
 `POST /v1/installation-requests`
@@ -22,6 +22,11 @@ photon.system.create_app_installation_request(input: CreateAppInstallationReques
 <Tab title="Rust">
 ```rust Rust
 client.create_app_installation_request(body: &types::CreateAppInstallationRequestRequest).await -> Result<ResponseValue<types::CreateAppInstallationRequestResponse>, Error<CreateAppInstallationRequestError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.System.CreateAppInstallationRequest(ctx context.Context, params *CreateAppInstallationRequestParams, opts ...RequestOption) (*CreateAppInstallationRequestResponse, error)
 ```
 </Tab>
 </Tabs>
@@ -74,6 +79,34 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient()
+var body photonapi.CreateAppInstallationRequestRequest
+if err := json.Unmarshal([]byte(`{
+	"appId": "appId",
+	"clientAssertion": "clientAssertion",
+	"redirectUri": "redirectUri",
+	"state": "state"
+}`), &body); err != nil {
+	return err
+}
+result, err := client.System.CreateAppInstallationRequest(ctx, &photonapi.CreateAppInstallationRequestParams{
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

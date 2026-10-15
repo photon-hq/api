@@ -1,7 +1,7 @@
 ---
 title: "Create WhatsApp VoIP sender"
 icon: arrow-up-right
-description: "Create WhatsApp VoIP sender: createWhatsappVoipSender in the TypeScript, Python and Rust clients."
+description: "Create WhatsApp VoIP sender: createWhatsappVoipSender in the TypeScript, Python, Rust and Go clients."
 ---
 
 `POST /v1/projects/{id}/platforms/whatsapp-business/account/senders`
@@ -22,6 +22,11 @@ photon.projects.platforms.create_whatsapp_voip_sender(input: CreateWhatsappVoipS
 <Tab title="Rust">
 ```rust Rust
 client.create_whatsapp_voip_sender(idempotency_key: String, id: String, body: &types::CreateWhatsappVoipSenderRequest).await -> Result<ResponseValue<types::Operation>, Error<CreateWhatsappVoipSenderError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Projects.Platforms.CreateWhatsappVoipSender(ctx context.Context, params *CreateWhatsappVoipSenderParams, opts ...RequestOption) (*Operation, error)
 ```
 </Tab>
 </Tabs>
@@ -86,6 +91,34 @@ let result = client
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.CreateWhatsappVoipSenderRequest
+if err := json.Unmarshal([]byte(`{
+	"voipResourceId": "voipResourceId"
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Projects.Platforms.CreateWhatsappVoipSender(ctx, &photonapi.CreateWhatsappVoipSenderParams{
+	IdempotencyKey: "idempotencyKey",
+	ID: "id",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
 ```
 
 </RequestExample>

@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  goMethods,
+  goSample,
   placeholder,
   pythonCallPaths,
   pythonSample,
@@ -101,6 +103,60 @@ const rustClient = `impl Client {
     pub async fn list_scopes(&self) -> Result<support::ResponseValue<types::Scopes>, support::Error<ListScopesError>> {}
 }`;
 
+const goClient = `// ProjectsService groups the projects operations.
+type ProjectsService struct{ c *core }
+
+// AuthService groups the auth operations.
+type AuthService struct{ c *core }
+
+type Client struct {
+	c        *core
+	Projects *ProjectsService
+	Auth     *AuthService
+}
+
+func newClient(c *core) *Client {
+	client := &Client{c: c}
+	client.Projects = newProjectsService(c)
+	client.Auth = newAuthService(c)
+	return client
+}
+
+func newProjectsService(c *core) *ProjectsService {
+	return &ProjectsService{c: c}
+}
+
+func newAuthService(c *core) *AuthService {
+	return &AuthService{c: c}
+}
+
+type GetParams struct {
+	// ProjectID is the path parameter projectId.
+	ProjectID string
+}
+
+type CreateParams struct {
+	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
+	IdempotencyKey string
+	// Note is the query parameter note.
+	Note *string
+	// Body is the request body.
+	Body CreateProjectRequest
+}
+
+func (s *ProjectsService) Get(ctx context.Context, params *GetParams, opts ...RequestOption) (*Project, error) {
+	return nil, nil
+}
+
+func (s *ProjectsService) Create(ctx context.Context, params *CreateParams, opts ...RequestOption) error {
+	return nil
+}
+
+func (s *AuthService) ListScopes(ctx context.Context, opts ...RequestOption) (*Scopes, error) {
+	return nil, nil
+}
+`;
+
 test("method names come from the generated clients", () => {
   assert.deepEqual([...pythonCallPaths(pythonClient)].sort(), [
     ["CreateProject", "photon.projects.create"],
@@ -112,6 +168,14 @@ test("method names come from the generated clients", () => {
     { name: "body", type: "&types::CreateProjectRequest" },
   ]);
   assert.deepEqual(rustSignatures(rustClient).get("list_scopes"), []);
+  const go = goMethods(goClient);
+  assert.equal(go.get("projects.Get")?.path, "client.Projects.Get");
+  assert.deepEqual(go.get("projects.Create")?.fields, [
+    { name: "IdempotencyKey", location: "header", wireName: "Idempotency-Key", type: "string", optional: false },
+    { name: "Note", location: "query", wireName: "note", type: "string", optional: true },
+  ]);
+  assert.equal(go.get("projects.Create")?.bodyType, "CreateProjectRequest");
+  assert.equal(go.get("auth.ListScopes")?.params, undefined);
 });
 
 test("placeholders use required members and values the schema allows", () => {
@@ -141,15 +205,28 @@ test("samples call the SDK method with the operation's required inputs", () => {
   assert.match(rust, /"idempotencyKey"\.to_owned\(\),\n        &serde_json::from_value\(serde_json::json!\(\{/);
   assert.doesNotMatch(rust, /into_inner/);
   assert.match(rustSample(document, listScopes, []), /PhotonClientBuilder::new\(\)\.build\(\)\?;\nlet result = client\n    \.list_scopes\(\)/);
+
+  const go = goSample(document, createProject, goMethods(goClient).get("projects.Create")!);
+  assert.match(go, /photonapi\.NewClient\(photonapi\.WithAPIKey\(os\.Getenv\("PHOTON_API_TOKEN"\)\)\)/);
+  assert.match(go, /var body photonapi\.CreateProjectRequest/);
+  assert.match(go, /"kind": "sms"/);
+  assert.match(go, /\tIdempotencyKey: "idempotencyKey",/);
+  assert.match(go, /err := client\.Projects\.Create\(ctx, &photonapi\.CreateParams\{/);
+  assert.doesNotMatch(go, /\tNote:/);
+  const goList = goSample(document, listScopes, goMethods(goClient).get("auth.ListScopes")!);
+  assert.match(goList, /client := photonapi\.NewClient\(\)\nresult, err := client\.Auth\.ListScopes\(ctx\)/);
+  // Results are never printed: some operations return one-time credentials.
+  assert.match(goList, /_ = result/);
+  assert.doesNotMatch(goList, /fmt\.Println/);
 });
 
-test("every operation gets TypeScript, Python and Rust samples", () => {
-  const result = withCodeSamples(document, { operations: [getProject, createProject, listScopes] }, { pythonClient, rustClient });
+test("every operation gets TypeScript, Python, Rust and Go samples", () => {
+  const result = withCodeSamples(document, { operations: [getProject, createProject, listScopes] }, { pythonClient, rustClient, goClient });
   const operation = ((result.paths as JsonObject)["/v1/projects"] as JsonObject).post as JsonObject;
-  assert.deepEqual((operation["x-codeSamples"] as Array<{ lang: string }>).map((sample) => sample.lang), ["typescript", "python", "rust"]);
+  assert.deepEqual((operation["x-codeSamples"] as Array<{ lang: string }>).map((sample) => sample.lang), ["typescript", "python", "rust", "go"]);
   assert.equal("x-codeSamples" in (((document.paths as JsonObject)["/v1/projects"] as JsonObject).post as JsonObject), false);
   assert.throws(
-    () => withCodeSamples(document, { operations: [getProject, createProject, listScopes] }, { pythonClient, rustClient: "" }),
+    () => withCodeSamples(document, { operations: [getProject, createProject, listScopes] }, { pythonClient, rustClient: "", goClient }),
     /Rust client has no method for getProject/,
   );
 });
