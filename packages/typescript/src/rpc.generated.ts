@@ -160,6 +160,18 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "200": "json"
     }
   },
+  "completeAccountOnboarding": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
   "configureVoiceProfileOutbound": {
     "request": "application/json",
     "responses": [
@@ -590,6 +602,18 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
     }
   },
   "getAccount": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
+  "getAccountOnboarding": {
     "responses": [
       "application/json"
     ],
@@ -1600,6 +1624,19 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "200": "json"
     }
   },
+  "updateAccountOnboarding": {
+    "request": "application/json",
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
   "updateAgentProfile": {
     "request": "application/json",
     "responses": [
@@ -1770,6 +1807,44 @@ export interface RpcInvokers {
 export function createRpcNamespaces(invokers: RpcInvokers) {
   const data = {
     account: {
+        onboarding: {
+            /**
+             * Complete onboarding
+             *
+             * Marks the authenticated account's onboarding flow complete and returns a confirmation with onboarded set to true. No prior update is required, but submit any onboarding information you want to keep with updateAccountOnboarding first, because further edits through updateAccountOnboarding are rejected after completion.
+             */
+            complete: (input: Schemas.CompleteAccountOnboardingInput = {}, options?: RequestOptions) => invokers.data<Schemas.CompleteAccountOnboardingInput, Schemas.CompleteAccountOnboardingOutput>(
+                "completeAccountOnboarding",
+                Sdk.completeAccountOnboarding,
+                Schemas.CompleteAccountOnboardingOutputSchemas,
+                input,
+                options,
+            ),
+            /**
+             * Get onboarding state
+             *
+             * Returns the authenticated account's current onboarding state and collected onboarding information. Reading the state does not complete onboarding or modify the supplied account information.
+             */
+            get: (input: Schemas.GetAccountOnboardingInput = {}, options?: RequestOptions) => invokers.data<Schemas.GetAccountOnboardingInput, Schemas.GetAccountOnboardingOutput>(
+                "getAccountOnboarding",
+                Sdk.getAccountOnboarding,
+                Schemas.GetAccountOnboardingOutputSchemas,
+                input,
+                options,
+            ),
+            /**
+             * Update onboarding state
+             *
+             * Updates the authenticated account's submitted onboarding information, including the documented company, background, platform and referral fields. Returns the updated onboarding state. Completed onboarding cannot be edited through this operation; completion is performed separately with completeAccountOnboarding. Supply the required Idempotency-Key header.
+             */
+            update: (input: Schemas.UpdateAccountOnboardingInput, options?: RequestOptions) => invokers.data<Schemas.UpdateAccountOnboardingInput, Schemas.UpdateAccountOnboardingOutput>(
+                "updateAccountOnboarding",
+                Sdk.updateAccountOnboarding,
+                Schemas.UpdateAccountOnboardingOutputSchemas,
+                input,
+                options,
+            ),
+        },
         /**
          * Commit profile picture
          *
@@ -3468,6 +3543,44 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
   };
   const raw = {
     account: {
+        onboarding: {
+            /**
+             * Complete onboarding
+             *
+             * Marks the authenticated account's onboarding flow complete and returns a confirmation with onboarded set to true. No prior update is required, but submit any onboarding information you want to keep with updateAccountOnboarding first, because further edits through updateAccountOnboarding are rejected after completion.
+             */
+            complete: (input: Schemas.CompleteAccountOnboardingInput = {}, options?: RequestOptions) => invokers.raw<Schemas.CompleteAccountOnboardingInput, Schemas.CompleteAccountOnboardingOutput>(
+                "completeAccountOnboarding",
+                Sdk.completeAccountOnboarding,
+                Schemas.CompleteAccountOnboardingOutputSchemas,
+                input,
+                options,
+            ),
+            /**
+             * Get onboarding state
+             *
+             * Returns the authenticated account's current onboarding state and collected onboarding information. Reading the state does not complete onboarding or modify the supplied account information.
+             */
+            get: (input: Schemas.GetAccountOnboardingInput = {}, options?: RequestOptions) => invokers.raw<Schemas.GetAccountOnboardingInput, Schemas.GetAccountOnboardingOutput>(
+                "getAccountOnboarding",
+                Sdk.getAccountOnboarding,
+                Schemas.GetAccountOnboardingOutputSchemas,
+                input,
+                options,
+            ),
+            /**
+             * Update onboarding state
+             *
+             * Updates the authenticated account's submitted onboarding information, including the documented company, background, platform and referral fields. Returns the updated onboarding state. Completed onboarding cannot be edited through this operation; completion is performed separately with completeAccountOnboarding. Supply the required Idempotency-Key header.
+             */
+            update: (input: Schemas.UpdateAccountOnboardingInput, options?: RequestOptions) => invokers.raw<Schemas.UpdateAccountOnboardingInput, Schemas.UpdateAccountOnboardingOutput>(
+                "updateAccountOnboarding",
+                Sdk.updateAccountOnboarding,
+                Schemas.UpdateAccountOnboardingOutputSchemas,
+                input,
+                options,
+            ),
+        },
         /**
          * Commit profile picture
          *

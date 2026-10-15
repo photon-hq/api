@@ -1,9 +1,9 @@
 ---
 title: "Overview"
-description: "Install the Photon API clients for TypeScript, Python, and Rust."
+description: "Install the Photon API clients for TypeScript, Python, Rust, and Go."
 ---
 
-The Photon API clients are libraries for TypeScript, Python, and Rust that call
+The Photon API clients are libraries for TypeScript, Python, Rust, and Go that call
 the [Photon API](/api-reference). Each one is generated from the API's public
 OpenAPI contract, so every endpoint is a typed method and every request and
 response field has a type.
@@ -11,8 +11,9 @@ response field has a type.
 The clients:
 
 - send the `Authorization: Bearer` header on every request: in TypeScript and
-  Python you set the header when you create the client, and in Rust the client
-  attaches the credential you register,
+  Python you set the header when you create the client, in Rust the client
+  attaches the credential you register, and in Go you pass the credential as a
+  client option,
 - type every request and response with the contract's fields and names,
 - retry reads and idempotent writes after transient errors such as `429` and
   `503`,
@@ -22,8 +23,9 @@ The clients:
 They do not run OAuth flows, and they leave validation rules such as patterns,
 lengths, and ranges to the API. Responses are read leniently, so an installed
 client keeps working as the API grows: fields the API adds later are accepted
-(TypeScript and Python keep them; Rust ignores them unless the object allows
-extra members), and new enum values are kept rather than rejected.
+(TypeScript and Python keep them; Go ignores them; Rust ignores them unless
+the object allows extra members), and new enum values are kept rather than
+rejected.
 
 ## Packages
 
@@ -32,8 +34,9 @@ extra members), and new enum values are kept rather than rejected.
 | TypeScript | [`@photon-ai/api`](https://www.npmjs.com/package/@photon-ai/api) | `@photon-ai/api` | Node.js 22 or later, or a modern browser |
 | Python | [`photonhq-api`](https://pypi.org/project/photonhq-api/) | `photon_api` | Python 3.11 or later |
 | Rust | [`photonhq-api`](https://crates.io/crates/photonhq-api) | `photon_ai_api` | Rust 1.88 or later, with Tokio |
+| Go | [`github.com/photon-hq/api/packages/go`](https://pkg.go.dev/github.com/photon-hq/api/packages/go) | `photonapi` | Go 1.25 or later |
 
-The three packages share one version number and are released together. See
+The four packages share one version number and are released together. See
 [Versioning](/api-client/versioning).
 
 ## Install
@@ -51,12 +54,17 @@ pip install photonhq-api
 cargo add photonhq-api
 cargo add tokio --features macros,rt-multi-thread
 ```
+
+```sh Go
+go get github.com/photon-hq/api/packages/go
+```
 </CodeGroup>
 
 The TypeScript client is an ES module. The Python package includes a
 synchronous client, `Photon`, and an asynchronous one, `AsyncPhoton`. The Rust
 client is async and runs on Tokio; the Rust examples in this guide also use
-`#[tokio::main]`, which needs the Tokio features shown above.
+`#[tokio::main]`, which needs the Tokio features shown above. The Go client
+uses only the standard library.
 
 ## Source and contract
 

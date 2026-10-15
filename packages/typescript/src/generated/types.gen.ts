@@ -42,6 +42,10 @@ export type AccountNotFoundProblem = {
     [key: string]: JsonValue | 'ACCOUNT_NOT_FOUND' | string | never | 404 | 'Account Not Found' | 'https://photon.codes/docs/problems/account-not-found' | undefined;
 };
 
+export type AccountOnboardingBackground = 'hobbyist' | 'company' | (string & {});
+
+export type AccountOnboardingPlatform = 'imessage' | 'sms' | 'whatsapp' | 'slack' | 'discord' | 'telegram' | 'voice' | (string & {});
+
 export type AccountOwnsOrganizationsProblem = {
     code: 'ACCOUNT_OWNS_ORGANIZATIONS';
     detail?: string;
@@ -864,6 +868,17 @@ export type CommitAgentProfileAvatarRequest = {
 };
 
 export type CommitAgentProfileAvatarUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
+
+export type CompleteAccountOnboardingForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type CompleteAccountOnboardingGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type CompleteAccountOnboardingInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type CompleteAccountOnboardingResponse = {
+    onboarded: true;
+    [key: string]: unknown;
+};
 
 export type ConfigureVoiceProfileOutboundBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
 
@@ -1708,6 +1723,22 @@ export type GetAccountForbiddenProblem = ForbiddenProblem | InsufficientScopePro
 export type GetAccountGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
 
 export type GetAccountInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type GetAccountOnboardingForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type GetAccountOnboardingGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type GetAccountOnboardingInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type GetAccountOnboardingResponse = {
+    background: string | null;
+    companyName: string | null;
+    companyUrl: string | null;
+    onboarded: boolean;
+    platforms: Array<AccountOnboardingPlatform> | null;
+    referralSource: string | null;
+    [key: string]: unknown;
+};
 
 export type GetAgentProfileForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -2599,6 +2630,18 @@ export type NumberCountry = {
     callingCode: string;
     countryCode: string;
     displayName: string;
+};
+
+export type OnboardingCompletedProblem = {
+    code: 'ONBOARDING_COMPLETED';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'Onboarding Completed';
+    type: 'https://photon.codes/docs/problems/onboarding-completed';
+    [key: string]: JsonValue | 'ONBOARDING_COMPLETED' | string | never | 409 | 'Onboarding Completed' | 'https://photon.codes/docs/problems/onboarding-completed' | undefined;
 };
 
 export type Operation = {
@@ -3948,6 +3991,34 @@ export type UpdateAccountGatewayTimeoutProblem = UpstreamTimeoutProblem | Reques
 
 export type UpdateAccountInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
+export type UpdateAccountOnboardingBadRequestProblem = HttpErrorProblem | InvalidArgumentProblem | IdempotencyKeyInvalidProblem | IdempotencyKeyRequiredProblem;
+
+export type UpdateAccountOnboardingForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type UpdateAccountOnboardingGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type UpdateAccountOnboardingInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type UpdateAccountOnboardingRequest = {
+    background?: AccountOnboardingBackground | null;
+    companyName?: string | null;
+    companyUrl?: string | null;
+    platforms?: Array<AccountOnboardingPlatform>;
+    referralSource?: string | null;
+};
+
+export type UpdateAccountOnboardingResponse = {
+    background: string | null;
+    companyName: string | null;
+    companyUrl: string | null;
+    onboarded: boolean;
+    platforms: Array<AccountOnboardingPlatform> | null;
+    referralSource: string | null;
+    [key: string]: unknown;
+};
+
+export type UpdateAccountOnboardingUnprocessableEntityProblem = IdempotencyKeyReusedProblem | ValidationFailedProblem;
+
 export type UpdateAccountRequest = {
     firstName?: string;
     lastName?: string | null;
@@ -4952,6 +5023,199 @@ export type RevokeAuthorizedApplicationResponses = {
 };
 
 export type RevokeAuthorizedApplicationResult = RevokeAuthorizedApplicationResponses[keyof RevokeAuthorizedApplicationResponses];
+
+export type GetAccountOnboardingData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/account/onboarding';
+};
+
+export type GetAccountOnboardingErrors = {
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: GetAccountOnboardingForbiddenProblem;
+    /**
+     * ACCOUNT_NOT_FOUND: Account Not Found
+     */
+    404: AccountNotFoundProblem;
+    /**
+     * ACCOUNT_DELETED: Account Deleted
+     */
+    410: AccountDeletedProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: GetAccountOnboardingInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: GetAccountOnboardingGatewayTimeoutProblem;
+};
+
+export type GetAccountOnboardingError = GetAccountOnboardingErrors[keyof GetAccountOnboardingErrors];
+
+export type GetAccountOnboardingResponses = {
+    /**
+     * The authenticated account's onboarding state.
+     */
+    200: GetAccountOnboardingResponse;
+};
+
+export type GetAccountOnboardingResult = GetAccountOnboardingResponses[keyof GetAccountOnboardingResponses];
+
+export type UpdateAccountOnboardingData = {
+    body: UpdateAccountOnboardingRequest;
+    headers: {
+        /**
+         * Identifies one logical mutation across retries.
+         */
+        'Idempotency-Key': string;
+    };
+    path?: never;
+    query?: never;
+    url: '/v1/account/onboarding';
+};
+
+export type UpdateAccountOnboardingErrors = {
+    /**
+     * HTTP_ERROR: Request Failed; INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required
+     */
+    400: UpdateAccountOnboardingBadRequestProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: UpdateAccountOnboardingForbiddenProblem;
+    /**
+     * ACCOUNT_NOT_FOUND: Account Not Found
+     */
+    404: AccountNotFoundProblem;
+    /**
+     * ONBOARDING_COMPLETED: Onboarding Completed
+     */
+    409: OnboardingCompletedProblem;
+    /**
+     * ACCOUNT_DELETED: Account Deleted
+     */
+    410: AccountDeletedProblem;
+    /**
+     * PAYLOAD_TOO_LARGE: Payload Too Large
+     */
+    413: PayloadTooLargeProblem;
+    /**
+     * IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused; VALIDATION_FAILED: Request Validation Failed
+     */
+    422: UpdateAccountOnboardingUnprocessableEntityProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: UpdateAccountOnboardingInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: UpdateAccountOnboardingGatewayTimeoutProblem;
+};
+
+export type UpdateAccountOnboardingError = UpdateAccountOnboardingErrors[keyof UpdateAccountOnboardingErrors];
+
+export type UpdateAccountOnboardingResponses = {
+    /**
+     * The updated onboarding state.
+     */
+    200: UpdateAccountOnboardingResponse;
+};
+
+export type UpdateAccountOnboardingResult = UpdateAccountOnboardingResponses[keyof UpdateAccountOnboardingResponses];
+
+export type CompleteAccountOnboardingData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/account/onboarding/complete';
+};
+
+export type CompleteAccountOnboardingErrors = {
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: CompleteAccountOnboardingForbiddenProblem;
+    /**
+     * ACCOUNT_NOT_FOUND: Account Not Found
+     */
+    404: AccountNotFoundProblem;
+    /**
+     * ACCOUNT_DELETED: Account Deleted
+     */
+    410: AccountDeletedProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: CompleteAccountOnboardingInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: CompleteAccountOnboardingGatewayTimeoutProblem;
+};
+
+export type CompleteAccountOnboardingError = CompleteAccountOnboardingErrors[keyof CompleteAccountOnboardingErrors];
+
+export type CompleteAccountOnboardingResponses = {
+    /**
+     * The completed onboarding state.
+     */
+    200: CompleteAccountOnboardingResponse;
+};
+
+export type CompleteAccountOnboardingResult = CompleteAccountOnboardingResponses[keyof CompleteAccountOnboardingResponses];
 
 export type ConfirmAccountPhoneVerificationData = {
     body: ConfirmAccountPhoneVerificationRequest;

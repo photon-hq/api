@@ -1,7 +1,7 @@
 # Photon API
 
 The public OpenAPI contract of the Photon API, a Postman collection generated
-from it, and TypeScript, Python and Rust clients generated from the same
+from it, and TypeScript, Python, Rust and Go clients generated from the same
 contract.
 
 | Language | Package | Install | Documentation |
@@ -9,6 +9,7 @@ contract.
 | TypeScript / JavaScript | [`@photon-ai/api`](https://www.npmjs.com/package/@photon-ai/api) | `npm install @photon-ai/api` | [packages/typescript](packages/typescript/README.md) |
 | Python | [`photonhq-api`](https://pypi.org/project/photonhq-api/) | `pip install photonhq-api` | [packages/python](packages/python/README.md) |
 | Rust | [`photonhq-api`](https://crates.io/crates/photonhq-api) | `cargo add photonhq-api` | [packages/rust](packages/rust/README.md) |
+| Go | [`github.com/photon-hq/api/packages/go`](https://pkg.go.dev/github.com/photon-hq/api/packages/go) | `go get github.com/photon-hq/api/packages/go` | [packages/go](packages/go/README.md) |
 
 | File | Contents |
 | --- | --- |

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.1 (2026-10-14)
+
+
+### Features
+
+* **New Go client.** Install it with `go get github.com/photon-hq/api/packages/go`: the Photon API client for Go, generated from the same contract and released in lockstep with the TypeScript, Python and Rust packages (the module is versioned by the `packages/go/v<version>` tag). It requires Go 1.25+, uses only the standard library, and its API reference is on [pkg.go.dev](https://pkg.go.dev/github.com/photon-hq/api/packages/go).
+* **Account onboarding operations** `account.onboarding.get`, `account.onboarding.update` and `account.onboarding.complete` in TypeScript and Python (`get_account_onboarding`, `update_account_onboarding` and `complete_account_onboarding` in Rust; `Account.Onboarding.Get`, `.Update` and `.Complete` in Go): read, update and complete the authenticated account's onboarding, with the new `AccountOnboardingBackground` and `AccountOnboardingPlatform` types.
+
 ## 0.4.0 (2026-10-14)
 
 

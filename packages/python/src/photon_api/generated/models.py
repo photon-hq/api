@@ -30,6 +30,16 @@ class Account(BaseModel):
     updatedAt: str | None
 
 
+class AccountOnboardingBackground(RootModel[Literal["hobbyist", "company"] | str]):
+    root: Literal["hobbyist", "company"] | str
+
+
+class AccountOnboardingPlatform(
+    RootModel[Literal["imessage", "sms", "whatsapp", "slack", "discord", "telegram", "voice"] | str]
+):
+    root: Literal["imessage", "sms", "whatsapp", "slack", "discord", "telegram", "voice"] | str
+
+
 class AccountServiceKey(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -425,6 +435,16 @@ class CommitAgentProfileAvatarRequest(BaseModel):
         extra="allow",
     )
     uploadId: str
+
+
+class CompleteAccountOnboardingResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, Any],
+    }
+    onboarded: Literal[True]
 
 
 class ConfirmAccountPhoneVerificationRequest(BaseModel):
@@ -899,6 +919,24 @@ class FixedChargeTier(BaseModel):
     toUnit: int | None
 
 
+class GetAccountOnboardingResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, Any],
+    }
+    background: str | None
+    companyName: str | None
+    companyUrl: str | None
+    onboarded: bool
+    platforms: (
+        list[Literal["imessage", "sms", "whatsapp", "slack", "discord", "telegram", "voice"] | str]
+        | None
+    )
+    referralSource: str | None
+
+
 class GetOrganizationCreditResponse(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -1197,6 +1235,22 @@ class NumberCountry(BaseModel):
     callingCode: str
     countryCode: str
     displayName: str
+
+
+class OnboardingCompletedProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["ONBOARDING_COMPLETED"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["Onboarding Completed"]
+    type: Literal["https://photon.codes/docs/problems/onboarding-completed"]
 
 
 class OperationError(BaseModel):
@@ -2348,6 +2402,38 @@ class UnavailableProjectSlugReason(
     RootModel[Literal["reserved", "retired", "taken", "too_short"] | str]
 ):
     root: Literal["reserved", "retired", "taken", "too_short"] | str
+
+
+class UpdateAccountOnboardingRequest(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    background: Literal["hobbyist", "company"] | str | None | MISSING = MISSING
+    companyName: str | None | MISSING = MISSING
+    companyUrl: str | None | MISSING = MISSING
+    platforms: (
+        list[Literal["imessage", "sms", "whatsapp", "slack", "discord", "telegram", "voice"] | str]
+        | MISSING
+    ) = MISSING
+    referralSource: str | None | MISSING = MISSING
+
+
+class UpdateAccountOnboardingResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, Any],
+    }
+    background: str | None
+    companyName: str | None
+    companyUrl: str | None
+    onboarded: bool
+    platforms: (
+        list[Literal["imessage", "sms", "whatsapp", "slack", "discord", "telegram", "voice"] | str]
+        | None
+    )
+    referralSource: str | None
 
 
 class UpdateAccountRequest(BaseModel):
@@ -3717,6 +3803,12 @@ class CommitAgentProfileAvatarGatewayTimeoutProblem(
     root: UpstreamTimeoutProblem | RequestTimeoutProblem
 
 
+class CompleteAccountOnboardingGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
 class ConfigureVoiceProfileOutboundConflictProblem(
     RootModel[
         ProjectClosingProblem
@@ -4319,6 +4411,12 @@ class ForbiddenProblem(BaseModel):
 
 
 class GetAccountGatewayTimeoutProblem(RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class GetAccountOnboardingGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
     root: UpstreamTimeoutProblem | RequestTimeoutProblem
 
 
@@ -6564,6 +6662,50 @@ class UpdateAccountInternalServerErrorProblem(
     root: InternalErrorProblem | InvalidAuthContextProblem
 
 
+class UpdateAccountOnboardingBadRequestProblem(
+    RootModel[
+        HttpErrorProblem
+        | InvalidArgumentProblem
+        | IdempotencyKeyInvalidProblem
+        | IdempotencyKeyRequiredProblem
+    ]
+):
+    root: (
+        HttpErrorProblem
+        | InvalidArgumentProblem
+        | IdempotencyKeyInvalidProblem
+        | IdempotencyKeyRequiredProblem
+    )
+
+
+class UpdateAccountOnboardingForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class UpdateAccountOnboardingGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class UpdateAccountOnboardingInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
 class UpdateAgentProfileBadRequestProblem(
     RootModel[IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
 ):
@@ -7375,6 +7517,28 @@ class CommitAgentProfileAvatarForbiddenProblem(
         | OrganizationSsoRequiredProblem
         | ResourceMismatchProblem
     )
+
+
+class CompleteAccountOnboardingForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class CompleteAccountOnboardingInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
 
 
 class ConfigureVoiceProfileOutboundBadRequestProblem(
@@ -8196,6 +8360,28 @@ class GetAccountForbiddenProblem(
 
 
 class GetAccountInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class GetAccountOnboardingForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class GetAccountOnboardingInternalServerErrorProblem(
     RootModel[InternalErrorProblem | InvalidAuthContextProblem]
 ):
     root: InternalErrorProblem | InvalidAuthContextProblem
@@ -9518,6 +9704,12 @@ class RotateWebhookSigningSecretUnprocessableEntityProblem(
     RootModel[ValidationFailedProblem | IdempotencyKeyReusedProblem]
 ):
     root: ValidationFailedProblem | IdempotencyKeyReusedProblem
+
+
+class UpdateAccountOnboardingUnprocessableEntityProblem(
+    RootModel[IdempotencyKeyReusedProblem | ValidationFailedProblem]
+):
+    root: IdempotencyKeyReusedProblem | ValidationFailedProblem
 
 
 class UpdateAccountUnprocessableEntityProblem(

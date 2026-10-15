@@ -22,6 +22,26 @@ export type AccountZodInput = z.input<typeof zAccount>;
 
 export type AccountZodOutput = z.output<typeof zAccount>;
 
+export const zAccountOnboardingBackground = /* @__PURE__ */ (() => openEnum(['hobbyist', 'company']))();
+
+export type AccountOnboardingBackgroundZodInput = z.input<typeof zAccountOnboardingBackground>;
+
+export type AccountOnboardingBackgroundZodOutput = z.output<typeof zAccountOnboardingBackground>;
+
+export const zAccountOnboardingPlatform = /* @__PURE__ */ (() => openEnum([
+    'imessage',
+    'sms',
+    'whatsapp',
+    'slack',
+    'discord',
+    'telegram',
+    'voice'
+]))();
+
+export type AccountOnboardingPlatformZodInput = z.input<typeof zAccountOnboardingPlatform>;
+
+export type AccountOnboardingPlatformZodOutput = z.output<typeof zAccountOnboardingPlatform>;
+
 export const zAccountServiceKey = /* @__PURE__ */ (() => z.looseObject({
     accountId: z.string(),
     createdAt: z.string(),
@@ -476,6 +496,14 @@ export const zCommitAgentProfileAvatarRequest = /* @__PURE__ */ (() => z.looseOb
 export type CommitAgentProfileAvatarRequestZodInput = z.input<typeof zCommitAgentProfileAvatarRequest>;
 
 export type CommitAgentProfileAvatarRequestZodOutput = z.output<typeof zCommitAgentProfileAvatarRequest>;
+
+export const zCompleteAccountOnboardingResponse = /* @__PURE__ */ (() => z.looseObject({
+    onboarded: z.literal(true)
+}))();
+
+export type CompleteAccountOnboardingResponseZodInput = z.input<typeof zCompleteAccountOnboardingResponse>;
+
+export type CompleteAccountOnboardingResponseZodOutput = z.output<typeof zCompleteAccountOnboardingResponse>;
 
 export const zConfirmAccountPhoneVerificationRequest = /* @__PURE__ */ (() => z.looseObject({
     code: z.string(),
@@ -1004,6 +1032,19 @@ export const zFixedCharge = z.looseObject({
 export type FixedChargeZodInput = z.input<typeof zFixedCharge>;
 
 export type FixedChargeZodOutput = z.output<typeof zFixedCharge>;
+
+export const zGetAccountOnboardingResponse = /* @__PURE__ */ (() => z.looseObject({
+    background: z.string().nullable(),
+    companyName: z.string().nullable(),
+    companyUrl: z.string().nullable(),
+    onboarded: z.boolean(),
+    platforms: z.array(zAccountOnboardingPlatform).nullable(),
+    referralSource: z.string().nullable()
+}))();
+
+export type GetAccountOnboardingResponseZodInput = z.input<typeof zGetAccountOnboardingResponse>;
+
+export type GetAccountOnboardingResponseZodOutput = z.output<typeof zGetAccountOnboardingResponse>;
 
 export const zGetOrganizationCreditResponse = z.looseObject({
     balanceCents: z.number().refine(Number.isInteger, { message: 'Expected an integer' }),
@@ -1966,6 +2007,15 @@ export type CommitAccountProfilePictureInternalServerErrorProblemZodInput = z.in
 
 export type CommitAccountProfilePictureInternalServerErrorProblemZodOutput = z.output<typeof zCommitAccountProfilePictureInternalServerErrorProblem>;
 
+export const zCompleteAccountOnboardingInternalServerErrorProblem: z.ZodType<PhotonWireTypes.CompleteAccountOnboardingInternalServerErrorProblem, PhotonWireTypes.CompleteAccountOnboardingInternalServerErrorProblem> = /* @__PURE__ */ (() => z.union([
+    zInternalErrorProblem,
+    zInvalidAuthContextProblem
+]))();
+
+export type CompleteAccountOnboardingInternalServerErrorProblemZodInput = z.input<typeof zCompleteAccountOnboardingInternalServerErrorProblem>;
+
+export type CompleteAccountOnboardingInternalServerErrorProblemZodOutput = z.output<typeof zCompleteAccountOnboardingInternalServerErrorProblem>;
+
 export const zConfigureVoiceProfileOutboundInternalServerErrorProblem: z.ZodType<PhotonWireTypes.ConfigureVoiceProfileOutboundInternalServerErrorProblem, PhotonWireTypes.ConfigureVoiceProfileOutboundInternalServerErrorProblem> = /* @__PURE__ */ (() => z.union([
     zInternalErrorProblem,
     zInvalidAuthContextProblem
@@ -2190,6 +2240,15 @@ export const zGetAccountInternalServerErrorProblem: z.ZodType<PhotonWireTypes.Ge
 export type GetAccountInternalServerErrorProblemZodInput = z.input<typeof zGetAccountInternalServerErrorProblem>;
 
 export type GetAccountInternalServerErrorProblemZodOutput = z.output<typeof zGetAccountInternalServerErrorProblem>;
+
+export const zGetAccountOnboardingInternalServerErrorProblem: z.ZodType<PhotonWireTypes.GetAccountOnboardingInternalServerErrorProblem, PhotonWireTypes.GetAccountOnboardingInternalServerErrorProblem> = /* @__PURE__ */ (() => z.union([
+    zInternalErrorProblem,
+    zInvalidAuthContextProblem
+]))();
+
+export type GetAccountOnboardingInternalServerErrorProblemZodInput = z.input<typeof zGetAccountOnboardingInternalServerErrorProblem>;
+
+export type GetAccountOnboardingInternalServerErrorProblemZodOutput = z.output<typeof zGetAccountOnboardingInternalServerErrorProblem>;
 
 export const zGetAttachmentInternalServerErrorProblem: z.ZodType<PhotonWireTypes.GetAttachmentInternalServerErrorProblem, PhotonWireTypes.GetAttachmentInternalServerErrorProblem> = /* @__PURE__ */ (() => z.union([
     zInternalErrorProblem,
@@ -2980,6 +3039,21 @@ export const zListNumberCountriesResponse = /* @__PURE__ */ (() => z.looseObject
 export type ListNumberCountriesResponseZodInput = z.input<typeof zListNumberCountriesResponse>;
 
 export type ListNumberCountriesResponseZodOutput = z.output<typeof zListNumberCountriesResponse>;
+
+export const zOnboardingCompletedProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('ONBOARDING_COMPLETED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: absent().optional(),
+    requestId: z.string().optional(),
+    status: z.literal(409),
+    title: z.literal('Onboarding Completed'),
+    type: z.literal('https://photon.codes/docs/problems/onboarding-completed')
+}).catchall(zJsonValue))();
+
+export type OnboardingCompletedProblemZodInput = z.input<typeof zOnboardingCompletedProblem>;
+
+export type OnboardingCompletedProblemZodOutput = z.output<typeof zOnboardingCompletedProblem>;
 
 export const zOperationError = /* @__PURE__ */ (() => z.looseObject({
     code: z.string(),
@@ -4225,6 +4299,17 @@ export type CommitAgentProfileAvatarForbiddenProblemZodInput = z.input<typeof zC
 
 export type CommitAgentProfileAvatarForbiddenProblemZodOutput = z.output<typeof zCommitAgentProfileAvatarForbiddenProblem>;
 
+export const zCompleteAccountOnboardingForbiddenProblem: z.ZodType<PhotonWireTypes.CompleteAccountOnboardingForbiddenProblem, PhotonWireTypes.CompleteAccountOnboardingForbiddenProblem> = /* @__PURE__ */ (() => z.union([
+    zForbiddenProblem,
+    zInsufficientScopeProblem,
+    zOrganizationSsoRequiredProblem,
+    zResourceMismatchProblem
+]))();
+
+export type CompleteAccountOnboardingForbiddenProblemZodInput = z.input<typeof zCompleteAccountOnboardingForbiddenProblem>;
+
+export type CompleteAccountOnboardingForbiddenProblemZodOutput = z.output<typeof zCompleteAccountOnboardingForbiddenProblem>;
+
 export const zConfigureVoiceProfileOutboundForbiddenProblem: z.ZodType<PhotonWireTypes.ConfigureVoiceProfileOutboundForbiddenProblem, PhotonWireTypes.ConfigureVoiceProfileOutboundForbiddenProblem> = /* @__PURE__ */ (() => z.union([
     zForbiddenProblem,
     zInsufficientScopeProblem,
@@ -4554,6 +4639,17 @@ export const zGetAccountForbiddenProblem: z.ZodType<PhotonWireTypes.GetAccountFo
 export type GetAccountForbiddenProblemZodInput = z.input<typeof zGetAccountForbiddenProblem>;
 
 export type GetAccountForbiddenProblemZodOutput = z.output<typeof zGetAccountForbiddenProblem>;
+
+export const zGetAccountOnboardingForbiddenProblem: z.ZodType<PhotonWireTypes.GetAccountOnboardingForbiddenProblem, PhotonWireTypes.GetAccountOnboardingForbiddenProblem> = /* @__PURE__ */ (() => z.union([
+    zForbiddenProblem,
+    zInsufficientScopeProblem,
+    zOrganizationSsoRequiredProblem,
+    zResourceMismatchProblem
+]))();
+
+export type GetAccountOnboardingForbiddenProblemZodInput = z.input<typeof zGetAccountOnboardingForbiddenProblem>;
+
+export type GetAccountOnboardingForbiddenProblemZodOutput = z.output<typeof zGetAccountOnboardingForbiddenProblem>;
 
 export const zGetAgentProfileForbiddenProblem: z.ZodType<PhotonWireTypes.GetAgentProfileForbiddenProblem, PhotonWireTypes.GetAgentProfileForbiddenProblem> = /* @__PURE__ */ (() => z.union([
     zForbiddenProblem,
@@ -6529,6 +6625,62 @@ export type UpdateAccountInternalServerErrorProblemZodInput = z.input<typeof zUp
 
 export type UpdateAccountInternalServerErrorProblemZodOutput = z.output<typeof zUpdateAccountInternalServerErrorProblem>;
 
+export const zUpdateAccountOnboardingBadRequestProblem: z.ZodType<PhotonWireTypes.UpdateAccountOnboardingBadRequestProblem, PhotonWireTypes.UpdateAccountOnboardingBadRequestProblem> = /* @__PURE__ */ (() => z.union([
+    zHttpErrorProblem,
+    zInvalidArgumentProblem,
+    zIdempotencyKeyInvalidProblem,
+    zIdempotencyKeyRequiredProblem
+]))();
+
+export type UpdateAccountOnboardingBadRequestProblemZodInput = z.input<typeof zUpdateAccountOnboardingBadRequestProblem>;
+
+export type UpdateAccountOnboardingBadRequestProblemZodOutput = z.output<typeof zUpdateAccountOnboardingBadRequestProblem>;
+
+export const zUpdateAccountOnboardingForbiddenProblem: z.ZodType<PhotonWireTypes.UpdateAccountOnboardingForbiddenProblem, PhotonWireTypes.UpdateAccountOnboardingForbiddenProblem> = /* @__PURE__ */ (() => z.union([
+    zForbiddenProblem,
+    zInsufficientScopeProblem,
+    zOrganizationSsoRequiredProblem,
+    zResourceMismatchProblem
+]))();
+
+export type UpdateAccountOnboardingForbiddenProblemZodInput = z.input<typeof zUpdateAccountOnboardingForbiddenProblem>;
+
+export type UpdateAccountOnboardingForbiddenProblemZodOutput = z.output<typeof zUpdateAccountOnboardingForbiddenProblem>;
+
+export const zUpdateAccountOnboardingInternalServerErrorProblem: z.ZodType<PhotonWireTypes.UpdateAccountOnboardingInternalServerErrorProblem, PhotonWireTypes.UpdateAccountOnboardingInternalServerErrorProblem> = /* @__PURE__ */ (() => z.union([
+    zInternalErrorProblem,
+    zInvalidAuthContextProblem
+]))();
+
+export type UpdateAccountOnboardingInternalServerErrorProblemZodInput = z.input<typeof zUpdateAccountOnboardingInternalServerErrorProblem>;
+
+export type UpdateAccountOnboardingInternalServerErrorProblemZodOutput = z.output<typeof zUpdateAccountOnboardingInternalServerErrorProblem>;
+
+export const zUpdateAccountOnboardingRequest = /* @__PURE__ */ (() => z.looseObject({
+    background: zAccountOnboardingBackground.nullish(),
+    companyName: z.string().nullish(),
+    companyUrl: z.string().nullish(),
+    platforms: z.array(zAccountOnboardingPlatform).optional(),
+    referralSource: z.string().nullish()
+}))();
+
+export type UpdateAccountOnboardingRequestZodInput = z.input<typeof zUpdateAccountOnboardingRequest>;
+
+export type UpdateAccountOnboardingRequestZodOutput = z.output<typeof zUpdateAccountOnboardingRequest>;
+
+export const zUpdateAccountOnboardingResponse = /* @__PURE__ */ (() => z.looseObject({
+    background: z.string().nullable(),
+    companyName: z.string().nullable(),
+    companyUrl: z.string().nullable(),
+    onboarded: z.boolean(),
+    platforms: z.array(zAccountOnboardingPlatform).nullable(),
+    referralSource: z.string().nullable()
+}))();
+
+export type UpdateAccountOnboardingResponseZodInput = z.input<typeof zUpdateAccountOnboardingResponse>;
+
+export type UpdateAccountOnboardingResponseZodOutput = z.output<typeof zUpdateAccountOnboardingResponse>;
+
 export const zUpdateAccountRequest = /* @__PURE__ */ (() => z.looseObject({
     firstName: z.string().optional(),
     lastName: z.string().nullish()
@@ -6984,6 +7136,15 @@ export type CommitAgentProfileAvatarGatewayTimeoutProblemZodInput = z.input<type
 
 export type CommitAgentProfileAvatarGatewayTimeoutProblemZodOutput = z.output<typeof zCommitAgentProfileAvatarGatewayTimeoutProblem>;
 
+export const zCompleteAccountOnboardingGatewayTimeoutProblem: z.ZodType<PhotonWireTypes.CompleteAccountOnboardingGatewayTimeoutProblem, PhotonWireTypes.CompleteAccountOnboardingGatewayTimeoutProblem> = /* @__PURE__ */ (() => z.union([
+    zUpstreamTimeoutProblem,
+    zRequestTimeoutProblem
+]))();
+
+export type CompleteAccountOnboardingGatewayTimeoutProblemZodInput = z.input<typeof zCompleteAccountOnboardingGatewayTimeoutProblem>;
+
+export type CompleteAccountOnboardingGatewayTimeoutProblemZodOutput = z.output<typeof zCompleteAccountOnboardingGatewayTimeoutProblem>;
+
 export const zConfigureVoiceProfileOutboundGatewayTimeoutProblem: z.ZodType<PhotonWireTypes.ConfigureVoiceProfileOutboundGatewayTimeoutProblem, PhotonWireTypes.ConfigureVoiceProfileOutboundGatewayTimeoutProblem> = /* @__PURE__ */ (() => z.union([
     zRequestTimeoutProblem,
     zUpstreamTimeoutProblem
@@ -7271,6 +7432,15 @@ export const zGetAccountGatewayTimeoutProblem: z.ZodType<PhotonWireTypes.GetAcco
 export type GetAccountGatewayTimeoutProblemZodInput = z.input<typeof zGetAccountGatewayTimeoutProblem>;
 
 export type GetAccountGatewayTimeoutProblemZodOutput = z.output<typeof zGetAccountGatewayTimeoutProblem>;
+
+export const zGetAccountOnboardingGatewayTimeoutProblem: z.ZodType<PhotonWireTypes.GetAccountOnboardingGatewayTimeoutProblem, PhotonWireTypes.GetAccountOnboardingGatewayTimeoutProblem> = /* @__PURE__ */ (() => z.union([
+    zUpstreamTimeoutProblem,
+    zRequestTimeoutProblem
+]))();
+
+export type GetAccountOnboardingGatewayTimeoutProblemZodInput = z.input<typeof zGetAccountOnboardingGatewayTimeoutProblem>;
+
+export type GetAccountOnboardingGatewayTimeoutProblemZodOutput = z.output<typeof zGetAccountOnboardingGatewayTimeoutProblem>;
 
 export const zGetAgentProfileGatewayTimeoutProblem: z.ZodType<PhotonWireTypes.GetAgentProfileGatewayTimeoutProblem, PhotonWireTypes.GetAgentProfileGatewayTimeoutProblem> = /* @__PURE__ */ (() => z.union([
     zUpstreamTimeoutProblem,
@@ -7928,6 +8098,15 @@ export const zUpdateAccountGatewayTimeoutProblem: z.ZodType<PhotonWireTypes.Upda
 export type UpdateAccountGatewayTimeoutProblemZodInput = z.input<typeof zUpdateAccountGatewayTimeoutProblem>;
 
 export type UpdateAccountGatewayTimeoutProblemZodOutput = z.output<typeof zUpdateAccountGatewayTimeoutProblem>;
+
+export const zUpdateAccountOnboardingGatewayTimeoutProblem: z.ZodType<PhotonWireTypes.UpdateAccountOnboardingGatewayTimeoutProblem, PhotonWireTypes.UpdateAccountOnboardingGatewayTimeoutProblem> = /* @__PURE__ */ (() => z.union([
+    zUpstreamTimeoutProblem,
+    zRequestTimeoutProblem
+]))();
+
+export type UpdateAccountOnboardingGatewayTimeoutProblemZodInput = z.input<typeof zUpdateAccountOnboardingGatewayTimeoutProblem>;
+
+export type UpdateAccountOnboardingGatewayTimeoutProblemZodOutput = z.output<typeof zUpdateAccountOnboardingGatewayTimeoutProblem>;
 
 export const zUpdateAgentProfileGatewayTimeoutProblem: z.ZodType<PhotonWireTypes.UpdateAgentProfileGatewayTimeoutProblem, PhotonWireTypes.UpdateAgentProfileGatewayTimeoutProblem> = /* @__PURE__ */ (() => z.union([
     zUpstreamTimeoutProblem,
@@ -8627,6 +8806,15 @@ export const zRotateWebhookSigningSecretUnprocessableEntityProblem: z.ZodType<Ph
 export type RotateWebhookSigningSecretUnprocessableEntityProblemZodInput = z.input<typeof zRotateWebhookSigningSecretUnprocessableEntityProblem>;
 
 export type RotateWebhookSigningSecretUnprocessableEntityProblemZodOutput = z.output<typeof zRotateWebhookSigningSecretUnprocessableEntityProblem>;
+
+export const zUpdateAccountOnboardingUnprocessableEntityProblem: z.ZodType<PhotonWireTypes.UpdateAccountOnboardingUnprocessableEntityProblem, PhotonWireTypes.UpdateAccountOnboardingUnprocessableEntityProblem> = /* @__PURE__ */ (() => z.union([
+    zIdempotencyKeyReusedProblem,
+    zValidationFailedProblem
+]))();
+
+export type UpdateAccountOnboardingUnprocessableEntityProblemZodInput = z.input<typeof zUpdateAccountOnboardingUnprocessableEntityProblem>;
+
+export type UpdateAccountOnboardingUnprocessableEntityProblemZodOutput = z.output<typeof zUpdateAccountOnboardingUnprocessableEntityProblem>;
 
 export const zUpdateAccountUnprocessableEntityProblem: z.ZodType<PhotonWireTypes.UpdateAccountUnprocessableEntityProblem, PhotonWireTypes.UpdateAccountUnprocessableEntityProblem> = /* @__PURE__ */ (() => z.union([
     zIdempotencyKeyReusedProblem,
@@ -9802,6 +9990,33 @@ export const zRevokeAuthorizedApplicationPath = /* @__PURE__ */ (() => z.looseOb
 export const zRevokeAuthorizedApplicationResult = /* @__PURE__ */ (() => z.void())();
 
 export type revokeAuthorizedApplicationResultZodOutput = z.output<typeof zRevokeAuthorizedApplicationResult>;
+
+/**
+ * The authenticated account's onboarding state.
+ */
+export const zGetAccountOnboardingResult = zGetAccountOnboardingResponse;
+
+export type getAccountOnboardingResultZodOutput = z.output<typeof zGetAccountOnboardingResult>;
+
+export const zUpdateAccountOnboardingBody = zUpdateAccountOnboardingRequest;
+
+export const zUpdateAccountOnboardingHeaders = /* @__PURE__ */ (() => z.looseObject({
+    'Idempotency-Key': z.string()
+}))();
+
+/**
+ * The updated onboarding state.
+ */
+export const zUpdateAccountOnboardingResult = zUpdateAccountOnboardingResponse;
+
+export type updateAccountOnboardingResultZodOutput = z.output<typeof zUpdateAccountOnboardingResult>;
+
+/**
+ * The completed onboarding state.
+ */
+export const zCompleteAccountOnboardingResult = zCompleteAccountOnboardingResponse;
+
+export type completeAccountOnboardingResultZodOutput = z.output<typeof zCompleteAccountOnboardingResult>;
 
 export const zConfirmAccountPhoneVerificationBody = zConfirmAccountPhoneVerificationRequest;
 

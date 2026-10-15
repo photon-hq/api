@@ -169,13 +169,14 @@ The OpenAPI contract this client is generated from is
 in [photon-hq/api](https://github.com/photon-hq/api), with a Postman
 collection generated from it. The same repository contains the
 [TypeScript](https://github.com/photon-hq/api/tree/main/packages/typescript),
-[Python](https://github.com/photon-hq/api/tree/main/packages/python) and
-[Rust](https://github.com/photon-hq/api/tree/main/packages/rust) clients.
+[Python](https://github.com/photon-hq/api/tree/main/packages/python),
+[Rust](https://github.com/photon-hq/api/tree/main/packages/rust) and
+[Go](https://github.com/photon-hq/api/tree/main/packages/go) clients.
 
 ## Versioning
 
-The TypeScript, Python and Rust clients share one version and are released
-together. Releases follow semantic versioning, starting at 0.1.0. Before 1.0,
+The TypeScript, Python, Rust and Go clients share one version and are
+released together. Releases follow semantic versioning, starting at 0.1.0. Before 1.0,
 breaking changes increase the minor version. Changes are listed in
 [CHANGELOG.md](https://github.com/photon-hq/api/blob/main/CHANGELOG.md).
 
