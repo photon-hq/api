@@ -1,0 +1,269 @@
+---
+title: "Send a Message"
+icon: arrow-up-right
+description: "Send a Message: sendMessage in the TypeScript, Python and Rust clients."
+---
+
+`POST /v1/projects/{id}/messages`
+
+Sends SMS, email, WhatsApp Personal, WhatsApp Business, iMessage, or Telegram text and image messages. A shared iMessage line sends only in direct Spaces, only to a peer with an active Assignment who has messaged it since that Assignment. SMS and MMS require current Platforms authorization for the sender and every recipient; campaign eligibility is required unless every recipient is in-network.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.sendMessage(input: SendMessageInput, options?: RequestOptions): Promise<SendMessageOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.send_message(input: SendMessageInput) -> models.SentMessage
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.send_message(id: String, idempotency_key: String, body: &types::SendMessageRequest).await -> Result<ResponseValue<types::SentMessage>, Error<SendMessageError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.sendMessage({
+  path: {
+    id: "id",
+  },
+  headers: {
+    "idempotency-key": "idempotency-key",
+  },
+  body: {
+    content: {
+      type: "text",
+      format: "format",
+      text: "text",
+    },
+    senderId: "senderId",
+    spaceId: "spaceId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import SendMessageInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.send_message(
+    SendMessageInput.model_validate({
+        "path": {
+            "id": "id",
+        },
+        "headers": {
+            "idempotency-key": "idempotency-key",
+        },
+        "body": {
+            "content": {
+                "type": "text",
+                "format": "format",
+                "text": "text",
+            },
+            "senderId": "senderId",
+            "spaceId": "spaceId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .send_message(
+        "id".to_owned(),
+        "idempotency-key".to_owned(),
+        &serde_json::from_value(serde_json::json!({
+            "content": {
+                "type": "text",
+                "format": "format",
+                "text": "text",
+            },
+            "senderId": "senderId",
+            "spaceId": "spaceId",
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 202
+{
+  "content": {
+    "format": "plain",
+    "text": "Hello from Photon.",
+    "type": "text"
+  },
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "id": "pho_msg_00000000000000000000000001",
+  "metadata": {},
+  "platform": "whatsapp",
+  "projectId": "pho_prj_00000000000000000000000001",
+  "sentBy": {
+    "details": {
+      "resourceId": "pho_res_00000000000000000000000001",
+      "type": "dedicated"
+    },
+    "handle": "+14155550123",
+    "id": "pho_usr_00000000000000000000000001",
+    "kind": "agent",
+    "metadata": {},
+    "platform": "whatsapp",
+    "projectId": "pho_prj_00000000000000000000000001"
+  },
+  "space": {
+    "details": {},
+    "id": "pho_spc_00000000000000000000000001",
+    "kind": "direct",
+    "metadata": {},
+    "participantIds": [
+      "pho_usr_00000000000000000000000001",
+      "pho_usr_00000000000000000000000002"
+    ],
+    "platform": "whatsapp",
+    "projectId": "pho_prj_00000000000000000000000001"
+  },
+  "status": "dispatched",
+  "timestamps": {
+    "dispatchedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "updatedAt": "2026-01-01T00:00:00.000Z"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+<ParamField header="idempotency-key" type={"string"} required>
+
+</ParamField>
+
+
+## Body
+
+<ParamField body="content" type={"SendContent"} required>
+
+</ParamField>
+
+<ParamField body="email" type={"SendEmailOptions"}>
+
+</ParamField>
+
+<ParamField body="parentMessageId" type={"string"}>
+
+</ParamField>
+
+<ParamField body="senderId" type={"string"} required>
+
+</ParamField>
+
+<ParamField body="spaceId" type={"string"} required>
+
+</ParamField>
+
+<ParamField body="telegram" type={"SendTelegramOptions"}>
+
+</ParamField>
+
+
+## Returns
+
+**`202`** The Message was persisted for asynchronous delivery. Idempotent-Replayed indicates that this request reused an existing Message. SentMessage
+
+Headers: `Cache-Control`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
+<ResponseField name="acceptance" type={"object"} required>
+
+</ResponseField>
+
+<ResponseField name="addressedTo" type={"UserSnapshot"}>
+
+</ResponseField>
+
+<ResponseField name="content" type={"TelegramMessageContent"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+When Photon first persisted this resource.
+</ResponseField>
+
+<ResponseField name="failure" type={"MessageFailure"} required>
+
+</ResponseField>
+
+<ResponseField name="id" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="metadata" type={"ResourceMetadata"} required>
+
+</ResponseField>
+
+<ResponseField name="parentMessageId" type={"string"}>
+
+</ResponseField>
+
+<ResponseField name="platform" type={"Platform"} required>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="receivedBy" type={"UserSnapshot"}>
+
+</ResponseField>
+
+<ResponseField name="sentBy" type={"UserSnapshot"} required>
+
+</ResponseField>
+
+<ResponseField name="space" type={"SpaceSnapshot"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"SentMessageStatus"} required>
+
+</ResponseField>
+
+<ResponseField name="timestamp" type={"object"}>
+
+</ResponseField>
+
+<ResponseField name="timestamps" type={"FailedMessageTimestamps"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+When Photon last persisted a change to this resource's public state.
+</ResponseField>
+

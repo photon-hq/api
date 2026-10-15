@@ -1,0 +1,236 @@
+---
+title: "Create or get a Space"
+icon: arrow-up-right
+description: "Create or get a Space: createOrGetSpace in the TypeScript, Python and Rust clients."
+---
+
+`POST /v1/projects/{id}/spaces`
+
+Creates or returns a project Space. Idempotency-Key is required for every platform and binds the project, platform and initial User IDs (unordered except the iMessage creator in first position) for 24 hours after workflow completion. Concurrent matching requests join the same operation; conflicting reuse returns 422 once its outcome is available. A new email key creates a new thread; direct Spaces and SMS groups converge by participants. Every creation and successful replay requires at least one currently project-owned Agent, or for iMessage a shared-line Agent in a direct Space whose peer has an active Assignment of this project on that line. For iMessage, an existing exact match is reused; otherwise the first participant must be a project-owned dedicated phone Agent and creates the native direct chat or group. Multiple matching native groups return SPACE_AMBIGUOUS; incomplete group membership cannot establish an exact match. Replays return 200 and the current stored Space, with Idempotent-Replayed: true. A timeout does not cancel accepted work: retry the same key and input.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.createOrGetSpace(input: CreateOrGetSpaceInput, options?: RequestOptions): Promise<CreateOrGetSpaceOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.create_or_get_space(input: CreateOrGetSpaceInput) -> models.PlatformSpace
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.create_or_get_space(id: String, idempotency_key: String, body: &types::CreateOrGetSpaceRequest).await -> Result<ResponseValue<CreateOrGetSpaceResponse>, Error<CreateOrGetSpaceError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.createOrGetSpace({
+  path: {
+    id: "id",
+  },
+  headers: {
+    "idempotency-key": "idempotency-key",
+  },
+  body: {
+    participantIds: [],
+    platform: "sms",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import CreateOrGetSpaceInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.create_or_get_space(
+    CreateOrGetSpaceInput.model_validate({
+        "path": {
+            "id": "id",
+        },
+        "headers": {
+            "idempotency-key": "idempotency-key",
+        },
+        "body": {
+            "participantIds": [],
+            "platform": "sms",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .create_or_get_space(
+        "id".to_owned(),
+        "idempotency-key".to_owned(),
+        &serde_json::from_value(serde_json::json!({
+            "participantIds": [],
+            "platform": "sms",
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "details": {},
+  "id": "pho_spc_00000000000000000000000001",
+  "kind": "direct",
+  "metadata": {},
+  "participantIds": [
+    "pho_usr_00000000000000000000000001",
+    "pho_usr_00000000000000000000000002"
+  ],
+  "platform": "whatsapp",
+  "projectId": "pho_prj_00000000000000000000000001",
+  "updatedAt": "2026-01-01T00:00:00.000Z"
+}
+```
+
+```json 201
+{
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "details": {},
+  "id": "pho_spc_00000000000000000000000001",
+  "kind": "direct",
+  "metadata": {},
+  "participantIds": [
+    "pho_usr_00000000000000000000000001",
+    "pho_usr_00000000000000000000000002"
+  ],
+  "platform": "whatsapp",
+  "projectId": "pho_prj_00000000000000000000000001",
+  "updatedAt": "2026-01-01T00:00:00.000Z"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+<ParamField header="idempotency-key" type={"string"} required>
+Required for every platform; 1-255 visible ASCII characters. Reuse for retries. For email, the same key and initial participants retrieve the same Space, and a new key starts a separate conversation. SMS identifies its Space by participants, even with a new key. iMessage binds the key to the first participant as creator and the remaining unordered User IDs. Existing matching Spaces are reused.
+</ParamField>
+
+
+## Body
+
+<ParamField body="participantIds" type={"array of string"} required>
+Canonical Photon User IDs from this project and platform. iMessage uses the first participant as creator when a new chat is needed; remaining order is ignored. Other platforms ignore all participant order. Counts: iMessage 2-1000; both WhatsApp platforms exactly 2; email 1-51; SMS 2-9. Every Space requires a currently project-owned Agent.
+</ParamField>
+
+<ParamField body="platform" type={"Platform"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The Space already existed and is returned in its authoritative stored state. PlatformSpace
+
+Headers: `Cache-Control`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+When Photon first persisted this resource.
+</ResponseField>
+
+<ResponseField name="details" type={"TelegramSpaceDetails"} required>
+
+</ResponseField>
+
+<ResponseField name="id" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="kind" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="metadata" type={"ResourceMetadata"} required>
+
+</ResponseField>
+
+<ResponseField name="participantIds" type={"array of string"} required>
+
+</ResponseField>
+
+<ResponseField name="platform" type={"Platform"} required>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+When Photon last persisted a change to this resource's public state.
+</ResponseField>
+
+**`201`** The Space was created. PlatformSpace
+
+Headers: `Cache-Control`, `Location`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+When Photon first persisted this resource.
+</ResponseField>
+
+<ResponseField name="details" type={"TelegramSpaceDetails"} required>
+
+</ResponseField>
+
+<ResponseField name="id" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="kind" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="metadata" type={"ResourceMetadata"} required>
+
+</ResponseField>
+
+<ResponseField name="participantIds" type={"array of string"} required>
+
+</ResponseField>
+
+<ResponseField name="platform" type={"Platform"} required>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+When Photon last persisted a change to this resource's public state.
+</ResponseField>
+

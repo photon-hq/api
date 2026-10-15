@@ -1,0 +1,180 @@
+---
+title: "Count Messages"
+icon: arrow-down-left
+description: "Count Messages: countMessages in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{id}/messages/count`
+
+Counts matching Messages before pagination. Delivery updates do not add Messages; results are eventually consistent.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.countMessages(input: CountMessagesInput, options?: RequestOptions): Promise<CountMessagesOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.count_messages(input: CountMessagesInput) -> models.CountMessagesResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.count_messages(id: String, params: Option<CountMessagesParams>).await -> Result<ResponseValue<types::CountMessagesResponse>, Error<CountMessagesError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.countMessages({
+  path: {
+    id: "id",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import CountMessagesInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.count_messages(
+    CountMessagesInput.model_validate({
+        "path": {
+            "id": "id",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .count_messages("id".to_owned(), None)
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "count": 0,
+  "groups": [
+    {
+      "count": 0,
+      "status": "received"
+    }
+  ]
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+<ParamField query="createdBefore" type={"string (date-time)"}>
+Exclusive upper bound on createdAt, RFC 3339. Cannot combine with updatedAt bounds.
+</ParamField>
+
+<ParamField query="createdSince" type={"string (date-time)"}>
+Inclusive lower bound on createdAt, RFC 3339. Cannot combine with updatedAt bounds.
+</ParamField>
+
+<ParamField query="direction" type={"MessageDirection"}>
+Message origin: received or dispatched, including later delivery outcomes
+</ParamField>
+
+<ParamField query="excludeContentTypes" type={"string"}>
+Comma-separated content types to exclude from resource-scoped Message lists and counts. Requires resourceId. A group is excluded when group is selected or all of its parts are excluded; retained Messages are unchanged. Supported values: attachment, group, message.delete, message.read, poll, poll.update, poll.vote, reaction, space.participants.update, space.typing.update, text, text.update, voice.
+</ParamField>
+
+<ParamField query="perspectiveUserId" type={"string"}>
+Selects this User's sent or received Messages. Requires spaceId; cannot combine with resourceId.
+</ParamField>
+
+<ParamField query="platform" type={"Platform"}>
+Restricts the page to one platform
+</ParamField>
+
+<ParamField query="resourceId" type={"string"}>
+Resource associated with the Message when sent or received. Can combine with spaceId, but not perspectiveUserId.
+</ParamField>
+
+<ParamField query="spaceId" type={"string"}>
+Requires resourceId or perspectiveUserId. User perspectives use created_at order and exclude time bounds and platform filters.
+</ParamField>
+
+<ParamField query="updatedBefore" type={"string (date-time)"}>
+Exclusive upper bound on updatedAt, RFC 3339. Cannot combine with createdAt bounds.
+</ParamField>
+
+<ParamField query="updatedSince" type={"string (date-time)"}>
+Inclusive lower bound on updatedAt, RFC 3339. Cannot combine with createdAt bounds.
+</ParamField>
+
+<ParamField query="interval" type={"\"day\""}>
+Calendar-day counts by Message.createdAt
+</ParamField>
+
+<ParamField query="timeZone" type={"string"}>
+IANA zone for calendar-day buckets; defaults to UTC; requires interval
+</ParamField>
+
+
+## Returns
+
+**`200`** Matching Message count, optional direction groups and daily buckets CountMessagesResponse
+
+**One of: MessageCount**
+
+<ResponseField name="count" type={"integer"} required>
+
+</ResponseField>
+
+<ResponseField name="groups" type={"array of MessageStatusCount"} required>
+
+</ResponseField>
+
+**One of: DailyMessageCount**
+
+<ResponseField name="buckets" type={"array of MessageCountBucket"} required>
+
+</ResponseField>
+
+<ResponseField name="count" type={"integer"} required>
+
+</ResponseField>
+
+<ResponseField name="groups" type={"array of MessageStatusCount"} required>
+
+</ResponseField>
+
+<ResponseField name="interval" type={"\"day\""} required>
+
+</ResponseField>
+
+<ResponseField name="timeZone" type={"string"} required>
+
+</ResponseField>
+

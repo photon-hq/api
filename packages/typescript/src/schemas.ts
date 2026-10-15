@@ -332,6 +332,21 @@ export const CountFilteredVerificationCodesOutputSchemas: OutputSchemas<CountFil
     "200": GeneratedZod.zFilteredVerificationCodeCount,
 }))();
 
+export const CountMessagesInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zCountMessagesPath.strict(),
+    query: GeneratedZod.zCountMessagesQuery.strict().optional(),
+}))();
+export type CountMessagesInput = {
+    path: NonNullable<WireTypes.CountMessagesData["path"]>;
+    query?: NonNullable<WireTypes.CountMessagesData["query"]>;
+};
+
+export const CountMessagesOutputSchema = GeneratedZod.zCountMessagesResponse;
+export type CountMessagesOutput = z.output<typeof CountMessagesOutputSchema>;
+export const CountMessagesOutputSchemas: OutputSchemas<CountMessagesOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zCountMessagesResponse,
+}))();
+
 export const CountProjectsInputSchema = /* @__PURE__ */ (() => z.strictObject({
     path: GeneratedZod.zCountProjectsPath.strict(),
     query: GeneratedZod.zCountProjectsQuery.strict().optional(),
@@ -360,6 +375,36 @@ export const CountResourceFilteredVerificationCodesOutputSchema = GeneratedZod.z
 export type CountResourceFilteredVerificationCodesOutput = z.output<typeof CountResourceFilteredVerificationCodesOutputSchema>;
 export const CountResourceFilteredVerificationCodesOutputSchemas: OutputSchemas<CountResourceFilteredVerificationCodesOutput> = /* @__PURE__ */ (() => ({
     "200": GeneratedZod.zFilteredVerificationCodeCount,
+}))();
+
+export const CountSpacesInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zCountSpacesPath.strict(),
+    query: GeneratedZod.zCountSpacesQuery.strict().optional(),
+}))();
+export type CountSpacesInput = {
+    path: NonNullable<WireTypes.CountSpacesData["path"]>;
+    query?: NonNullable<WireTypes.CountSpacesData["query"]>;
+};
+
+export const CountSpacesOutputSchema = GeneratedZod.zSpaceCount;
+export type CountSpacesOutput = z.output<typeof CountSpacesOutputSchema>;
+export const CountSpacesOutputSchemas: OutputSchemas<CountSpacesOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zSpaceCount,
+}))();
+
+export const CountUsersInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zCountUsersPath.strict(),
+    query: GeneratedZod.zCountUsersQuery.strict().optional(),
+}))();
+export type CountUsersInput = {
+    path: NonNullable<WireTypes.CountUsersData["path"]>;
+    query?: NonNullable<WireTypes.CountUsersData["query"]>;
+};
+
+export const CountUsersOutputSchema = GeneratedZod.zUserCount;
+export type CountUsersOutput = z.output<typeof CountUsersOutputSchema>;
+export const CountUsersOutputSchemas: OutputSchemas<CountUsersOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zUserCount,
 }))();
 
 export const CreateAccountProfilePictureUploadInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -489,6 +534,44 @@ export const CreateOrganizationSsoPortalLinkOutputSchema = GeneratedZod.zCreateO
 export type CreateOrganizationSsoPortalLinkOutput = z.output<typeof CreateOrganizationSsoPortalLinkOutputSchema>;
 export const CreateOrganizationSsoPortalLinkOutputSchemas: OutputSchemas<CreateOrganizationSsoPortalLinkOutput> = /* @__PURE__ */ (() => ({
     "200": GeneratedZod.zCreateOrganizationSsoPortalLinkResponse,
+}))();
+
+export const CreateOrGetSpaceInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    body: GeneratedZod.zCreateOrGetSpaceBody,
+    path: GeneratedZod.zCreateOrGetSpacePath.strict(),
+    headers: z.strictObject({
+        "idempotency-key": GeneratedZod.zCreateOrGetSpaceHeaders.shape["idempotency-key"],
+    }),
+}))();
+export type CreateOrGetSpaceInput = {
+    body: WireTypes.CreateOrGetSpaceData["body"];
+    path: NonNullable<WireTypes.CreateOrGetSpaceData["path"]>;
+    headers: {
+        "idempotency-key": NonNullable<WireTypes.CreateOrGetSpaceData["headers"]>["idempotency-key"];
+    };
+};
+
+export const CreateOrGetSpaceOutputSchema = GeneratedZod.zPlatformSpace;
+export type CreateOrGetSpaceOutput = z.output<typeof CreateOrGetSpaceOutputSchema>;
+export const CreateOrGetSpaceOutputSchemas: OutputSchemas<CreateOrGetSpaceOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zPlatformSpace,
+    "201": GeneratedZod.zPlatformSpace,
+}))();
+
+export const CreateOrGetUserInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    body: GeneratedZod.zCreateOrGetUserBody,
+    path: GeneratedZod.zCreateOrGetUserPath.strict(),
+}))();
+export type CreateOrGetUserInput = {
+    body: WireTypes.CreateOrGetUserData["body"];
+    path: NonNullable<WireTypes.CreateOrGetUserData["path"]>;
+};
+
+export const CreateOrGetUserOutputSchema = GeneratedZod.zPlatformUser;
+export type CreateOrGetUserOutput = z.output<typeof CreateOrGetUserOutputSchema>;
+export const CreateOrGetUserOutputSchemas: OutputSchemas<CreateOrGetUserOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zPlatformUser,
+    "201": GeneratedZod.zPlatformUser,
 }))();
 
 export const CreateProjectInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -899,6 +982,54 @@ export const GetEffectiveTermsOutputSchemas: OutputSchemas<GetEffectiveTermsOutp
     "200": GeneratedZod.zGetEffectiveTermsResponse,
 }))();
 
+export const GetEmailDeliveryMetricsInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zGetEmailDeliveryMetricsPath.strict(),
+    query: GeneratedZod.zGetEmailDeliveryMetricsQuery.strict().optional(),
+}))();
+export type GetEmailDeliveryMetricsInput = {
+    path: NonNullable<WireTypes.GetEmailDeliveryMetricsData["path"]>;
+    query?: NonNullable<WireTypes.GetEmailDeliveryMetricsData["query"]>;
+};
+
+export const GetEmailDeliveryMetricsOutputSchema = GeneratedZod.zEmailDeliveryMetrics;
+export type GetEmailDeliveryMetricsOutput = z.output<typeof GetEmailDeliveryMetricsOutputSchema>;
+export const GetEmailDeliveryMetricsOutputSchemas: OutputSchemas<GetEmailDeliveryMetricsOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zEmailDeliveryMetrics,
+}))();
+
+export const GetEmailSendingPoliciesInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zGetEmailSendingPoliciesPath.strict(),
+}))();
+export type GetEmailSendingPoliciesInput = {
+    path: NonNullable<WireTypes.GetEmailSendingPoliciesData["path"]>;
+};
+
+export const GetEmailSendingPoliciesOutputSchema = GeneratedZod.zEmailSendingPolicies;
+export type GetEmailSendingPoliciesOutput = z.output<typeof GetEmailSendingPoliciesOutputSchema>;
+export const GetEmailSendingPoliciesOutputSchemas: OutputSchemas<GetEmailSendingPoliciesOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zEmailSendingPolicies,
+}))();
+
+export const GetMessageInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zGetMessagePath.strict(),
+    headers: z.strictObject({
+        "if-none-match": GeneratedZod.zGetMessageHeaders.shape["if-none-match"],
+    }).optional(),
+}))();
+export type GetMessageInput = {
+    path: NonNullable<WireTypes.GetMessageData["path"]>;
+    headers?: {
+        "if-none-match"?: NonNullable<WireTypes.GetMessageData["headers"]>["if-none-match"];
+    };
+};
+
+export const GetMessageOutputSchema = /* @__PURE__ */ (() => z.union([GeneratedZod.zPlatformMessage, z.undefined()]))();
+export type GetMessageOutput = z.output<typeof GetMessageOutputSchema>;
+export const GetMessageOutputSchemas: OutputSchemas<GetMessageOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zPlatformMessage,
+    "304": z.undefined(),
+}))();
+
 export const GetMessageMetricsBackfillInputSchema = /* @__PURE__ */ (() => z.strictObject({
     path: GeneratedZod.zGetMessageMetricsBackfillPath.strict(),
     headers: z.strictObject({
@@ -1121,6 +1252,46 @@ export const GetSmsLineCampaignAssignmentOutputSchemas: OutputSchemas<GetSmsLine
     "200": GeneratedZod.zGetSmsLineCampaignAssignmentResponse,
 }))();
 
+export const GetSpaceInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zGetSpacePath.strict(),
+    headers: z.strictObject({
+        "if-none-match": GeneratedZod.zGetSpaceHeaders.shape["if-none-match"],
+    }).optional(),
+}))();
+export type GetSpaceInput = {
+    path: NonNullable<WireTypes.GetSpaceData["path"]>;
+    headers?: {
+        "if-none-match"?: NonNullable<WireTypes.GetSpaceData["headers"]>["if-none-match"];
+    };
+};
+
+export const GetSpaceOutputSchema = /* @__PURE__ */ (() => z.union([GeneratedZod.zPlatformSpace, z.undefined()]))();
+export type GetSpaceOutput = z.output<typeof GetSpaceOutputSchema>;
+export const GetSpaceOutputSchemas: OutputSchemas<GetSpaceOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zPlatformSpace,
+    "304": z.undefined(),
+}))();
+
+export const GetUserInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zGetUserPath.strict(),
+    headers: z.strictObject({
+        "if-none-match": GeneratedZod.zGetUserHeaders.shape["if-none-match"],
+    }).optional(),
+}))();
+export type GetUserInput = {
+    path: NonNullable<WireTypes.GetUserData["path"]>;
+    headers?: {
+        "if-none-match"?: NonNullable<WireTypes.GetUserData["headers"]>["if-none-match"];
+    };
+};
+
+export const GetUserOutputSchema = /* @__PURE__ */ (() => z.union([GeneratedZod.zPlatformUser, z.undefined()]))();
+export type GetUserOutput = z.output<typeof GetUserOutputSchema>;
+export const GetUserOutputSchemas: OutputSchemas<GetUserOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zPlatformUser,
+    "304": z.undefined(),
+}))();
+
 export const GetVoiceLineProfileAssignmentInputSchema = /* @__PURE__ */ (() => z.strictObject({
     path: GeneratedZod.zGetVoiceLineProfileAssignmentPath.strict(),
 }))();
@@ -1297,6 +1468,21 @@ export const ListCreditActivityOutputSchemas: OutputSchemas<ListCreditActivityOu
     "200": GeneratedZod.zListCreditActivityResponse,
 }))();
 
+export const ListEmailRecommendationsInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zListEmailRecommendationsPath.strict(),
+    query: GeneratedZod.zListEmailRecommendationsQuery.strict().optional(),
+}))();
+export type ListEmailRecommendationsInput = {
+    path: NonNullable<WireTypes.ListEmailRecommendationsData["path"]>;
+    query?: NonNullable<WireTypes.ListEmailRecommendationsData["query"]>;
+};
+
+export const ListEmailRecommendationsOutputSchema = GeneratedZod.zEmailRecommendations;
+export type ListEmailRecommendationsOutput = z.output<typeof ListEmailRecommendationsOutputSchema>;
+export const ListEmailRecommendationsOutputSchemas: OutputSchemas<ListEmailRecommendationsOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zEmailRecommendations,
+}))();
+
 export const ListFilteredVerificationCodesInputSchema = /* @__PURE__ */ (() => z.strictObject({
     path: GeneratedZod.zListFilteredVerificationCodesPath.strict(),
     query: GeneratedZod.zListFilteredVerificationCodesQuery.strict().optional(),
@@ -1325,6 +1511,21 @@ export const ListInvoicesOutputSchema = GeneratedZod.zListInvoicesResponse;
 export type ListInvoicesOutput = z.output<typeof ListInvoicesOutputSchema>;
 export const ListInvoicesOutputSchemas: OutputSchemas<ListInvoicesOutput> = /* @__PURE__ */ (() => ({
     "200": GeneratedZod.zListInvoicesResponse,
+}))();
+
+export const ListMessagesInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zListMessagesPath.strict(),
+    query: GeneratedZod.zListMessagesQuery.strict().optional(),
+}))();
+export type ListMessagesInput = {
+    path: NonNullable<WireTypes.ListMessagesData["path"]>;
+    query?: NonNullable<WireTypes.ListMessagesData["query"]>;
+};
+
+export const ListMessagesOutputSchema = GeneratedZod.zMessagePage;
+export type ListMessagesOutput = z.output<typeof ListMessagesOutputSchema>;
+export const ListMessagesOutputSchemas: OutputSchemas<ListMessagesOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zMessagePage,
 }))();
 
 export const ListNumberAreaCodesInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1422,6 +1623,19 @@ export const ListProjectsOutputSchemas: OutputSchemas<ListProjectsOutput> = /* @
     "200": GeneratedZod.zProjectPage,
 }))();
 
+export const ListProjectSubscriptionsInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zListProjectSubscriptionsPath.strict(),
+}))();
+export type ListProjectSubscriptionsInput = {
+    path: NonNullable<WireTypes.ListProjectSubscriptionsData["path"]>;
+};
+
+export const ListProjectSubscriptionsOutputSchema = GeneratedZod.zListProjectSubscriptionsResponse;
+export type ListProjectSubscriptionsOutput = z.output<typeof ListProjectSubscriptionsOutputSchema>;
+export const ListProjectSubscriptionsOutputSchemas: OutputSchemas<ListProjectSubscriptionsOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zListProjectSubscriptionsResponse,
+}))();
+
 export const ListResourceFilteredVerificationCodesInputSchema = /* @__PURE__ */ (() => z.strictObject({
     path: GeneratedZod.zListResourceFilteredVerificationCodesPath.strict(),
     query: GeneratedZod.zListResourceFilteredVerificationCodesQuery.strict().optional(),
@@ -1465,6 +1679,36 @@ export const ListSharedLineAssignmentsOutputSchema = GeneratedZod.zSharedLineAss
 export type ListSharedLineAssignmentsOutput = z.output<typeof ListSharedLineAssignmentsOutputSchema>;
 export const ListSharedLineAssignmentsOutputSchemas: OutputSchemas<ListSharedLineAssignmentsOutput> = /* @__PURE__ */ (() => ({
     "200": GeneratedZod.zSharedLineAssignmentPage,
+}))();
+
+export const ListSpacesInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zListSpacesPath.strict(),
+    query: GeneratedZod.zListSpacesQuery.strict().optional(),
+}))();
+export type ListSpacesInput = {
+    path: NonNullable<WireTypes.ListSpacesData["path"]>;
+    query?: NonNullable<WireTypes.ListSpacesData["query"]>;
+};
+
+export const ListSpacesOutputSchema = GeneratedZod.zSpacePage;
+export type ListSpacesOutput = z.output<typeof ListSpacesOutputSchema>;
+export const ListSpacesOutputSchemas: OutputSchemas<ListSpacesOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zSpacePage,
+}))();
+
+export const ListUsersInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zListUsersPath.strict(),
+    query: GeneratedZod.zListUsersQuery.strict().optional(),
+}))();
+export type ListUsersInput = {
+    path: NonNullable<WireTypes.ListUsersData["path"]>;
+    query?: NonNullable<WireTypes.ListUsersData["query"]>;
+};
+
+export const ListUsersOutputSchema = GeneratedZod.zUserPage;
+export type ListUsersOutput = z.output<typeof ListUsersOutputSchema>;
+export const ListUsersOutputSchemas: OutputSchemas<ListUsersOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zUserPage,
 }))();
 
 export const ListVoiceProfilesInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1567,6 +1811,25 @@ export const ListWhatsappSharedLineAssignmentsOutputSchema = GeneratedZod.zShare
 export type ListWhatsappSharedLineAssignmentsOutput = z.output<typeof ListWhatsappSharedLineAssignmentsOutputSchema>;
 export const ListWhatsappSharedLineAssignmentsOutputSchemas: OutputSchemas<ListWhatsappSharedLineAssignmentsOutput> = /* @__PURE__ */ (() => ({
     "200": GeneratedZod.zSharedLineAssignmentPage,
+}))();
+
+export const MarkMessageReadInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zMarkMessageReadPath.strict(),
+    headers: z.strictObject({
+        "idempotency-key": GeneratedZod.zMarkMessageReadHeaders.shape["idempotency-key"],
+    }),
+}))();
+export type MarkMessageReadInput = {
+    path: NonNullable<WireTypes.MarkMessageReadData["path"]>;
+    headers: {
+        "idempotency-key": NonNullable<WireTypes.MarkMessageReadData["headers"]>["idempotency-key"];
+    };
+};
+
+export const MarkMessageReadOutputSchema = GeneratedZod.zMarkMessageReadResponse;
+export type MarkMessageReadOutput = z.output<typeof MarkMessageReadOutputSchema>;
+export const MarkMessageReadOutputSchemas: OutputSchemas<MarkMessageReadOutput> = /* @__PURE__ */ (() => ({
+    "202": GeneratedZod.zMarkMessageReadResponse,
 }))();
 
 export const PreviewOrganizationChangeInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1950,6 +2213,42 @@ export const RotateWebhookSigningSecretOutputSchema = GeneratedZod.zRotateWebhoo
 export type RotateWebhookSigningSecretOutput = z.output<typeof RotateWebhookSigningSecretOutputSchema>;
 export const RotateWebhookSigningSecretOutputSchemas: OutputSchemas<RotateWebhookSigningSecretOutput> = /* @__PURE__ */ (() => ({
     "200": GeneratedZod.zRotateWebhookSigningSecretResponse,
+}))();
+
+export const SendMessageInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    body: GeneratedZod.zSendMessageBody,
+    path: GeneratedZod.zSendMessagePath.strict(),
+    headers: z.strictObject({
+        "idempotency-key": GeneratedZod.zSendMessageHeaders.shape["idempotency-key"],
+    }),
+}))();
+export type SendMessageInput = {
+    body: WireTypes.SendMessageData["body"];
+    path: NonNullable<WireTypes.SendMessageData["path"]>;
+    headers: {
+        "idempotency-key": NonNullable<WireTypes.SendMessageData["headers"]>["idempotency-key"];
+    };
+};
+
+export const SendMessageOutputSchema = GeneratedZod.zSentMessage;
+export type SendMessageOutput = z.output<typeof SendMessageOutputSchema>;
+export const SendMessageOutputSchemas: OutputSchemas<SendMessageOutput> = /* @__PURE__ */ (() => ({
+    "202": GeneratedZod.zSentMessage,
+}))();
+
+export const SetSpaceTypingInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    body: GeneratedZod.zSetSpaceTypingBody,
+    path: GeneratedZod.zSetSpaceTypingPath.strict(),
+}))();
+export type SetSpaceTypingInput = {
+    body: WireTypes.SetSpaceTypingData["body"];
+    path: NonNullable<WireTypes.SetSpaceTypingData["path"]>;
+};
+
+export const SetSpaceTypingOutputSchema = GeneratedZod.zSetSpaceTypingResponse;
+export type SetSpaceTypingOutput = z.output<typeof SetSpaceTypingOutputSchema>;
+export const SetSpaceTypingOutputSchemas: OutputSchemas<SetSpaceTypingOutput> = /* @__PURE__ */ (() => ({
+    "202": GeneratedZod.zSetSpaceTypingResponse,
 }))();
 
 export const StartAccountPhoneVerificationInputSchema = /* @__PURE__ */ (() => z.strictObject({

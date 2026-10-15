@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.4.2 (2026-10-15)
+
+
+### Features
+
+* **Messaging operations.** Send and read conversations from the SDKs: `projects.sendMessage`, `projects.listMessages`, `projects.getMessage`, `projects.countMessages` and `projects.markMessageRead`; Spaces via `projects.listSpaces`, `projects.createOrGetSpace`, `projects.countSpaces`, `projects.getSpace` and `projects.setSpaceTyping`; platform Users via `projects.listUsers`, `projects.createOrGetUser`, `projects.countUsers` and `projects.getUser` (the same names in snake_case on `projects` in Python, flat on the client in Rust — `send_message`, `list_spaces`, … — and `Projects.SendMessage`, `Projects.ListSpaces`, … in Go). Sending takes the `SendContent` union (`SendTextContent`, attachments, reactions and more) with an idempotency key and returns the accepted `SentMessage`; message lifecycle and inbound traffic arrive on existing webhook destinations as the `message.received`, `message.dispatched`, `message.accepted`, `message.delivered` and `message.failed` events.
+* **Email insight operations** `projects.platforms.getEmailDeliveryMetrics`, `projects.platforms.getEmailSendingPolicies` and `projects.platforms.listEmailRecommendations` (`get_email_delivery_metrics`, `get_email_sending_policies` and `list_email_recommendations` in Python and Rust; `Projects.Platforms.GetEmailDeliveryMetrics`, `.GetEmailSendingPolicies` and `.ListEmailRecommendations` in Go): delivery-metric series, sending policies and advisory recommendations for a project's email platform, with the new `EmailDeliveryMetrics`, `EmailSendingPolicies`, `EmailRecommendations` and related types.
+* **Project subscriptions** `projects.billing.listProjectSubscriptions` (`list_project_subscriptions` in Python and Rust; `Projects.Billing.ListProjectSubscriptions` in Go): list a project's billing subscriptions, also readable with the `project:read_usage` OAuth scope.
+* `CreditSource` entries in `organizations.billing.listCreditActivity` responses now carry a `description`.
+
 ## 0.4.1 (2026-10-14)
 
 

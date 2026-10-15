@@ -1,0 +1,223 @@
+---
+title: "Create or get a User"
+icon: arrow-up-right
+description: "Create or get a User: createOrGetUser in the TypeScript, Python and Rust clients."
+---
+
+`POST /v1/projects/{id}/users`
+
+Creates or reconciles a User by normalized handle. WhatsApp and iMessage phone classification uses line allocation and project ownership; New iMessage email handles start as Human without lookup; existing email identities retain their producer-observed classification and ownership. WhatsApp Business uses project ownership. These three platforms perform no provider profile or enrichment fetch. Shared Agents expose type=shared without ownership IDs; dedicated Agents expose resourceId for this project or pairwise managedBy for another project. Dedicated lines without an active owner are unavailable. SMS retains its existing ownership and phone number enrichment behavior. Email retains domain ownership resolution, lowercase ASCII domains and case-preserved local parts. Dependency failures fail before classification writes. The natural identity is the project path ID, platform, and handle. Retrying after a committed creation whose response was lost returns the same User with 200 rather than replaying 201.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.createOrGetUser(input: CreateOrGetUserInput, options?: RequestOptions): Promise<CreateOrGetUserOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.create_or_get_user(input: CreateOrGetUserInput) -> models.PlatformUser
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.create_or_get_user(id: String, body: &types::CreateOrGetUserRequest).await -> Result<ResponseValue<CreateOrGetUserResponse>, Error<CreateOrGetUserError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.createOrGetUser({
+  path: {
+    id: "id",
+  },
+  body: {
+    handle: "handle",
+    platform: "sms",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import CreateOrGetUserInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.create_or_get_user(
+    CreateOrGetUserInput.model_validate({
+        "path": {
+            "id": "id",
+        },
+        "body": {
+            "handle": "handle",
+            "platform": "sms",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .create_or_get_user(
+        "id".to_owned(),
+        &serde_json::from_value(serde_json::json!({
+            "handle": "handle",
+            "platform": "sms",
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "details": {
+    "resourceId": "pho_res_00000000000000000000000001",
+    "type": "dedicated"
+  },
+  "handle": "+14155550123",
+  "id": "pho_usr_00000000000000000000000001",
+  "kind": "agent",
+  "metadata": {},
+  "platform": "whatsapp",
+  "projectId": "pho_prj_00000000000000000000000001",
+  "updatedAt": "2026-01-01T00:00:00.000Z"
+}
+```
+
+```json 201
+{
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "details": {
+    "resourceId": "pho_res_00000000000000000000000001",
+    "type": "dedicated"
+  },
+  "handle": "+14155550123",
+  "id": "pho_usr_00000000000000000000000001",
+  "kind": "agent",
+  "metadata": {},
+  "platform": "whatsapp",
+  "projectId": "pho_prj_00000000000000000000000001",
+  "updatedAt": "2026-01-01T00:00:00.000Z"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="id" type={"string"} required>
+
+</ParamField>
+
+
+## Body
+
+<ParamField body="handle" type={"string"} required>
+
+</ParamField>
+
+<ParamField body="platform" type={"Platform"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The existing User after authoritative classification and any required repair. PlatformUser
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+When Photon first persisted this resource.
+</ResponseField>
+
+<ResponseField name="details" type={"TelegramUserDetails"} required>
+
+</ResponseField>
+
+<ResponseField name="handle" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="id" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="kind" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="metadata" type={"ResourceMetadata"} required>
+
+</ResponseField>
+
+<ResponseField name="platform" type={"Platform"} required>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+When Photon last persisted a change to this resource's public state.
+</ResponseField>
+
+**`201`** The User was created from the platform’s resolved identity and authoritative observations. PlatformUser
+
+Headers: `Location`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+When Photon first persisted this resource.
+</ResponseField>
+
+<ResponseField name="details" type={"TelegramUserDetails"} required>
+
+</ResponseField>
+
+<ResponseField name="handle" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="id" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="kind" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="metadata" type={"ResourceMetadata"} required>
+
+</ResponseField>
+
+<ResponseField name="platform" type={"Platform"} required>
+
+</ResponseField>
+
+<ResponseField name="projectId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+When Photon last persisted a change to this resource's public state.
+</ResponseField>
+

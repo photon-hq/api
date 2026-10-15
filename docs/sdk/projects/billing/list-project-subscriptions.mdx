@@ -1,0 +1,110 @@
+---
+title: "List project subscriptions"
+icon: arrow-down-left
+description: "List project subscriptions: listProjectSubscriptions in the TypeScript, Python and Rust clients."
+---
+
+`GET /v1/projects/{projectId}/billing/subscriptions`
+
+Lists the plan each of the selected project's categories holds, with its price and the payer's standing. It suits showing a project's plan wherever projects are listed; the billing overview adds billing periods, fixed charges, entitlements and usage.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.projects.billing.listProjectSubscriptions(input: ListProjectSubscriptionsInput, options?: RequestOptions): Promise<ListProjectSubscriptionsOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.projects.billing.list_project_subscriptions(input: ListProjectSubscriptionsInput) -> models.ListProjectSubscriptionsResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.list_project_subscriptions(project_id: String).await -> Result<ResponseValue<types::ListProjectSubscriptionsResponse>, Error<ListProjectSubscriptionsError>>
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.projects.billing.listProjectSubscriptions({
+  path: {
+    projectId: "projectId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import ListProjectSubscriptionsInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.projects.billing.list_project_subscriptions(
+    ListProjectSubscriptionsInput.model_validate({
+        "path": {
+            "projectId": "projectId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .list_project_subscriptions("projectId".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "subscriptions": [
+    {
+      "baseAmountCents": 0,
+      "category": "string",
+      "categoryDisplayName": null,
+      "currency": "string",
+      "minimumCommitment": null,
+      "planCode": "string",
+      "planName": "string",
+      "status": "active",
+      "tierDisplayName": null
+    }
+  ]
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="projectId" type={"string"} required>
+The project being billed.
+</ParamField>
+
+
+## Returns
+
+**`200`** The plan each category holds. ListProjectSubscriptionsResponse
+
+<ResponseField name="subscriptions" type={"array of ProjectHeldPlan"} required>
+One entry per category that currently holds a subscription. Empty means none do — cancelled, or never opened.
+</ResponseField>
+

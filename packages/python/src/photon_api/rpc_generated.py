@@ -311,6 +311,36 @@ class CountFilteredVerificationCodesInput(BaseModel):
     query: CountFilteredVerificationCodesQuery | None = None
 
 
+class CountMessagesPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    id: str = Field(alias="id")
+
+
+class CountMessagesQuery(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    created_before: str | MISSING = Field(default=MISSING, alias="createdBefore")
+    created_since: str | MISSING = Field(default=MISSING, alias="createdSince")
+    direction: models.MessageDirection | MISSING = Field(default=MISSING, alias="direction")
+    exclude_content_types: str | MISSING = Field(default=MISSING, alias="excludeContentTypes")
+    perspective_user_id: str | MISSING = Field(default=MISSING, alias="perspectiveUserId")
+    platform: models.Platform | MISSING = Field(default=MISSING, alias="platform")
+    resource_id: str | MISSING = Field(default=MISSING, alias="resourceId")
+    space_id: str | MISSING = Field(default=MISSING, alias="spaceId")
+    updated_before: str | MISSING = Field(default=MISSING, alias="updatedBefore")
+    updated_since: str | MISSING = Field(default=MISSING, alias="updatedSince")
+    interval: Literal["day"] | MISSING = Field(default=MISSING, alias="interval")
+    time_zone: str | MISSING = Field(default=MISSING, alias="timeZone")
+
+
+class CountMessagesInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: CountMessagesPath
+    query: CountMessagesQuery | None = None
+
+
 class CountProjectsPath(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
@@ -354,6 +384,72 @@ class CountResourceFilteredVerificationCodesInput(BaseModel):
 
     path: CountResourceFilteredVerificationCodesPath
     query: CountResourceFilteredVerificationCodesQuery | None = None
+
+
+class CountSpacesPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    id: str = Field(alias="id")
+
+
+class CountSpacesQuery(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    message_created_before: str | MISSING = Field(default=MISSING, alias="messageCreatedBefore")
+    message_created_since: str | MISSING = Field(default=MISSING, alias="messageCreatedSince")
+    message_direction: models.MessageDirection | MISSING = Field(
+        default=MISSING, alias="messageDirection"
+    )
+    message_exclude_content_types: str | MISSING = Field(
+        default=MISSING, alias="messageExcludeContentTypes"
+    )
+    message_resource_id: str | MISSING = Field(default=MISSING, alias="messageResourceId")
+    created_before: str | MISSING = Field(default=MISSING, alias="createdBefore")
+    created_since: str | MISSING = Field(default=MISSING, alias="createdSince")
+    participant_handle: str | MISSING = Field(default=MISSING, alias="participantHandle")
+    participant_id: str | MISSING = Field(default=MISSING, alias="participantId")
+    platform: models.Platform | MISSING = Field(default=MISSING, alias="platform")
+    updated_before: str | MISSING = Field(default=MISSING, alias="updatedBefore")
+    updated_since: str | MISSING = Field(default=MISSING, alias="updatedSince")
+
+
+class CountSpacesInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: CountSpacesPath
+    query: CountSpacesQuery | None = None
+
+
+class CountUsersPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    id: str = Field(alias="id")
+
+
+class CountUsersQuery(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    message_created_before: str | MISSING = Field(default=MISSING, alias="messageCreatedBefore")
+    message_created_since: str | MISSING = Field(default=MISSING, alias="messageCreatedSince")
+    message_direction: models.MessageDirection | MISSING = Field(
+        default=MISSING, alias="messageDirection"
+    )
+    message_exclude_content_types: str | MISSING = Field(
+        default=MISSING, alias="messageExcludeContentTypes"
+    )
+    message_resource_id: str | MISSING = Field(default=MISSING, alias="messageResourceId")
+    created_before: str | MISSING = Field(default=MISSING, alias="createdBefore")
+    created_since: str | MISSING = Field(default=MISSING, alias="createdSince")
+    platform: models.Platform | MISSING = Field(default=MISSING, alias="platform")
+    updated_before: str | MISSING = Field(default=MISSING, alias="updatedBefore")
+    updated_since: str | MISSING = Field(default=MISSING, alias="updatedSince")
+
+
+class CountUsersInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: CountUsersPath
+    query: CountUsersQuery | None = None
 
 
 class CreateAccountProfilePictureUploadInput(BaseModel):
@@ -456,6 +552,39 @@ class CreateOrganizationSsoPortalLinkInput(BaseModel):
 
     body: models.CreateOrganizationSsoPortalLinkRequest
     path: CreateOrganizationSsoPortalLinkPath
+
+
+class CreateOrGetSpacePath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    id: str = Field(alias="id")
+
+
+class CreateOrGetSpaceHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    idempotency_key: str = Field(alias="idempotency-key")
+
+
+class CreateOrGetSpaceInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    body: models.CreateOrGetSpaceRequest
+    path: CreateOrGetSpacePath
+    headers: CreateOrGetSpaceHeader
+
+
+class CreateOrGetUserPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    id: str = Field(alias="id")
+
+
+class CreateOrGetUserInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    body: models.CreateOrGetUserRequest
+    path: CreateOrGetUserPath
 
 
 class CreateProjectPath(BaseModel):
@@ -833,6 +962,59 @@ class GetEffectiveTermsInput(BaseModel):
     path: GetEffectiveTermsPath
 
 
+class GetEmailDeliveryMetricsPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    id: str = Field(alias="id")
+
+
+class GetEmailDeliveryMetricsQuery(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    period: models.EmailDeliveryMetricsPeriodParameter | MISSING = Field(
+        default=MISSING, alias="period"
+    )
+
+
+class GetEmailDeliveryMetricsInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: GetEmailDeliveryMetricsPath
+    query: GetEmailDeliveryMetricsQuery | None = None
+
+
+class GetEmailSendingPoliciesPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    id: str = Field(alias="id")
+
+
+class GetEmailSendingPoliciesInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: GetEmailSendingPoliciesPath
+
+
+class GetMessagePath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    id: str = Field(alias="id")
+    message_id: str = Field(alias="messageId")
+
+
+class GetMessageHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    if_none_match: str | MISSING = Field(default=MISSING, alias="if-none-match")
+
+
+class GetMessageInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: GetMessagePath
+    headers: GetMessageHeader | None = None
+
+
 class GetMessageMetricsBackfillPath(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
@@ -1050,6 +1232,46 @@ class GetSmsLineCampaignAssignmentInput(BaseModel):
     path: GetSmsLineCampaignAssignmentPath
 
 
+class GetSpacePath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    id: str = Field(alias="id")
+    space_id: str = Field(alias="spaceId")
+
+
+class GetSpaceHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    if_none_match: str | MISSING = Field(default=MISSING, alias="if-none-match")
+
+
+class GetSpaceInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: GetSpacePath
+    headers: GetSpaceHeader | None = None
+
+
+class GetUserPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    id: str = Field(alias="id")
+    user_id: str = Field(alias="userId")
+
+
+class GetUserHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    if_none_match: str | MISSING = Field(default=MISSING, alias="if-none-match")
+
+
+class GetUserInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: GetUserPath
+    headers: GetUserHeader | None = None
+
+
 class GetVoiceLineProfileAssignmentPath(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
@@ -1242,6 +1464,26 @@ class ListCreditActivityInput(BaseModel):
     query: ListCreditActivityQuery | None = None
 
 
+class ListEmailRecommendationsPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    id: str = Field(alias="id")
+
+
+class ListEmailRecommendationsQuery(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    page_size: int | MISSING = Field(default=MISSING, alias="pageSize")
+    page_token: str | MISSING = Field(default=MISSING, alias="pageToken")
+
+
+class ListEmailRecommendationsInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: ListEmailRecommendationsPath
+    query: ListEmailRecommendationsQuery | None = None
+
+
 class ListFilteredVerificationCodesPath(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
@@ -1286,6 +1528,38 @@ class ListInvoicesInput(BaseModel):
 
     path: ListInvoicesPath
     query: ListInvoicesQuery | None = None
+
+
+class ListMessagesPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    id: str = Field(alias="id")
+
+
+class ListMessagesQuery(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    created_before: str | MISSING = Field(default=MISSING, alias="createdBefore")
+    created_since: str | MISSING = Field(default=MISSING, alias="createdSince")
+    direction: models.MessageDirection | MISSING = Field(default=MISSING, alias="direction")
+    exclude_content_types: str | MISSING = Field(default=MISSING, alias="excludeContentTypes")
+    order: models.SortOrder | MISSING = Field(default=MISSING, alias="order")
+    order_by: models.TimestampOrderBy | MISSING = Field(default=MISSING, alias="orderBy")
+    page_size: int | MISSING = Field(default=MISSING, alias="pageSize")
+    page_token: str | MISSING = Field(default=MISSING, alias="pageToken")
+    perspective_user_id: str | MISSING = Field(default=MISSING, alias="perspectiveUserId")
+    platform: models.Platform | MISSING = Field(default=MISSING, alias="platform")
+    resource_id: str | MISSING = Field(default=MISSING, alias="resourceId")
+    space_id: str | MISSING = Field(default=MISSING, alias="spaceId")
+    updated_before: str | MISSING = Field(default=MISSING, alias="updatedBefore")
+    updated_since: str | MISSING = Field(default=MISSING, alias="updatedSince")
+
+
+class ListMessagesInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: ListMessagesPath
+    query: ListMessagesQuery | None = None
 
 
 class ListNumberAreaCodesPath(BaseModel):
@@ -1394,6 +1668,18 @@ class ListProjectsInput(BaseModel):
     query: ListProjectsQuery | None = None
 
 
+class ListProjectSubscriptionsPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    project_id: str = Field(alias="projectId")
+
+
+class ListProjectSubscriptionsInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: ListProjectSubscriptionsPath
+
+
 class ListResourceFilteredVerificationCodesPath(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
@@ -1462,6 +1748,80 @@ class ListSharedLineAssignmentsInput(BaseModel):
 
     path: ListSharedLineAssignmentsPath
     query: ListSharedLineAssignmentsQuery | None = None
+
+
+class ListSpacesPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    id: str = Field(alias="id")
+
+
+class ListSpacesQuery(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    message_created_before: str | MISSING = Field(default=MISSING, alias="messageCreatedBefore")
+    message_created_since: str | MISSING = Field(default=MISSING, alias="messageCreatedSince")
+    message_direction: models.MessageDirection | MISSING = Field(
+        default=MISSING, alias="messageDirection"
+    )
+    message_exclude_content_types: str | MISSING = Field(
+        default=MISSING, alias="messageExcludeContentTypes"
+    )
+    message_resource_id: str | MISSING = Field(default=MISSING, alias="messageResourceId")
+    created_before: str | MISSING = Field(default=MISSING, alias="createdBefore")
+    created_since: str | MISSING = Field(default=MISSING, alias="createdSince")
+    order: models.SortOrder | MISSING = Field(default=MISSING, alias="order")
+    order_by: models.SpaceOrderBy | MISSING = Field(default=MISSING, alias="orderBy")
+    page_size: int | MISSING = Field(default=MISSING, alias="pageSize")
+    page_token: str | MISSING = Field(default=MISSING, alias="pageToken")
+    participant_handle: str | MISSING = Field(default=MISSING, alias="participantHandle")
+    participant_id: str | MISSING = Field(default=MISSING, alias="participantId")
+    platform: models.Platform | MISSING = Field(default=MISSING, alias="platform")
+    updated_before: str | MISSING = Field(default=MISSING, alias="updatedBefore")
+    updated_since: str | MISSING = Field(default=MISSING, alias="updatedSince")
+
+
+class ListSpacesInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: ListSpacesPath
+    query: ListSpacesQuery | None = None
+
+
+class ListUsersPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    id: str = Field(alias="id")
+
+
+class ListUsersQuery(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    message_created_before: str | MISSING = Field(default=MISSING, alias="messageCreatedBefore")
+    message_created_since: str | MISSING = Field(default=MISSING, alias="messageCreatedSince")
+    message_direction: models.MessageDirection | MISSING = Field(
+        default=MISSING, alias="messageDirection"
+    )
+    message_exclude_content_types: str | MISSING = Field(
+        default=MISSING, alias="messageExcludeContentTypes"
+    )
+    message_resource_id: str | MISSING = Field(default=MISSING, alias="messageResourceId")
+    created_before: str | MISSING = Field(default=MISSING, alias="createdBefore")
+    created_since: str | MISSING = Field(default=MISSING, alias="createdSince")
+    order: models.SortOrder | MISSING = Field(default=MISSING, alias="order")
+    order_by: models.TimestampOrderBy | MISSING = Field(default=MISSING, alias="orderBy")
+    page_size: int | MISSING = Field(default=MISSING, alias="pageSize")
+    page_token: str | MISSING = Field(default=MISSING, alias="pageToken")
+    platform: models.Platform | MISSING = Field(default=MISSING, alias="platform")
+    updated_before: str | MISSING = Field(default=MISSING, alias="updatedBefore")
+    updated_since: str | MISSING = Field(default=MISSING, alias="updatedSince")
+
+
+class ListUsersInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: ListUsersPath
+    query: ListUsersQuery | None = None
 
 
 class ListVoiceProfilesPath(BaseModel):
@@ -1581,6 +1941,26 @@ class ListWhatsappSharedLineAssignmentsInput(BaseModel):
 
     path: ListWhatsappSharedLineAssignmentsPath
     query: ListWhatsappSharedLineAssignmentsQuery | None = None
+
+
+class MarkMessageReadPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    id: str = Field(alias="id")
+    message_id: str = Field(alias="messageId")
+
+
+class MarkMessageReadHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    idempotency_key: str = Field(alias="idempotency-key")
+
+
+class MarkMessageReadInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: MarkMessageReadPath
+    headers: MarkMessageReadHeader
 
 
 class PreviewOrganizationChangePath(BaseModel):
@@ -1940,6 +2320,40 @@ class RotateWebhookSigningSecretInput(BaseModel):
     body: models.RotateWebhookSigningSecretRequest
     path: RotateWebhookSigningSecretPath
     headers: RotateWebhookSigningSecretHeader
+
+
+class SendMessagePath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    id: str = Field(alias="id")
+
+
+class SendMessageHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    idempotency_key: str = Field(alias="idempotency-key")
+
+
+class SendMessageInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    body: models.SendMessageRequest
+    path: SendMessagePath
+    headers: SendMessageHeader
+
+
+class SetSpaceTypingPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    id: str = Field(alias="id")
+    space_id: str = Field(alias="spaceId")
+
+
+class SetSpaceTypingInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    body: models.SetSpaceTypingRequest
+    path: SetSpaceTypingPath
 
 
 class StartAccountPhoneVerificationInput(BaseModel):
@@ -2502,6 +2916,21 @@ _OP_COUNT_FILTERED_VERIFICATION_CODES = OperationSpec(
     },
 )
 
+_OP_COUNT_MESSAGES = OperationSpec(
+    operation_id="countMessages",
+    method="GET",
+    path="/v1/projects/{id}/messages/count",
+    safe=True,
+    idempotency_key_required=False,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.CountMessagesResponse),
+    },
+)
+
 _OP_COUNT_PROJECTS = OperationSpec(
     operation_id="countProjects",
     method="GET",
@@ -2529,6 +2958,36 @@ _OP_COUNT_RESOURCE_FILTERED_VERIFICATION_CODES = OperationSpec(
     ),
     success_responses={
         "200": TypeAdapter(models.FilteredVerificationCodeCount),
+    },
+)
+
+_OP_COUNT_SPACES = OperationSpec(
+    operation_id="countSpaces",
+    method="GET",
+    path="/v1/projects/{id}/spaces/count",
+    safe=True,
+    idempotency_key_required=False,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.SpaceCount),
+    },
+)
+
+_OP_COUNT_USERS = OperationSpec(
+    operation_id="countUsers",
+    method="GET",
+    path="/v1/projects/{id}/users/count",
+    safe=True,
+    idempotency_key_required=False,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.UserCount),
     },
 )
 
@@ -2656,6 +3115,40 @@ _OP_CREATE_ORGANIZATION_SSO_PORTAL_LINK = OperationSpec(
     ),
     success_responses={
         "200": TypeAdapter(models.CreateOrganizationSsoPortalLinkResponse),
+    },
+)
+
+_OP_CREATE_OR_GET_SPACE = OperationSpec(
+    operation_id="createOrGetSpace",
+    method="POST",
+    path="/v1/projects/{id}/spaces",
+    safe=False,
+    idempotency_key_required=True,
+    request_media_type="application/json",
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.PlatformSpace),
+        "201": TypeAdapter(models.PlatformSpace),
+    },
+)
+
+_OP_CREATE_OR_GET_USER = OperationSpec(
+    operation_id="createOrGetUser",
+    method="POST",
+    path="/v1/projects/{id}/users",
+    safe=False,
+    idempotency_key_required=False,
+    request_media_type="application/json",
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.PlatformUser),
+        "201": TypeAdapter(models.PlatformUser),
     },
 )
 
@@ -3057,6 +3550,52 @@ _OP_GET_EFFECTIVE_TERMS = OperationSpec(
     },
 )
 
+_OP_GET_EMAIL_DELIVERY_METRICS = OperationSpec(
+    operation_id="getEmailDeliveryMetrics",
+    method="GET",
+    path="/v1/projects/{id}/platforms/email/metrics",
+    safe=True,
+    idempotency_key_required=False,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.EmailDeliveryMetrics),
+    },
+)
+
+_OP_GET_EMAIL_SENDING_POLICIES = OperationSpec(
+    operation_id="getEmailSendingPolicies",
+    method="GET",
+    path="/v1/projects/{id}/platforms/email/sending-policy",
+    safe=True,
+    idempotency_key_required=False,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.EmailSendingPolicies),
+    },
+)
+
+_OP_GET_MESSAGE = OperationSpec(
+    operation_id="getMessage",
+    method="GET",
+    path="/v1/projects/{id}/messages/{messageId}",
+    safe=True,
+    idempotency_key_required=False,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.PlatformMessage),
+        "304": None,
+    },
+)
+
 _OP_GET_MESSAGE_METRICS_BACKFILL = OperationSpec(
     operation_id="getMessageMetricsBackfill",
     method="GET",
@@ -3297,6 +3836,38 @@ _OP_GET_SMS_LINE_CAMPAIGN_ASSIGNMENT = OperationSpec(
     },
 )
 
+_OP_GET_SPACE = OperationSpec(
+    operation_id="getSpace",
+    method="GET",
+    path="/v1/projects/{id}/spaces/{spaceId}",
+    safe=True,
+    idempotency_key_required=False,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.PlatformSpace),
+        "304": None,
+    },
+)
+
+_OP_GET_USER = OperationSpec(
+    operation_id="getUser",
+    method="GET",
+    path="/v1/projects/{id}/users/{userId}",
+    safe=True,
+    idempotency_key_required=False,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.PlatformUser),
+        "304": None,
+    },
+)
+
 _OP_GET_VOICE_LINE_PROFILE_ASSIGNMENT = OperationSpec(
     operation_id="getVoiceLineProfileAssignment",
     method="GET",
@@ -3493,6 +4064,21 @@ _OP_LIST_CREDIT_ACTIVITY = OperationSpec(
     },
 )
 
+_OP_LIST_EMAIL_RECOMMENDATIONS = OperationSpec(
+    operation_id="listEmailRecommendations",
+    method="GET",
+    path="/v1/projects/{id}/platforms/email/recommendations",
+    safe=True,
+    idempotency_key_required=False,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.EmailRecommendations),
+    },
+)
+
 _OP_LIST_FILTERED_VERIFICATION_CODES = OperationSpec(
     operation_id="listFilteredVerificationCodes",
     method="GET",
@@ -3520,6 +4106,21 @@ _OP_LIST_INVOICES = OperationSpec(
     ),
     success_responses={
         "200": TypeAdapter(models.ListInvoicesResponse),
+    },
+)
+
+_OP_LIST_MESSAGES = OperationSpec(
+    operation_id="listMessages",
+    method="GET",
+    path="/v1/projects/{id}/messages",
+    safe=True,
+    idempotency_key_required=False,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.MessagePage),
     },
 )
 
@@ -3628,6 +4229,21 @@ _OP_LIST_PROJECTS = OperationSpec(
     },
 )
 
+_OP_LIST_PROJECT_SUBSCRIPTIONS = OperationSpec(
+    operation_id="listProjectSubscriptions",
+    method="GET",
+    path="/v1/projects/{projectId}/billing/subscriptions",
+    safe=True,
+    idempotency_key_required=False,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.ListProjectSubscriptionsResponse),
+    },
+)
+
 _OP_LIST_RESOURCE_FILTERED_VERIFICATION_CODES = OperationSpec(
     operation_id="listResourceFilteredVerificationCodes",
     method="GET",
@@ -3670,6 +4286,36 @@ _OP_LIST_SHARED_LINE_ASSIGNMENTS = OperationSpec(
     ),
     success_responses={
         "200": TypeAdapter(models.SharedLineAssignmentPage),
+    },
+)
+
+_OP_LIST_SPACES = OperationSpec(
+    operation_id="listSpaces",
+    method="GET",
+    path="/v1/projects/{id}/spaces",
+    safe=True,
+    idempotency_key_required=False,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.SpacePage),
+    },
+)
+
+_OP_LIST_USERS = OperationSpec(
+    operation_id="listUsers",
+    method="GET",
+    path="/v1/projects/{id}/users",
+    safe=True,
+    idempotency_key_required=False,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.UserPage),
     },
 )
 
@@ -3778,6 +4424,21 @@ _OP_LIST_WHATSAPP_SHARED_LINE_ASSIGNMENTS = OperationSpec(
     ),
     success_responses={
         "200": TypeAdapter(models.SharedLineAssignmentPage),
+    },
+)
+
+_OP_MARK_MESSAGE_READ = OperationSpec(
+    operation_id="markMessageRead",
+    method="POST",
+    path="/v1/projects/{id}/messages/{messageId}/read",
+    safe=False,
+    idempotency_key_required=True,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "202": TypeAdapter(models.MarkMessageReadResponse),
     },
 )
 
@@ -4133,6 +4794,38 @@ _OP_ROTATE_WEBHOOK_SIGNING_SECRET = OperationSpec(
     ),
     success_responses={
         "200": TypeAdapter(models.RotateWebhookSigningSecretResponse),
+    },
+)
+
+_OP_SEND_MESSAGE = OperationSpec(
+    operation_id="sendMessage",
+    method="POST",
+    path="/v1/projects/{id}/messages",
+    safe=False,
+    idempotency_key_required=True,
+    request_media_type="application/json",
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "202": TypeAdapter(models.SentMessage),
+    },
+)
+
+_OP_SET_SPACE_TYPING = OperationSpec(
+    operation_id="setSpaceTyping",
+    method="POST",
+    path="/v1/projects/{id}/spaces/{spaceId}/typing",
+    safe=False,
+    idempotency_key_required=False,
+    request_media_type="application/json",
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "202": TypeAdapter(models.SetSpaceTypingResponse),
     },
 )
 
@@ -4557,6 +5250,20 @@ class SyncRawProjectsPlatformsResource:
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_GET_DEFAULT_VOICE_PROFILE, payload)
 
+    def get_email_delivery_metrics(
+        self, input: GetEmailDeliveryMetricsInput
+    ) -> RawResponse[models.EmailDeliveryMetrics]:
+        "Get email delivery metrics\n\nReads cached supplementary email series for the exact Project and rolling day or week. Coverage is eligible single-recipient messages; multi-recipient and simulator traffic is excluded. Observed complaints include reported feedback only. Missing data is distinct from zero. Original timestamps and availability are preserved; freshness describes retrieval, not complete event coverage. These series are not complete recipient totals, billing totals or Photon reputation rates. This read never queries the delivery provider or authorizes sending. Requires platforms:read for the path Project."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_GET_EMAIL_DELIVERY_METRICS, payload)
+
+    def get_email_sending_policies(
+        self, input: GetEmailSendingPoliciesInput
+    ) -> RawResponse[models.EmailSendingPolicies]:
+        "Get email sending policies\n\nReads Organization email recipient allowances shared across all its Projects, with rolling 60-second and 24-hour windows. Also returns Project and Organization review status and Photon policy pauses. Projects have no separate recipient quota. These limits are independent of subscription allowances. A policy pause blocks sending; an unpaused policy does not guarantee that every domain, suppression or account check permits a send. Requires platforms:read for the path Project."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_GET_EMAIL_SENDING_POLICIES, payload)
+
     def get_imessage(
         self, input: GetProjectImessagePlatformInput
     ) -> RawResponse[models.ProjectPlatformSettings]:
@@ -4628,6 +5335,13 @@ class SyncRawProjectsPlatformsResource:
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_GET_WHATSAPP_SIGNUP_CONFIG, payload)
 
+    def list_email_recommendations(
+        self, input: ListEmailRecommendationsInput
+    ) -> RawResponse[models.EmailRecommendations]:
+        "List email recommendations\n\nReads Photon guidance from stored sending policies, sending setup and domain checks. Project and Organization restrictions repeat on each page of domain observations. Follow nextPageToken until hasMore is false; observations describe only the current page. Recommendations are advisory reads, never permission to send or resume. Reputation-rate guidance and supplementary delivery advice are explicitly unavailable until their sources are integrated. An empty list does not indicate healthy reputation or resolved findings. Requires platforms:read for the path Project."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_LIST_EMAIL_RECOMMENDATIONS, payload)
+
     def list_filtered_verification_codes(
         self, input: ListFilteredVerificationCodesInput
     ) -> RawResponse[models.FilteredVerificationCodePage]:
@@ -4669,7 +5383,7 @@ class SyncRawProjectsPlatformsResource:
         return self._transport.request(_OP_LIST_RESOURCE_FILTERED_VERIFICATION_CODES, payload)
 
     def list_resources(self, input: ListResourcesInput) -> RawResponse[models.ResourcePage]:
-        "List resources\n\nLists everything the project holds, oldest first, whatever kind of thing it is — one endpoint and one id shape for numbers, dedicated lines and whatever ships next. Nothing half-built appears here: a resource exists only once it is real, so anything still being provisioned is an operation rather than a resource with a pending flag. Filter by `type`, by `ability` (which matches only abilities that are currently enabled), and by `state` — comma-separated, and absent means every state, including retired ones. `detail` carries a per-type public view: an SMS number's number, a dedicated line's number and its per-capability health (`imessageHealth`, `whatsappHealth`, each with an `overallStatus` of `available`, `degraded`, `unavailable` or `unknown`; `imessageHealth` also carries `account`, `photonSystemComponents`, `newConversations`, `sms`, `mms` and `outboundPhoneCalling`, each a `status` with the `cause` that decided it: `account`, `photonSystemComponents`, or null for the item's own state. `outboundPhoneCalling` is whether the line's number can place outbound phone calls: `available`, `unavailable` when its caller ID is not verified (the line is then `degraded`), or `unknown` when it has not been checked yet; it does not depend on the account or the Photon system components, so its `cause` is always null). Requires the platforms:read permission bound to the project resource in the path."
+        "List resources\n\nLists the project's resources, oldest first, including retired ones unless `state` filters them out. Filter by `type`, by enabled `ability` and by comma-separated `state`. `detail` is a per-type public view. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_LIST_RESOURCES, payload)
 
@@ -4855,6 +5569,13 @@ class SyncRawProjectsBillingResource:
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_LIST_BILLING_PLANS, payload)
 
+    def list_project_subscriptions(
+        self, input: ListProjectSubscriptionsInput
+    ) -> RawResponse[models.ListProjectSubscriptionsResponse]:
+        "List project subscriptions\n\nLists the plan each of the selected project's categories holds, with its price and the payer's standing. It suits showing a project's plan wherever projects are listed; the billing overview adds billing periods, fixed charges, entitlements and usage."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_LIST_PROJECT_SUBSCRIPTIONS, payload)
+
 
 class SyncRawProjectsResource:
     def __init__(self, transport: SyncTransport) -> None:
@@ -4862,6 +5583,35 @@ class SyncRawProjectsResource:
         self.agent_profile = SyncRawProjectsAgentProfileResource(transport)
         self.billing = SyncRawProjectsBillingResource(transport)
         self.platforms = SyncRawProjectsPlatformsResource(transport)
+
+    def count_messages(
+        self, input: CountMessagesInput
+    ) -> RawResponse[models.CountMessagesResponse]:
+        "Count Messages\n\nCounts matching Messages before pagination. Delivery updates do not add Messages; results are eventually consistent."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_COUNT_MESSAGES, payload)
+
+    def count_spaces(self, input: CountSpacesInput) -> RawResponse[models.SpaceCount]:
+        "Count Spaces\n\nCounts distinct Spaces matching the list filters; multiple matching Messages count once. Results are eventually consistent."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_COUNT_SPACES, payload)
+
+    def count_users(self, input: CountUsersInput) -> RawResponse[models.UserCount]:
+        "Count Users\n\nCounts distinct Users matching the list filters, including incoming senders or outgoing recipients selected by Message filters. Results are eventually consistent."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_COUNT_USERS, payload)
+
+    def create_or_get_space(
+        self, input: CreateOrGetSpaceInput
+    ) -> RawResponse[models.PlatformSpace]:
+        "Create or get a Space\n\nCreates or returns a project Space. Idempotency-Key is required for every platform and binds the project, platform and initial User IDs (unordered except the iMessage creator in first position) for 24 hours after workflow completion. Concurrent matching requests join the same operation; conflicting reuse returns 422 once its outcome is available. A new email key creates a new thread; direct Spaces and SMS groups converge by participants. Every creation and successful replay requires at least one currently project-owned Agent, or for iMessage a shared-line Agent in a direct Space whose peer has an active Assignment of this project on that line. For iMessage, an existing exact match is reused; otherwise the first participant must be a project-owned dedicated phone Agent and creates the native direct chat or group. Multiple matching native groups return SPACE_AMBIGUOUS; incomplete group membership cannot establish an exact match. Replays return 200 and the current stored Space, with Idempotent-Replayed: true. A timeout does not cancel accepted work: retry the same key and input."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_CREATE_OR_GET_SPACE, payload)
+
+    def create_or_get_user(self, input: CreateOrGetUserInput) -> RawResponse[models.PlatformUser]:
+        "Create or get a User\n\nCreates or reconciles a User by normalized handle. WhatsApp and iMessage phone classification uses line allocation and project ownership; New iMessage email handles start as Human without lookup; existing email identities retain their producer-observed classification and ownership. WhatsApp Business uses project ownership. These three platforms perform no provider profile or enrichment fetch. Shared Agents expose type=shared without ownership IDs; dedicated Agents expose resourceId for this project or pairwise managedBy for another project. Dedicated lines without an active owner are unavailable. SMS retains its existing ownership and phone number enrichment behavior. Email retains domain ownership resolution, lowercase ASCII domains and case-preserved local parts. Dependency failures fail before classification writes. The natural identity is the project path ID, platform, and handle. Retrying after a committed creation whose response was lost returns the same User with 200 rather than replaying 201."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_CREATE_OR_GET_USER, payload)
 
     def create_project_api_key(
         self, input: CreateProjectApiKeyInput
@@ -4904,6 +5654,11 @@ class SyncRawProjectsResource:
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_GET_ATTACHMENT, payload)
 
+    def get_message(self, input: GetMessageInput) -> RawResponse[models.PlatformMessage | None]:
+        "Get a Message\n\nReturns one stored Message by canonical Photon Message ID on any supported contract platform. The globally unique Message ID is resolved within the authorized Project. Unsupported platform Messages are outside this collection and return MESSAGE_NOT_FOUND."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_GET_MESSAGE, payload)
+
     def get_message_metrics_backfill(
         self, input: GetMessageMetricsBackfillInput
     ) -> RawResponse[models.GetMessageMetricsBackfillResponse]:
@@ -4917,6 +5672,16 @@ class SyncRawProjectsResource:
         "Get metrics SQL schema\n\nReturns the message_events and call_events SQL schema, supported queries, and limits for the selected API version."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_GET_MESSAGE_METRICS_SQL_SCHEMA, payload)
+
+    def get_space(self, input: GetSpaceInput) -> RawResponse[models.PlatformSpace | None]:
+        "Get a Space\n\nReturns one stored Space by canonical Photon Space ID. A Space of a kind its platform does not support returns OPERATION_UNAVAILABLE."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_GET_SPACE, payload)
+
+    def get_user(self, input: GetUserInput) -> RawResponse[models.PlatformUser | None]:
+        "Get an User\n\nReturns one User after refreshing its Human or Agent classification and project ownership where supported. iMessage email identities retain their producer-observed classification and ownership because no current email ownership lookup is available. WhatsApp, WhatsApp Business and iMessage perform no provider fetch; only SMS Human classifications perform a phone number lookup. Current-project Agents expose resourceId; external-project Agents expose only pairwise managedBy. Conditional response evaluation uses the post-reconciliation representation. Stored reads use each platform definition; projection requires adapter support."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_GET_USER, payload)
 
     def get_webhook_destination(
         self, input: GetWebhookDestinationInput
@@ -4937,12 +5702,27 @@ class SyncRawProjectsResource:
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_LIST_ATTACHMENTS, payload)
 
+    def list_messages(self, input: ListMessagesInput) -> RawResponse[models.MessagePage]:
+        "List Messages\n\nLists the Project's Messages, with optional resource, conversation, and time filters. Results are eventually consistent."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_LIST_MESSAGES, payload)
+
     def list_project_api_keys(
         self, input: ListProjectApiKeysInput
     ) -> RawResponse[models.ListProjectApiKeysResponse]:
         "List project API keys\n\nLists the API keys on the selected project, ordered newest first. Revoked keys are not listed; expired keys stay listed until they are revoked. Entries contain key metadata and permissions, never secret values. Use the returned identifiers to manage an existing key; lost secrets cannot be recovered through this operation."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_LIST_PROJECT_API_KEYS, payload)
+
+    def list_spaces(self, input: ListSpacesInput) -> RawResponse[models.SpacePage]:
+        "List Spaces\n\nLists the Project's stored Spaces, with optional participant and Message filters. Results are eventually consistent."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_LIST_SPACES, payload)
+
+    def list_users(self, input: ListUsersInput) -> RawResponse[models.UserPage]:
+        "List Users\n\nLists stored Users without refreshing their classification; use Get User for current details. Message filters select incoming senders or outgoing recipients, excluding the Message's own endpoint."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_LIST_USERS, payload)
 
     def list_webhook_api_versions(
         self, input: ListWebhookApiVersionsInput
@@ -4972,6 +5752,13 @@ class SyncRawProjectsResource:
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_LIST_WEBHOOK_EVENT_TYPES, payload)
 
+    def mark_message_read(
+        self, input: MarkMessageReadInput
+    ) -> RawResponse[models.MarkMessageReadResponse]:
+        "Mark a Message as read\n\nPersists a request to mark one incoming Message as read using its receiving account. A 202 means accepted for asynchronous execution, not handled by the provider. Requires Idempotency-Key. The returned action Message tracks its outcome; privacy settings may suppress remote visibility."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_MARK_MESSAGE_READ, payload)
+
     def query_message_metrics(
         self, input: QueryMessageMetricsInput
     ) -> RawResponse[models.QueryMessageMetricsResponse]:
@@ -4999,6 +5786,18 @@ class SyncRawProjectsResource:
         "Rotate webhook signing secret\n\nRotates the signing secret for the selected project's webhook destination and returns the new secret. The optional overlapSeconds controls the requested overlap with the previous secret according to the documented request constraints. Store the new secret securely and update the receiver's signature verification configuration; it is returned only in this response and in idempotent replays of it, never by destination reads. Supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_ROTATE_WEBHOOK_SIGNING_SECRET, payload)
+
+    def send_message(self, input: SendMessageInput) -> RawResponse[models.SentMessage]:
+        "Send a Message\n\nSends SMS, email, WhatsApp Personal, WhatsApp Business, iMessage, or Telegram text and image messages. A shared iMessage line sends only in direct Spaces, only to a peer with an active Assignment who has messaged it since that Assignment. SMS and MMS require current Platforms authorization for the sender and every recipient; campaign eligibility is required unless every recipient is in-network."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_SEND_MESSAGE, payload)
+
+    def set_space_typing(
+        self, input: SetSpaceTypingInput
+    ) -> RawResponse[models.SetSpaceTypingResponse]:
+        "Set typing in a Space\n\nSaves one transient typing update as an authorized Agent in this Space. Returns the dispatched Message with HTTP 202. Successful provider handoff ends in accepted; rejection or expiry ends in failed. Repeat true to refresh; false stops where supported. Callers control refreshes. Unsupported platforms return OPERATION_UNAVAILABLE."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_SET_SPACE_TYPING, payload)
 
     def update(self, input: UpdateProjectInput) -> RawResponse[models.Project]:
         "Update project\n\nUpdates the identified project's name and returns the updated project. The project slug is not a mutable field in this request. Use an authorized account or organization service-identity credential; a project API key is not accepted. Supply the required Idempotency-Key header."
@@ -5548,6 +6347,18 @@ class SyncProjectsPlatformsResource:
         "Get default Voice profile\n\nGets the profile currently selected as the project default, including its optional inbound delivery state. Requires platforms:read bound to the path project."
         return (self._raw_resource.get_default_voice_profile(input)).data
 
+    def get_email_delivery_metrics(
+        self, input: GetEmailDeliveryMetricsInput
+    ) -> models.EmailDeliveryMetrics:
+        "Get email delivery metrics\n\nReads cached supplementary email series for the exact Project and rolling day or week. Coverage is eligible single-recipient messages; multi-recipient and simulator traffic is excluded. Observed complaints include reported feedback only. Missing data is distinct from zero. Original timestamps and availability are preserved; freshness describes retrieval, not complete event coverage. These series are not complete recipient totals, billing totals or Photon reputation rates. This read never queries the delivery provider or authorizes sending. Requires platforms:read for the path Project."
+        return (self._raw_resource.get_email_delivery_metrics(input)).data
+
+    def get_email_sending_policies(
+        self, input: GetEmailSendingPoliciesInput
+    ) -> models.EmailSendingPolicies:
+        "Get email sending policies\n\nReads Organization email recipient allowances shared across all its Projects, with rolling 60-second and 24-hour windows. Also returns Project and Organization review status and Photon policy pauses. Projects have no separate recipient quota. These limits are independent of subscription allowances. A policy pause blocks sending; an unpaused policy does not guarantee that every domain, suppression or account check permits a send. Requires platforms:read for the path Project."
+        return (self._raw_resource.get_email_sending_policies(input)).data
+
     def get_imessage(
         self, input: GetProjectImessagePlatformInput
     ) -> models.ProjectPlatformSettings:
@@ -5608,6 +6419,12 @@ class SyncProjectsPlatformsResource:
         "Get WhatsApp signup config\n\nReturns what the browser needs to open Meta's Embedded Signup popup: the Facebook Login for Business configuration id, the Graph version to run against, and the scopes it will request. Answered in-process rather than forwarded, so the first step of onboarding survives an outage of the private service. Pass `configId` to `FB.login` as `config_id` with `response_type: 'code'` and `override_default_response_type: true`. Do NOT add a `featureType` — omitting it is what keeps the phone-number screen in the flow, and `only_waba_sharing` produces an account with no number that cannot be provisioned. Requires the platforms:read permission bound to the project resource in the path."
         return (self._raw_resource.get_whatsapp_signup_config(input)).data
 
+    def list_email_recommendations(
+        self, input: ListEmailRecommendationsInput
+    ) -> models.EmailRecommendations:
+        "List email recommendations\n\nReads Photon guidance from stored sending policies, sending setup and domain checks. Project and Organization restrictions repeat on each page of domain observations. Follow nextPageToken until hasMore is false; observations describe only the current page. Recommendations are advisory reads, never permission to send or resume. Reputation-rate guidance and supplementary delivery advice are explicitly unavailable until their sources are integrated. An empty list does not indicate healthy reputation or resolved findings. Requires platforms:read for the path Project."
+        return (self._raw_resource.list_email_recommendations(input)).data
+
     def list_filtered_verification_codes(
         self, input: ListFilteredVerificationCodesInput
     ) -> models.FilteredVerificationCodePage:
@@ -5643,7 +6460,7 @@ class SyncProjectsPlatformsResource:
         return (self._raw_resource.list_resource_filtered_verification_codes(input)).data
 
     def list_resources(self, input: ListResourcesInput) -> models.ResourcePage:
-        "List resources\n\nLists everything the project holds, oldest first, whatever kind of thing it is — one endpoint and one id shape for numbers, dedicated lines and whatever ships next. Nothing half-built appears here: a resource exists only once it is real, so anything still being provisioned is an operation rather than a resource with a pending flag. Filter by `type`, by `ability` (which matches only abilities that are currently enabled), and by `state` — comma-separated, and absent means every state, including retired ones. `detail` carries a per-type public view: an SMS number's number, a dedicated line's number and its per-capability health (`imessageHealth`, `whatsappHealth`, each with an `overallStatus` of `available`, `degraded`, `unavailable` or `unknown`; `imessageHealth` also carries `account`, `photonSystemComponents`, `newConversations`, `sms`, `mms` and `outboundPhoneCalling`, each a `status` with the `cause` that decided it: `account`, `photonSystemComponents`, or null for the item's own state. `outboundPhoneCalling` is whether the line's number can place outbound phone calls: `available`, `unavailable` when its caller ID is not verified (the line is then `degraded`), or `unknown` when it has not been checked yet; it does not depend on the account or the Photon system components, so its `cause` is always null). Requires the platforms:read permission bound to the project resource in the path."
+        "List resources\n\nLists the project's resources, oldest first, including retired ones unless `state` filters them out. Filter by `type`, by enabled `ability` and by comma-separated `state`. `detail` is a per-type public view. Requires the platforms:read permission bound to the project resource in the path."
         return (self._raw_resource.list_resources(input)).data
 
     def list_voice_profiles(self, input: ListVoiceProfilesInput) -> models.VoiceProfilePage:
@@ -5786,6 +6603,12 @@ class SyncProjectsBillingResource:
         "List billing plans\n\nLists the billing plan catalog, grouped by their public plan-metadata type. Use the returned plan information when choosing the category and planCode for a plan change. The catalog is the same for every project, and reading it does not purchase a plan."
         return (self._raw_resource.list_billing_plans(input)).data
 
+    def list_project_subscriptions(
+        self, input: ListProjectSubscriptionsInput
+    ) -> models.ListProjectSubscriptionsResponse:
+        "List project subscriptions\n\nLists the plan each of the selected project's categories holds, with its price and the payer's standing. It suits showing a project's plan wherever projects are listed; the billing overview adds billing periods, fixed charges, entitlements and usage."
+        return (self._raw_resource.list_project_subscriptions(input)).data
+
 
 class SyncProjectsResource:
     def __init__(self, transport: SyncTransport) -> None:
@@ -5793,6 +6616,26 @@ class SyncProjectsResource:
         self.agent_profile = SyncProjectsAgentProfileResource(transport)
         self.billing = SyncProjectsBillingResource(transport)
         self.platforms = SyncProjectsPlatformsResource(transport)
+
+    def count_messages(self, input: CountMessagesInput) -> models.CountMessagesResponse:
+        "Count Messages\n\nCounts matching Messages before pagination. Delivery updates do not add Messages; results are eventually consistent."
+        return (self._raw_resource.count_messages(input)).data
+
+    def count_spaces(self, input: CountSpacesInput) -> models.SpaceCount:
+        "Count Spaces\n\nCounts distinct Spaces matching the list filters; multiple matching Messages count once. Results are eventually consistent."
+        return (self._raw_resource.count_spaces(input)).data
+
+    def count_users(self, input: CountUsersInput) -> models.UserCount:
+        "Count Users\n\nCounts distinct Users matching the list filters, including incoming senders or outgoing recipients selected by Message filters. Results are eventually consistent."
+        return (self._raw_resource.count_users(input)).data
+
+    def create_or_get_space(self, input: CreateOrGetSpaceInput) -> models.PlatformSpace:
+        "Create or get a Space\n\nCreates or returns a project Space. Idempotency-Key is required for every platform and binds the project, platform and initial User IDs (unordered except the iMessage creator in first position) for 24 hours after workflow completion. Concurrent matching requests join the same operation; conflicting reuse returns 422 once its outcome is available. A new email key creates a new thread; direct Spaces and SMS groups converge by participants. Every creation and successful replay requires at least one currently project-owned Agent, or for iMessage a shared-line Agent in a direct Space whose peer has an active Assignment of this project on that line. For iMessage, an existing exact match is reused; otherwise the first participant must be a project-owned dedicated phone Agent and creates the native direct chat or group. Multiple matching native groups return SPACE_AMBIGUOUS; incomplete group membership cannot establish an exact match. Replays return 200 and the current stored Space, with Idempotent-Replayed: true. A timeout does not cancel accepted work: retry the same key and input."
+        return (self._raw_resource.create_or_get_space(input)).data
+
+    def create_or_get_user(self, input: CreateOrGetUserInput) -> models.PlatformUser:
+        "Create or get a User\n\nCreates or reconciles a User by normalized handle. WhatsApp and iMessage phone classification uses line allocation and project ownership; New iMessage email handles start as Human without lookup; existing email identities retain their producer-observed classification and ownership. WhatsApp Business uses project ownership. These three platforms perform no provider profile or enrichment fetch. Shared Agents expose type=shared without ownership IDs; dedicated Agents expose resourceId for this project or pairwise managedBy for another project. Dedicated lines without an active owner are unavailable. SMS retains its existing ownership and phone number enrichment behavior. Email retains domain ownership resolution, lowercase ASCII domains and case-preserved local parts. Dependency failures fail before classification writes. The natural identity is the project path ID, platform, and handle. Retrying after a committed creation whose response was lost returns the same User with 200 rather than replaying 201."
+        return (self._raw_resource.create_or_get_user(input)).data
 
     def create_project_api_key(
         self, input: CreateProjectApiKeyInput
@@ -5828,6 +6671,10 @@ class SyncProjectsResource:
         "Get attachment\n\nReturns an Attachment's metadata. Use the content endpoint to download its bytes."
         return (self._raw_resource.get_attachment(input)).data
 
+    def get_message(self, input: GetMessageInput) -> models.PlatformMessage | None:
+        "Get a Message\n\nReturns one stored Message by canonical Photon Message ID on any supported contract platform. The globally unique Message ID is resolved within the authorized Project. Unsupported platform Messages are outside this collection and return MESSAGE_NOT_FOUND."
+        return (self._raw_resource.get_message(input)).data
+
     def get_message_metrics_backfill(
         self, input: GetMessageMetricsBackfillInput
     ) -> models.GetMessageMetricsBackfillResponse:
@@ -5839,6 +6686,14 @@ class SyncProjectsResource:
     ) -> models.GetMessageMetricsSqlSchemaResponse:
         "Get metrics SQL schema\n\nReturns the message_events and call_events SQL schema, supported queries, and limits for the selected API version."
         return (self._raw_resource.get_message_metrics_sql_schema(input)).data
+
+    def get_space(self, input: GetSpaceInput) -> models.PlatformSpace | None:
+        "Get a Space\n\nReturns one stored Space by canonical Photon Space ID. A Space of a kind its platform does not support returns OPERATION_UNAVAILABLE."
+        return (self._raw_resource.get_space(input)).data
+
+    def get_user(self, input: GetUserInput) -> models.PlatformUser | None:
+        "Get an User\n\nReturns one User after refreshing its Human or Agent classification and project ownership where supported. iMessage email identities retain their producer-observed classification and ownership because no current email ownership lookup is available. WhatsApp, WhatsApp Business and iMessage perform no provider fetch; only SMS Human classifications perform a phone number lookup. Current-project Agents expose resourceId; external-project Agents expose only pairwise managedBy. Conditional response evaluation uses the post-reconciliation representation. Stored reads use each platform definition; projection requires adapter support."
+        return (self._raw_resource.get_user(input)).data
 
     def get_webhook_destination(
         self, input: GetWebhookDestinationInput
@@ -5856,11 +6711,23 @@ class SyncProjectsResource:
         "List attachments\n\nLists the Project's Attachment metadata, with optional time filters."
         return (self._raw_resource.list_attachments(input)).data
 
+    def list_messages(self, input: ListMessagesInput) -> models.MessagePage:
+        "List Messages\n\nLists the Project's Messages, with optional resource, conversation, and time filters. Results are eventually consistent."
+        return (self._raw_resource.list_messages(input)).data
+
     def list_project_api_keys(
         self, input: ListProjectApiKeysInput
     ) -> models.ListProjectApiKeysResponse:
         "List project API keys\n\nLists the API keys on the selected project, ordered newest first. Revoked keys are not listed; expired keys stay listed until they are revoked. Entries contain key metadata and permissions, never secret values. Use the returned identifiers to manage an existing key; lost secrets cannot be recovered through this operation."
         return (self._raw_resource.list_project_api_keys(input)).data
+
+    def list_spaces(self, input: ListSpacesInput) -> models.SpacePage:
+        "List Spaces\n\nLists the Project's stored Spaces, with optional participant and Message filters. Results are eventually consistent."
+        return (self._raw_resource.list_spaces(input)).data
+
+    def list_users(self, input: ListUsersInput) -> models.UserPage:
+        "List Users\n\nLists stored Users without refreshing their classification; use Get User for current details. Message filters select incoming senders or outgoing recipients, excluding the Message's own endpoint."
+        return (self._raw_resource.list_users(input)).data
 
     def list_webhook_api_versions(
         self, input: ListWebhookApiVersionsInput
@@ -5886,6 +6753,10 @@ class SyncProjectsResource:
         "List webhook event types\n\nLists the webhook event types available in the requested apiVersion, including their descriptions, audiences and reader-schema URLs. Use this versioned catalog when selecting a destination's enabledEvents. The response may include version-retirement information; an authorized conditional request can return 304 without a body."
         return (self._raw_resource.list_webhook_event_types(input)).data
 
+    def mark_message_read(self, input: MarkMessageReadInput) -> models.MarkMessageReadResponse:
+        "Mark a Message as read\n\nPersists a request to mark one incoming Message as read using its receiving account. A 202 means accepted for asynchronous execution, not handled by the provider. Requires Idempotency-Key. The returned action Message tracks its outcome; privacy settings may suppress remote visibility."
+        return (self._raw_resource.mark_message_read(input)).data
+
     def query_message_metrics(
         self, input: QueryMessageMetricsInput
     ) -> models.QueryMessageMetricsResponse:
@@ -5909,6 +6780,14 @@ class SyncProjectsResource:
     ) -> models.RotateWebhookSigningSecretResponse:
         "Rotate webhook signing secret\n\nRotates the signing secret for the selected project's webhook destination and returns the new secret. The optional overlapSeconds controls the requested overlap with the previous secret according to the documented request constraints. Store the new secret securely and update the receiver's signature verification configuration; it is returned only in this response and in idempotent replays of it, never by destination reads. Supply the required Idempotency-Key header."
         return (self._raw_resource.rotate_webhook_signing_secret(input)).data
+
+    def send_message(self, input: SendMessageInput) -> models.SentMessage:
+        "Send a Message\n\nSends SMS, email, WhatsApp Personal, WhatsApp Business, iMessage, or Telegram text and image messages. A shared iMessage line sends only in direct Spaces, only to a peer with an active Assignment who has messaged it since that Assignment. SMS and MMS require current Platforms authorization for the sender and every recipient; campaign eligibility is required unless every recipient is in-network."
+        return (self._raw_resource.send_message(input)).data
+
+    def set_space_typing(self, input: SetSpaceTypingInput) -> models.SetSpaceTypingResponse:
+        "Set typing in a Space\n\nSaves one transient typing update as an authorized Agent in this Space. Returns the dispatched Message with HTTP 202. Successful provider handoff ends in accepted; rejection or expiry ends in failed. Repeat true to refresh; false stops where supported. Callers control refreshes. Unsupported platforms return OPERATION_UNAVAILABLE."
+        return (self._raw_resource.set_space_typing(input)).data
 
     def update(self, input: UpdateProjectInput) -> models.Project:
         "Update project\n\nUpdates the identified project's name and returns the updated project. The project slug is not a mutable field in this request. Use an authorized account or organization service-identity credential; a project API key is not accepted. Supply the required Idempotency-Key header."
@@ -6428,6 +7307,20 @@ class AsyncRawProjectsPlatformsResource:
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_GET_DEFAULT_VOICE_PROFILE, payload)
 
+    async def get_email_delivery_metrics(
+        self, input: GetEmailDeliveryMetricsInput
+    ) -> RawResponse[models.EmailDeliveryMetrics]:
+        "Get email delivery metrics\n\nReads cached supplementary email series for the exact Project and rolling day or week. Coverage is eligible single-recipient messages; multi-recipient and simulator traffic is excluded. Observed complaints include reported feedback only. Missing data is distinct from zero. Original timestamps and availability are preserved; freshness describes retrieval, not complete event coverage. These series are not complete recipient totals, billing totals or Photon reputation rates. This read never queries the delivery provider or authorizes sending. Requires platforms:read for the path Project."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_GET_EMAIL_DELIVERY_METRICS, payload)
+
+    async def get_email_sending_policies(
+        self, input: GetEmailSendingPoliciesInput
+    ) -> RawResponse[models.EmailSendingPolicies]:
+        "Get email sending policies\n\nReads Organization email recipient allowances shared across all its Projects, with rolling 60-second and 24-hour windows. Also returns Project and Organization review status and Photon policy pauses. Projects have no separate recipient quota. These limits are independent of subscription allowances. A policy pause blocks sending; an unpaused policy does not guarantee that every domain, suppression or account check permits a send. Requires platforms:read for the path Project."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_GET_EMAIL_SENDING_POLICIES, payload)
+
     async def get_imessage(
         self, input: GetProjectImessagePlatformInput
     ) -> RawResponse[models.ProjectPlatformSettings]:
@@ -6503,6 +7396,13 @@ class AsyncRawProjectsPlatformsResource:
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_GET_WHATSAPP_SIGNUP_CONFIG, payload)
 
+    async def list_email_recommendations(
+        self, input: ListEmailRecommendationsInput
+    ) -> RawResponse[models.EmailRecommendations]:
+        "List email recommendations\n\nReads Photon guidance from stored sending policies, sending setup and domain checks. Project and Organization restrictions repeat on each page of domain observations. Follow nextPageToken until hasMore is false; observations describe only the current page. Recommendations are advisory reads, never permission to send or resume. Reputation-rate guidance and supplementary delivery advice are explicitly unavailable until their sources are integrated. An empty list does not indicate healthy reputation or resolved findings. Requires platforms:read for the path Project."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_LIST_EMAIL_RECOMMENDATIONS, payload)
+
     async def list_filtered_verification_codes(
         self, input: ListFilteredVerificationCodesInput
     ) -> RawResponse[models.FilteredVerificationCodePage]:
@@ -6546,7 +7446,7 @@ class AsyncRawProjectsPlatformsResource:
         return await self._transport.request(_OP_LIST_RESOURCE_FILTERED_VERIFICATION_CODES, payload)
 
     async def list_resources(self, input: ListResourcesInput) -> RawResponse[models.ResourcePage]:
-        "List resources\n\nLists everything the project holds, oldest first, whatever kind of thing it is — one endpoint and one id shape for numbers, dedicated lines and whatever ships next. Nothing half-built appears here: a resource exists only once it is real, so anything still being provisioned is an operation rather than a resource with a pending flag. Filter by `type`, by `ability` (which matches only abilities that are currently enabled), and by `state` — comma-separated, and absent means every state, including retired ones. `detail` carries a per-type public view: an SMS number's number, a dedicated line's number and its per-capability health (`imessageHealth`, `whatsappHealth`, each with an `overallStatus` of `available`, `degraded`, `unavailable` or `unknown`; `imessageHealth` also carries `account`, `photonSystemComponents`, `newConversations`, `sms`, `mms` and `outboundPhoneCalling`, each a `status` with the `cause` that decided it: `account`, `photonSystemComponents`, or null for the item's own state. `outboundPhoneCalling` is whether the line's number can place outbound phone calls: `available`, `unavailable` when its caller ID is not verified (the line is then `degraded`), or `unknown` when it has not been checked yet; it does not depend on the account or the Photon system components, so its `cause` is always null). Requires the platforms:read permission bound to the project resource in the path."
+        "List resources\n\nLists the project's resources, oldest first, including retired ones unless `state` filters them out. Filter by `type`, by enabled `ability` and by comma-separated `state`. `detail` is a per-type public view. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_LIST_RESOURCES, payload)
 
@@ -6738,6 +7638,13 @@ class AsyncRawProjectsBillingResource:
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_LIST_BILLING_PLANS, payload)
 
+    async def list_project_subscriptions(
+        self, input: ListProjectSubscriptionsInput
+    ) -> RawResponse[models.ListProjectSubscriptionsResponse]:
+        "List project subscriptions\n\nLists the plan each of the selected project's categories holds, with its price and the payer's standing. It suits showing a project's plan wherever projects are listed; the billing overview adds billing periods, fixed charges, entitlements and usage."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_LIST_PROJECT_SUBSCRIPTIONS, payload)
+
 
 class AsyncRawProjectsResource:
     def __init__(self, transport: AsyncTransport) -> None:
@@ -6745,6 +7652,37 @@ class AsyncRawProjectsResource:
         self.agent_profile = AsyncRawProjectsAgentProfileResource(transport)
         self.billing = AsyncRawProjectsBillingResource(transport)
         self.platforms = AsyncRawProjectsPlatformsResource(transport)
+
+    async def count_messages(
+        self, input: CountMessagesInput
+    ) -> RawResponse[models.CountMessagesResponse]:
+        "Count Messages\n\nCounts matching Messages before pagination. Delivery updates do not add Messages; results are eventually consistent."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_COUNT_MESSAGES, payload)
+
+    async def count_spaces(self, input: CountSpacesInput) -> RawResponse[models.SpaceCount]:
+        "Count Spaces\n\nCounts distinct Spaces matching the list filters; multiple matching Messages count once. Results are eventually consistent."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_COUNT_SPACES, payload)
+
+    async def count_users(self, input: CountUsersInput) -> RawResponse[models.UserCount]:
+        "Count Users\n\nCounts distinct Users matching the list filters, including incoming senders or outgoing recipients selected by Message filters. Results are eventually consistent."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_COUNT_USERS, payload)
+
+    async def create_or_get_space(
+        self, input: CreateOrGetSpaceInput
+    ) -> RawResponse[models.PlatformSpace]:
+        "Create or get a Space\n\nCreates or returns a project Space. Idempotency-Key is required for every platform and binds the project, platform and initial User IDs (unordered except the iMessage creator in first position) for 24 hours after workflow completion. Concurrent matching requests join the same operation; conflicting reuse returns 422 once its outcome is available. A new email key creates a new thread; direct Spaces and SMS groups converge by participants. Every creation and successful replay requires at least one currently project-owned Agent, or for iMessage a shared-line Agent in a direct Space whose peer has an active Assignment of this project on that line. For iMessage, an existing exact match is reused; otherwise the first participant must be a project-owned dedicated phone Agent and creates the native direct chat or group. Multiple matching native groups return SPACE_AMBIGUOUS; incomplete group membership cannot establish an exact match. Replays return 200 and the current stored Space, with Idempotent-Replayed: true. A timeout does not cancel accepted work: retry the same key and input."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_CREATE_OR_GET_SPACE, payload)
+
+    async def create_or_get_user(
+        self, input: CreateOrGetUserInput
+    ) -> RawResponse[models.PlatformUser]:
+        "Create or get a User\n\nCreates or reconciles a User by normalized handle. WhatsApp and iMessage phone classification uses line allocation and project ownership; New iMessage email handles start as Human without lookup; existing email identities retain their producer-observed classification and ownership. WhatsApp Business uses project ownership. These three platforms perform no provider profile or enrichment fetch. Shared Agents expose type=shared without ownership IDs; dedicated Agents expose resourceId for this project or pairwise managedBy for another project. Dedicated lines without an active owner are unavailable. SMS retains its existing ownership and phone number enrichment behavior. Email retains domain ownership resolution, lowercase ASCII domains and case-preserved local parts. Dependency failures fail before classification writes. The natural identity is the project path ID, platform, and handle. Retrying after a committed creation whose response was lost returns the same User with 200 rather than replaying 201."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_CREATE_OR_GET_USER, payload)
 
     async def create_project_api_key(
         self, input: CreateProjectApiKeyInput
@@ -6787,6 +7725,13 @@ class AsyncRawProjectsResource:
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_GET_ATTACHMENT, payload)
 
+    async def get_message(
+        self, input: GetMessageInput
+    ) -> RawResponse[models.PlatformMessage | None]:
+        "Get a Message\n\nReturns one stored Message by canonical Photon Message ID on any supported contract platform. The globally unique Message ID is resolved within the authorized Project. Unsupported platform Messages are outside this collection and return MESSAGE_NOT_FOUND."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_GET_MESSAGE, payload)
+
     async def get_message_metrics_backfill(
         self, input: GetMessageMetricsBackfillInput
     ) -> RawResponse[models.GetMessageMetricsBackfillResponse]:
@@ -6800,6 +7745,16 @@ class AsyncRawProjectsResource:
         "Get metrics SQL schema\n\nReturns the message_events and call_events SQL schema, supported queries, and limits for the selected API version."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_GET_MESSAGE_METRICS_SQL_SCHEMA, payload)
+
+    async def get_space(self, input: GetSpaceInput) -> RawResponse[models.PlatformSpace | None]:
+        "Get a Space\n\nReturns one stored Space by canonical Photon Space ID. A Space of a kind its platform does not support returns OPERATION_UNAVAILABLE."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_GET_SPACE, payload)
+
+    async def get_user(self, input: GetUserInput) -> RawResponse[models.PlatformUser | None]:
+        "Get an User\n\nReturns one User after refreshing its Human or Agent classification and project ownership where supported. iMessage email identities retain their producer-observed classification and ownership because no current email ownership lookup is available. WhatsApp, WhatsApp Business and iMessage perform no provider fetch; only SMS Human classifications perform a phone number lookup. Current-project Agents expose resourceId; external-project Agents expose only pairwise managedBy. Conditional response evaluation uses the post-reconciliation representation. Stored reads use each platform definition; projection requires adapter support."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_GET_USER, payload)
 
     async def get_webhook_destination(
         self, input: GetWebhookDestinationInput
@@ -6822,12 +7777,27 @@ class AsyncRawProjectsResource:
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_LIST_ATTACHMENTS, payload)
 
+    async def list_messages(self, input: ListMessagesInput) -> RawResponse[models.MessagePage]:
+        "List Messages\n\nLists the Project's Messages, with optional resource, conversation, and time filters. Results are eventually consistent."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_LIST_MESSAGES, payload)
+
     async def list_project_api_keys(
         self, input: ListProjectApiKeysInput
     ) -> RawResponse[models.ListProjectApiKeysResponse]:
         "List project API keys\n\nLists the API keys on the selected project, ordered newest first. Revoked keys are not listed; expired keys stay listed until they are revoked. Entries contain key metadata and permissions, never secret values. Use the returned identifiers to manage an existing key; lost secrets cannot be recovered through this operation."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_LIST_PROJECT_API_KEYS, payload)
+
+    async def list_spaces(self, input: ListSpacesInput) -> RawResponse[models.SpacePage]:
+        "List Spaces\n\nLists the Project's stored Spaces, with optional participant and Message filters. Results are eventually consistent."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_LIST_SPACES, payload)
+
+    async def list_users(self, input: ListUsersInput) -> RawResponse[models.UserPage]:
+        "List Users\n\nLists stored Users without refreshing their classification; use Get User for current details. Message filters select incoming senders or outgoing recipients, excluding the Message's own endpoint."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_LIST_USERS, payload)
 
     async def list_webhook_api_versions(
         self, input: ListWebhookApiVersionsInput
@@ -6857,6 +7827,13 @@ class AsyncRawProjectsResource:
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_LIST_WEBHOOK_EVENT_TYPES, payload)
 
+    async def mark_message_read(
+        self, input: MarkMessageReadInput
+    ) -> RawResponse[models.MarkMessageReadResponse]:
+        "Mark a Message as read\n\nPersists a request to mark one incoming Message as read using its receiving account. A 202 means accepted for asynchronous execution, not handled by the provider. Requires Idempotency-Key. The returned action Message tracks its outcome; privacy settings may suppress remote visibility."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_MARK_MESSAGE_READ, payload)
+
     async def query_message_metrics(
         self, input: QueryMessageMetricsInput
     ) -> RawResponse[models.QueryMessageMetricsResponse]:
@@ -6884,6 +7861,18 @@ class AsyncRawProjectsResource:
         "Rotate webhook signing secret\n\nRotates the signing secret for the selected project's webhook destination and returns the new secret. The optional overlapSeconds controls the requested overlap with the previous secret according to the documented request constraints. Store the new secret securely and update the receiver's signature verification configuration; it is returned only in this response and in idempotent replays of it, never by destination reads. Supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_ROTATE_WEBHOOK_SIGNING_SECRET, payload)
+
+    async def send_message(self, input: SendMessageInput) -> RawResponse[models.SentMessage]:
+        "Send a Message\n\nSends SMS, email, WhatsApp Personal, WhatsApp Business, iMessage, or Telegram text and image messages. A shared iMessage line sends only in direct Spaces, only to a peer with an active Assignment who has messaged it since that Assignment. SMS and MMS require current Platforms authorization for the sender and every recipient; campaign eligibility is required unless every recipient is in-network."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_SEND_MESSAGE, payload)
+
+    async def set_space_typing(
+        self, input: SetSpaceTypingInput
+    ) -> RawResponse[models.SetSpaceTypingResponse]:
+        "Set typing in a Space\n\nSaves one transient typing update as an authorized Agent in this Space. Returns the dispatched Message with HTTP 202. Successful provider handoff ends in accepted; rejection or expiry ends in failed. Repeat true to refresh; false stops where supported. Callers control refreshes. Unsupported platforms return OPERATION_UNAVAILABLE."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_SET_SPACE_TYPING, payload)
 
     async def update(self, input: UpdateProjectInput) -> RawResponse[models.Project]:
         "Update project\n\nUpdates the identified project's name and returns the updated project. The project slug is not a mutable field in this request. Use an authorized account or organization service-identity credential; a project API key is not accepted. Supply the required Idempotency-Key header."
@@ -7445,6 +8434,18 @@ class AsyncProjectsPlatformsResource:
         "Get default Voice profile\n\nGets the profile currently selected as the project default, including its optional inbound delivery state. Requires platforms:read bound to the path project."
         return (await self._raw_resource.get_default_voice_profile(input)).data
 
+    async def get_email_delivery_metrics(
+        self, input: GetEmailDeliveryMetricsInput
+    ) -> models.EmailDeliveryMetrics:
+        "Get email delivery metrics\n\nReads cached supplementary email series for the exact Project and rolling day or week. Coverage is eligible single-recipient messages; multi-recipient and simulator traffic is excluded. Observed complaints include reported feedback only. Missing data is distinct from zero. Original timestamps and availability are preserved; freshness describes retrieval, not complete event coverage. These series are not complete recipient totals, billing totals or Photon reputation rates. This read never queries the delivery provider or authorizes sending. Requires platforms:read for the path Project."
+        return (await self._raw_resource.get_email_delivery_metrics(input)).data
+
+    async def get_email_sending_policies(
+        self, input: GetEmailSendingPoliciesInput
+    ) -> models.EmailSendingPolicies:
+        "Get email sending policies\n\nReads Organization email recipient allowances shared across all its Projects, with rolling 60-second and 24-hour windows. Also returns Project and Organization review status and Photon policy pauses. Projects have no separate recipient quota. These limits are independent of subscription allowances. A policy pause blocks sending; an unpaused policy does not guarantee that every domain, suppression or account check permits a send. Requires platforms:read for the path Project."
+        return (await self._raw_resource.get_email_sending_policies(input)).data
+
     async def get_imessage(
         self, input: GetProjectImessagePlatformInput
     ) -> models.ProjectPlatformSettings:
@@ -7505,6 +8506,12 @@ class AsyncProjectsPlatformsResource:
         "Get WhatsApp signup config\n\nReturns what the browser needs to open Meta's Embedded Signup popup: the Facebook Login for Business configuration id, the Graph version to run against, and the scopes it will request. Answered in-process rather than forwarded, so the first step of onboarding survives an outage of the private service. Pass `configId` to `FB.login` as `config_id` with `response_type: 'code'` and `override_default_response_type: true`. Do NOT add a `featureType` — omitting it is what keeps the phone-number screen in the flow, and `only_waba_sharing` produces an account with no number that cannot be provisioned. Requires the platforms:read permission bound to the project resource in the path."
         return (await self._raw_resource.get_whatsapp_signup_config(input)).data
 
+    async def list_email_recommendations(
+        self, input: ListEmailRecommendationsInput
+    ) -> models.EmailRecommendations:
+        "List email recommendations\n\nReads Photon guidance from stored sending policies, sending setup and domain checks. Project and Organization restrictions repeat on each page of domain observations. Follow nextPageToken until hasMore is false; observations describe only the current page. Recommendations are advisory reads, never permission to send or resume. Reputation-rate guidance and supplementary delivery advice are explicitly unavailable until their sources are integrated. An empty list does not indicate healthy reputation or resolved findings. Requires platforms:read for the path Project."
+        return (await self._raw_resource.list_email_recommendations(input)).data
+
     async def list_filtered_verification_codes(
         self, input: ListFilteredVerificationCodesInput
     ) -> models.FilteredVerificationCodePage:
@@ -7540,7 +8547,7 @@ class AsyncProjectsPlatformsResource:
         return (await self._raw_resource.list_resource_filtered_verification_codes(input)).data
 
     async def list_resources(self, input: ListResourcesInput) -> models.ResourcePage:
-        "List resources\n\nLists everything the project holds, oldest first, whatever kind of thing it is — one endpoint and one id shape for numbers, dedicated lines and whatever ships next. Nothing half-built appears here: a resource exists only once it is real, so anything still being provisioned is an operation rather than a resource with a pending flag. Filter by `type`, by `ability` (which matches only abilities that are currently enabled), and by `state` — comma-separated, and absent means every state, including retired ones. `detail` carries a per-type public view: an SMS number's number, a dedicated line's number and its per-capability health (`imessageHealth`, `whatsappHealth`, each with an `overallStatus` of `available`, `degraded`, `unavailable` or `unknown`; `imessageHealth` also carries `account`, `photonSystemComponents`, `newConversations`, `sms`, `mms` and `outboundPhoneCalling`, each a `status` with the `cause` that decided it: `account`, `photonSystemComponents`, or null for the item's own state. `outboundPhoneCalling` is whether the line's number can place outbound phone calls: `available`, `unavailable` when its caller ID is not verified (the line is then `degraded`), or `unknown` when it has not been checked yet; it does not depend on the account or the Photon system components, so its `cause` is always null). Requires the platforms:read permission bound to the project resource in the path."
+        "List resources\n\nLists the project's resources, oldest first, including retired ones unless `state` filters them out. Filter by `type`, by enabled `ability` and by comma-separated `state`. `detail` is a per-type public view. Requires the platforms:read permission bound to the project resource in the path."
         return (await self._raw_resource.list_resources(input)).data
 
     async def list_voice_profiles(self, input: ListVoiceProfilesInput) -> models.VoiceProfilePage:
@@ -7689,6 +8696,12 @@ class AsyncProjectsBillingResource:
         "List billing plans\n\nLists the billing plan catalog, grouped by their public plan-metadata type. Use the returned plan information when choosing the category and planCode for a plan change. The catalog is the same for every project, and reading it does not purchase a plan."
         return (await self._raw_resource.list_billing_plans(input)).data
 
+    async def list_project_subscriptions(
+        self, input: ListProjectSubscriptionsInput
+    ) -> models.ListProjectSubscriptionsResponse:
+        "List project subscriptions\n\nLists the plan each of the selected project's categories holds, with its price and the payer's standing. It suits showing a project's plan wherever projects are listed; the billing overview adds billing periods, fixed charges, entitlements and usage."
+        return (await self._raw_resource.list_project_subscriptions(input)).data
+
 
 class AsyncProjectsResource:
     def __init__(self, transport: AsyncTransport) -> None:
@@ -7696,6 +8709,26 @@ class AsyncProjectsResource:
         self.agent_profile = AsyncProjectsAgentProfileResource(transport)
         self.billing = AsyncProjectsBillingResource(transport)
         self.platforms = AsyncProjectsPlatformsResource(transport)
+
+    async def count_messages(self, input: CountMessagesInput) -> models.CountMessagesResponse:
+        "Count Messages\n\nCounts matching Messages before pagination. Delivery updates do not add Messages; results are eventually consistent."
+        return (await self._raw_resource.count_messages(input)).data
+
+    async def count_spaces(self, input: CountSpacesInput) -> models.SpaceCount:
+        "Count Spaces\n\nCounts distinct Spaces matching the list filters; multiple matching Messages count once. Results are eventually consistent."
+        return (await self._raw_resource.count_spaces(input)).data
+
+    async def count_users(self, input: CountUsersInput) -> models.UserCount:
+        "Count Users\n\nCounts distinct Users matching the list filters, including incoming senders or outgoing recipients selected by Message filters. Results are eventually consistent."
+        return (await self._raw_resource.count_users(input)).data
+
+    async def create_or_get_space(self, input: CreateOrGetSpaceInput) -> models.PlatformSpace:
+        "Create or get a Space\n\nCreates or returns a project Space. Idempotency-Key is required for every platform and binds the project, platform and initial User IDs (unordered except the iMessage creator in first position) for 24 hours after workflow completion. Concurrent matching requests join the same operation; conflicting reuse returns 422 once its outcome is available. A new email key creates a new thread; direct Spaces and SMS groups converge by participants. Every creation and successful replay requires at least one currently project-owned Agent, or for iMessage a shared-line Agent in a direct Space whose peer has an active Assignment of this project on that line. For iMessage, an existing exact match is reused; otherwise the first participant must be a project-owned dedicated phone Agent and creates the native direct chat or group. Multiple matching native groups return SPACE_AMBIGUOUS; incomplete group membership cannot establish an exact match. Replays return 200 and the current stored Space, with Idempotent-Replayed: true. A timeout does not cancel accepted work: retry the same key and input."
+        return (await self._raw_resource.create_or_get_space(input)).data
+
+    async def create_or_get_user(self, input: CreateOrGetUserInput) -> models.PlatformUser:
+        "Create or get a User\n\nCreates or reconciles a User by normalized handle. WhatsApp and iMessage phone classification uses line allocation and project ownership; New iMessage email handles start as Human without lookup; existing email identities retain their producer-observed classification and ownership. WhatsApp Business uses project ownership. These three platforms perform no provider profile or enrichment fetch. Shared Agents expose type=shared without ownership IDs; dedicated Agents expose resourceId for this project or pairwise managedBy for another project. Dedicated lines without an active owner are unavailable. SMS retains its existing ownership and phone number enrichment behavior. Email retains domain ownership resolution, lowercase ASCII domains and case-preserved local parts. Dependency failures fail before classification writes. The natural identity is the project path ID, platform, and handle. Retrying after a committed creation whose response was lost returns the same User with 200 rather than replaying 201."
+        return (await self._raw_resource.create_or_get_user(input)).data
 
     async def create_project_api_key(
         self, input: CreateProjectApiKeyInput
@@ -7731,6 +8764,10 @@ class AsyncProjectsResource:
         "Get attachment\n\nReturns an Attachment's metadata. Use the content endpoint to download its bytes."
         return (await self._raw_resource.get_attachment(input)).data
 
+    async def get_message(self, input: GetMessageInput) -> models.PlatformMessage | None:
+        "Get a Message\n\nReturns one stored Message by canonical Photon Message ID on any supported contract platform. The globally unique Message ID is resolved within the authorized Project. Unsupported platform Messages are outside this collection and return MESSAGE_NOT_FOUND."
+        return (await self._raw_resource.get_message(input)).data
+
     async def get_message_metrics_backfill(
         self, input: GetMessageMetricsBackfillInput
     ) -> models.GetMessageMetricsBackfillResponse:
@@ -7742,6 +8779,14 @@ class AsyncProjectsResource:
     ) -> models.GetMessageMetricsSqlSchemaResponse:
         "Get metrics SQL schema\n\nReturns the message_events and call_events SQL schema, supported queries, and limits for the selected API version."
         return (await self._raw_resource.get_message_metrics_sql_schema(input)).data
+
+    async def get_space(self, input: GetSpaceInput) -> models.PlatformSpace | None:
+        "Get a Space\n\nReturns one stored Space by canonical Photon Space ID. A Space of a kind its platform does not support returns OPERATION_UNAVAILABLE."
+        return (await self._raw_resource.get_space(input)).data
+
+    async def get_user(self, input: GetUserInput) -> models.PlatformUser | None:
+        "Get an User\n\nReturns one User after refreshing its Human or Agent classification and project ownership where supported. iMessage email identities retain their producer-observed classification and ownership because no current email ownership lookup is available. WhatsApp, WhatsApp Business and iMessage perform no provider fetch; only SMS Human classifications perform a phone number lookup. Current-project Agents expose resourceId; external-project Agents expose only pairwise managedBy. Conditional response evaluation uses the post-reconciliation representation. Stored reads use each platform definition; projection requires adapter support."
+        return (await self._raw_resource.get_user(input)).data
 
     async def get_webhook_destination(
         self, input: GetWebhookDestinationInput
@@ -7759,11 +8804,23 @@ class AsyncProjectsResource:
         "List attachments\n\nLists the Project's Attachment metadata, with optional time filters."
         return (await self._raw_resource.list_attachments(input)).data
 
+    async def list_messages(self, input: ListMessagesInput) -> models.MessagePage:
+        "List Messages\n\nLists the Project's Messages, with optional resource, conversation, and time filters. Results are eventually consistent."
+        return (await self._raw_resource.list_messages(input)).data
+
     async def list_project_api_keys(
         self, input: ListProjectApiKeysInput
     ) -> models.ListProjectApiKeysResponse:
         "List project API keys\n\nLists the API keys on the selected project, ordered newest first. Revoked keys are not listed; expired keys stay listed until they are revoked. Entries contain key metadata and permissions, never secret values. Use the returned identifiers to manage an existing key; lost secrets cannot be recovered through this operation."
         return (await self._raw_resource.list_project_api_keys(input)).data
+
+    async def list_spaces(self, input: ListSpacesInput) -> models.SpacePage:
+        "List Spaces\n\nLists the Project's stored Spaces, with optional participant and Message filters. Results are eventually consistent."
+        return (await self._raw_resource.list_spaces(input)).data
+
+    async def list_users(self, input: ListUsersInput) -> models.UserPage:
+        "List Users\n\nLists stored Users without refreshing their classification; use Get User for current details. Message filters select incoming senders or outgoing recipients, excluding the Message's own endpoint."
+        return (await self._raw_resource.list_users(input)).data
 
     async def list_webhook_api_versions(
         self, input: ListWebhookApiVersionsInput
@@ -7789,6 +8846,12 @@ class AsyncProjectsResource:
         "List webhook event types\n\nLists the webhook event types available in the requested apiVersion, including their descriptions, audiences and reader-schema URLs. Use this versioned catalog when selecting a destination's enabledEvents. The response may include version-retirement information; an authorized conditional request can return 304 without a body."
         return (await self._raw_resource.list_webhook_event_types(input)).data
 
+    async def mark_message_read(
+        self, input: MarkMessageReadInput
+    ) -> models.MarkMessageReadResponse:
+        "Mark a Message as read\n\nPersists a request to mark one incoming Message as read using its receiving account. A 202 means accepted for asynchronous execution, not handled by the provider. Requires Idempotency-Key. The returned action Message tracks its outcome; privacy settings may suppress remote visibility."
+        return (await self._raw_resource.mark_message_read(input)).data
+
     async def query_message_metrics(
         self, input: QueryMessageMetricsInput
     ) -> models.QueryMessageMetricsResponse:
@@ -7812,6 +8875,14 @@ class AsyncProjectsResource:
     ) -> models.RotateWebhookSigningSecretResponse:
         "Rotate webhook signing secret\n\nRotates the signing secret for the selected project's webhook destination and returns the new secret. The optional overlapSeconds controls the requested overlap with the previous secret according to the documented request constraints. Store the new secret securely and update the receiver's signature verification configuration; it is returned only in this response and in idempotent replays of it, never by destination reads. Supply the required Idempotency-Key header."
         return (await self._raw_resource.rotate_webhook_signing_secret(input)).data
+
+    async def send_message(self, input: SendMessageInput) -> models.SentMessage:
+        "Send a Message\n\nSends SMS, email, WhatsApp Personal, WhatsApp Business, iMessage, or Telegram text and image messages. A shared iMessage line sends only in direct Spaces, only to a peer with an active Assignment who has messaged it since that Assignment. SMS and MMS require current Platforms authorization for the sender and every recipient; campaign eligibility is required unless every recipient is in-network."
+        return (await self._raw_resource.send_message(input)).data
+
+    async def set_space_typing(self, input: SetSpaceTypingInput) -> models.SetSpaceTypingResponse:
+        "Set typing in a Space\n\nSaves one transient typing update as an authorized Agent in this Space. Returns the dispatched Message with HTTP 202. Successful provider handoff ends in accepted; rejection or expiry ends in failed. Repeat true to refresh; false stops where supported. Callers control refreshes. Unsupported platforms return OPERATION_UNAVAILABLE."
+        return (await self._raw_resource.set_space_typing(input)).data
 
     async def update(self, input: UpdateProjectInput) -> models.Project:
         "Update project\n\nUpdates the identified project's name and returns the updated project. The project slug is not a mutable field in this request. Use an authorized account or organization service-identity credential; a project API key is not accepted. Supply the required Idempotency-Key header."

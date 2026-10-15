@@ -3,12 +3,26 @@
 
 from __future__ import annotations
 
-from typing import Any, Literal, Optional, Union
+from typing import Annotated, Any, Literal, Optional, Union
 
-from pydantic import ConfigDict, Field
+from pydantic import ConfigDict, Field, model_validator
 from pydantic.experimental.missing_sentinel import MISSING
 
-from photon_api._model_base import BaseModel, PrefixItems, RootModel
+from photon_api._model_base import BaseModel, PrefixItems, RootModel, validate_all_of
+
+
+class AcceptedMessageTimestamps(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    acceptedAt: str
+    """
+    When Photon finalized terminal acceptance.
+    """
+    dispatchedAt: str
+    """
+    When the emitting service established the public dispatch/send milestone.
+    """
 
 
 class Account(BaseModel):
@@ -144,6 +158,10 @@ class Attachment(BaseModel):
     projectId: str
     sizeBytes: int
     updatedAt: str
+
+
+class AttachmentId(RootModel[str]):
+    root: str
 
 
 class AttachmentNotReadyRetryAfter(RootModel[Literal["5"]]):
@@ -477,6 +495,30 @@ class ConnectWhatsappBusinessRequest(BaseModel):
     wabaId: str
 
 
+class ContentIssueCode(
+    RootModel[
+        Literal[
+            "metadata_server_owned",
+            "markdown_html_forbidden",
+            "voice_requires_audio",
+            "attachment_mime_type_mismatch",
+            "attachment_size_mismatch",
+        ]
+        | str
+    ]
+):
+    root: (
+        Literal[
+            "metadata_server_owned",
+            "markdown_html_forbidden",
+            "voice_requires_audio",
+            "attachment_mime_type_mismatch",
+            "attachment_size_mismatch",
+        ]
+        | str
+    )
+
+
 class CreateAccountServiceKeyRequest(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -680,6 +722,44 @@ class DeleteVoiceProfileOutboundResponse(BaseModel):
     profileVersion: int
 
 
+class DeliveredMessageTimestamps(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    deliveredAt: str
+    """
+    When Photon finalized delivery based on authoritative confirmation.
+    """
+    dispatchedAt: str
+    """
+    When the emitting service established the public dispatch/send milestone.
+    """
+
+
+class DeliveryConfirmationNotApplicableAcceptance(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    code: Literal["delivery_confirmation_not_applicable"]
+    message: str
+
+
+class DeliveryConfirmationTimedOutAcceptance(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    code: Literal["delivery_confirmation_timed_out"]
+    message: str
+
+
+class DeliveryConfirmationUnavailableAcceptance(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    code: Literal["delivery_confirmation_unavailable"]
+    message: str
+
+
 class DeviceAuthorizeResponse(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -781,8 +861,220 @@ class DisableOrganizationSsoRequest(BaseModel):
     expectedVersion: str
 
 
+class DispatchedMessageTimestamps(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    dispatchedAt: str
+    """
+    When the emitting service established the public dispatch/send milestone.
+    """
+
+
 class DownloadAttachmentResponse(RootModel[Any]):
     root: Any
+
+
+class EmailContentDisposition(RootModel[Literal["inline", "attachment"] | str]):
+    root: Literal["inline", "attachment"] | str
+
+
+class EmailDeliveryMetricsAvailability(
+    RootModel[Literal["available", "partial", "no_data", "unavailable"] | str]
+):
+    root: Literal["available", "partial", "no_data", "unavailable"] | str
+
+
+class EmailDeliveryMetricsFreshness(RootModel[Literal["current", "stale", "unavailable"] | str]):
+    root: Literal["current", "stale", "unavailable"] | str
+
+
+class EmailDeliveryMetricsInterval(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    end: str
+    start: str
+
+
+class EmailDeliveryMetricsPeriod(RootModel[Literal["day", "week"] | str]):
+    root: Literal["day", "week"] | str
+
+
+class EmailDeliveryMetricsPeriodParameter(RootModel[Literal["day", "week"] | str]):
+    root: Literal["day", "week"] | str = "day"
+
+
+class EmailDeliveryMetricsSeriesMetric(
+    RootModel[
+        Literal[
+            "sent", "delivered", "permanent_bounces", "temporary_bounces", "observed_complaints"
+        ]
+        | str
+    ]
+):
+    root: (
+        Literal[
+            "sent", "delivered", "permanent_bounces", "temporary_bounces", "observed_complaints"
+        ]
+        | str
+    )
+
+
+class EmailDeliveryMetricsSeriesPoint(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    at: str
+    count: int
+
+
+class EmailDeliveryMetricsSeriesStatus(
+    RootModel[Literal["available", "no_data", "unavailable"] | str]
+):
+    root: Literal["available", "no_data", "unavailable"] | str
+
+
+class EmailDeliveryMetricsSeriesUnit(RootModel[Literal["messages", "reports"] | str]):
+    root: Literal["messages", "reports"] | str
+
+
+class EmailMailboxAddress(RootModel[str]):
+    root: str
+    """
+    The captured mailbox address. Preserve local-part case; admission services own normalization and sending restrictions.
+    """
+
+
+class EmailMetadata(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    contentDisposition: Literal["inline", "attachment"] | str | MISSING = MISSING
+    contentId: str | MISSING = MISSING
+    originalHtml: str | MISSING = MISSING
+    related: bool | MISSING = MISSING
+    sourceMediaType: str | MISSING = MISSING
+    subject: str | MISSING = MISSING
+
+
+class EmailObservationStatus(
+    RootModel[Literal["current", "partial", "stale", "unavailable"] | str]
+):
+    root: Literal["current", "partial", "stale", "unavailable"] | str
+
+
+class EmailRecommendationCategory(
+    RootModel[Literal["sending_restriction", "domain_health", "data_availability"] | str]
+):
+    root: Literal["sending_restriction", "domain_health", "data_availability"] | str
+
+
+class EmailRecommendationCode(
+    RootModel[
+        Literal[
+            "project_sending_paused",
+            "organization_sending_paused",
+            "sending_review_required",
+            "sending_checks_unavailable",
+            "domain_dns_records",
+            "domain_verification",
+            "domain_checks_unavailable",
+            "domain_settings_unavailable",
+            "domain_unavailable",
+        ]
+        | str
+    ]
+):
+    root: (
+        Literal[
+            "project_sending_paused",
+            "organization_sending_paused",
+            "sending_review_required",
+            "sending_checks_unavailable",
+            "domain_dns_records",
+            "domain_verification",
+            "domain_checks_unavailable",
+            "domain_settings_unavailable",
+            "domain_unavailable",
+        ]
+        | str
+    )
+
+
+class EmailRecommendationContactSupportAction(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    code: Literal["contact_support"]
+
+
+class EmailRecommendationDomainScope(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    resourceId: str
+    type: Literal["domain"]
+
+
+class EmailRecommendationOrganizationScope(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    type: Literal["organization"]
+
+
+class EmailRecommendationProjectScope(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    type: Literal["project"]
+
+
+class EmailRecommendationReviewDomainChecksAction(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    code: Literal["review_domain_checks"]
+    resourceId: str
+
+
+class EmailRecommendationReviewDomainDnsAction(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    code: Literal["review_domain_dns"]
+    resourceId: str
+
+
+class EmailRecommendationScope(
+    RootModel[
+        EmailRecommendationProjectScope
+        | EmailRecommendationOrganizationScope
+        | EmailRecommendationDomainScope
+    ]
+):
+    root: (
+        EmailRecommendationProjectScope
+        | EmailRecommendationOrganizationScope
+        | EmailRecommendationDomainScope
+    )
+
+
+class EmailRecommendationSeverity(RootModel[Literal["info", "warning"] | str]):
+    root: Literal["info", "warning"] | str
+
+
+class EmailSendingPolicyReviewStatus(RootModel[Literal["new", "reviewed"] | str]):
+    root: Literal["new", "reviewed"] | str
+
+
+class EmailSendingSetupCoverage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    observationStatus: Literal["current", "partial", "stale", "unavailable"] | str
+    observedAt: str | MISSING = MISSING
 
 
 class EntitlementRejectionReason(
@@ -817,6 +1109,20 @@ class ExistingAppInstallationDeliveryStatus(
     ]
 ):
     root: Literal["delivery_consumed", "recovery_required", "revocation_pending", "revoked"] | str
+
+
+class FailedMessageTimestamps(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    dispatchedAt: str | MISSING = MISSING
+    """
+    When the emitting service established the public dispatch/send milestone.
+    """
+    failedAt: str
+    """
+    When Photon finalized terminal failure.
+    """
 
 
 class FilteredVerificationCode(BaseModel):
@@ -968,8 +1274,18 @@ class GetWhatsappSignupConfigResponse(BaseModel):
     scopes: list[str]
 
 
+class IdempotentReplayedValue(RootModel[Literal["true", "false"] | str]):
+    root: Literal["true", "false"] | str
+
+
 class ImessageHandle(RootModel[str]):
     root: str
+
+
+class ImessageSpaceDetails(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
 
 
 class InvitationEnterpriseLoginRequest(BaseModel):
@@ -1083,6 +1399,70 @@ class ListVoiceProfilesDefaultInput(RootModel[Literal["true", "false"] | str]):
     root: Literal["true", "false"] | str
 
 
+class ManagerId(RootModel[str]):
+    root: str
+
+
+class MessageBlockedByCarrierFailure(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    code: Literal["message_blocked_by_carrier"]
+    message: str
+
+
+class MessageBlockedFailure(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    code: Literal["message_blocked"]
+    message: str
+
+
+class MessageContentInvalidFailure(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    code: Literal["message_content_invalid"]
+    message: str
+
+
+class MessageDeliveryFailedFailure(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    code: Literal["message_delivery_failed"]
+    confirmedRecipientCount: int | MISSING = MISSING
+    """
+    Unique recipients with authoritative delivery confirmation for the original send; omission means evidence is not supplied.
+    """
+    message: str
+
+
+class MessageDirection(RootModel[Literal["received", "sent"] | str]):
+    root: Literal["received", "sent"] | str
+
+
+class MessageExpiredFailure(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    code: Literal["message_expired"]
+    message: str
+
+
+class MessageFailedFailure(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    code: Literal["message_failed"]
+    message: str
+
+
+class MessageId(RootModel[str]):
+    root: str
+
+
 class MessageMetricsBackfillState(
     RootModel[
         Literal["disabled", "pending", "running", "verifying", "completed", "paused", "failed"]
@@ -1176,6 +1556,116 @@ class MessageMetricsSqlLimits(BaseModel):
 
 class MessageMetricsSqlTableName(RootModel[Literal["message_events", "call_events"] | str]):
     root: Literal["message_events", "call_events"] | str
+
+
+class MessageNotFoundProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["MESSAGE_NOT_FOUND"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[404]
+    title: Literal["Message Not Found"]
+    type: Literal["https://photon.codes/docs/problems/message-not-found"]
+
+
+class MessageNotReadableProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["MESSAGE_NOT_READABLE"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["Message Not Readable"]
+    type: Literal["https://photon.codes/docs/problems/message-not-readable"]
+
+
+class MessageRateLimitedFailure(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    code: Literal["message_rate_limited"]
+    message: str
+
+
+class MessageRejectedFailure(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    code: Literal["message_rejected"]
+    message: str
+
+
+class MessageStatus(
+    RootModel[Literal["received", "dispatched", "accepted", "delivered", "failed"] | str]
+):
+    root: Literal["received", "dispatched", "accepted", "delivered", "failed"] | str
+
+
+class MessageStatusCount(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    count: int
+    status: Literal["received", "dispatched", "accepted", "delivered", "failed"] | str
+
+
+class MessageSubmissionUnknownFailure(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    code: Literal["message_submission_unknown"]
+    message: str
+
+
+class MessageTooLargeFailure(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    code: Literal["message_too_large"]
+    message: str
+
+
+class MessageTooLongProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["MESSAGE_TOO_LONG"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[422]
+    title: Literal["Message Too Long"]
+    type: Literal["https://photon.codes/docs/problems/message-too-long"]
+
+
+class MessageTypeUnsupportedFailure(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    code: Literal["message_type_unsupported"]
+    message: str
+
+
+class MessagingUnavailableFailure(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    code: Literal["messaging_unavailable"]
+    message: str
 
 
 class MeteredUsage(BaseModel):
@@ -1327,6 +1817,22 @@ class OperationType(
         ]
         | str
     )
+
+
+class OperationUnavailableProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["OPERATION_UNAVAILABLE"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[422]
+    title: Literal["Operation Unavailable"]
+    type: Literal["https://photon.codes/docs/problems/operation-unavailable"]
 
 
 class OrganizationAuthenticationRedirect(BaseModel):
@@ -1576,6 +2082,17 @@ class PendingBillingOperation(BaseModel):
     submittedAt: str | None
 
 
+class PhoneCarrier(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    lineType: str | MISSING = MISSING
+    mobileCountryCode: str | MISSING = MISSING
+    mobileNetworkCode: str | MISSING = MISSING
+    name: str | MISSING = MISSING
+    normalizedName: str | MISSING = MISSING
+
+
 class PhoneVerificationCaptcha(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -1586,6 +2103,30 @@ class PhoneVerificationCaptcha(BaseModel):
 
 class PlanSource(RootModel[Literal["catalog", "override"] | str]):
     root: Literal["catalog", "override"] | str
+
+
+class Platform(
+    RootModel[
+        Literal["sms", "email", "whatsapp", "whatsapp_business", "imessage", "telegram"] | str
+    ]
+):
+    root: Literal["sms", "email", "whatsapp", "whatsapp_business", "imessage", "telegram"] | str
+
+
+class PlatformIdentifier(RootModel[str]):
+    root: str
+
+
+class PollOption(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    id: str
+    text: str
+
+
+class PollSelectionMode(RootModel[Literal["single", "multiple"] | str]):
+    root: Literal["single", "multiple"] | str
 
 
 class PreviewOrganizationChangeRequest(BaseModel):
@@ -1692,6 +2233,10 @@ class ProjectDeletedProblem(BaseModel):
     type: Literal["https://photon.codes/docs/problems/project-deleted"]
 
 
+class ProjectId(RootModel[str]):
+    root: str
+
+
 class ProjectInvoiceSubject(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -1795,6 +2340,44 @@ class RateLimitedProblem(BaseModel):
     type: Literal["https://photon.codes/docs/problems/rate-limited"]
 
 
+class ReactionAction(RootModel[Literal["add", "remove"] | str]):
+    root: Literal["add", "remove"] | str
+
+
+class ReceivedMessageTimestamps(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    receivedAt: str
+    """
+    Authoritative source receipt or observation time, preserved across replay.
+    """
+
+
+class RecipientInvalidFailure(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    code: Literal["recipient_invalid"]
+    message: str
+
+
+class RecipientOptedOutFailure(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    code: Literal["recipient_opted_out"]
+    message: str
+
+
+class RecipientUnreachableFailure(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    code: Literal["recipient_unreachable"]
+    message: str
+
+
 class RedeemAppInstallationDeliveryRequest(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -1832,6 +2415,10 @@ class RequestTimeoutProblem(BaseModel):
     status: Literal[504]
     title: Literal["Request Timeout"]
     type: Literal["https://photon.codes/docs/problems/request-timeout"]
+
+
+class ResourceId(RootModel[str]):
+    root: str
 
 
 class ResourceMismatchProblem(BaseModel):
@@ -1939,6 +2526,223 @@ class SelectableWebhookApiVersionStatus(RootModel[Literal["preview", "latest", "
     root: Literal["preview", "latest", "maintain"] | str
 
 
+class SendAttachmentCaption(BaseModel):
+    """
+    Text shown with the attachment. Accepted on: telegram.
+    """
+
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    format: str
+    text: str
+
+
+class SendAttachmentMetadata(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    caption: SendAttachmentCaption | MISSING = MISSING
+
+
+class SendEmailMailbox(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    address: str
+    name: str | MISSING = MISSING
+
+
+class SendEmailOptions(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    bcc: list[SendEmailMailbox] | MISSING = MISSING
+    cc: list[SendEmailMailbox] | MISSING = MISSING
+    replyTo: list[SendEmailMailbox] | MISSING = MISSING
+    subject: str | MISSING = MISSING
+    to: list[SendEmailMailbox] | MISSING = MISSING
+
+
+class SendMessageDeleteContent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    reason: str | MISSING = MISSING
+    scope: str | MISSING = MISSING
+    type: Literal["message.delete"]
+
+
+class SendMessageReadContent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    type: Literal["message.read"]
+
+
+class SendPollContent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    options: list[PollOption]
+    question: str
+    selectionMode: Literal["single", "multiple"] | str
+    type: Literal["poll"]
+
+
+class SendPollUpdateContent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    options: list[PollOption]
+    question: str
+    selectionMode: Literal["single", "multiple"] | str
+    type: Literal["poll.update"]
+
+
+class SendPollVoteContent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    selectedOptions: list[PollOption]
+    type: Literal["poll.vote"]
+
+
+class SendReactionContent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    action: Literal["add", "remove"] | str
+    reaction: str
+    type: Literal["reaction"]
+
+
+class SendSpaceTypingUpdateContent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    type: Literal["space.typing.update"]
+    typing: bool
+    """
+    True starts or refreshes typing; false stops it or reports a stop.
+    """
+
+
+class SendTelegramOptions(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    richMessage: bool | MISSING = MISSING
+    """
+    Whether standalone text is sent as a Telegram rich message. Defaults to true; false sends a regular message. Not accepted with attachments.
+    """
+
+
+class SendTextContent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    format: str
+    text: str
+    type: Literal["text"]
+
+
+class SendTextUpdateContent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    format: str
+    text: str
+    type: Literal["text.update"]
+
+
+class SendVoiceContent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    attachmentId: str
+    type: Literal["voice"]
+
+
+class SenderNotAuthorizedFailure(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    code: Literal["sender_not_authorized"]
+    message: str
+
+
+class SenderNotFoundProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["SENDER_NOT_FOUND"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[404]
+    title: Literal["Sender Not Found"]
+    type: Literal["https://photon.codes/docs/problems/sender-not-found"]
+
+
+class SenderNotSendableProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["SENDER_NOT_SENDABLE"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["Sender Not Sendable"]
+    type: Literal["https://photon.codes/docs/problems/sender-not-sendable"]
+
+
+class SenderRegistrationRequiredFailure(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    code: Literal["sender_registration_required"]
+    message: str
+
+
+class SenderUnavailableFailure(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    code: Literal["sender_unavailable"]
+    message: str
+
+
+class SentMessageStatus(RootModel[Literal["dispatched", "accepted", "delivered", "failed"] | str]):
+    root: Literal["dispatched", "accepted", "delivered", "failed"] | str
+
+
+class SetSpaceTypingContent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    type: Literal["space.typing.update"]
+    typing: bool
+
+
+class SetSpaceTypingRequest(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    senderId: str
+    typing: bool
+    """
+    True starts or refreshes typing; false stops it.
+    """
+
+
 class SharedLineAssignmentPlatform(RootModel[Literal["imessage", "whatsapp"] | str]):
     root: Literal["imessage", "whatsapp"] | str
 
@@ -1957,6 +2761,54 @@ class SharedLineCapExceededProblem(BaseModel):
     status: Literal[409]
     title: Literal["Shared Line Cap Exceeded"]
     type: Literal["https://photon.codes/docs/problems/shared-line-cap-exceeded"]
+
+
+class SharedLineGroupUnsupportedProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["SHARED_LINE_GROUP_UNSUPPORTED"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[422]
+    title: Literal["Shared Line Group Unsupported"]
+    type: Literal["https://photon.codes/docs/problems/shared-line-group-unsupported"]
+
+
+class SharedLineInboundRequiredProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["SHARED_LINE_INBOUND_REQUIRED"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[403]
+    title: Literal["Shared Line Inbound Required"]
+    type: Literal["https://photon.codes/docs/problems/shared-line-inbound-required"]
+
+
+class SharedLineNotAssignedProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["SHARED_LINE_NOT_ASSIGNED"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[403]
+    title: Literal["Shared Line Not Assigned"]
+    type: Literal["https://photon.codes/docs/problems/shared-line-not-assigned"]
 
 
 class SharedLinePoolExhaustedProblem(BaseModel):
@@ -2107,6 +2959,22 @@ class SmsCampaignMutationInProgressProblem(BaseModel):
     type: Literal["https://photon.codes/docs/problems/sms-campaign-mutation-in-progress"]
 
 
+class SmsCampaignNotEligibleProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["SMS_CAMPAIGN_NOT_ELIGIBLE"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["SMS Campaign Not Eligible"]
+    type: Literal["https://photon.codes/docs/problems/sms-campaign-not-eligible"]
+
+
 class SmsCampaignNotFoundProblem(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -2234,8 +3102,118 @@ class SmsLineUnsupportedProblem(BaseModel):
     type: Literal["https://photon.codes/docs/problems/sms-line-unsupported"]
 
 
+class SmsSpaceDetails(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+
+
+class SmsUserDetails(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    carrier: PhoneCarrier | MISSING = MISSING
+    countryCode: str | MISSING = MISSING
+    managedBy: str | MISSING = MISSING
+    nationalFormat: str | MISSING = MISSING
+    resourceId: str | MISSING = MISSING
+
+
 class SortOrder(RootModel[Literal["asc", "desc"] | str]):
     root: Literal["asc", "desc"] | str
+
+
+class SpaceAmbiguousProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["SPACE_AMBIGUOUS"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["Multiple Matching Spaces"]
+    type: Literal["https://photon.codes/docs/problems/space-ambiguous"]
+
+
+class SpaceCount(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    count: int
+
+
+class SpaceId(RootModel[str]):
+    root: str
+
+
+class SpaceNotFoundProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["SPACE_NOT_FOUND"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[404]
+    title: Literal["Space Not Found"]
+    type: Literal["https://photon.codes/docs/problems/space-not-found"]
+
+
+class SpaceNotSendableProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["SPACE_NOT_SENDABLE"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["Space Not Sendable"]
+    type: Literal["https://photon.codes/docs/problems/space-not-sendable"]
+
+
+class SpaceOrderBy(RootModel[Literal["created_at", "updated_at", "last_message_created_at"] | str]):
+    root: Literal["created_at", "updated_at", "last_message_created_at"] | str
+
+
+class SpaceRequiresOwnedAgentProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["SPACE_REQUIRES_OWNED_AGENT"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[422]
+    title: Literal["Space Requires Owned Agent"]
+    type: Literal["https://photon.codes/docs/problems/space-requires-owned-agent"]
+
+
+class SpaceTypingCacheControl(RootModel[Literal["no-store"]]):
+    root: Literal["no-store"]
+
+
+class SpamClassification(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    classifiedAt: str | MISSING = MISSING
+    confidence: float | MISSING = MISSING
+    source: str
+    status: str
 
 
 class SsoSubscriptionRequiredProblem(BaseModel):
@@ -2332,6 +3310,13 @@ class SupportedPlatform(BaseModel):
     type: str
 
 
+class SupportedPlatformConstraint(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    platform: Platform
+
+
 class TelegramProjectDeletedProblem(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -2364,6 +3349,19 @@ class TelegramProvisionInProgressProblem(BaseModel):
     status: Literal[409]
     title: Literal["Telegram Provision In Progress"]
     type: Literal["https://photon.codes/docs/problems/telegram-provision-in-progress"]
+
+
+class TelegramSpaceDetails(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+
+
+class TelegramUserDetails(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    resourceId: str | MISSING = MISSING
 
 
 class TimestampOrderBy(RootModel[Literal["created_at", "updated_at"] | str]):
@@ -2402,6 +3400,22 @@ class UnavailableProjectSlugReason(
     RootModel[Literal["reserved", "retired", "taken", "too_short"] | str]
 ):
     root: Literal["reserved", "retired", "taken", "too_short"] | str
+
+
+class UnsupportedContentProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["UNSUPPORTED_CONTENT"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[422]
+    title: Literal["Unsupported Content"]
+    type: Literal["https://photon.codes/docs/problems/unsupported-content"]
 
 
 class UpdateAccountOnboardingRequest(BaseModel):
@@ -2602,6 +3616,53 @@ class UsageChargeTier(BaseModel):
     toUnit: int | None
 
 
+class UserCount(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    count: int
+
+
+class UserId(RootModel[str]):
+    root: str
+
+
+class UserIdentityConflictProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["USER_IDENTITY_CONFLICT"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["User Identity Conflict"]
+    type: Literal["https://photon.codes/docs/problems/user-identity-conflict"]
+
+
+class UserLineType(RootModel[Literal["shared", "dedicated"] | str]):
+    root: Literal["shared", "dedicated"] | str
+
+
+class UserNotFoundProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["USER_NOT_FOUND"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[404]
+    title: Literal["User Not Found"]
+    type: Literal["https://photon.codes/docs/problems/user-not-found"]
+
+
 class ValidationLocation(
     RootModel[Literal["body", "cookie", "form", "header", "json", "param", "query"] | str]
 ):
@@ -2691,6 +3752,20 @@ class VoiceLineProfileAssignmentUpdate(BaseModel):
     expectedVersion: int
     profileId: str | None
     resourceId: str
+
+
+class VoiceMetadata(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    durationMs: int | MISSING = MISSING
+    """
+    Server-observed recording duration in milliseconds, when known.
+    """
+    waveform: list[float] | MISSING = MISSING
+    """
+    Server-provided normalized waveform samples for optional display.
+    """
 
 
 class VoiceOutboundConfiguredProblem(BaseModel):
@@ -2813,6 +3888,20 @@ class VoiceProfileVersionConflictProblem(BaseModel):
     type: Literal["https://photon.codes/docs/problems/voice-profile-version-conflict"]
 
 
+class VoiceSpaceDetails(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+
+
+class VoiceUserDetails(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    managedBy: str | MISSING = MISSING
+    resourceId: str | MISSING = MISSING
+
+
 class WebhookApiVersionRetirement(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -2922,6 +4011,21 @@ class WhatsappBusinessAccountAlert(BaseModel):
     type: str
 
 
+class WhatsappBusinessSpaceDetails(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+
+
+class WhatsappBusinessUserDetails(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    managedBy: str | MISSING = MISSING
+    phoneNumber: str | MISSING = MISSING
+    resourceId: str | MISSING = MISSING
+
+
 class WhatsappDisplayNameUnavailableProblem(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -3010,6 +4114,22 @@ class WhatsappSenderProvisioningProblem(BaseModel):
     status: Literal[409]
     title: Literal["WhatsApp Sender Provisioning"]
     type: Literal["https://photon.codes/docs/problems/whatsapp-sender-provisioning"]
+
+
+class WhatsappSpaceDetails(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+
+
+class WhatsappUserDetails(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    managedBy: str | MISSING = MISSING
+    phoneNumber: str | MISSING = MISSING
+    resourceId: str | MISSING = MISSING
+    type: Literal["shared", "dedicated"] | str | MISSING = MISSING
 
 
 class WhatsappVerificationCodeNotFoundProblem(BaseModel):
@@ -3756,6 +4876,22 @@ class BillingPreviewPlanChange(BaseModel):
     """
 
 
+class BillingSuspendedProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["BILLING_SUSPENDED"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[402]
+    title: Literal["Billing Suspended"]
+    type: Literal["https://photon.codes/docs/problems/billing-suspended"]
+
+
 class CancelOperationGatewayTimeoutProblem(
     RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
 ):
@@ -3845,6 +4981,20 @@ class ConfirmAccountPhoneVerificationGatewayTimeoutProblem(
     root: UpstreamTimeoutProblem | RequestTimeoutProblem
 
 
+class ConfirmedRecipient(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    handle: str
+    """
+    Recipient handle from the original send: an email address for email, or the corresponding address on another platform.
+    """
+    userId: str
+    """
+    Photon User ID of the confirmed recipient.
+    """
+
+
 class ConnectEmailDomainGatewayTimeoutProblem(
     RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
 ):
@@ -3899,10 +5049,44 @@ class ConnectWhatsappBusinessServiceUnavailableProblem(
     )
 
 
+class ContentIssue(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    code: (
+        Literal[
+            "metadata_server_owned",
+            "markdown_html_forbidden",
+            "voice_requires_audio",
+            "attachment_mime_type_mismatch",
+            "attachment_size_mismatch",
+        ]
+        | str
+    )
+    location: Literal["json"]
+    message: str
+    path: str
+
+
+class ContentMetadata(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, dict[str, JsonValue | None]],
+    }
+    email: EmailMetadata | MISSING = MISSING
+    voice: VoiceMetadata | MISSING = MISSING
+
+
 class CountFilteredVerificationCodesGatewayTimeoutProblem(
     RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
 ):
     root: RequestTimeoutProblem | UpstreamTimeoutProblem
+
+
+class CountMessagesGatewayTimeoutProblem(RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
 
 
 class CountProjectsGatewayTimeoutProblem(RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]):
@@ -3913,6 +5097,14 @@ class CountResourceFilteredVerificationCodesGatewayTimeoutProblem(
     RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
 ):
     root: RequestTimeoutProblem | UpstreamTimeoutProblem
+
+
+class CountSpacesGatewayTimeoutProblem(RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class CountUsersGatewayTimeoutProblem(RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
 
 
 class CreateAccountProfilePictureUploadGatewayTimeoutProblem(
@@ -3963,6 +5155,37 @@ class CreateDefaultVoiceProfileRequest(BaseModel):
     )
     mediaEncryption: Literal["auto", "srtp"] | str | MISSING = MISSING
     protocol: Literal["sip"]
+
+
+class CreateOrGetSpaceGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class CreateOrGetSpaceRequest(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    participantIds: list[str]
+    """
+    Canonical Photon User IDs from this project and platform. iMessage uses the first participant as creator when a new chat is needed; remaining order is ignored. Other platforms ignore all participant order. Counts: iMessage 2-1000; both WhatsApp platforms exactly 2; email 1-51; SMS 2-9. Every Space requires a currently project-owned Agent.
+    """
+    platform: Platform
+
+
+class CreateOrGetUserGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class CreateOrGetUserRequest(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    handle: str
+    platform: Platform
 
 
 class CreateOrganizationPaymentMethodCheckoutGatewayTimeoutProblem(
@@ -4212,6 +5435,22 @@ class DeleteWebhookDestinationGatewayTimeoutProblem(
     root: RequestTimeoutProblem | UpstreamTimeoutProblem
 
 
+class DeliveryPartiallyConfirmedAcceptance(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    code: Literal["delivery_partially_confirmed"]
+    confirmedRecipientCount: int
+    """
+    Unique recipients with authoritative delivery confirmation for the original send.
+    """
+    confirmedRecipients: list[ConfirmedRecipient] | MISSING = MISSING
+    """
+    Optional complete list of confirmed recipient snapshots, each with a Photon userId and the handle used for the original send. User IDs must be unique, and both fields must be visible to the caller. The list length must equal confirmedRecipientCount. Persist the snapshots with the terminal outcome. Omit when the full confirmed set cannot be identified or disclosed; omission does not mean zero deliveries.
+    """
+    message: str
+
+
 class DeprecatedWebhookApiVersion(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -4283,6 +5522,21 @@ class DownloadAttachmentGatewayTimeoutProblem(
     root: UpstreamTimeoutProblem | RequestTimeoutProblem
 
 
+class EmailDeliveryMetricsSeries(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    metric: (
+        Literal[
+            "sent", "delivered", "permanent_bounces", "temporary_bounces", "observed_complaints"
+        ]
+        | str
+    )
+    points: list[EmailDeliveryMetricsSeriesPoint]
+    status: Literal["available", "no_data", "unavailable"] | str
+    unit: Literal["messages", "reports"] | str
+
+
 class EmailDomainAlreadyConnectedProblem(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -4313,6 +5567,106 @@ class EmailDomainCapExceededProblem(BaseModel):
     status: Literal[409]
     title: Literal["Email Domain Cap Exceeded"]
     type: Literal["https://photon.codes/docs/problems/email-domain-cap-exceeded"]
+
+
+class EmailDomainObservation(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    observationStatus: Literal["current", "partial", "stale", "unavailable"] | str
+    observedAt: str | MISSING = MISSING
+    resourceId: str
+
+
+class EmailMailbox(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    address: str
+    """
+    The captured mailbox address. Preserve local-part case; admission services own normalization and sending restrictions.
+    """
+    name: str | MISSING = MISSING
+    """
+    The captured display name, when known.
+    """
+    userId: str | MISSING = MISSING
+    """
+    The resolved Photon User ID, when available. Outbound admission must resolve every mailbox before capture.
+    """
+
+
+class EmailOrganizationSendingPolicy(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    paused: bool
+    """
+    Whether this Photon sending policy is paused. Other send eligibility checks still apply.
+    """
+    recipientsPer24Hours: int
+    """
+    Organization recipient allowance shared by all Projects in a rolling 24-hour window.
+    """
+    recipientsPerMinute: int
+    """
+    Organization recipient allowance shared by all Projects in a rolling 60-second window.
+    """
+    reviewStatus: Literal["new", "reviewed"] | str
+    updatedAt: str
+
+
+class EmailRecommendationAction(
+    RootModel[
+        EmailRecommendationContactSupportAction
+        | EmailRecommendationReviewDomainDnsAction
+        | EmailRecommendationReviewDomainChecksAction
+    ]
+):
+    root: (
+        EmailRecommendationContactSupportAction
+        | EmailRecommendationReviewDomainDnsAction
+        | EmailRecommendationReviewDomainChecksAction
+    )
+
+
+class EmailRecommendationsCoverage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    deliveryAdvice: Literal["unavailable"]
+    reputation: Literal["unavailable"]
+    sendingPolicies: Literal["available"]
+    sendingSetup: EmailSendingSetupCoverage
+
+
+class EmailRecommendationsDomainPage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    hasMore: bool
+    nextPageToken: str | MISSING = MISSING
+    observations: list[EmailDomainObservation]
+
+
+class EmailSendingPolicy(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    paused: bool
+    """
+    Whether this Photon sending policy is paused. Other send eligibility checks still apply.
+    """
+    reviewStatus: Literal["new", "reviewed"] | str
+    updatedAt: str
+
+
+class EmailUserDetails(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    managedBy: str | MISSING = MISSING
+    resourceId: str | MISSING = MISSING
 
 
 class EntitlementRequiredProblem(BaseModel):
@@ -4452,6 +5806,22 @@ class GetEffectiveTermsGatewayTimeoutProblem(
     RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
 ):
     root: RequestTimeoutProblem | UpstreamTimeoutProblem
+
+
+class GetEmailDeliveryMetricsGatewayTimeoutProblem(
+    RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
+):
+    root: RequestTimeoutProblem | UpstreamTimeoutProblem
+
+
+class GetEmailSendingPoliciesGatewayTimeoutProblem(
+    RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
+):
+    root: RequestTimeoutProblem | UpstreamTimeoutProblem
+
+
+class GetMessageGatewayTimeoutProblem(RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
 
 
 class GetMessageMetricsBackfillResponse(BaseModel):
@@ -4659,6 +6029,14 @@ class GetSmsLineCampaignAssignmentServiceUnavailableProblem(
     root: SmsCampaignContextUnavailableProblem | UpstreamUnavailableProblem
 
 
+class GetSpaceGatewayTimeoutProblem(RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class GetUserGatewayTimeoutProblem(RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
 class GetVoiceLineProfileAssignmentGatewayTimeoutProblem(
     RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
 ):
@@ -4819,6 +6197,15 @@ class ImessageModeDedicatedProblem(BaseModel):
     type: Literal["https://photon.codes/docs/problems/imessage-mode-dedicated"]
 
 
+class ImessageUserDetails(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    managedBy: str | MISSING = MISSING
+    resourceId: str | MISSING = MISSING
+    type: Literal["shared", "dedicated"] | str | MISSING = MISSING
+
+
 class InsufficientScopeProblem(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -4897,6 +6284,55 @@ class InvalidAuthContextProblem(BaseModel):
     status: Literal[500]
     title: Literal["Invalid Authentication Context"]
     type: Literal["https://photon.codes/docs/problems/invalid-auth-context"]
+
+
+class InvalidContentProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["INVALID_CONTENT"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    issues: list[ContentIssue]
+    requestId: str | MISSING = MISSING
+    status: Literal[422]
+    title: Literal["Invalid Content"]
+    type: Literal["https://photon.codes/docs/problems/invalid-content"]
+
+
+class InvalidPageTokenProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["INVALID_PAGE_TOKEN"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[400]
+    title: Literal["Invalid Page Token"]
+    type: Literal["https://photon.codes/docs/problems/invalid-page-token"]
+
+
+class InvalidRequestProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["INVALID_REQUEST"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[400]
+    title: Literal["Invalid Request"]
+    type: Literal["https://photon.codes/docs/problems/invalid-request"]
 
 
 class InvalidReturnToProblem(BaseModel):
@@ -5049,6 +6485,34 @@ class ListCreditActivityInternalServerErrorProblem(
     root: InternalErrorProblem | InvalidAuthContextProblem
 
 
+class ListEmailRecommendationsForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class ListEmailRecommendationsGatewayTimeoutProblem(
+    RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
+):
+    root: RequestTimeoutProblem | UpstreamTimeoutProblem
+
+
+class ListEmailRecommendationsInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
 class ListFilteredVerificationCodesForbiddenProblem(
     RootModel[
         ForbiddenProblem
@@ -5105,6 +6569,32 @@ class ListInvoicesInternalServerErrorProblem(
 
 class ListInvoicesSubjectParam(RootModel[str | Literal["organization"]]):
     root: str | Literal["organization"]
+
+
+class ListMessagesForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class ListMessagesGatewayTimeoutProblem(RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class ListMessagesInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
 
 
 class ListNumberAreaCodesForbiddenProblem(
@@ -5249,6 +6739,34 @@ class ListProjectPlatformsResponse(BaseModel):
     platforms: list[SupportedPlatform]
 
 
+class ListProjectSubscriptionsForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class ListProjectSubscriptionsGatewayTimeoutProblem(
+    RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
+):
+    root: RequestTimeoutProblem | UpstreamTimeoutProblem
+
+
+class ListProjectSubscriptionsInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
 class ListProjectsForbiddenProblem(
     RootModel[
         ForbiddenProblem
@@ -5346,6 +6864,58 @@ class ListSharedLineAssignmentsGatewayTimeoutProblem(
 
 
 class ListSharedLineAssignmentsInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class ListSpacesForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class ListSpacesGatewayTimeoutProblem(RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class ListSpacesInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class ListUsersForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class ListUsersGatewayTimeoutProblem(RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class ListUsersInternalServerErrorProblem(
     RootModel[InternalErrorProblem | InvalidAuthContextProblem]
 ):
     root: InternalErrorProblem | InvalidAuthContextProblem
@@ -5527,6 +7097,134 @@ class ListWhatsappSharedLineAssignmentsInternalServerErrorProblem(
     root: InternalErrorProblem | InvalidAuthContextProblem
 
 
+class MarkMessageReadConflictProblem(
+    RootModel[SenderNotSendableProblem | SpaceNotSendableProblem | MessageNotReadableProblem]
+):
+    root: SenderNotSendableProblem | SpaceNotSendableProblem | MessageNotReadableProblem
+
+
+class MarkMessageReadForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class MarkMessageReadGatewayTimeoutProblem(
+    RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
+):
+    root: RequestTimeoutProblem | UpstreamTimeoutProblem
+
+
+class MarkMessageReadInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class MarkMessageReadNotFoundProblem(
+    RootModel[SenderNotFoundProblem | SpaceNotFoundProblem | MessageNotFoundProblem]
+):
+    root: SenderNotFoundProblem | SpaceNotFoundProblem | MessageNotFoundProblem
+
+
+class MessageAcceptance(
+    RootModel[
+        DeliveryConfirmationUnavailableAcceptance
+        | DeliveryConfirmationNotApplicableAcceptance
+        | DeliveryConfirmationTimedOutAcceptance
+        | DeliveryPartiallyConfirmedAcceptance
+    ]
+):
+    root: (
+        DeliveryConfirmationUnavailableAcceptance
+        | DeliveryConfirmationNotApplicableAcceptance
+        | DeliveryConfirmationTimedOutAcceptance
+        | DeliveryPartiallyConfirmedAcceptance
+    )
+
+
+class MessageCount(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    count: int
+    groups: list[MessageStatusCount]
+
+
+class MessageCountBucket(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    count: int
+    end: str
+    groups: list[MessageStatusCount]
+    start: str
+
+
+class MessageDeleteContent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    metadata: ContentMetadata | MISSING = MISSING
+    reason: str | MISSING = MISSING
+    scope: str | MISSING = MISSING
+    type: Literal["message.delete"]
+
+
+class MessageFailure(
+    RootModel[
+        SenderNotAuthorizedFailure
+        | SenderUnavailableFailure
+        | SenderRegistrationRequiredFailure
+        | RecipientInvalidFailure
+        | RecipientUnreachableFailure
+        | RecipientOptedOutFailure
+        | MessageTypeUnsupportedFailure
+        | MessageContentInvalidFailure
+        | MessageTooLargeFailure
+        | MessageBlockedFailure
+        | MessageBlockedByCarrierFailure
+        | MessageRateLimitedFailure
+        | MessageRejectedFailure
+        | MessageExpiredFailure
+        | MessageDeliveryFailedFailure
+        | MessageSubmissionUnknownFailure
+        | MessagingUnavailableFailure
+        | MessageFailedFailure
+    ]
+):
+    root: (
+        SenderNotAuthorizedFailure
+        | SenderUnavailableFailure
+        | SenderRegistrationRequiredFailure
+        | RecipientInvalidFailure
+        | RecipientUnreachableFailure
+        | RecipientOptedOutFailure
+        | MessageTypeUnsupportedFailure
+        | MessageContentInvalidFailure
+        | MessageTooLargeFailure
+        | MessageBlockedFailure
+        | MessageBlockedByCarrierFailure
+        | MessageRateLimitedFailure
+        | MessageRejectedFailure
+        | MessageExpiredFailure
+        | MessageDeliveryFailedFailure
+        | MessageSubmissionUnknownFailure
+        | MessagingUnavailableFailure
+        | MessageFailedFailure
+    )
+
+
 class MessageMetricsJsonDiscriminator(
     RootModel[MessageMetricsJsonPathDiscriminator | MessageMetricsJsonOneOfPathsDiscriminator]
 ):
@@ -5565,6 +7263,14 @@ class MessageMetricsPlatformJsonPaths(BaseModel):
         | str
     )
     paths: list[MessageMetricsJsonPath]
+
+
+class MessageReadContent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    metadata: ContentMetadata | MISSING = MISSING
+    type: Literal["message.read"]
 
 
 class Operation(BaseModel):
@@ -5629,6 +7335,37 @@ class OrganizationSsoDomain(BaseModel):
     }
     domain: str
     state: Literal["verified", "pending", "failed"] | str
+
+
+class PollContent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    metadata: ContentMetadata | MISSING = MISSING
+    options: list[PollOption]
+    question: str
+    selectionMode: Literal["single", "multiple"] | str
+    type: Literal["poll"]
+
+
+class PollUpdateContent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    metadata: ContentMetadata | MISSING = MISSING
+    options: list[PollOption]
+    question: str
+    selectionMode: Literal["single", "multiple"] | str
+    type: Literal["poll.update"]
+
+
+class PollVoteContent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    metadata: ContentMetadata | MISSING = MISSING
+    selectedOptions: list[PollOption]
+    type: Literal["poll.vote"]
 
 
 class PreviewOrganizationChangeForbiddenProblem(
@@ -5721,6 +7458,45 @@ class Project(BaseModel):
     projectId: str
     slug: str
     updatedAt: str = Field(..., examples=["2026-01-01T00:00:00.000Z"])
+
+
+class ProjectHeldPlan(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    baseAmountCents: int
+    """
+    The plan's recurring base fee in whole cents.
+    """
+    category: str
+    """
+    Category slug, e.g. analytics or messaging.
+    """
+    categoryDisplayName: str | None | MISSING = MISSING
+    """
+    Display name for the subscription category; absent or null when unconfigured.
+    """
+    currency: str
+    """
+    ISO currency code.
+    """
+    minimumCommitment: BillingPlanMinimumCommitment | None
+    planCode: str
+    """
+    This category's plan.
+    """
+    planName: str
+    """
+    The plan's customer-facing name, e.g. Messaging Pro.
+    """
+    status: Literal["active", "past_due", "restricted", "suspended", "terminated"] | str
+    """
+    State of one category's subscription: the payer's dunning stage while it holds one. Dunning is organization-level, so the stage applies to every category at once, and paying clears it. Entitlements are unaffected at every stage; viewing, paying and releasing resources stay available. Only categories that hold a subscription appear at all; a cancelled category is absent rather than listed as terminated.
+    """
+    tierDisplayName: str | None
+    """
+    The plan's tier as customers see it, e.g. Pro for Messaging Pro, where the category is already clear. Null when unconfigured.
+    """
 
 
 class ProjectPage(BaseModel):
@@ -5901,6 +7677,16 @@ class QueryMessageMetricsGatewayTimeoutProblem(
     RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
 ):
     root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class ReactionContent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    action: Literal["add", "remove"] | str
+    metadata: ContentMetadata | MISSING = MISSING
+    reaction: str
+    type: Literal["reaction"]
 
 
 class RedeemAppInstallationDeliveryGatewayTimeoutProblem(
@@ -6219,6 +8005,18 @@ class Resource(BaseModel):
     updatedAt: str = Field(..., examples=["2026-01-01T00:00:00.000Z"])
 
 
+class ResourceMetadata(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    displayName: str | MISSING = MISSING
+    email: EmailMetadata | MISSING = MISSING
+    spam: SpamClassification | MISSING = MISSING
+
+
 class ResourcePage(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -6448,6 +8246,124 @@ class SelectableWebhookApiVersion(BaseModel):
     version: str
 
 
+class SendAttachmentContent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    attachmentId: str
+    metadata: SendAttachmentMetadata | MISSING = MISSING
+    type: Literal["attachment"]
+
+
+class SendMessageConflictProblem(
+    RootModel[
+        AttachmentNotReadyProblem
+        | SenderNotSendableProblem
+        | SmsCampaignNotEligibleProblem
+        | SpaceNotSendableProblem
+    ]
+):
+    root: (
+        AttachmentNotReadyProblem
+        | SenderNotSendableProblem
+        | SmsCampaignNotEligibleProblem
+        | SpaceNotSendableProblem
+    )
+
+
+class SendMessageForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+        | SharedLineInboundRequiredProblem
+        | SharedLineNotAssignedProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+        | SharedLineInboundRequiredProblem
+        | SharedLineNotAssignedProblem
+    )
+
+
+class SendMessageGatewayTimeoutProblem(RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class SendMessageInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class SendMessageNotFoundProblem(
+    RootModel[
+        SpaceNotFoundProblem
+        | MessageNotFoundProblem
+        | AttachmentNotFoundProblem
+        | SenderNotFoundProblem
+    ]
+):
+    root: (
+        SpaceNotFoundProblem
+        | MessageNotFoundProblem
+        | AttachmentNotFoundProblem
+        | SenderNotFoundProblem
+    )
+
+
+class SentMessageConstraint(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    status: Literal["dispatched", "accepted", "delivered", "failed"] | str
+
+
+class SetSpaceTypingConstraint(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    content: SetSpaceTypingContent
+    status: Literal["dispatched"]
+
+
+class SetSpaceTypingForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class SetSpaceTypingGatewayTimeoutProblem(
+    RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
+):
+    root: RequestTimeoutProblem | UpstreamTimeoutProblem
+
+
+class SetSpaceTypingInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class SetSpaceTypingNotFoundProblem(RootModel[SpaceNotFoundProblem | UserNotFoundProblem]):
+    root: SpaceNotFoundProblem | UserNotFoundProblem
+
+
 class SharedLineAssignment(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -6498,6 +8414,86 @@ class SipOutboundConnection(BaseModel):
     realm: str
 
 
+class SmsSpace(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    details: SmsSpaceDetails
+    id: str
+    kind: str
+    metadata: ResourceMetadata
+    participantIds: list[str]
+    platform: Literal["sms"]
+    projectId: str
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class SmsSpaceSnapshot(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    details: SmsSpaceDetails
+    id: str
+    kind: str
+    metadata: ResourceMetadata
+    participantIds: list[str]
+    platform: Literal["sms"]
+    projectId: str
+
+
+class SmsUser(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    details: SmsUserDetails
+    handle: str
+    id: str
+    kind: str
+    metadata: ResourceMetadata
+    platform: Literal["sms"]
+    projectId: str
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class SmsUserSnapshot(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    details: SmsUserDetails
+    handle: str
+    id: str
+    kind: str
+    metadata: ResourceMetadata
+    platform: Literal["sms"]
+    projectId: str
+
+
+class SpaceTypingUpdateContent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    metadata: ContentMetadata | MISSING = MISSING
+    type: Literal["space.typing.update"]
+    typing: bool
+    """
+    True starts or refreshes typing; false stops it or reports a stop.
+    """
+
+
 class StartAccountPhoneVerificationForbiddenProblem(
     RootModel[
         CaptchaRequiredProblem
@@ -6528,8 +8524,96 @@ class StartAccountPhoneVerificationInternalServerErrorProblem(
     root: InternalErrorProblem | InvalidAuthContextProblem
 
 
+class TelegramSpace(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    details: TelegramSpaceDetails
+    id: str
+    kind: str
+    metadata: ResourceMetadata
+    participantIds: list[str]
+    platform: Literal["telegram"]
+    projectId: str
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class TelegramSpaceSnapshot(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    details: TelegramSpaceDetails
+    id: str
+    kind: str
+    metadata: ResourceMetadata
+    participantIds: list[str]
+    platform: Literal["telegram"]
+    projectId: str
+
+
+class TelegramUser(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    details: TelegramUserDetails
+    handle: str
+    id: str
+    kind: str
+    metadata: ResourceMetadata
+    platform: Literal["telegram"]
+    projectId: str
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class TelegramUserSnapshot(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    details: TelegramUserDetails
+    handle: str
+    id: str
+    kind: str
+    metadata: ResourceMetadata
+    platform: Literal["telegram"]
+    projectId: str
+
+
 class TerminalBillingOperation(RootModel[SucceededBillingOperation | FailedBillingOperation]):
     root: SucceededBillingOperation | FailedBillingOperation
+
+
+class TextContent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    format: str
+    metadata: ContentMetadata | MISSING = MISSING
+    text: str
+    type: Literal["text"]
+
+
+class TextUpdateContent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    format: str
+    metadata: ContentMetadata | MISSING = MISSING
+    text: str
+    type: Literal["text.update"]
 
 
 class UnassignSmsLineCampaignBadRequestProblem(
@@ -6618,6 +8702,80 @@ class UnavailableProjectSlug(BaseModel):
     reason: Literal["reserved", "retired", "taken", "too_short"] | str
     slug: str
     suggestion: str | MISSING = MISSING
+
+
+class UnknownContent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    metadata: ContentMetadata | MISSING = MISSING
+    type: str
+
+
+class UnknownSpace(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    details: dict[str, JsonValue | None]
+    id: str
+    kind: str
+    metadata: ResourceMetadata
+    participantIds: list[str]
+    platform: str
+    projectId: str
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class UnknownSpaceSnapshot(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    details: dict[str, JsonValue | None]
+    id: str
+    kind: str
+    metadata: ResourceMetadata
+    participantIds: list[str]
+    platform: str
+    projectId: str
+
+
+class UnknownUser(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    details: dict[str, JsonValue | None]
+    id: str
+    kind: str
+    metadata: ResourceMetadata
+    platform: str
+    projectId: str
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class UnknownUserSnapshot(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    details: dict[str, JsonValue | None]
+    id: str
+    kind: str
+    metadata: ResourceMetadata
+    platform: str
+    projectId: str
 
 
 class UpdateAccountBadRequestProblem(
@@ -7098,12 +9256,89 @@ class ValidationIssue(BaseModel):
     path: str
 
 
+class VoiceContent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    attachmentId: str
+    metadata: ContentMetadata | MISSING = MISSING
+    type: Literal["voice"]
+
+
 class VoiceProfileInboundConfiguration(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
     inbound: SipInboundConfiguration | None
     profileVersion: int
+
+
+class VoiceSpace(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    details: VoiceSpaceDetails
+    id: str
+    kind: str
+    metadata: ResourceMetadata
+    participantIds: list[str]
+    platform: Literal["voice"]
+    projectId: str
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class VoiceSpaceSnapshot(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    details: VoiceSpaceDetails
+    id: str
+    kind: str
+    metadata: ResourceMetadata
+    participantIds: list[str]
+    platform: Literal["voice"]
+    projectId: str
+
+
+class VoiceUser(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    details: VoiceUserDetails
+    handle: str
+    id: str
+    kind: str
+    metadata: ResourceMetadata
+    platform: Literal["voice"]
+    projectId: str
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class VoiceUserSnapshot(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    details: VoiceUserDetails
+    handle: str
+    id: str
+    kind: str
+    metadata: ResourceMetadata
+    platform: Literal["voice"]
+    projectId: str
 
 
 class WebhookApiVersion(RootModel[SelectableWebhookApiVersion | DeprecatedWebhookApiVersion]):
@@ -7146,6 +9381,142 @@ class WhatsappBusinessAccountRestriction(BaseModel):
     )
     observedAt: str = Field(..., examples=["2026-01-01T00:00:00.000Z"])
     status: Literal["FLAGGED", "DISABLED", "REINSTATED", "UNKNOWN"] | str
+
+
+class WhatsappBusinessSpace(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    details: WhatsappBusinessSpaceDetails
+    id: str
+    kind: str
+    metadata: ResourceMetadata
+    participantIds: list[str]
+    platform: Literal["whatsapp_business"]
+    projectId: str
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class WhatsappBusinessSpaceSnapshot(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    details: WhatsappBusinessSpaceDetails
+    id: str
+    kind: str
+    metadata: ResourceMetadata
+    participantIds: list[str]
+    platform: Literal["whatsapp_business"]
+    projectId: str
+
+
+class WhatsappBusinessUser(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    details: WhatsappBusinessUserDetails
+    handle: str
+    id: str
+    kind: str
+    metadata: ResourceMetadata
+    platform: Literal["whatsapp_business"]
+    projectId: str
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class WhatsappBusinessUserSnapshot(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    details: WhatsappBusinessUserDetails
+    handle: str
+    id: str
+    kind: str
+    metadata: ResourceMetadata
+    platform: Literal["whatsapp_business"]
+    projectId: str
+
+
+class WhatsappSpace(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    details: WhatsappSpaceDetails
+    id: str
+    kind: str
+    metadata: ResourceMetadata
+    participantIds: list[str]
+    platform: Literal["whatsapp"]
+    projectId: str
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class WhatsappSpaceSnapshot(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    details: WhatsappSpaceDetails
+    id: str
+    kind: str
+    metadata: ResourceMetadata
+    participantIds: list[str]
+    platform: Literal["whatsapp"]
+    projectId: str
+
+
+class WhatsappUser(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    details: WhatsappUserDetails
+    handle: str
+    id: str
+    kind: str
+    metadata: ResourceMetadata
+    platform: Literal["whatsapp"]
+    projectId: str
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class WhatsappUserSnapshot(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    details: WhatsappUserDetails
+    handle: str
+    id: str
+    kind: str
+    metadata: ResourceMetadata
+    platform: Literal["whatsapp"]
+    projectId: str
 
 
 class AssignSmsLineCampaignBadRequestProblem(
@@ -7206,6 +9577,15 @@ class AssignVoiceLineProfileInternalServerErrorProblem(
     RootModel[InternalErrorProblem | InvalidAuthContextProblem]
 ):
     root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class AttachmentContent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    attachmentId: str
+    metadata: ContentMetadata | MISSING = MISSING
+    type: Literal["attachment"]
 
 
 class AuthorizedApplication(BaseModel):
@@ -7705,6 +10085,28 @@ class CountFilteredVerificationCodesInternalServerErrorProblem(
     root: InternalErrorProblem | InvalidAuthContextProblem
 
 
+class CountMessagesForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class CountMessagesInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
 class CountProjectsForbiddenProblem(
     RootModel[
         ForbiddenProblem
@@ -7738,6 +10140,50 @@ class CountResourceFilteredVerificationCodesForbiddenProblem(
 
 
 class CountResourceFilteredVerificationCodesInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class CountSpacesForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class CountSpacesInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class CountUsersForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class CountUsersInternalServerErrorProblem(
     RootModel[InternalErrorProblem | InvalidAuthContextProblem]
 ):
     root: InternalErrorProblem | InvalidAuthContextProblem
@@ -7826,6 +10272,72 @@ class CreateDefaultVoiceProfileForbiddenProblem(
 
 
 class CreateDefaultVoiceProfileInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class CreateOrGetSpaceBadRequestProblem(
+    RootModel[
+        HttpErrorProblem
+        | InvalidRequestProblem
+        | IdempotencyKeyRequiredProblem
+        | IdempotencyKeyInvalidProblem
+    ]
+):
+    root: (
+        HttpErrorProblem
+        | InvalidRequestProblem
+        | IdempotencyKeyRequiredProblem
+        | IdempotencyKeyInvalidProblem
+    )
+
+
+class CreateOrGetSpaceForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class CreateOrGetSpaceInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class CreateOrGetSpaceServiceUnavailableProblem(
+    RootModel[IdempotencyUnavailableProblem | UpstreamUnavailableProblem]
+):
+    root: IdempotencyUnavailableProblem | UpstreamUnavailableProblem
+
+
+class CreateOrGetUserForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class CreateOrGetUserInternalServerErrorProblem(
     RootModel[InternalErrorProblem | InvalidAuthContextProblem]
 ):
     root: InternalErrorProblem | InvalidAuthContextProblem
@@ -8105,11 +10617,26 @@ class CreditSource(BaseModel):
     """
     Null for a grant.
     """
+    description: str | None
+    """
+    What Photon called a grant when it granted it, such as "Welcome credit". Null for a credit note, and for a grant without one.
+    """
     kind: Literal["release", "unused_time", "other", "grant"] | str
     subject: OrganizationCreditSubject | ProjectCreditSubject | None
     """
     Whose subscription the charge was on: the organization's own, or a project's. Null when it is none Billing knows.
     """
+
+
+class DailyMessageCount(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    buckets: list[MessageCountBucket]
+    count: int
+    groups: list[MessageStatusCount]
+    interval: Literal["day"]
+    timeZone: str
 
 
 class DeleteAccountForbiddenProblem(
@@ -8330,6 +10857,167 @@ class DownloadAttachmentInternalServerErrorProblem(
     root: InternalErrorProblem | InvalidAuthContextProblem
 
 
+class EmailAddressing(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    bcc: list[EmailMailbox] | MISSING = MISSING
+    """
+    Omitted means unavailable or undisclosed; an empty array means known empty. Never infer hidden recipients from another observation.
+    """
+    cc: list[EmailMailbox] | MISSING = MISSING
+    """
+    Omitted means unavailable or undisclosed; an empty array means known empty. Never infer hidden recipients from another observation.
+    """
+    from_: EmailMailbox = Field(..., alias="from")
+    """
+    The captured sender mailbox. Its address and resolved User ID must agree with the source Message's sentBy.
+    """
+    replyTo: list[EmailMailbox] | MISSING = MISSING
+    """
+    Omitted means unavailable or undisclosed; an empty array means known empty. Never infer hidden recipients from another observation.
+    """
+    sourceMessageId: str
+    """
+    The Message that supplied this observation. In a Message Space snapshot this is the containing Message's own ID, not its parent ID.
+    """
+    to: list[EmailMailbox] | MISSING = MISSING
+    """
+    Omitted means unavailable or undisclosed; an empty array means known empty. Never infer hidden recipients from another observation.
+    """
+
+
+class EmailDeliveryMetrics(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    availability: Literal["available", "partial", "no_data", "unavailable"] | str
+    collectedAt: str | MISSING = MISSING
+    complaintVisibility: Literal["reported_feedback_only"]
+    coverage: Literal["eligible_single_recipient_messages"]
+    freshness: Literal["current", "stale", "unavailable"] | str
+    interval: EmailDeliveryMetricsInterval | MISSING = MISSING
+    period: Literal["day", "week"] | str
+    readAt: str
+    series: list[EmailDeliveryMetricsSeries]
+    source: Literal["supplementary_delivery"]
+
+
+class EmailRecommendation(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    action: (
+        EmailRecommendationContactSupportAction
+        | EmailRecommendationReviewDomainDnsAction
+        | EmailRecommendationReviewDomainChecksAction
+    )
+    category: Literal["sending_restriction", "domain_health", "data_availability"] | str
+    code: (
+        Literal[
+            "project_sending_paused",
+            "organization_sending_paused",
+            "sending_review_required",
+            "sending_checks_unavailable",
+            "domain_dns_records",
+            "domain_verification",
+            "domain_checks_unavailable",
+            "domain_settings_unavailable",
+            "domain_unavailable",
+        ]
+        | str
+    )
+    description: str
+    observationStatus: Literal["current", "partial", "stale", "unavailable"] | str
+    observedAt: str | MISSING = MISSING
+    scope: (
+        EmailRecommendationProjectScope
+        | EmailRecommendationOrganizationScope
+        | EmailRecommendationDomainScope
+    )
+    severity: Literal["info", "warning"] | str
+    status: Literal["active"]
+    """
+    Current fact-derived recommendations. Absence is not a resolved finding or proof that sending is allowed.
+    """
+    title: str
+
+
+class EmailRecommendations(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    coverage: EmailRecommendationsCoverage
+    domainPage: EmailRecommendationsDomainPage
+    readAt: str
+    recommendations: list[EmailRecommendation]
+
+
+class EmailSendingPolicies(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    organization: EmailOrganizationSendingPolicy
+    project: EmailSendingPolicy
+
+
+class EmailSpaceDetails(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    latestAddressing: EmailAddressing | MISSING = MISSING
+    """
+    The latest eligible whole observation on a canonical Space, or this Message's immutable capture in an embedded Space. Absent when no observation is available.
+    """
+
+
+class EmailSpaceSnapshot(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    details: EmailSpaceDetails
+    id: str
+    kind: str
+    metadata: ResourceMetadata
+    participantIds: list[str]
+    platform: Literal["email"]
+    projectId: str
+
+
+class EmailUser(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    details: EmailUserDetails
+    handle: str
+    id: str
+    kind: str
+    metadata: ResourceMetadata
+    platform: Literal["email"]
+    projectId: str
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class EmailUserSnapshot(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    details: EmailUserDetails
+    handle: str
+    id: str
+    kind: str
+    metadata: ResourceMetadata
+    platform: Literal["email"]
+    projectId: str
+
+
 class FixedCharge(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -8508,6 +11196,72 @@ class GetEffectiveTermsForbiddenProblem(
 
 
 class GetEffectiveTermsInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class GetEmailDeliveryMetricsForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class GetEmailDeliveryMetricsInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class GetEmailSendingPoliciesForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class GetEmailSendingPoliciesInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class GetMessageForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class GetMessageInternalServerErrorProblem(
     RootModel[InternalErrorProblem | InvalidAuthContextProblem]
 ):
     root: InternalErrorProblem | InvalidAuthContextProblem
@@ -8837,6 +11591,50 @@ class GetSmsLineCampaignAssignmentInternalServerErrorProblem(
     root: InternalErrorProblem | InvalidAuthContextProblem
 
 
+class GetSpaceForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class GetSpaceInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class GetUserForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class GetUserInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
 class GetVoiceLineProfileAssignmentForbiddenProblem(
     RootModel[
         ForbiddenProblem
@@ -9001,6 +11799,80 @@ class GetWhatsappSignupConfigInternalServerErrorProblem(
     root: InternalErrorProblem | InvalidAuthContextProblem
 
 
+class ImessageGroupContentPart(
+    RootModel[TextContent | AttachmentContent | MessageReadContent | SpaceTypingUpdateContent]
+):
+    root: TextContent | AttachmentContent | MessageReadContent | SpaceTypingUpdateContent
+
+
+class ImessageSpace(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    details: ImessageSpaceDetails
+    id: str
+    kind: str
+    metadata: ResourceMetadata
+    participantIds: list[str]
+    platform: Literal["imessage"]
+    projectId: str
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class ImessageSpaceSnapshot(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    details: ImessageSpaceDetails
+    id: str
+    kind: str
+    metadata: ResourceMetadata
+    participantIds: list[str]
+    platform: Literal["imessage"]
+    projectId: str
+
+
+class ImessageUser(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    details: ImessageUserDetails
+    handle: str
+    id: str
+    kind: str
+    metadata: ResourceMetadata
+    platform: Literal["imessage"]
+    projectId: str
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class ImessageUserSnapshot(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    details: ImessageUserDetails
+    handle: str
+    id: str
+    kind: str
+    metadata: ResourceMetadata
+    platform: Literal["imessage"]
+    projectId: str
+
+
 class Invoice(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -9069,6 +11941,16 @@ class ListInvoicesResponse(BaseModel):
     nextCursor: str | None
     """
     Pass as cursor to read the next page. Null on the last page.
+    """
+
+
+class ListProjectSubscriptionsResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    subscriptions: list[ProjectHeldPlan]
+    """
+    One entry per category that currently holds a subscription. Empty means none do — cancelled, or never opened.
     """
 
 
@@ -9320,6 +12202,35 @@ class SipOutboundConfiguration(BaseModel):
     connection: SipOutboundConnection
 
 
+class SpaceSnapshot(
+    RootModel[
+        SmsSpaceSnapshot
+        | WhatsappSpaceSnapshot
+        | WhatsappBusinessSpaceSnapshot
+        | EmailSpaceSnapshot
+        | VoiceSpaceSnapshot
+        | ImessageSpaceSnapshot
+        | TelegramSpaceSnapshot
+        | UnknownSpaceSnapshot
+    ]
+):
+    root: Annotated[
+        SmsSpaceSnapshot
+        | WhatsappSpaceSnapshot
+        | WhatsappBusinessSpaceSnapshot
+        | EmailSpaceSnapshot
+        | VoiceSpaceSnapshot
+        | ImessageSpaceSnapshot
+        | TelegramSpaceSnapshot
+        | UnknownSpaceSnapshot,
+        Field(union_mode="left_to_right"),
+    ]
+
+
+class TelegramGroupContentPart(RootModel[TextContent | AttachmentContent | VoiceContent]):
+    root: TextContent | AttachmentContent | VoiceContent
+
+
 class UpdateVoiceProfileOutboundAuthenticationResponse(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -9335,6 +12246,78 @@ class UsageChargeFilter(BaseModel):
     displayName: str | None
     pricing: UsageChargePricing
     values: list[UsageChargeFilterValue]
+
+
+class User(
+    RootModel[
+        SmsUser
+        | WhatsappUser
+        | WhatsappBusinessUser
+        | EmailUser
+        | VoiceUser
+        | ImessageUser
+        | TelegramUser
+        | UnknownUser
+    ]
+):
+    root: Annotated[
+        SmsUser
+        | WhatsappUser
+        | WhatsappBusinessUser
+        | EmailUser
+        | VoiceUser
+        | ImessageUser
+        | TelegramUser
+        | UnknownUser,
+        Field(union_mode="left_to_right"),
+    ]
+
+
+class UserSnapshot(
+    RootModel[
+        SmsUserSnapshot
+        | WhatsappUserSnapshot
+        | WhatsappBusinessUserSnapshot
+        | EmailUserSnapshot
+        | VoiceUserSnapshot
+        | ImessageUserSnapshot
+        | TelegramUserSnapshot
+        | UnknownUserSnapshot
+    ]
+):
+    root: Annotated[
+        SmsUserSnapshot
+        | WhatsappUserSnapshot
+        | WhatsappBusinessUserSnapshot
+        | EmailUserSnapshot
+        | VoiceUserSnapshot
+        | ImessageUserSnapshot
+        | TelegramUserSnapshot
+        | UnknownUserSnapshot,
+        Field(union_mode="left_to_right"),
+    ]
+
+
+class UserSnapshotInput(
+    RootModel[
+        SmsUserSnapshot
+        | WhatsappUserSnapshot
+        | WhatsappBusinessUserSnapshot
+        | EmailUserSnapshot
+        | VoiceUserSnapshot
+        | ImessageUserSnapshot
+        | TelegramUserSnapshot
+    ]
+):
+    root: (
+        SmsUserSnapshot
+        | WhatsappUserSnapshot
+        | WhatsappBusinessUserSnapshot
+        | EmailUserSnapshot
+        | VoiceUserSnapshot
+        | ImessageUserSnapshot
+        | TelegramUserSnapshot
+    )
 
 
 class ValidationFailedProblem(BaseModel):
@@ -9438,10 +12421,36 @@ class ConnectWhatsappBusinessUnprocessableEntityProblem(
     root: ValidationFailedProblem | IdempotencyKeyReusedProblem
 
 
+class CountMessagesResponse(RootModel[MessageCount | DailyMessageCount]):
+    root: MessageCount | DailyMessageCount
+
+
 class CreateAccountServiceKeyUnprocessableEntityProblem(
     RootModel[IdempotencyKeyReusedProblem | ValidationFailedProblem]
 ):
     root: IdempotencyKeyReusedProblem | ValidationFailedProblem
+
+
+class CreateOrGetSpaceUnprocessableEntityProblem(
+    RootModel[
+        SpaceRequiresOwnedAgentProblem
+        | IdempotencyKeyReusedProblem
+        | OperationUnavailableProblem
+        | ValidationFailedProblem
+    ]
+):
+    root: (
+        SpaceRequiresOwnedAgentProblem
+        | IdempotencyKeyReusedProblem
+        | OperationUnavailableProblem
+        | ValidationFailedProblem
+    )
+
+
+class CreateOrGetUserUnprocessableEntityProblem(
+    RootModel[OperationUnavailableProblem | ValidationFailedProblem]
+):
+    root: OperationUnavailableProblem | ValidationFailedProblem
 
 
 class CreateOrganizationPaymentMethodCheckoutUnprocessableEntityProblem(
@@ -9576,6 +12585,27 @@ class DisconnectWhatsappBusinessAccountUnprocessableEntityProblem(
     root: ValidationFailedProblem | IdempotencyKeyReusedProblem
 
 
+class EmailSpace(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    details: EmailSpaceDetails
+    id: str
+    kind: str
+    metadata: ResourceMetadata
+    participantIds: list[str]
+    platform: Literal["email"]
+    projectId: str
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
 class GetBillingOverviewResponse(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -9620,10 +12650,49 @@ class GetOrganizationBillingOverviewResponse(BaseModel):
     """
 
 
+class GetSpaceUnprocessableEntityProblem(
+    RootModel[OperationUnavailableProblem | ValidationFailedProblem]
+):
+    root: OperationUnavailableProblem | ValidationFailedProblem
+
+
+class GetUserUnprocessableEntityProblem(
+    RootModel[OperationUnavailableProblem | ValidationFailedProblem]
+):
+    root: OperationUnavailableProblem | ValidationFailedProblem
+
+
 class GetWhatsappBusinessVerificationCodeUnprocessableEntityProblem(
     RootModel[ValidationFailedProblem | WhatsappVerificationWindowExpiredProblem]
 ):
     root: ValidationFailedProblem | WhatsappVerificationWindowExpiredProblem
+
+
+class ImessageGroupContent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    metadata: ContentMetadata | MISSING = MISSING
+    parts: list[TextContent | AttachmentContent | MessageReadContent | SpaceTypingUpdateContent]
+    type: Literal["group"]
+
+
+class ImessageMessageContent(
+    RootModel[
+        TextContent
+        | AttachmentContent
+        | MessageReadContent
+        | SpaceTypingUpdateContent
+        | ImessageGroupContent
+    ]
+):
+    root: (
+        TextContent
+        | AttachmentContent
+        | MessageReadContent
+        | SpaceTypingUpdateContent
+        | ImessageGroupContent
+    )
 
 
 class ListCreditActivityResponse(BaseModel):
@@ -9644,6 +12713,39 @@ class ListWebhookEventTypesResponse(
     RootModel[SelectableWebhookEventCatalog | DeprecatedWebhookEventCatalog]
 ):
     root: SelectableWebhookEventCatalog | DeprecatedWebhookEventCatalog
+
+
+class MarkMessageReadUnprocessableEntityProblem(
+    RootModel[IdempotencyKeyReusedProblem | OperationUnavailableProblem | ValidationFailedProblem]
+):
+    root: IdempotencyKeyReusedProblem | OperationUnavailableProblem | ValidationFailedProblem
+
+
+class PlatformUser(RootModel[User]):
+    root: User = Field(
+        ...,
+        examples=[
+            {
+                "createdAt": "2026-01-01T00:00:00.000Z",
+                "details": {
+                    "resourceId": "pho_res_00000000000000000000000001",
+                    "type": "dedicated",
+                },
+                "handle": "+14155550123",
+                "id": "pho_usr_00000000000000000000000001",
+                "kind": "agent",
+                "metadata": {},
+                "platform": "whatsapp",
+                "projectId": "pho_prj_00000000000000000000000001",
+                "updatedAt": "2026-01-01T00:00:00.000Z",
+            }
+        ],
+    )
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_all_of(cls, data: Any) -> Any:
+        return validate_all_of(data, SupportedPlatformConstraint)
 
 
 class ProvisionImessageDedicatedLineUnprocessableEntityProblem(
@@ -9668,6 +12770,38 @@ class QueryMessageMetricsUnprocessableEntityProblem(
     RootModel[QueryResourceLimitProblem | ValidationFailedProblem]
 ):
     root: QueryResourceLimitProblem | ValidationFailedProblem
+
+
+class ReceivedImessageMessage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    addressedTo: UserSnapshot | MISSING = MISSING
+    content: (
+        TextContent
+        | AttachmentContent
+        | MessageReadContent
+        | SpaceTypingUpdateContent
+        | ImessageGroupContent
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    id: str
+    metadata: ResourceMetadata
+    parentMessageId: str | MISSING = MISSING
+    platform: Literal["imessage"]
+    projectId: str
+    receivedBy: UserSnapshot | MISSING = MISSING
+    sentBy: UserSnapshot
+    space: SpaceSnapshot
+    status: Literal["received"]
+    timestamps: ReceivedMessageTimestamps
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
 
 
 class ResetAccountProfilePictureUnprocessableEntityProblem(
@@ -9704,6 +12838,107 @@ class RotateWebhookSigningSecretUnprocessableEntityProblem(
     RootModel[ValidationFailedProblem | IdempotencyKeyReusedProblem]
 ):
     root: ValidationFailedProblem | IdempotencyKeyReusedProblem
+
+
+class SendMessageUnprocessableEntityProblem(
+    RootModel[
+        SharedLineGroupUnsupportedProblem
+        | ValidationFailedProblem
+        | InvalidContentProblem
+        | UnsupportedContentProblem
+        | MessageTooLongProblem
+        | IdempotencyKeyReusedProblem
+    ]
+):
+    root: (
+        SharedLineGroupUnsupportedProblem
+        | ValidationFailedProblem
+        | InvalidContentProblem
+        | UnsupportedContentProblem
+        | MessageTooLongProblem
+        | IdempotencyKeyReusedProblem
+    )
+
+
+class SendSpaceParticipantsUpdateContent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    added: list[
+        SmsUserSnapshot
+        | WhatsappUserSnapshot
+        | WhatsappBusinessUserSnapshot
+        | EmailUserSnapshot
+        | VoiceUserSnapshot
+        | ImessageUserSnapshot
+        | TelegramUserSnapshot
+    ]
+    removed: list[
+        SmsUserSnapshot
+        | WhatsappUserSnapshot
+        | WhatsappBusinessUserSnapshot
+        | EmailUserSnapshot
+        | VoiceUserSnapshot
+        | ImessageUserSnapshot
+        | TelegramUserSnapshot
+    ]
+    type: Literal["space.participants.update"]
+
+
+class SetSpaceTypingUnprocessableEntityProblem(
+    RootModel[OperationUnavailableProblem | ValidationFailedProblem]
+):
+    root: OperationUnavailableProblem | ValidationFailedProblem
+
+
+class Space(
+    RootModel[
+        SmsSpace
+        | WhatsappSpace
+        | WhatsappBusinessSpace
+        | EmailSpace
+        | VoiceSpace
+        | ImessageSpace
+        | TelegramSpace
+        | UnknownSpace
+    ]
+):
+    root: Annotated[
+        SmsSpace
+        | WhatsappSpace
+        | WhatsappBusinessSpace
+        | EmailSpace
+        | VoiceSpace
+        | ImessageSpace
+        | TelegramSpace
+        | UnknownSpace,
+        Field(union_mode="left_to_right"),
+    ]
+
+
+class SpaceParticipantsUpdateContent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    added: list[UserSnapshot]
+    metadata: ContentMetadata | MISSING = MISSING
+    removed: list[UserSnapshot]
+    type: Literal["space.participants.update"]
+
+
+class TelegramGroupContent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    metadata: ContentMetadata | MISSING = MISSING
+    parts: list[TextContent | AttachmentContent | VoiceContent]
+    type: Literal["group"]
+
+
+class TelegramMessageContent(
+    RootModel[TextContent | AttachmentContent | VoiceContent | TelegramGroupContent]
+):
+    root: TextContent | AttachmentContent | VoiceContent | TelegramGroupContent
 
 
 class UpdateAccountOnboardingUnprocessableEntityProblem(
@@ -9783,6 +13018,20 @@ class UsageCharge(BaseModel):
     prorated: bool
 
 
+class UserPage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    items: list[PlatformUser]
+    """
+    Unsupported platforms and records with unsupported data are omitted.
+    """
+    nextPageToken: str | MISSING = MISSING
+    """
+    Continue with this token, even if items is empty. Omitted when no more pages remain.
+    """
+
+
 class VoiceProfile(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -9831,6 +13080,140 @@ class WebhookDestinationPage(BaseModel):
     )
     destinations: list[WebhookDestination]
     nextPageToken: str | MISSING = MISSING
+
+
+class WhatsappBusinessGroupContentPart(
+    RootModel[
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+    ]
+):
+    root: (
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+    )
+
+
+class WhatsappGroupContentPart(
+    RootModel[
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+    ]
+):
+    root: (
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+    )
+
+
+class AcceptedImessageMessage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    acceptance: (
+        DeliveryConfirmationUnavailableAcceptance
+        | DeliveryConfirmationNotApplicableAcceptance
+        | DeliveryConfirmationTimedOutAcceptance
+        | DeliveryPartiallyConfirmedAcceptance
+    )
+    addressedTo: UserSnapshot | MISSING = MISSING
+    content: (
+        TextContent
+        | AttachmentContent
+        | MessageReadContent
+        | SpaceTypingUpdateContent
+        | ImessageGroupContent
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    id: str
+    metadata: ResourceMetadata
+    parentMessageId: str | MISSING = MISSING
+    platform: Literal["imessage"]
+    projectId: str
+    receivedBy: UserSnapshot | MISSING = MISSING
+    sentBy: UserSnapshot
+    space: SpaceSnapshot
+    status: Literal["accepted"]
+    timestamps: AcceptedMessageTimestamps
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class AcceptedTelegramMessage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    acceptance: (
+        DeliveryConfirmationUnavailableAcceptance
+        | DeliveryConfirmationNotApplicableAcceptance
+        | DeliveryConfirmationTimedOutAcceptance
+        | DeliveryPartiallyConfirmedAcceptance
+    )
+    addressedTo: UserSnapshot | MISSING = MISSING
+    content: TextContent | AttachmentContent | VoiceContent | TelegramGroupContent
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    id: str
+    metadata: ResourceMetadata
+    parentMessageId: str | MISSING = MISSING
+    platform: Literal["telegram"]
+    projectId: str
+    receivedBy: UserSnapshot | MISSING = MISSING
+    sentBy: UserSnapshot
+    space: SpaceSnapshot
+    status: Literal["accepted"]
+    timestamps: AcceptedMessageTimestamps
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
 
 
 class BillingPlan(BaseModel):
@@ -9884,6 +13267,302 @@ class CreateWebhookDestinationResponse(BaseModel):
     signingSecret: str
 
 
+class DeliveredImessageMessage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    addressedTo: UserSnapshot | MISSING = MISSING
+    content: (
+        TextContent
+        | AttachmentContent
+        | MessageReadContent
+        | SpaceTypingUpdateContent
+        | ImessageGroupContent
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    id: str
+    metadata: ResourceMetadata
+    parentMessageId: str | MISSING = MISSING
+    platform: Literal["imessage"]
+    projectId: str
+    receivedBy: UserSnapshot | MISSING = MISSING
+    sentBy: UserSnapshot
+    space: SpaceSnapshot
+    status: Literal["delivered"]
+    timestamps: DeliveredMessageTimestamps
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class DeliveredTelegramMessage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    addressedTo: UserSnapshot | MISSING = MISSING
+    content: TextContent | AttachmentContent | VoiceContent | TelegramGroupContent
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    id: str
+    metadata: ResourceMetadata
+    parentMessageId: str | MISSING = MISSING
+    platform: Literal["telegram"]
+    projectId: str
+    receivedBy: UserSnapshot | MISSING = MISSING
+    sentBy: UserSnapshot
+    space: SpaceSnapshot
+    status: Literal["delivered"]
+    timestamps: DeliveredMessageTimestamps
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class DispatchedImessageMessage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    addressedTo: UserSnapshot | MISSING = MISSING
+    content: (
+        TextContent
+        | AttachmentContent
+        | MessageReadContent
+        | SpaceTypingUpdateContent
+        | ImessageGroupContent
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    id: str
+    metadata: ResourceMetadata
+    parentMessageId: str | MISSING = MISSING
+    platform: Literal["imessage"]
+    projectId: str
+    receivedBy: UserSnapshot | MISSING = MISSING
+    sentBy: UserSnapshot
+    space: SpaceSnapshot
+    status: Literal["dispatched"]
+    timestamps: DispatchedMessageTimestamps
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class DispatchedTelegramMessage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    addressedTo: UserSnapshot | MISSING = MISSING
+    content: TextContent | AttachmentContent | VoiceContent | TelegramGroupContent
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    id: str
+    metadata: ResourceMetadata
+    parentMessageId: str | MISSING = MISSING
+    platform: Literal["telegram"]
+    projectId: str
+    receivedBy: UserSnapshot | MISSING = MISSING
+    sentBy: UserSnapshot
+    space: SpaceSnapshot
+    status: Literal["dispatched"]
+    timestamps: DispatchedMessageTimestamps
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class EmailGroupContentPart(
+    RootModel[
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+    ]
+):
+    root: (
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+    )
+
+
+class FailedImessageMessage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    addressedTo: UserSnapshot | MISSING = MISSING
+    content: (
+        TextContent
+        | AttachmentContent
+        | MessageReadContent
+        | SpaceTypingUpdateContent
+        | ImessageGroupContent
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    failure: (
+        SenderNotAuthorizedFailure
+        | SenderUnavailableFailure
+        | SenderRegistrationRequiredFailure
+        | RecipientInvalidFailure
+        | RecipientUnreachableFailure
+        | RecipientOptedOutFailure
+        | MessageTypeUnsupportedFailure
+        | MessageContentInvalidFailure
+        | MessageTooLargeFailure
+        | MessageBlockedFailure
+        | MessageBlockedByCarrierFailure
+        | MessageRateLimitedFailure
+        | MessageRejectedFailure
+        | MessageExpiredFailure
+        | MessageDeliveryFailedFailure
+        | MessageSubmissionUnknownFailure
+        | MessagingUnavailableFailure
+        | MessageFailedFailure
+    )
+    id: str
+    metadata: ResourceMetadata
+    parentMessageId: str | MISSING = MISSING
+    platform: Literal["imessage"]
+    projectId: str
+    receivedBy: UserSnapshot | MISSING = MISSING
+    sentBy: UserSnapshot
+    space: SpaceSnapshot
+    status: Literal["failed"]
+    timestamps: FailedMessageTimestamps
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class FailedTelegramMessage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    addressedTo: UserSnapshot | MISSING = MISSING
+    content: TextContent | AttachmentContent | VoiceContent | TelegramGroupContent
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    failure: (
+        SenderNotAuthorizedFailure
+        | SenderUnavailableFailure
+        | SenderRegistrationRequiredFailure
+        | RecipientInvalidFailure
+        | RecipientUnreachableFailure
+        | RecipientOptedOutFailure
+        | MessageTypeUnsupportedFailure
+        | MessageContentInvalidFailure
+        | MessageTooLargeFailure
+        | MessageBlockedFailure
+        | MessageBlockedByCarrierFailure
+        | MessageRateLimitedFailure
+        | MessageRejectedFailure
+        | MessageExpiredFailure
+        | MessageDeliveryFailedFailure
+        | MessageSubmissionUnknownFailure
+        | MessagingUnavailableFailure
+        | MessageFailedFailure
+    )
+    id: str
+    metadata: ResourceMetadata
+    parentMessageId: str | MISSING = MISSING
+    platform: Literal["telegram"]
+    projectId: str
+    receivedBy: UserSnapshot | MISSING = MISSING
+    sentBy: UserSnapshot
+    space: SpaceSnapshot
+    status: Literal["failed"]
+    timestamps: FailedMessageTimestamps
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class GroupContentPart(
+    RootModel[
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+    ]
+):
+    root: (
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+    )
+
+
+class ImessageMessage(
+    RootModel[
+        ReceivedImessageMessage
+        | DispatchedImessageMessage
+        | AcceptedImessageMessage
+        | DeliveredImessageMessage
+        | FailedImessageMessage
+    ]
+):
+    root: (
+        ReceivedImessageMessage
+        | DispatchedImessageMessage
+        | AcceptedImessageMessage
+        | DeliveredImessageMessage
+        | FailedImessageMessage
+    )
+
+
 class ListBillingPlansResponse(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -9920,6 +13599,158 @@ class OrganizationSubscriptionTerms(BaseModel):
     scheduledPlanChange: ScheduledPlanChange | None
     """
     A downgrade waiting for the period end, or null.
+    """
+
+
+class PlatformSpace(RootModel[Space]):
+    root: Space = Field(
+        ...,
+        examples=[
+            {
+                "createdAt": "2026-01-01T00:00:00.000Z",
+                "details": {},
+                "id": "pho_spc_00000000000000000000000001",
+                "kind": "direct",
+                "metadata": {},
+                "participantIds": [
+                    "pho_usr_00000000000000000000000001",
+                    "pho_usr_00000000000000000000000002",
+                ],
+                "platform": "whatsapp",
+                "projectId": "pho_prj_00000000000000000000000001",
+                "updatedAt": "2026-01-01T00:00:00.000Z",
+            }
+        ],
+    )
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_all_of(cls, data: Any) -> Any:
+        return validate_all_of(data, SupportedPlatformConstraint)
+
+
+class ReceivedTelegramMessage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    addressedTo: UserSnapshot | MISSING = MISSING
+    content: TextContent | AttachmentContent | VoiceContent | TelegramGroupContent
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    id: str
+    metadata: ResourceMetadata
+    parentMessageId: str | MISSING = MISSING
+    platform: Literal["telegram"]
+    projectId: str
+    receivedBy: UserSnapshot | MISSING = MISSING
+    sentBy: UserSnapshot
+    space: SpaceSnapshot
+    status: Literal["received"]
+    timestamps: ReceivedMessageTimestamps
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class SendContentPart(
+    RootModel[
+        SendTextContent
+        | SendTextUpdateContent
+        | SendAttachmentContent
+        | SendVoiceContent
+        | SendReactionContent
+        | SendMessageDeleteContent
+        | SendMessageReadContent
+        | SendSpaceParticipantsUpdateContent
+        | SendSpaceTypingUpdateContent
+        | SendPollContent
+        | SendPollVoteContent
+        | SendPollUpdateContent
+    ]
+):
+    root: (
+        SendTextContent
+        | SendTextUpdateContent
+        | SendAttachmentContent
+        | SendVoiceContent
+        | SendReactionContent
+        | SendMessageDeleteContent
+        | SendMessageReadContent
+        | SendSpaceParticipantsUpdateContent
+        | SendSpaceTypingUpdateContent
+        | SendPollContent
+        | SendPollVoteContent
+        | SendPollUpdateContent
+    )
+
+
+class SendGroupContent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    parts: list[
+        SendTextContent
+        | SendTextUpdateContent
+        | SendAttachmentContent
+        | SendVoiceContent
+        | SendReactionContent
+        | SendMessageDeleteContent
+        | SendMessageReadContent
+        | SendSpaceParticipantsUpdateContent
+        | SendSpaceTypingUpdateContent
+        | SendPollContent
+        | SendPollVoteContent
+        | SendPollUpdateContent
+    ]
+    type: Literal["group"]
+
+
+class SmsGroupContentPart(
+    RootModel[
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+    ]
+):
+    root: (
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+    )
+
+
+class SpacePage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    items: list[PlatformSpace]
+    """
+    Unsupported platforms and records with unsupported data are omitted.
+    """
+    nextPageToken: str | MISSING = MISSING
+    """
+    Continue with this token, even if items is empty. Omitted when no more pages remain.
     """
 
 
@@ -9960,6 +13791,624 @@ class SubscriptionTerms(BaseModel):
     """
 
 
+class TelegramMessage(
+    RootModel[
+        ReceivedTelegramMessage
+        | DispatchedTelegramMessage
+        | AcceptedTelegramMessage
+        | DeliveredTelegramMessage
+        | FailedTelegramMessage
+    ]
+):
+    root: (
+        ReceivedTelegramMessage
+        | DispatchedTelegramMessage
+        | AcceptedTelegramMessage
+        | DeliveredTelegramMessage
+        | FailedTelegramMessage
+    )
+
+
+class WhatsappBusinessGroupContent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    metadata: ContentMetadata | MISSING = MISSING
+    parts: list[
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+    ]
+    type: Literal["group"]
+
+
+class WhatsappBusinessMessageContent(
+    RootModel[
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+        | WhatsappBusinessGroupContent
+    ]
+):
+    root: (
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+        | WhatsappBusinessGroupContent
+    )
+
+
+class WhatsappGroupContent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    metadata: ContentMetadata | MISSING = MISSING
+    parts: list[
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+    ]
+    type: Literal["group"]
+
+
+class WhatsappMessageContent(
+    RootModel[
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+        | WhatsappGroupContent
+    ]
+):
+    root: (
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+        | WhatsappGroupContent
+    )
+
+
+class AcceptedWhatsappBusinessMessage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    acceptance: (
+        DeliveryConfirmationUnavailableAcceptance
+        | DeliveryConfirmationNotApplicableAcceptance
+        | DeliveryConfirmationTimedOutAcceptance
+        | DeliveryPartiallyConfirmedAcceptance
+    )
+    addressedTo: UserSnapshot | MISSING = MISSING
+    content: (
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+        | WhatsappBusinessGroupContent
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    id: str
+    metadata: ResourceMetadata
+    parentMessageId: str | MISSING = MISSING
+    platform: Literal["whatsapp_business"]
+    projectId: str
+    receivedBy: UserSnapshot | MISSING = MISSING
+    sentBy: UserSnapshot
+    space: SpaceSnapshot
+    status: Literal["accepted"]
+    timestamps: AcceptedMessageTimestamps
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class AcceptedWhatsappMessage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    acceptance: (
+        DeliveryConfirmationUnavailableAcceptance
+        | DeliveryConfirmationNotApplicableAcceptance
+        | DeliveryConfirmationTimedOutAcceptance
+        | DeliveryPartiallyConfirmedAcceptance
+    )
+    addressedTo: UserSnapshot | MISSING = MISSING
+    content: (
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+        | WhatsappGroupContent
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    id: str
+    metadata: ResourceMetadata
+    parentMessageId: str | MISSING = MISSING
+    platform: Literal["whatsapp"]
+    projectId: str
+    receivedBy: UserSnapshot | MISSING = MISSING
+    sentBy: UserSnapshot
+    space: SpaceSnapshot
+    status: Literal["accepted"]
+    timestamps: AcceptedMessageTimestamps
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class DeliveredWhatsappBusinessMessage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    addressedTo: UserSnapshot | MISSING = MISSING
+    content: (
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+        | WhatsappBusinessGroupContent
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    id: str
+    metadata: ResourceMetadata
+    parentMessageId: str | MISSING = MISSING
+    platform: Literal["whatsapp_business"]
+    projectId: str
+    receivedBy: UserSnapshot | MISSING = MISSING
+    sentBy: UserSnapshot
+    space: SpaceSnapshot
+    status: Literal["delivered"]
+    timestamps: DeliveredMessageTimestamps
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class DeliveredWhatsappMessage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    addressedTo: UserSnapshot | MISSING = MISSING
+    content: (
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+        | WhatsappGroupContent
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    id: str
+    metadata: ResourceMetadata
+    parentMessageId: str | MISSING = MISSING
+    platform: Literal["whatsapp"]
+    projectId: str
+    receivedBy: UserSnapshot | MISSING = MISSING
+    sentBy: UserSnapshot
+    space: SpaceSnapshot
+    status: Literal["delivered"]
+    timestamps: DeliveredMessageTimestamps
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class DispatchedWhatsappBusinessMessage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    addressedTo: UserSnapshot | MISSING = MISSING
+    content: (
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+        | WhatsappBusinessGroupContent
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    id: str
+    metadata: ResourceMetadata
+    parentMessageId: str | MISSING = MISSING
+    platform: Literal["whatsapp_business"]
+    projectId: str
+    receivedBy: UserSnapshot | MISSING = MISSING
+    sentBy: UserSnapshot
+    space: SpaceSnapshot
+    status: Literal["dispatched"]
+    timestamps: DispatchedMessageTimestamps
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class DispatchedWhatsappMessage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    addressedTo: UserSnapshot | MISSING = MISSING
+    content: (
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+        | WhatsappGroupContent
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    id: str
+    metadata: ResourceMetadata
+    parentMessageId: str | MISSING = MISSING
+    platform: Literal["whatsapp"]
+    projectId: str
+    receivedBy: UserSnapshot | MISSING = MISSING
+    sentBy: UserSnapshot
+    space: SpaceSnapshot
+    status: Literal["dispatched"]
+    timestamps: DispatchedMessageTimestamps
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class EmailGroupContent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    metadata: ContentMetadata | MISSING = MISSING
+    parts: list[
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+    ]
+    type: Literal["group"]
+
+
+class EmailMessageContent(
+    RootModel[
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+        | EmailGroupContent
+    ]
+):
+    root: (
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+        | EmailGroupContent
+    )
+
+
+class FailedEmailMessage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    addressedTo: UserSnapshot | MISSING = MISSING
+    content: (
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+        | EmailGroupContent
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    failure: (
+        SenderNotAuthorizedFailure
+        | SenderUnavailableFailure
+        | SenderRegistrationRequiredFailure
+        | RecipientInvalidFailure
+        | RecipientUnreachableFailure
+        | RecipientOptedOutFailure
+        | MessageTypeUnsupportedFailure
+        | MessageContentInvalidFailure
+        | MessageTooLargeFailure
+        | MessageBlockedFailure
+        | MessageBlockedByCarrierFailure
+        | MessageRateLimitedFailure
+        | MessageRejectedFailure
+        | MessageExpiredFailure
+        | MessageDeliveryFailedFailure
+        | MessageSubmissionUnknownFailure
+        | MessagingUnavailableFailure
+        | MessageFailedFailure
+    )
+    id: str
+    metadata: ResourceMetadata
+    parentMessageId: str | MISSING = MISSING
+    platform: Literal["email"]
+    projectId: str
+    receivedBy: UserSnapshot | MISSING = MISSING
+    sentBy: UserSnapshot
+    space: SpaceSnapshot
+    status: Literal["failed"]
+    timestamps: FailedMessageTimestamps
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class FailedWhatsappBusinessMessage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    addressedTo: UserSnapshot | MISSING = MISSING
+    content: (
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+        | WhatsappBusinessGroupContent
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    failure: (
+        SenderNotAuthorizedFailure
+        | SenderUnavailableFailure
+        | SenderRegistrationRequiredFailure
+        | RecipientInvalidFailure
+        | RecipientUnreachableFailure
+        | RecipientOptedOutFailure
+        | MessageTypeUnsupportedFailure
+        | MessageContentInvalidFailure
+        | MessageTooLargeFailure
+        | MessageBlockedFailure
+        | MessageBlockedByCarrierFailure
+        | MessageRateLimitedFailure
+        | MessageRejectedFailure
+        | MessageExpiredFailure
+        | MessageDeliveryFailedFailure
+        | MessageSubmissionUnknownFailure
+        | MessagingUnavailableFailure
+        | MessageFailedFailure
+    )
+    id: str
+    metadata: ResourceMetadata
+    parentMessageId: str | MISSING = MISSING
+    platform: Literal["whatsapp_business"]
+    projectId: str
+    receivedBy: UserSnapshot | MISSING = MISSING
+    sentBy: UserSnapshot
+    space: SpaceSnapshot
+    status: Literal["failed"]
+    timestamps: FailedMessageTimestamps
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class FailedWhatsappMessage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    addressedTo: UserSnapshot | MISSING = MISSING
+    content: (
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+        | WhatsappGroupContent
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    failure: (
+        SenderNotAuthorizedFailure
+        | SenderUnavailableFailure
+        | SenderRegistrationRequiredFailure
+        | RecipientInvalidFailure
+        | RecipientUnreachableFailure
+        | RecipientOptedOutFailure
+        | MessageTypeUnsupportedFailure
+        | MessageContentInvalidFailure
+        | MessageTooLargeFailure
+        | MessageBlockedFailure
+        | MessageBlockedByCarrierFailure
+        | MessageRateLimitedFailure
+        | MessageRejectedFailure
+        | MessageExpiredFailure
+        | MessageDeliveryFailedFailure
+        | MessageSubmissionUnknownFailure
+        | MessagingUnavailableFailure
+        | MessageFailedFailure
+    )
+    id: str
+    metadata: ResourceMetadata
+    parentMessageId: str | MISSING = MISSING
+    platform: Literal["whatsapp"]
+    projectId: str
+    receivedBy: UserSnapshot | MISSING = MISSING
+    sentBy: UserSnapshot
+    space: SpaceSnapshot
+    status: Literal["failed"]
+    timestamps: FailedMessageTimestamps
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
 class GetEffectiveTermsResponse(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -9985,6 +14434,1252 @@ class GetOrganizationTermsResponse(BaseModel):
     timeZone: str
     """
     The IANA time zone the payer is billed in, e.g. America/Los_Angeles. Billing periods start and end at its midnights, so read their calendar dates in it.
+    """
+
+
+class GroupContent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    metadata: ContentMetadata | MISSING = MISSING
+    parts: list[
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+    ]
+    type: Literal["group"]
+
+
+class ReceivedEmailMessage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    addressedTo: UserSnapshot | MISSING = MISSING
+    content: (
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+        | EmailGroupContent
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    id: str
+    metadata: ResourceMetadata
+    parentMessageId: str | MISSING = MISSING
+    platform: Literal["email"]
+    projectId: str
+    receivedBy: UserSnapshot | MISSING = MISSING
+    sentBy: UserSnapshot
+    space: SpaceSnapshot
+    status: Literal["received"]
+    timestamps: ReceivedMessageTimestamps
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class ReceivedWhatsappBusinessMessage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    addressedTo: UserSnapshot | MISSING = MISSING
+    content: (
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+        | WhatsappBusinessGroupContent
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    id: str
+    metadata: ResourceMetadata
+    parentMessageId: str | MISSING = MISSING
+    platform: Literal["whatsapp_business"]
+    projectId: str
+    receivedBy: UserSnapshot | MISSING = MISSING
+    sentBy: UserSnapshot
+    space: SpaceSnapshot
+    status: Literal["received"]
+    timestamps: ReceivedMessageTimestamps
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class ReceivedWhatsappMessage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    addressedTo: UserSnapshot | MISSING = MISSING
+    content: (
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+        | WhatsappGroupContent
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    id: str
+    metadata: ResourceMetadata
+    parentMessageId: str | MISSING = MISSING
+    platform: Literal["whatsapp"]
+    projectId: str
+    receivedBy: UserSnapshot | MISSING = MISSING
+    sentBy: UserSnapshot
+    space: SpaceSnapshot
+    status: Literal["received"]
+    timestamps: ReceivedMessageTimestamps
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class SendContent(
+    RootModel[
+        SendTextContent
+        | SendTextUpdateContent
+        | SendAttachmentContent
+        | SendVoiceContent
+        | SendReactionContent
+        | SendMessageDeleteContent
+        | SendMessageReadContent
+        | SendSpaceParticipantsUpdateContent
+        | SendSpaceTypingUpdateContent
+        | SendPollContent
+        | SendPollVoteContent
+        | SendPollUpdateContent
+        | SendGroupContent
+    ]
+):
+    root: (
+        SendTextContent
+        | SendTextUpdateContent
+        | SendAttachmentContent
+        | SendVoiceContent
+        | SendReactionContent
+        | SendMessageDeleteContent
+        | SendMessageReadContent
+        | SendSpaceParticipantsUpdateContent
+        | SendSpaceTypingUpdateContent
+        | SendPollContent
+        | SendPollVoteContent
+        | SendPollUpdateContent
+        | SendGroupContent
+    )
+
+
+class SendMessageRequest(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    content: (
+        SendTextContent
+        | SendTextUpdateContent
+        | SendAttachmentContent
+        | SendVoiceContent
+        | SendReactionContent
+        | SendMessageDeleteContent
+        | SendMessageReadContent
+        | SendSpaceParticipantsUpdateContent
+        | SendSpaceTypingUpdateContent
+        | SendPollContent
+        | SendPollVoteContent
+        | SendPollUpdateContent
+        | SendGroupContent
+    )
+    email: SendEmailOptions | MISSING = MISSING
+    parentMessageId: str | MISSING = MISSING
+    senderId: str
+    spaceId: str
+    telegram: SendTelegramOptions | MISSING = MISSING
+
+
+class SmsGroupContent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    metadata: ContentMetadata | MISSING = MISSING
+    parts: list[
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+    ]
+    type: Literal["group"]
+
+
+class SmsMessageContent(
+    RootModel[
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+        | SmsGroupContent
+    ]
+):
+    root: (
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+        | SmsGroupContent
+    )
+
+
+class WhatsappBusinessMessage(
+    RootModel[
+        ReceivedWhatsappBusinessMessage
+        | DispatchedWhatsappBusinessMessage
+        | AcceptedWhatsappBusinessMessage
+        | DeliveredWhatsappBusinessMessage
+        | FailedWhatsappBusinessMessage
+    ]
+):
+    root: (
+        ReceivedWhatsappBusinessMessage
+        | DispatchedWhatsappBusinessMessage
+        | AcceptedWhatsappBusinessMessage
+        | DeliveredWhatsappBusinessMessage
+        | FailedWhatsappBusinessMessage
+    )
+
+
+class WhatsappMessage(
+    RootModel[
+        ReceivedWhatsappMessage
+        | DispatchedWhatsappMessage
+        | AcceptedWhatsappMessage
+        | DeliveredWhatsappMessage
+        | FailedWhatsappMessage
+    ]
+):
+    root: (
+        ReceivedWhatsappMessage
+        | DispatchedWhatsappMessage
+        | AcceptedWhatsappMessage
+        | DeliveredWhatsappMessage
+        | FailedWhatsappMessage
+    )
+
+
+class AcceptedEmailMessage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    acceptance: (
+        DeliveryConfirmationUnavailableAcceptance
+        | DeliveryConfirmationNotApplicableAcceptance
+        | DeliveryConfirmationTimedOutAcceptance
+        | DeliveryPartiallyConfirmedAcceptance
+    )
+    addressedTo: UserSnapshot | MISSING = MISSING
+    content: (
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+        | EmailGroupContent
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    id: str
+    metadata: ResourceMetadata
+    parentMessageId: str | MISSING = MISSING
+    platform: Literal["email"]
+    projectId: str
+    receivedBy: UserSnapshot | MISSING = MISSING
+    sentBy: UserSnapshot
+    space: SpaceSnapshot
+    status: Literal["accepted"]
+    timestamps: AcceptedMessageTimestamps
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class AcceptedSmsMessage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    acceptance: (
+        DeliveryConfirmationUnavailableAcceptance
+        | DeliveryConfirmationNotApplicableAcceptance
+        | DeliveryConfirmationTimedOutAcceptance
+        | DeliveryPartiallyConfirmedAcceptance
+    )
+    addressedTo: UserSnapshot | MISSING = MISSING
+    content: (
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+        | SmsGroupContent
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    id: str
+    metadata: ResourceMetadata
+    parentMessageId: str | MISSING = MISSING
+    platform: Literal["sms"]
+    projectId: str
+    receivedBy: UserSnapshot | MISSING = MISSING
+    sentBy: UserSnapshot
+    space: SpaceSnapshot
+    status: Literal["accepted"]
+    timestamps: AcceptedMessageTimestamps
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class Content(
+    RootModel[
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+        | GroupContent
+    ]
+):
+    root: (
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+        | GroupContent
+    )
+
+
+class DeliveredEmailMessage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    addressedTo: UserSnapshot | MISSING = MISSING
+    content: (
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+        | EmailGroupContent
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    id: str
+    metadata: ResourceMetadata
+    parentMessageId: str | MISSING = MISSING
+    platform: Literal["email"]
+    projectId: str
+    receivedBy: UserSnapshot | MISSING = MISSING
+    sentBy: UserSnapshot
+    space: SpaceSnapshot
+    status: Literal["delivered"]
+    timestamps: DeliveredMessageTimestamps
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class DeliveredSmsMessage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    addressedTo: UserSnapshot | MISSING = MISSING
+    content: (
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+        | SmsGroupContent
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    id: str
+    metadata: ResourceMetadata
+    parentMessageId: str | MISSING = MISSING
+    platform: Literal["sms"]
+    projectId: str
+    receivedBy: UserSnapshot | MISSING = MISSING
+    sentBy: UserSnapshot
+    space: SpaceSnapshot
+    status: Literal["delivered"]
+    timestamps: DeliveredMessageTimestamps
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class DeliveredUnknownMessage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    addressedTo: UserSnapshot | MISSING = MISSING
+    content: (
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+        | GroupContent
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    id: str
+    metadata: ResourceMetadata
+    parentMessageId: str | MISSING = MISSING
+    platform: str
+    projectId: str
+    receivedBy: UserSnapshot | MISSING = MISSING
+    sentBy: UserSnapshot
+    space: SpaceSnapshot
+    status: Literal["delivered"]
+    timestamps: DeliveredMessageTimestamps
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class DispatchedEmailMessage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    addressedTo: UserSnapshot | MISSING = MISSING
+    content: (
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+        | EmailGroupContent
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    id: str
+    metadata: ResourceMetadata
+    parentMessageId: str | MISSING = MISSING
+    platform: Literal["email"]
+    projectId: str
+    receivedBy: UserSnapshot | MISSING = MISSING
+    sentBy: UserSnapshot
+    space: SpaceSnapshot
+    status: Literal["dispatched"]
+    timestamps: DispatchedMessageTimestamps
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class DispatchedSmsMessage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    addressedTo: UserSnapshot | MISSING = MISSING
+    content: (
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+        | SmsGroupContent
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    id: str
+    metadata: ResourceMetadata
+    parentMessageId: str | MISSING = MISSING
+    platform: Literal["sms"]
+    projectId: str
+    receivedBy: UserSnapshot | MISSING = MISSING
+    sentBy: UserSnapshot
+    space: SpaceSnapshot
+    status: Literal["dispatched"]
+    timestamps: DispatchedMessageTimestamps
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class DispatchedUnknownMessage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    addressedTo: UserSnapshot | MISSING = MISSING
+    content: (
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+        | GroupContent
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    id: str
+    metadata: ResourceMetadata
+    parentMessageId: str | MISSING = MISSING
+    platform: str
+    projectId: str
+    receivedBy: UserSnapshot | MISSING = MISSING
+    sentBy: UserSnapshot
+    space: SpaceSnapshot
+    status: Literal["dispatched"]
+    timestamps: DispatchedMessageTimestamps
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class EmailMessage(
+    RootModel[
+        ReceivedEmailMessage
+        | DispatchedEmailMessage
+        | AcceptedEmailMessage
+        | DeliveredEmailMessage
+        | FailedEmailMessage
+    ]
+):
+    root: (
+        ReceivedEmailMessage
+        | DispatchedEmailMessage
+        | AcceptedEmailMessage
+        | DeliveredEmailMessage
+        | FailedEmailMessage
+    )
+
+
+class FailedSmsMessage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    addressedTo: UserSnapshot | MISSING = MISSING
+    content: (
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+        | SmsGroupContent
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    failure: (
+        SenderNotAuthorizedFailure
+        | SenderUnavailableFailure
+        | SenderRegistrationRequiredFailure
+        | RecipientInvalidFailure
+        | RecipientUnreachableFailure
+        | RecipientOptedOutFailure
+        | MessageTypeUnsupportedFailure
+        | MessageContentInvalidFailure
+        | MessageTooLargeFailure
+        | MessageBlockedFailure
+        | MessageBlockedByCarrierFailure
+        | MessageRateLimitedFailure
+        | MessageRejectedFailure
+        | MessageExpiredFailure
+        | MessageDeliveryFailedFailure
+        | MessageSubmissionUnknownFailure
+        | MessagingUnavailableFailure
+        | MessageFailedFailure
+    )
+    id: str
+    metadata: ResourceMetadata
+    parentMessageId: str | MISSING = MISSING
+    platform: Literal["sms"]
+    projectId: str
+    receivedBy: UserSnapshot | MISSING = MISSING
+    sentBy: UserSnapshot
+    space: SpaceSnapshot
+    status: Literal["failed"]
+    timestamps: FailedMessageTimestamps
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class FailedUnknownMessage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    addressedTo: UserSnapshot | MISSING = MISSING
+    content: (
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+        | GroupContent
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    failure: (
+        SenderNotAuthorizedFailure
+        | SenderUnavailableFailure
+        | SenderRegistrationRequiredFailure
+        | RecipientInvalidFailure
+        | RecipientUnreachableFailure
+        | RecipientOptedOutFailure
+        | MessageTypeUnsupportedFailure
+        | MessageContentInvalidFailure
+        | MessageTooLargeFailure
+        | MessageBlockedFailure
+        | MessageBlockedByCarrierFailure
+        | MessageRateLimitedFailure
+        | MessageRejectedFailure
+        | MessageExpiredFailure
+        | MessageDeliveryFailedFailure
+        | MessageSubmissionUnknownFailure
+        | MessagingUnavailableFailure
+        | MessageFailedFailure
+    )
+    id: str
+    metadata: ResourceMetadata
+    parentMessageId: str | MISSING = MISSING
+    platform: str
+    projectId: str
+    receivedBy: UserSnapshot | MISSING = MISSING
+    sentBy: UserSnapshot
+    space: SpaceSnapshot
+    status: Literal["failed"]
+    timestamps: FailedMessageTimestamps
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class ReceivedSmsMessage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    addressedTo: UserSnapshot | MISSING = MISSING
+    content: (
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+        | SmsGroupContent
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    id: str
+    metadata: ResourceMetadata
+    parentMessageId: str | MISSING = MISSING
+    platform: Literal["sms"]
+    projectId: str
+    receivedBy: UserSnapshot | MISSING = MISSING
+    sentBy: UserSnapshot
+    space: SpaceSnapshot
+    status: Literal["received"]
+    timestamps: ReceivedMessageTimestamps
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class ReceivedUnknownMessage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    addressedTo: UserSnapshot | MISSING = MISSING
+    content: (
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+        | GroupContent
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    id: str
+    metadata: ResourceMetadata
+    parentMessageId: str | MISSING = MISSING
+    platform: str
+    projectId: str
+    receivedBy: UserSnapshot | MISSING = MISSING
+    sentBy: UserSnapshot
+    space: SpaceSnapshot
+    status: Literal["received"]
+    timestamps: ReceivedMessageTimestamps
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class SmsMessage(
+    RootModel[
+        ReceivedSmsMessage
+        | DispatchedSmsMessage
+        | AcceptedSmsMessage
+        | DeliveredSmsMessage
+        | FailedSmsMessage
+    ]
+):
+    root: (
+        ReceivedSmsMessage
+        | DispatchedSmsMessage
+        | AcceptedSmsMessage
+        | DeliveredSmsMessage
+        | FailedSmsMessage
+    )
+
+
+class AcceptedUnknownMessage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    acceptance: (
+        DeliveryConfirmationUnavailableAcceptance
+        | DeliveryConfirmationNotApplicableAcceptance
+        | DeliveryConfirmationTimedOutAcceptance
+        | DeliveryPartiallyConfirmedAcceptance
+    )
+    addressedTo: UserSnapshot | MISSING = MISSING
+    content: (
+        TextContent
+        | TextUpdateContent
+        | AttachmentContent
+        | VoiceContent
+        | ReactionContent
+        | MessageDeleteContent
+        | MessageReadContent
+        | SpaceParticipantsUpdateContent
+        | SpaceTypingUpdateContent
+        | PollContent
+        | PollVoteContent
+        | PollUpdateContent
+        | GroupContent
+    )
+    createdAt: str
+    """
+    When Photon first persisted this resource.
+    """
+    id: str
+    metadata: ResourceMetadata
+    parentMessageId: str | MISSING = MISSING
+    platform: str
+    projectId: str
+    receivedBy: UserSnapshot | MISSING = MISSING
+    sentBy: UserSnapshot
+    space: SpaceSnapshot
+    status: Literal["accepted"]
+    timestamps: AcceptedMessageTimestamps
+    updatedAt: str
+    """
+    When Photon last persisted a change to this resource's public state.
+    """
+
+
+class UnknownMessage(
+    RootModel[
+        ReceivedUnknownMessage
+        | DispatchedUnknownMessage
+        | AcceptedUnknownMessage
+        | DeliveredUnknownMessage
+        | FailedUnknownMessage
+    ]
+):
+    root: (
+        ReceivedUnknownMessage
+        | DispatchedUnknownMessage
+        | AcceptedUnknownMessage
+        | DeliveredUnknownMessage
+        | FailedUnknownMessage
+    )
+
+
+class Message(
+    RootModel[
+        ReceivedSmsMessage
+        | DispatchedSmsMessage
+        | AcceptedSmsMessage
+        | DeliveredSmsMessage
+        | FailedSmsMessage
+        | ReceivedWhatsappMessage
+        | DispatchedWhatsappMessage
+        | AcceptedWhatsappMessage
+        | DeliveredWhatsappMessage
+        | FailedWhatsappMessage
+        | ReceivedWhatsappBusinessMessage
+        | DispatchedWhatsappBusinessMessage
+        | AcceptedWhatsappBusinessMessage
+        | DeliveredWhatsappBusinessMessage
+        | FailedWhatsappBusinessMessage
+        | ReceivedEmailMessage
+        | DispatchedEmailMessage
+        | AcceptedEmailMessage
+        | DeliveredEmailMessage
+        | FailedEmailMessage
+        | ReceivedImessageMessage
+        | DispatchedImessageMessage
+        | AcceptedImessageMessage
+        | DeliveredImessageMessage
+        | FailedImessageMessage
+        | ReceivedTelegramMessage
+        | DispatchedTelegramMessage
+        | AcceptedTelegramMessage
+        | DeliveredTelegramMessage
+        | FailedTelegramMessage
+        | ReceivedUnknownMessage
+        | DispatchedUnknownMessage
+        | AcceptedUnknownMessage
+        | DeliveredUnknownMessage
+        | FailedUnknownMessage
+    ]
+):
+    root: Annotated[
+        ReceivedSmsMessage
+        | DispatchedSmsMessage
+        | AcceptedSmsMessage
+        | DeliveredSmsMessage
+        | FailedSmsMessage
+        | ReceivedWhatsappMessage
+        | DispatchedWhatsappMessage
+        | AcceptedWhatsappMessage
+        | DeliveredWhatsappMessage
+        | FailedWhatsappMessage
+        | ReceivedWhatsappBusinessMessage
+        | DispatchedWhatsappBusinessMessage
+        | AcceptedWhatsappBusinessMessage
+        | DeliveredWhatsappBusinessMessage
+        | FailedWhatsappBusinessMessage
+        | ReceivedEmailMessage
+        | DispatchedEmailMessage
+        | AcceptedEmailMessage
+        | DeliveredEmailMessage
+        | FailedEmailMessage
+        | ReceivedImessageMessage
+        | DispatchedImessageMessage
+        | AcceptedImessageMessage
+        | DeliveredImessageMessage
+        | FailedImessageMessage
+        | ReceivedTelegramMessage
+        | DispatchedTelegramMessage
+        | AcceptedTelegramMessage
+        | DeliveredTelegramMessage
+        | FailedTelegramMessage
+        | ReceivedUnknownMessage
+        | DispatchedUnknownMessage
+        | AcceptedUnknownMessage
+        | DeliveredUnknownMessage
+        | FailedUnknownMessage,
+        Field(union_mode="left_to_right"),
+    ]
+
+
+class PlatformMessage(RootModel[Message]):
+    root: Message = Field(
+        ...,
+        examples=[
+            {
+                "content": {"format": "plain", "text": "Hello from Photon.", "type": "text"},
+                "createdAt": "2026-01-01T00:00:00.000Z",
+                "id": "pho_msg_00000000000000000000000001",
+                "metadata": {},
+                "platform": "whatsapp",
+                "projectId": "pho_prj_00000000000000000000000001",
+                "sentBy": {
+                    "details": {
+                        "resourceId": "pho_res_00000000000000000000000001",
+                        "type": "dedicated",
+                    },
+                    "handle": "+14155550123",
+                    "id": "pho_usr_00000000000000000000000001",
+                    "kind": "agent",
+                    "metadata": {},
+                    "platform": "whatsapp",
+                    "projectId": "pho_prj_00000000000000000000000001",
+                },
+                "space": {
+                    "details": {},
+                    "id": "pho_spc_00000000000000000000000001",
+                    "kind": "direct",
+                    "metadata": {},
+                    "participantIds": [
+                        "pho_usr_00000000000000000000000001",
+                        "pho_usr_00000000000000000000000002",
+                    ],
+                    "platform": "whatsapp",
+                    "projectId": "pho_prj_00000000000000000000000001",
+                },
+                "status": "dispatched",
+                "timestamps": {"dispatchedAt": "2026-01-01T00:00:00.000Z"},
+                "updatedAt": "2026-01-01T00:00:00.000Z",
+            }
+        ],
+    )
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_all_of(cls, data: Any) -> Any:
+        return validate_all_of(data, SupportedPlatformConstraint)
+
+
+class SentMessage(RootModel[Message]):
+    root: Message = Field(
+        ...,
+        examples=[
+            {
+                "content": {"format": "plain", "text": "Hello from Photon.", "type": "text"},
+                "createdAt": "2026-01-01T00:00:00.000Z",
+                "id": "pho_msg_00000000000000000000000001",
+                "metadata": {},
+                "platform": "whatsapp",
+                "projectId": "pho_prj_00000000000000000000000001",
+                "sentBy": {
+                    "details": {
+                        "resourceId": "pho_res_00000000000000000000000001",
+                        "type": "dedicated",
+                    },
+                    "handle": "+14155550123",
+                    "id": "pho_usr_00000000000000000000000001",
+                    "kind": "agent",
+                    "metadata": {},
+                    "platform": "whatsapp",
+                    "projectId": "pho_prj_00000000000000000000000001",
+                },
+                "space": {
+                    "details": {},
+                    "id": "pho_spc_00000000000000000000000001",
+                    "kind": "direct",
+                    "metadata": {},
+                    "participantIds": [
+                        "pho_usr_00000000000000000000000001",
+                        "pho_usr_00000000000000000000000002",
+                    ],
+                    "platform": "whatsapp",
+                    "projectId": "pho_prj_00000000000000000000000001",
+                },
+                "status": "dispatched",
+                "timestamps": {"dispatchedAt": "2026-01-01T00:00:00.000Z"},
+                "updatedAt": "2026-01-01T00:00:00.000Z",
+            }
+        ],
+    )
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_all_of(cls, data: Any) -> Any:
+        return validate_all_of(data, SupportedPlatformConstraint, SentMessageConstraint)
+
+
+class SetSpaceTypingResponse(RootModel[Message]):
+    root: Message = Field(
+        ...,
+        examples=[
+            {
+                "content": {"type": "space.typing.update", "typing": True},
+                "createdAt": "2026-01-01T00:00:00.000Z",
+                "id": "pho_msg_00000000000000000000000001",
+                "metadata": {},
+                "platform": "whatsapp",
+                "projectId": "pho_prj_00000000000000000000000001",
+                "sentBy": {
+                    "details": {
+                        "resourceId": "pho_res_00000000000000000000000001",
+                        "type": "dedicated",
+                    },
+                    "handle": "+14155550123",
+                    "id": "pho_usr_00000000000000000000000001",
+                    "kind": "agent",
+                    "metadata": {},
+                    "platform": "whatsapp",
+                    "projectId": "pho_prj_00000000000000000000000001",
+                },
+                "space": {
+                    "details": {},
+                    "id": "pho_spc_00000000000000000000000001",
+                    "kind": "direct",
+                    "metadata": {},
+                    "participantIds": [
+                        "pho_usr_00000000000000000000000001",
+                        "pho_usr_00000000000000000000000002",
+                    ],
+                    "platform": "whatsapp",
+                    "projectId": "pho_prj_00000000000000000000000001",
+                },
+                "status": "dispatched",
+                "timestamps": {"dispatchedAt": "2026-01-01T00:00:00.000Z"},
+                "updatedAt": "2026-01-01T00:00:00.000Z",
+            }
+        ],
+    )
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_all_of(cls, data: Any) -> Any:
+        return validate_all_of(data, SetSpaceTypingConstraint)
+
+
+class MarkMessageReadResponse(RootModel[Message]):
+    root: Message = Field(
+        ...,
+        examples=[
+            {
+                "content": {"type": "message.read"},
+                "createdAt": "2026-01-01T00:00:00.000Z",
+                "id": "pho_msg_00000000000000000000000001",
+                "metadata": {},
+                "parentMessageId": "pho_msg_00000000000000000000000002",
+                "platform": "whatsapp",
+                "projectId": "pho_prj_00000000000000000000000001",
+                "sentBy": {
+                    "details": {
+                        "resourceId": "pho_res_00000000000000000000000001",
+                        "type": "dedicated",
+                    },
+                    "handle": "+14155550123",
+                    "id": "pho_usr_00000000000000000000000001",
+                    "kind": "agent",
+                    "metadata": {},
+                    "platform": "whatsapp",
+                    "projectId": "pho_prj_00000000000000000000000001",
+                },
+                "space": {
+                    "details": {},
+                    "id": "pho_spc_00000000000000000000000001",
+                    "kind": "direct",
+                    "metadata": {},
+                    "participantIds": [
+                        "pho_usr_00000000000000000000000001",
+                        "pho_usr_00000000000000000000000002",
+                    ],
+                    "platform": "whatsapp",
+                    "projectId": "pho_prj_00000000000000000000000001",
+                },
+                "status": "dispatched",
+                "timestamps": {"dispatchedAt": "2026-01-01T00:00:00.000Z"},
+                "updatedAt": "2026-01-01T00:00:00.000Z",
+            }
+        ],
+    )
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_all_of(cls, data: Any) -> Any:
+        return validate_all_of(data, SupportedPlatformConstraint, SentMessageConstraint)
+
+
+class MessagePage(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    items: list[PlatformMessage]
+    """
+    Unsupported platforms and records with unsupported data are omitted.
+    """
+    nextPageToken: str | MISSING = MISSING
+    """
+    Continue with this token, even if items is empty. Omitted when no more pages remain.
     """
 
 
