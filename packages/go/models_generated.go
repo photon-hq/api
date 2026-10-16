@@ -2620,9 +2620,50 @@ type ListWhatsappAccountPhoneNumbersResponse struct {
 
 type ManagerId string
 
-type MarkMessageReadResponse struct {
-	Platform Platform          `json:"platform"`
-	Status   SentMessageStatus `json:"status"`
+type MarkMessageReadResponse struct{ Union }
+
+// Kind returns the "platform" discriminator, or "" when absent.
+func (u MarkMessageReadResponse) Kind() string { return u.Discriminator("platform") }
+
+// Platform returns the "platform" member, or "" when absent.
+func (u MarkMessageReadResponse) Platform() string { return u.Discriminator("platform") }
+
+// Status returns the "status" member, or "" when absent.
+func (u MarkMessageReadResponse) Status() string { return u.Discriminator("status") }
+
+// AsSmsMessage decodes the value as SmsMessage.
+func (u MarkMessageReadResponse) AsSmsMessage() (SmsMessage, error) {
+	return UnionAs[SmsMessage](u.Union)
+}
+
+// AsWhatsappMessage decodes the value as WhatsappMessage.
+func (u MarkMessageReadResponse) AsWhatsappMessage() (WhatsappMessage, error) {
+	return UnionAs[WhatsappMessage](u.Union)
+}
+
+// AsWhatsappBusinessMessage decodes the value as WhatsappBusinessMessage.
+func (u MarkMessageReadResponse) AsWhatsappBusinessMessage() (WhatsappBusinessMessage, error) {
+	return UnionAs[WhatsappBusinessMessage](u.Union)
+}
+
+// AsEmailMessage decodes the value as EmailMessage.
+func (u MarkMessageReadResponse) AsEmailMessage() (EmailMessage, error) {
+	return UnionAs[EmailMessage](u.Union)
+}
+
+// AsImessageMessage decodes the value as ImessageMessage.
+func (u MarkMessageReadResponse) AsImessageMessage() (ImessageMessage, error) {
+	return UnionAs[ImessageMessage](u.Union)
+}
+
+// AsTelegramMessage decodes the value as TelegramMessage.
+func (u MarkMessageReadResponse) AsTelegramMessage() (TelegramMessage, error) {
+	return UnionAs[TelegramMessage](u.Union)
+}
+
+// AsUnknownMessage decodes the value as UnknownMessage.
+func (u MarkMessageReadResponse) AsUnknownMessage() (UnknownMessage, error) {
+	return UnionAs[UnknownMessage](u.Union)
 }
 
 type Message struct{ Union }
@@ -3300,17 +3341,120 @@ const (
 
 type PlatformIdentifier string
 
-type PlatformMessage struct {
-	Platform Platform `json:"platform"`
+type PlatformMessage struct{ Union }
+
+// Kind returns the "platform" discriminator, or "" when absent.
+func (u PlatformMessage) Kind() string { return u.Discriminator("platform") }
+
+// Platform returns the "platform" member, or "" when absent.
+func (u PlatformMessage) Platform() string { return u.Discriminator("platform") }
+
+// AsSmsMessage decodes the value as SmsMessage.
+func (u PlatformMessage) AsSmsMessage() (SmsMessage, error) { return UnionAs[SmsMessage](u.Union) }
+
+// AsWhatsappMessage decodes the value as WhatsappMessage.
+func (u PlatformMessage) AsWhatsappMessage() (WhatsappMessage, error) {
+	return UnionAs[WhatsappMessage](u.Union)
 }
 
-type PlatformSpace struct {
-	Platform Platform `json:"platform"`
+// AsWhatsappBusinessMessage decodes the value as WhatsappBusinessMessage.
+func (u PlatformMessage) AsWhatsappBusinessMessage() (WhatsappBusinessMessage, error) {
+	return UnionAs[WhatsappBusinessMessage](u.Union)
 }
 
-type PlatformUser struct {
-	Platform Platform `json:"platform"`
+// AsEmailMessage decodes the value as EmailMessage.
+func (u PlatformMessage) AsEmailMessage() (EmailMessage, error) {
+	return UnionAs[EmailMessage](u.Union)
 }
+
+// AsImessageMessage decodes the value as ImessageMessage.
+func (u PlatformMessage) AsImessageMessage() (ImessageMessage, error) {
+	return UnionAs[ImessageMessage](u.Union)
+}
+
+// AsTelegramMessage decodes the value as TelegramMessage.
+func (u PlatformMessage) AsTelegramMessage() (TelegramMessage, error) {
+	return UnionAs[TelegramMessage](u.Union)
+}
+
+// AsUnknownMessage decodes the value as UnknownMessage.
+func (u PlatformMessage) AsUnknownMessage() (UnknownMessage, error) {
+	return UnionAs[UnknownMessage](u.Union)
+}
+
+type PlatformSpace struct{ Union }
+
+// Kind returns the "platform" discriminator, or "" when absent.
+func (u PlatformSpace) Kind() string { return u.Discriminator("platform") }
+
+// Platform returns the "platform" member, or "" when absent.
+func (u PlatformSpace) Platform() string { return u.Discriminator("platform") }
+
+// AsSmsSpace decodes the value as SmsSpace.
+func (u PlatformSpace) AsSmsSpace() (SmsSpace, error) { return UnionAs[SmsSpace](u.Union) }
+
+// AsWhatsappSpace decodes the value as WhatsappSpace.
+func (u PlatformSpace) AsWhatsappSpace() (WhatsappSpace, error) {
+	return UnionAs[WhatsappSpace](u.Union)
+}
+
+// AsWhatsappBusinessSpace decodes the value as WhatsappBusinessSpace.
+func (u PlatformSpace) AsWhatsappBusinessSpace() (WhatsappBusinessSpace, error) {
+	return UnionAs[WhatsappBusinessSpace](u.Union)
+}
+
+// AsEmailSpace decodes the value as EmailSpace.
+func (u PlatformSpace) AsEmailSpace() (EmailSpace, error) { return UnionAs[EmailSpace](u.Union) }
+
+// AsVoiceSpace decodes the value as VoiceSpace.
+func (u PlatformSpace) AsVoiceSpace() (VoiceSpace, error) { return UnionAs[VoiceSpace](u.Union) }
+
+// AsImessageSpace decodes the value as ImessageSpace.
+func (u PlatformSpace) AsImessageSpace() (ImessageSpace, error) {
+	return UnionAs[ImessageSpace](u.Union)
+}
+
+// AsTelegramSpace decodes the value as TelegramSpace.
+func (u PlatformSpace) AsTelegramSpace() (TelegramSpace, error) {
+	return UnionAs[TelegramSpace](u.Union)
+}
+
+// AsUnknownSpace decodes the value as UnknownSpace.
+func (u PlatformSpace) AsUnknownSpace() (UnknownSpace, error) { return UnionAs[UnknownSpace](u.Union) }
+
+type PlatformUser struct{ Union }
+
+// Kind returns the "platform" discriminator, or "" when absent.
+func (u PlatformUser) Kind() string { return u.Discriminator("platform") }
+
+// Platform returns the "platform" member, or "" when absent.
+func (u PlatformUser) Platform() string { return u.Discriminator("platform") }
+
+// AsSmsUser decodes the value as SmsUser.
+func (u PlatformUser) AsSmsUser() (SmsUser, error) { return UnionAs[SmsUser](u.Union) }
+
+// AsWhatsappUser decodes the value as WhatsappUser.
+func (u PlatformUser) AsWhatsappUser() (WhatsappUser, error) { return UnionAs[WhatsappUser](u.Union) }
+
+// AsWhatsappBusinessUser decodes the value as WhatsappBusinessUser.
+func (u PlatformUser) AsWhatsappBusinessUser() (WhatsappBusinessUser, error) {
+	return UnionAs[WhatsappBusinessUser](u.Union)
+}
+
+// AsEmailUser decodes the value as EmailUser.
+func (u PlatformUser) AsEmailUser() (EmailUser, error) { return UnionAs[EmailUser](u.Union) }
+
+// AsVoiceUser decodes the value as VoiceUser.
+func (u PlatformUser) AsVoiceUser() (VoiceUser, error) { return UnionAs[VoiceUser](u.Union) }
+
+// AsImessageUser decodes the value as ImessageUser.
+func (u PlatformUser) AsImessageUser() (ImessageUser, error) { return UnionAs[ImessageUser](u.Union) }
+
+// AsTelegramUser decodes the value as TelegramUser.
+func (u PlatformUser) AsTelegramUser() (TelegramUser, error) { return UnionAs[TelegramUser](u.Union) }
+
+// AsUnknownUser decodes the value as UnknownUser.
+func (u PlatformUser) AsUnknownUser() (UnknownUser, error) { return UnionAs[UnknownUser](u.Union) }
 
 type PollContent struct {
 	Metadata      *ContentMetadata  `json:"metadata,omitempty"`
@@ -4108,9 +4252,46 @@ type SenderUnavailableFailure struct {
 	Message string `json:"message"`
 }
 
-type SentMessage struct {
-	Platform Platform          `json:"platform"`
-	Status   SentMessageStatus `json:"status"`
+type SentMessage struct{ Union }
+
+// Kind returns the "platform" discriminator, or "" when absent.
+func (u SentMessage) Kind() string { return u.Discriminator("platform") }
+
+// Platform returns the "platform" member, or "" when absent.
+func (u SentMessage) Platform() string { return u.Discriminator("platform") }
+
+// Status returns the "status" member, or "" when absent.
+func (u SentMessage) Status() string { return u.Discriminator("status") }
+
+// AsSmsMessage decodes the value as SmsMessage.
+func (u SentMessage) AsSmsMessage() (SmsMessage, error) { return UnionAs[SmsMessage](u.Union) }
+
+// AsWhatsappMessage decodes the value as WhatsappMessage.
+func (u SentMessage) AsWhatsappMessage() (WhatsappMessage, error) {
+	return UnionAs[WhatsappMessage](u.Union)
+}
+
+// AsWhatsappBusinessMessage decodes the value as WhatsappBusinessMessage.
+func (u SentMessage) AsWhatsappBusinessMessage() (WhatsappBusinessMessage, error) {
+	return UnionAs[WhatsappBusinessMessage](u.Union)
+}
+
+// AsEmailMessage decodes the value as EmailMessage.
+func (u SentMessage) AsEmailMessage() (EmailMessage, error) { return UnionAs[EmailMessage](u.Union) }
+
+// AsImessageMessage decodes the value as ImessageMessage.
+func (u SentMessage) AsImessageMessage() (ImessageMessage, error) {
+	return UnionAs[ImessageMessage](u.Union)
+}
+
+// AsTelegramMessage decodes the value as TelegramMessage.
+func (u SentMessage) AsTelegramMessage() (TelegramMessage, error) {
+	return UnionAs[TelegramMessage](u.Union)
+}
+
+// AsUnknownMessage decodes the value as UnknownMessage.
+func (u SentMessage) AsUnknownMessage() (UnknownMessage, error) {
+	return UnionAs[UnknownMessage](u.Union)
 }
 
 type SentMessageConstraint struct {
@@ -4142,9 +4323,47 @@ type SetSpaceTypingRequest struct {
 	Typing bool `json:"typing"`
 }
 
-type SetSpaceTypingResponse struct {
-	Content SetSpaceTypingContent `json:"content"`
-	Status  string                `json:"status"`
+type SetSpaceTypingResponse struct{ Union }
+
+// Kind returns the "platform" discriminator, or "" when absent.
+func (u SetSpaceTypingResponse) Kind() string { return u.Discriminator("platform") }
+
+// Status returns the "status" member, or "" when absent.
+func (u SetSpaceTypingResponse) Status() string { return u.Discriminator("status") }
+
+// AsSmsMessage decodes the value as SmsMessage.
+func (u SetSpaceTypingResponse) AsSmsMessage() (SmsMessage, error) {
+	return UnionAs[SmsMessage](u.Union)
+}
+
+// AsWhatsappMessage decodes the value as WhatsappMessage.
+func (u SetSpaceTypingResponse) AsWhatsappMessage() (WhatsappMessage, error) {
+	return UnionAs[WhatsappMessage](u.Union)
+}
+
+// AsWhatsappBusinessMessage decodes the value as WhatsappBusinessMessage.
+func (u SetSpaceTypingResponse) AsWhatsappBusinessMessage() (WhatsappBusinessMessage, error) {
+	return UnionAs[WhatsappBusinessMessage](u.Union)
+}
+
+// AsEmailMessage decodes the value as EmailMessage.
+func (u SetSpaceTypingResponse) AsEmailMessage() (EmailMessage, error) {
+	return UnionAs[EmailMessage](u.Union)
+}
+
+// AsImessageMessage decodes the value as ImessageMessage.
+func (u SetSpaceTypingResponse) AsImessageMessage() (ImessageMessage, error) {
+	return UnionAs[ImessageMessage](u.Union)
+}
+
+// AsTelegramMessage decodes the value as TelegramMessage.
+func (u SetSpaceTypingResponse) AsTelegramMessage() (TelegramMessage, error) {
+	return UnionAs[TelegramMessage](u.Union)
+}
+
+// AsUnknownMessage decodes the value as UnknownMessage.
+func (u SetSpaceTypingResponse) AsUnknownMessage() (UnknownMessage, error) {
+	return UnionAs[UnknownMessage](u.Union)
 }
 
 type SharedLineAssignment struct {
