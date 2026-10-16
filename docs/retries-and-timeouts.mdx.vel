@@ -12,7 +12,7 @@ request is sent once.
 
 | | TypeScript | Python | Rust | Go |
 | --- | --- | --- | --- | --- |
-| Requests retried | `GET`, and requests with an `Idempotency-Key` header | `GET`, and requests with an `Idempotency-Key` header | `GET`, and requests with an `Idempotency-Key` header whose body can be resent | `GET`, and requests with an `Idempotency-Key` header (the client fills an empty key field itself) |
+| Requests retried | `GET`, and requests with an `Idempotency-Key` header | `GET`, and requests with an `Idempotency-Key` header | `GET`, and requests with an `Idempotency-Key` header whose body can be resent | `GET`, and requests with an `Idempotency-Key` header whose body can be resent: a one-shot reader body is buffered up to 8 MiB, larger ones are sent once (the client fills an empty key field itself) |
 | Statuses retried | `408`, `429`, `502`, `503`, `504` (configurable) | `408`, `429`, `502`, `503`, `504` | `408`, `429`, `502`, `503`, `504` | `408`, `429`, `502`, `503`, `504` |
 | Network errors and timeouts, before or while the response body arrives | Retried | Retried | Not retried | Retried until the response arrives; a failure while reading the body is not |
 | Attempts | 3, including the first | 3, including the first | 3, including the first | 3, including the first |

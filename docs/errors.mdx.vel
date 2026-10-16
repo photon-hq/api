@@ -81,7 +81,7 @@ Operations return an `error`; inspect it with `errors.As`.
 | --- | --- | --- |
 | `*APIError` | The API returns an error status. | `StatusCode`, `Problem` (the parsed problem document, `nil` when the body is not one), `RequestID`, `Header`, `Body` (the raw body, capped at 64 KiB). `Code()` returns the problem's code, or `""`. |
 | `*TransportError` | The request did not complete: a network failure, a cancelled context, or a timeout on the `http.Client`, on its last attempt. | `OperationID`, `Err` (the underlying error). |
-| `*ResponseDecodeError` | A successful response could not be read as the contract describes. | `OperationID`, `StatusCode`, `Body` (capped), `RequestID`, `Err`. |
+| `*ResponseDecodeError` | A successful response could not be read as the contract describes. | `OperationID`, `StatusCode`, `Body` (the full response body), `RequestID`, `Err`. |
 
 Problem documents are not generated as per-operation types: read
 `APIError.Problem` and match on its `Code`.

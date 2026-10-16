@@ -200,8 +200,10 @@ under the contract's names in Go's exported casing (`organizationId` becomes
 `photonapi.Ptr`.
 
 Enums are plain string types, so unknown values pass through. Unions keep
-their raw JSON: branch on `Kind()` and decode with the union's `As<Member>`
-methods. Timestamps are `photonapi.Timestamp` values in UTC with millisecond
+their raw JSON: branch on the union's `Kind()` method where it declares a
+discriminator (every message, space and user union does), or on
+`Discriminator(field)`, then decode with the union's `As<Member>` methods.
+Timestamps are `photonapi.Timestamp` values in UTC with millisecond
 precision.
 </Tab>
 </Tabs>

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.1 (2026-10-16)
+
+
+### Documentation
+
+* **release:** correct three Go guide claims
+
 ## 0.5.0 (2026-10-16)
 
 
