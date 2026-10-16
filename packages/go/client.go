@@ -504,6 +504,11 @@ func (c *core) finish(spec *requestSpec, resp *http.Response, out any, info *Res
 			Body: raw, RequestID: requestID, Err: err,
 		}
 	}
+	// A response union of a multi-status operation keeps the status that
+	// produced its body, so its decoders can refuse the wrong schema.
+	if carrier, ok := out.(interface{ setStatus(int) }); ok {
+		carrier.setStatus(resp.StatusCode)
+	}
 	return nil
 }
 

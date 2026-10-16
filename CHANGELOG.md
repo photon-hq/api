@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.5.0 (2026-10-16)
+
+
+### ⚠ BREAKING CHANGES
+
+* Go only; TypeScript, Python and Rust are unchanged. Upgrading from 0.4.x:
+    * **Messages read back with their full content.** `PlatformMessage` — the items of `Projects.ListMessages` and the body of `Projects.GetMessage` — previously decoded only its `platform` field. It is now a `Union` value: branch on `Kind()`, decode the platform with its `As` method, then the status variant. For an incoming iMessage: `item.AsImessageMessage()`, then `.AsReceivedImessageMessage()` for the id, sender, space and content. `PlatformSpace` and `PlatformUser` change the same way. The former `.Platform` field is the `Platform()` method.
+    * **Send results carry the sent message.** `SentMessage` from `Projects.SendMessage` is the same kind of `Union` value: `sent.AsImessageMessage()` then `.AsAcceptedImessageMessage()` reaches the sent message's `id`. The former `.Platform` and `.Status` fields are the `Platform()` and `Status()` methods. `MarkMessageReadResponse` and `SetSpaceTypingResponse` change the same way.
+    * **`Organizations.Billing.ChangePlan` returns a typed union.** `*ChangePlanResponse` replaces `*Union`, with `AsTerminalBillingOperation()` (the status 200 body) and `AsPendingBillingOperation()` (status 202). The decoders check the HTTP status that produced the body and refuse the other status's schema; `Status()` returns it.
+
+### Bug Fixes
+
+* **go:** allOf-narrowed unions (messages, spaces, users, send results) decode with their full surface instead of only their constraint fields, and multi-status responses get a named, status-aware union
+
 ## 0.4.3 (2026-10-15)
 
 

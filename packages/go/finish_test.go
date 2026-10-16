@@ -27,3 +27,41 @@ func TestRedirectNotModified(t *testing.T) {
 		t.Fatalf("undeclared 304: want APIError, got %v", err)
 	}
 }
+
+// finish stamps the HTTP status into a multi-status response union through
+// the setStatus hook. The per-operation decoders that gate on this status are
+// generated; their shape is pinned by the go-codegen tests, so this probe
+// stays independent of any one operation's contract.
+type statusUnionProbe struct {
+	Union
+	status int
+}
+
+func (u *statusUnionProbe) setStatus(code int) { u.status = code }
+
+func TestResponseUnionStatus(t *testing.T) {
+	spec := newSpec("changePlan", "POST", "/plan")
+	resp := &http.Response{
+		StatusCode: 202,
+		Header:     http.Header{},
+		Body:       io.NopCloser(strings.NewReader(`{"operationId":"op_1"}`)),
+	}
+	var out statusUnionProbe
+	if err := (&core{}).finish(spec, resp, &out, nil); err != nil {
+		t.Fatal(err)
+	}
+	if out.status != 202 {
+		t.Fatalf("status = %d", out.status)
+	}
+	if string(out.Raw) != `{"operationId":"op_1"}` {
+		t.Fatalf("raw = %s", out.Raw)
+	}
+	// A plain model decodes unchanged: the hook only touches carriers.
+	var plain struct {
+		OperationID string `json:"operationId"`
+	}
+	resp = &http.Response{StatusCode: 200, Header: http.Header{}, Body: io.NopCloser(strings.NewReader(`{"operationId":"op_2"}`))}
+	if err := (&core{}).finish(spec, resp, &plain, nil); err != nil || plain.OperationID != "op_2" {
+		t.Fatalf("plain decode: %+v, %v", plain, err)
+	}
+}

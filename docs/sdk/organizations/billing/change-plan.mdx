@@ -26,7 +26,7 @@ client.change_plan(idempotency_key: String, organization_id: String, project_id:
 </Tab>
 <Tab title="Go">
 ```go Go
-client.Organizations.Billing.ChangePlan(ctx context.Context, params *ChangePlanParams, opts ...RequestOption) (*Union, error)
+client.Organizations.Billing.ChangePlan(ctx context.Context, params *ChangePlanParams, opts ...RequestOption) (*ChangePlanResponse, error)
 ```
 </Tab>
 </Tabs>

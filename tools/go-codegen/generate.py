@@ -108,6 +108,24 @@ def union_members(schema: dict) -> list[dict] | None:
     return members if members and len(members) > 0 else None
 
 
+def allof_union(schema: dict) -> tuple[dict, dict] | None:
+    """The union member of an `allOf[union, constraint objects...]`, with the
+    constraints' properties. Such a schema is the union narrowed by constants
+    (a platform, a status), which Go cannot express statically: it stays a
+    Union value with the union's decoders plus one accessor per constraint."""
+    union = None
+    constraints: dict = {}
+    for member in schema.get("allOf") or []:
+        target = SCHEMAS[ref_name(member)] if ref_name(member) else member
+        if union_members(target):
+            if union is not None:
+                sys.exit("allOf with more than one union member is not supported")
+            union = target
+        else:
+            constraints.update(target.get("properties") or {})
+    return (union, constraints) if union else None
+
+
 class Mapper:
     """Maps schemas to Go types. `kind` of a named schema decides nilability."""
 
@@ -130,7 +148,7 @@ class Mapper:
         if (r := ref_name(inner)):
             return self.kind(r)
         if "allOf" in inner:
-            return "struct"
+            return "union" if allof_union(inner) else "struct"
         if union_members(inner):
             members = union_members(inner)
             if len(members) == 1 and ref_name(members[0]):
@@ -230,6 +248,9 @@ class Mapper:
 
 mapper = Mapper()
 
+# Named response unions synthesized for operations with several success schemas.
+RESPONSE_UNIONS: dict[str, str] = {}
+
 
 def collect(schema: dict) -> None:
     """Mark every named schema reachable from `schema`."""
@@ -267,6 +288,8 @@ def merged_object(schema: dict) -> tuple[dict, set[str]]:
     for key in ("allOf",):
         for member in schema.get(key) or []:
             target = SCHEMAS[ref_name(member)] if ref_name(member) else member
+            if union_members(target):
+                sys.exit(f"allOf union member in an inline object: {json.dumps(schema)[:200]}")
             p, r = merged_object(target)
             props.update(p)
             required |= r
@@ -336,11 +359,28 @@ def emit_model(name: str) -> str:
         typ, _ = mapper.go_type(members[0], hint=go + "Member")
         return d + f"type {go} = {typ}\n\n"
     if kind == "union":
-        ext = inner.get("x-photon-extension") or {}
+        source, constraints = inner, {}
+        if (narrowed := allof_union(inner)):
+            source, constraints = narrowed
+        members = union_members(source)
+        ext = source.get("x-photon-extension") or {}
         out = d + f"type {go} struct{{ Union }}\n\n"
         disc = ext.get("discriminator")
         if disc:
             out += f'// Kind returns the "{disc}" discriminator, or "" when absent.\nfunc (u {go}) Kind() string {{ return u.Discriminator("{disc}") }}\n\n'
+        # Method names already taken on the carrier: the Union surface, Kind,
+        # and one As decoder per member; an accessor may not shadow any of them.
+        taken_methods = {"Kind", "Union", "Raw", "Discriminator", "MarshalJSON", "UnmarshalJSON"}
+        taken_methods |= {f"As{type_name(ref_name(m))}" for m in members if ref_name(m)}
+        for pname, prop in constraints.items():
+            # One accessor per string-typed constraint member (the platform, the
+            # status); other members stay reachable through the decoders.
+            prop_kind = mapper.kind(ref_name(prop)) if ref_name(prop) else mapper._kind(prop)
+            accessor = field_name(pname)
+            if prop_kind != "string" or accessor in taken_methods:
+                continue
+            taken_methods.add(accessor)
+            out += f'// {accessor} returns the "{pname}" member, or "" when absent.\nfunc (u {go}) {accessor}() string {{ return u.Discriminator("{pname}") }}\n\n'
         for m in members:
             if not ref_name(m):
                 continue
@@ -440,12 +480,46 @@ def emit_op(node: Node, op: dict) -> tuple[str, str]:
 
     ok = media(op["responses"])
     result = None  # (kind, go type)
+    response_union = ""
     schemas = {(mt, n) for _, mt, n in ok}
     if not ok:
         has_redirect = any(s[0] == "3" for s in op["responses"])
         result = ("redirect", "Redirect") if has_redirect else None
     elif len(schemas) > 1:
-        result = ("union", "Union")
+        # Distinct success schemas: a named union with a decoder per status's
+        # schema, like the model unions, rather than an anonymous Union.
+        if all(mt == "application/json" and n for _, mt, n in ok):
+            # `<Operation>Response` unless the contract already has that schema.
+            response_name = f"{op_type}Response"
+            if response_name in SCHEMAS:
+                response_name = f"{op_type}Result"
+            RESPONSE_UNIONS[response_name] = op["operationId"]
+            # The carrier keeps the HTTP status that produced the body (set by
+            # the client), because overlapping schemas — unions, open objects —
+            # can decode as either member; the status is the discriminator.
+            response_union = (
+                f"// {response_name} is the body of {method_name}: one schema per success status.\n"
+                f"type {response_name} struct {{\n\tUnion\n\tstatus int\n}}\n\n"
+                f"// Status returns the HTTP status that produced this body, or 0 when the\n// value was not decoded from a response.\nfunc (u {response_name}) Status() int {{ return u.status }}\n\n"
+                f"func (u *{response_name}) setStatus(code int) {{ u.status = code }}\n\n"
+            )
+            statuses: dict[str, list[str]] = {}
+            for status, _, n in sorted(ok):
+                statuses.setdefault(n, []).append(status)
+            for n, under in statuses.items():
+                mn = type_name(n)
+                mapper.need(n)
+                codes = " && ".join(f"u.status != {status}" for status in under)
+                response_union += (
+                    f"// As{mn} decodes the value as {mn}, the body of status {', '.join(under)}.\n"
+                    f"func (u {response_name}) As{mn}() ({mn}, error) {{\n"
+                    f"\tif u.status != 0 && {codes} {{\n"
+                    f'\t\tvar zero {mn}\n\t\treturn zero, fmt.Errorf("photonapi: the status %d body is not {mn} (status {", ".join(under)})", u.status)\n'
+                    f"\t}}\n\treturn UnionAs[{mn}](u.Union)\n}}\n\n"
+                )
+            result = ("union", response_name)
+        else:
+            result = ("union", "Union")
     else:
         _, mt, n = ok[0]
         if mt == "":
@@ -458,7 +532,7 @@ def emit_op(node: Node, op: dict) -> tuple[str, str]:
 
     params_name = f"{op_type}Params"
     has_params = bool(fields) or body_type is not None
-    structure = ""
+    structure = response_union
     if has_params:
         structure += f"// {params_name} holds the parameters of {method_name}.\ntype {params_name} struct {{\n"
         for f in fields:
@@ -557,7 +631,7 @@ def emit_services(root: Node) -> str:
 
 
 def imports(body: str) -> str:
-    wanted = [m for m, token in (("context", "context."), ("io", "io.")) if token in body]
+    wanted = [m for m, token in (("context", "context."), ("fmt", "fmt."), ("io", "io.")) if token in body]
     if not wanted:
         return ""
     return "import (\n" + "".join(f'\t"{m}"\n' for m in wanted) + ")\n\n"
@@ -580,9 +654,10 @@ def render() -> dict[str, str]:
     names = sorted(mapper.needed)
     taken = {type_name(n) for n in names}
     params = {f"{ident(op['operationId'])}Params": op["operationId"] for op in MANIFEST_OPS}
+    params |= RESPONSE_UNIONS
     for params_name, operation_id in params.items():
         if params_name in taken:
-            sys.exit(f"params type of {operation_id} collides with a schema")
+            sys.exit(f"params or response type of {operation_id} collides with a schema")
     models = "".join(emit_model(n) + drain() for n in names) + drain()
     reserved = taken | params.keys() | HANDWRITTEN
     for name in mapper.hoisted:

@@ -4,6 +4,7 @@ package photonapi
 
 import (
 	"context"
+	"fmt"
 	"io"
 )
 
@@ -1269,6 +1270,36 @@ type UpdateOrganizationSsoPolicyParams struct {
 type DeviceTokenParams struct {
 	// Body is the request body.
 	Body DeviceTokenRequest
+}
+
+// ChangePlanResponse is the body of ChangePlan: one schema per success status.
+type ChangePlanResponse struct {
+	Union
+	status int
+}
+
+// Status returns the HTTP status that produced this body, or 0 when the
+// value was not decoded from a response.
+func (u ChangePlanResponse) Status() int { return u.status }
+
+func (u *ChangePlanResponse) setStatus(code int) { u.status = code }
+
+// AsTerminalBillingOperation decodes the value as TerminalBillingOperation, the body of status 200.
+func (u ChangePlanResponse) AsTerminalBillingOperation() (TerminalBillingOperation, error) {
+	if u.status != 0 && u.status != 200 {
+		var zero TerminalBillingOperation
+		return zero, fmt.Errorf("photonapi: the status %d body is not TerminalBillingOperation (status 200)", u.status)
+	}
+	return UnionAs[TerminalBillingOperation](u.Union)
+}
+
+// AsPendingBillingOperation decodes the value as PendingBillingOperation, the body of status 202.
+func (u ChangePlanResponse) AsPendingBillingOperation() (PendingBillingOperation, error) {
+	if u.status != 0 && u.status != 202 {
+		var zero PendingBillingOperation
+		return zero, fmt.Errorf("photonapi: the status %d body is not PendingBillingOperation (status 202)", u.status)
+	}
+	return UnionAs[PendingBillingOperation](u.Union)
 }
 
 // ChangePlanParams holds the parameters of ChangePlan.
@@ -4001,7 +4032,7 @@ func newOrganizationsBillingService(c *core) *OrganizationsBillingService {
 // Change plan
 //
 // Purchases or changes the selected project's plan for the supplied category and planCode. A 202 response means the change is pending: poll the returned operation URL and honor Retry-After until it succeeds or fails. A 200 response means the idempotency key resolved to an operation that is already terminal; inspect that result rather than assuming success from the status code alone. Supply the required Idempotency-Key header. Supply both organizationId and projectId to select the project within its organization.
-func (s *OrganizationsBillingService) ChangePlan(ctx context.Context, params *ChangePlanParams, opts ...RequestOption) (*Union, error) {
+func (s *OrganizationsBillingService) ChangePlan(ctx context.Context, params *ChangePlanParams, opts ...RequestOption) (*ChangePlanResponse, error) {
 	if params == nil {
 		params = &ChangePlanParams{}
 	}
@@ -4011,7 +4042,7 @@ func (s *OrganizationsBillingService) ChangePlan(ctx context.Context, params *Ch
 	spec.setPath("organizationId", params.OrganizationID)
 	spec.setPath("projectId", params.ProjectID)
 	spec.setJSON(params.Body)
-	var out Union
+	var out ChangePlanResponse
 	if err := s.c.do(ctx, spec, &out, opts); err != nil {
 		return nil, err
 	}
