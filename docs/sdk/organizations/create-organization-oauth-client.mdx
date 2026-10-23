@@ -1,0 +1,239 @@
+---
+title: "Create an organization OAuth client"
+icon: arrow-up-right
+description: "Create an organization OAuth client: createOrganizationOauthClient in the TypeScript, Python, Rust and Go clients."
+---
+
+`POST /v1/organizations/{organizationId}/oauth/clients`
+
+Use the same UUID Idempotency-Key and payload when retrying. Unknown provider outcomes require recovery; do not use a new key to retry an uncertain creation.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.createOrganizationOauthClient(input: CreateOrganizationOauthClientInput, options?: RequestOptions): Promise<CreateOrganizationOauthClientOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.create_organization_oauth_client(input: CreateOrganizationOauthClientInput) -> models.CreateOrganizationOauthClientResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.create_organization_oauth_client(organization_id: String, idempotency_key: String, body: &types::CreateOrganizationOauthClientRequest).await -> Result<ResponseValue<types::CreateOrganizationOauthClientResponse>, Error<CreateOrganizationOauthClientError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.CreateOrganizationOauthClient(ctx context.Context, params *CreateOrganizationOauthClientParams, opts ...RequestOption) (*CreateOrganizationOauthClientResponse, error)
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.createOrganizationOauthClient({
+  path: {
+    organizationId: "organizationId",
+  },
+  headers: {
+    "idempotency-key": "idempotency-key",
+  },
+  body: {
+    name: "name",
+    redirectUris: [
+      {
+        default: true,
+        uri: "uri",
+      },
+    ],
+    scopes: [],
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import CreateOrganizationOauthClientInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.create_organization_oauth_client(
+    CreateOrganizationOauthClientInput.model_validate({
+        "path": {
+            "organizationId": "organizationId",
+        },
+        "headers": {
+            "idempotency-key": "idempotency-key",
+        },
+        "body": {
+            "name": "name",
+            "redirectUris": [
+                {
+                    "default": True,
+                    "uri": "uri",
+                },
+            ],
+            "scopes": [],
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .create_organization_oauth_client(
+        "organizationId".to_owned(),
+        "idempotency-key".to_owned(),
+        &serde_json::from_value(serde_json::json!({
+            "name": "name",
+            "redirectUris": [
+                {
+                    "default": true,
+                    "uri": "uri",
+                },
+            ],
+            "scopes": [],
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.CreateOrganizationOauthClientRequest
+if err := json.Unmarshal([]byte(`{
+	"name": "name",
+	"redirectUris": [
+		{
+			"default": true,
+			"uri": "uri"
+		}
+	],
+	"scopes": []
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Organizations.CreateOrganizationOauthClient(ctx, &photonapi.CreateOrganizationOauthClientParams{
+	OrganizationID: "organizationId",
+	IdempotencyKey: "idempotency-key",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 201
+{
+  "clientId": "string",
+  "createdAt": "2026-01-01T00:00:00Z",
+  "description": null,
+  "name": "string",
+  "redirectUris": [
+    {
+      "default": true,
+      "uri": "string"
+    }
+  ],
+  "scopes": [
+    "string"
+  ],
+  "updatedAt": "2026-01-01T00:00:00Z"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="organizationId" type={"string"} required>
+
+</ParamField>
+
+<ParamField header="idempotency-key" type={"string (uuid)"} required>
+
+</ParamField>
+
+
+## Body
+
+<ParamField body="description" type={"string | null"}>
+
+</ParamField>
+
+<ParamField body="name" type={"string"} required>
+
+</ParamField>
+
+<ParamField body="redirectUris" type={"array of OrganizationOauthClientRedirectUriInput"} required>
+
+</ParamField>
+
+<ParamField body="scopes" type={"array of string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`201`** Created organization OAuth client, or the same recorded creation on retry. CreateOrganizationOauthClientResponse
+
+Headers: `ETag`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
+<ResponseField name="clientId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="description" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="name" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="redirectUris" type={"array of OrganizationOauthClientRedirectUri"} required>
+
+</ResponseField>
+
+<ResponseField name="scopes" type={"array of string"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+

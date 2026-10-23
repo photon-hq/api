@@ -1,0 +1,198 @@
+---
+title: "Commit an organization avatar"
+icon: arrow-up-right
+description: "Commit an organization avatar: commitOrganizationAvatar in the TypeScript, Python, Rust and Go clients."
+---
+
+`POST /v1/organizations/{organizationId}/avatar/commit`
+
+
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.commitOrganizationAvatar(input: CommitOrganizationAvatarInput, options?: RequestOptions): Promise<CommitOrganizationAvatarOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.commit_organization_avatar(input: CommitOrganizationAvatarInput) -> models.CommitOrganizationAvatarResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.commit_organization_avatar(idempotency_key: String, organization_id: String, body: &types::CommitOrganizationAvatarRequest).await -> Result<ResponseValue<types::CommitOrganizationAvatarResponse>, Error<CommitOrganizationAvatarError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.CommitOrganizationAvatar(ctx context.Context, params *CommitOrganizationAvatarParams, opts ...RequestOption) (*CommitOrganizationAvatarResponse, error)
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.commitOrganizationAvatar({
+  path: {
+    organizationId: "organizationId",
+  },
+  headers: {
+    idempotencyKey: "idempotencyKey",
+  },
+  body: {
+    uploadId: "uploadId",
+    expectedVersion: "expectedVersion",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import CommitOrganizationAvatarInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.commit_organization_avatar(
+    CommitOrganizationAvatarInput.model_validate({
+        "path": {
+            "organizationId": "organizationId",
+        },
+        "headers": {
+            "Idempotency-Key": "idempotencyKey",
+        },
+        "body": {
+            "uploadId": "uploadId",
+            "expectedVersion": "expectedVersion",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .commit_organization_avatar(
+        "idempotencyKey".to_owned(),
+        "organizationId".to_owned(),
+        &serde_json::from_value(serde_json::json!({
+            "uploadId": "uploadId",
+            "expectedVersion": "expectedVersion",
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.CommitOrganizationAvatarRequest
+if err := json.Unmarshal([]byte(`{
+	"uploadId": "uploadId",
+	"expectedVersion": "expectedVersion"
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Organizations.CommitOrganizationAvatar(ctx, &photonapi.CommitOrganizationAvatarParams{
+	IdempotencyKey: "idempotencyKey",
+	OrganizationID: "organizationId",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "avatarUrl": null,
+  "billingInitialization": "pending",
+  "createdAt": "2026-01-01T00:00:00Z",
+  "name": "string",
+  "organizationId": "string",
+  "updatedAt": "2026-01-01T00:00:00Z",
+  "version": "string"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField header="Idempotency-Key" type={"string"} required>
+Identifies one logical mutation across retries.
+</ParamField>
+
+<ParamField path="organizationId" type={"string"} required>
+
+</ParamField>
+
+
+## Body
+
+<ParamField body="expectedVersion" type={"string"} required>
+
+</ParamField>
+
+<ParamField body="uploadId" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** Committed organization presentation. CommitOrganizationAvatarResponse
+
+<ResponseField name="avatarUrl" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="billingInitialization" type={"OrganizationBillingInitialization"}>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="name" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="version" type={"string"} required>
+
+</ResponseField>
+

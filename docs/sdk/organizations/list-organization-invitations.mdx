@@ -1,0 +1,137 @@
+---
+title: "List pending organization invitations"
+icon: arrow-down-left
+description: "List pending organization invitations: listOrganizationInvitations in the TypeScript, Python, Rust and Go clients."
+---
+
+`GET /v1/organizations/{organizationId}/invitations`
+
+
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.listOrganizationInvitations(input: ListOrganizationInvitationsInput, options?: RequestOptions): Promise<ListOrganizationInvitationsOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.list_organization_invitations(input: ListOrganizationInvitationsInput) -> models.ListOrganizationInvitationsResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.list_organization_invitations(organization_id: String).await -> Result<ResponseValue<types::ListOrganizationInvitationsResponse>, Error<ListOrganizationInvitationsError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.ListOrganizationInvitations(ctx context.Context, params *ListOrganizationInvitationsParams, opts ...RequestOption) (*ListOrganizationInvitationsResponse, error)
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.listOrganizationInvitations({
+  path: {
+    organizationId: "organizationId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import ListOrganizationInvitationsInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.list_organization_invitations(
+    ListOrganizationInvitationsInput.model_validate({
+        "path": {
+            "organizationId": "organizationId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .list_organization_invitations("organizationId".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Organizations.ListOrganizationInvitations(ctx, &photonapi.ListOrganizationInvitationsParams{
+	OrganizationID: "organizationId",
+})
+if err != nil {
+	return err
+}
+_ = result
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "invitations": [
+    {
+      "acceptedAt": null,
+      "acceptedByAccountId": null,
+      "allProjects": true,
+      "createdAt": "2026-01-01T00:00:00Z",
+      "email": "string",
+      "expiresAt": "2026-01-01T00:00:00Z",
+      "invitationId": "string",
+      "invitedByAccountId": "string",
+      "organizationId": "string",
+      "role": "member",
+      "status": "pending",
+      "updatedAt": "2026-01-01T00:00:00Z"
+    }
+  ]
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="organizationId" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** Organization invitations; no token is returned. ListOrganizationInvitationsResponse
+
+<ResponseField name="invitations" type={"array of ListOrganizationInvitationsResponseInvitationsItem"} required>
+
+</ResponseField>
+

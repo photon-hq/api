@@ -1,0 +1,122 @@
+---
+title: "Ensure the initial organization"
+icon: arrow-up-right
+description: "Ensure the initial organization: ensureInitialOrganization in the TypeScript, Python, Rust and Go clients."
+---
+
+`POST /v1/organizations/initial`
+
+
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.ensureInitialOrganization(input: EnsureInitialOrganizationInput, options?: RequestOptions): Promise<EnsureInitialOrganizationOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.ensure_initial_organization(input: EnsureInitialOrganizationInput) -> models.EnsureInitialOrganizationResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.ensure_initial_organization(idempotency_key: String).await -> Result<ResponseValue<types::EnsureInitialOrganizationResponse>, Error<EnsureInitialOrganizationError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.EnsureInitialOrganization(ctx context.Context, params *EnsureInitialOrganizationParams, opts ...RequestOption) (*EnsureInitialOrganizationResponse, error)
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.ensureInitialOrganization({
+  headers: {
+    idempotencyKey: "idempotencyKey",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import EnsureInitialOrganizationInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.ensure_initial_organization(
+    EnsureInitialOrganizationInput.model_validate({
+        "headers": {
+            "Idempotency-Key": "idempotencyKey",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .ensure_initial_organization("idempotencyKey".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Organizations.EnsureInitialOrganization(ctx, &photonapi.EnsureInitialOrganizationParams{
+	IdempotencyKey: "idempotencyKey",
+})
+if err != nil {
+	return err
+}
+_ = result
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "organization": null
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField header="Idempotency-Key" type={"string"} required>
+Identifies one logical mutation across retries.
+</ParamField>
+
+
+## Returns
+
+**`200`** Creates the caller's first owned organization, once per account. Never recreated after it is deleted or transferred. EnsureInitialOrganizationResponse
+
+<ResponseField name="organization" type={"Organization | null"} required>
+The initial organization this request created; null when the account already had one.
+</ResponseField>
+

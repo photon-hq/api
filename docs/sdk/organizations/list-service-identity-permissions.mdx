@@ -1,0 +1,124 @@
+---
+title: "List grantable Service Identity permissions"
+icon: arrow-down-left
+description: "List grantable Service Identity permissions: listServiceIdentityPermissions in the TypeScript, Python, Rust and Go clients."
+---
+
+`GET /v1/organizations/{organizationId}/service-identities/permissions`
+
+The permissions a Service Identity or installable app may be granted: the machine set of the current auth contract, sorted. Create, update, and app declarations accept exactly these values.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.listServiceIdentityPermissions(input: ListServiceIdentityPermissionsInput, options?: RequestOptions): Promise<ListServiceIdentityPermissionsOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.list_service_identity_permissions(input: ListServiceIdentityPermissionsInput) -> models.ListServiceIdentityPermissionsResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.list_service_identity_permissions(organization_id: String).await -> Result<ResponseValue<types::ListServiceIdentityPermissionsResponse>, Error<ListServiceIdentityPermissionsError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.ListServiceIdentityPermissions(ctx context.Context, params *ListServiceIdentityPermissionsParams, opts ...RequestOption) (*ListServiceIdentityPermissionsResponse, error)
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.listServiceIdentityPermissions({
+  path: {
+    organizationId: "organizationId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import ListServiceIdentityPermissionsInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.list_service_identity_permissions(
+    ListServiceIdentityPermissionsInput.model_validate({
+        "path": {
+            "organizationId": "organizationId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .list_service_identity_permissions("organizationId".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Organizations.ListServiceIdentityPermissions(ctx, &photonapi.ListServiceIdentityPermissionsParams{
+	OrganizationID: "organizationId",
+})
+if err != nil {
+	return err
+}
+_ = result
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "permissions": [
+    "string"
+  ]
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="organizationId" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** Grantable machine permissions. ListServiceIdentityPermissionsResponse
+
+<ResponseField name="permissions" type={"array of string"} required>
+
+</ResponseField>
+

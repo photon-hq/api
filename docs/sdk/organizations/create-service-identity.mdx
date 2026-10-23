@@ -1,0 +1,228 @@
+---
+title: "Create an organization Service Identity"
+icon: arrow-up-right
+description: "Create an organization Service Identity: createServiceIdentity in the TypeScript, Python, Rust and Go clients."
+---
+
+`POST /v1/organizations/{organizationId}/service-identities`
+
+
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.createServiceIdentity(input: CreateServiceIdentityInput, options?: RequestOptions): Promise<CreateServiceIdentityOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.create_service_identity(input: CreateServiceIdentityInput) -> models.CreateServiceIdentityResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.create_service_identity(idempotency_key: String, organization_id: String, body: &types::CreateServiceIdentityRequest).await -> Result<ResponseValue<types::CreateServiceIdentityResponse>, Error<CreateServiceIdentityError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.CreateServiceIdentity(ctx context.Context, params *CreateServiceIdentityParams, opts ...RequestOption) (*CreateServiceIdentityResponse, error)
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.createServiceIdentity({
+  path: {
+    organizationId: "organizationId",
+  },
+  headers: {
+    idempotencyKey: "idempotencyKey",
+  },
+  body: {
+    name: "name",
+    permissions: [
+      "permissions",
+    ],
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import CreateServiceIdentityInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.create_service_identity(
+    CreateServiceIdentityInput.model_validate({
+        "path": {
+            "organizationId": "organizationId",
+        },
+        "headers": {
+            "Idempotency-Key": "idempotencyKey",
+        },
+        "body": {
+            "name": "name",
+            "permissions": [
+                "permissions",
+            ],
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .create_service_identity(
+        "idempotencyKey".to_owned(),
+        "organizationId".to_owned(),
+        &serde_json::from_value(serde_json::json!({
+            "name": "name",
+            "permissions": [
+                "permissions",
+            ],
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.CreateServiceIdentityRequest
+if err := json.Unmarshal([]byte(`{
+	"name": "name",
+	"permissions": [
+		"permissions"
+	]
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Organizations.CreateServiceIdentity(ctx, &photonapi.CreateServiceIdentityParams{
+	IdempotencyKey: "idempotencyKey",
+	OrganizationID: "organizationId",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "appInstallationManaged": true,
+  "createdAt": "2026-01-01T00:00:00Z",
+  "createdByAccountId": "string",
+  "name": "string",
+  "organizationId": "string",
+  "permissions": [
+    "string"
+  ],
+  "serviceIdentityId": "string",
+  "status": "active",
+  "updatedAt": "2026-01-01T00:00:00Z",
+  "updatedByAccountId": "string",
+  "version": "string"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField header="Idempotency-Key" type={"string"} required>
+Identifies one logical mutation across retries.
+</ParamField>
+
+<ParamField path="organizationId" type={"string"} required>
+
+</ParamField>
+
+
+## Body
+
+<ParamField body="name" type={"string"} required>
+
+</ParamField>
+
+<ParamField body="permissions" type={"array of string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** Committed identity metadata; credentials are managed separately. CreateServiceIdentityResponse
+
+<ResponseField name="appInstallationManaged" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="createdByAccountId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="name" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="permissions" type={"array of string"} required>
+
+</ResponseField>
+
+<ResponseField name="serviceIdentityId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"ServiceIdentityStatus"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedByAccountId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="version" type={"string"} required>
+
+</ResponseField>
+

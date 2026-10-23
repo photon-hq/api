@@ -4,6 +4,30 @@ export type ClientOptions = {
     baseUrl: 'https://api.photon.codes' | (string & {});
 };
 
+export type AcceptOrganizationInvitationBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+
+export type AcceptOrganizationInvitationConflictProblem = AccountClosingProblem | InvitationExpiredProblem | InvitationRevokedProblem | InvitationRoleConflictProblem | InvitationTerminalProblem | InvitationPredatesRemovalProblem | OrganizationUnavailableProblem | OrganizationAuthPolicyChangedProblem;
+
+export type AcceptOrganizationInvitationForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | InvitationEmailMismatchProblem | InvitationInviterIneligibleProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type AcceptOrganizationInvitationGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type AcceptOrganizationInvitationRequest = {
+    token: string;
+};
+
+export type AcceptOrganizationInvitationResponse = {
+    allProjects: true;
+    organizationId: string;
+    organizationName: string;
+    role: OrganizationMemberRole;
+    status: AcceptOrganizationInvitationResponseStatus;
+};
+
+export type AcceptOrganizationInvitationResponseStatus = 'accepted' | 'already_member' | 'role_managed' | (string & {});
+
+export type AcceptOrganizationInvitationUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
+
 export type AcceptedEmailMessage = {
     acceptance: MessageAcceptance;
     addressedTo?: UserSnapshot;
@@ -214,6 +238,18 @@ export type Account = {
     [key: string]: unknown;
 };
 
+export type AccountClosingProblem = {
+    code: 'ACCOUNT_CLOSING';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'Account Is Closing';
+    type: 'https://photon.codes/docs/problems/account-closing';
+    [key: string]: JsonValue | 'ACCOUNT_CLOSING' | string | never | 409 | 'Account Is Closing' | 'https://photon.codes/docs/problems/account-closing' | undefined;
+};
+
 export type AccountDeletedProblem = {
     code: 'ACCOUNT_DELETED';
     detail?: string;
@@ -237,10 +273,6 @@ export type AccountNotFoundProblem = {
     type: 'https://photon.codes/docs/problems/account-not-found';
     [key: string]: JsonValue | 'ACCOUNT_NOT_FOUND' | string | never | 404 | 'Account Not Found' | 'https://photon.codes/docs/problems/account-not-found' | undefined;
 };
-
-export type AccountOnboardingBackground = 'hobbyist' | 'company' | (string & {});
-
-export type AccountOnboardingPlatform = 'imessage' | 'sms' | 'whatsapp' | 'slack' | 'discord' | 'telegram' | 'voice' | (string & {});
 
 export type AccountOwnsOrganizationsProblem = {
     code: 'ACCOUNT_OWNS_ORGANIZATIONS';
@@ -404,6 +436,18 @@ export type AppInstallationDeliveryUnavailableProblem = {
     title: 'Installation Delivery Unavailable';
     type: 'https://photon.codes/docs/problems/app-installation-delivery-unavailable';
     [key: string]: JsonValue | 'APP_INSTALLATION_DELIVERY_UNAVAILABLE' | string | never | 409 | 'Installation Delivery Unavailable' | 'https://photon.codes/docs/problems/app-installation-delivery-unavailable' | undefined;
+};
+
+export type AppInstallationManagedProblem = {
+    code: 'APP_INSTALLATION_MANAGED';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'App Installation Managed';
+    type: 'https://photon.codes/docs/problems/app-installation-managed';
+    [key: string]: JsonValue | 'APP_INSTALLATION_MANAGED' | string | never | 409 | 'App Installation Managed' | 'https://photon.codes/docs/problems/app-installation-managed' | undefined;
 };
 
 export type AssignSmsLineCampaignBadRequestProblem = SmsCampaignInvalidRequestProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
@@ -646,51 +690,6 @@ export type BatchUpdateVoiceLineProfileAssignmentsResponse = {
     assignments: Array<VoiceLineProfileAssignment>;
 };
 
-export type BeginInvitationSsoBadRequestProblem = InvalidReturnToProblem | InvalidArgumentProblem;
-
-export type BeginInvitationSsoForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem;
-
-export type BeginInvitationSsoGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
-
-export type BeginInvitationSsoInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
-
-export type BeginInvitationSsoPreconditionFailedProblem = OrganizationSsoPreconditionFailedProblem | SsoSubscriptionRequiredProblem;
-
-export type BeginInvitationSsoRequest = {
-    returnTo: string;
-    token: string;
-};
-
-export type BeginOrganizationAuthenticationBadRequestProblem = InvalidReturnToProblem | InvalidArgumentProblem;
-
-export type BeginOrganizationAuthenticationForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem;
-
-export type BeginOrganizationAuthenticationGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
-
-export type BeginOrganizationAuthenticationInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
-
-export type BeginOrganizationAuthenticationPreconditionFailedProblem = OrganizationSsoPreconditionFailedProblem | SsoSubscriptionRequiredProblem;
-
-export type BeginOrganizationClosureAuthenticationBadRequestProblem = InvalidReturnToProblem | InvalidArgumentProblem;
-
-export type BeginOrganizationClosureAuthenticationForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem;
-
-export type BeginOrganizationClosureAuthenticationGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
-
-export type BeginOrganizationClosureAuthenticationInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
-
-export type BeginOrganizationClosureAuthenticationPreconditionFailedProblem = OrganizationSsoPreconditionFailedProblem | SsoSubscriptionRequiredProblem;
-
-export type BeginOrganizationSsoAdmissionBadRequestProblem = InvalidReturnToProblem | InvalidArgumentProblem;
-
-export type BeginOrganizationSsoAdmissionForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem;
-
-export type BeginOrganizationSsoAdmissionGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
-
-export type BeginOrganizationSsoAdmissionInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
-
-export type BeginOrganizationSsoAdmissionPreconditionFailedProblem = OrganizationSsoPreconditionFailedProblem | SsoSubscriptionRequiredProblem;
-
 /**
  * What the change does beside what it bills, by the kind of change requested: fixed_charge for a fixed-charge change, plan_change for a plan change.
  */
@@ -756,7 +755,7 @@ export type BillingOperationFailure = {
  */
 export type BillingOperationFailureCode = 'payment_method_required' | 'payment_failed' | 'not_provisioned' | 'invalid_target' | 'internal' | (string & {});
 
-export type BillingOperationFailureDetail = 'cancellation_scheduled' | 'feature_not_sold_by_plan' | 'feature_not_found' | 'payment_timeout' | 'plan_activation_timeout' | 'plan_not_found' | 'quantity_out_of_range' | 'reconciliation_required' | 'release_required' | 'target_rejected' | (string & {});
+export type BillingOperationFailureDetail = 'cancellation_scheduled' | 'feature_not_sold_by_plan' | 'feature_not_found' | 'insufficient_funds' | 'payment_declined' | 'payment_method_expired' | 'payment_method_invalid' | 'payment_timeout' | 'plan_activation_timeout' | 'plan_not_found' | 'quantity_out_of_range' | 'reconciliation_required' | 'release_required' | 'target_rejected' | (string & {});
 
 export type BillingOperationKind = 'change_plan' | 'adjust_fixed_charge_quantity' | (string & {});
 
@@ -765,6 +764,47 @@ export type BillingOperationResult = {
     type: 'version';
     version: string;
 };
+
+/**
+ * A payment the customer's bank asked them to authenticate (3DS). The invoice's pay route completes it.
+ */
+export type BillingPaymentAction = {
+    /**
+     * Amount of the payment, in cents.
+     */
+    amountCents: number;
+    /**
+     * ISO currency code.
+     */
+    currency: string;
+    /**
+     * When the operation stops waiting: past it, the payment is cancelled and the operation fails. Null without an operation.
+     */
+    expiresAt: string | null;
+    /**
+     * The invoice whose payment it is. Pay it to complete the payment.
+     */
+    invoiceId: string;
+    /**
+     * The invoice's number. Null until the invoice is issued: a plan change is invoiced once it is paid.
+     */
+    invoiceNumber: string | null;
+    /**
+     * The pending operation it completes. Null for an invoice no operation waits on, such as a renewal.
+     */
+    operation: BillingPaymentActionOperation | null;
+    /**
+     * What it pays for: the operation's project or organization, or those the invoice bills.
+     */
+    subjects: Array<InvoiceSubject>;
+};
+
+export type BillingPaymentActionOperation = {
+    kind: BillingPaymentActionOperationKind;
+    operationId: string;
+};
+
+export type BillingPaymentActionOperationKind = 'change_plan' | 'adjust_fixed_charge_quantity' | 'create_one_off_invoice' | (string & {});
 
 export type BillingPlan = {
     /**
@@ -1004,22 +1044,19 @@ export type CancelOperationGatewayTimeoutProblem = RequestTimeoutProblem | Upstr
 
 export type CancelOperationInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
-export type CaptchaProvider = 'turnstile' | 'hcaptcha' | (string & {});
+export type CancelSsoSubscriptionBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
 
-export type CaptchaRequiredProblem = {
-    challengeContext: string;
-    code: 'CAPTCHA_REQUIRED';
-    detail?: string;
-    instance?: string;
-    provider: CaptchaProvider;
-    remediation?: never;
-    requestId?: string;
-    siteKey: string;
-    status: 403;
-    title: 'Captcha Required';
-    type: 'https://photon.codes/docs/problems/captcha-required';
-    [key: string]: JsonValue | string | 'CAPTCHA_REQUIRED' | CaptchaProvider | never | 403 | 'Captcha Required' | 'https://photon.codes/docs/problems/captcha-required' | undefined;
+export type CancelSsoSubscriptionConflictProblem = OrganizationAuthPolicyChangedProblem | OrganizationUnavailableProblem | OrganizationVersionConflictProblem | OrganizationSsoEnabledProblem;
+
+export type CancelSsoSubscriptionForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem;
+
+export type CancelSsoSubscriptionGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type CancelSsoSubscriptionResponse = {
+    accepted: boolean;
 };
+
+export type CancelSsoSubscriptionUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
 export type ChangePlanBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
 
@@ -1046,6 +1083,19 @@ export type ChangePlanServiceUnavailableProblem = IdempotencyUnavailableProblem 
 
 export type ChangePlanUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
+export type CheckOrganizationDeletionConflictProblem = OrganizationAuthPolicyChangedProblem | OrganizationUnavailableProblem;
+
+export type CheckOrganizationDeletionForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type CheckOrganizationDeletionGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type CheckOrganizationDeletionResponse = {
+    blockers: Array<string>;
+    canDelete: boolean;
+    organizationId: string;
+    version: string;
+};
+
 export type CheckProjectSlugAvailabilityForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type CheckProjectSlugAvailabilityGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
@@ -1057,6 +1107,32 @@ export type ClickHouseSqlQueryRequest = {
         [key: string]: string;
     };
     sql: string;
+};
+
+export type CloseOrganizationBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+
+export type CloseOrganizationConflictProblem = OrganizationAuthPolicyChangedProblem | ClosureBlockedProblem | OrganizationVersionConflictProblem | AccountClosingProblem | OrganizationUnavailableProblem;
+
+export type CloseOrganizationForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type CloseOrganizationGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type CloseOrganizationRequest = {
+    expectedVersion: string;
+};
+
+export type CloseOrganizationUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
+
+export type ClosureBlockedProblem = {
+    code: 'CLOSURE_BLOCKED';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'Organization Closure Blocked';
+    type: 'https://photon.codes/docs/problems/organization-closure-blocked';
+    [key: string]: JsonValue | 'CLOSURE_BLOCKED' | string | never | 409 | 'Organization Closure Blocked' | 'https://photon.codes/docs/problems/organization-closure-blocked' | undefined;
 };
 
 export type CommitAccountProfilePictureBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyInvalidProblem | IdempotencyKeyRequiredProblem;
@@ -1085,16 +1161,30 @@ export type CommitAgentProfileAvatarRequest = {
 
 export type CommitAgentProfileAvatarUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
-export type CompleteAccountOnboardingForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+export type CommitOrganizationAvatarBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
 
-export type CompleteAccountOnboardingGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+export type CommitOrganizationAvatarConflictProblem = OrganizationAuthPolicyChangedProblem | OrganizationUnavailableProblem | OrganizationVersionConflictProblem;
 
-export type CompleteAccountOnboardingInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+export type CommitOrganizationAvatarForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
-export type CompleteAccountOnboardingResponse = {
-    onboarded: true;
-    [key: string]: unknown;
+export type CommitOrganizationAvatarGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type CommitOrganizationAvatarRequest = {
+    expectedVersion: string;
+    uploadId: string;
 };
+
+export type CommitOrganizationAvatarResponse = {
+    avatarUrl: string | null;
+    billingInitialization?: OrganizationBillingInitialization;
+    createdAt: string;
+    name: string;
+    organizationId: string;
+    updatedAt: string;
+    version: string;
+};
+
+export type CommitOrganizationAvatarUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
 export type ConfigureVoiceProfileOutboundBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
 
@@ -1118,17 +1208,6 @@ export type ConfigureVoiceProfileOutboundResponse = {
 };
 
 export type ConfigureVoiceProfileOutboundUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
-
-export type ConfirmAccountPhoneVerificationForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
-
-export type ConfirmAccountPhoneVerificationGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
-
-export type ConfirmAccountPhoneVerificationInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
-
-export type ConfirmAccountPhoneVerificationRequest = {
-    code: string;
-    phoneNumber: string;
-};
 
 export type ConfirmedRecipient = {
     /**
@@ -1172,24 +1251,6 @@ export type ConnectTelegramBotInternalServerErrorProblem = InternalErrorProblem 
 export type ConnectTelegramBotRequest = Record<string, unknown>;
 
 export type ConnectTelegramBotUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
-
-export type ConnectWhatsappBusinessBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
-
-export type ConnectWhatsappBusinessForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
-
-export type ConnectWhatsappBusinessGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
-
-export type ConnectWhatsappBusinessInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
-
-export type ConnectWhatsappBusinessRequest = {
-    code: string;
-    phoneNumberId: string;
-    wabaId: string;
-};
-
-export type ConnectWhatsappBusinessServiceUnavailableProblem = BillingEntitlementsPendingProblem | BillingNotProvisionedProblem | UpstreamUnavailableProblem;
-
-export type ConnectWhatsappBusinessUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
 export type Content = TextContent | TextUpdateContent | AttachmentContent | VoiceContent | ReactionContent | MessageDeleteContent | MessageReadContent | SpaceParticipantsUpdateContent | SpaceTypingUpdateContent | PollContent | PollVoteContent | PollUpdateContent | GroupContent;
 
@@ -1347,6 +1408,88 @@ export type CreateOrGetUserRequest = {
 
 export type CreateOrGetUserUnprocessableEntityProblem = OperationUnavailableProblem | ValidationFailedProblem;
 
+export type CreateOrganizationAvatarUploadConflictProblem = OrganizationAuthPolicyChangedProblem | OrganizationUnavailableProblem | OrganizationVersionConflictProblem;
+
+export type CreateOrganizationAvatarUploadForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type CreateOrganizationAvatarUploadGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type CreateOrganizationAvatarUploadRequest = {
+    contentType: CreateOrganizationAvatarUploadRequestContentType;
+};
+
+export type CreateOrganizationAvatarUploadRequestContentType = 'image/jpeg' | 'image/png' | 'image/webp' | (string & {});
+
+export type CreateOrganizationAvatarUploadResponse = {
+    expiresAt: string;
+    formFields: {
+        [key: string]: string;
+    };
+    uploadId: string;
+    uploadUrl: string;
+};
+
+export type CreateOrganizationBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem;
+
+export type CreateOrganizationForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type CreateOrganizationGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type CreateOrganizationInvitationBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+
+export type CreateOrganizationInvitationConflictProblem = AccountClosingProblem | InvitationExpiredProblem | InvitationRevokedProblem | InvitationRoleConflictProblem | InvitationTerminalProblem | InvitationPredatesRemovalProblem | OrganizationUnavailableProblem | OrganizationAuthPolicyChangedProblem;
+
+export type CreateOrganizationInvitationForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | InvitationEmailMismatchProblem | InvitationInviterIneligibleProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type CreateOrganizationInvitationGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type CreateOrganizationInvitationRequest = {
+    email: string;
+    role: OrganizationInvitationRole;
+};
+
+export type CreateOrganizationInvitationResponse = {
+    acceptedAt: string | null;
+    acceptedByAccountId: string | null;
+    allProjects: true;
+    createdAt: string;
+    email: string;
+    expiresAt: string;
+    invitationId: string;
+    invitedByAccountId: string;
+    organizationId: string;
+    role: OrganizationInvitationRole;
+    status: OrganizationInvitationStatus;
+    updatedAt: string;
+};
+
+export type CreateOrganizationInvitationUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
+
+export type CreateOrganizationOauthClientConflictProblem = OrganizationUnavailableProblem | OauthClientCreationConflictProblem;
+
+export type CreateOrganizationOauthClientForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type CreateOrganizationOauthClientGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type CreateOrganizationOauthClientInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type CreateOrganizationOauthClientRequest = {
+    description?: string | null;
+    name: string;
+    redirectUris: Array<OrganizationOauthClientRedirectUriInput>;
+    scopes: Array<string>;
+};
+
+export type CreateOrganizationOauthClientResponse = {
+    clientId: string;
+    createdAt: string;
+    description: string | null;
+    name: string;
+    redirectUris: Array<OrganizationOauthClientRedirectUri>;
+    scopes: Array<string>;
+    updatedAt: string;
+};
+
 export type CreateOrganizationPaymentMethodCheckoutBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
 
 export type CreateOrganizationPaymentMethodCheckoutForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
@@ -1366,26 +1509,19 @@ export type CreateOrganizationPaymentMethodCheckoutServiceUnavailableProblem = P
 
 export type CreateOrganizationPaymentMethodCheckoutUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
-export type CreateOrganizationSetupIntentBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
-
-export type CreateOrganizationSetupIntentForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
-
-export type CreateOrganizationSetupIntentGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
-
-export type CreateOrganizationSetupIntentInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
-
-export type CreateOrganizationSetupIntentResponse = {
-    /**
-     * Stripe SetupIntent client secret.
-     */
-    clientSecret: string;
-    /**
-     * Publishable key for the Stripe account backing billing.
-     */
-    publishableKey: string;
+export type CreateOrganizationRequest = {
+    name: string;
 };
 
-export type CreateOrganizationSetupIntentUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
+export type CreateOrganizationResponse = {
+    avatarUrl: string | null;
+    billingInitialization?: OrganizationBillingInitialization;
+    createdAt: string;
+    name: string;
+    organizationId: string;
+    updatedAt: string;
+    version: string;
+};
 
 export type CreateOrganizationSsoPortalLinkBadRequestProblem = InvalidReturnToProblem | InvalidArgumentProblem;
 
@@ -1411,6 +1547,8 @@ export type CreateOrganizationSsoPortalLinkResponse = {
     url: string;
     [key: string]: unknown;
 };
+
+export type CreateOrganizationUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
 export type CreateProjectApiKeyBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem;
 
@@ -1441,6 +1579,106 @@ export type CreateProjectRequest = {
 };
 
 export type CreateProjectUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
+
+export type CreateServiceIdentityApiKeyBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+
+export type CreateServiceIdentityApiKeyConflictProblem = AppInstallationManagedProblem | ServiceCredentialConflictProblem;
+
+export type CreateServiceIdentityApiKeyForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type CreateServiceIdentityApiKeyGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type CreateServiceIdentityApiKeyRequest = {
+    expectedIdentityVersion: string;
+    label: string;
+};
+
+export type CreateServiceIdentityApiKeyResponse = CreateServiceIdentityApiKeyResponseCreated | CreateServiceIdentityApiKeyResponseUndelivered;
+
+export type CreateServiceIdentityApiKeyResponseCreated = {
+    credentialId: string;
+    status: 'created';
+    value: string;
+};
+
+export type CreateServiceIdentityApiKeyResponseUndelivered = {
+    credentialId: string;
+    status: CreateServiceIdentityApiKeyResponseUndeliveredStatus;
+};
+
+export type CreateServiceIdentityApiKeyResponseUndeliveredStatus = 'delivery_consumed' | 'recovery_required' | 'revoked' | (string & {});
+
+export type CreateServiceIdentityApiKeyUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
+
+export type CreateServiceIdentityBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+
+export type CreateServiceIdentityClientSecretBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+
+export type CreateServiceIdentityClientSecretConflictProblem = AppInstallationManagedProblem | ServiceCredentialConflictProblem;
+
+export type CreateServiceIdentityClientSecretForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type CreateServiceIdentityClientSecretGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type CreateServiceIdentityClientSecretRequest = {
+    expectedIdentityVersion: string;
+    label: string;
+};
+
+export type CreateServiceIdentityClientSecretResponse = CreateServiceIdentityClientSecretResponseCreated | CreateServiceIdentityClientSecretResponseUndelivered | CreateServiceIdentityClientSecretResponseApplicationPending;
+
+export type CreateServiceIdentityClientSecretResponseApplicationPending = {
+    operationId: string;
+    stage: 'application';
+    status: CreateServiceIdentityClientSecretResponseApplicationPendingStatus;
+};
+
+export type CreateServiceIdentityClientSecretResponseApplicationPendingStatus = 'recovery_required' | 'cleanup_required' | (string & {});
+
+export type CreateServiceIdentityClientSecretResponseCreated = {
+    clientId: string;
+    credentialId: string;
+    stage: 'credential';
+    status: 'created';
+    value: string;
+};
+
+export type CreateServiceIdentityClientSecretResponseUndelivered = {
+    credentialId: string;
+    stage: 'credential';
+    status: CreateServiceIdentityClientSecretResponseUndeliveredStatus;
+};
+
+export type CreateServiceIdentityClientSecretResponseUndeliveredStatus = 'delivery_consumed' | 'recovery_required' | 'revocation_pending' | 'revoked' | (string & {});
+
+export type CreateServiceIdentityClientSecretUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
+
+export type CreateServiceIdentityConflictProblem = AccountClosingProblem | OrganizationAuthPolicyChangedProblem | OrganizationUnavailableProblem | AppInstallationManagedProblem | ServiceIdentityVersionConflictProblem;
+
+export type CreateServiceIdentityForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type CreateServiceIdentityGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type CreateServiceIdentityRequest = {
+    name: string;
+    permissions: Array<string>;
+};
+
+export type CreateServiceIdentityResponse = {
+    appInstallationManaged: boolean;
+    createdAt: string;
+    createdByAccountId: string;
+    name: string;
+    organizationId: string;
+    permissions: Array<string>;
+    serviceIdentityId: string;
+    status: ServiceIdentityStatus;
+    updatedAt: string;
+    updatedByAccountId: string;
+    version: string;
+};
+
+export type CreateServiceIdentityUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
 export type CreateSharedLineAssignmentBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
 
@@ -1655,6 +1893,29 @@ export type DeleteAccountForbiddenProblem = ForbiddenProblem | InsufficientScope
 export type DeleteAccountGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
 
 export type DeleteAccountInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type DeleteOrganizationOauthClientConflictProblem = OrganizationUnavailableProblem | OauthClientDeletionConflictProblem;
+
+export type DeleteOrganizationOauthClientForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type DeleteOrganizationOauthClientGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type DeleteOrganizationOauthClientInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type DeleteOrganizationOauthClientResponse = {
+    operationId: string;
+    status: DeleteOrganizationOauthClientResponseStatus;
+};
+
+export type DeleteOrganizationOauthClientResponseStatus = 'cleanup_required' | 'deleted' | (string & {});
+
+export type DeleteOrganizationOauthClientSecretConflictProblem = OrganizationUnavailableProblem | OauthSecretRevocationConflictProblem;
+
+export type DeleteOrganizationOauthClientSecretForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type DeleteOrganizationOauthClientSecretGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type DeleteOrganizationOauthClientSecretInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
 export type DeleteProjectBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
 
@@ -2615,6 +2876,19 @@ export type EmailUserSnapshot = {
     updatedAt?: never;
 };
 
+export type EnsureInitialOrganizationBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+
+export type EnsureInitialOrganizationForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type EnsureInitialOrganizationGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type EnsureInitialOrganizationResponse = {
+    /**
+     * The initial organization this request created; null when the account already had one.
+     */
+    organization: Organization | null;
+};
+
 export type EntitlementRejectionReason = 'billing_restricted' | 'business_plan_required' | 'card_required' | 'email_required' | 'plan_change_scheduled' | 'subscription_not_billable' | (string & {});
 
 export type EntitlementRequiredProblem = {
@@ -2645,6 +2919,7 @@ export type FailedBillingOperation = {
      * Stable handle for this provisioning action.
      */
     operationId: string;
+    paymentAction: null;
     resolvedAt: string | null;
     result: null;
     /**
@@ -2967,22 +3242,6 @@ export type GetAccountGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTi
 
 export type GetAccountInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
-export type GetAccountOnboardingForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
-
-export type GetAccountOnboardingGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
-
-export type GetAccountOnboardingInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
-
-export type GetAccountOnboardingResponse = {
-    background: string | null;
-    companyName: string | null;
-    companyUrl: string | null;
-    onboarded: boolean;
-    platforms: Array<AccountOnboardingPlatform> | null;
-    referralSource: string | null;
-    [key: string]: unknown;
-};
-
 export type GetAgentProfileForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type GetAgentProfileGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
@@ -3018,6 +3277,22 @@ export type GetBillingOverviewResponse = {
      * Current-period metered usage, priced.
      */
     usage: Array<MeteredUsage>;
+};
+
+export type GetCurrentOrganizationConflictProblem = OrganizationAuthPolicyChangedProblem | OrganizationUnavailableProblem | OrganizationVersionConflictProblem;
+
+export type GetCurrentOrganizationForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type GetCurrentOrganizationGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type GetCurrentOrganizationResponse = {
+    avatarUrl: string | null;
+    billingInitialization?: OrganizationBillingInitialization;
+    createdAt: string;
+    name: string;
+    organizationId: string;
+    updatedAt: string;
+    version: string;
 };
 
 export type GetDefaultVoiceProfileForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
@@ -3111,6 +3386,8 @@ export type GetOrganizationBillingOverviewResponse = {
     subscription: OrganizationSubscription | null;
 };
 
+export type GetOrganizationConflictProblem = OrganizationAuthPolicyChangedProblem | OrganizationUnavailableProblem | OrganizationVersionConflictProblem;
+
 export type GetOrganizationConnectionStatusForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem;
 
 export type GetOrganizationConnectionStatusGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
@@ -3134,6 +3411,50 @@ export type GetOrganizationCreditResponse = {
     currency: string;
 };
 
+export type GetOrganizationForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type GetOrganizationGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type GetOrganizationOauthClientForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type GetOrganizationOauthClientGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type GetOrganizationOauthClientInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type GetOrganizationOauthClientResponse = {
+    clientId: string;
+    createdAt: string;
+    description: string | null;
+    name: string;
+    redirectUris: Array<OrganizationOauthClientRedirectUri>;
+    scopes: Array<string>;
+    updatedAt: string;
+};
+
+export type GetOrganizationOauthClientSecretForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type GetOrganizationOauthClientSecretGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type GetOrganizationOauthClientSecretInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type GetOrganizationOauthClientSecretResponse = {
+    current: GetOrganizationOauthClientSecretResponseCurrent | null;
+    previous: GetOrganizationOauthClientSecretResponsePrevious | null;
+};
+
+export type GetOrganizationOauthClientSecretResponseCurrent = {
+    createdAt: string;
+    hint: string;
+    lastUsedAt: string | null;
+};
+
+export type GetOrganizationOauthClientSecretResponsePrevious = {
+    createdAt: string;
+    hint: string;
+    lastUsedAt: string | null;
+    validUntil: string | null;
+};
+
 export type GetOrganizationPaymentMethodForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type GetOrganizationPaymentMethodGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
@@ -3149,6 +3470,16 @@ export type GetOrganizationPaymentMethodResponse = {
      * Metadata for the default card, or null.
      */
     paymentMethod: PaymentMethod | null;
+};
+
+export type GetOrganizationResponse = {
+    avatarUrl: string | null;
+    billingInitialization?: OrganizationBillingInitialization;
+    createdAt: string;
+    name: string;
+    organizationId: string;
+    updatedAt: string;
+    version: string;
 };
 
 export type GetOrganizationSsoConfigurationBadRequestProblem = InvalidReturnToProblem | InvalidArgumentProblem;
@@ -3217,6 +3548,26 @@ export type GetResourceGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamT
 
 export type GetResourceInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
+export type GetServiceIdentityConflictProblem = AccountClosingProblem | OrganizationAuthPolicyChangedProblem | OrganizationUnavailableProblem | AppInstallationManagedProblem | ServiceIdentityVersionConflictProblem;
+
+export type GetServiceIdentityForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type GetServiceIdentityGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type GetServiceIdentityResponse = {
+    appInstallationManaged: boolean;
+    createdAt: string;
+    createdByAccountId: string;
+    name: string;
+    organizationId: string;
+    permissions: Array<string>;
+    serviceIdentityId: string;
+    status: ServiceIdentityStatus;
+    updatedAt: string;
+    updatedByAccountId: string;
+    version: string;
+};
+
 export type GetSharedLineAssignmentForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type GetSharedLineAssignmentGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
@@ -3251,6 +3602,29 @@ export type GetSpaceGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTime
 export type GetSpaceInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
 export type GetSpaceUnprocessableEntityProblem = OperationUnavailableProblem | ValidationFailedProblem;
+
+export type GetSsoSubscriptionConflictProblem = OrganizationAuthPolicyChangedProblem | OrganizationUnavailableProblem | OrganizationVersionConflictProblem;
+
+export type GetSsoSubscriptionForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem;
+
+export type GetSsoSubscriptionGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type GetSsoSubscriptionResponse = {
+    amount: string;
+    canConfigure: boolean;
+    cancelsAt: string | null;
+    currency: string;
+    currentPeriodEnd: string;
+    failureCode: string | null;
+    firstChargeAt: string | null;
+    interval: 'monthly';
+    nextRenewalAt: string;
+    operationId: string | null;
+    paymentMethodRequired: boolean;
+    state: GetSsoSubscriptionResponseState;
+};
+
+export type GetSsoSubscriptionResponseState = 'not_subscribed' | 'subscribing' | 'subscribed' | 'cancellation_pending' | 'cancel_scheduled' | 'cancelled' | 'needs_attention' | (string & {});
 
 export type GetUserForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -3306,16 +3680,6 @@ export type GetWhatsappSharedLineAssignmentForbiddenProblem = ForbiddenProblem |
 export type GetWhatsappSharedLineAssignmentGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
 
 export type GetWhatsappSharedLineAssignmentInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
-
-export type GetWhatsappSignupConfigForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
-
-export type GetWhatsappSignupConfigInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
-
-export type GetWhatsappSignupConfigResponse = {
-    configId: string;
-    graphVersion: string;
-    scopes: Array<string>;
-};
 
 export type GroupContent = {
     metadata?: ContentMetadata;
@@ -3602,9 +3966,105 @@ export type InvalidReturnToProblem = {
     [key: string]: JsonValue | 'INVALID_RETURN_TO' | string | never | 400 | 'Invalid Return To' | 'https://photon.codes/docs/problems/invalid-return-to' | undefined;
 };
 
+export type InvitationEmailMismatchProblem = {
+    code: 'INVITATION_EMAIL_MISMATCH';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 403;
+    title: 'Invitation Email Mismatch';
+    type: 'https://photon.codes/docs/problems/invitation-email-mismatch';
+    [key: string]: JsonValue | 'INVITATION_EMAIL_MISMATCH' | string | never | 403 | 'Invitation Email Mismatch' | 'https://photon.codes/docs/problems/invitation-email-mismatch' | undefined;
+};
+
 export type InvitationEnterpriseLoginRequest = {
     invitationToken: string;
     returnTo: string;
+};
+
+export type InvitationExpiredProblem = {
+    code: 'INVITATION_EXPIRED';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'Invitation Expired';
+    type: 'https://photon.codes/docs/problems/invitation-expired';
+    [key: string]: JsonValue | 'INVITATION_EXPIRED' | string | never | 409 | 'Invitation Expired' | 'https://photon.codes/docs/problems/invitation-expired' | undefined;
+};
+
+export type InvitationInviterIneligibleProblem = {
+    code: 'INVITATION_INVITER_INELIGIBLE';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 403;
+    title: 'Invitation Inviter Ineligible';
+    type: 'https://photon.codes/docs/problems/invitation-inviter-ineligible';
+    [key: string]: JsonValue | 'INVITATION_INVITER_INELIGIBLE' | string | never | 403 | 'Invitation Inviter Ineligible' | 'https://photon.codes/docs/problems/invitation-inviter-ineligible' | undefined;
+};
+
+export type InvitationNotFoundProblem = {
+    code: 'INVITATION_NOT_FOUND';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 404;
+    title: 'Invitation Not Found';
+    type: 'https://photon.codes/docs/problems/invitation-not-found';
+    [key: string]: JsonValue | 'INVITATION_NOT_FOUND' | string | never | 404 | 'Invitation Not Found' | 'https://photon.codes/docs/problems/invitation-not-found' | undefined;
+};
+
+export type InvitationPredatesRemovalProblem = {
+    code: 'INVITATION_PREDATES_REMOVAL';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'Invitation Predates Removal';
+    type: 'https://photon.codes/docs/problems/invitation-predates-removal';
+    [key: string]: JsonValue | 'INVITATION_PREDATES_REMOVAL' | string | never | 409 | 'Invitation Predates Removal' | 'https://photon.codes/docs/problems/invitation-predates-removal' | undefined;
+};
+
+export type InvitationRevokedProblem = {
+    code: 'INVITATION_REVOKED';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'Invitation Revoked';
+    type: 'https://photon.codes/docs/problems/invitation-revoked';
+    [key: string]: JsonValue | 'INVITATION_REVOKED' | string | never | 409 | 'Invitation Revoked' | 'https://photon.codes/docs/problems/invitation-revoked' | undefined;
+};
+
+export type InvitationRoleConflictProblem = {
+    code: 'INVITATION_ROLE_CONFLICT';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'Invitation Role Conflict';
+    type: 'https://photon.codes/docs/problems/invitation-role-conflict';
+    [key: string]: JsonValue | 'INVITATION_ROLE_CONFLICT' | string | never | 409 | 'Invitation Role Conflict' | 'https://photon.codes/docs/problems/invitation-role-conflict' | undefined;
+};
+
+export type InvitationTerminalProblem = {
+    code: 'INVITATION_TERMINAL';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'Invitation Terminal';
+    type: 'https://photon.codes/docs/problems/invitation-terminal';
+    [key: string]: JsonValue | 'INVITATION_TERMINAL' | string | never | 409 | 'Invitation Terminal' | 'https://photon.codes/docs/problems/invitation-terminal' | undefined;
 };
 
 export type Invoice = {
@@ -3625,6 +4085,18 @@ export type Invoice = {
      * Human invoice number.
      */
     number: string;
+    /**
+     * Its payment waits on the customer's authentication (3DS). Pay the invoice to complete it.
+     */
+    paymentActionRequired: boolean;
+    /**
+     * When payment is due, ISO 8601.
+     */
+    paymentDueAt: string | null;
+    /**
+     * Unpaid past its due date. Overdue invoices set the organization's dunning stage.
+     */
+    paymentOverdue: boolean;
     paymentStatus: InvoicePaymentStatus;
     /**
      * Downloadable PDF link.
@@ -3661,6 +4133,33 @@ export type InvoiceSubject = ProjectInvoiceSubject | OrganizationInvoiceSubject;
 export type JsonValue = string | number | boolean | null | Array<JsonValue> | {
     [key: string]: JsonValue;
 };
+
+export type LeaveOrganizationBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+
+export type LeaveOrganizationConflictProblem = AccountClosingProblem | OrganizationVersionConflictProblem | OrganizationTransferToSelfProblem | OrganizationOwnerInvariantProblem | OrganizationOwnerProtectedProblem | OrganizationSelfManagementForbiddenProblem | OrganizationMembershipVersionConflictProblem | OrganizationMemberRemovedProblem | OrganizationRecoveryRequiredProblem | OrganizationAuthPolicyChangedProblem | OrganizationUnavailableProblem;
+
+export type LeaveOrganizationForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type LeaveOrganizationGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type LeaveOrganizationRequest = {
+    expectedVersion: string;
+};
+
+export type LeaveOrganizationResponse = {
+    accountId: string;
+    createdAt: string;
+    joinedVia: OrganizationMemberJoinedVia;
+    organizationId: string;
+    removedAt: string | null;
+    role: OrganizationMemberRole;
+    roleManagedAt: string | null;
+    status: OrganizationMemberStatus;
+    updatedAt: string;
+    version: string;
+};
+
+export type LeaveOrganizationUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
 export type ListAccountServiceKeysForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -3815,6 +4314,99 @@ export type ListOperationsGatewayTimeoutProblem = RequestTimeoutProblem | Upstre
 
 export type ListOperationsInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
+export type ListOrganizationInvitationsConflictProblem = AccountClosingProblem | InvitationExpiredProblem | InvitationRevokedProblem | InvitationRoleConflictProblem | InvitationTerminalProblem | InvitationPredatesRemovalProblem | OrganizationUnavailableProblem | OrganizationAuthPolicyChangedProblem;
+
+export type ListOrganizationInvitationsForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | InvitationEmailMismatchProblem | InvitationInviterIneligibleProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type ListOrganizationInvitationsGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type ListOrganizationInvitationsResponse = {
+    invitations: Array<ListOrganizationInvitationsResponseInvitationsItem>;
+};
+
+export type ListOrganizationInvitationsResponseInvitationsItem = {
+    acceptedAt: string | null;
+    acceptedByAccountId: string | null;
+    allProjects: true;
+    createdAt: string;
+    email: string;
+    expiresAt: string;
+    invitationId: string;
+    invitedByAccountId: string;
+    organizationId: string;
+    role: OrganizationInvitationRole;
+    status: OrganizationInvitationStatus;
+    updatedAt: string;
+};
+
+export type ListOrganizationMembersConflictProblem = AccountClosingProblem | OrganizationVersionConflictProblem | OrganizationTransferToSelfProblem | OrganizationOwnerInvariantProblem | OrganizationOwnerProtectedProblem | OrganizationSelfManagementForbiddenProblem | OrganizationMembershipVersionConflictProblem | OrganizationMemberRemovedProblem | OrganizationRecoveryRequiredProblem | OrganizationAuthPolicyChangedProblem | OrganizationUnavailableProblem;
+
+export type ListOrganizationMembersForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type ListOrganizationMembersGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type ListOrganizationMembersResponse = {
+    members: Array<ListOrganizationMembersResponseMembersItem>;
+};
+
+export type ListOrganizationMembersResponseMembersItem = {
+    account: ListOrganizationMembersResponseMembersItemAccount | null;
+    accountId: string;
+    createdAt: string;
+    joinedVia: OrganizationMemberJoinedVia;
+    organizationId: string;
+    removedAt: string | null;
+    role: OrganizationMemberRole;
+    roleManagedAt: string | null;
+    status: OrganizationMemberStatus;
+    updatedAt: string;
+    version: string;
+};
+
+export type ListOrganizationMembersResponseMembersItemAccount = {
+    displayName: string | null;
+    email: string;
+    firstName: string | null;
+    lastName: string | null;
+    pictureUrl: string;
+};
+
+export type ListOrganizationOauthClientsForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type ListOrganizationOauthClientsGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type ListOrganizationOauthClientsInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type ListOrganizationOauthClientsResponse = {
+    oauthClients: Array<ListOrganizationOauthClientsResponseOauthClientsItem>;
+};
+
+export type ListOrganizationOauthClientsResponseOauthClientsItem = {
+    clientId: string;
+    createdAt: string;
+    description: string | null;
+    name: string;
+    redirectUris: Array<OrganizationOauthClientRedirectUri>;
+    scopes: Array<string>;
+    updatedAt: string;
+};
+
+export type ListOrganizationsForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type ListOrganizationsGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type ListOrganizationsResponse = {
+    /**
+     * An active invitation membership exempts acquisition questions; not CRM completion or phone verification.
+     */
+    acquisitionQuestionnaireExempt: boolean;
+    organizations: Array<Organization>;
+    /**
+     * Listed organizations where the caller is the Owner.
+     */
+    ownedOrganizationIds: Array<string>;
+};
+
 export type ListProjectApiKeysForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type ListProjectApiKeysResponse = {
@@ -3857,6 +4449,72 @@ export type ListResourcesForbiddenProblem = ForbiddenProblem | InsufficientScope
 export type ListResourcesGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
 
 export type ListResourcesInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type ListServiceIdentitiesConflictProblem = AccountClosingProblem | OrganizationAuthPolicyChangedProblem | OrganizationUnavailableProblem | AppInstallationManagedProblem | ServiceIdentityVersionConflictProblem;
+
+export type ListServiceIdentitiesForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type ListServiceIdentitiesGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type ListServiceIdentitiesResponse = {
+    serviceIdentities: Array<ListServiceIdentitiesResponseServiceIdentitiesItem>;
+};
+
+export type ListServiceIdentitiesResponseServiceIdentitiesItem = {
+    appInstallationManaged: boolean;
+    createdAt: string;
+    createdByAccountId: string;
+    name: string;
+    organizationId: string;
+    permissions: Array<string>;
+    serviceIdentityId: string;
+    status: ServiceIdentityStatus;
+    updatedAt: string;
+    updatedByAccountId: string;
+    version: string;
+};
+
+export type ListServiceIdentityCredentialsBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+
+export type ListServiceIdentityCredentialsConflictProblem = AppInstallationManagedProblem | ServiceCredentialConflictProblem;
+
+export type ListServiceIdentityCredentialsForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type ListServiceIdentityCredentialsGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type ListServiceIdentityCredentialsResponse = {
+    credentials: Array<ListServiceIdentityCredentialsResponseCredentialsItem>;
+};
+
+export type ListServiceIdentityCredentialsResponseCredentialsItem = {
+    bound: boolean;
+    createdAt: string;
+    creationStartedAt: string | null;
+    credentialId: string;
+    deliveryConsumedAt: string | null;
+    expiresAt: string | null;
+    hint: string | null;
+    kind: ServiceIdentityCredentialKind;
+    label: string;
+    providerCleanupCompletedAt: string | null;
+    revocationRequestedAt: string | null;
+    serviceIdentityId: string;
+    status: ServiceIdentityCredentialStatus;
+    updatedAt: string;
+    version: string;
+};
+
+export type ListServiceIdentityCredentialsUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
+
+export type ListServiceIdentityPermissionsConflictProblem = AccountClosingProblem | OrganizationAuthPolicyChangedProblem | OrganizationUnavailableProblem | AppInstallationManagedProblem | ServiceIdentityVersionConflictProblem;
+
+export type ListServiceIdentityPermissionsForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type ListServiceIdentityPermissionsGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type ListServiceIdentityPermissionsResponse = {
+    permissions: Array<string>;
+};
 
 export type ListSharedLineAssignmentsForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -4279,16 +4937,112 @@ export type NumberCountry = {
     displayName: string;
 };
 
-export type OnboardingCompletedProblem = {
-    code: 'ONBOARDING_COMPLETED';
+export type OauthClientCreationConflictProblem = {
+    code: 'OAUTH_CLIENT_CREATION_CONFLICT';
     detail?: string;
     instance?: string;
     remediation?: never;
     requestId?: string;
     status: 409;
-    title: 'Onboarding Completed';
-    type: 'https://photon.codes/docs/problems/onboarding-completed';
-    [key: string]: JsonValue | 'ONBOARDING_COMPLETED' | string | never | 409 | 'Onboarding Completed' | 'https://photon.codes/docs/problems/onboarding-completed' | undefined;
+    title: 'OAuth Client Creation Conflict';
+    type: 'https://photon.codes/docs/problems/oauth-client-creation-conflict';
+    [key: string]: JsonValue | 'OAUTH_CLIENT_CREATION_CONFLICT' | string | never | 409 | 'OAuth Client Creation Conflict' | 'https://photon.codes/docs/problems/oauth-client-creation-conflict' | undefined;
+};
+
+export type OauthClientDeletionConflictProblem = {
+    code: 'OAUTH_CLIENT_DELETION_CONFLICT';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'OAuth Client Deletion Conflict';
+    type: 'https://photon.codes/docs/problems/oauth-client-deletion-conflict';
+    [key: string]: JsonValue | 'OAUTH_CLIENT_DELETION_CONFLICT' | string | never | 409 | 'OAuth Client Deletion Conflict' | 'https://photon.codes/docs/problems/oauth-client-deletion-conflict' | undefined;
+};
+
+export type OauthClientNotFoundProblem = {
+    code: 'OAUTH_CLIENT_NOT_FOUND';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 404;
+    title: 'OAuth Client Not Found';
+    type: 'https://photon.codes/docs/problems/oauth-client-not-found';
+    [key: string]: JsonValue | 'OAUTH_CLIENT_NOT_FOUND' | string | never | 404 | 'OAuth Client Not Found' | 'https://photon.codes/docs/problems/oauth-client-not-found' | undefined;
+};
+
+export type OauthClientPreconditionFailedProblem = {
+    code: 'OAUTH_CLIENT_PRECONDITION_FAILED';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 412;
+    title: 'OAuth Client Precondition Failed';
+    type: 'https://photon.codes/docs/problems/oauth-client-precondition-failed';
+    [key: string]: JsonValue | 'OAUTH_CLIENT_PRECONDITION_FAILED' | string | never | 412 | 'OAuth Client Precondition Failed' | 'https://photon.codes/docs/problems/oauth-client-precondition-failed' | undefined;
+};
+
+export type OauthClientQuotaExceededProblem = {
+    code: 'OAUTH_CLIENT_QUOTA_EXCEEDED';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 429;
+    title: 'OAuth Client Quota Exceeded';
+    type: 'https://photon.codes/docs/problems/oauth-client-quota-exceeded';
+    [key: string]: JsonValue | 'OAUTH_CLIENT_QUOTA_EXCEEDED' | string | never | 429 | 'OAuth Client Quota Exceeded' | 'https://photon.codes/docs/problems/oauth-client-quota-exceeded' | undefined;
+};
+
+export type OauthSecretConfiguredProblem = {
+    code: 'OAUTH_SECRET_CONFIGURED';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'OAuth Secret Already Configured';
+    type: 'https://photon.codes/docs/problems/oauth-secret-configured';
+    [key: string]: JsonValue | 'OAUTH_SECRET_CONFIGURED' | string | never | 409 | 'OAuth Secret Already Configured' | 'https://photon.codes/docs/problems/oauth-secret-configured' | undefined;
+};
+
+export type OauthSecretCreationConflictProblem = {
+    code: 'OAUTH_SECRET_CREATION_CONFLICT';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'OAuth Secret Creation Conflict';
+    type: 'https://photon.codes/docs/problems/oauth-secret-creation-conflict';
+    [key: string]: JsonValue | 'OAUTH_SECRET_CREATION_CONFLICT' | string | never | 409 | 'OAuth Secret Creation Conflict' | 'https://photon.codes/docs/problems/oauth-secret-creation-conflict' | undefined;
+};
+
+export type OauthSecretNotConfiguredProblem = {
+    code: 'OAUTH_SECRET_NOT_CONFIGURED';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'OAuth Secret Not Configured';
+    type: 'https://photon.codes/docs/problems/oauth-secret-not-configured';
+    [key: string]: JsonValue | 'OAUTH_SECRET_NOT_CONFIGURED' | string | never | 409 | 'OAuth Secret Not Configured' | 'https://photon.codes/docs/problems/oauth-secret-not-configured' | undefined;
+};
+
+export type OauthSecretRevocationConflictProblem = {
+    code: 'OAUTH_SECRET_REVOCATION_CONFLICT';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'OAuth Secret Revocation Conflict';
+    type: 'https://photon.codes/docs/problems/oauth-secret-revocation-conflict';
+    [key: string]: JsonValue | 'OAUTH_SECRET_REVOCATION_CONFLICT' | string | never | 409 | 'OAuth Secret Revocation Conflict' | 'https://photon.codes/docs/problems/oauth-secret-revocation-conflict' | undefined;
 };
 
 export type Operation = {
@@ -4362,13 +5116,29 @@ export type OperationUnavailableProblem = {
     [key: string]: JsonValue | 'OPERATION_UNAVAILABLE' | string | never | 422 | 'Operation Unavailable' | 'https://photon.codes/docs/problems/operation-unavailable' | undefined;
 };
 
-export type OrganizationAuthenticationRedirect = {
-    url: string;
+export type Organization = {
+    avatarUrl: string | null;
+    billingInitialization?: OrganizationBillingInitialization;
+    createdAt: string;
+    name: string;
+    organizationId: string;
+    updatedAt: string;
+    version: string;
 };
 
-export type OrganizationAuthenticationRequest = {
-    returnTo: string;
+export type OrganizationAuthPolicyChangedProblem = {
+    code: 'ORGANIZATION_AUTH_POLICY_CHANGED';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'Organization Authentication Policy Changed';
+    type: 'https://photon.codes/docs/problems/organization-auth-policy-changed';
+    [key: string]: JsonValue | 'ORGANIZATION_AUTH_POLICY_CHANGED' | string | never | 409 | 'Organization Authentication Policy Changed' | 'https://photon.codes/docs/problems/organization-auth-policy-changed' | undefined;
 };
+
+export type OrganizationBillingInitialization = 'pending' | 'retry_required' | 'completed' | 'unknown' | (string & {});
 
 export type OrganizationConnectionNotFoundProblem = {
     code: 'ORGANIZATION_CONNECTION_NOT_FOUND';
@@ -4415,9 +5185,126 @@ export type OrganizationEnterpriseLoginRequest = {
     returnTo: string;
 };
 
+export type OrganizationInvitationRole = 'member' | 'viewer' | (string & {});
+
+export type OrganizationInvitationStatus = 'pending' | 'accepted' | 'revoked' | (string & {});
+
 export type OrganizationInvoiceSubject = {
     organizationId: string;
     type: 'organization';
+};
+
+export type OrganizationMemberJoinedVia = 'creation' | 'invitation' | 'sso_jit' | 'migration' | 'recovery' | (string & {});
+
+export type OrganizationMemberNotFoundProblem = {
+    code: 'ORGANIZATION_MEMBER_NOT_FOUND';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 404;
+    title: 'Organization Member Not Found';
+    type: 'https://photon.codes/docs/problems/organization-member-not-found';
+    [key: string]: JsonValue | 'ORGANIZATION_MEMBER_NOT_FOUND' | string | never | 404 | 'Organization Member Not Found' | 'https://photon.codes/docs/problems/organization-member-not-found' | undefined;
+};
+
+export type OrganizationMemberRemovedProblem = {
+    code: 'ORGANIZATION_MEMBER_REMOVED';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'Organization Member Removed';
+    type: 'https://photon.codes/docs/problems/organization-member-removed';
+    [key: string]: JsonValue | 'ORGANIZATION_MEMBER_REMOVED' | string | never | 409 | 'Organization Member Removed' | 'https://photon.codes/docs/problems/organization-member-removed' | undefined;
+};
+
+export type OrganizationMemberRole = 'owner' | 'admin' | 'member' | 'viewer' | (string & {});
+
+export type OrganizationMemberStatus = 'active' | 'removed' | (string & {});
+
+export type OrganizationMembership = {
+    accountId: string;
+    createdAt: string;
+    joinedVia: OrganizationMemberJoinedVia;
+    organizationId: string;
+    removedAt: string | null;
+    role: OrganizationMemberRole;
+    roleManagedAt: string | null;
+    status: OrganizationMemberStatus;
+    updatedAt: string;
+    version: string;
+};
+
+export type OrganizationMembershipVersionConflictProblem = {
+    code: 'ORGANIZATION_MEMBERSHIP_VERSION_CONFLICT';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'Organization Membership Version Conflict';
+    type: 'https://photon.codes/docs/problems/organization-membership-version-conflict';
+    [key: string]: JsonValue | 'ORGANIZATION_MEMBERSHIP_VERSION_CONFLICT' | string | never | 409 | 'Organization Membership Version Conflict' | 'https://photon.codes/docs/problems/organization-membership-version-conflict' | undefined;
+};
+
+export type OrganizationOauthClientRedirectUri = {
+    default: boolean;
+    uri: string;
+};
+
+export type OrganizationOauthClientRedirectUriInput = {
+    default: boolean;
+    uri: string;
+};
+
+export type OrganizationOwnerInvariantProblem = {
+    code: 'ORGANIZATION_OWNER_INVARIANT';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'Organization Ownership Requires Recovery';
+    type: 'https://photon.codes/docs/problems/organization-owner-invariant';
+    [key: string]: JsonValue | 'ORGANIZATION_OWNER_INVARIANT' | string | never | 409 | 'Organization Ownership Requires Recovery' | 'https://photon.codes/docs/problems/organization-owner-invariant' | undefined;
+};
+
+export type OrganizationOwnerProtectedProblem = {
+    code: 'ORGANIZATION_OWNER_PROTECTED';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'Organization Owner Protected';
+    type: 'https://photon.codes/docs/problems/organization-owner-protected';
+    [key: string]: JsonValue | 'ORGANIZATION_OWNER_PROTECTED' | string | never | 409 | 'Organization Owner Protected' | 'https://photon.codes/docs/problems/organization-owner-protected' | undefined;
+};
+
+export type OrganizationRecoveryRequiredProblem = {
+    code: 'ORGANIZATION_RECOVERY_REQUIRED';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'Organization Recovery Required';
+    type: 'https://photon.codes/docs/problems/organization-recovery-required';
+    [key: string]: JsonValue | 'ORGANIZATION_RECOVERY_REQUIRED' | string | never | 409 | 'Organization Recovery Required' | 'https://photon.codes/docs/problems/organization-recovery-required' | undefined;
+};
+
+export type OrganizationSelfManagementForbiddenProblem = {
+    code: 'ORGANIZATION_SELF_MANAGEMENT_FORBIDDEN';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'Use Leave Organization';
+    type: 'https://photon.codes/docs/problems/organization-self-management-forbidden';
+    [key: string]: JsonValue | 'ORGANIZATION_SELF_MANAGEMENT_FORBIDDEN' | string | never | 409 | 'Use Leave Organization' | 'https://photon.codes/docs/problems/organization-self-management-forbidden' | undefined;
 };
 
 export type OrganizationSsoConfiguration = {
@@ -4459,6 +5346,18 @@ export type OrganizationSsoDomain = {
 };
 
 export type OrganizationSsoDomainState = 'verified' | 'pending' | 'failed' | (string & {});
+
+export type OrganizationSsoEnabledProblem = {
+    code: 'ORGANIZATION_SSO_ENABLED';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'Organization SSO Enabled';
+    type: 'https://photon.codes/docs/problems/organization-sso-enabled';
+    [key: string]: JsonValue | 'ORGANIZATION_SSO_ENABLED' | string | never | 409 | 'Organization SSO Enabled' | 'https://photon.codes/docs/problems/organization-sso-enabled' | undefined;
+};
 
 export type OrganizationSsoNotFoundProblem = {
     code: 'ORGANIZATION_SSO_NOT_FOUND';
@@ -4579,6 +5478,42 @@ export type OrganizationSyncUnavailableProblem = {
     [key: string]: JsonValue | 'ORGANIZATION_SYNC_UNAVAILABLE' | string | never | 409 | 'Organization Synchronization Unavailable' | 'https://photon.codes/docs/problems/organization-sync-unavailable' | undefined;
 };
 
+export type OrganizationTransferToSelfProblem = {
+    code: 'ORGANIZATION_TRANSFER_TO_SELF';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'Choose Another Organization Owner';
+    type: 'https://photon.codes/docs/problems/organization-transfer-to-self';
+    [key: string]: JsonValue | 'ORGANIZATION_TRANSFER_TO_SELF' | string | never | 409 | 'Choose Another Organization Owner' | 'https://photon.codes/docs/problems/organization-transfer-to-self' | undefined;
+};
+
+export type OrganizationUnavailableProblem = {
+    code: 'ORGANIZATION_UNAVAILABLE';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'Organization Unavailable';
+    type: 'https://photon.codes/docs/problems/organization-unavailable';
+    [key: string]: JsonValue | 'ORGANIZATION_UNAVAILABLE' | string | never | 409 | 'Organization Unavailable' | 'https://photon.codes/docs/problems/organization-unavailable' | undefined;
+};
+
+export type OrganizationVersionConflictProblem = {
+    code: 'ORGANIZATION_VERSION_CONFLICT';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'Organization Version Conflict';
+    type: 'https://photon.codes/docs/problems/organization-version-conflict';
+    [key: string]: JsonValue | 'ORGANIZATION_VERSION_CONFLICT' | string | never | 409 | 'Organization Version Conflict' | 'https://photon.codes/docs/problems/organization-version-conflict' | undefined;
+};
+
 export type PayloadTooLargeProblem = {
     code: 'PAYLOAD_TOO_LARGE';
     detail?: string;
@@ -4631,6 +5566,10 @@ export type PendingBillingOperation = {
      * Stable handle for this provisioning action.
      */
     operationId: string;
+    /**
+     * Set while a payment the operation waits for needs the customer's authentication. Completing it within the payment window completes the operation.
+     */
+    paymentAction: BillingPaymentAction | null;
     resolvedAt: null;
     result: null;
     /**
@@ -4646,11 +5585,6 @@ export type PhoneCarrier = {
     mobileNetworkCode?: string;
     name?: string;
     normalizedName?: string;
-};
-
-export type PhoneVerificationCaptcha = {
-    challengeContext: string;
-    token: string;
 };
 
 export type PlanSource = 'catalog' | 'override' | (string & {});
@@ -4721,6 +5655,40 @@ export type PreviewOrganizationChangeResponse = {
      */
     timeZone: string;
 };
+
+export type PreviewOrganizationInvitationConflictProblem = AccountClosingProblem | InvitationExpiredProblem | InvitationRevokedProblem | InvitationRoleConflictProblem | InvitationTerminalProblem | InvitationPredatesRemovalProblem | OrganizationUnavailableProblem | OrganizationAuthPolicyChangedProblem;
+
+export type PreviewOrganizationInvitationForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | InvitationEmailMismatchProblem | InvitationInviterIneligibleProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type PreviewOrganizationInvitationGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type PreviewOrganizationInvitationRequest = {
+    token: string;
+};
+
+export type PreviewOrganizationInvitationResponse = {
+    allProjects: true;
+    emailMatches: boolean;
+    expiresAt: string;
+    inviter: PreviewOrganizationInvitationResponseInviter | null;
+    maskedEmail: string;
+    memberCount: number;
+    organizationAvatarUrl: string | null;
+    organizationId: string;
+    organizationName: string;
+    role: OrganizationInvitationRole;
+    ssoRequired: boolean;
+    status: PreviewOrganizationInvitationResponseStatus;
+};
+
+export type PreviewOrganizationInvitationResponseInviter = {
+    accountId: string;
+    avatarUrl: string;
+    maskedEmail: string;
+    name: string | null;
+};
+
+export type PreviewOrganizationInvitationResponseStatus = 'pending' | 'accepted' | (string & {});
 
 export type PreviewProjectChangeForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -5327,6 +6295,57 @@ export type ReleaseWhatsappSharedLineAssignmentGatewayTimeoutProblem = RequestTi
 
 export type ReleaseWhatsappSharedLineAssignmentInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
+export type RemoveOrganizationAvatarBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+
+export type RemoveOrganizationAvatarConflictProblem = OrganizationAuthPolicyChangedProblem | OrganizationUnavailableProblem | OrganizationVersionConflictProblem;
+
+export type RemoveOrganizationAvatarForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type RemoveOrganizationAvatarGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type RemoveOrganizationAvatarRequest = {
+    expectedVersion: string;
+};
+
+export type RemoveOrganizationAvatarResponse = {
+    avatarUrl: string | null;
+    billingInitialization?: OrganizationBillingInitialization;
+    createdAt: string;
+    name: string;
+    organizationId: string;
+    updatedAt: string;
+    version: string;
+};
+
+export type RemoveOrganizationAvatarUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
+
+export type RemoveOrganizationMemberBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+
+export type RemoveOrganizationMemberConflictProblem = AccountClosingProblem | OrganizationVersionConflictProblem | OrganizationTransferToSelfProblem | OrganizationOwnerInvariantProblem | OrganizationOwnerProtectedProblem | OrganizationSelfManagementForbiddenProblem | OrganizationMembershipVersionConflictProblem | OrganizationMemberRemovedProblem | OrganizationRecoveryRequiredProblem | OrganizationAuthPolicyChangedProblem | OrganizationUnavailableProblem;
+
+export type RemoveOrganizationMemberForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type RemoveOrganizationMemberGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type RemoveOrganizationMemberRequest = {
+    expectedVersion: string;
+};
+
+export type RemoveOrganizationMemberResponse = {
+    accountId: string;
+    createdAt: string;
+    joinedVia: OrganizationMemberJoinedVia;
+    organizationId: string;
+    removedAt: string | null;
+    role: OrganizationMemberRole;
+    roleManagedAt: string | null;
+    status: OrganizationMemberStatus;
+    updatedAt: string;
+    version: string;
+};
+
+export type RemoveOrganizationMemberUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
+
 export type ReplaceVoiceProfileInboundConflictProblem = ProjectClosingProblem | VoiceProfileVersionConflictProblem | VoiceOutboundOperationPendingProblem;
 
 export type ReplaceVoiceProfileInboundForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
@@ -5352,6 +6371,31 @@ export type RequestTimeoutProblem = {
     type: 'https://photon.codes/docs/problems/request-timeout';
     [key: string]: JsonValue | 'REQUEST_TIMEOUT' | string | never | 504 | 'Request Timeout' | 'https://photon.codes/docs/problems/request-timeout' | undefined;
 };
+
+export type ResendOrganizationInvitationBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+
+export type ResendOrganizationInvitationConflictProblem = AccountClosingProblem | InvitationExpiredProblem | InvitationRevokedProblem | InvitationRoleConflictProblem | InvitationTerminalProblem | InvitationPredatesRemovalProblem | OrganizationUnavailableProblem | OrganizationAuthPolicyChangedProblem;
+
+export type ResendOrganizationInvitationForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | InvitationEmailMismatchProblem | InvitationInviterIneligibleProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type ResendOrganizationInvitationGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type ResendOrganizationInvitationResponse = {
+    acceptedAt: string | null;
+    acceptedByAccountId: string | null;
+    allProjects: true;
+    createdAt: string;
+    email: string;
+    expiresAt: string;
+    invitationId: string;
+    invitedByAccountId: string;
+    organizationId: string;
+    role: OrganizationInvitationRole;
+    status: OrganizationInvitationStatus;
+    updatedAt: string;
+};
+
+export type ResendOrganizationInvitationUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
 export type ResetAccountProfilePictureBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyInvalidProblem | IdempotencyKeyRequiredProblem;
 
@@ -5471,6 +6515,31 @@ export type RevokeAuthorizedApplicationGatewayTimeoutProblem = UpstreamTimeoutPr
 
 export type RevokeAuthorizedApplicationInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
+export type RevokeOrganizationInvitationBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+
+export type RevokeOrganizationInvitationConflictProblem = AccountClosingProblem | InvitationExpiredProblem | InvitationRevokedProblem | InvitationRoleConflictProblem | InvitationTerminalProblem | InvitationPredatesRemovalProblem | OrganizationUnavailableProblem | OrganizationAuthPolicyChangedProblem;
+
+export type RevokeOrganizationInvitationForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | InvitationEmailMismatchProblem | InvitationInviterIneligibleProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type RevokeOrganizationInvitationGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type RevokeOrganizationInvitationResponse = {
+    acceptedAt: string | null;
+    acceptedByAccountId: string | null;
+    allProjects: true;
+    createdAt: string;
+    email: string;
+    expiresAt: string;
+    invitationId: string;
+    invitedByAccountId: string;
+    organizationId: string;
+    role: OrganizationInvitationRole;
+    status: OrganizationInvitationStatus;
+    updatedAt: string;
+};
+
+export type RevokeOrganizationInvitationUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
+
 export type RevokeProjectApiKeyBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem;
 
 export type RevokeProjectApiKeyForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
@@ -5478,6 +6547,57 @@ export type RevokeProjectApiKeyForbiddenProblem = ForbiddenProblem | Insufficien
 export type RevokeProjectApiKeyNotFoundProblem = ProjectNotFoundProblem | ApiKeyNotFoundProblem;
 
 export type RevokeProjectApiKeyUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
+
+export type RevokeServiceIdentityCredentialBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+
+export type RevokeServiceIdentityCredentialConflictProblem = AppInstallationManagedProblem | ServiceCredentialConflictProblem;
+
+export type RevokeServiceIdentityCredentialForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type RevokeServiceIdentityCredentialGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type RevokeServiceIdentityCredentialRequest = {
+    expectedVersion: string;
+};
+
+export type RevokeServiceIdentityCredentialResponse = {
+    bound: boolean;
+    createdAt: string;
+    creationStartedAt: string | null;
+    credentialId: string;
+    deliveryConsumedAt: string | null;
+    expiresAt: string | null;
+    hint: string | null;
+    kind: ServiceIdentityCredentialKind;
+    label: string;
+    providerCleanupCompletedAt: string | null;
+    revocationRequestedAt: string | null;
+    serviceIdentityId: string;
+    status: ServiceIdentityCredentialStatus;
+    updatedAt: string;
+    version: string;
+};
+
+export type RevokeServiceIdentityCredentialUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
+
+export type RotateOrganizationOauthClientSecretConflictProblem = OrganizationUnavailableProblem | OauthSecretNotConfiguredProblem | OauthSecretCreationConflictProblem;
+
+export type RotateOrganizationOauthClientSecretForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type RotateOrganizationOauthClientSecretGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type RotateOrganizationOauthClientSecretInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type RotateOrganizationOauthClientSecretRequest = {
+    mode: RotateOrganizationOauthClientSecretRequestMode;
+};
+
+export type RotateOrganizationOauthClientSecretRequestMode = 'normal' | 'emergency' | (string & {});
+
+export type RotateOrganizationOauthClientSecretResponse = {
+    previousSecretValidUntil: string | null;
+    value: string | null;
+};
 
 export type RotateVoiceProfileOutboundCredentialBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
 
@@ -5742,6 +6862,72 @@ export type SentMessageConstraint = {
 
 export type SentMessageStatus = 'dispatched' | 'accepted' | 'delivered' | 'failed' | (string & {});
 
+export type ServiceCredentialConflictProblem = {
+    code: 'SERVICE_CREDENTIAL_CONFLICT';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'Service Credential Conflict';
+    type: 'https://photon.codes/docs/problems/service-credential-conflict';
+    [key: string]: JsonValue | 'SERVICE_CREDENTIAL_CONFLICT' | string | never | 409 | 'Service Credential Conflict' | 'https://photon.codes/docs/problems/service-credential-conflict' | undefined;
+};
+
+export type ServiceCredentialNotFoundProblem = {
+    code: 'SERVICE_CREDENTIAL_NOT_FOUND';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 404;
+    title: 'Service Credential Not Found';
+    type: 'https://photon.codes/docs/problems/service-credential-not-found';
+    [key: string]: JsonValue | 'SERVICE_CREDENTIAL_NOT_FOUND' | string | never | 404 | 'Service Credential Not Found' | 'https://photon.codes/docs/problems/service-credential-not-found' | undefined;
+};
+
+export type ServiceCredentialPreconditionFailedProblem = {
+    code: 'SERVICE_CREDENTIAL_PRECONDITION_FAILED';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 412;
+    title: 'Service Credential Precondition Failed';
+    type: 'https://photon.codes/docs/problems/service-credential-precondition-failed';
+    [key: string]: JsonValue | 'SERVICE_CREDENTIAL_PRECONDITION_FAILED' | string | never | 412 | 'Service Credential Precondition Failed' | 'https://photon.codes/docs/problems/service-credential-precondition-failed' | undefined;
+};
+
+export type ServiceIdentityCredentialKind = 'api_key' | 'client_secret' | (string & {});
+
+export type ServiceIdentityCredentialStatus = 'active' | 'revoked' | (string & {});
+
+export type ServiceIdentityNotFoundProblem = {
+    code: 'SERVICE_IDENTITY_NOT_FOUND';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 404;
+    title: 'Service Identity Not Found';
+    type: 'https://photon.codes/docs/problems/service-identity-not-found';
+    [key: string]: JsonValue | 'SERVICE_IDENTITY_NOT_FOUND' | string | never | 404 | 'Service Identity Not Found' | 'https://photon.codes/docs/problems/service-identity-not-found' | undefined;
+};
+
+export type ServiceIdentityStatus = 'active' | 'disabled' | (string & {});
+
+export type ServiceIdentityVersionConflictProblem = {
+    code: 'SERVICE_IDENTITY_VERSION_CONFLICT';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'Service Identity Version Conflict';
+    type: 'https://photon.codes/docs/problems/service-identity-version-conflict';
+    [key: string]: JsonValue | 'SERVICE_IDENTITY_VERSION_CONFLICT' | string | never | 409 | 'Service Identity Version Conflict' | 'https://photon.codes/docs/problems/service-identity-version-conflict' | undefined;
+};
+
 export type SetSpaceTypingConstraint = {
     content: SetSpaceTypingContent;
     status: 'dispatched';
@@ -5772,6 +6958,22 @@ export type SetSpaceTypingRequest = {
 export type SetSpaceTypingResponse = Message & SetSpaceTypingConstraint;
 
 export type SetSpaceTypingUnprocessableEntityProblem = OperationUnavailableProblem | ValidationFailedProblem;
+
+export type SetupOrganizationOauthClientSecretConflictProblem = OrganizationUnavailableProblem | OauthSecretConfiguredProblem | OauthSecretCreationConflictProblem;
+
+export type SetupOrganizationOauthClientSecretCreatedResponse = {
+    value: string;
+};
+
+export type SetupOrganizationOauthClientSecretForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type SetupOrganizationOauthClientSecretGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type SetupOrganizationOauthClientSecretInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type SetupOrganizationOauthClientSecretResponse = {
+    value: null;
+};
 
 export type SharedLineAssignment = {
     assignedPhoneNumber: string;
@@ -6270,29 +7472,32 @@ export type SsoSubscriptionRequiredProblem = {
     [key: string]: JsonValue | 'SSO_SUBSCRIPTION_REQUIRED' | string | never | 412 | 'SSO Subscription Required' | 'https://photon.codes/docs/problems/sso-subscription-required' | undefined;
 };
 
-export type StartAccountPhoneVerificationForbiddenProblem = CaptchaRequiredProblem | ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
-
-export type StartAccountPhoneVerificationGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
-
-export type StartAccountPhoneVerificationInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
-
-export type StartAccountPhoneVerificationRequest = {
-    captcha?: PhoneVerificationCaptcha;
-    phoneNumber: string;
-};
-
-export type StartAccountPhoneVerificationResponse = {
-    channel: 'sms';
-    expiresAt: string;
-    resendAvailableAt: string;
-};
-
 export type StartEnterpriseLoginRequest = OrganizationEnterpriseLoginRequest | InvitationEnterpriseLoginRequest | RetryEnterpriseLoginRequest;
 
 export type StartEnterpriseLoginResponse = {
     url: string;
     [key: string]: unknown;
 };
+
+export type SubscribeSsoBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+
+export type SubscribeSsoConflictProblem = OrganizationAuthPolicyChangedProblem | OrganizationUnavailableProblem | OrganizationVersionConflictProblem;
+
+export type SubscribeSsoForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem;
+
+export type SubscribeSsoGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type SubscribeSsoRequest = {
+    expectedAmount: string;
+    expectedCurrency: string;
+    expectedCurrentPeriodEnd: string;
+};
+
+export type SubscribeSsoResponse = {
+    accepted: boolean;
+};
+
+export type SubscribeSsoUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
 /**
  * State of one category's subscription: the payer's dunning stage while it holds one. Dunning is organization-level, so the stage applies to every category at once, and paying clears it. Entitlements are unaffected at every stage; viewing, paying and releasing resources stay available. Only categories that hold a subscription appear at all; a cancelled category is absent rather than listed as terminated.
@@ -6339,6 +7544,7 @@ export type SucceededBillingOperation = {
      * Stable handle for this provisioning action.
      */
     operationId: string;
+    paymentAction: null;
     resolvedAt: string | null;
     result: BillingOperationResult;
     /**
@@ -6481,6 +7687,27 @@ export type TextUpdateContent = {
 
 export type TimestampOrderBy = 'created_at' | 'updated_at' | (string & {});
 
+export type TransferOrganizationOwnershipBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+
+export type TransferOrganizationOwnershipConflictProblem = AccountClosingProblem | OrganizationVersionConflictProblem | OrganizationTransferToSelfProblem | OrganizationOwnerInvariantProblem | OrganizationOwnerProtectedProblem | OrganizationSelfManagementForbiddenProblem | OrganizationMembershipVersionConflictProblem | OrganizationMemberRemovedProblem | OrganizationRecoveryRequiredProblem | OrganizationAuthPolicyChangedProblem | OrganizationUnavailableProblem;
+
+export type TransferOrganizationOwnershipForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type TransferOrganizationOwnershipGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type TransferOrganizationOwnershipRequest = {
+    expectedVersion: string;
+    newOwnerAccountId: string;
+};
+
+export type TransferOrganizationOwnershipResponse = {
+    newOwner: OrganizationMembership;
+    organizationVersion: string;
+    previousOwner: OrganizationMembership;
+};
+
+export type TransferOrganizationOwnershipUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
+
 export type UnassignSmsLineCampaignBadRequestProblem = SmsCampaignInvalidRequestProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
 
 export type UnassignSmsLineCampaignConflictProblem = ProjectClosingProblem | SmsLineUnsupportedProblem | SmsCampaignNotReadyProblem | SmsCampaignVersionConflictProblem | SmsCampaignCapacityExceededProblem | SmsCampaignReconciliationRequiredProblem | SmsCampaignMutationInProgressProblem;
@@ -6603,34 +7830,6 @@ export type UpdateAccountGatewayTimeoutProblem = UpstreamTimeoutProblem | Reques
 
 export type UpdateAccountInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
-export type UpdateAccountOnboardingBadRequestProblem = HttpErrorProblem | InvalidArgumentProblem | IdempotencyKeyInvalidProblem | IdempotencyKeyRequiredProblem;
-
-export type UpdateAccountOnboardingForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
-
-export type UpdateAccountOnboardingGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
-
-export type UpdateAccountOnboardingInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
-
-export type UpdateAccountOnboardingRequest = {
-    background?: AccountOnboardingBackground | null;
-    companyName?: string | null;
-    companyUrl?: string | null;
-    platforms?: Array<AccountOnboardingPlatform>;
-    referralSource?: string | null;
-};
-
-export type UpdateAccountOnboardingResponse = {
-    background: string | null;
-    companyName: string | null;
-    companyUrl: string | null;
-    onboarded: boolean;
-    platforms: Array<AccountOnboardingPlatform> | null;
-    referralSource: string | null;
-    [key: string]: unknown;
-};
-
-export type UpdateAccountOnboardingUnprocessableEntityProblem = IdempotencyKeyReusedProblem | ValidationFailedProblem;
-
 export type UpdateAccountRequest = {
     firstName?: string;
     lastName?: string | null;
@@ -6665,6 +7864,82 @@ export type UpdateDefaultVoiceProfileRequest = {
     protocol?: 'sip';
 };
 
+export type UpdateOrganizationBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+
+export type UpdateOrganizationConflictProblem = OrganizationAuthPolicyChangedProblem | OrganizationUnavailableProblem | OrganizationVersionConflictProblem;
+
+export type UpdateOrganizationForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type UpdateOrganizationGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type UpdateOrganizationMemberRoleBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+
+export type UpdateOrganizationMemberRoleConflictProblem = AccountClosingProblem | OrganizationVersionConflictProblem | OrganizationTransferToSelfProblem | OrganizationOwnerInvariantProblem | OrganizationOwnerProtectedProblem | OrganizationSelfManagementForbiddenProblem | OrganizationMembershipVersionConflictProblem | OrganizationMemberRemovedProblem | OrganizationRecoveryRequiredProblem | OrganizationAuthPolicyChangedProblem | OrganizationUnavailableProblem;
+
+export type UpdateOrganizationMemberRoleForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type UpdateOrganizationMemberRoleGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type UpdateOrganizationMemberRoleRequest = {
+    expectedVersion: string;
+    role: UpdateOrganizationMemberRoleRequestRole;
+};
+
+export type UpdateOrganizationMemberRoleRequestRole = 'admin' | 'member' | 'viewer' | (string & {});
+
+export type UpdateOrganizationMemberRoleResponse = {
+    accountId: string;
+    createdAt: string;
+    joinedVia: OrganizationMemberJoinedVia;
+    organizationId: string;
+    removedAt: string | null;
+    role: OrganizationMemberRole;
+    roleManagedAt: string | null;
+    status: OrganizationMemberStatus;
+    updatedAt: string;
+    version: string;
+};
+
+export type UpdateOrganizationMemberRoleUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
+
+export type UpdateOrganizationOauthClientForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type UpdateOrganizationOauthClientGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type UpdateOrganizationOauthClientInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type UpdateOrganizationOauthClientRequest = {
+    description?: string | null;
+    name?: string;
+    redirectUris?: Array<OrganizationOauthClientRedirectUriInput>;
+    scopes?: Array<string>;
+};
+
+export type UpdateOrganizationOauthClientResponse = {
+    clientId: string;
+    createdAt: string;
+    description: string | null;
+    name: string;
+    redirectUris: Array<OrganizationOauthClientRedirectUri>;
+    scopes: Array<string>;
+    updatedAt: string;
+};
+
+export type UpdateOrganizationRequest = {
+    expectedVersion: string;
+    name: string;
+};
+
+export type UpdateOrganizationResponse = {
+    avatarUrl: string | null;
+    billingInitialization?: OrganizationBillingInitialization;
+    createdAt: string;
+    name: string;
+    organizationId: string;
+    updatedAt: string;
+    version: string;
+};
+
 export type UpdateOrganizationSsoPolicyBadRequestProblem = InvalidReturnToProblem | InvalidArgumentProblem;
 
 export type UpdateOrganizationSsoPolicyForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem;
@@ -6679,6 +7954,8 @@ export type UpdateOrganizationSsoPolicyRequest = {
     expectedVersion: string;
     ssoJitEnabled: boolean;
 };
+
+export type UpdateOrganizationUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
 export type UpdateProjectApiKeyBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem;
 
@@ -6703,6 +7980,37 @@ export type UpdateProjectRequest = {
 };
 
 export type UpdateProjectUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
+
+export type UpdateServiceIdentityBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+
+export type UpdateServiceIdentityConflictProblem = AccountClosingProblem | OrganizationAuthPolicyChangedProblem | OrganizationUnavailableProblem | AppInstallationManagedProblem | ServiceIdentityVersionConflictProblem;
+
+export type UpdateServiceIdentityForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type UpdateServiceIdentityGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type UpdateServiceIdentityRequest = {
+    expectedVersion: string;
+    name?: string;
+    permissions?: Array<string>;
+    status?: ServiceIdentityStatus;
+};
+
+export type UpdateServiceIdentityResponse = {
+    appInstallationManaged: boolean;
+    createdAt: string;
+    createdByAccountId: string;
+    name: string;
+    organizationId: string;
+    permissions: Array<string>;
+    serviceIdentityId: string;
+    status: ServiceIdentityStatus;
+    updatedAt: string;
+    updatedByAccountId: string;
+    version: string;
+};
+
+export type UpdateServiceIdentityUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
 export type UpdateVoiceProfileConflictProblem = ProjectClosingProblem | VoiceProfileDirectionConfiguredProblem | VoiceProfileVersionConflictProblem | VoiceOutboundOperationPendingProblem;
 
@@ -7936,345 +9244,6 @@ export type RevokeAuthorizedApplicationResponses = {
 
 export type RevokeAuthorizedApplicationResult = RevokeAuthorizedApplicationResponses[keyof RevokeAuthorizedApplicationResponses];
 
-export type GetAccountOnboardingData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/v1/account/onboarding';
-};
-
-export type GetAccountOnboardingErrors = {
-    /**
-     * NOT_AUTHENTICATED: Not Authenticated
-     */
-    401: NotAuthenticatedProblem;
-    /**
-     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
-     *
-     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
-     */
-    403: GetAccountOnboardingForbiddenProblem;
-    /**
-     * ACCOUNT_NOT_FOUND: Account Not Found
-     */
-    404: AccountNotFoundProblem;
-    /**
-     * ACCOUNT_DELETED: Account Deleted
-     */
-    410: AccountDeletedProblem;
-    /**
-     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
-     *
-     * INTERNAL_ERROR: Internal Server Error
-     */
-    500: GetAccountOnboardingInternalServerErrorProblem;
-    /**
-     * UPSTREAM_FAILURE: Upstream Service Failure
-     */
-    502: UpstreamFailureProblem;
-    /**
-     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
-     */
-    503: UpstreamUnavailableProblem;
-    /**
-     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
-     */
-    504: GetAccountOnboardingGatewayTimeoutProblem;
-};
-
-export type GetAccountOnboardingError = GetAccountOnboardingErrors[keyof GetAccountOnboardingErrors];
-
-export type GetAccountOnboardingResponses = {
-    /**
-     * The authenticated account's onboarding state.
-     */
-    200: GetAccountOnboardingResponse;
-};
-
-export type GetAccountOnboardingResult = GetAccountOnboardingResponses[keyof GetAccountOnboardingResponses];
-
-export type UpdateAccountOnboardingData = {
-    body: UpdateAccountOnboardingRequest;
-    headers: {
-        /**
-         * Identifies one logical mutation across retries.
-         */
-        'Idempotency-Key': string;
-    };
-    path?: never;
-    query?: never;
-    url: '/v1/account/onboarding';
-};
-
-export type UpdateAccountOnboardingErrors = {
-    /**
-     * HTTP_ERROR: Request Failed; INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required
-     */
-    400: UpdateAccountOnboardingBadRequestProblem;
-    /**
-     * NOT_AUTHENTICATED: Not Authenticated
-     */
-    401: NotAuthenticatedProblem;
-    /**
-     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
-     *
-     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
-     */
-    403: UpdateAccountOnboardingForbiddenProblem;
-    /**
-     * ACCOUNT_NOT_FOUND: Account Not Found
-     */
-    404: AccountNotFoundProblem;
-    /**
-     * ONBOARDING_COMPLETED: Onboarding Completed
-     */
-    409: OnboardingCompletedProblem;
-    /**
-     * ACCOUNT_DELETED: Account Deleted
-     */
-    410: AccountDeletedProblem;
-    /**
-     * PAYLOAD_TOO_LARGE: Payload Too Large
-     */
-    413: PayloadTooLargeProblem;
-    /**
-     * IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused; VALIDATION_FAILED: Request Validation Failed
-     */
-    422: UpdateAccountOnboardingUnprocessableEntityProblem;
-    /**
-     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
-     *
-     * INTERNAL_ERROR: Internal Server Error
-     */
-    500: UpdateAccountOnboardingInternalServerErrorProblem;
-    /**
-     * UPSTREAM_FAILURE: Upstream Service Failure
-     */
-    502: UpstreamFailureProblem;
-    /**
-     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
-     */
-    503: UpstreamUnavailableProblem;
-    /**
-     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
-     */
-    504: UpdateAccountOnboardingGatewayTimeoutProblem;
-};
-
-export type UpdateAccountOnboardingError = UpdateAccountOnboardingErrors[keyof UpdateAccountOnboardingErrors];
-
-export type UpdateAccountOnboardingResponses = {
-    /**
-     * The updated onboarding state.
-     */
-    200: UpdateAccountOnboardingResponse;
-};
-
-export type UpdateAccountOnboardingResult = UpdateAccountOnboardingResponses[keyof UpdateAccountOnboardingResponses];
-
-export type CompleteAccountOnboardingData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/v1/account/onboarding/complete';
-};
-
-export type CompleteAccountOnboardingErrors = {
-    /**
-     * NOT_AUTHENTICATED: Not Authenticated
-     */
-    401: NotAuthenticatedProblem;
-    /**
-     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
-     *
-     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
-     */
-    403: CompleteAccountOnboardingForbiddenProblem;
-    /**
-     * ACCOUNT_NOT_FOUND: Account Not Found
-     */
-    404: AccountNotFoundProblem;
-    /**
-     * ACCOUNT_DELETED: Account Deleted
-     */
-    410: AccountDeletedProblem;
-    /**
-     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
-     *
-     * INTERNAL_ERROR: Internal Server Error
-     */
-    500: CompleteAccountOnboardingInternalServerErrorProblem;
-    /**
-     * UPSTREAM_FAILURE: Upstream Service Failure
-     */
-    502: UpstreamFailureProblem;
-    /**
-     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
-     */
-    503: UpstreamUnavailableProblem;
-    /**
-     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
-     */
-    504: CompleteAccountOnboardingGatewayTimeoutProblem;
-};
-
-export type CompleteAccountOnboardingError = CompleteAccountOnboardingErrors[keyof CompleteAccountOnboardingErrors];
-
-export type CompleteAccountOnboardingResponses = {
-    /**
-     * The completed onboarding state.
-     */
-    200: CompleteAccountOnboardingResponse;
-};
-
-export type CompleteAccountOnboardingResult = CompleteAccountOnboardingResponses[keyof CompleteAccountOnboardingResponses];
-
-export type ConfirmAccountPhoneVerificationData = {
-    body: ConfirmAccountPhoneVerificationRequest;
-    path?: never;
-    query?: never;
-    url: '/v1/account/phone';
-};
-
-export type ConfirmAccountPhoneVerificationErrors = {
-    /**
-     * INVALID_ARGUMENT: Invalid Argument
-     */
-    400: InvalidArgumentProblem;
-    /**
-     * NOT_AUTHENTICATED: Not Authenticated
-     */
-    401: NotAuthenticatedProblem;
-    /**
-     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
-     *
-     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
-     */
-    403: ConfirmAccountPhoneVerificationForbiddenProblem;
-    /**
-     * ACCOUNT_NOT_FOUND: Account Not Found
-     */
-    404: AccountNotFoundProblem;
-    /**
-     * ACCOUNT_DELETED: Account Deleted
-     */
-    410: AccountDeletedProblem;
-    /**
-     * PAYLOAD_TOO_LARGE: Payload Too Large
-     */
-    413: PayloadTooLargeProblem;
-    /**
-     * VALIDATION_FAILED: Request Validation Failed
-     */
-    422: ValidationFailedProblem;
-    /**
-     * RATE_LIMITED: Too Many Requests
-     */
-    429: RateLimitedProblem;
-    /**
-     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
-     *
-     * INTERNAL_ERROR: Internal Server Error
-     */
-    500: ConfirmAccountPhoneVerificationInternalServerErrorProblem;
-    /**
-     * UPSTREAM_FAILURE: Upstream Service Failure
-     */
-    502: UpstreamFailureProblem;
-    /**
-     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
-     */
-    503: UpstreamUnavailableProblem;
-    /**
-     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
-     */
-    504: ConfirmAccountPhoneVerificationGatewayTimeoutProblem;
-};
-
-export type ConfirmAccountPhoneVerificationError = ConfirmAccountPhoneVerificationErrors[keyof ConfirmAccountPhoneVerificationErrors];
-
-export type ConfirmAccountPhoneVerificationResponses = {
-    /**
-     * The Account with its verified phone number.
-     */
-    200: Account;
-};
-
-export type ConfirmAccountPhoneVerificationResult = ConfirmAccountPhoneVerificationResponses[keyof ConfirmAccountPhoneVerificationResponses];
-
-export type StartAccountPhoneVerificationData = {
-    body: StartAccountPhoneVerificationRequest;
-    path?: never;
-    query?: never;
-    url: '/v1/account/phone/verifications';
-};
-
-export type StartAccountPhoneVerificationErrors = {
-    /**
-     * INVALID_ARGUMENT: Invalid Argument
-     */
-    400: InvalidArgumentProblem;
-    /**
-     * NOT_AUTHENTICATED: Not Authenticated
-     */
-    401: NotAuthenticatedProblem;
-    /**
-     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch; CAPTCHA_REQUIRED: Captcha Required
-     *
-     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
-     */
-    403: StartAccountPhoneVerificationForbiddenProblem;
-    /**
-     * ACCOUNT_NOT_FOUND: Account Not Found
-     */
-    404: AccountNotFoundProblem;
-    /**
-     * ACCOUNT_DELETED: Account Deleted
-     */
-    410: AccountDeletedProblem;
-    /**
-     * PAYLOAD_TOO_LARGE: Payload Too Large
-     */
-    413: PayloadTooLargeProblem;
-    /**
-     * VALIDATION_FAILED: Request Validation Failed
-     */
-    422: ValidationFailedProblem;
-    /**
-     * RATE_LIMITED: Too Many Requests
-     */
-    429: RateLimitedProblem;
-    /**
-     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
-     *
-     * INTERNAL_ERROR: Internal Server Error
-     */
-    500: StartAccountPhoneVerificationInternalServerErrorProblem;
-    /**
-     * UPSTREAM_FAILURE: Upstream Service Failure
-     */
-    502: UpstreamFailureProblem;
-    /**
-     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
-     */
-    503: UpstreamUnavailableProblem;
-    /**
-     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
-     */
-    504: StartAccountPhoneVerificationGatewayTimeoutProblem;
-};
-
-export type StartAccountPhoneVerificationError = StartAccountPhoneVerificationErrors[keyof StartAccountPhoneVerificationErrors];
-
-export type StartAccountPhoneVerificationResponses = {
-    /**
-     * A pending verification. The Account is unchanged.
-     */
-    201: StartAccountPhoneVerificationResponse;
-};
-
-export type StartAccountPhoneVerificationResult = StartAccountPhoneVerificationResponses[keyof StartAccountPhoneVerificationResponses];
-
 export type ResetAccountProfilePictureData = {
     body?: never;
     headers: {
@@ -9098,213 +10067,6 @@ export type UpdateOrganizationSsoPolicyResponses = {
 
 export type UpdateOrganizationSsoPolicyResult = UpdateOrganizationSsoPolicyResponses[keyof UpdateOrganizationSsoPolicyResponses];
 
-export type BeginOrganizationSsoAdmissionData = {
-    body: OrganizationAuthenticationRequest;
-    path: {
-        orgId: string;
-    };
-    query?: never;
-    url: '/v1/auth/organizations/{orgId}/sso/admission';
-};
-
-export type BeginOrganizationSsoAdmissionErrors = {
-    /**
-     * INVALID_RETURN_TO: Invalid Return To; INVALID_ARGUMENT: Invalid Argument
-     */
-    400: BeginOrganizationSsoAdmissionBadRequestProblem;
-    /**
-     * NOT_AUTHENTICATED: Not Authenticated
-     */
-    401: NotAuthenticatedProblem;
-    /**
-     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
-     */
-    403: BeginOrganizationSsoAdmissionForbiddenProblem;
-    /**
-     * ORGANIZATION_SSO_NOT_FOUND: Organization SSO Not Found
-     */
-    404: OrganizationSsoNotFoundProblem;
-    /**
-     * ORGANIZATION_SSO_CONFLICT: Organization SSO Conflict
-     */
-    409: OrganizationSsoConflictProblem;
-    /**
-     * ORGANIZATION_SSO_PRECONDITION_FAILED: Organization SSO Precondition Failed; SSO_SUBSCRIPTION_REQUIRED: SSO Subscription Required
-     */
-    412: BeginOrganizationSsoAdmissionPreconditionFailedProblem;
-    /**
-     * VALIDATION_FAILED: Request Validation Failed
-     */
-    422: ValidationFailedProblem;
-    /**
-     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
-     *
-     * INTERNAL_ERROR: Internal Server Error
-     */
-    500: BeginOrganizationSsoAdmissionInternalServerErrorProblem;
-    /**
-     * UPSTREAM_FAILURE: Upstream Service Failure
-     */
-    502: UpstreamFailureProblem;
-    /**
-     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
-     */
-    503: UpstreamUnavailableProblem;
-    /**
-     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
-     */
-    504: BeginOrganizationSsoAdmissionGatewayTimeoutProblem;
-};
-
-export type BeginOrganizationSsoAdmissionError = BeginOrganizationSsoAdmissionErrors[keyof BeginOrganizationSsoAdmissionErrors];
-
-export type BeginOrganizationSsoAdmissionResponses = {
-    /**
-     * Targeted SSO authorization URL.
-     */
-    200: OrganizationAuthenticationRedirect;
-};
-
-export type BeginOrganizationSsoAdmissionResult = BeginOrganizationSsoAdmissionResponses[keyof BeginOrganizationSsoAdmissionResponses];
-
-export type BeginOrganizationAuthenticationData = {
-    body: OrganizationAuthenticationRequest;
-    path: {
-        orgId: string;
-    };
-    query?: never;
-    url: '/v1/auth/organizations/{orgId}/sso/authenticate';
-};
-
-export type BeginOrganizationAuthenticationErrors = {
-    /**
-     * INVALID_RETURN_TO: Invalid Return To; INVALID_ARGUMENT: Invalid Argument
-     */
-    400: BeginOrganizationAuthenticationBadRequestProblem;
-    /**
-     * NOT_AUTHENTICATED: Not Authenticated
-     */
-    401: NotAuthenticatedProblem;
-    /**
-     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
-     */
-    403: BeginOrganizationAuthenticationForbiddenProblem;
-    /**
-     * ORGANIZATION_SSO_NOT_FOUND: Organization SSO Not Found
-     */
-    404: OrganizationSsoNotFoundProblem;
-    /**
-     * ORGANIZATION_SSO_CONFLICT: Organization SSO Conflict
-     */
-    409: OrganizationSsoConflictProblem;
-    /**
-     * ORGANIZATION_SSO_PRECONDITION_FAILED: Organization SSO Precondition Failed; SSO_SUBSCRIPTION_REQUIRED: SSO Subscription Required
-     */
-    412: BeginOrganizationAuthenticationPreconditionFailedProblem;
-    /**
-     * VALIDATION_FAILED: Request Validation Failed
-     */
-    422: ValidationFailedProblem;
-    /**
-     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
-     *
-     * INTERNAL_ERROR: Internal Server Error
-     */
-    500: BeginOrganizationAuthenticationInternalServerErrorProblem;
-    /**
-     * UPSTREAM_FAILURE: Upstream Service Failure
-     */
-    502: UpstreamFailureProblem;
-    /**
-     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
-     */
-    503: UpstreamUnavailableProblem;
-    /**
-     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
-     */
-    504: BeginOrganizationAuthenticationGatewayTimeoutProblem;
-};
-
-export type BeginOrganizationAuthenticationError = BeginOrganizationAuthenticationErrors[keyof BeginOrganizationAuthenticationErrors];
-
-export type BeginOrganizationAuthenticationResponses = {
-    /**
-     * Targeted SSO authorization URL.
-     */
-    200: OrganizationAuthenticationRedirect;
-};
-
-export type BeginOrganizationAuthenticationResult = BeginOrganizationAuthenticationResponses[keyof BeginOrganizationAuthenticationResponses];
-
-export type BeginOrganizationClosureAuthenticationData = {
-    body: OrganizationAuthenticationRequest;
-    path: {
-        orgId: string;
-    };
-    query?: never;
-    url: '/v1/auth/organizations/{orgId}/sso/closure-authenticate';
-};
-
-export type BeginOrganizationClosureAuthenticationErrors = {
-    /**
-     * INVALID_RETURN_TO: Invalid Return To; INVALID_ARGUMENT: Invalid Argument
-     */
-    400: BeginOrganizationClosureAuthenticationBadRequestProblem;
-    /**
-     * NOT_AUTHENTICATED: Not Authenticated
-     */
-    401: NotAuthenticatedProblem;
-    /**
-     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
-     */
-    403: BeginOrganizationClosureAuthenticationForbiddenProblem;
-    /**
-     * ORGANIZATION_SSO_NOT_FOUND: Organization SSO Not Found
-     */
-    404: OrganizationSsoNotFoundProblem;
-    /**
-     * ORGANIZATION_SSO_CONFLICT: Organization SSO Conflict
-     */
-    409: OrganizationSsoConflictProblem;
-    /**
-     * ORGANIZATION_SSO_PRECONDITION_FAILED: Organization SSO Precondition Failed; SSO_SUBSCRIPTION_REQUIRED: SSO Subscription Required
-     */
-    412: BeginOrganizationClosureAuthenticationPreconditionFailedProblem;
-    /**
-     * VALIDATION_FAILED: Request Validation Failed
-     */
-    422: ValidationFailedProblem;
-    /**
-     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
-     *
-     * INTERNAL_ERROR: Internal Server Error
-     */
-    500: BeginOrganizationClosureAuthenticationInternalServerErrorProblem;
-    /**
-     * UPSTREAM_FAILURE: Upstream Service Failure
-     */
-    502: UpstreamFailureProblem;
-    /**
-     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
-     */
-    503: UpstreamUnavailableProblem;
-    /**
-     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
-     */
-    504: BeginOrganizationClosureAuthenticationGatewayTimeoutProblem;
-};
-
-export type BeginOrganizationClosureAuthenticationError = BeginOrganizationClosureAuthenticationErrors[keyof BeginOrganizationClosureAuthenticationErrors];
-
-export type BeginOrganizationClosureAuthenticationResponses = {
-    /**
-     * Targeted SSO authorization URL.
-     */
-    200: OrganizationAuthenticationRedirect;
-};
-
-export type BeginOrganizationClosureAuthenticationResult = BeginOrganizationClosureAuthenticationResponses[keyof BeginOrganizationClosureAuthenticationResponses];
-
 export type DisableOrganizationSsoData = {
     body: DisableOrganizationSsoRequest;
     headers: {
@@ -9379,75 +10141,6 @@ export type DisableOrganizationSsoResponses = {
 };
 
 export type DisableOrganizationSsoResult = DisableOrganizationSsoResponses[keyof DisableOrganizationSsoResponses];
-
-export type BeginInvitationSsoData = {
-    body: BeginInvitationSsoRequest;
-    path: {
-        orgId: string;
-    };
-    query?: never;
-    url: '/v1/auth/organizations/{orgId}/sso/invitation';
-};
-
-export type BeginInvitationSsoErrors = {
-    /**
-     * INVALID_RETURN_TO: Invalid Return To; INVALID_ARGUMENT: Invalid Argument
-     */
-    400: BeginInvitationSsoBadRequestProblem;
-    /**
-     * NOT_AUTHENTICATED: Not Authenticated
-     */
-    401: NotAuthenticatedProblem;
-    /**
-     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
-     */
-    403: BeginInvitationSsoForbiddenProblem;
-    /**
-     * ORGANIZATION_SSO_NOT_FOUND: Organization SSO Not Found
-     */
-    404: OrganizationSsoNotFoundProblem;
-    /**
-     * ORGANIZATION_SSO_CONFLICT: Organization SSO Conflict
-     */
-    409: OrganizationSsoConflictProblem;
-    /**
-     * ORGANIZATION_SSO_PRECONDITION_FAILED: Organization SSO Precondition Failed; SSO_SUBSCRIPTION_REQUIRED: SSO Subscription Required
-     */
-    412: BeginInvitationSsoPreconditionFailedProblem;
-    /**
-     * VALIDATION_FAILED: Request Validation Failed
-     */
-    422: ValidationFailedProblem;
-    /**
-     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
-     *
-     * INTERNAL_ERROR: Internal Server Error
-     */
-    500: BeginInvitationSsoInternalServerErrorProblem;
-    /**
-     * UPSTREAM_FAILURE: Upstream Service Failure
-     */
-    502: UpstreamFailureProblem;
-    /**
-     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
-     */
-    503: UpstreamUnavailableProblem;
-    /**
-     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
-     */
-    504: BeginInvitationSsoGatewayTimeoutProblem;
-};
-
-export type BeginInvitationSsoError = BeginInvitationSsoErrors[keyof BeginInvitationSsoErrors];
-
-export type BeginInvitationSsoResponses = {
-    /**
-     * Invitation-bound SSO authorization URL.
-     */
-    200: OrganizationAuthenticationRedirect;
-};
-
-export type BeginInvitationSsoResult = BeginInvitationSsoResponses[keyof BeginInvitationSsoResponses];
 
 export type CreateOrganizationSsoPortalLinkData = {
     body: CreateOrganizationSsoPortalLinkRequest;
@@ -9684,6 +10377,828 @@ export type RedeemAppInstallationDeliveryResponses = {
 };
 
 export type RedeemAppInstallationDeliveryResult = RedeemAppInstallationDeliveryResponses[keyof RedeemAppInstallationDeliveryResponses];
+
+export type ListOrganizationsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/organizations';
+};
+
+export type ListOrganizationsErrors = {
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: ListOrganizationsForbiddenProblem;
+    /**
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: ListOrganizationsGatewayTimeoutProblem;
+};
+
+export type ListOrganizationsError = ListOrganizationsErrors[keyof ListOrganizationsErrors];
+
+export type ListOrganizationsResponses = {
+    /**
+     * The account's accessible organizations.
+     */
+    200: ListOrganizationsResponse;
+};
+
+export type ListOrganizationsResult = ListOrganizationsResponses[keyof ListOrganizationsResponses];
+
+export type CreateOrganizationData = {
+    body: CreateOrganizationRequest;
+    headers: {
+        /**
+         * Identifies one logical mutation across retries.
+         */
+        'Idempotency-Key': string;
+    };
+    path?: never;
+    query?: never;
+    url: '/v1/organizations';
+};
+
+export type CreateOrganizationErrors = {
+    /**
+     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_ARGUMENT: Invalid Argument
+     */
+    400: CreateOrganizationBadRequestProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: CreateOrganizationForbiddenProblem;
+    /**
+     * ACCOUNT_NOT_FOUND: Account Not Found
+     */
+    404: AccountNotFoundProblem;
+    /**
+     * ACCOUNT_CLOSING: Account Is Closing
+     */
+    409: AccountClosingProblem;
+    /**
+     * PAYLOAD_TOO_LARGE: Payload Too Large
+     */
+    413: PayloadTooLargeProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
+     */
+    422: CreateOrganizationUnprocessableEntityProblem;
+    /**
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: CreateOrganizationGatewayTimeoutProblem;
+};
+
+export type CreateOrganizationError = CreateOrganizationErrors[keyof CreateOrganizationErrors];
+
+export type CreateOrganizationResponses = {
+    /**
+     * The created organization. Its caller is the Owner; SSO and JIT start disabled.
+     */
+    201: CreateOrganizationResponse;
+};
+
+export type CreateOrganizationResult = CreateOrganizationResponses[keyof CreateOrganizationResponses];
+
+export type GetCurrentOrganizationData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/organizations/current';
+};
+
+export type GetCurrentOrganizationErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument
+     */
+    400: InvalidArgumentProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: GetCurrentOrganizationForbiddenProblem;
+    /**
+     * ORGANIZATION_MEMBER_NOT_FOUND: Organization Member Not Found
+     */
+    404: OrganizationMemberNotFoundProblem;
+    /**
+     * ORGANIZATION_AUTH_POLICY_CHANGED: Organization Authentication Policy Changed; ORGANIZATION_UNAVAILABLE: Organization Unavailable; ORGANIZATION_VERSION_CONFLICT: Organization Version Conflict
+     */
+    409: GetCurrentOrganizationConflictProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: GetCurrentOrganizationGatewayTimeoutProblem;
+};
+
+export type GetCurrentOrganizationError = GetCurrentOrganizationErrors[keyof GetCurrentOrganizationErrors];
+
+export type GetCurrentOrganizationResponses = {
+    /**
+     * The credential's organization presentation.
+     */
+    200: GetCurrentOrganizationResponse;
+};
+
+export type GetCurrentOrganizationResult = GetCurrentOrganizationResponses[keyof GetCurrentOrganizationResponses];
+
+export type EnsureInitialOrganizationData = {
+    body?: never;
+    headers: {
+        /**
+         * Identifies one logical mutation across retries.
+         */
+        'Idempotency-Key': string;
+    };
+    path?: never;
+    query?: never;
+    url: '/v1/organizations/initial';
+};
+
+export type EnsureInitialOrganizationErrors = {
+    /**
+     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     */
+    400: EnsureInitialOrganizationBadRequestProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: EnsureInitialOrganizationForbiddenProblem;
+    /**
+     * ACCOUNT_NOT_FOUND: Account Not Found
+     */
+    404: AccountNotFoundProblem;
+    /**
+     * ACCOUNT_CLOSING: Account Is Closing
+     */
+    409: AccountClosingProblem;
+    /**
+     * IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
+     */
+    422: IdempotencyKeyReusedProblem;
+    /**
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: EnsureInitialOrganizationGatewayTimeoutProblem;
+};
+
+export type EnsureInitialOrganizationError = EnsureInitialOrganizationErrors[keyof EnsureInitialOrganizationErrors];
+
+export type EnsureInitialOrganizationResponses = {
+    /**
+     * Creates the caller's first owned organization, once per account. Never recreated after it is deleted or transferred.
+     */
+    200: EnsureInitialOrganizationResponse;
+};
+
+export type EnsureInitialOrganizationResult = EnsureInitialOrganizationResponses[keyof EnsureInitialOrganizationResponses];
+
+export type AcceptOrganizationInvitationData = {
+    body: AcceptOrganizationInvitationRequest;
+    headers: {
+        /**
+         * Identifies one logical mutation across retries.
+         */
+        'Idempotency-Key': string;
+    };
+    path?: never;
+    query?: never;
+    url: '/v1/organizations/invitations/accept';
+};
+
+export type AcceptOrganizationInvitationErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     */
+    400: AcceptOrganizationInvitationBadRequestProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * INVITATION_EMAIL_MISMATCH: Invitation Email Mismatch; INVITATION_INVITER_INELIGIBLE: Invitation Inviter Ineligible; ORGANIZATION_SSO_REQUIRED: Organization SSO Required; FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: AcceptOrganizationInvitationForbiddenProblem;
+    /**
+     * INVITATION_NOT_FOUND: Invitation Not Found
+     */
+    404: InvitationNotFoundProblem;
+    /**
+     * ACCOUNT_CLOSING: Account Is Closing; INVITATION_EXPIRED: Invitation Expired; INVITATION_REVOKED: Invitation Revoked; INVITATION_ROLE_CONFLICT: Invitation Role Conflict; INVITATION_TERMINAL: Invitation Terminal; INVITATION_PREDATES_REMOVAL: Invitation Predates Removal; ORGANIZATION_UNAVAILABLE: Organization Unavailable; ORGANIZATION_AUTH_POLICY_CHANGED: Organization Authentication Policy Changed
+     */
+    409: AcceptOrganizationInvitationConflictProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
+     */
+    422: AcceptOrganizationInvitationUnprocessableEntityProblem;
+    /**
+     * RATE_LIMITED: Too Many Requests
+     */
+    429: RateLimitedProblem;
+    /**
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: AcceptOrganizationInvitationGatewayTimeoutProblem;
+};
+
+export type AcceptOrganizationInvitationError = AcceptOrganizationInvitationErrors[keyof AcceptOrganizationInvitationErrors];
+
+export type AcceptOrganizationInvitationResponses = {
+    /**
+     * The joined organization and current role. Existing managed roles are preserved.
+     */
+    200: AcceptOrganizationInvitationResponse;
+};
+
+export type AcceptOrganizationInvitationResult = AcceptOrganizationInvitationResponses[keyof AcceptOrganizationInvitationResponses];
+
+export type PreviewOrganizationInvitationData = {
+    body: PreviewOrganizationInvitationRequest;
+    path?: never;
+    query?: never;
+    url: '/v1/organizations/invitations/preview';
+};
+
+export type PreviewOrganizationInvitationErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument
+     */
+    400: InvalidArgumentProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * INVITATION_EMAIL_MISMATCH: Invitation Email Mismatch; INVITATION_INVITER_INELIGIBLE: Invitation Inviter Ineligible; ORGANIZATION_SSO_REQUIRED: Organization SSO Required; FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: PreviewOrganizationInvitationForbiddenProblem;
+    /**
+     * INVITATION_NOT_FOUND: Invitation Not Found
+     */
+    404: InvitationNotFoundProblem;
+    /**
+     * ACCOUNT_CLOSING: Account Is Closing; INVITATION_EXPIRED: Invitation Expired; INVITATION_REVOKED: Invitation Revoked; INVITATION_ROLE_CONFLICT: Invitation Role Conflict; INVITATION_TERMINAL: Invitation Terminal; INVITATION_PREDATES_REMOVAL: Invitation Predates Removal; ORGANIZATION_UNAVAILABLE: Organization Unavailable; ORGANIZATION_AUTH_POLICY_CHANGED: Organization Authentication Policy Changed
+     */
+    409: PreviewOrganizationInvitationConflictProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * RATE_LIMITED: Too Many Requests
+     */
+    429: RateLimitedProblem;
+    /**
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: PreviewOrganizationInvitationGatewayTimeoutProblem;
+};
+
+export type PreviewOrganizationInvitationError = PreviewOrganizationInvitationErrors[keyof PreviewOrganizationInvitationErrors];
+
+export type PreviewOrganizationInvitationResponses = {
+    /**
+     * Masked target, role, organization and masked inviter for all organization projects.
+     */
+    200: PreviewOrganizationInvitationResponse;
+};
+
+export type PreviewOrganizationInvitationResult = PreviewOrganizationInvitationResponses[keyof PreviewOrganizationInvitationResponses];
+
+export type CloseOrganizationData = {
+    body: CloseOrganizationRequest;
+    headers: {
+        /**
+         * Identifies one logical mutation across retries.
+         */
+        'Idempotency-Key': string;
+    };
+    path: {
+        organizationId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}';
+};
+
+export type CloseOrganizationErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     */
+    400: CloseOrganizationBadRequestProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: CloseOrganizationForbiddenProblem;
+    /**
+     * ORGANIZATION_MEMBER_NOT_FOUND: Organization Member Not Found
+     */
+    404: OrganizationMemberNotFoundProblem;
+    /**
+     * ORGANIZATION_AUTH_POLICY_CHANGED: Organization Authentication Policy Changed; CLOSURE_BLOCKED: Organization Closure Blocked; ORGANIZATION_VERSION_CONFLICT: Organization Version Conflict; ACCOUNT_CLOSING: Account Is Closing; ORGANIZATION_UNAVAILABLE: Organization Unavailable
+     */
+    409: CloseOrganizationConflictProblem;
+    /**
+     * PAYLOAD_TOO_LARGE: Payload Too Large
+     */
+    413: PayloadTooLargeProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
+     */
+    422: CloseOrganizationUnprocessableEntityProblem;
+    /**
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: CloseOrganizationGatewayTimeoutProblem;
+};
+
+export type CloseOrganizationError = CloseOrganizationErrors[keyof CloseOrganizationErrors];
+
+export type CloseOrganizationResponses = {
+    /**
+     * The organization has been removed from normal access.
+     */
+    204: void;
+};
+
+export type CloseOrganizationResult = CloseOrganizationResponses[keyof CloseOrganizationResponses];
+
+export type GetOrganizationData = {
+    body?: never;
+    path: {
+        organizationId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}';
+};
+
+export type GetOrganizationErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument
+     */
+    400: InvalidArgumentProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: GetOrganizationForbiddenProblem;
+    /**
+     * ORGANIZATION_MEMBER_NOT_FOUND: Organization Member Not Found
+     */
+    404: OrganizationMemberNotFoundProblem;
+    /**
+     * ORGANIZATION_AUTH_POLICY_CHANGED: Organization Authentication Policy Changed; ORGANIZATION_UNAVAILABLE: Organization Unavailable; ORGANIZATION_VERSION_CONFLICT: Organization Version Conflict
+     */
+    409: GetOrganizationConflictProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: GetOrganizationGatewayTimeoutProblem;
+};
+
+export type GetOrganizationError = GetOrganizationErrors[keyof GetOrganizationErrors];
+
+export type GetOrganizationResponses = {
+    /**
+     * Current organization presentation. An unset avatar is null.
+     */
+    200: GetOrganizationResponse;
+};
+
+export type GetOrganizationResult = GetOrganizationResponses[keyof GetOrganizationResponses];
+
+export type UpdateOrganizationData = {
+    body: UpdateOrganizationRequest;
+    headers: {
+        /**
+         * Identifies one logical mutation across retries.
+         */
+        'Idempotency-Key': string;
+    };
+    path: {
+        organizationId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}';
+};
+
+export type UpdateOrganizationErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     */
+    400: UpdateOrganizationBadRequestProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: UpdateOrganizationForbiddenProblem;
+    /**
+     * ORGANIZATION_MEMBER_NOT_FOUND: Organization Member Not Found
+     */
+    404: OrganizationMemberNotFoundProblem;
+    /**
+     * ORGANIZATION_AUTH_POLICY_CHANGED: Organization Authentication Policy Changed; ORGANIZATION_UNAVAILABLE: Organization Unavailable; ORGANIZATION_VERSION_CONFLICT: Organization Version Conflict
+     */
+    409: UpdateOrganizationConflictProblem;
+    /**
+     * PAYLOAD_TOO_LARGE: Payload Too Large
+     */
+    413: PayloadTooLargeProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
+     */
+    422: UpdateOrganizationUnprocessableEntityProblem;
+    /**
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: UpdateOrganizationGatewayTimeoutProblem;
+};
+
+export type UpdateOrganizationError = UpdateOrganizationErrors[keyof UpdateOrganizationErrors];
+
+export type UpdateOrganizationResponses = {
+    /**
+     * Committed organization presentation.
+     */
+    200: UpdateOrganizationResponse;
+};
+
+export type UpdateOrganizationResult = UpdateOrganizationResponses[keyof UpdateOrganizationResponses];
+
+export type RemoveOrganizationAvatarData = {
+    body: RemoveOrganizationAvatarRequest;
+    headers: {
+        /**
+         * Identifies one logical mutation across retries.
+         */
+        'Idempotency-Key': string;
+    };
+    path: {
+        organizationId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/avatar';
+};
+
+export type RemoveOrganizationAvatarErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     */
+    400: RemoveOrganizationAvatarBadRequestProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: RemoveOrganizationAvatarForbiddenProblem;
+    /**
+     * ORGANIZATION_MEMBER_NOT_FOUND: Organization Member Not Found
+     */
+    404: OrganizationMemberNotFoundProblem;
+    /**
+     * ORGANIZATION_AUTH_POLICY_CHANGED: Organization Authentication Policy Changed; ORGANIZATION_UNAVAILABLE: Organization Unavailable; ORGANIZATION_VERSION_CONFLICT: Organization Version Conflict
+     */
+    409: RemoveOrganizationAvatarConflictProblem;
+    /**
+     * PAYLOAD_TOO_LARGE: Payload Too Large
+     */
+    413: PayloadTooLargeProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
+     */
+    422: RemoveOrganizationAvatarUnprocessableEntityProblem;
+    /**
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: RemoveOrganizationAvatarGatewayTimeoutProblem;
+};
+
+export type RemoveOrganizationAvatarError = RemoveOrganizationAvatarErrors[keyof RemoveOrganizationAvatarErrors];
+
+export type RemoveOrganizationAvatarResponses = {
+    /**
+     * Organization presentation with a null default avatar.
+     */
+    200: RemoveOrganizationAvatarResponse;
+};
+
+export type RemoveOrganizationAvatarResult = RemoveOrganizationAvatarResponses[keyof RemoveOrganizationAvatarResponses];
+
+export type CommitOrganizationAvatarData = {
+    body: CommitOrganizationAvatarRequest;
+    headers: {
+        /**
+         * Identifies one logical mutation across retries.
+         */
+        'Idempotency-Key': string;
+    };
+    path: {
+        organizationId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/avatar/commit';
+};
+
+export type CommitOrganizationAvatarErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     */
+    400: CommitOrganizationAvatarBadRequestProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: CommitOrganizationAvatarForbiddenProblem;
+    /**
+     * ORGANIZATION_MEMBER_NOT_FOUND: Organization Member Not Found
+     */
+    404: OrganizationMemberNotFoundProblem;
+    /**
+     * ORGANIZATION_AUTH_POLICY_CHANGED: Organization Authentication Policy Changed; ORGANIZATION_UNAVAILABLE: Organization Unavailable; ORGANIZATION_VERSION_CONFLICT: Organization Version Conflict
+     */
+    409: CommitOrganizationAvatarConflictProblem;
+    /**
+     * PAYLOAD_TOO_LARGE: Payload Too Large
+     */
+    413: PayloadTooLargeProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
+     */
+    422: CommitOrganizationAvatarUnprocessableEntityProblem;
+    /**
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: CommitOrganizationAvatarGatewayTimeoutProblem;
+};
+
+export type CommitOrganizationAvatarError = CommitOrganizationAvatarErrors[keyof CommitOrganizationAvatarErrors];
+
+export type CommitOrganizationAvatarResponses = {
+    /**
+     * Committed organization presentation.
+     */
+    200: CommitOrganizationAvatarResponse;
+};
+
+export type CommitOrganizationAvatarResult = CommitOrganizationAvatarResponses[keyof CommitOrganizationAvatarResponses];
+
+export type CreateOrganizationAvatarUploadData = {
+    body: CreateOrganizationAvatarUploadRequest;
+    path: {
+        organizationId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/avatar/uploads';
+};
+
+export type CreateOrganizationAvatarUploadErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument
+     */
+    400: InvalidArgumentProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: CreateOrganizationAvatarUploadForbiddenProblem;
+    /**
+     * ORGANIZATION_MEMBER_NOT_FOUND: Organization Member Not Found
+     */
+    404: OrganizationMemberNotFoundProblem;
+    /**
+     * ORGANIZATION_AUTH_POLICY_CHANGED: Organization Authentication Policy Changed; ORGANIZATION_UNAVAILABLE: Organization Unavailable; ORGANIZATION_VERSION_CONFLICT: Organization Version Conflict
+     */
+    409: CreateOrganizationAvatarUploadConflictProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: CreateOrganizationAvatarUploadGatewayTimeoutProblem;
+};
+
+export type CreateOrganizationAvatarUploadError = CreateOrganizationAvatarUploadErrors[keyof CreateOrganizationAvatarUploadErrors];
+
+export type CreateOrganizationAvatarUploadResponses = {
+    /**
+     * A ten-minute organization-bound presigned upload.
+     */
+    201: CreateOrganizationAvatarUploadResponse;
+};
+
+export type CreateOrganizationAvatarUploadResult = CreateOrganizationAvatarUploadResponses[keyof CreateOrganizationAvatarUploadResponses];
 
 export type GetOrganizationBillingOverviewData = {
     body?: never;
@@ -10369,75 +11884,6 @@ export type GetEffectiveTermsResponses = {
 
 export type GetEffectiveTermsResult = GetEffectiveTermsResponses[keyof GetEffectiveTermsResponses];
 
-export type CreateOrganizationSetupIntentData = {
-    body?: never;
-    headers: {
-        /**
-         * Identifies one logical mutation across retries.
-         */
-        'Idempotency-Key': string;
-    };
-    path: {
-        organizationId: string;
-    };
-    query?: never;
-    url: '/v1/organizations/{organizationId}/billing/setup-intent';
-};
-
-export type CreateOrganizationSetupIntentErrors = {
-    /**
-     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
-     */
-    400: CreateOrganizationSetupIntentBadRequestProblem;
-    /**
-     * NOT_AUTHENTICATED: Not Authenticated
-     */
-    401: NotAuthenticatedProblem;
-    /**
-     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
-     *
-     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
-     */
-    403: CreateOrganizationSetupIntentForbiddenProblem;
-    /**
-     * FAILED_PRECONDITION: Failed Precondition
-     */
-    409: FailedPreconditionProblem;
-    /**
-     * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
-     */
-    422: CreateOrganizationSetupIntentUnprocessableEntityProblem;
-    /**
-     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
-     *
-     * INTERNAL_ERROR: Internal Server Error
-     */
-    500: CreateOrganizationSetupIntentInternalServerErrorProblem;
-    /**
-     * UPSTREAM_FAILURE: Upstream Service Failure
-     */
-    502: UpstreamFailureProblem;
-    /**
-     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
-     */
-    503: UpstreamUnavailableProblem;
-    /**
-     * REQUEST_TIMEOUT: Request Timeout; UPSTREAM_TIMEOUT: Upstream Service Timeout
-     */
-    504: CreateOrganizationSetupIntentGatewayTimeoutProblem;
-};
-
-export type CreateOrganizationSetupIntentError = CreateOrganizationSetupIntentErrors[keyof CreateOrganizationSetupIntentErrors];
-
-export type CreateOrganizationSetupIntentResponses = {
-    /**
-     * Payment-provider client configuration (client secret and publishable key) for capturing the organization's card.
-     */
-    200: CreateOrganizationSetupIntentResponse;
-};
-
-export type CreateOrganizationSetupIntentResult = CreateOrganizationSetupIntentResponses[keyof CreateOrganizationSetupIntentResponses];
-
 export type GetOrganizationTermsData = {
     body?: never;
     path: {
@@ -10500,6 +11946,1285 @@ export type GetOrganizationTermsResponses = {
 };
 
 export type GetOrganizationTermsResult = GetOrganizationTermsResponses[keyof GetOrganizationTermsResponses];
+
+export type CheckOrganizationDeletionData = {
+    body?: never;
+    path: {
+        organizationId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/deletion-check';
+};
+
+export type CheckOrganizationDeletionErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument
+     */
+    400: InvalidArgumentProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: CheckOrganizationDeletionForbiddenProblem;
+    /**
+     * ORGANIZATION_MEMBER_NOT_FOUND: Organization Member Not Found
+     */
+    404: OrganizationMemberNotFoundProblem;
+    /**
+     * ORGANIZATION_AUTH_POLICY_CHANGED: Organization Authentication Policy Changed; ORGANIZATION_UNAVAILABLE: Organization Unavailable
+     */
+    409: CheckOrganizationDeletionConflictProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: CheckOrganizationDeletionGatewayTimeoutProblem;
+};
+
+export type CheckOrganizationDeletionError = CheckOrganizationDeletionErrors[keyof CheckOrganizationDeletionErrors];
+
+export type CheckOrganizationDeletionResponses = {
+    /**
+     * Check whether the organization can be deleted and list prerequisites.
+     */
+    200: CheckOrganizationDeletionResponse;
+};
+
+export type CheckOrganizationDeletionResult = CheckOrganizationDeletionResponses[keyof CheckOrganizationDeletionResponses];
+
+export type ListOrganizationInvitationsData = {
+    body?: never;
+    path: {
+        organizationId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/invitations';
+};
+
+export type ListOrganizationInvitationsErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument
+     */
+    400: InvalidArgumentProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * INVITATION_EMAIL_MISMATCH: Invitation Email Mismatch; INVITATION_INVITER_INELIGIBLE: Invitation Inviter Ineligible; ORGANIZATION_SSO_REQUIRED: Organization SSO Required; FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: ListOrganizationInvitationsForbiddenProblem;
+    /**
+     * INVITATION_NOT_FOUND: Invitation Not Found
+     */
+    404: InvitationNotFoundProblem;
+    /**
+     * ACCOUNT_CLOSING: Account Is Closing; INVITATION_EXPIRED: Invitation Expired; INVITATION_REVOKED: Invitation Revoked; INVITATION_ROLE_CONFLICT: Invitation Role Conflict; INVITATION_TERMINAL: Invitation Terminal; INVITATION_PREDATES_REMOVAL: Invitation Predates Removal; ORGANIZATION_UNAVAILABLE: Organization Unavailable; ORGANIZATION_AUTH_POLICY_CHANGED: Organization Authentication Policy Changed
+     */
+    409: ListOrganizationInvitationsConflictProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * RATE_LIMITED: Too Many Requests
+     */
+    429: RateLimitedProblem;
+    /**
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: ListOrganizationInvitationsGatewayTimeoutProblem;
+};
+
+export type ListOrganizationInvitationsError = ListOrganizationInvitationsErrors[keyof ListOrganizationInvitationsErrors];
+
+export type ListOrganizationInvitationsResponses = {
+    /**
+     * Organization invitations; no token is returned.
+     */
+    200: ListOrganizationInvitationsResponse;
+};
+
+export type ListOrganizationInvitationsResult = ListOrganizationInvitationsResponses[keyof ListOrganizationInvitationsResponses];
+
+export type CreateOrganizationInvitationData = {
+    body: CreateOrganizationInvitationRequest;
+    headers: {
+        /**
+         * Identifies one logical mutation across retries.
+         */
+        'Idempotency-Key': string;
+    };
+    path: {
+        organizationId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/invitations';
+};
+
+export type CreateOrganizationInvitationErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     */
+    400: CreateOrganizationInvitationBadRequestProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * INVITATION_EMAIL_MISMATCH: Invitation Email Mismatch; INVITATION_INVITER_INELIGIBLE: Invitation Inviter Ineligible; ORGANIZATION_SSO_REQUIRED: Organization SSO Required; FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: CreateOrganizationInvitationForbiddenProblem;
+    /**
+     * INVITATION_NOT_FOUND: Invitation Not Found
+     */
+    404: InvitationNotFoundProblem;
+    /**
+     * ACCOUNT_CLOSING: Account Is Closing; INVITATION_EXPIRED: Invitation Expired; INVITATION_REVOKED: Invitation Revoked; INVITATION_ROLE_CONFLICT: Invitation Role Conflict; INVITATION_TERMINAL: Invitation Terminal; INVITATION_PREDATES_REMOVAL: Invitation Predates Removal; ORGANIZATION_UNAVAILABLE: Organization Unavailable; ORGANIZATION_AUTH_POLICY_CHANGED: Organization Authentication Policy Changed
+     */
+    409: CreateOrganizationInvitationConflictProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
+     */
+    422: CreateOrganizationInvitationUnprocessableEntityProblem;
+    /**
+     * RATE_LIMITED: Too Many Requests
+     */
+    429: RateLimitedProblem;
+    /**
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: CreateOrganizationInvitationGatewayTimeoutProblem;
+};
+
+export type CreateOrganizationInvitationError = CreateOrganizationInvitationErrors[keyof CreateOrganizationInvitationErrors];
+
+export type CreateOrganizationInvitationResponses = {
+    /**
+     * Invitation applies to all current and future projects. No token is returned.
+     */
+    201: CreateOrganizationInvitationResponse;
+};
+
+export type CreateOrganizationInvitationResult = CreateOrganizationInvitationResponses[keyof CreateOrganizationInvitationResponses];
+
+export type ResendOrganizationInvitationData = {
+    body?: never;
+    headers: {
+        /**
+         * Identifies one logical mutation across retries.
+         */
+        'Idempotency-Key': string;
+    };
+    path: {
+        organizationId: string;
+        invitationId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/invitations/{invitationId}/resend';
+};
+
+export type ResendOrganizationInvitationErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     */
+    400: ResendOrganizationInvitationBadRequestProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * INVITATION_EMAIL_MISMATCH: Invitation Email Mismatch; INVITATION_INVITER_INELIGIBLE: Invitation Inviter Ineligible; ORGANIZATION_SSO_REQUIRED: Organization SSO Required; FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: ResendOrganizationInvitationForbiddenProblem;
+    /**
+     * INVITATION_NOT_FOUND: Invitation Not Found
+     */
+    404: InvitationNotFoundProblem;
+    /**
+     * ACCOUNT_CLOSING: Account Is Closing; INVITATION_EXPIRED: Invitation Expired; INVITATION_REVOKED: Invitation Revoked; INVITATION_ROLE_CONFLICT: Invitation Role Conflict; INVITATION_TERMINAL: Invitation Terminal; INVITATION_PREDATES_REMOVAL: Invitation Predates Removal; ORGANIZATION_UNAVAILABLE: Organization Unavailable; ORGANIZATION_AUTH_POLICY_CHANGED: Organization Authentication Policy Changed
+     */
+    409: ResendOrganizationInvitationConflictProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
+     */
+    422: ResendOrganizationInvitationUnprocessableEntityProblem;
+    /**
+     * RATE_LIMITED: Too Many Requests
+     */
+    429: RateLimitedProblem;
+    /**
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: ResendOrganizationInvitationGatewayTimeoutProblem;
+};
+
+export type ResendOrganizationInvitationError = ResendOrganizationInvitationErrors[keyof ResendOrganizationInvitationErrors];
+
+export type ResendOrganizationInvitationResponses = {
+    /**
+     * The invitation after the operation; no token is returned.
+     */
+    200: ResendOrganizationInvitationResponse;
+};
+
+export type ResendOrganizationInvitationResult = ResendOrganizationInvitationResponses[keyof ResendOrganizationInvitationResponses];
+
+export type RevokeOrganizationInvitationData = {
+    body?: never;
+    headers: {
+        /**
+         * Identifies one logical mutation across retries.
+         */
+        'Idempotency-Key': string;
+    };
+    path: {
+        organizationId: string;
+        invitationId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/invitations/{invitationId}/revoke';
+};
+
+export type RevokeOrganizationInvitationErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     */
+    400: RevokeOrganizationInvitationBadRequestProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * INVITATION_EMAIL_MISMATCH: Invitation Email Mismatch; INVITATION_INVITER_INELIGIBLE: Invitation Inviter Ineligible; ORGANIZATION_SSO_REQUIRED: Organization SSO Required; FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: RevokeOrganizationInvitationForbiddenProblem;
+    /**
+     * INVITATION_NOT_FOUND: Invitation Not Found
+     */
+    404: InvitationNotFoundProblem;
+    /**
+     * ACCOUNT_CLOSING: Account Is Closing; INVITATION_EXPIRED: Invitation Expired; INVITATION_REVOKED: Invitation Revoked; INVITATION_ROLE_CONFLICT: Invitation Role Conflict; INVITATION_TERMINAL: Invitation Terminal; INVITATION_PREDATES_REMOVAL: Invitation Predates Removal; ORGANIZATION_UNAVAILABLE: Organization Unavailable; ORGANIZATION_AUTH_POLICY_CHANGED: Organization Authentication Policy Changed
+     */
+    409: RevokeOrganizationInvitationConflictProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
+     */
+    422: RevokeOrganizationInvitationUnprocessableEntityProblem;
+    /**
+     * RATE_LIMITED: Too Many Requests
+     */
+    429: RateLimitedProblem;
+    /**
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: RevokeOrganizationInvitationGatewayTimeoutProblem;
+};
+
+export type RevokeOrganizationInvitationError = RevokeOrganizationInvitationErrors[keyof RevokeOrganizationInvitationErrors];
+
+export type RevokeOrganizationInvitationResponses = {
+    /**
+     * The invitation after the operation; no token is returned.
+     */
+    200: RevokeOrganizationInvitationResponse;
+};
+
+export type RevokeOrganizationInvitationResult = RevokeOrganizationInvitationResponses[keyof RevokeOrganizationInvitationResponses];
+
+export type LeaveOrganizationData = {
+    body: LeaveOrganizationRequest;
+    headers: {
+        /**
+         * Identifies one logical mutation across retries.
+         */
+        'Idempotency-Key': string;
+    };
+    path: {
+        organizationId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/leave';
+};
+
+export type LeaveOrganizationErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     */
+    400: LeaveOrganizationBadRequestProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: LeaveOrganizationForbiddenProblem;
+    /**
+     * ORGANIZATION_MEMBER_NOT_FOUND: Organization Member Not Found
+     */
+    404: OrganizationMemberNotFoundProblem;
+    /**
+     * ACCOUNT_CLOSING: Account Is Closing; ORGANIZATION_VERSION_CONFLICT: Organization Version Conflict; ORGANIZATION_TRANSFER_TO_SELF: Choose Another Organization Owner; ORGANIZATION_OWNER_INVARIANT: Organization Ownership Requires Recovery; ORGANIZATION_OWNER_PROTECTED: Organization Owner Protected; ORGANIZATION_SELF_MANAGEMENT_FORBIDDEN: Use Leave Organization; ORGANIZATION_MEMBERSHIP_VERSION_CONFLICT: Organization Membership Version Conflict; ORGANIZATION_MEMBER_REMOVED: Organization Member Removed; ORGANIZATION_RECOVERY_REQUIRED: Organization Recovery Required; ORGANIZATION_AUTH_POLICY_CHANGED: Organization Authentication Policy Changed; ORGANIZATION_UNAVAILABLE: Organization Unavailable
+     */
+    409: LeaveOrganizationConflictProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
+     */
+    422: LeaveOrganizationUnprocessableEntityProblem;
+    /**
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: LeaveOrganizationGatewayTimeoutProblem;
+};
+
+export type LeaveOrganizationError = LeaveOrganizationErrors[keyof LeaveOrganizationErrors];
+
+export type LeaveOrganizationResponses = {
+    /**
+     * Committed removal of the authenticated member.
+     */
+    200: LeaveOrganizationResponse;
+};
+
+export type LeaveOrganizationResult = LeaveOrganizationResponses[keyof LeaveOrganizationResponses];
+
+export type ListOrganizationMembersData = {
+    body?: never;
+    path: {
+        organizationId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/members';
+};
+
+export type ListOrganizationMembersErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument
+     */
+    400: InvalidArgumentProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: ListOrganizationMembersForbiddenProblem;
+    /**
+     * ORGANIZATION_MEMBER_NOT_FOUND: Organization Member Not Found
+     */
+    404: OrganizationMemberNotFoundProblem;
+    /**
+     * ACCOUNT_CLOSING: Account Is Closing; ORGANIZATION_VERSION_CONFLICT: Organization Version Conflict; ORGANIZATION_TRANSFER_TO_SELF: Choose Another Organization Owner; ORGANIZATION_OWNER_INVARIANT: Organization Ownership Requires Recovery; ORGANIZATION_OWNER_PROTECTED: Organization Owner Protected; ORGANIZATION_SELF_MANAGEMENT_FORBIDDEN: Use Leave Organization; ORGANIZATION_MEMBERSHIP_VERSION_CONFLICT: Organization Membership Version Conflict; ORGANIZATION_MEMBER_REMOVED: Organization Member Removed; ORGANIZATION_RECOVERY_REQUIRED: Organization Recovery Required; ORGANIZATION_AUTH_POLICY_CHANGED: Organization Authentication Policy Changed; ORGANIZATION_UNAVAILABLE: Organization Unavailable
+     */
+    409: ListOrganizationMembersConflictProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: ListOrganizationMembersGatewayTimeoutProblem;
+};
+
+export type ListOrganizationMembersError = ListOrganizationMembersErrors[keyof ListOrganizationMembersErrors];
+
+export type ListOrganizationMembersResponses = {
+    /**
+     * Current active organization memberships.
+     */
+    200: ListOrganizationMembersResponse;
+};
+
+export type ListOrganizationMembersResult = ListOrganizationMembersResponses[keyof ListOrganizationMembersResponses];
+
+export type RemoveOrganizationMemberData = {
+    body: RemoveOrganizationMemberRequest;
+    headers: {
+        /**
+         * Identifies one logical mutation across retries.
+         */
+        'Idempotency-Key': string;
+    };
+    path: {
+        organizationId: string;
+        memberAccountId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/members/{memberAccountId}';
+};
+
+export type RemoveOrganizationMemberErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     */
+    400: RemoveOrganizationMemberBadRequestProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: RemoveOrganizationMemberForbiddenProblem;
+    /**
+     * ORGANIZATION_MEMBER_NOT_FOUND: Organization Member Not Found
+     */
+    404: OrganizationMemberNotFoundProblem;
+    /**
+     * ACCOUNT_CLOSING: Account Is Closing; ORGANIZATION_VERSION_CONFLICT: Organization Version Conflict; ORGANIZATION_TRANSFER_TO_SELF: Choose Another Organization Owner; ORGANIZATION_OWNER_INVARIANT: Organization Ownership Requires Recovery; ORGANIZATION_OWNER_PROTECTED: Organization Owner Protected; ORGANIZATION_SELF_MANAGEMENT_FORBIDDEN: Use Leave Organization; ORGANIZATION_MEMBERSHIP_VERSION_CONFLICT: Organization Membership Version Conflict; ORGANIZATION_MEMBER_REMOVED: Organization Member Removed; ORGANIZATION_RECOVERY_REQUIRED: Organization Recovery Required; ORGANIZATION_AUTH_POLICY_CHANGED: Organization Authentication Policy Changed; ORGANIZATION_UNAVAILABLE: Organization Unavailable
+     */
+    409: RemoveOrganizationMemberConflictProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
+     */
+    422: RemoveOrganizationMemberUnprocessableEntityProblem;
+    /**
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: RemoveOrganizationMemberGatewayTimeoutProblem;
+};
+
+export type RemoveOrganizationMemberError = RemoveOrganizationMemberErrors[keyof RemoveOrganizationMemberErrors];
+
+export type RemoveOrganizationMemberResponses = {
+    /**
+     * Committed removal; project keys retain their independent lifecycle.
+     */
+    200: RemoveOrganizationMemberResponse;
+};
+
+export type RemoveOrganizationMemberResult = RemoveOrganizationMemberResponses[keyof RemoveOrganizationMemberResponses];
+
+export type UpdateOrganizationMemberRoleData = {
+    body: UpdateOrganizationMemberRoleRequest;
+    headers: {
+        /**
+         * Identifies one logical mutation across retries.
+         */
+        'Idempotency-Key': string;
+    };
+    path: {
+        organizationId: string;
+        memberAccountId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/members/{memberAccountId}';
+};
+
+export type UpdateOrganizationMemberRoleErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     */
+    400: UpdateOrganizationMemberRoleBadRequestProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: UpdateOrganizationMemberRoleForbiddenProblem;
+    /**
+     * ORGANIZATION_MEMBER_NOT_FOUND: Organization Member Not Found
+     */
+    404: OrganizationMemberNotFoundProblem;
+    /**
+     * ACCOUNT_CLOSING: Account Is Closing; ORGANIZATION_VERSION_CONFLICT: Organization Version Conflict; ORGANIZATION_TRANSFER_TO_SELF: Choose Another Organization Owner; ORGANIZATION_OWNER_INVARIANT: Organization Ownership Requires Recovery; ORGANIZATION_OWNER_PROTECTED: Organization Owner Protected; ORGANIZATION_SELF_MANAGEMENT_FORBIDDEN: Use Leave Organization; ORGANIZATION_MEMBERSHIP_VERSION_CONFLICT: Organization Membership Version Conflict; ORGANIZATION_MEMBER_REMOVED: Organization Member Removed; ORGANIZATION_RECOVERY_REQUIRED: Organization Recovery Required; ORGANIZATION_AUTH_POLICY_CHANGED: Organization Authentication Policy Changed; ORGANIZATION_UNAVAILABLE: Organization Unavailable
+     */
+    409: UpdateOrganizationMemberRoleConflictProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
+     */
+    422: UpdateOrganizationMemberRoleUnprocessableEntityProblem;
+    /**
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: UpdateOrganizationMemberRoleGatewayTimeoutProblem;
+};
+
+export type UpdateOrganizationMemberRoleError = UpdateOrganizationMemberRoleErrors[keyof UpdateOrganizationMemberRoleErrors];
+
+export type UpdateOrganizationMemberRoleResponses = {
+    /**
+     * Committed membership result; refresh the member list for current state.
+     */
+    200: UpdateOrganizationMemberRoleResponse;
+};
+
+export type UpdateOrganizationMemberRoleResult = UpdateOrganizationMemberRoleResponses[keyof UpdateOrganizationMemberRoleResponses];
+
+export type ListOrganizationOauthClientsData = {
+    body?: never;
+    path: {
+        organizationId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/oauth/clients';
+};
+
+export type ListOrganizationOauthClientsErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument
+     */
+    400: InvalidArgumentProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: ListOrganizationOauthClientsForbiddenProblem;
+    /**
+     * OAUTH_CLIENT_NOT_FOUND: OAuth Client Not Found
+     */
+    404: OauthClientNotFoundProblem;
+    /**
+     * ORGANIZATION_UNAVAILABLE: Organization Unavailable
+     */
+    409: OrganizationUnavailableProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: ListOrganizationOauthClientsInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: ListOrganizationOauthClientsGatewayTimeoutProblem;
+};
+
+export type ListOrganizationOauthClientsError = ListOrganizationOauthClientsErrors[keyof ListOrganizationOauthClientsErrors];
+
+export type ListOrganizationOauthClientsResponses = {
+    /**
+     * Third-party OAuth applications owned by the organization.
+     */
+    200: ListOrganizationOauthClientsResponse;
+};
+
+export type ListOrganizationOauthClientsResult = ListOrganizationOauthClientsResponses[keyof ListOrganizationOauthClientsResponses];
+
+export type CreateOrganizationOauthClientData = {
+    body: CreateOrganizationOauthClientRequest;
+    headers: {
+        'idempotency-key': string;
+    };
+    path: {
+        organizationId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/oauth/clients';
+};
+
+export type CreateOrganizationOauthClientErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument
+     */
+    400: InvalidArgumentProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: CreateOrganizationOauthClientForbiddenProblem;
+    /**
+     * OAUTH_CLIENT_NOT_FOUND: OAuth Client Not Found
+     */
+    404: OauthClientNotFoundProblem;
+    /**
+     * ORGANIZATION_UNAVAILABLE: Organization Unavailable; OAUTH_CLIENT_CREATION_CONFLICT: OAuth Client Creation Conflict
+     */
+    409: CreateOrganizationOauthClientConflictProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * OAUTH_CLIENT_QUOTA_EXCEEDED: OAuth Client Quota Exceeded
+     */
+    429: OauthClientQuotaExceededProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: CreateOrganizationOauthClientInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: CreateOrganizationOauthClientGatewayTimeoutProblem;
+};
+
+export type CreateOrganizationOauthClientError = CreateOrganizationOauthClientErrors[keyof CreateOrganizationOauthClientErrors];
+
+export type CreateOrganizationOauthClientResponses = {
+    /**
+     * Created organization OAuth client, or the same recorded creation on retry.
+     */
+    201: CreateOrganizationOauthClientResponse;
+};
+
+export type CreateOrganizationOauthClientResult = CreateOrganizationOauthClientResponses[keyof CreateOrganizationOauthClientResponses];
+
+export type DeleteOrganizationOauthClientData = {
+    body?: never;
+    path: {
+        organizationId: string;
+        clientId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/oauth/clients/{clientId}';
+};
+
+export type DeleteOrganizationOauthClientErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument
+     */
+    400: InvalidArgumentProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: DeleteOrganizationOauthClientForbiddenProblem;
+    /**
+     * OAUTH_CLIENT_NOT_FOUND: OAuth Client Not Found
+     */
+    404: OauthClientNotFoundProblem;
+    /**
+     * ORGANIZATION_UNAVAILABLE: Organization Unavailable; OAUTH_CLIENT_DELETION_CONFLICT: OAuth Client Deletion Conflict
+     */
+    409: DeleteOrganizationOauthClientConflictProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: DeleteOrganizationOauthClientInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: DeleteOrganizationOauthClientGatewayTimeoutProblem;
+};
+
+export type DeleteOrganizationOauthClientError = DeleteOrganizationOauthClientErrors[keyof DeleteOrganizationOauthClientErrors];
+
+export type DeleteOrganizationOauthClientResponses = {
+    /**
+     * Provider deletion has been confirmed.
+     */
+    200: DeleteOrganizationOauthClientResponse;
+    /**
+     * Deletion accepted; provider cleanup is pending.
+     */
+    202: DeleteOrganizationOauthClientResponse;
+};
+
+export type DeleteOrganizationOauthClientResult = DeleteOrganizationOauthClientResponses[keyof DeleteOrganizationOauthClientResponses];
+
+export type GetOrganizationOauthClientData = {
+    body?: never;
+    path: {
+        organizationId: string;
+        clientId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/oauth/clients/{clientId}';
+};
+
+export type GetOrganizationOauthClientErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument
+     */
+    400: InvalidArgumentProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: GetOrganizationOauthClientForbiddenProblem;
+    /**
+     * OAUTH_CLIENT_NOT_FOUND: OAuth Client Not Found
+     */
+    404: OauthClientNotFoundProblem;
+    /**
+     * ORGANIZATION_UNAVAILABLE: Organization Unavailable
+     */
+    409: OrganizationUnavailableProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: GetOrganizationOauthClientInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: GetOrganizationOauthClientGatewayTimeoutProblem;
+};
+
+export type GetOrganizationOauthClientError = GetOrganizationOauthClientErrors[keyof GetOrganizationOauthClientErrors];
+
+export type GetOrganizationOauthClientResponses = {
+    /**
+     * Organization OAuth client metadata.
+     */
+    200: GetOrganizationOauthClientResponse;
+};
+
+export type GetOrganizationOauthClientResult = GetOrganizationOauthClientResponses[keyof GetOrganizationOauthClientResponses];
+
+export type UpdateOrganizationOauthClientData = {
+    body: UpdateOrganizationOauthClientRequest;
+    headers: {
+        'if-match': string;
+    };
+    path: {
+        organizationId: string;
+        clientId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/oauth/clients/{clientId}';
+};
+
+export type UpdateOrganizationOauthClientErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument
+     */
+    400: InvalidArgumentProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: UpdateOrganizationOauthClientForbiddenProblem;
+    /**
+     * OAUTH_CLIENT_NOT_FOUND: OAuth Client Not Found
+     */
+    404: OauthClientNotFoundProblem;
+    /**
+     * ORGANIZATION_UNAVAILABLE: Organization Unavailable
+     */
+    409: OrganizationUnavailableProblem;
+    /**
+     * OAUTH_CLIENT_PRECONDITION_FAILED: OAuth Client Precondition Failed
+     */
+    412: OauthClientPreconditionFailedProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: UpdateOrganizationOauthClientInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: UpdateOrganizationOauthClientGatewayTimeoutProblem;
+};
+
+export type UpdateOrganizationOauthClientError = UpdateOrganizationOauthClientErrors[keyof UpdateOrganizationOauthClientErrors];
+
+export type UpdateOrganizationOauthClientResponses = {
+    /**
+     * Updated organization OAuth client.
+     */
+    200: UpdateOrganizationOauthClientResponse;
+};
+
+export type UpdateOrganizationOauthClientResult = UpdateOrganizationOauthClientResponses[keyof UpdateOrganizationOauthClientResponses];
+
+export type DeleteOrganizationOauthClientSecretData = {
+    body?: never;
+    path: {
+        organizationId: string;
+        clientId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/oauth/clients/{clientId}/secret';
+};
+
+export type DeleteOrganizationOauthClientSecretErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument
+     */
+    400: InvalidArgumentProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: DeleteOrganizationOauthClientSecretForbiddenProblem;
+    /**
+     * OAUTH_CLIENT_NOT_FOUND: OAuth Client Not Found
+     */
+    404: OauthClientNotFoundProblem;
+    /**
+     * ORGANIZATION_UNAVAILABLE: Organization Unavailable; OAUTH_SECRET_REVOCATION_CONFLICT: OAuth Secret Revocation Conflict
+     */
+    409: DeleteOrganizationOauthClientSecretConflictProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: DeleteOrganizationOauthClientSecretInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: DeleteOrganizationOauthClientSecretGatewayTimeoutProblem;
+};
+
+export type DeleteOrganizationOauthClientSecretError = DeleteOrganizationOauthClientSecretErrors[keyof DeleteOrganizationOauthClientSecretErrors];
+
+export type DeleteOrganizationOauthClientSecretResponses = {
+    /**
+     * The app has no secret.
+     */
+    204: void;
+};
+
+export type DeleteOrganizationOauthClientSecretResult = DeleteOrganizationOauthClientSecretResponses[keyof DeleteOrganizationOauthClientSecretResponses];
+
+export type GetOrganizationOauthClientSecretData = {
+    body?: never;
+    path: {
+        organizationId: string;
+        clientId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/oauth/clients/{clientId}/secret';
+};
+
+export type GetOrganizationOauthClientSecretErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument
+     */
+    400: InvalidArgumentProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: GetOrganizationOauthClientSecretForbiddenProblem;
+    /**
+     * OAUTH_CLIENT_NOT_FOUND: OAuth Client Not Found
+     */
+    404: OauthClientNotFoundProblem;
+    /**
+     * ORGANIZATION_UNAVAILABLE: Organization Unavailable
+     */
+    409: OrganizationUnavailableProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: GetOrganizationOauthClientSecretInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: GetOrganizationOauthClientSecretGatewayTimeoutProblem;
+};
+
+export type GetOrganizationOauthClientSecretError = GetOrganizationOauthClientSecretErrors[keyof GetOrganizationOauthClientSecretErrors];
+
+export type GetOrganizationOauthClientSecretResponses = {
+    /**
+     * Secret metadata; plaintext is never returned.
+     */
+    200: GetOrganizationOauthClientSecretResponse;
+};
+
+export type GetOrganizationOauthClientSecretResult = GetOrganizationOauthClientSecretResponses[keyof GetOrganizationOauthClientSecretResponses];
+
+export type SetupOrganizationOauthClientSecretData = {
+    body?: never;
+    headers: {
+        'idempotency-key': string;
+    };
+    path: {
+        organizationId: string;
+        clientId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/oauth/clients/{clientId}/secret';
+};
+
+export type SetupOrganizationOauthClientSecretErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument
+     */
+    400: InvalidArgumentProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: SetupOrganizationOauthClientSecretForbiddenProblem;
+    /**
+     * OAUTH_CLIENT_NOT_FOUND: OAuth Client Not Found
+     */
+    404: OauthClientNotFoundProblem;
+    /**
+     * ORGANIZATION_UNAVAILABLE: Organization Unavailable; OAUTH_SECRET_CONFIGURED: OAuth Secret Already Configured; OAUTH_SECRET_CREATION_CONFLICT: OAuth Secret Creation Conflict
+     */
+    409: SetupOrganizationOauthClientSecretConflictProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: SetupOrganizationOauthClientSecretInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: SetupOrganizationOauthClientSecretGatewayTimeoutProblem;
+};
+
+export type SetupOrganizationOauthClientSecretError = SetupOrganizationOauthClientSecretErrors[keyof SetupOrganizationOauthClientSecretErrors];
+
+export type SetupOrganizationOauthClientSecretResponses = {
+    /**
+     * Replay: the secret exists, its plaintext is gone.
+     */
+    200: SetupOrganizationOauthClientSecretResponse;
+    /**
+     * Secret created; plaintext is returned once.
+     */
+    201: SetupOrganizationOauthClientSecretCreatedResponse;
+};
+
+export type SetupOrganizationOauthClientSecretResult = SetupOrganizationOauthClientSecretResponses[keyof SetupOrganizationOauthClientSecretResponses];
+
+export type RotateOrganizationOauthClientSecretData = {
+    body: RotateOrganizationOauthClientSecretRequest;
+    headers: {
+        'idempotency-key': string;
+    };
+    path: {
+        organizationId: string;
+        clientId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/oauth/clients/{clientId}/secret/rotate';
+};
+
+export type RotateOrganizationOauthClientSecretErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument
+     */
+    400: InvalidArgumentProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: RotateOrganizationOauthClientSecretForbiddenProblem;
+    /**
+     * OAUTH_CLIENT_NOT_FOUND: OAuth Client Not Found
+     */
+    404: OauthClientNotFoundProblem;
+    /**
+     * ORGANIZATION_UNAVAILABLE: Organization Unavailable; OAUTH_SECRET_NOT_CONFIGURED: OAuth Secret Not Configured; OAUTH_SECRET_CREATION_CONFLICT: OAuth Secret Creation Conflict
+     */
+    409: RotateOrganizationOauthClientSecretConflictProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: RotateOrganizationOauthClientSecretInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: RotateOrganizationOauthClientSecretGatewayTimeoutProblem;
+};
+
+export type RotateOrganizationOauthClientSecretError = RotateOrganizationOauthClientSecretErrors[keyof RotateOrganizationOauthClientSecretErrors];
+
+export type RotateOrganizationOauthClientSecretResponses = {
+    /**
+     * Secret rotated. `previousSecretValidUntil` is when the old one stops working, null once it has.
+     */
+    200: RotateOrganizationOauthClientSecretResponse;
+};
+
+export type RotateOrganizationOauthClientSecretResult = RotateOrganizationOauthClientSecretResponses[keyof RotateOrganizationOauthClientSecretResponses];
 
 export type ListProjectsData = {
     body?: never;
@@ -10821,6 +13546,910 @@ export type CheckProjectSlugAvailabilityResponses = {
 };
 
 export type CheckProjectSlugAvailabilityResult = CheckProjectSlugAvailabilityResponses[keyof CheckProjectSlugAvailabilityResponses];
+
+export type ListServiceIdentitiesData = {
+    body?: never;
+    path: {
+        organizationId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/service-identities';
+};
+
+export type ListServiceIdentitiesErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument
+     */
+    400: InvalidArgumentProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: ListServiceIdentitiesForbiddenProblem;
+    /**
+     * SERVICE_IDENTITY_NOT_FOUND: Service Identity Not Found
+     */
+    404: ServiceIdentityNotFoundProblem;
+    /**
+     * ACCOUNT_CLOSING: Account Is Closing; ORGANIZATION_AUTH_POLICY_CHANGED: Organization Authentication Policy Changed; ORGANIZATION_UNAVAILABLE: Organization Unavailable; APP_INSTALLATION_MANAGED: App Installation Managed; SERVICE_IDENTITY_VERSION_CONFLICT: Service Identity Version Conflict
+     */
+    409: ListServiceIdentitiesConflictProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: ListServiceIdentitiesGatewayTimeoutProblem;
+};
+
+export type ListServiceIdentitiesError = ListServiceIdentitiesErrors[keyof ListServiceIdentitiesErrors];
+
+export type ListServiceIdentitiesResponses = {
+    /**
+     * Current organization identity metadata.
+     */
+    200: ListServiceIdentitiesResponse;
+};
+
+export type ListServiceIdentitiesResult = ListServiceIdentitiesResponses[keyof ListServiceIdentitiesResponses];
+
+export type CreateServiceIdentityData = {
+    body: CreateServiceIdentityRequest;
+    headers: {
+        /**
+         * Identifies one logical mutation across retries.
+         */
+        'Idempotency-Key': string;
+    };
+    path: {
+        organizationId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/service-identities';
+};
+
+export type CreateServiceIdentityErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     */
+    400: CreateServiceIdentityBadRequestProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: CreateServiceIdentityForbiddenProblem;
+    /**
+     * SERVICE_IDENTITY_NOT_FOUND: Service Identity Not Found
+     */
+    404: ServiceIdentityNotFoundProblem;
+    /**
+     * ACCOUNT_CLOSING: Account Is Closing; ORGANIZATION_AUTH_POLICY_CHANGED: Organization Authentication Policy Changed; ORGANIZATION_UNAVAILABLE: Organization Unavailable; APP_INSTALLATION_MANAGED: App Installation Managed; SERVICE_IDENTITY_VERSION_CONFLICT: Service Identity Version Conflict
+     */
+    409: CreateServiceIdentityConflictProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
+     */
+    422: CreateServiceIdentityUnprocessableEntityProblem;
+    /**
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: CreateServiceIdentityGatewayTimeoutProblem;
+};
+
+export type CreateServiceIdentityError = CreateServiceIdentityErrors[keyof CreateServiceIdentityErrors];
+
+export type CreateServiceIdentityResponses = {
+    /**
+     * Committed identity metadata; credentials are managed separately.
+     */
+    200: CreateServiceIdentityResponse;
+};
+
+export type CreateServiceIdentityResult = CreateServiceIdentityResponses[keyof CreateServiceIdentityResponses];
+
+export type ListServiceIdentityPermissionsData = {
+    body?: never;
+    path: {
+        organizationId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/service-identities/permissions';
+};
+
+export type ListServiceIdentityPermissionsErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument
+     */
+    400: InvalidArgumentProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: ListServiceIdentityPermissionsForbiddenProblem;
+    /**
+     * SERVICE_IDENTITY_NOT_FOUND: Service Identity Not Found
+     */
+    404: ServiceIdentityNotFoundProblem;
+    /**
+     * ACCOUNT_CLOSING: Account Is Closing; ORGANIZATION_AUTH_POLICY_CHANGED: Organization Authentication Policy Changed; ORGANIZATION_UNAVAILABLE: Organization Unavailable; APP_INSTALLATION_MANAGED: App Installation Managed; SERVICE_IDENTITY_VERSION_CONFLICT: Service Identity Version Conflict
+     */
+    409: ListServiceIdentityPermissionsConflictProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: ListServiceIdentityPermissionsGatewayTimeoutProblem;
+};
+
+export type ListServiceIdentityPermissionsError = ListServiceIdentityPermissionsErrors[keyof ListServiceIdentityPermissionsErrors];
+
+export type ListServiceIdentityPermissionsResponses = {
+    /**
+     * Grantable machine permissions.
+     */
+    200: ListServiceIdentityPermissionsResponse;
+};
+
+export type ListServiceIdentityPermissionsResult = ListServiceIdentityPermissionsResponses[keyof ListServiceIdentityPermissionsResponses];
+
+export type GetServiceIdentityData = {
+    body?: never;
+    path: {
+        organizationId: string;
+        serviceIdentityId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/service-identities/{serviceIdentityId}';
+};
+
+export type GetServiceIdentityErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument
+     */
+    400: InvalidArgumentProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: GetServiceIdentityForbiddenProblem;
+    /**
+     * SERVICE_IDENTITY_NOT_FOUND: Service Identity Not Found
+     */
+    404: ServiceIdentityNotFoundProblem;
+    /**
+     * ACCOUNT_CLOSING: Account Is Closing; ORGANIZATION_AUTH_POLICY_CHANGED: Organization Authentication Policy Changed; ORGANIZATION_UNAVAILABLE: Organization Unavailable; APP_INSTALLATION_MANAGED: App Installation Managed; SERVICE_IDENTITY_VERSION_CONFLICT: Service Identity Version Conflict
+     */
+    409: GetServiceIdentityConflictProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: GetServiceIdentityGatewayTimeoutProblem;
+};
+
+export type GetServiceIdentityError = GetServiceIdentityErrors[keyof GetServiceIdentityErrors];
+
+export type GetServiceIdentityResponses = {
+    /**
+     * Current identity metadata.
+     */
+    200: GetServiceIdentityResponse;
+};
+
+export type GetServiceIdentityResult = GetServiceIdentityResponses[keyof GetServiceIdentityResponses];
+
+export type UpdateServiceIdentityData = {
+    body: UpdateServiceIdentityRequest;
+    headers: {
+        /**
+         * Identifies one logical mutation across retries.
+         */
+        'Idempotency-Key': string;
+    };
+    path: {
+        organizationId: string;
+        serviceIdentityId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/service-identities/{serviceIdentityId}';
+};
+
+export type UpdateServiceIdentityErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     */
+    400: UpdateServiceIdentityBadRequestProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: UpdateServiceIdentityForbiddenProblem;
+    /**
+     * SERVICE_IDENTITY_NOT_FOUND: Service Identity Not Found
+     */
+    404: ServiceIdentityNotFoundProblem;
+    /**
+     * ACCOUNT_CLOSING: Account Is Closing; ORGANIZATION_AUTH_POLICY_CHANGED: Organization Authentication Policy Changed; ORGANIZATION_UNAVAILABLE: Organization Unavailable; APP_INSTALLATION_MANAGED: App Installation Managed; SERVICE_IDENTITY_VERSION_CONFLICT: Service Identity Version Conflict
+     */
+    409: UpdateServiceIdentityConflictProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
+     */
+    422: UpdateServiceIdentityUnprocessableEntityProblem;
+    /**
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: UpdateServiceIdentityGatewayTimeoutProblem;
+};
+
+export type UpdateServiceIdentityError = UpdateServiceIdentityErrors[keyof UpdateServiceIdentityErrors];
+
+export type UpdateServiceIdentityResponses = {
+    /**
+     * Committed identity metadata; replay returns the original result.
+     */
+    200: UpdateServiceIdentityResponse;
+};
+
+export type UpdateServiceIdentityResult = UpdateServiceIdentityResponses[keyof UpdateServiceIdentityResponses];
+
+export type ListServiceIdentityCredentialsData = {
+    body?: never;
+    path: {
+        organizationId: string;
+        serviceIdentityId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials';
+};
+
+export type ListServiceIdentityCredentialsErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     */
+    400: ListServiceIdentityCredentialsBadRequestProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: ListServiceIdentityCredentialsForbiddenProblem;
+    /**
+     * SERVICE_CREDENTIAL_NOT_FOUND: Service Credential Not Found
+     */
+    404: ServiceCredentialNotFoundProblem;
+    /**
+     * APP_INSTALLATION_MANAGED: App Installation Managed; SERVICE_CREDENTIAL_CONFLICT: Service Credential Conflict
+     */
+    409: ListServiceIdentityCredentialsConflictProblem;
+    /**
+     * SERVICE_CREDENTIAL_PRECONDITION_FAILED: Service Credential Precondition Failed
+     */
+    412: ServiceCredentialPreconditionFailedProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
+     */
+    422: ListServiceIdentityCredentialsUnprocessableEntityProblem;
+    /**
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: ListServiceIdentityCredentialsGatewayTimeoutProblem;
+};
+
+export type ListServiceIdentityCredentialsError = ListServiceIdentityCredentialsErrors[keyof ListServiceIdentityCredentialsErrors];
+
+export type ListServiceIdentityCredentialsResponses = {
+    /**
+     * Credential metadata, including pending and revoked entries; never secrets.
+     */
+    200: ListServiceIdentityCredentialsResponse;
+};
+
+export type ListServiceIdentityCredentialsResult = ListServiceIdentityCredentialsResponses[keyof ListServiceIdentityCredentialsResponses];
+
+export type CreateServiceIdentityApiKeyData = {
+    body: CreateServiceIdentityApiKeyRequest;
+    headers: {
+        /**
+         * Identifies one logical mutation across retries.
+         */
+        'Idempotency-Key': string;
+    };
+    path: {
+        organizationId: string;
+        serviceIdentityId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials/api-keys';
+};
+
+export type CreateServiceIdentityApiKeyErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     */
+    400: CreateServiceIdentityApiKeyBadRequestProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: CreateServiceIdentityApiKeyForbiddenProblem;
+    /**
+     * SERVICE_CREDENTIAL_NOT_FOUND: Service Credential Not Found
+     */
+    404: ServiceCredentialNotFoundProblem;
+    /**
+     * APP_INSTALLATION_MANAGED: App Installation Managed; SERVICE_CREDENTIAL_CONFLICT: Service Credential Conflict
+     */
+    409: CreateServiceIdentityApiKeyConflictProblem;
+    /**
+     * SERVICE_CREDENTIAL_PRECONDITION_FAILED: Service Credential Precondition Failed
+     */
+    412: ServiceCredentialPreconditionFailedProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
+     */
+    422: CreateServiceIdentityApiKeyUnprocessableEntityProblem;
+    /**
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: CreateServiceIdentityApiKeyGatewayTimeoutProblem;
+};
+
+export type CreateServiceIdentityApiKeyError = CreateServiceIdentityApiKeyErrors[keyof CreateServiceIdentityApiKeyErrors];
+
+export type CreateServiceIdentityApiKeyResponses = {
+    /**
+     * Creation state; only the first successful delivery includes value.
+     */
+    200: CreateServiceIdentityApiKeyResponse;
+};
+
+export type CreateServiceIdentityApiKeyResult = CreateServiceIdentityApiKeyResponses[keyof CreateServiceIdentityApiKeyResponses];
+
+export type CreateServiceIdentityClientSecretData = {
+    body: CreateServiceIdentityClientSecretRequest;
+    headers: {
+        /**
+         * Identifies one logical mutation across retries.
+         */
+        'Idempotency-Key': string;
+    };
+    path: {
+        organizationId: string;
+        serviceIdentityId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials/client-secrets';
+};
+
+export type CreateServiceIdentityClientSecretErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     */
+    400: CreateServiceIdentityClientSecretBadRequestProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: CreateServiceIdentityClientSecretForbiddenProblem;
+    /**
+     * SERVICE_CREDENTIAL_NOT_FOUND: Service Credential Not Found
+     */
+    404: ServiceCredentialNotFoundProblem;
+    /**
+     * APP_INSTALLATION_MANAGED: App Installation Managed; SERVICE_CREDENTIAL_CONFLICT: Service Credential Conflict
+     */
+    409: CreateServiceIdentityClientSecretConflictProblem;
+    /**
+     * SERVICE_CREDENTIAL_PRECONDITION_FAILED: Service Credential Precondition Failed
+     */
+    412: ServiceCredentialPreconditionFailedProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
+     */
+    422: CreateServiceIdentityClientSecretUnprocessableEntityProblem;
+    /**
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: CreateServiceIdentityClientSecretGatewayTimeoutProblem;
+};
+
+export type CreateServiceIdentityClientSecretError = CreateServiceIdentityClientSecretErrors[keyof CreateServiceIdentityClientSecretErrors];
+
+export type CreateServiceIdentityClientSecretResponses = {
+    /**
+     * Creation stage and state; only first delivery includes value and clientId.
+     */
+    200: CreateServiceIdentityClientSecretResponse;
+};
+
+export type CreateServiceIdentityClientSecretResult = CreateServiceIdentityClientSecretResponses[keyof CreateServiceIdentityClientSecretResponses];
+
+export type RevokeServiceIdentityCredentialData = {
+    body: RevokeServiceIdentityCredentialRequest;
+    headers: {
+        /**
+         * Identifies one logical mutation across retries.
+         */
+        'Idempotency-Key': string;
+    };
+    path: {
+        organizationId: string;
+        serviceIdentityId: string;
+        credentialId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials/{credentialId}/revoke';
+};
+
+export type RevokeServiceIdentityCredentialErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     */
+    400: RevokeServiceIdentityCredentialBadRequestProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: RevokeServiceIdentityCredentialForbiddenProblem;
+    /**
+     * SERVICE_CREDENTIAL_NOT_FOUND: Service Credential Not Found
+     */
+    404: ServiceCredentialNotFoundProblem;
+    /**
+     * APP_INSTALLATION_MANAGED: App Installation Managed; SERVICE_CREDENTIAL_CONFLICT: Service Credential Conflict
+     */
+    409: RevokeServiceIdentityCredentialConflictProblem;
+    /**
+     * SERVICE_CREDENTIAL_PRECONDITION_FAILED: Service Credential Precondition Failed
+     */
+    412: ServiceCredentialPreconditionFailedProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
+     */
+    422: RevokeServiceIdentityCredentialUnprocessableEntityProblem;
+    /**
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: RevokeServiceIdentityCredentialGatewayTimeoutProblem;
+};
+
+export type RevokeServiceIdentityCredentialError = RevokeServiceIdentityCredentialErrors[keyof RevokeServiceIdentityCredentialErrors];
+
+export type RevokeServiceIdentityCredentialResponses = {
+    /**
+     * Credential revocation state; bound client secrets require provider confirmation.
+     */
+    200: RevokeServiceIdentityCredentialResponse;
+};
+
+export type RevokeServiceIdentityCredentialResult = RevokeServiceIdentityCredentialResponses[keyof RevokeServiceIdentityCredentialResponses];
+
+export type GetSsoSubscriptionData = {
+    body?: never;
+    path: {
+        organizationId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/sso/subscription';
+};
+
+export type GetSsoSubscriptionErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument
+     */
+    400: InvalidArgumentProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: GetSsoSubscriptionForbiddenProblem;
+    /**
+     * ORGANIZATION_AUTH_POLICY_CHANGED: Organization Authentication Policy Changed; ORGANIZATION_UNAVAILABLE: Organization Unavailable; ORGANIZATION_VERSION_CONFLICT: Organization Version Conflict
+     */
+    409: GetSsoSubscriptionConflictProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: GetSsoSubscriptionGatewayTimeoutProblem;
+};
+
+export type GetSsoSubscriptionError = GetSsoSubscriptionErrors[keyof GetSsoSubscriptionErrors];
+
+export type GetSsoSubscriptionResponses = {
+    /**
+     * Organization SSO subscription and current billing terms
+     */
+    200: GetSsoSubscriptionResponse;
+};
+
+export type GetSsoSubscriptionResult = GetSsoSubscriptionResponses[keyof GetSsoSubscriptionResponses];
+
+export type SubscribeSsoData = {
+    body: SubscribeSsoRequest;
+    headers: {
+        /**
+         * Identifies one logical mutation across retries.
+         */
+        'Idempotency-Key': string;
+    };
+    path: {
+        organizationId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/sso/subscription';
+};
+
+export type SubscribeSsoErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     */
+    400: SubscribeSsoBadRequestProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: SubscribeSsoForbiddenProblem;
+    /**
+     * ORGANIZATION_AUTH_POLICY_CHANGED: Organization Authentication Policy Changed; ORGANIZATION_UNAVAILABLE: Organization Unavailable; ORGANIZATION_VERSION_CONFLICT: Organization Version Conflict
+     */
+    409: SubscribeSsoConflictProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
+     */
+    422: SubscribeSsoUnprocessableEntityProblem;
+    /**
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: SubscribeSsoGatewayTimeoutProblem;
+};
+
+export type SubscribeSsoError = SubscribeSsoErrors[keyof SubscribeSsoErrors];
+
+export type SubscribeSsoResponses = {
+    /**
+     * SSO subscription request accepted
+     */
+    202: SubscribeSsoResponse;
+};
+
+export type SubscribeSsoResult = SubscribeSsoResponses[keyof SubscribeSsoResponses];
+
+export type CancelSsoSubscriptionData = {
+    body?: never;
+    headers: {
+        /**
+         * Identifies one logical mutation across retries.
+         */
+        'Idempotency-Key': string;
+    };
+    path: {
+        organizationId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/sso/subscription/cancel';
+};
+
+export type CancelSsoSubscriptionErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     */
+    400: CancelSsoSubscriptionBadRequestProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: CancelSsoSubscriptionForbiddenProblem;
+    /**
+     * ORGANIZATION_AUTH_POLICY_CHANGED: Organization Authentication Policy Changed; ORGANIZATION_UNAVAILABLE: Organization Unavailable; ORGANIZATION_VERSION_CONFLICT: Organization Version Conflict; ORGANIZATION_SSO_ENABLED: Organization SSO Enabled
+     */
+    409: CancelSsoSubscriptionConflictProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
+     */
+    422: CancelSsoSubscriptionUnprocessableEntityProblem;
+    /**
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: CancelSsoSubscriptionGatewayTimeoutProblem;
+};
+
+export type CancelSsoSubscriptionError = CancelSsoSubscriptionErrors[keyof CancelSsoSubscriptionErrors];
+
+export type CancelSsoSubscriptionResponses = {
+    /**
+     * SSO cancellation request accepted. It ends the subscription right away; the unused days after today become organization credit, never a card refund. Refused while SSO is still required.
+     */
+    202: CancelSsoSubscriptionResponse;
+};
+
+export type CancelSsoSubscriptionResult = CancelSsoSubscriptionResponses[keyof CancelSsoSubscriptionResponses];
+
+export type TransferOrganizationOwnershipData = {
+    body: TransferOrganizationOwnershipRequest;
+    headers: {
+        /**
+         * Identifies one logical mutation across retries.
+         */
+        'Idempotency-Key': string;
+    };
+    path: {
+        organizationId: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organizationId}/transfer-ownership';
+};
+
+export type TransferOrganizationOwnershipErrors = {
+    /**
+     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     */
+    400: TransferOrganizationOwnershipBadRequestProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: TransferOrganizationOwnershipForbiddenProblem;
+    /**
+     * ORGANIZATION_MEMBER_NOT_FOUND: Organization Member Not Found
+     */
+    404: OrganizationMemberNotFoundProblem;
+    /**
+     * ACCOUNT_CLOSING: Account Is Closing; ORGANIZATION_VERSION_CONFLICT: Organization Version Conflict; ORGANIZATION_TRANSFER_TO_SELF: Choose Another Organization Owner; ORGANIZATION_OWNER_INVARIANT: Organization Ownership Requires Recovery; ORGANIZATION_OWNER_PROTECTED: Organization Owner Protected; ORGANIZATION_SELF_MANAGEMENT_FORBIDDEN: Use Leave Organization; ORGANIZATION_MEMBERSHIP_VERSION_CONFLICT: Organization Membership Version Conflict; ORGANIZATION_MEMBER_REMOVED: Organization Member Removed; ORGANIZATION_RECOVERY_REQUIRED: Organization Recovery Required; ORGANIZATION_AUTH_POLICY_CHANGED: Organization Authentication Policy Changed; ORGANIZATION_UNAVAILABLE: Organization Unavailable
+     */
+    409: TransferOrganizationOwnershipConflictProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
+     */
+    422: TransferOrganizationOwnershipUnprocessableEntityProblem;
+    /**
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: UpstreamUnavailableProblem;
+    /**
+     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
+     */
+    504: TransferOrganizationOwnershipGatewayTimeoutProblem;
+};
+
+export type TransferOrganizationOwnershipError = TransferOrganizationOwnershipErrors[keyof TransferOrganizationOwnershipErrors];
+
+export type TransferOrganizationOwnershipResponses = {
+    /**
+     * Committed transfer; expectedVersion is the organization version.
+     */
+    200: TransferOrganizationOwnershipResponse;
+};
+
+export type TransferOrganizationOwnershipResult = TransferOrganizationOwnershipResponses[keyof TransferOrganizationOwnershipResponses];
 
 export type ListAttachmentsData = {
     body?: never;
@@ -15153,85 +18782,6 @@ export type CreateWhatsappVoipSenderResponses = {
 
 export type CreateWhatsappVoipSenderResult = CreateWhatsappVoipSenderResponses[keyof CreateWhatsappVoipSenderResponses];
 
-export type ConnectWhatsappBusinessData = {
-    body: ConnectWhatsappBusinessRequest;
-    headers: {
-        /**
-         * Identifies one logical mutation across retries.
-         */
-        'Idempotency-Key': string;
-    };
-    path: {
-        id: string;
-    };
-    query?: never;
-    url: '/v1/projects/{id}/platforms/whatsapp-business/numbers';
-};
-
-export type ConnectWhatsappBusinessErrors = {
-    /**
-     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
-     */
-    400: ConnectWhatsappBusinessBadRequestProblem;
-    /**
-     * NOT_AUTHENTICATED: Not Authenticated
-     */
-    401: NotAuthenticatedProblem;
-    /**
-     * ENTITLEMENT_REQUIRED: Entitlement Required
-     */
-    402: EntitlementRequiredProblem;
-    /**
-     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
-     *
-     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
-     */
-    403: ConnectWhatsappBusinessForbiddenProblem;
-    /**
-     * PROJECT_CLOSING: Project Is Closing
-     */
-    409: ProjectClosingProblem;
-    /**
-     * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
-     */
-    422: ConnectWhatsappBusinessUnprocessableEntityProblem;
-    /**
-     * RATE_LIMITED: Too Many Requests
-     */
-    429: RateLimitedProblem;
-    /**
-     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
-     *
-     * INTERNAL_ERROR: Internal Server Error
-     */
-    500: ConnectWhatsappBusinessInternalServerErrorProblem;
-    /**
-     * UPSTREAM_FAILURE: Upstream Service Failure
-     */
-    502: UpstreamFailureProblem;
-    /**
-     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable; BILLING_NOT_PROVISIONED: Billing Not Provisioned; BILLING_ENTITLEMENTS_PENDING: Billing Entitlements Pending
-     *
-     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
-     */
-    503: ConnectWhatsappBusinessServiceUnavailableProblem;
-    /**
-     * REQUEST_TIMEOUT: Request Timeout; UPSTREAM_TIMEOUT: Upstream Service Timeout
-     */
-    504: ConnectWhatsappBusinessGatewayTimeoutProblem;
-};
-
-export type ConnectWhatsappBusinessError = ConnectWhatsappBusinessErrors[keyof ConnectWhatsappBusinessErrors];
-
-export type ConnectWhatsappBusinessResponses = {
-    /**
-     * The code was accepted and onboarding was dispatched. GET the Location after the Retry-After interval until the operation is terminal.
-     */
-    202: Operation;
-};
-
-export type ConnectWhatsappBusinessResult = ConnectWhatsappBusinessResponses[keyof ConnectWhatsappBusinessResponses];
-
 export type GetWhatsappBusinessVerificationCodeData = {
     body?: never;
     path: {
@@ -15297,61 +18847,6 @@ export type GetWhatsappBusinessVerificationCodeResponses = {
 };
 
 export type GetWhatsappBusinessVerificationCodeResult = GetWhatsappBusinessVerificationCodeResponses[keyof GetWhatsappBusinessVerificationCodeResponses];
-
-export type GetWhatsappSignupConfigData = {
-    body?: never;
-    path: {
-        id: string;
-    };
-    query?: never;
-    url: '/v1/projects/{id}/platforms/whatsapp-business/signup-config';
-};
-
-export type GetWhatsappSignupConfigErrors = {
-    /**
-     * NOT_AUTHENTICATED: Not Authenticated
-     */
-    401: NotAuthenticatedProblem;
-    /**
-     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
-     *
-     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
-     */
-    403: GetWhatsappSignupConfigForbiddenProblem;
-    /**
-     * VALIDATION_FAILED: Request Validation Failed
-     */
-    422: ValidationFailedProblem;
-    /**
-     * RATE_LIMITED: Too Many Requests
-     */
-    429: RateLimitedProblem;
-    /**
-     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
-     *
-     * INTERNAL_ERROR: Internal Server Error
-     */
-    500: GetWhatsappSignupConfigInternalServerErrorProblem;
-    /**
-     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
-     */
-    503: UpstreamUnavailableProblem;
-    /**
-     * REQUEST_TIMEOUT: Request Timeout
-     */
-    504: RequestTimeoutProblem;
-};
-
-export type GetWhatsappSignupConfigError = GetWhatsappSignupConfigErrors[keyof GetWhatsappSignupConfigErrors];
-
-export type GetWhatsappSignupConfigResponses = {
-    /**
-     * The parameters to launch Embedded Signup with.
-     */
-    200: GetWhatsappSignupConfigResponse;
-};
-
-export type GetWhatsappSignupConfigResult = GetWhatsappSignupConfigResponses[keyof GetWhatsappSignupConfigResponses];
 
 export type ListWhatsappSharedLineAssignmentsData = {
     body?: never;

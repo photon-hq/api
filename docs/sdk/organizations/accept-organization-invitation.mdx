@@ -1,0 +1,168 @@
+---
+title: "Accept an invitation to all organization projects"
+icon: arrow-up-right
+description: "Accept an invitation to all organization projects: acceptOrganizationInvitation in the TypeScript, Python, Rust and Go clients."
+---
+
+`POST /v1/organizations/invitations/accept`
+
+
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.acceptOrganizationInvitation(input: AcceptOrganizationInvitationInput, options?: RequestOptions): Promise<AcceptOrganizationInvitationOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.accept_organization_invitation(input: AcceptOrganizationInvitationInput) -> models.AcceptOrganizationInvitationResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.accept_organization_invitation(idempotency_key: String, body: &types::AcceptOrganizationInvitationRequest).await -> Result<ResponseValue<types::AcceptOrganizationInvitationResponse>, Error<AcceptOrganizationInvitationError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.AcceptOrganizationInvitation(ctx context.Context, params *AcceptOrganizationInvitationParams, opts ...RequestOption) (*AcceptOrganizationInvitationResponse, error)
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.acceptOrganizationInvitation({
+  headers: {
+    idempotencyKey: "idempotencyKey",
+  },
+  body: {
+    token: "token",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import AcceptOrganizationInvitationInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.accept_organization_invitation(
+    AcceptOrganizationInvitationInput.model_validate({
+        "headers": {
+            "Idempotency-Key": "idempotencyKey",
+        },
+        "body": {
+            "token": "token",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .accept_organization_invitation(
+        "idempotencyKey".to_owned(),
+        &serde_json::from_value(serde_json::json!({
+            "token": "token",
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.AcceptOrganizationInvitationRequest
+if err := json.Unmarshal([]byte(`{
+	"token": "token"
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Organizations.AcceptOrganizationInvitation(ctx, &photonapi.AcceptOrganizationInvitationParams{
+	IdempotencyKey: "idempotencyKey",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "allProjects": true,
+  "organizationId": "string",
+  "organizationName": "string",
+  "role": "owner",
+  "status": "accepted"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField header="Idempotency-Key" type={"string"} required>
+Identifies one logical mutation across retries.
+</ParamField>
+
+
+## Body
+
+<ParamField body="token" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The joined organization and current role. Existing managed roles are preserved. AcceptOrganizationInvitationResponse
+
+<ResponseField name="allProjects" type={"true"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationName" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="role" type={"OrganizationMemberRole"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"AcceptOrganizationInvitationResponseStatus"} required>
+
+</ResponseField>
+

@@ -1,0 +1,178 @@
+---
+title: "Create an organization"
+icon: arrow-up-right
+description: "Create an organization: createOrganization in the TypeScript, Python, Rust and Go clients."
+---
+
+`POST /v1/organizations`
+
+
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.createOrganization(input: CreateOrganizationInput, options?: RequestOptions): Promise<CreateOrganizationOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.create_organization(input: CreateOrganizationInput) -> models.CreateOrganizationResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.create_organization(idempotency_key: String, body: &types::CreateOrganizationRequest).await -> Result<ResponseValue<types::CreateOrganizationResponse>, Error<CreateOrganizationError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.CreateOrganization(ctx context.Context, params *CreateOrganizationParams, opts ...RequestOption) (*CreateOrganizationResponse, error)
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.createOrganization({
+  headers: {
+    idempotencyKey: "idempotencyKey",
+  },
+  body: {
+    name: "name",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import CreateOrganizationInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.create_organization(
+    CreateOrganizationInput.model_validate({
+        "headers": {
+            "Idempotency-Key": "idempotencyKey",
+        },
+        "body": {
+            "name": "name",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .create_organization(
+        "idempotencyKey".to_owned(),
+        &serde_json::from_value(serde_json::json!({
+            "name": "name",
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.CreateOrganizationRequest
+if err := json.Unmarshal([]byte(`{
+	"name": "name"
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Organizations.CreateOrganization(ctx, &photonapi.CreateOrganizationParams{
+	IdempotencyKey: "idempotencyKey",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 201
+{
+  "avatarUrl": null,
+  "billingInitialization": "pending",
+  "createdAt": "2026-01-01T00:00:00Z",
+  "name": "string",
+  "organizationId": "string",
+  "updatedAt": "2026-01-01T00:00:00Z",
+  "version": "string"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField header="Idempotency-Key" type={"string"} required>
+Identifies one logical mutation across retries.
+</ParamField>
+
+
+## Body
+
+<ParamField body="name" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`201`** The created organization. Its caller is the Owner; SSO and JIT start disabled. CreateOrganizationResponse
+
+<ResponseField name="avatarUrl" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="billingInitialization" type={"OrganizationBillingInitialization"}>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="name" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="version" type={"string"} required>
+
+</ResponseField>
+

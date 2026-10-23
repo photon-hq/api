@@ -28,34 +28,6 @@ photon.auth.getOrganizationSsoConfiguration(input: GetOrganizationSsoConfigurati
 ```
 `GET /v1/auth/organizations/{orgId}/sso`
 
-**[Sign in with invitation SSO](/api-client/sdk/auth/begin-invitation-sso)**
-
-```typescript TypeScript
-photon.auth.beginInvitationSso(input: BeginInvitationSsoInput, options?: RequestOptions): Promise<BeginInvitationSsoOutput>
-```
-`POST /v1/auth/organizations/{orgId}/sso/invitation`
-
-**[Sign in with organization SSO](/api-client/sdk/auth/begin-organization-authentication)**
-
-```typescript TypeScript
-photon.auth.beginOrganizationAuthentication(input: BeginOrganizationAuthenticationInput, options?: RequestOptions): Promise<BeginOrganizationAuthenticationOutput>
-```
-`POST /v1/auth/organizations/{orgId}/sso/authenticate`
-
-**[Sign in to close organization](/api-client/sdk/auth/begin-organization-closure-authentication)**
-
-```typescript TypeScript
-photon.auth.beginOrganizationClosureAuthentication(input: BeginOrganizationClosureAuthenticationInput, options?: RequestOptions): Promise<BeginOrganizationClosureAuthenticationOutput>
-```
-`POST /v1/auth/organizations/{orgId}/sso/closure-authenticate`
-
-**[Begin organization SSO admission](/api-client/sdk/auth/begin-organization-sso-admission)**
-
-```typescript TypeScript
-photon.auth.beginOrganizationSsoAdmission(input: BeginOrganizationSsoAdmissionInput, options?: RequestOptions): Promise<BeginOrganizationSsoAdmissionOutput>
-```
-`POST /v1/auth/organizations/{orgId}/sso/admission`
-
 **[Create organization setup portal link](/api-client/sdk/auth/create-organization-sso-portal-link)**
 
 ```typescript TypeScript
@@ -120,34 +92,6 @@ photon.auth.get_organization_connection_status(input: GetOrganizationConnectionS
 photon.auth.get_organization_sso_configuration(input: GetOrganizationSsoConfigurationInput) -> models.OrganizationSsoConfiguration
 ```
 `GET /v1/auth/organizations/{orgId}/sso`
-
-**[Sign in with invitation SSO](/api-client/sdk/auth/begin-invitation-sso)**
-
-```python Python
-photon.auth.begin_invitation_sso(input: BeginInvitationSsoInput) -> models.OrganizationAuthenticationRedirect
-```
-`POST /v1/auth/organizations/{orgId}/sso/invitation`
-
-**[Sign in with organization SSO](/api-client/sdk/auth/begin-organization-authentication)**
-
-```python Python
-photon.auth.begin_organization_authentication(input: BeginOrganizationAuthenticationInput) -> models.OrganizationAuthenticationRedirect
-```
-`POST /v1/auth/organizations/{orgId}/sso/authenticate`
-
-**[Sign in to close organization](/api-client/sdk/auth/begin-organization-closure-authentication)**
-
-```python Python
-photon.auth.begin_organization_closure_authentication(input: BeginOrganizationClosureAuthenticationInput) -> models.OrganizationAuthenticationRedirect
-```
-`POST /v1/auth/organizations/{orgId}/sso/closure-authenticate`
-
-**[Begin organization SSO admission](/api-client/sdk/auth/begin-organization-sso-admission)**
-
-```python Python
-photon.auth.begin_organization_sso_admission(input: BeginOrganizationSsoAdmissionInput) -> models.OrganizationAuthenticationRedirect
-```
-`POST /v1/auth/organizations/{orgId}/sso/admission`
 
 **[Create organization setup portal link](/api-client/sdk/auth/create-organization-sso-portal-link)**
 
@@ -214,34 +158,6 @@ client.get_organization_sso_configuration(org_id: String).await -> Result<Respon
 ```
 `GET /v1/auth/organizations/{orgId}/sso`
 
-**[Sign in with invitation SSO](/api-client/sdk/auth/begin-invitation-sso)**
-
-```rust Rust
-client.begin_invitation_sso(org_id: String, body: &types::BeginInvitationSsoRequest).await -> Result<ResponseValue<types::OrganizationAuthenticationRedirect>, Error<BeginInvitationSsoError>>
-```
-`POST /v1/auth/organizations/{orgId}/sso/invitation`
-
-**[Sign in with organization SSO](/api-client/sdk/auth/begin-organization-authentication)**
-
-```rust Rust
-client.begin_organization_authentication(org_id: String, body: &types::OrganizationAuthenticationRequest).await -> Result<ResponseValue<types::OrganizationAuthenticationRedirect>, Error<BeginOrganizationAuthenticationError>>
-```
-`POST /v1/auth/organizations/{orgId}/sso/authenticate`
-
-**[Sign in to close organization](/api-client/sdk/auth/begin-organization-closure-authentication)**
-
-```rust Rust
-client.begin_organization_closure_authentication(org_id: String, body: &types::OrganizationAuthenticationRequest).await -> Result<ResponseValue<types::OrganizationAuthenticationRedirect>, Error<BeginOrganizationClosureAuthenticationError>>
-```
-`POST /v1/auth/organizations/{orgId}/sso/closure-authenticate`
-
-**[Begin organization SSO admission](/api-client/sdk/auth/begin-organization-sso-admission)**
-
-```rust Rust
-client.begin_organization_sso_admission(org_id: String, body: &types::OrganizationAuthenticationRequest).await -> Result<ResponseValue<types::OrganizationAuthenticationRedirect>, Error<BeginOrganizationSsoAdmissionError>>
-```
-`POST /v1/auth/organizations/{orgId}/sso/admission`
-
 **[Create organization setup portal link](/api-client/sdk/auth/create-organization-sso-portal-link)**
 
 ```rust Rust
@@ -306,34 +222,6 @@ client.Auth.GetOrganizationConnectionStatus(ctx context.Context, params *GetOrga
 client.Auth.GetOrganizationSsoConfiguration(ctx context.Context, params *GetOrganizationSsoConfigurationParams, opts ...RequestOption) (*OrganizationSsoConfiguration, error)
 ```
 `GET /v1/auth/organizations/{orgId}/sso`
-
-**[Sign in with invitation SSO](/api-client/sdk/auth/begin-invitation-sso)**
-
-```go Go
-client.Auth.BeginInvitationSso(ctx context.Context, params *BeginInvitationSsoParams, opts ...RequestOption) (*OrganizationAuthenticationRedirect, error)
-```
-`POST /v1/auth/organizations/{orgId}/sso/invitation`
-
-**[Sign in with organization SSO](/api-client/sdk/auth/begin-organization-authentication)**
-
-```go Go
-client.Auth.BeginOrganizationAuthentication(ctx context.Context, params *BeginOrganizationAuthenticationParams, opts ...RequestOption) (*OrganizationAuthenticationRedirect, error)
-```
-`POST /v1/auth/organizations/{orgId}/sso/authenticate`
-
-**[Sign in to close organization](/api-client/sdk/auth/begin-organization-closure-authentication)**
-
-```go Go
-client.Auth.BeginOrganizationClosureAuthentication(ctx context.Context, params *BeginOrganizationClosureAuthenticationParams, opts ...RequestOption) (*OrganizationAuthenticationRedirect, error)
-```
-`POST /v1/auth/organizations/{orgId}/sso/closure-authenticate`
-
-**[Begin organization SSO admission](/api-client/sdk/auth/begin-organization-sso-admission)**
-
-```go Go
-client.Auth.BeginOrganizationSsoAdmission(ctx context.Context, params *BeginOrganizationSsoAdmissionParams, opts ...RequestOption) (*OrganizationAuthenticationRedirect, error)
-```
-`POST /v1/auth/organizations/{orgId}/sso/admission`
 
 **[Create organization setup portal link](/api-client/sdk/auth/create-organization-sso-portal-link)**
 
@@ -465,15 +353,6 @@ Business permissions an OAuth application can be configured with. Client creatio
 </ResponseField>
 
 <ResponseField name="version" type={"string"} required>
-
-</ResponseField>
-
-
-### OrganizationAuthenticationRedirect
-
-
-
-<ResponseField name="url" type={"string"} required>
 
 </ResponseField>
 

@@ -1,0 +1,200 @@
+---
+title: "Transfer organization ownership to an existing member"
+icon: arrow-up-right
+description: "Transfer organization ownership to an existing member: transferOrganizationOwnership in the TypeScript, Python, Rust and Go clients."
+---
+
+`POST /v1/organizations/{organizationId}/transfer-ownership`
+
+
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.transferOrganizationOwnership(input: TransferOrganizationOwnershipInput, options?: RequestOptions): Promise<TransferOrganizationOwnershipOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.transfer_organization_ownership(input: TransferOrganizationOwnershipInput) -> models.TransferOrganizationOwnershipResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.transfer_organization_ownership(idempotency_key: String, organization_id: String, body: &types::TransferOrganizationOwnershipRequest).await -> Result<ResponseValue<types::TransferOrganizationOwnershipResponse>, Error<TransferOrganizationOwnershipError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.TransferOrganizationOwnership(ctx context.Context, params *TransferOrganizationOwnershipParams, opts ...RequestOption) (*TransferOrganizationOwnershipResponse, error)
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.transferOrganizationOwnership({
+  path: {
+    organizationId: "organizationId",
+  },
+  headers: {
+    idempotencyKey: "idempotencyKey",
+  },
+  body: {
+    expectedVersion: "expectedVersion",
+    newOwnerAccountId: "newOwnerAccountId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import TransferOrganizationOwnershipInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.transfer_organization_ownership(
+    TransferOrganizationOwnershipInput.model_validate({
+        "path": {
+            "organizationId": "organizationId",
+        },
+        "headers": {
+            "Idempotency-Key": "idempotencyKey",
+        },
+        "body": {
+            "expectedVersion": "expectedVersion",
+            "newOwnerAccountId": "newOwnerAccountId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .transfer_organization_ownership(
+        "idempotencyKey".to_owned(),
+        "organizationId".to_owned(),
+        &serde_json::from_value(serde_json::json!({
+            "expectedVersion": "expectedVersion",
+            "newOwnerAccountId": "newOwnerAccountId",
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.TransferOrganizationOwnershipRequest
+if err := json.Unmarshal([]byte(`{
+	"expectedVersion": "expectedVersion",
+	"newOwnerAccountId": "newOwnerAccountId"
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Organizations.TransferOrganizationOwnership(ctx, &photonapi.TransferOrganizationOwnershipParams{
+	IdempotencyKey: "idempotencyKey",
+	OrganizationID: "organizationId",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "newOwner": {
+    "accountId": "string",
+    "createdAt": "2026-01-01T00:00:00Z",
+    "joinedVia": "creation",
+    "organizationId": "string",
+    "removedAt": null,
+    "role": "owner",
+    "roleManagedAt": null,
+    "status": "active",
+    "updatedAt": "2026-01-01T00:00:00Z",
+    "version": "string"
+  },
+  "organizationVersion": "string",
+  "previousOwner": {
+    "accountId": "string",
+    "createdAt": "2026-01-01T00:00:00Z",
+    "joinedVia": "creation",
+    "organizationId": "string",
+    "removedAt": null,
+    "role": "owner",
+    "roleManagedAt": null,
+    "status": "active",
+    "updatedAt": "2026-01-01T00:00:00Z",
+    "version": "string"
+  }
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField header="Idempotency-Key" type={"string"} required>
+Identifies one logical mutation across retries.
+</ParamField>
+
+<ParamField path="organizationId" type={"string"} required>
+
+</ParamField>
+
+
+## Body
+
+<ParamField body="expectedVersion" type={"string"} required>
+
+</ParamField>
+
+<ParamField body="newOwnerAccountId" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** Committed transfer; expectedVersion is the organization version. TransferOrganizationOwnershipResponse
+
+<ResponseField name="newOwner" type={"OrganizationMembership"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationVersion" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="previousOwner" type={"OrganizationMembership"} required>
+
+</ResponseField>
+

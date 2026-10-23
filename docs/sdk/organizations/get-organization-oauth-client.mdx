@@ -1,0 +1,168 @@
+---
+title: "Read an organization OAuth client"
+icon: arrow-down-left
+description: "Read an organization OAuth client: getOrganizationOauthClient in the TypeScript, Python, Rust and Go clients."
+---
+
+`GET /v1/organizations/{organizationId}/oauth/clients/{clientId}`
+
+
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.getOrganizationOauthClient(input: GetOrganizationOauthClientInput, options?: RequestOptions): Promise<GetOrganizationOauthClientOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.get_organization_oauth_client(input: GetOrganizationOauthClientInput) -> models.GetOrganizationOauthClientResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.get_organization_oauth_client(organization_id: String, client_id: String).await -> Result<ResponseValue<types::GetOrganizationOauthClientResponse>, Error<GetOrganizationOauthClientError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.GetOrganizationOauthClient(ctx context.Context, params *GetOrganizationOauthClientParams, opts ...RequestOption) (*GetOrganizationOauthClientResponse, error)
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.getOrganizationOauthClient({
+  path: {
+    organizationId: "organizationId",
+    clientId: "clientId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import GetOrganizationOauthClientInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.get_organization_oauth_client(
+    GetOrganizationOauthClientInput.model_validate({
+        "path": {
+            "organizationId": "organizationId",
+            "clientId": "clientId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .get_organization_oauth_client("organizationId".to_owned(), "clientId".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Organizations.GetOrganizationOauthClient(ctx, &photonapi.GetOrganizationOauthClientParams{
+	OrganizationID: "organizationId",
+	ClientID: "clientId",
+})
+if err != nil {
+	return err
+}
+_ = result
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "clientId": "string",
+  "createdAt": "2026-01-01T00:00:00Z",
+  "description": null,
+  "name": "string",
+  "redirectUris": [
+    {
+      "default": true,
+      "uri": "string"
+    }
+  ],
+  "scopes": [
+    "string"
+  ],
+  "updatedAt": "2026-01-01T00:00:00Z"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="organizationId" type={"string"} required>
+
+</ParamField>
+
+<ParamField path="clientId" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** Organization OAuth client metadata. GetOrganizationOauthClientResponse
+
+Headers: `ETag`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
+<ResponseField name="clientId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="description" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="name" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="redirectUris" type={"array of OrganizationOauthClientRedirectUri"} required>
+
+</ResponseField>
+
+<ResponseField name="scopes" type={"array of string"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+

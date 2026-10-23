@@ -1,0 +1,176 @@
+---
+title: "Subscribe to organization SSO"
+icon: arrow-up-right
+description: "Subscribe to organization SSO: subscribeSso in the TypeScript, Python, Rust and Go clients."
+---
+
+`POST /v1/organizations/{organizationId}/sso/subscription`
+
+
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.subscribeSso(input: SubscribeSsoInput, options?: RequestOptions): Promise<SubscribeSsoOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.subscribe_sso(input: SubscribeSsoInput) -> models.SubscribeSsoResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.subscribe_sso(idempotency_key: String, organization_id: String, body: &types::SubscribeSsoRequest).await -> Result<ResponseValue<types::SubscribeSsoResponse>, Error<SubscribeSsoError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.SubscribeSso(ctx context.Context, params *SubscribeSsoParams, opts ...RequestOption) (*SubscribeSsoResponse, error)
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.subscribeSso({
+  path: {
+    organizationId: "organizationId",
+  },
+  headers: {
+    idempotencyKey: "idempotencyKey",
+  },
+  body: {
+    expectedAmount: "expectedAmount",
+    expectedCurrency: "expectedCurrency",
+    expectedCurrentPeriodEnd: "2026-01-01T00:00:00Z",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import SubscribeSsoInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.subscribe_sso(
+    SubscribeSsoInput.model_validate({
+        "path": {
+            "organizationId": "organizationId",
+        },
+        "headers": {
+            "Idempotency-Key": "idempotencyKey",
+        },
+        "body": {
+            "expectedAmount": "expectedAmount",
+            "expectedCurrency": "expectedCurrency",
+            "expectedCurrentPeriodEnd": "2026-01-01T00:00:00Z",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .subscribe_sso(
+        "idempotencyKey".to_owned(),
+        "organizationId".to_owned(),
+        &serde_json::from_value(serde_json::json!({
+            "expectedAmount": "expectedAmount",
+            "expectedCurrency": "expectedCurrency",
+            "expectedCurrentPeriodEnd": "2026-01-01T00:00:00Z",
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.SubscribeSsoRequest
+if err := json.Unmarshal([]byte(`{
+	"expectedAmount": "expectedAmount",
+	"expectedCurrency": "expectedCurrency",
+	"expectedCurrentPeriodEnd": "2026-01-01T00:00:00Z"
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Organizations.SubscribeSso(ctx, &photonapi.SubscribeSsoParams{
+	IdempotencyKey: "idempotencyKey",
+	OrganizationID: "organizationId",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 202
+{
+  "accepted": true
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField header="Idempotency-Key" type={"string"} required>
+Identifies one logical mutation across retries.
+</ParamField>
+
+<ParamField path="organizationId" type={"string"} required>
+
+</ParamField>
+
+
+## Body
+
+<ParamField body="expectedAmount" type={"string"} required>
+
+</ParamField>
+
+<ParamField body="expectedCurrency" type={"string"} required>
+
+</ParamField>
+
+<ParamField body="expectedCurrentPeriodEnd" type={"string (date-time)"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`202`** SSO subscription request accepted SubscribeSsoResponse
+
+<ResponseField name="accepted" type={"boolean"} required>
+
+</ResponseField>
+

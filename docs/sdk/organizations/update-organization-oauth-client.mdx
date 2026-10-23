@@ -1,0 +1,211 @@
+---
+title: "Update an organization OAuth client"
+icon: pencil
+description: "Update an organization OAuth client: updateOrganizationOauthClient in the TypeScript, Python, Rust and Go clients."
+---
+
+`PATCH /v1/organizations/{organizationId}/oauth/clients/{clientId}`
+
+Requires If-Match from the latest read. Stale versions return 412. A failed response may follow an applied provider update; reread before retrying. Version checking is not provider atomic CAS.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.updateOrganizationOauthClient(input: UpdateOrganizationOauthClientInput, options?: RequestOptions): Promise<UpdateOrganizationOauthClientOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.update_organization_oauth_client(input: UpdateOrganizationOauthClientInput) -> models.UpdateOrganizationOauthClientResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.update_organization_oauth_client(organization_id: String, client_id: String, if_match: String, body: &types::UpdateOrganizationOauthClientRequest).await -> Result<ResponseValue<types::UpdateOrganizationOauthClientResponse>, Error<UpdateOrganizationOauthClientError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.UpdateOrganizationOauthClient(ctx context.Context, params *UpdateOrganizationOauthClientParams, opts ...RequestOption) (*UpdateOrganizationOauthClientResponse, error)
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.updateOrganizationOauthClient({
+  path: {
+    organizationId: "organizationId",
+    clientId: "clientId",
+  },
+  headers: {
+    "if-match": "if-match",
+  },
+  body: {},
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import UpdateOrganizationOauthClientInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.update_organization_oauth_client(
+    UpdateOrganizationOauthClientInput.model_validate({
+        "path": {
+            "organizationId": "organizationId",
+            "clientId": "clientId",
+        },
+        "headers": {
+            "if-match": "if-match",
+        },
+        "body": {},
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .update_organization_oauth_client(
+        "organizationId".to_owned(),
+        "clientId".to_owned(),
+        "if-match".to_owned(),
+        &serde_json::from_value(serde_json::json!({}))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.UpdateOrganizationOauthClientRequest
+if err := json.Unmarshal([]byte(`{}`), &body); err != nil {
+	return err
+}
+result, err := client.Organizations.UpdateOrganizationOauthClient(ctx, &photonapi.UpdateOrganizationOauthClientParams{
+	OrganizationID: "organizationId",
+	ClientID: "clientId",
+	IfMatch: "if-match",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "clientId": "string",
+  "createdAt": "2026-01-01T00:00:00Z",
+  "description": null,
+  "name": "string",
+  "redirectUris": [
+    {
+      "default": true,
+      "uri": "string"
+    }
+  ],
+  "scopes": [
+    "string"
+  ],
+  "updatedAt": "2026-01-01T00:00:00Z"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="organizationId" type={"string"} required>
+
+</ParamField>
+
+<ParamField path="clientId" type={"string"} required>
+
+</ParamField>
+
+<ParamField header="if-match" type={"string"} required>
+
+</ParamField>
+
+
+## Body
+
+<ParamField body="description" type={"string | null"}>
+
+</ParamField>
+
+<ParamField body="name" type={"string"}>
+
+</ParamField>
+
+<ParamField body="redirectUris" type={"array of OrganizationOauthClientRedirectUriInput"}>
+
+</ParamField>
+
+<ParamField body="scopes" type={"array of string"}>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** Updated organization OAuth client. UpdateOrganizationOauthClientResponse
+
+Headers: `ETag`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
+<ResponseField name="clientId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="description" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="name" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="redirectUris" type={"array of OrganizationOauthClientRedirectUri"} required>
+
+</ResponseField>
+
+<ResponseField name="scopes" type={"array of string"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+

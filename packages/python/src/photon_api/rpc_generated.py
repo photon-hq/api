@@ -11,6 +11,19 @@ from .generated import models
 from .transport import AsyncTransport, OperationSpec, RawResponse, SyncTransport
 
 
+class AcceptOrganizationInvitationHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    idempotency_key: str = Field(alias="Idempotency-Key")
+
+
+class AcceptOrganizationInvitationInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    body: models.AcceptOrganizationInvitationRequest
+    headers: AcceptOrganizationInvitationHeader
+
+
 class AssignSmsLineCampaignPath(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
@@ -59,58 +72,6 @@ class BatchUpdateVoiceLineProfileAssignmentsInput(BaseModel):
     path: BatchUpdateVoiceLineProfileAssignmentsPath
 
 
-class BeginInvitationSsoPath(BaseModel):
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    org_id: str = Field(alias="orgId")
-
-
-class BeginInvitationSsoInput(BaseModel):
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    body: models.BeginInvitationSsoRequest
-    path: BeginInvitationSsoPath
-
-
-class BeginOrganizationAuthenticationPath(BaseModel):
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    org_id: str = Field(alias="orgId")
-
-
-class BeginOrganizationAuthenticationInput(BaseModel):
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    body: models.OrganizationAuthenticationRequest
-    path: BeginOrganizationAuthenticationPath
-
-
-class BeginOrganizationClosureAuthenticationPath(BaseModel):
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    org_id: str = Field(alias="orgId")
-
-
-class BeginOrganizationClosureAuthenticationInput(BaseModel):
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    body: models.OrganizationAuthenticationRequest
-    path: BeginOrganizationClosureAuthenticationPath
-
-
-class BeginOrganizationSsoAdmissionPath(BaseModel):
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    org_id: str = Field(alias="orgId")
-
-
-class BeginOrganizationSsoAdmissionInput(BaseModel):
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    body: models.OrganizationAuthenticationRequest
-    path: BeginOrganizationSsoAdmissionPath
-
-
 class CancelOperationPath(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
@@ -122,6 +83,25 @@ class CancelOperationInput(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
     path: CancelOperationPath
+
+
+class CancelSsoSubscriptionPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+
+
+class CancelSsoSubscriptionHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    idempotency_key: str = Field(alias="Idempotency-Key")
+
+
+class CancelSsoSubscriptionInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: CancelSsoSubscriptionPath
+    headers: CancelSsoSubscriptionHeader
 
 
 class ChangePlanPath(BaseModel):
@@ -145,6 +125,18 @@ class ChangePlanInput(BaseModel):
     headers: ChangePlanHeader
 
 
+class CheckOrganizationDeletionPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+
+
+class CheckOrganizationDeletionInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: CheckOrganizationDeletionPath
+
+
 class CheckProjectSlugAvailabilityPath(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
@@ -162,6 +154,26 @@ class CheckProjectSlugAvailabilityInput(BaseModel):
 
     path: CheckProjectSlugAvailabilityPath
     query: CheckProjectSlugAvailabilityQuery
+
+
+class CloseOrganizationPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+
+
+class CloseOrganizationHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    idempotency_key: str = Field(alias="Idempotency-Key")
+
+
+class CloseOrganizationInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    body: models.CloseOrganizationRequest
+    path: CloseOrganizationPath
+    headers: CloseOrganizationHeader
 
 
 class CommitAccountProfilePictureHeader(BaseModel):
@@ -197,8 +209,24 @@ class CommitAgentProfileAvatarInput(BaseModel):
     headers: CommitAgentProfileAvatarHeader
 
 
-class CompleteAccountOnboardingInput(BaseModel):
+class CommitOrganizationAvatarPath(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+
+
+class CommitOrganizationAvatarHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    idempotency_key: str = Field(alias="Idempotency-Key")
+
+
+class CommitOrganizationAvatarInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    body: models.CommitOrganizationAvatarRequest
+    path: CommitOrganizationAvatarPath
+    headers: CommitOrganizationAvatarHeader
 
 
 class ConfigureVoiceProfileOutboundPath(BaseModel):
@@ -220,12 +248,6 @@ class ConfigureVoiceProfileOutboundInput(BaseModel):
     body: models.ConfigureVoiceProfileOutboundRequest
     path: ConfigureVoiceProfileOutboundPath
     headers: ConfigureVoiceProfileOutboundHeader
-
-
-class ConfirmAccountPhoneVerificationInput(BaseModel):
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    body: models.ConfirmAccountPhoneVerificationRequest
 
 
 class ConnectEmailDomainPath(BaseModel):
@@ -266,26 +288,6 @@ class ConnectTelegramBotInput(BaseModel):
     body: models.ConnectTelegramBotRequest
     path: ConnectTelegramBotPath
     headers: ConnectTelegramBotHeader
-
-
-class ConnectWhatsappBusinessPath(BaseModel):
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    id: str = Field(alias="id")
-
-
-class ConnectWhatsappBusinessHeader(BaseModel):
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    idempotency_key: str = Field(alias="Idempotency-Key")
-
-
-class ConnectWhatsappBusinessInput(BaseModel):
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    body: models.ConnectWhatsappBusinessRequest
-    path: ConnectWhatsappBusinessPath
-    headers: ConnectWhatsappBusinessHeader
 
 
 class CountFilteredVerificationCodesPath(BaseModel):
@@ -503,6 +505,72 @@ class CreateDefaultVoiceProfileInput(BaseModel):
     path: CreateDefaultVoiceProfilePath
 
 
+class CreateOrganizationHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    idempotency_key: str = Field(alias="Idempotency-Key")
+
+
+class CreateOrganizationInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    body: models.CreateOrganizationRequest
+    headers: CreateOrganizationHeader
+
+
+class CreateOrganizationAvatarUploadPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+
+
+class CreateOrganizationAvatarUploadInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    body: models.CreateOrganizationAvatarUploadRequest
+    path: CreateOrganizationAvatarUploadPath
+
+
+class CreateOrganizationInvitationPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+
+
+class CreateOrganizationInvitationHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    idempotency_key: str = Field(alias="Idempotency-Key")
+
+
+class CreateOrganizationInvitationInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    body: models.CreateOrganizationInvitationRequest
+    path: CreateOrganizationInvitationPath
+    headers: CreateOrganizationInvitationHeader
+
+
+class CreateOrganizationOauthClientPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+
+
+class CreateOrganizationOauthClientHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    idempotency_key: str = Field(alias="idempotency-key")
+
+
+class CreateOrganizationOauthClientInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    body: models.CreateOrganizationOauthClientRequest
+    path: CreateOrganizationOauthClientPath
+    headers: CreateOrganizationOauthClientHeader
+
+
 class CreateOrganizationPaymentMethodCheckoutPath(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
@@ -520,25 +588,6 @@ class CreateOrganizationPaymentMethodCheckoutInput(BaseModel):
 
     path: CreateOrganizationPaymentMethodCheckoutPath
     headers: CreateOrganizationPaymentMethodCheckoutHeader | None = None
-
-
-class CreateOrganizationSetupIntentPath(BaseModel):
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    organization_id: str = Field(alias="organizationId")
-
-
-class CreateOrganizationSetupIntentHeader(BaseModel):
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    idempotency_key: str = Field(alias="Idempotency-Key")
-
-
-class CreateOrganizationSetupIntentInput(BaseModel):
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    path: CreateOrganizationSetupIntentPath
-    headers: CreateOrganizationSetupIntentHeader
 
 
 class CreateOrganizationSsoPortalLinkPath(BaseModel):
@@ -625,6 +674,68 @@ class CreateProjectApiKeyInput(BaseModel):
     body: models.CreateProjectApiKeyRequest
     path: CreateProjectApiKeyPath
     headers: CreateProjectApiKeyHeader
+
+
+class CreateServiceIdentityPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+
+
+class CreateServiceIdentityHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    idempotency_key: str = Field(alias="Idempotency-Key")
+
+
+class CreateServiceIdentityInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    body: models.CreateServiceIdentityRequest
+    path: CreateServiceIdentityPath
+    headers: CreateServiceIdentityHeader
+
+
+class CreateServiceIdentityApiKeyPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+    service_identity_id: str = Field(alias="serviceIdentityId")
+
+
+class CreateServiceIdentityApiKeyHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    idempotency_key: str = Field(alias="Idempotency-Key")
+
+
+class CreateServiceIdentityApiKeyInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    body: models.CreateServiceIdentityApiKeyRequest
+    path: CreateServiceIdentityApiKeyPath
+    headers: CreateServiceIdentityApiKeyHeader
+
+
+class CreateServiceIdentityClientSecretPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+    service_identity_id: str = Field(alias="serviceIdentityId")
+
+
+class CreateServiceIdentityClientSecretHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    idempotency_key: str = Field(alias="Idempotency-Key")
+
+
+class CreateServiceIdentityClientSecretInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    body: models.CreateServiceIdentityClientSecretRequest
+    path: CreateServiceIdentityClientSecretPath
+    headers: CreateServiceIdentityClientSecretHeader
 
 
 class CreateSharedLineAssignmentPath(BaseModel):
@@ -722,6 +833,32 @@ class CreateWhatsappVoipSenderInput(BaseModel):
 
 class DeleteAccountInput(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+
+class DeleteOrganizationOauthClientPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+    client_id: str = Field(alias="clientId")
+
+
+class DeleteOrganizationOauthClientInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: DeleteOrganizationOauthClientPath
+
+
+class DeleteOrganizationOauthClientSecretPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+    client_id: str = Field(alias="clientId")
+
+
+class DeleteOrganizationOauthClientSecretInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: DeleteOrganizationOauthClientSecretPath
 
 
 class DeleteProjectPath(BaseModel):
@@ -879,11 +1016,19 @@ class DownloadAttachmentInput(BaseModel):
     path: DownloadAttachmentPath
 
 
-class GetAccountInput(BaseModel):
+class EnsureInitialOrganizationHeader(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
+    idempotency_key: str = Field(alias="Idempotency-Key")
 
-class GetAccountOnboardingInput(BaseModel):
+
+class EnsureInitialOrganizationInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    headers: EnsureInitialOrganizationHeader
+
+
+class GetAccountInput(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
 
@@ -935,6 +1080,10 @@ class GetBillingOverviewInput(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
     path: GetBillingOverviewPath
+
+
+class GetCurrentOrganizationInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
 
 class GetDefaultVoiceProfilePath(BaseModel):
@@ -1066,6 +1215,18 @@ class GetOperationInput(BaseModel):
     path: GetOperationPath
 
 
+class GetOrganizationPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+
+
+class GetOrganizationInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: GetOrganizationPath
+
+
 class GetOrganizationBillingOverviewPath(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
@@ -1100,6 +1261,32 @@ class GetOrganizationCreditInput(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
     path: GetOrganizationCreditPath
+
+
+class GetOrganizationOauthClientPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+    client_id: str = Field(alias="clientId")
+
+
+class GetOrganizationOauthClientInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: GetOrganizationOauthClientPath
+
+
+class GetOrganizationOauthClientSecretPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+    client_id: str = Field(alias="clientId")
+
+
+class GetOrganizationOauthClientSecretInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: GetOrganizationOauthClientSecretPath
 
 
 class GetOrganizationPaymentMethodPath(BaseModel):
@@ -1206,6 +1393,19 @@ class GetResourceInput(BaseModel):
     path: GetResourcePath
 
 
+class GetServiceIdentityPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+    service_identity_id: str = Field(alias="serviceIdentityId")
+
+
+class GetServiceIdentityInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: GetServiceIdentityPath
+
+
 class GetSharedLineAssignmentPath(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
@@ -1250,6 +1450,18 @@ class GetSpaceInput(BaseModel):
 
     path: GetSpacePath
     headers: GetSpaceHeader | None = None
+
+
+class GetSsoSubscriptionPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+
+
+class GetSsoSubscriptionInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: GetSsoSubscriptionPath
 
 
 class GetUserPath(BaseModel):
@@ -1376,16 +1588,24 @@ class GetWhatsappSharedLineAssignmentInput(BaseModel):
     path: GetWhatsappSharedLineAssignmentPath
 
 
-class GetWhatsappSignupConfigPath(BaseModel):
+class LeaveOrganizationPath(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
-    id: str = Field(alias="id")
+    organization_id: str = Field(alias="organizationId")
 
 
-class GetWhatsappSignupConfigInput(BaseModel):
+class LeaveOrganizationHeader(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
-    path: GetWhatsappSignupConfigPath
+    idempotency_key: str = Field(alias="Idempotency-Key")
+
+
+class LeaveOrganizationInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    body: models.LeaveOrganizationRequest
+    path: LeaveOrganizationPath
+    headers: LeaveOrganizationHeader
 
 
 class ListAccountServiceKeysInput(BaseModel):
@@ -1621,6 +1841,46 @@ class ListOperationsInput(BaseModel):
     query: ListOperationsQuery | None = None
 
 
+class ListOrganizationInvitationsPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+
+
+class ListOrganizationInvitationsInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: ListOrganizationInvitationsPath
+
+
+class ListOrganizationMembersPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+
+
+class ListOrganizationMembersInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: ListOrganizationMembersPath
+
+
+class ListOrganizationOauthClientsPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+
+
+class ListOrganizationOauthClientsInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: ListOrganizationOauthClientsPath
+
+
+class ListOrganizationsInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+
 class ListProjectApiKeysPath(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
@@ -1727,6 +1987,43 @@ class ListResourcesInput(BaseModel):
 
     path: ListResourcesPath
     query: ListResourcesQuery | None = None
+
+
+class ListServiceIdentitiesPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+
+
+class ListServiceIdentitiesInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: ListServiceIdentitiesPath
+
+
+class ListServiceIdentityCredentialsPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+    service_identity_id: str = Field(alias="serviceIdentityId")
+
+
+class ListServiceIdentityCredentialsInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: ListServiceIdentityCredentialsPath
+
+
+class ListServiceIdentityPermissionsPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+
+
+class ListServiceIdentityPermissionsInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: ListServiceIdentityPermissionsPath
 
 
 class ListSharedLineAssignmentsPath(BaseModel):
@@ -1976,6 +2273,12 @@ class PreviewOrganizationChangeInput(BaseModel):
     path: PreviewOrganizationChangePath
 
 
+class PreviewOrganizationInvitationInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    body: models.PreviewOrganizationInvitationRequest
+
+
 class PreviewProjectChangePath(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
@@ -2151,6 +2454,47 @@ class ReleaseWhatsappSharedLineAssignmentInput(BaseModel):
     path: ReleaseWhatsappSharedLineAssignmentPath
 
 
+class RemoveOrganizationAvatarPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+
+
+class RemoveOrganizationAvatarHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    idempotency_key: str = Field(alias="Idempotency-Key")
+
+
+class RemoveOrganizationAvatarInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    body: models.RemoveOrganizationAvatarRequest
+    path: RemoveOrganizationAvatarPath
+    headers: RemoveOrganizationAvatarHeader
+
+
+class RemoveOrganizationMemberPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+    member_account_id: str = Field(alias="memberAccountId")
+
+
+class RemoveOrganizationMemberHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    idempotency_key: str = Field(alias="Idempotency-Key")
+
+
+class RemoveOrganizationMemberInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    body: models.RemoveOrganizationMemberRequest
+    path: RemoveOrganizationMemberPath
+    headers: RemoveOrganizationMemberHeader
+
+
 class ReplaceVoiceProfileInboundPath(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
@@ -2163,6 +2507,26 @@ class ReplaceVoiceProfileInboundInput(BaseModel):
 
     body: models.ReplaceVoiceProfileInboundRequest
     path: ReplaceVoiceProfileInboundPath
+
+
+class ResendOrganizationInvitationPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+    invitation_id: str = Field(alias="invitationId")
+
+
+class ResendOrganizationInvitationHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    idempotency_key: str = Field(alias="Idempotency-Key")
+
+
+class ResendOrganizationInvitationInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: ResendOrganizationInvitationPath
+    headers: ResendOrganizationInvitationHeader
 
 
 class ResetAccountProfilePictureHeader(BaseModel):
@@ -2260,6 +2624,26 @@ class RevokeAuthorizedApplicationInput(BaseModel):
     path: RevokeAuthorizedApplicationPath
 
 
+class RevokeOrganizationInvitationPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+    invitation_id: str = Field(alias="invitationId")
+
+
+class RevokeOrganizationInvitationHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    idempotency_key: str = Field(alias="Idempotency-Key")
+
+
+class RevokeOrganizationInvitationInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: RevokeOrganizationInvitationPath
+    headers: RevokeOrganizationInvitationHeader
+
+
 class RevokeProjectApiKeyPath(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
@@ -2278,6 +2662,49 @@ class RevokeProjectApiKeyInput(BaseModel):
 
     path: RevokeProjectApiKeyPath
     headers: RevokeProjectApiKeyHeader
+
+
+class RevokeServiceIdentityCredentialPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+    service_identity_id: str = Field(alias="serviceIdentityId")
+    credential_id: str = Field(alias="credentialId")
+
+
+class RevokeServiceIdentityCredentialHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    idempotency_key: str = Field(alias="Idempotency-Key")
+
+
+class RevokeServiceIdentityCredentialInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    body: models.RevokeServiceIdentityCredentialRequest
+    path: RevokeServiceIdentityCredentialPath
+    headers: RevokeServiceIdentityCredentialHeader
+
+
+class RotateOrganizationOauthClientSecretPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+    client_id: str = Field(alias="clientId")
+
+
+class RotateOrganizationOauthClientSecretHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    idempotency_key: str = Field(alias="idempotency-key")
+
+
+class RotateOrganizationOauthClientSecretInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    body: models.RotateOrganizationOauthClientSecretRequest
+    path: RotateOrganizationOauthClientSecretPath
+    headers: RotateOrganizationOauthClientSecretHeader
 
 
 class RotateVoiceProfileOutboundCredentialPath(BaseModel):
@@ -2356,16 +2783,70 @@ class SetSpaceTypingInput(BaseModel):
     path: SetSpaceTypingPath
 
 
-class StartAccountPhoneVerificationInput(BaseModel):
+class SetupOrganizationOauthClientSecretPath(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
-    body: models.StartAccountPhoneVerificationRequest
+    organization_id: str = Field(alias="organizationId")
+    client_id: str = Field(alias="clientId")
+
+
+class SetupOrganizationOauthClientSecretHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    idempotency_key: str = Field(alias="idempotency-key")
+
+
+class SetupOrganizationOauthClientSecretInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: SetupOrganizationOauthClientSecretPath
+    headers: SetupOrganizationOauthClientSecretHeader
 
 
 class StartEnterpriseLoginInput(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
     body: models.StartEnterpriseLoginRequest
+
+
+class SubscribeSsoPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+
+
+class SubscribeSsoHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    idempotency_key: str = Field(alias="Idempotency-Key")
+
+
+class SubscribeSsoInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    body: models.SubscribeSsoRequest
+    path: SubscribeSsoPath
+    headers: SubscribeSsoHeader
+
+
+class TransferOrganizationOwnershipPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+
+
+class TransferOrganizationOwnershipHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    idempotency_key: str = Field(alias="Idempotency-Key")
+
+
+class TransferOrganizationOwnershipInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    body: models.TransferOrganizationOwnershipRequest
+    path: TransferOrganizationOwnershipPath
+    headers: TransferOrganizationOwnershipHeader
 
 
 class UnassignSmsLineCampaignPath(BaseModel):
@@ -2428,19 +2909,6 @@ class UpdateAccountInput(BaseModel):
     headers: UpdateAccountHeader
 
 
-class UpdateAccountOnboardingHeader(BaseModel):
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    idempotency_key: str = Field(alias="Idempotency-Key")
-
-
-class UpdateAccountOnboardingInput(BaseModel):
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    body: models.UpdateAccountOnboardingRequest
-    headers: UpdateAccountOnboardingHeader
-
-
 class UpdateAgentProfilePath(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
@@ -2472,6 +2940,68 @@ class UpdateDefaultVoiceProfileInput(BaseModel):
 
     body: models.UpdateDefaultVoiceProfileRequest
     path: UpdateDefaultVoiceProfilePath
+
+
+class UpdateOrganizationPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+
+
+class UpdateOrganizationHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    idempotency_key: str = Field(alias="Idempotency-Key")
+
+
+class UpdateOrganizationInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    body: models.UpdateOrganizationRequest
+    path: UpdateOrganizationPath
+    headers: UpdateOrganizationHeader
+
+
+class UpdateOrganizationMemberRolePath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+    member_account_id: str = Field(alias="memberAccountId")
+
+
+class UpdateOrganizationMemberRoleHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    idempotency_key: str = Field(alias="Idempotency-Key")
+
+
+class UpdateOrganizationMemberRoleInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    body: models.UpdateOrganizationMemberRoleRequest
+    path: UpdateOrganizationMemberRolePath
+    headers: UpdateOrganizationMemberRoleHeader
+
+
+class UpdateOrganizationOauthClientPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+    client_id: str = Field(alias="clientId")
+
+
+class UpdateOrganizationOauthClientHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    if_match: str = Field(alias="if-match")
+
+
+class UpdateOrganizationOauthClientInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    body: models.UpdateOrganizationOauthClientRequest
+    path: UpdateOrganizationOauthClientPath
+    headers: UpdateOrganizationOauthClientHeader
 
 
 class UpdateOrganizationSsoPolicyPath(BaseModel):
@@ -2526,6 +3056,27 @@ class UpdateProjectApiKeyInput(BaseModel):
     body: models.UpdateProjectApiKeyRequest
     path: UpdateProjectApiKeyPath
     headers: UpdateProjectApiKeyHeader
+
+
+class UpdateServiceIdentityPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    organization_id: str = Field(alias="organizationId")
+    service_identity_id: str = Field(alias="serviceIdentityId")
+
+
+class UpdateServiceIdentityHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    idempotency_key: str = Field(alias="Idempotency-Key")
+
+
+class UpdateServiceIdentityInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    body: models.UpdateServiceIdentityRequest
+    path: UpdateServiceIdentityPath
+    headers: UpdateServiceIdentityHeader
 
 
 class UpdateVoiceProfilePath(BaseModel):
@@ -2613,6 +3164,22 @@ class UploadAttachmentInput(BaseModel):
     headers: UploadAttachmentHeader
 
 
+_OP_ACCEPT_ORGANIZATION_INVITATION = OperationSpec(
+    operation_id="acceptOrganizationInvitation",
+    method="POST",
+    path="/v1/organizations/invitations/accept",
+    safe=False,
+    idempotency_key_required=True,
+    request_media_type="application/json",
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.AcceptOrganizationInvitationResponse),
+    },
+)
+
 _OP_ASSIGN_SMS_LINE_CAMPAIGN = OperationSpec(
     operation_id="assignSmsLineCampaign",
     method="PUT",
@@ -2662,70 +3229,6 @@ _OP_BATCH_UPDATE_VOICE_LINE_PROFILE_ASSIGNMENTS = OperationSpec(
     },
 )
 
-_OP_BEGIN_INVITATION_SSO = OperationSpec(
-    operation_id="beginInvitationSso",
-    method="POST",
-    path="/v1/auth/organizations/{orgId}/sso/invitation",
-    safe=False,
-    idempotency_key_required=False,
-    request_media_type="application/json",
-    accept_media_types=(
-        "application/json",
-        "application/problem+json",
-    ),
-    success_responses={
-        "200": TypeAdapter(models.OrganizationAuthenticationRedirect),
-    },
-)
-
-_OP_BEGIN_ORGANIZATION_AUTHENTICATION = OperationSpec(
-    operation_id="beginOrganizationAuthentication",
-    method="POST",
-    path="/v1/auth/organizations/{orgId}/sso/authenticate",
-    safe=False,
-    idempotency_key_required=False,
-    request_media_type="application/json",
-    accept_media_types=(
-        "application/json",
-        "application/problem+json",
-    ),
-    success_responses={
-        "200": TypeAdapter(models.OrganizationAuthenticationRedirect),
-    },
-)
-
-_OP_BEGIN_ORGANIZATION_CLOSURE_AUTHENTICATION = OperationSpec(
-    operation_id="beginOrganizationClosureAuthentication",
-    method="POST",
-    path="/v1/auth/organizations/{orgId}/sso/closure-authenticate",
-    safe=False,
-    idempotency_key_required=False,
-    request_media_type="application/json",
-    accept_media_types=(
-        "application/json",
-        "application/problem+json",
-    ),
-    success_responses={
-        "200": TypeAdapter(models.OrganizationAuthenticationRedirect),
-    },
-)
-
-_OP_BEGIN_ORGANIZATION_SSO_ADMISSION = OperationSpec(
-    operation_id="beginOrganizationSsoAdmission",
-    method="POST",
-    path="/v1/auth/organizations/{orgId}/sso/admission",
-    safe=False,
-    idempotency_key_required=False,
-    request_media_type="application/json",
-    accept_media_types=(
-        "application/json",
-        "application/problem+json",
-    ),
-    success_responses={
-        "200": TypeAdapter(models.OrganizationAuthenticationRedirect),
-    },
-)
-
 _OP_CANCEL_OPERATION = OperationSpec(
     operation_id="cancelOperation",
     method="POST",
@@ -2738,6 +3241,21 @@ _OP_CANCEL_OPERATION = OperationSpec(
     ),
     success_responses={
         "200": TypeAdapter(models.Operation),
+    },
+)
+
+_OP_CANCEL_SSO_SUBSCRIPTION = OperationSpec(
+    operation_id="cancelSsoSubscription",
+    method="POST",
+    path="/v1/organizations/{organizationId}/sso/subscription/cancel",
+    safe=False,
+    idempotency_key_required=True,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "202": TypeAdapter(models.CancelSsoSubscriptionResponse),
     },
 )
 
@@ -2758,6 +3276,21 @@ _OP_CHANGE_PLAN = OperationSpec(
     },
 )
 
+_OP_CHECK_ORGANIZATION_DELETION = OperationSpec(
+    operation_id="checkOrganizationDeletion",
+    method="GET",
+    path="/v1/organizations/{organizationId}/deletion-check",
+    safe=True,
+    idempotency_key_required=False,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.CheckOrganizationDeletionResponse),
+    },
+)
+
 _OP_CHECK_PROJECT_SLUG_AVAILABILITY = OperationSpec(
     operation_id="checkProjectSlugAvailability",
     method="GET",
@@ -2770,6 +3303,19 @@ _OP_CHECK_PROJECT_SLUG_AVAILABILITY = OperationSpec(
     ),
     success_responses={
         "200": TypeAdapter(models.CheckProjectSlugAvailabilityResponse),
+    },
+)
+
+_OP_CLOSE_ORGANIZATION = OperationSpec(
+    operation_id="closeOrganization",
+    method="DELETE",
+    path="/v1/organizations/{organizationId}",
+    safe=False,
+    idempotency_key_required=True,
+    request_media_type="application/json",
+    accept_media_types=("application/problem+json",),
+    success_responses={
+        "204": None,
     },
 )
 
@@ -2805,18 +3351,19 @@ _OP_COMMIT_AGENT_PROFILE_AVATAR = OperationSpec(
     },
 )
 
-_OP_COMPLETE_ACCOUNT_ONBOARDING = OperationSpec(
-    operation_id="completeAccountOnboarding",
+_OP_COMMIT_ORGANIZATION_AVATAR = OperationSpec(
+    operation_id="commitOrganizationAvatar",
     method="POST",
-    path="/v1/account/onboarding/complete",
+    path="/v1/organizations/{organizationId}/avatar/commit",
     safe=False,
-    idempotency_key_required=False,
+    idempotency_key_required=True,
+    request_media_type="application/json",
     accept_media_types=(
         "application/json",
         "application/problem+json",
     ),
     success_responses={
-        "200": TypeAdapter(models.CompleteAccountOnboardingResponse),
+        "200": TypeAdapter(models.CommitOrganizationAvatarResponse),
     },
 )
 
@@ -2834,22 +3381,6 @@ _OP_CONFIGURE_VOICE_PROFILE_OUTBOUND = OperationSpec(
     success_responses={
         "200": TypeAdapter(models.ConfigureVoiceProfileOutboundResponse),
         "201": TypeAdapter(models.ConfigureVoiceProfileOutboundResponse),
-    },
-)
-
-_OP_CONFIRM_ACCOUNT_PHONE_VERIFICATION = OperationSpec(
-    operation_id="confirmAccountPhoneVerification",
-    method="PUT",
-    path="/v1/account/phone",
-    safe=False,
-    idempotency_key_required=False,
-    request_media_type="application/json",
-    accept_media_types=(
-        "application/json",
-        "application/problem+json",
-    ),
-    success_responses={
-        "200": TypeAdapter(models.Account),
     },
 )
 
@@ -2873,22 +3404,6 @@ _OP_CONNECT_TELEGRAM_BOT = OperationSpec(
     operation_id="connectTelegramBot",
     method="POST",
     path="/v1/projects/{id}/platforms/telegram/bots",
-    safe=False,
-    idempotency_key_required=True,
-    request_media_type="application/json",
-    accept_media_types=(
-        "application/json",
-        "application/problem+json",
-    ),
-    success_responses={
-        "202": TypeAdapter(models.Operation),
-    },
-)
-
-_OP_CONNECT_WHATSAPP_BUSINESS = OperationSpec(
-    operation_id="connectWhatsappBusiness",
-    method="POST",
-    path="/v1/projects/{id}/platforms/whatsapp-business/numbers",
     safe=False,
     idempotency_key_required=True,
     request_media_type="application/json",
@@ -3072,6 +3587,70 @@ _OP_CREATE_DEFAULT_VOICE_PROFILE = OperationSpec(
     },
 )
 
+_OP_CREATE_ORGANIZATION = OperationSpec(
+    operation_id="createOrganization",
+    method="POST",
+    path="/v1/organizations",
+    safe=False,
+    idempotency_key_required=True,
+    request_media_type="application/json",
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "201": TypeAdapter(models.CreateOrganizationResponse),
+    },
+)
+
+_OP_CREATE_ORGANIZATION_AVATAR_UPLOAD = OperationSpec(
+    operation_id="createOrganizationAvatarUpload",
+    method="POST",
+    path="/v1/organizations/{organizationId}/avatar/uploads",
+    safe=False,
+    idempotency_key_required=False,
+    request_media_type="application/json",
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "201": TypeAdapter(models.CreateOrganizationAvatarUploadResponse),
+    },
+)
+
+_OP_CREATE_ORGANIZATION_INVITATION = OperationSpec(
+    operation_id="createOrganizationInvitation",
+    method="POST",
+    path="/v1/organizations/{organizationId}/invitations",
+    safe=False,
+    idempotency_key_required=True,
+    request_media_type="application/json",
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "201": TypeAdapter(models.CreateOrganizationInvitationResponse),
+    },
+)
+
+_OP_CREATE_ORGANIZATION_OAUTH_CLIENT = OperationSpec(
+    operation_id="createOrganizationOauthClient",
+    method="POST",
+    path="/v1/organizations/{organizationId}/oauth/clients",
+    safe=False,
+    idempotency_key_required=True,
+    request_media_type="application/json",
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "201": TypeAdapter(models.CreateOrganizationOauthClientResponse),
+    },
+)
+
 _OP_CREATE_ORGANIZATION_PAYMENT_METHOD_CHECKOUT = OperationSpec(
     operation_id="createOrganizationPaymentMethodCheckout",
     method="POST",
@@ -3084,21 +3663,6 @@ _OP_CREATE_ORGANIZATION_PAYMENT_METHOD_CHECKOUT = OperationSpec(
     ),
     success_responses={
         "200": TypeAdapter(models.CreateOrganizationPaymentMethodCheckoutResponse),
-    },
-)
-
-_OP_CREATE_ORGANIZATION_SETUP_INTENT = OperationSpec(
-    operation_id="createOrganizationSetupIntent",
-    method="POST",
-    path="/v1/organizations/{organizationId}/billing/setup-intent",
-    safe=False,
-    idempotency_key_required=True,
-    accept_media_types=(
-        "application/json",
-        "application/problem+json",
-    ),
-    success_responses={
-        "200": TypeAdapter(models.CreateOrganizationSetupIntentResponse),
     },
 )
 
@@ -3182,6 +3746,54 @@ _OP_CREATE_PROJECT_API_KEY = OperationSpec(
     ),
     success_responses={
         "201": TypeAdapter(models.CreateProjectApiKeyResponse),
+    },
+)
+
+_OP_CREATE_SERVICE_IDENTITY = OperationSpec(
+    operation_id="createServiceIdentity",
+    method="POST",
+    path="/v1/organizations/{organizationId}/service-identities",
+    safe=False,
+    idempotency_key_required=True,
+    request_media_type="application/json",
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.CreateServiceIdentityResponse),
+    },
+)
+
+_OP_CREATE_SERVICE_IDENTITY_API_KEY = OperationSpec(
+    operation_id="createServiceIdentityApiKey",
+    method="POST",
+    path="/v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials/api-keys",
+    safe=False,
+    idempotency_key_required=True,
+    request_media_type="application/json",
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.CreateServiceIdentityApiKeyResponse),
+    },
+)
+
+_OP_CREATE_SERVICE_IDENTITY_CLIENT_SECRET = OperationSpec(
+    operation_id="createServiceIdentityClientSecret",
+    method="POST",
+    path="/v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials/client-secrets",
+    safe=False,
+    idempotency_key_required=True,
+    request_media_type="application/json",
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.CreateServiceIdentityClientSecretResponse),
     },
 )
 
@@ -3277,6 +3889,34 @@ _OP_DELETE_ACCOUNT = OperationSpec(
     ),
     success_responses={
         "200": TypeAdapter(models.Account),
+    },
+)
+
+_OP_DELETE_ORGANIZATION_OAUTH_CLIENT = OperationSpec(
+    operation_id="deleteOrganizationOauthClient",
+    method="DELETE",
+    path="/v1/organizations/{organizationId}/oauth/clients/{clientId}",
+    safe=False,
+    idempotency_key_required=False,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.DeleteOrganizationOauthClientResponse),
+        "202": TypeAdapter(models.DeleteOrganizationOauthClientResponse),
+    },
+)
+
+_OP_DELETE_ORGANIZATION_OAUTH_CLIENT_SECRET = OperationSpec(
+    operation_id="deleteOrganizationOauthClientSecret",
+    method="DELETE",
+    path="/v1/organizations/{organizationId}/oauth/clients/{clientId}/secret",
+    safe=False,
+    idempotency_key_required=False,
+    accept_media_types=("application/problem+json",),
+    success_responses={
+        "204": None,
     },
 )
 
@@ -3430,6 +4070,21 @@ _OP_DOWNLOAD_ATTACHMENT = OperationSpec(
     },
 )
 
+_OP_ENSURE_INITIAL_ORGANIZATION = OperationSpec(
+    operation_id="ensureInitialOrganization",
+    method="POST",
+    path="/v1/organizations/initial",
+    safe=False,
+    idempotency_key_required=True,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.EnsureInitialOrganizationResponse),
+    },
+)
+
 _OP_GET_ACCOUNT = OperationSpec(
     operation_id="getAccount",
     method="GET",
@@ -3442,21 +4097,6 @@ _OP_GET_ACCOUNT = OperationSpec(
     ),
     success_responses={
         "200": TypeAdapter(models.Account),
-    },
-)
-
-_OP_GET_ACCOUNT_ONBOARDING = OperationSpec(
-    operation_id="getAccountOnboarding",
-    method="GET",
-    path="/v1/account/onboarding",
-    safe=True,
-    idempotency_key_required=False,
-    accept_media_types=(
-        "application/json",
-        "application/problem+json",
-    ),
-    success_responses={
-        "200": TypeAdapter(models.GetAccountOnboardingResponse),
     },
 )
 
@@ -3517,6 +4157,21 @@ _OP_GET_BILLING_OVERVIEW = OperationSpec(
     ),
     success_responses={
         "200": TypeAdapter(models.GetBillingOverviewResponse),
+    },
+)
+
+_OP_GET_CURRENT_ORGANIZATION = OperationSpec(
+    operation_id="getCurrentOrganization",
+    method="GET",
+    path="/v1/organizations/current",
+    safe=True,
+    idempotency_key_required=False,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.GetCurrentOrganizationResponse),
     },
 )
 
@@ -3641,6 +4296,21 @@ _OP_GET_OPERATION = OperationSpec(
     },
 )
 
+_OP_GET_ORGANIZATION = OperationSpec(
+    operation_id="getOrganization",
+    method="GET",
+    path="/v1/organizations/{organizationId}",
+    safe=True,
+    idempotency_key_required=False,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.GetOrganizationResponse),
+    },
+)
+
 _OP_GET_ORGANIZATION_BILLING_OVERVIEW = OperationSpec(
     operation_id="getOrganizationBillingOverview",
     method="GET",
@@ -3683,6 +4353,36 @@ _OP_GET_ORGANIZATION_CREDIT = OperationSpec(
     ),
     success_responses={
         "200": TypeAdapter(models.GetOrganizationCreditResponse),
+    },
+)
+
+_OP_GET_ORGANIZATION_OAUTH_CLIENT = OperationSpec(
+    operation_id="getOrganizationOauthClient",
+    method="GET",
+    path="/v1/organizations/{organizationId}/oauth/clients/{clientId}",
+    safe=True,
+    idempotency_key_required=False,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.GetOrganizationOauthClientResponse),
+    },
+)
+
+_OP_GET_ORGANIZATION_OAUTH_CLIENT_SECRET = OperationSpec(
+    operation_id="getOrganizationOauthClientSecret",
+    method="GET",
+    path="/v1/organizations/{organizationId}/oauth/clients/{clientId}/secret",
+    safe=True,
+    idempotency_key_required=False,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.GetOrganizationOauthClientSecretResponse),
     },
 )
 
@@ -3806,6 +4506,21 @@ _OP_GET_RESOURCE = OperationSpec(
     },
 )
 
+_OP_GET_SERVICE_IDENTITY = OperationSpec(
+    operation_id="getServiceIdentity",
+    method="GET",
+    path="/v1/organizations/{organizationId}/service-identities/{serviceIdentityId}",
+    safe=True,
+    idempotency_key_required=False,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.GetServiceIdentityResponse),
+    },
+)
+
 _OP_GET_SHARED_LINE_ASSIGNMENT = OperationSpec(
     operation_id="getSharedLineAssignment",
     method="GET",
@@ -3849,6 +4564,21 @@ _OP_GET_SPACE = OperationSpec(
     success_responses={
         "200": TypeAdapter(models.PlatformSpace),
         "304": None,
+    },
+)
+
+_OP_GET_SSO_SUBSCRIPTION = OperationSpec(
+    operation_id="getSsoSubscription",
+    method="GET",
+    path="/v1/organizations/{organizationId}/sso/subscription",
+    safe=True,
+    idempotency_key_required=False,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.GetSsoSubscriptionResponse),
     },
 )
 
@@ -3974,18 +4704,19 @@ _OP_GET_WHATSAPP_SHARED_LINE_ASSIGNMENT = OperationSpec(
     },
 )
 
-_OP_GET_WHATSAPP_SIGNUP_CONFIG = OperationSpec(
-    operation_id="getWhatsappSignupConfig",
-    method="GET",
-    path="/v1/projects/{id}/platforms/whatsapp-business/signup-config",
-    safe=True,
-    idempotency_key_required=False,
+_OP_LEAVE_ORGANIZATION = OperationSpec(
+    operation_id="leaveOrganization",
+    method="POST",
+    path="/v1/organizations/{organizationId}/leave",
+    safe=False,
+    idempotency_key_required=True,
+    request_media_type="application/json",
     accept_media_types=(
         "application/json",
         "application/problem+json",
     ),
     success_responses={
-        "200": TypeAdapter(models.GetWhatsappSignupConfigResponse),
+        "200": TypeAdapter(models.LeaveOrganizationResponse),
     },
 )
 
@@ -4184,6 +4915,66 @@ _OP_LIST_OPERATIONS = OperationSpec(
     },
 )
 
+_OP_LIST_ORGANIZATION_INVITATIONS = OperationSpec(
+    operation_id="listOrganizationInvitations",
+    method="GET",
+    path="/v1/organizations/{organizationId}/invitations",
+    safe=True,
+    idempotency_key_required=False,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.ListOrganizationInvitationsResponse),
+    },
+)
+
+_OP_LIST_ORGANIZATION_MEMBERS = OperationSpec(
+    operation_id="listOrganizationMembers",
+    method="GET",
+    path="/v1/organizations/{organizationId}/members",
+    safe=True,
+    idempotency_key_required=False,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.ListOrganizationMembersResponse),
+    },
+)
+
+_OP_LIST_ORGANIZATION_OAUTH_CLIENTS = OperationSpec(
+    operation_id="listOrganizationOauthClients",
+    method="GET",
+    path="/v1/organizations/{organizationId}/oauth/clients",
+    safe=True,
+    idempotency_key_required=False,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.ListOrganizationOauthClientsResponse),
+    },
+)
+
+_OP_LIST_ORGANIZATIONS = OperationSpec(
+    operation_id="listOrganizations",
+    method="GET",
+    path="/v1/organizations",
+    safe=True,
+    idempotency_key_required=False,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.ListOrganizationsResponse),
+    },
+)
+
 _OP_LIST_PROJECT_API_KEYS = OperationSpec(
     operation_id="listProjectApiKeys",
     method="GET",
@@ -4271,6 +5062,51 @@ _OP_LIST_RESOURCES = OperationSpec(
     ),
     success_responses={
         "200": TypeAdapter(models.ResourcePage),
+    },
+)
+
+_OP_LIST_SERVICE_IDENTITIES = OperationSpec(
+    operation_id="listServiceIdentities",
+    method="GET",
+    path="/v1/organizations/{organizationId}/service-identities",
+    safe=True,
+    idempotency_key_required=False,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.ListServiceIdentitiesResponse),
+    },
+)
+
+_OP_LIST_SERVICE_IDENTITY_CREDENTIALS = OperationSpec(
+    operation_id="listServiceIdentityCredentials",
+    method="GET",
+    path="/v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials",
+    safe=True,
+    idempotency_key_required=False,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.ListServiceIdentityCredentialsResponse),
+    },
+)
+
+_OP_LIST_SERVICE_IDENTITY_PERMISSIONS = OperationSpec(
+    operation_id="listServiceIdentityPermissions",
+    method="GET",
+    path="/v1/organizations/{organizationId}/service-identities/permissions",
+    safe=True,
+    idempotency_key_required=False,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.ListServiceIdentityPermissionsResponse),
     },
 )
 
@@ -4455,6 +5291,22 @@ _OP_PREVIEW_ORGANIZATION_CHANGE = OperationSpec(
     ),
     success_responses={
         "200": TypeAdapter(models.PreviewOrganizationChangeResponse),
+    },
+)
+
+_OP_PREVIEW_ORGANIZATION_INVITATION = OperationSpec(
+    operation_id="previewOrganizationInvitation",
+    method="POST",
+    path="/v1/organizations/invitations/preview",
+    safe=False,
+    idempotency_key_required=False,
+    request_media_type="application/json",
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.PreviewOrganizationInvitationResponse),
     },
 )
 
@@ -4645,6 +5497,38 @@ _OP_RELEASE_WHATSAPP_SHARED_LINE_ASSIGNMENT = OperationSpec(
     },
 )
 
+_OP_REMOVE_ORGANIZATION_AVATAR = OperationSpec(
+    operation_id="removeOrganizationAvatar",
+    method="DELETE",
+    path="/v1/organizations/{organizationId}/avatar",
+    safe=False,
+    idempotency_key_required=True,
+    request_media_type="application/json",
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.RemoveOrganizationAvatarResponse),
+    },
+)
+
+_OP_REMOVE_ORGANIZATION_MEMBER = OperationSpec(
+    operation_id="removeOrganizationMember",
+    method="DELETE",
+    path="/v1/organizations/{organizationId}/members/{memberAccountId}",
+    safe=False,
+    idempotency_key_required=True,
+    request_media_type="application/json",
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.RemoveOrganizationMemberResponse),
+    },
+)
+
 _OP_REPLACE_VOICE_PROFILE_INBOUND = OperationSpec(
     operation_id="replaceVoiceProfileInbound",
     method="PUT",
@@ -4659,6 +5543,21 @@ _OP_REPLACE_VOICE_PROFILE_INBOUND = OperationSpec(
     success_responses={
         "200": TypeAdapter(models.VoiceProfileInboundConfiguration),
         "201": TypeAdapter(models.VoiceProfileInboundConfiguration),
+    },
+)
+
+_OP_RESEND_ORGANIZATION_INVITATION = OperationSpec(
+    operation_id="resendOrganizationInvitation",
+    method="POST",
+    path="/v1/organizations/{organizationId}/invitations/{invitationId}/resend",
+    safe=False,
+    idempotency_key_required=True,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.ResendOrganizationInvitationResponse),
     },
 )
 
@@ -4750,6 +5649,21 @@ _OP_REVOKE_AUTHORIZED_APPLICATION = OperationSpec(
     },
 )
 
+_OP_REVOKE_ORGANIZATION_INVITATION = OperationSpec(
+    operation_id="revokeOrganizationInvitation",
+    method="POST",
+    path="/v1/organizations/{organizationId}/invitations/{invitationId}/revoke",
+    safe=False,
+    idempotency_key_required=True,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.RevokeOrganizationInvitationResponse),
+    },
+)
+
 _OP_REVOKE_PROJECT_API_KEY = OperationSpec(
     operation_id="revokeProjectApiKey",
     method="DELETE",
@@ -4762,6 +5676,38 @@ _OP_REVOKE_PROJECT_API_KEY = OperationSpec(
     ),
     success_responses={
         "200": TypeAdapter(models.ProjectApiKeyResponse),
+    },
+)
+
+_OP_REVOKE_SERVICE_IDENTITY_CREDENTIAL = OperationSpec(
+    operation_id="revokeServiceIdentityCredential",
+    method="POST",
+    path="/v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials/{credentialId}/revoke",
+    safe=False,
+    idempotency_key_required=True,
+    request_media_type="application/json",
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.RevokeServiceIdentityCredentialResponse),
+    },
+)
+
+_OP_ROTATE_ORGANIZATION_OAUTH_CLIENT_SECRET = OperationSpec(
+    operation_id="rotateOrganizationOauthClientSecret",
+    method="POST",
+    path="/v1/organizations/{organizationId}/oauth/clients/{clientId}/secret/rotate",
+    safe=False,
+    idempotency_key_required=True,
+    request_media_type="application/json",
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.RotateOrganizationOauthClientSecretResponse),
     },
 )
 
@@ -4829,19 +5775,19 @@ _OP_SET_SPACE_TYPING = OperationSpec(
     },
 )
 
-_OP_START_ACCOUNT_PHONE_VERIFICATION = OperationSpec(
-    operation_id="startAccountPhoneVerification",
-    method="POST",
-    path="/v1/account/phone/verifications",
+_OP_SETUP_ORGANIZATION_OAUTH_CLIENT_SECRET = OperationSpec(
+    operation_id="setupOrganizationOauthClientSecret",
+    method="PUT",
+    path="/v1/organizations/{organizationId}/oauth/clients/{clientId}/secret",
     safe=False,
-    idempotency_key_required=False,
-    request_media_type="application/json",
+    idempotency_key_required=True,
     accept_media_types=(
         "application/json",
         "application/problem+json",
     ),
     success_responses={
-        "201": TypeAdapter(models.StartAccountPhoneVerificationResponse),
+        "200": TypeAdapter(models.SetupOrganizationOauthClientSecretResponse),
+        "201": TypeAdapter(models.SetupOrganizationOauthClientSecretCreatedResponse),
     },
 )
 
@@ -4858,6 +5804,38 @@ _OP_START_ENTERPRISE_LOGIN = OperationSpec(
     ),
     success_responses={
         "200": TypeAdapter(models.StartEnterpriseLoginResponse),
+    },
+)
+
+_OP_SUBSCRIBE_SSO = OperationSpec(
+    operation_id="subscribeSso",
+    method="POST",
+    path="/v1/organizations/{organizationId}/sso/subscription",
+    safe=False,
+    idempotency_key_required=True,
+    request_media_type="application/json",
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "202": TypeAdapter(models.SubscribeSsoResponse),
+    },
+)
+
+_OP_TRANSFER_ORGANIZATION_OWNERSHIP = OperationSpec(
+    operation_id="transferOrganizationOwnership",
+    method="POST",
+    path="/v1/organizations/{organizationId}/transfer-ownership",
+    safe=False,
+    idempotency_key_required=True,
+    request_media_type="application/json",
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.TransferOrganizationOwnershipResponse),
     },
 )
 
@@ -4905,22 +5883,6 @@ _OP_UPDATE_ACCOUNT = OperationSpec(
     },
 )
 
-_OP_UPDATE_ACCOUNT_ONBOARDING = OperationSpec(
-    operation_id="updateAccountOnboarding",
-    method="PATCH",
-    path="/v1/account/onboarding",
-    safe=False,
-    idempotency_key_required=True,
-    request_media_type="application/json",
-    accept_media_types=(
-        "application/json",
-        "application/problem+json",
-    ),
-    success_responses={
-        "200": TypeAdapter(models.UpdateAccountOnboardingResponse),
-    },
-)
-
 _OP_UPDATE_AGENT_PROFILE = OperationSpec(
     operation_id="updateAgentProfile",
     method="PATCH",
@@ -4950,6 +5912,54 @@ _OP_UPDATE_DEFAULT_VOICE_PROFILE = OperationSpec(
     ),
     success_responses={
         "200": TypeAdapter(models.VoiceProfile),
+    },
+)
+
+_OP_UPDATE_ORGANIZATION = OperationSpec(
+    operation_id="updateOrganization",
+    method="PATCH",
+    path="/v1/organizations/{organizationId}",
+    safe=False,
+    idempotency_key_required=True,
+    request_media_type="application/json",
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.UpdateOrganizationResponse),
+    },
+)
+
+_OP_UPDATE_ORGANIZATION_MEMBER_ROLE = OperationSpec(
+    operation_id="updateOrganizationMemberRole",
+    method="PATCH",
+    path="/v1/organizations/{organizationId}/members/{memberAccountId}",
+    safe=False,
+    idempotency_key_required=True,
+    request_media_type="application/json",
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.UpdateOrganizationMemberRoleResponse),
+    },
+)
+
+_OP_UPDATE_ORGANIZATION_OAUTH_CLIENT = OperationSpec(
+    operation_id="updateOrganizationOauthClient",
+    method="PATCH",
+    path="/v1/organizations/{organizationId}/oauth/clients/{clientId}",
+    safe=False,
+    idempotency_key_required=False,
+    request_media_type="application/json",
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.UpdateOrganizationOauthClientResponse),
     },
 )
 
@@ -4998,6 +6008,22 @@ _OP_UPDATE_PROJECT_API_KEY = OperationSpec(
     ),
     success_responses={
         "200": TypeAdapter(models.ProjectApiKeyResponse),
+    },
+)
+
+_OP_UPDATE_SERVICE_IDENTITY = OperationSpec(
+    operation_id="updateServiceIdentity",
+    method="PATCH",
+    path="/v1/organizations/{organizationId}/service-identities/{serviceIdentityId}",
+    safe=False,
+    idempotency_key_required=True,
+    request_media_type="application/json",
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.UpdateServiceIdentityResponse),
     },
 )
 
@@ -5081,6 +6107,431 @@ _OP_UPLOAD_ATTACHMENT = OperationSpec(
         "201": TypeAdapter(models.Attachment),
     },
 )
+
+
+class SyncRawOrganizationsBillingResource:
+    def __init__(self, transport: SyncTransport) -> None:
+        self._transport = transport
+
+    def change_plan(
+        self, input: ChangePlanInput
+    ) -> RawResponse[models.TerminalBillingOperation | models.PendingBillingOperation]:
+        "Change plan\n\nPurchases or changes the selected project's plan for the supplied category and planCode. A 202 response means the change is pending: poll the returned operation URL and honor Retry-After until it succeeds or fails. A 200 response means the idempotency key resolved to an operation that is already terminal; inspect that result rather than assuming success from the status code alone. Supply the required Idempotency-Key header. Supply both organizationId and projectId to select the project within its organization."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_CHANGE_PLAN, payload)
+
+    def create_organization_payment_method_checkout(
+        self, input: CreateOrganizationPaymentMethodCheckoutInput
+    ) -> RawResponse[models.CreateOrganizationPaymentMethodCheckoutResponse]:
+        "Create payment method checkout\n\nReturns a hosted payment-method collection URL for the selected organization. An Idempotency-Key header is optional; supply one to make retries safe. Complete the returned checkout flow. Receiving the URL does not mean a card has been saved; check payment-method status afterward."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_CREATE_ORGANIZATION_PAYMENT_METHOD_CHECKOUT, payload)
+
+    def get_effective_terms(
+        self, input: GetEffectiveTermsInput
+    ) -> RawResponse[models.GetEffectiveTermsResponse]:
+        "Get the project's effective billing terms\n\nReturns what the selected project is billed on now, per category it holds: the plan as its subscription has it, with any override applied, each fixed charge at the subscription's price and quantity, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. Supply both organizationId and projectId; the organization must pay for the project. This operation does not change billing."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_GET_EFFECTIVE_TERMS, payload)
+
+    def get_organization_billing_overview(
+        self, input: GetOrganizationBillingOverviewInput
+    ) -> RawResponse[models.GetOrganizationBillingOverviewResponse]:
+        "Get organization billing overview\n\nReturns the selected organization’s billing subscription and entitlementsVersion. The subscription can be null. Read the returned plan, charges and entitlements to inspect organization billing; this operation does not purchase or change a plan."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_GET_ORGANIZATION_BILLING_OVERVIEW, payload)
+
+    def get_organization_credit(
+        self, input: GetOrganizationCreditInput
+    ) -> RawResponse[models.GetOrganizationCreditResponse]:
+        "Get organization credit\n\nReturns the credit the selected organization holds: on credit notes, such as the unused time of a plan an upgrade replaced or the unused days of a prorated fixed charge it released, and in its wallet: the credit Photon granted it, such as a new account's first organization's welcome credit, and any prepaid credit it bought. It offsets that organization's invoices of any kind except one-off invoices, credit notes first. Reading it does not apply or change credit."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_GET_ORGANIZATION_CREDIT, payload)
+
+    def get_organization_payment_method(
+        self, input: GetOrganizationPaymentMethodInput
+    ) -> RawResponse[models.GetOrganizationPaymentMethodResponse]:
+        "Get organization payment method\n\nReports whether the selected organization has a card on file and returns its documented payment-method metadata. Reading this endpoint does not collect a new card or create a checkout session."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_GET_ORGANIZATION_PAYMENT_METHOD, payload)
+
+    def get_organization_terms(
+        self, input: GetOrganizationTermsInput
+    ) -> RawResponse[models.GetOrganizationTermsResponse]:
+        "Get the organization's effective billing terms\n\nReturns what the selected organization is billed on now on its own subscription, such as SSO and 10DLC campaigns: the plan as the subscription has it, with any override applied, each fixed charge at the subscription's price and the quantity the organization holds, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. subscription has a project subscription's terms without its category, and is null when the organization holds none. Project subscriptions are read per project. This operation does not change billing."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_GET_ORGANIZATION_TERMS, payload)
+
+    def list_credit_activity(
+        self, input: ListCreditActivityInput
+    ) -> RawResponse[models.ListCreditActivityResponse]:
+        "List credit activity\n\nReturns one page of how the selected organization's credit balance changed, newest first: credit notes issued and credit granted, credit applied to invoices, credit restored when the change an invoice paid for never applied, and credit voided. Each entry names the credit note (none for granted credit), the invoice when there is one, and the charge and subscription the credit note credits, or that the credit was a grant. Pass nextPage as page to read further. This operation does not change billing."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_LIST_CREDIT_ACTIVITY, payload)
+
+    def list_invoices(self, input: ListInvoicesInput) -> RawResponse[models.ListInvoicesResponse]:
+        "List invoices\n\nReturns one page of the selected organization's invoices, newest first: every invoice issued to it with a nonzero total or actual charges, including charges fully paid by credit; drafts and empty invoices are excluded. Each names what it charged the organization's own subscription and each project. Pass subject to list only the invoices that charge the organization itself or one of its projects, and nextCursor as cursor to read further. Listing invoices does not make a payment or modify a subscription."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_LIST_INVOICES, payload)
+
+    def preview_organization_change(
+        self, input: PreviewOrganizationChangeInput
+    ) -> RawResponse[models.PreviewOrganizationChangeResponse]:
+        "Preview an organization billing change\n\nPreviews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_PREVIEW_ORGANIZATION_CHANGE, payload)
+
+    def preview_project_change(
+        self, input: PreviewProjectChangeInput
+    ) -> RawResponse[models.PreviewProjectChangeResponse]:
+        "Preview a project billing change\n\nPreviews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. Supply both organizationId and projectId; the organization must pay for the project."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_PREVIEW_PROJECT_CHANGE, payload)
+
+
+class SyncRawOrganizationsProjectsResource:
+    def __init__(self, transport: SyncTransport) -> None:
+        self._transport = transport
+
+    def check_project_slug_availability(
+        self, input: CheckProjectSlugAvailabilityInput
+    ) -> RawResponse[models.CheckProjectSlugAvailabilityResponse]:
+        "Check project slug availability\n\nReports whether createProject would accept `slug` right now. Advisory: only the create itself allocates, so a caller must still handle SLUG_TAKEN. A malformed slug is rejected on shape; a reserved slug, a slug held by an active project, and a slug retired with a deleted project each answer `available: false` with a reason."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_CHECK_PROJECT_SLUG_AVAILABILITY, payload)
+
+    def count(self, input: CountProjectsInput) -> RawResponse[models.ProjectCount]:
+        "Count projects\n\nCounts the projects the same filter would list. The count is read from the primary, so it is authoritative rather than replica-lagged."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_COUNT_PROJECTS, payload)
+
+    def create(self, input: CreateProjectInput) -> RawResponse[models.Project]:
+        "Create project\n\nCreates in the authorized organization. In addition to account credentials, explicitly granted Service Identity API keys and M2M tokens may create projects. Project API keys cannot create projects. Creator and private credential evidence come only from the trusted authorization context. The caller-selected slug is immutable, must be 3 to 63 lowercase ASCII alphanumerics separated by single hyphens, and cannot be reserved or held by any active or deleted project."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_CREATE_PROJECT, payload)
+
+    def get_project_closure_status(
+        self, input: GetProjectClosureStatusInput
+    ) -> RawResponse[models.GetProjectClosureStatusResponse]:
+        "Get project closure status\n\nReturns closure progress for projectId within organizationId, including deletionOperationId, domain progress and ready. This read operation does not initiate deletion."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_GET_PROJECT_CLOSURE_STATUS, payload)
+
+    def list(self, input: ListProjectsInput) -> RawResponse[models.ProjectPage]:
+        "List projects\n\nReturns a cursor-paginated page of the active projects in organizationId. Filter using query and the documented creation-time bounds, and navigate with pageSize and pageToken. Project roles are not returned and role is not a supported filter."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_LIST_PROJECTS, payload)
+
+
+class SyncRawOrganizationsResource:
+    def __init__(self, transport: SyncTransport) -> None:
+        self._transport = transport
+        self.billing = SyncRawOrganizationsBillingResource(transport)
+        self.projects = SyncRawOrganizationsProjectsResource(transport)
+
+    def accept_organization_invitation(
+        self, input: AcceptOrganizationInvitationInput
+    ) -> RawResponse[models.AcceptOrganizationInvitationResponse]:
+        "Accept an invitation to all organization projects"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_ACCEPT_ORGANIZATION_INVITATION, payload)
+
+    def cancel_sso_subscription(
+        self, input: CancelSsoSubscriptionInput
+    ) -> RawResponse[models.CancelSsoSubscriptionResponse]:
+        "Cancel the SSO subscription"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_CANCEL_SSO_SUBSCRIPTION, payload)
+
+    def check_organization_deletion(
+        self, input: CheckOrganizationDeletionInput
+    ) -> RawResponse[models.CheckOrganizationDeletionResponse]:
+        "Check organization deletion prerequisites"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_CHECK_ORGANIZATION_DELETION, payload)
+
+    def close_organization(self, input: CloseOrganizationInput) -> RawResponse[None]:
+        "Delete organization"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_CLOSE_ORGANIZATION, payload)
+
+    def commit_organization_avatar(
+        self, input: CommitOrganizationAvatarInput
+    ) -> RawResponse[models.CommitOrganizationAvatarResponse]:
+        "Commit an organization avatar"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_COMMIT_ORGANIZATION_AVATAR, payload)
+
+    def create_organization(
+        self, input: CreateOrganizationInput
+    ) -> RawResponse[models.CreateOrganizationResponse]:
+        "Create an organization"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_CREATE_ORGANIZATION, payload)
+
+    def create_organization_avatar_upload(
+        self, input: CreateOrganizationAvatarUploadInput
+    ) -> RawResponse[models.CreateOrganizationAvatarUploadResponse]:
+        "Create an organization avatar upload\n\nUpload a JPEG, PNG, or WebP image up to 5 MiB with every returned form field and the file last. Upload directly without Photon credentials, then commit the uploadId. Do not log or cache upload URLs or fields."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_CREATE_ORGANIZATION_AVATAR_UPLOAD, payload)
+
+    def create_organization_invitation(
+        self, input: CreateOrganizationInvitationInput
+    ) -> RawResponse[models.CreateOrganizationInvitationResponse]:
+        "Invite a Member or Viewer to all organization projects"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_CREATE_ORGANIZATION_INVITATION, payload)
+
+    def create_organization_oauth_client(
+        self, input: CreateOrganizationOauthClientInput
+    ) -> RawResponse[models.CreateOrganizationOauthClientResponse]:
+        "Create an organization OAuth client\n\nUse the same UUID Idempotency-Key and payload when retrying. Unknown provider outcomes require recovery; do not use a new key to retry an uncertain creation."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_CREATE_ORGANIZATION_OAUTH_CLIENT, payload)
+
+    def create_service_identity(
+        self, input: CreateServiceIdentityInput
+    ) -> RawResponse[models.CreateServiceIdentityResponse]:
+        "Create an organization Service Identity"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_CREATE_SERVICE_IDENTITY, payload)
+
+    def create_service_identity_api_key(
+        self, input: CreateServiceIdentityApiKeyInput
+    ) -> RawResponse[models.CreateServiceIdentityApiKeyResponse]:
+        "Create a one-time Service Identity API key"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_CREATE_SERVICE_IDENTITY_API_KEY, payload)
+
+    def create_service_identity_client_secret(
+        self, input: CreateServiceIdentityClientSecretInput
+    ) -> RawResponse[models.CreateServiceIdentityClientSecretResponse]:
+        "Create a one-time Service Identity M2M client secret"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_CREATE_SERVICE_IDENTITY_CLIENT_SECRET, payload)
+
+    def delete_organization_oauth_client(
+        self, input: DeleteOrganizationOauthClientInput
+    ) -> RawResponse[models.DeleteOrganizationOauthClientResponse]:
+        "Delete an organization OAuth client\n\nQueues deletion of the exact provider application. Retry DELETE to read its current status. Accepted deletion does not promise immediate token revocation."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_DELETE_ORGANIZATION_OAUTH_CLIENT, payload)
+
+    def delete_organization_oauth_client_secret(
+        self, input: DeleteOrganizationOauthClientSecretInput
+    ) -> RawResponse[None]:
+        "Revoke an organization OAuth client's secret\n\nStops every secret of the app now, including one still in its grace period."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_DELETE_ORGANIZATION_OAUTH_CLIENT_SECRET, payload)
+
+    def ensure_initial_organization(
+        self, input: EnsureInitialOrganizationInput
+    ) -> RawResponse[models.EnsureInitialOrganizationResponse]:
+        "Ensure the initial organization"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_ENSURE_INITIAL_ORGANIZATION, payload)
+
+    def get_current_organization(
+        self, input: GetCurrentOrganizationInput | None = None
+    ) -> RawResponse[models.GetCurrentOrganizationResponse]:
+        "Read the credential's organization\n\nReads the organization the credential is bound to: the organization an OAuth grant was consented for, or a Service Identity's own organization. Use it to discover which organization an integration acts for, and pass its organizationId to organization-scoped operations."
+        payload = (input or GetCurrentOrganizationInput()).model_dump(
+            mode="json", by_alias=True, exclude_unset=True
+        )
+        return self._transport.request(_OP_GET_CURRENT_ORGANIZATION, payload)
+
+    def get_organization(
+        self, input: GetOrganizationInput
+    ) -> RawResponse[models.GetOrganizationResponse]:
+        "Read organization name and avatar"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_GET_ORGANIZATION, payload)
+
+    def get_organization_oauth_client(
+        self, input: GetOrganizationOauthClientInput
+    ) -> RawResponse[models.GetOrganizationOauthClientResponse]:
+        "Read an organization OAuth client"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_GET_ORGANIZATION_OAUTH_CLIENT, payload)
+
+    def get_organization_oauth_client_secret(
+        self, input: GetOrganizationOauthClientSecretInput
+    ) -> RawResponse[models.GetOrganizationOauthClientSecretResponse]:
+        "Read an organization OAuth client's secret"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_GET_ORGANIZATION_OAUTH_CLIENT_SECRET, payload)
+
+    def get_service_identity(
+        self, input: GetServiceIdentityInput
+    ) -> RawResponse[models.GetServiceIdentityResponse]:
+        "Read a Service Identity"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_GET_SERVICE_IDENTITY, payload)
+
+    def get_sso_subscription(
+        self, input: GetSsoSubscriptionInput
+    ) -> RawResponse[models.GetSsoSubscriptionResponse]:
+        "Read SSO subscription"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_GET_SSO_SUBSCRIPTION, payload)
+
+    def leave_organization(
+        self, input: LeaveOrganizationInput
+    ) -> RawResponse[models.LeaveOrganizationResponse]:
+        "Leave an organization; Owners must transfer or close first"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_LEAVE_ORGANIZATION, payload)
+
+    def list_organization_invitations(
+        self, input: ListOrganizationInvitationsInput
+    ) -> RawResponse[models.ListOrganizationInvitationsResponse]:
+        "List pending organization invitations"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_LIST_ORGANIZATION_INVITATIONS, payload)
+
+    def list_organization_members(
+        self, input: ListOrganizationMembersInput
+    ) -> RawResponse[models.ListOrganizationMembersResponse]:
+        "List current organization members"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_LIST_ORGANIZATION_MEMBERS, payload)
+
+    def list_organization_oauth_clients(
+        self, input: ListOrganizationOauthClientsInput
+    ) -> RawResponse[models.ListOrganizationOauthClientsResponse]:
+        "List organization OAuth clients"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_LIST_ORGANIZATION_OAUTH_CLIENTS, payload)
+
+    def list_organizations(
+        self, input: ListOrganizationsInput | None = None
+    ) -> RawResponse[models.ListOrganizationsResponse]:
+        "List organizations"
+        payload = (input or ListOrganizationsInput()).model_dump(
+            mode="json", by_alias=True, exclude_unset=True
+        )
+        return self._transport.request(_OP_LIST_ORGANIZATIONS, payload)
+
+    def list_service_identities(
+        self, input: ListServiceIdentitiesInput
+    ) -> RawResponse[models.ListServiceIdentitiesResponse]:
+        "List organization Service Identities"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_LIST_SERVICE_IDENTITIES, payload)
+
+    def list_service_identity_credentials(
+        self, input: ListServiceIdentityCredentialsInput
+    ) -> RawResponse[models.ListServiceIdentityCredentialsResponse]:
+        "List Service Identity credential metadata"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_LIST_SERVICE_IDENTITY_CREDENTIALS, payload)
+
+    def list_service_identity_permissions(
+        self, input: ListServiceIdentityPermissionsInput
+    ) -> RawResponse[models.ListServiceIdentityPermissionsResponse]:
+        "List grantable Service Identity permissions\n\nThe permissions a Service Identity or installable app may be granted: the machine set of the current auth contract, sorted. Create, update, and app declarations accept exactly these values."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_LIST_SERVICE_IDENTITY_PERMISSIONS, payload)
+
+    def preview_organization_invitation(
+        self, input: PreviewOrganizationInvitationInput
+    ) -> RawResponse[models.PreviewOrganizationInvitationResponse]:
+        "Preview an organization invitation after sign-in"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_PREVIEW_ORGANIZATION_INVITATION, payload)
+
+    def remove_organization_avatar(
+        self, input: RemoveOrganizationAvatarInput
+    ) -> RawResponse[models.RemoveOrganizationAvatarResponse]:
+        "Remove an organization avatar"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_REMOVE_ORGANIZATION_AVATAR, payload)
+
+    def remove_organization_member(
+        self, input: RemoveOrganizationMemberInput
+    ) -> RawResponse[models.RemoveOrganizationMemberResponse]:
+        "Remove an organization member's access to all projects"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_REMOVE_ORGANIZATION_MEMBER, payload)
+
+    def resend_organization_invitation(
+        self, input: ResendOrganizationInvitationInput
+    ) -> RawResponse[models.ResendOrganizationInvitationResponse]:
+        "Resend an organization invitation"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_RESEND_ORGANIZATION_INVITATION, payload)
+
+    def revoke_organization_invitation(
+        self, input: RevokeOrganizationInvitationInput
+    ) -> RawResponse[models.RevokeOrganizationInvitationResponse]:
+        "Revoke an organization invitation"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_REVOKE_ORGANIZATION_INVITATION, payload)
+
+    def revoke_service_identity_credential(
+        self, input: RevokeServiceIdentityCredentialInput
+    ) -> RawResponse[models.RevokeServiceIdentityCredentialResponse]:
+        "Request Service Identity credential revocation"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_REVOKE_SERVICE_IDENTITY_CREDENTIAL, payload)
+
+    def rotate_organization_oauth_client_secret(
+        self, input: RotateOrganizationOauthClientSecretInput
+    ) -> RawResponse[models.RotateOrganizationOauthClientSecretResponse]:
+        "Rotate an organization OAuth client's secret\n\nMints a new secret, then retires the one it replaces: `normal` keeps the old one working for one hour, `emergency` stops it now. A secret not created through Photon always stops now. Rotating again ends an earlier grace period. Retain the same UUID Idempotency-Key when retrying: only the delivering request returns plaintext."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_ROTATE_ORGANIZATION_OAUTH_CLIENT_SECRET, payload)
+
+    def setup_organization_oauth_client_secret(
+        self, input: SetupOrganizationOauthClientSecretInput
+    ) -> RawResponse[
+        models.SetupOrganizationOauthClientSecretResponse
+        | models.SetupOrganizationOauthClientSecretCreatedResponse
+    ]:
+        "Create an organization OAuth client's secret\n\nMints the app's first secret; once it has one, rotate it instead. Retain the same UUID Idempotency-Key when retrying: only the delivering request returns plaintext."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_SETUP_ORGANIZATION_OAUTH_CLIENT_SECRET, payload)
+
+    def subscribe_sso(self, input: SubscribeSsoInput) -> RawResponse[models.SubscribeSsoResponse]:
+        "Subscribe to organization SSO"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_SUBSCRIBE_SSO, payload)
+
+    def transfer_organization_ownership(
+        self, input: TransferOrganizationOwnershipInput
+    ) -> RawResponse[models.TransferOrganizationOwnershipResponse]:
+        "Transfer organization ownership to an existing member"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_TRANSFER_ORGANIZATION_OWNERSHIP, payload)
+
+    def update_organization(
+        self, input: UpdateOrganizationInput
+    ) -> RawResponse[models.UpdateOrganizationResponse]:
+        "Change organization name"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_UPDATE_ORGANIZATION, payload)
+
+    def update_organization_member_role(
+        self, input: UpdateOrganizationMemberRoleInput
+    ) -> RawResponse[models.UpdateOrganizationMemberRoleResponse]:
+        "Change an organization member's role across all projects"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_UPDATE_ORGANIZATION_MEMBER_ROLE, payload)
+
+    def update_organization_oauth_client(
+        self, input: UpdateOrganizationOauthClientInput
+    ) -> RawResponse[models.UpdateOrganizationOauthClientResponse]:
+        "Update an organization OAuth client\n\nRequires If-Match from the latest read. Stale versions return 412. A failed response may follow an applied provider update; reread before retrying. Version checking is not provider atomic CAS."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_UPDATE_ORGANIZATION_OAUTH_CLIENT, payload)
+
+    def update_service_identity(
+        self, input: UpdateServiceIdentityInput
+    ) -> RawResponse[models.UpdateServiceIdentityResponse]:
+        "Update a Service Identity"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_UPDATE_SERVICE_IDENTITY, payload)
 
 
 class SyncRawProjectsPlatformsImessageAssignmentsResource:
@@ -5167,13 +6618,6 @@ class SyncRawProjectsPlatformsResource:
         "Connect Telegram bot\n\nStarts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to create a new bot, whose name and username are chosen in Telegram, or to connect an existing managed bot, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_CONNECT_TELEGRAM_BOT, payload)
-
-    def connect_whatsapp_business(
-        self, input: ConnectWhatsappBusinessInput
-    ) -> RawResponse[models.Operation]:
-        "Connect WhatsApp Business\n\nExchanges the authorization code Embedded Signup returned and connects exactly the selected phone number as one `whatsapp_sender`. Send the WABA id and phone-number id emitted by the same popup attempt; both are treated as selectors and verified against Meta before use. A selected number that matches a non-retired, same-project `voip_line` is linked to it; a number absent from Photon inventory stays unbound; a matching non-retired `cosmos_line`, foreign VoIP line or unassigned VoIP line fails the operation before registration. Connecting is free — no plan requirement — but Billing must report the project's organization as ready with a payment method on file. The Idempotency-Key is required and permanent: replaying the same key returns the original operation forever. Requires the platforms:write permission bound to the project resource in the path."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CONNECT_WHATSAPP_BUSINESS, payload)
 
     def count_filtered_verification_codes(
         self, input: CountFilteredVerificationCodesInput
@@ -5327,13 +6771,6 @@ class SyncRawProjectsPlatformsResource:
         "Get WhatsApp shared line assignment\n\nReads one WhatsApp shared line assignment. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_GET_WHATSAPP_SHARED_LINE_ASSIGNMENT, payload)
-
-    def get_whatsapp_signup_config(
-        self, input: GetWhatsappSignupConfigInput
-    ) -> RawResponse[models.GetWhatsappSignupConfigResponse]:
-        "Get WhatsApp signup config\n\nReturns what the browser needs to open Meta's Embedded Signup popup: the Facebook Login for Business configuration id, the Graph version to run against, and the scopes it will request. Answered in-process rather than forwarded, so the first step of onboarding survives an outage of the private service. Pass `configId` to `FB.login` as `config_id` with `response_type: 'code'` and `override_default_response_type: true`. Do NOT add a `featureType` — omitting it is what keeps the phone-number screen in the flow, and `only_waba_sharing` produces an account with no number that cannot be provisioned. Requires the platforms:read permission bound to the project resource in the path."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_WHATSAPP_SIGNUP_CONFIG, payload)
 
     def list_email_recommendations(
         self, input: ListEmailRecommendationsInput
@@ -5825,286 +7262,9 @@ class SyncRawProjectsResource:
         return self._transport.request(_OP_UPLOAD_ATTACHMENT, payload)
 
 
-class SyncRawAuthDeviceResource:
-    def __init__(self, transport: SyncTransport) -> None:
-        self._transport = transport
-
-    def authorize(
-        self, input: DeviceAuthorizeInput | None = None
-    ) -> RawResponse[models.DeviceAuthorizeResponse]:
-        "Start device authorization\n\nStarts the device authorization flow for a CLI or another device without a browser. Show the verification URL and user code, then poll the token endpoint at the returned interval. No request fields are required; any supplied body is ignored."
-        payload = (input or DeviceAuthorizeInput()).model_dump(
-            mode="json", by_alias=True, exclude_unset=True
-        )
-        return self._transport.request(_OP_DEVICE_AUTHORIZE, payload)
-
-    def token(self, input: DeviceTokenInput) -> RawResponse[models.DeviceTokenResponse]:
-        "Exchange device code or refresh token\n\nExchanges an authorized device code or a refresh token for an access token and rotating refresh token. Accepts JSON and form-encoded bodies. While polling, wait at least interval seconds and increase the interval on slow_down. Store the new refresh token after every successful grant.\n\nThis SDK method sends uncompressed JSON (application/json). Other request formats described above apply to direct HTTP requests."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_DEVICE_TOKEN, payload)
-
-
-class SyncRawAuthResource:
-    def __init__(self, transport: SyncTransport) -> None:
-        self._transport = transport
-        self.device = SyncRawAuthDeviceResource(transport)
-
-    def begin_invitation_sso(
-        self, input: BeginInvitationSsoInput
-    ) -> RawResponse[models.OrganizationAuthenticationRedirect]:
-        "Sign in with invitation SSO\n\nReturns an authentication URL for the organization SSO connection associated with the supplied invitation token. Supply token and returnTo. Complete the returned authentication flow; requesting its URL does not itself accept the invitation."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_BEGIN_INVITATION_SSO, payload)
-
-    def begin_organization_authentication(
-        self, input: BeginOrganizationAuthenticationInput
-    ) -> RawResponse[models.OrganizationAuthenticationRedirect]:
-        "Sign in with organization SSO\n\nReturns a URL to authenticate through the selected organization’s current SSO connection. Supply returnTo and open the returned URL to continue the flow. Receiving the URL does not establish an authenticated session."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_BEGIN_ORGANIZATION_AUTHENTICATION, payload)
-
-    def begin_organization_closure_authentication(
-        self, input: BeginOrganizationClosureAuthenticationInput
-    ) -> RawResponse[models.OrganizationAuthenticationRedirect]:
-        "Sign in to close organization\n\nReturns an authentication URL for the current organization owner to inspect organization closure. Supply returnTo and complete the returned flow. This operation initiates authentication and does not close the organization."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_BEGIN_ORGANIZATION_CLOSURE_AUTHENTICATION, payload)
-
-    def begin_organization_sso_admission(
-        self, input: BeginOrganizationSsoAdmissionInput
-    ) -> RawResponse[models.OrganizationAuthenticationRedirect]:
-        "Begin organization SSO admission\n\nReturns an SSO admission URL for an existing account and the selected organization. Supply returnTo for the continuation URL. Admission requires completing the returned authentication flow; creating the URL does not itself grant membership."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_BEGIN_ORGANIZATION_SSO_ADMISSION, payload)
-
-    def create_organization_sso_portal_link(
-        self, input: CreateOrganizationSsoPortalLinkInput
-    ) -> RawResponse[models.CreateOrganizationSsoPortalLinkResponse]:
-        "Create organization setup portal link\n\nReturns an organization setup portal URL. Supply returnTo and optionally intent, either sso or domain_verification; sso is the default. Open the returned URL to complete the selected setup flow."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CREATE_ORGANIZATION_SSO_PORTAL_LINK, payload)
-
-    def disable_organization_sso(
-        self, input: DisableOrganizationSsoInput
-    ) -> RawResponse[models.OrganizationSsoConfiguration]:
-        "Disable organization SSO\n\nDeletes the provider connection, releases the SSO requirement once the connection is gone, then unbinds the chosen domains. Retry with the same Idempotency-Key to resume or await the same run."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_DISABLE_ORGANIZATION_SSO, payload)
-
-    def get_organization_connection_status(
-        self, input: GetOrganizationConnectionStatusInput
-    ) -> RawResponse[models.OrganizationConnectionStatus]:
-        "Get organization connection status\n\nRequires current human organization membership. Synchronization status does not attest SSO configuration or completed authorization."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_ORGANIZATION_CONNECTION_STATUS, payload)
-
-    def get_organization_sso_configuration(
-        self, input: GetOrganizationSsoConfigurationInput
-    ) -> RawResponse[models.OrganizationSsoConfiguration]:
-        "Get organization SSO configuration\n\nReturns the selected organization’s SSO connection state, configuration version, and desired and effective policy settings. Read policySyncStatus alongside the enforcement fields to distinguish requested settings from synchronized settings."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_ORGANIZATION_SSO_CONFIGURATION, payload)
-
-    def list_oauth_scopes(
-        self, input: ListOauthScopesInput | None = None
-    ) -> RawResponse[models.ListOauthScopesResponse]:
-        "List OAuth scopes\n\nLists the business permissions available to OAuth applications."
-        payload = (input or ListOauthScopesInput()).model_dump(
-            mode="json", by_alias=True, exclude_unset=True
-        )
-        return self._transport.request(_OP_LIST_OAUTH_SCOPES, payload)
-
-    def refresh_organization_sso_connection(
-        self, input: RefreshOrganizationSsoConnectionInput
-    ) -> RawResponse[models.OrganizationSsoConfiguration]:
-        "Refresh organization SSO connection\n\nRefreshes the selected organization’s SSO connection and returns its current connection state, configuration version and policy synchronization status. This operation takes no request body."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_REFRESH_ORGANIZATION_SSO_CONNECTION, payload)
-
-    def retry_organization_connection_sync(
-        self, input: RetryOrganizationConnectionSyncInput
-    ) -> RawResponse[models.OrganizationConnectionStatus]:
-        "Retry organization connection sync\n\nReconciles existing local intent. Takes no body and cannot change membership, roles or authentication policy."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_RETRY_ORGANIZATION_CONNECTION_SYNC, payload)
-
-    def start_enterprise_login(
-        self, input: StartEnterpriseLoginInput
-    ) -> RawResponse[models.StartEnterpriseLoginResponse]:
-        "Start company sign-in\n\nReturns a sign-in URL without requiring an existing account: the company SSO connection when the target has a ready connection, otherwise ordinary account login. Supply one documented enrollment variant: organizationId with returnTo (optionally invitationToken), invitationToken with returnTo, or retryToken. Open the returned URL to continue authentication; receiving a URL does not complete sign-in. This is a browser flow: the request must come from an allowed Origin, and the retryToken variant also needs the retry cookie set by the failed sign-in, so send it with credentials."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_START_ENTERPRISE_LOGIN, payload)
-
-    def update_organization_sso_policy(
-        self, input: UpdateOrganizationSsoPolicyInput
-    ) -> RawResponse[models.OrganizationSsoConfiguration]:
-        "Update organization SSO policy\n\nUpdates whether SSO can admit new members automatically using ssoJitEnabled and the current expectedVersion. Returns the organization’s SSO configuration and policy synchronization status; a successful response does not mean every desired policy setting has finished synchronizing."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_UPDATE_ORGANIZATION_SSO_POLICY, payload)
-
-
-class SyncRawOrganizationsBillingResource:
-    def __init__(self, transport: SyncTransport) -> None:
-        self._transport = transport
-
-    def change_plan(
-        self, input: ChangePlanInput
-    ) -> RawResponse[models.TerminalBillingOperation | models.PendingBillingOperation]:
-        "Change plan\n\nPurchases or changes the selected project's plan for the supplied category and planCode. A 202 response means the change is pending: poll the returned operation URL and honor Retry-After until it succeeds or fails. A 200 response means the idempotency key resolved to an operation that is already terminal; inspect that result rather than assuming success from the status code alone. Supply the required Idempotency-Key header. Supply both organizationId and projectId to select the project within its organization."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CHANGE_PLAN, payload)
-
-    def create_organization_payment_method_checkout(
-        self, input: CreateOrganizationPaymentMethodCheckoutInput
-    ) -> RawResponse[models.CreateOrganizationPaymentMethodCheckoutResponse]:
-        "Create payment method checkout\n\nReturns a hosted payment-method collection URL for the selected organization. An Idempotency-Key header is optional; supply one to make retries safe. Complete the returned checkout flow. Receiving the URL does not mean a card has been saved; check payment-method status afterward."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CREATE_ORGANIZATION_PAYMENT_METHOD_CHECKOUT, payload)
-
-    def create_organization_setup_intent(
-        self, input: CreateOrganizationSetupIntentInput
-    ) -> RawResponse[models.CreateOrganizationSetupIntentResponse]:
-        "Create card setup intent\n\nCreates payment-provider configuration for collecting a card for the selected organization and returns clientSecret and publishableKey. Supply the required Idempotency-Key header. Complete the provider’s card-collection flow separately and avoid logging the returned client secret."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CREATE_ORGANIZATION_SETUP_INTENT, payload)
-
-    def get_effective_terms(
-        self, input: GetEffectiveTermsInput
-    ) -> RawResponse[models.GetEffectiveTermsResponse]:
-        "Get the project's effective billing terms\n\nReturns what the selected project is billed on now, per category it holds: the plan as its subscription has it, with any override applied, each fixed charge at the subscription's price and quantity, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. Supply both organizationId and projectId; the organization must pay for the project. This operation does not change billing."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_EFFECTIVE_TERMS, payload)
-
-    def get_organization_billing_overview(
-        self, input: GetOrganizationBillingOverviewInput
-    ) -> RawResponse[models.GetOrganizationBillingOverviewResponse]:
-        "Get organization billing overview\n\nReturns the selected organization’s billing subscription and entitlementsVersion. The subscription can be null. Read the returned plan, charges and entitlements to inspect organization billing; this operation does not purchase or change a plan."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_ORGANIZATION_BILLING_OVERVIEW, payload)
-
-    def get_organization_credit(
-        self, input: GetOrganizationCreditInput
-    ) -> RawResponse[models.GetOrganizationCreditResponse]:
-        "Get organization credit\n\nReturns the credit the selected organization holds: on credit notes, such as the unused time of a plan an upgrade replaced or the unused days of a prorated fixed charge it released, and in its wallet: the credit Photon granted it, such as a new account's first organization's welcome credit, and any prepaid credit it bought. It offsets that organization's invoices of any kind except one-off invoices, credit notes first. Reading it does not apply or change credit."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_ORGANIZATION_CREDIT, payload)
-
-    def get_organization_payment_method(
-        self, input: GetOrganizationPaymentMethodInput
-    ) -> RawResponse[models.GetOrganizationPaymentMethodResponse]:
-        "Get organization payment method\n\nReports whether the selected organization has a card on file and returns its documented payment-method metadata. Reading this endpoint does not collect a new card or create a checkout session."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_ORGANIZATION_PAYMENT_METHOD, payload)
-
-    def get_organization_terms(
-        self, input: GetOrganizationTermsInput
-    ) -> RawResponse[models.GetOrganizationTermsResponse]:
-        "Get the organization's effective billing terms\n\nReturns what the selected organization is billed on now on its own subscription, such as SSO and 10DLC campaigns: the plan as the subscription has it, with any override applied, each fixed charge at the subscription's price and the quantity the organization holds, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. subscription has a project subscription's terms without its category, and is null when the organization holds none. Project subscriptions are read per project. This operation does not change billing."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_ORGANIZATION_TERMS, payload)
-
-    def list_credit_activity(
-        self, input: ListCreditActivityInput
-    ) -> RawResponse[models.ListCreditActivityResponse]:
-        "List credit activity\n\nReturns one page of how the selected organization's credit balance changed, newest first: credit notes issued and credit granted, credit applied to invoices, credit restored when the change an invoice paid for never applied, and credit voided. Each entry names the credit note (none for granted credit), the invoice when there is one, and the charge and subscription the credit note credits, or that the credit was a grant. Pass nextPage as page to read further. This operation does not change billing."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LIST_CREDIT_ACTIVITY, payload)
-
-    def list_invoices(self, input: ListInvoicesInput) -> RawResponse[models.ListInvoicesResponse]:
-        "List invoices\n\nReturns one page of the selected organization's invoices, newest first: every invoice issued to it with a nonzero total or actual charges, including charges fully paid by credit; drafts and empty invoices are excluded. Each names what it charged the organization's own subscription and each project. Pass subject to list only the invoices that charge the organization itself or one of its projects, and nextCursor as cursor to read further. Listing invoices does not make a payment or modify a subscription."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LIST_INVOICES, payload)
-
-    def preview_organization_change(
-        self, input: PreviewOrganizationChangeInput
-    ) -> RawResponse[models.PreviewOrganizationChangeResponse]:
-        "Preview an organization billing change\n\nPreviews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_PREVIEW_ORGANIZATION_CHANGE, payload)
-
-    def preview_project_change(
-        self, input: PreviewProjectChangeInput
-    ) -> RawResponse[models.PreviewProjectChangeResponse]:
-        "Preview a project billing change\n\nPreviews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. Supply both organizationId and projectId; the organization must pay for the project."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_PREVIEW_PROJECT_CHANGE, payload)
-
-
-class SyncRawOrganizationsProjectsResource:
-    def __init__(self, transport: SyncTransport) -> None:
-        self._transport = transport
-
-    def check_project_slug_availability(
-        self, input: CheckProjectSlugAvailabilityInput
-    ) -> RawResponse[models.CheckProjectSlugAvailabilityResponse]:
-        "Check project slug availability\n\nReports whether createProject would accept `slug` right now. Advisory: only the create itself allocates, so a caller must still handle SLUG_TAKEN. A malformed slug is rejected on shape; a reserved slug, a slug held by an active project, and a slug retired with a deleted project each answer `available: false` with a reason."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CHECK_PROJECT_SLUG_AVAILABILITY, payload)
-
-    def count(self, input: CountProjectsInput) -> RawResponse[models.ProjectCount]:
-        "Count projects\n\nCounts the projects the same filter would list. The count is read from the primary, so it is authoritative rather than replica-lagged."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_COUNT_PROJECTS, payload)
-
-    def create(self, input: CreateProjectInput) -> RawResponse[models.Project]:
-        "Create project\n\nCreates in the authorized organization. In addition to account credentials, explicitly granted Service Identity API keys and M2M tokens may create projects. Project API keys cannot create projects. Creator and private credential evidence come only from the trusted authorization context. The caller-selected slug is immutable, must be 3 to 63 lowercase ASCII alphanumerics separated by single hyphens, and cannot be reserved or held by any active or deleted project."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CREATE_PROJECT, payload)
-
-    def get_project_closure_status(
-        self, input: GetProjectClosureStatusInput
-    ) -> RawResponse[models.GetProjectClosureStatusResponse]:
-        "Get project closure status\n\nReturns closure progress for projectId within organizationId, including deletionOperationId, domain progress and ready. This read operation does not initiate deletion."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_PROJECT_CLOSURE_STATUS, payload)
-
-    def list(self, input: ListProjectsInput) -> RawResponse[models.ProjectPage]:
-        "List projects\n\nReturns a cursor-paginated page of the active projects in organizationId. Filter using query and the documented creation-time bounds, and navigate with pageSize and pageToken. Project roles are not returned and role is not a supported filter."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LIST_PROJECTS, payload)
-
-
-class SyncRawOrganizationsResource:
-    def __init__(self, transport: SyncTransport) -> None:
-        self._transport = transport
-        self.billing = SyncRawOrganizationsBillingResource(transport)
-        self.projects = SyncRawOrganizationsProjectsResource(transport)
-
-
-class SyncRawAccountOnboardingResource:
-    def __init__(self, transport: SyncTransport) -> None:
-        self._transport = transport
-
-    def complete(
-        self, input: CompleteAccountOnboardingInput | None = None
-    ) -> RawResponse[models.CompleteAccountOnboardingResponse]:
-        "Complete onboarding\n\nMarks the authenticated account's onboarding flow complete and returns a confirmation with onboarded set to true. No prior update is required, but submit any onboarding information you want to keep with updateAccountOnboarding first, because further edits through updateAccountOnboarding are rejected after completion."
-        payload = (input or CompleteAccountOnboardingInput()).model_dump(
-            mode="json", by_alias=True, exclude_unset=True
-        )
-        return self._transport.request(_OP_COMPLETE_ACCOUNT_ONBOARDING, payload)
-
-    def get(
-        self, input: GetAccountOnboardingInput | None = None
-    ) -> RawResponse[models.GetAccountOnboardingResponse]:
-        "Get onboarding state\n\nReturns the authenticated account's current onboarding state and collected onboarding information. Reading the state does not complete onboarding or modify the supplied account information."
-        payload = (input or GetAccountOnboardingInput()).model_dump(
-            mode="json", by_alias=True, exclude_unset=True
-        )
-        return self._transport.request(_OP_GET_ACCOUNT_ONBOARDING, payload)
-
-    def update(
-        self, input: UpdateAccountOnboardingInput
-    ) -> RawResponse[models.UpdateAccountOnboardingResponse]:
-        "Update onboarding state\n\nUpdates the authenticated account's submitted onboarding information, including the documented company, background, platform and referral fields. Returns the updated onboarding state. Completed onboarding cannot be edited through this operation; completion is performed separately with completeAccountOnboarding. Supply the required Idempotency-Key header."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_UPDATE_ACCOUNT_ONBOARDING, payload)
-
-
 class SyncRawAccountResource:
     def __init__(self, transport: SyncTransport) -> None:
         self._transport = transport
-        self.onboarding = SyncRawAccountOnboardingResource(transport)
 
     def commit_profile_picture(
         self, input: CommitAccountProfilePictureInput
@@ -6112,13 +7272,6 @@ class SyncRawAccountResource:
         "Commit profile picture\n\nCommits a profile picture previously uploaded through createAccountProfilePictureUpload. Call this only after the direct multipart upload succeeds, using the uploadId from the same upload session and a stable Idempotency-Key. The service validates the temporary object's ownership, size, content type, image bytes, dimensions, encryption, and age before changing the Account."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_COMMIT_ACCOUNT_PROFILE_PICTURE, payload)
-
-    def confirm_phone_verification(
-        self, input: ConfirmAccountPhoneVerificationInput
-    ) -> RawResponse[models.Account]:
-        "Confirm phone verification\n\nBinds the number once the code is approved. Repeat calls return the bound Account."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CONFIRM_ACCOUNT_PHONE_VERIFICATION, payload)
 
     def create_account_service_key(
         self, input: CreateAccountServiceKeyInput
@@ -6187,13 +7340,6 @@ class SyncRawAccountResource:
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_REVOKE_AUTHORIZED_APPLICATION, payload)
 
-    def start_phone_verification(
-        self, input: StartAccountPhoneVerificationInput
-    ) -> RawResponse[models.StartAccountPhoneVerificationResponse]:
-        "Start phone verification\n\nSends an SMS code. Answers CAPTCHA_REQUIRED with the widget to render when no solved challenge accompanies the request; retry with the returned challengeContext and a token. Rate limited per account, per destination number, and globally; a rejection carries Retry-After."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_START_ACCOUNT_PHONE_VERIFICATION, payload)
-
     def update(self, input: UpdateAccountInput) -> RawResponse[models.Account]:
         "Update account\n\nUpdates the supplied firstName and lastName fields on the authenticated account and returns the updated profile. Only the documented profile fields can be changed through this endpoint; profile-picture uploads and phone-number verification use their dedicated operations. Supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
@@ -6217,6 +7363,454 @@ class SyncRawSystemResource:
         "Redeem installation credential\n\nThe registered app backend authenticates with a signed client assertion and a single-use code. Plaintext is returned only once; retries return status and never create another credential."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_REDEEM_APP_INSTALLATION_DELIVERY, payload)
+
+
+class SyncRawAuthDeviceResource:
+    def __init__(self, transport: SyncTransport) -> None:
+        self._transport = transport
+
+    def authorize(
+        self, input: DeviceAuthorizeInput | None = None
+    ) -> RawResponse[models.DeviceAuthorizeResponse]:
+        "Start device authorization\n\nStarts the device authorization flow for a CLI or another device without a browser. Show the verification URL and user code, then poll the token endpoint at the returned interval. No request fields are required; any supplied body is ignored."
+        payload = (input or DeviceAuthorizeInput()).model_dump(
+            mode="json", by_alias=True, exclude_unset=True
+        )
+        return self._transport.request(_OP_DEVICE_AUTHORIZE, payload)
+
+    def token(self, input: DeviceTokenInput) -> RawResponse[models.DeviceTokenResponse]:
+        "Exchange device code or refresh token\n\nExchanges an authorized device code or a refresh token for an access token and rotating refresh token. Accepts JSON and form-encoded bodies. While polling, wait at least interval seconds and increase the interval on slow_down. Store the new refresh token after every successful grant.\n\nThis SDK method sends uncompressed JSON (application/json). Other request formats described above apply to direct HTTP requests."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_DEVICE_TOKEN, payload)
+
+
+class SyncRawAuthResource:
+    def __init__(self, transport: SyncTransport) -> None:
+        self._transport = transport
+        self.device = SyncRawAuthDeviceResource(transport)
+
+    def create_organization_sso_portal_link(
+        self, input: CreateOrganizationSsoPortalLinkInput
+    ) -> RawResponse[models.CreateOrganizationSsoPortalLinkResponse]:
+        "Create organization setup portal link\n\nReturns an organization setup portal URL. Supply returnTo and optionally intent, either sso or domain_verification; sso is the default. Open the returned URL to complete the selected setup flow."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_CREATE_ORGANIZATION_SSO_PORTAL_LINK, payload)
+
+    def disable_organization_sso(
+        self, input: DisableOrganizationSsoInput
+    ) -> RawResponse[models.OrganizationSsoConfiguration]:
+        "Disable organization SSO\n\nDeletes the provider connection, releases the SSO requirement once the connection is gone, then unbinds the chosen domains. Retry with the same Idempotency-Key to resume or await the same run."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_DISABLE_ORGANIZATION_SSO, payload)
+
+    def get_organization_connection_status(
+        self, input: GetOrganizationConnectionStatusInput
+    ) -> RawResponse[models.OrganizationConnectionStatus]:
+        "Get organization connection status\n\nRequires current human organization membership. Synchronization status does not attest SSO configuration or completed authorization."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_GET_ORGANIZATION_CONNECTION_STATUS, payload)
+
+    def get_organization_sso_configuration(
+        self, input: GetOrganizationSsoConfigurationInput
+    ) -> RawResponse[models.OrganizationSsoConfiguration]:
+        "Get organization SSO configuration\n\nReturns the selected organization’s SSO connection state, configuration version, and desired and effective policy settings. Read policySyncStatus alongside the enforcement fields to distinguish requested settings from synchronized settings."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_GET_ORGANIZATION_SSO_CONFIGURATION, payload)
+
+    def list_oauth_scopes(
+        self, input: ListOauthScopesInput | None = None
+    ) -> RawResponse[models.ListOauthScopesResponse]:
+        "List OAuth scopes\n\nLists the business permissions available to OAuth applications."
+        payload = (input or ListOauthScopesInput()).model_dump(
+            mode="json", by_alias=True, exclude_unset=True
+        )
+        return self._transport.request(_OP_LIST_OAUTH_SCOPES, payload)
+
+    def refresh_organization_sso_connection(
+        self, input: RefreshOrganizationSsoConnectionInput
+    ) -> RawResponse[models.OrganizationSsoConfiguration]:
+        "Refresh organization SSO connection\n\nRefreshes the selected organization’s SSO connection and returns its current connection state, configuration version and policy synchronization status. This operation takes no request body."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_REFRESH_ORGANIZATION_SSO_CONNECTION, payload)
+
+    def retry_organization_connection_sync(
+        self, input: RetryOrganizationConnectionSyncInput
+    ) -> RawResponse[models.OrganizationConnectionStatus]:
+        "Retry organization connection sync\n\nReconciles existing local intent. Takes no body and cannot change membership, roles or authentication policy."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_RETRY_ORGANIZATION_CONNECTION_SYNC, payload)
+
+    def start_enterprise_login(
+        self, input: StartEnterpriseLoginInput
+    ) -> RawResponse[models.StartEnterpriseLoginResponse]:
+        "Start company sign-in\n\nReturns a sign-in URL without requiring an existing account: the company SSO connection when the target has a ready connection, otherwise ordinary account login. Supply one documented enrollment variant: organizationId with returnTo (optionally invitationToken), invitationToken with returnTo, or retryToken. Open the returned URL to continue authentication; receiving a URL does not complete sign-in. This is a browser flow: the request must come from an allowed Origin, and the retryToken variant also needs the retry cookie set by the failed sign-in, so send it with credentials."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_START_ENTERPRISE_LOGIN, payload)
+
+    def update_organization_sso_policy(
+        self, input: UpdateOrganizationSsoPolicyInput
+    ) -> RawResponse[models.OrganizationSsoConfiguration]:
+        "Update organization SSO policy\n\nUpdates whether SSO can admit new members automatically using ssoJitEnabled and the current expectedVersion. Returns the organization’s SSO configuration and policy synchronization status; a successful response does not mean every desired policy setting has finished synchronizing."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_UPDATE_ORGANIZATION_SSO_POLICY, payload)
+
+
+class SyncOrganizationsBillingResource:
+    def __init__(self, transport: SyncTransport) -> None:
+        self._raw_resource = SyncRawOrganizationsBillingResource(transport)
+
+    def change_plan(
+        self, input: ChangePlanInput
+    ) -> models.TerminalBillingOperation | models.PendingBillingOperation:
+        "Change plan\n\nPurchases or changes the selected project's plan for the supplied category and planCode. A 202 response means the change is pending: poll the returned operation URL and honor Retry-After until it succeeds or fails. A 200 response means the idempotency key resolved to an operation that is already terminal; inspect that result rather than assuming success from the status code alone. Supply the required Idempotency-Key header. Supply both organizationId and projectId to select the project within its organization."
+        return (self._raw_resource.change_plan(input)).data
+
+    def create_organization_payment_method_checkout(
+        self, input: CreateOrganizationPaymentMethodCheckoutInput
+    ) -> models.CreateOrganizationPaymentMethodCheckoutResponse:
+        "Create payment method checkout\n\nReturns a hosted payment-method collection URL for the selected organization. An Idempotency-Key header is optional; supply one to make retries safe. Complete the returned checkout flow. Receiving the URL does not mean a card has been saved; check payment-method status afterward."
+        return (self._raw_resource.create_organization_payment_method_checkout(input)).data
+
+    def get_effective_terms(
+        self, input: GetEffectiveTermsInput
+    ) -> models.GetEffectiveTermsResponse:
+        "Get the project's effective billing terms\n\nReturns what the selected project is billed on now, per category it holds: the plan as its subscription has it, with any override applied, each fixed charge at the subscription's price and quantity, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. Supply both organizationId and projectId; the organization must pay for the project. This operation does not change billing."
+        return (self._raw_resource.get_effective_terms(input)).data
+
+    def get_organization_billing_overview(
+        self, input: GetOrganizationBillingOverviewInput
+    ) -> models.GetOrganizationBillingOverviewResponse:
+        "Get organization billing overview\n\nReturns the selected organization’s billing subscription and entitlementsVersion. The subscription can be null. Read the returned plan, charges and entitlements to inspect organization billing; this operation does not purchase or change a plan."
+        return (self._raw_resource.get_organization_billing_overview(input)).data
+
+    def get_organization_credit(
+        self, input: GetOrganizationCreditInput
+    ) -> models.GetOrganizationCreditResponse:
+        "Get organization credit\n\nReturns the credit the selected organization holds: on credit notes, such as the unused time of a plan an upgrade replaced or the unused days of a prorated fixed charge it released, and in its wallet: the credit Photon granted it, such as a new account's first organization's welcome credit, and any prepaid credit it bought. It offsets that organization's invoices of any kind except one-off invoices, credit notes first. Reading it does not apply or change credit."
+        return (self._raw_resource.get_organization_credit(input)).data
+
+    def get_organization_payment_method(
+        self, input: GetOrganizationPaymentMethodInput
+    ) -> models.GetOrganizationPaymentMethodResponse:
+        "Get organization payment method\n\nReports whether the selected organization has a card on file and returns its documented payment-method metadata. Reading this endpoint does not collect a new card or create a checkout session."
+        return (self._raw_resource.get_organization_payment_method(input)).data
+
+    def get_organization_terms(
+        self, input: GetOrganizationTermsInput
+    ) -> models.GetOrganizationTermsResponse:
+        "Get the organization's effective billing terms\n\nReturns what the selected organization is billed on now on its own subscription, such as SSO and 10DLC campaigns: the plan as the subscription has it, with any override applied, each fixed charge at the subscription's price and the quantity the organization holds, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. subscription has a project subscription's terms without its category, and is null when the organization holds none. Project subscriptions are read per project. This operation does not change billing."
+        return (self._raw_resource.get_organization_terms(input)).data
+
+    def list_credit_activity(
+        self, input: ListCreditActivityInput
+    ) -> models.ListCreditActivityResponse:
+        "List credit activity\n\nReturns one page of how the selected organization's credit balance changed, newest first: credit notes issued and credit granted, credit applied to invoices, credit restored when the change an invoice paid for never applied, and credit voided. Each entry names the credit note (none for granted credit), the invoice when there is one, and the charge and subscription the credit note credits, or that the credit was a grant. Pass nextPage as page to read further. This operation does not change billing."
+        return (self._raw_resource.list_credit_activity(input)).data
+
+    def list_invoices(self, input: ListInvoicesInput) -> models.ListInvoicesResponse:
+        "List invoices\n\nReturns one page of the selected organization's invoices, newest first: every invoice issued to it with a nonzero total or actual charges, including charges fully paid by credit; drafts and empty invoices are excluded. Each names what it charged the organization's own subscription and each project. Pass subject to list only the invoices that charge the organization itself or one of its projects, and nextCursor as cursor to read further. Listing invoices does not make a payment or modify a subscription."
+        return (self._raw_resource.list_invoices(input)).data
+
+    def preview_organization_change(
+        self, input: PreviewOrganizationChangeInput
+    ) -> models.PreviewOrganizationChangeResponse:
+        "Preview an organization billing change\n\nPreviews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing."
+        return (self._raw_resource.preview_organization_change(input)).data
+
+    def preview_project_change(
+        self, input: PreviewProjectChangeInput
+    ) -> models.PreviewProjectChangeResponse:
+        "Preview a project billing change\n\nPreviews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. Supply both organizationId and projectId; the organization must pay for the project."
+        return (self._raw_resource.preview_project_change(input)).data
+
+
+class SyncOrganizationsProjectsResource:
+    def __init__(self, transport: SyncTransport) -> None:
+        self._raw_resource = SyncRawOrganizationsProjectsResource(transport)
+
+    def check_project_slug_availability(
+        self, input: CheckProjectSlugAvailabilityInput
+    ) -> models.CheckProjectSlugAvailabilityResponse:
+        "Check project slug availability\n\nReports whether createProject would accept `slug` right now. Advisory: only the create itself allocates, so a caller must still handle SLUG_TAKEN. A malformed slug is rejected on shape; a reserved slug, a slug held by an active project, and a slug retired with a deleted project each answer `available: false` with a reason."
+        return (self._raw_resource.check_project_slug_availability(input)).data
+
+    def count(self, input: CountProjectsInput) -> models.ProjectCount:
+        "Count projects\n\nCounts the projects the same filter would list. The count is read from the primary, so it is authoritative rather than replica-lagged."
+        return (self._raw_resource.count(input)).data
+
+    def create(self, input: CreateProjectInput) -> models.Project:
+        "Create project\n\nCreates in the authorized organization. In addition to account credentials, explicitly granted Service Identity API keys and M2M tokens may create projects. Project API keys cannot create projects. Creator and private credential evidence come only from the trusted authorization context. The caller-selected slug is immutable, must be 3 to 63 lowercase ASCII alphanumerics separated by single hyphens, and cannot be reserved or held by any active or deleted project."
+        return (self._raw_resource.create(input)).data
+
+    def get_project_closure_status(
+        self, input: GetProjectClosureStatusInput
+    ) -> models.GetProjectClosureStatusResponse:
+        "Get project closure status\n\nReturns closure progress for projectId within organizationId, including deletionOperationId, domain progress and ready. This read operation does not initiate deletion."
+        return (self._raw_resource.get_project_closure_status(input)).data
+
+    def list(self, input: ListProjectsInput) -> models.ProjectPage:
+        "List projects\n\nReturns a cursor-paginated page of the active projects in organizationId. Filter using query and the documented creation-time bounds, and navigate with pageSize and pageToken. Project roles are not returned and role is not a supported filter."
+        return (self._raw_resource.list(input)).data
+
+
+class SyncOrganizationsResource:
+    def __init__(self, transport: SyncTransport) -> None:
+        self._raw_resource = SyncRawOrganizationsResource(transport)
+        self.billing = SyncOrganizationsBillingResource(transport)
+        self.projects = SyncOrganizationsProjectsResource(transport)
+
+    def accept_organization_invitation(
+        self, input: AcceptOrganizationInvitationInput
+    ) -> models.AcceptOrganizationInvitationResponse:
+        "Accept an invitation to all organization projects"
+        return (self._raw_resource.accept_organization_invitation(input)).data
+
+    def cancel_sso_subscription(
+        self, input: CancelSsoSubscriptionInput
+    ) -> models.CancelSsoSubscriptionResponse:
+        "Cancel the SSO subscription"
+        return (self._raw_resource.cancel_sso_subscription(input)).data
+
+    def check_organization_deletion(
+        self, input: CheckOrganizationDeletionInput
+    ) -> models.CheckOrganizationDeletionResponse:
+        "Check organization deletion prerequisites"
+        return (self._raw_resource.check_organization_deletion(input)).data
+
+    def close_organization(self, input: CloseOrganizationInput) -> None:
+        "Delete organization"
+        return (self._raw_resource.close_organization(input)).data
+
+    def commit_organization_avatar(
+        self, input: CommitOrganizationAvatarInput
+    ) -> models.CommitOrganizationAvatarResponse:
+        "Commit an organization avatar"
+        return (self._raw_resource.commit_organization_avatar(input)).data
+
+    def create_organization(
+        self, input: CreateOrganizationInput
+    ) -> models.CreateOrganizationResponse:
+        "Create an organization"
+        return (self._raw_resource.create_organization(input)).data
+
+    def create_organization_avatar_upload(
+        self, input: CreateOrganizationAvatarUploadInput
+    ) -> models.CreateOrganizationAvatarUploadResponse:
+        "Create an organization avatar upload\n\nUpload a JPEG, PNG, or WebP image up to 5 MiB with every returned form field and the file last. Upload directly without Photon credentials, then commit the uploadId. Do not log or cache upload URLs or fields."
+        return (self._raw_resource.create_organization_avatar_upload(input)).data
+
+    def create_organization_invitation(
+        self, input: CreateOrganizationInvitationInput
+    ) -> models.CreateOrganizationInvitationResponse:
+        "Invite a Member or Viewer to all organization projects"
+        return (self._raw_resource.create_organization_invitation(input)).data
+
+    def create_organization_oauth_client(
+        self, input: CreateOrganizationOauthClientInput
+    ) -> models.CreateOrganizationOauthClientResponse:
+        "Create an organization OAuth client\n\nUse the same UUID Idempotency-Key and payload when retrying. Unknown provider outcomes require recovery; do not use a new key to retry an uncertain creation."
+        return (self._raw_resource.create_organization_oauth_client(input)).data
+
+    def create_service_identity(
+        self, input: CreateServiceIdentityInput
+    ) -> models.CreateServiceIdentityResponse:
+        "Create an organization Service Identity"
+        return (self._raw_resource.create_service_identity(input)).data
+
+    def create_service_identity_api_key(
+        self, input: CreateServiceIdentityApiKeyInput
+    ) -> models.CreateServiceIdentityApiKeyResponse:
+        "Create a one-time Service Identity API key"
+        return (self._raw_resource.create_service_identity_api_key(input)).data
+
+    def create_service_identity_client_secret(
+        self, input: CreateServiceIdentityClientSecretInput
+    ) -> models.CreateServiceIdentityClientSecretResponse:
+        "Create a one-time Service Identity M2M client secret"
+        return (self._raw_resource.create_service_identity_client_secret(input)).data
+
+    def delete_organization_oauth_client(
+        self, input: DeleteOrganizationOauthClientInput
+    ) -> models.DeleteOrganizationOauthClientResponse:
+        "Delete an organization OAuth client\n\nQueues deletion of the exact provider application. Retry DELETE to read its current status. Accepted deletion does not promise immediate token revocation."
+        return (self._raw_resource.delete_organization_oauth_client(input)).data
+
+    def delete_organization_oauth_client_secret(
+        self, input: DeleteOrganizationOauthClientSecretInput
+    ) -> None:
+        "Revoke an organization OAuth client's secret\n\nStops every secret of the app now, including one still in its grace period."
+        return (self._raw_resource.delete_organization_oauth_client_secret(input)).data
+
+    def ensure_initial_organization(
+        self, input: EnsureInitialOrganizationInput
+    ) -> models.EnsureInitialOrganizationResponse:
+        "Ensure the initial organization"
+        return (self._raw_resource.ensure_initial_organization(input)).data
+
+    def get_current_organization(
+        self, input: GetCurrentOrganizationInput | None = None
+    ) -> models.GetCurrentOrganizationResponse:
+        "Read the credential's organization\n\nReads the organization the credential is bound to: the organization an OAuth grant was consented for, or a Service Identity's own organization. Use it to discover which organization an integration acts for, and pass its organizationId to organization-scoped operations."
+        return (self._raw_resource.get_current_organization(input)).data
+
+    def get_organization(self, input: GetOrganizationInput) -> models.GetOrganizationResponse:
+        "Read organization name and avatar"
+        return (self._raw_resource.get_organization(input)).data
+
+    def get_organization_oauth_client(
+        self, input: GetOrganizationOauthClientInput
+    ) -> models.GetOrganizationOauthClientResponse:
+        "Read an organization OAuth client"
+        return (self._raw_resource.get_organization_oauth_client(input)).data
+
+    def get_organization_oauth_client_secret(
+        self, input: GetOrganizationOauthClientSecretInput
+    ) -> models.GetOrganizationOauthClientSecretResponse:
+        "Read an organization OAuth client's secret"
+        return (self._raw_resource.get_organization_oauth_client_secret(input)).data
+
+    def get_service_identity(
+        self, input: GetServiceIdentityInput
+    ) -> models.GetServiceIdentityResponse:
+        "Read a Service Identity"
+        return (self._raw_resource.get_service_identity(input)).data
+
+    def get_sso_subscription(
+        self, input: GetSsoSubscriptionInput
+    ) -> models.GetSsoSubscriptionResponse:
+        "Read SSO subscription"
+        return (self._raw_resource.get_sso_subscription(input)).data
+
+    def leave_organization(self, input: LeaveOrganizationInput) -> models.LeaveOrganizationResponse:
+        "Leave an organization; Owners must transfer or close first"
+        return (self._raw_resource.leave_organization(input)).data
+
+    def list_organization_invitations(
+        self, input: ListOrganizationInvitationsInput
+    ) -> models.ListOrganizationInvitationsResponse:
+        "List pending organization invitations"
+        return (self._raw_resource.list_organization_invitations(input)).data
+
+    def list_organization_members(
+        self, input: ListOrganizationMembersInput
+    ) -> models.ListOrganizationMembersResponse:
+        "List current organization members"
+        return (self._raw_resource.list_organization_members(input)).data
+
+    def list_organization_oauth_clients(
+        self, input: ListOrganizationOauthClientsInput
+    ) -> models.ListOrganizationOauthClientsResponse:
+        "List organization OAuth clients"
+        return (self._raw_resource.list_organization_oauth_clients(input)).data
+
+    def list_organizations(
+        self, input: ListOrganizationsInput | None = None
+    ) -> models.ListOrganizationsResponse:
+        "List organizations"
+        return (self._raw_resource.list_organizations(input)).data
+
+    def list_service_identities(
+        self, input: ListServiceIdentitiesInput
+    ) -> models.ListServiceIdentitiesResponse:
+        "List organization Service Identities"
+        return (self._raw_resource.list_service_identities(input)).data
+
+    def list_service_identity_credentials(
+        self, input: ListServiceIdentityCredentialsInput
+    ) -> models.ListServiceIdentityCredentialsResponse:
+        "List Service Identity credential metadata"
+        return (self._raw_resource.list_service_identity_credentials(input)).data
+
+    def list_service_identity_permissions(
+        self, input: ListServiceIdentityPermissionsInput
+    ) -> models.ListServiceIdentityPermissionsResponse:
+        "List grantable Service Identity permissions\n\nThe permissions a Service Identity or installable app may be granted: the machine set of the current auth contract, sorted. Create, update, and app declarations accept exactly these values."
+        return (self._raw_resource.list_service_identity_permissions(input)).data
+
+    def preview_organization_invitation(
+        self, input: PreviewOrganizationInvitationInput
+    ) -> models.PreviewOrganizationInvitationResponse:
+        "Preview an organization invitation after sign-in"
+        return (self._raw_resource.preview_organization_invitation(input)).data
+
+    def remove_organization_avatar(
+        self, input: RemoveOrganizationAvatarInput
+    ) -> models.RemoveOrganizationAvatarResponse:
+        "Remove an organization avatar"
+        return (self._raw_resource.remove_organization_avatar(input)).data
+
+    def remove_organization_member(
+        self, input: RemoveOrganizationMemberInput
+    ) -> models.RemoveOrganizationMemberResponse:
+        "Remove an organization member's access to all projects"
+        return (self._raw_resource.remove_organization_member(input)).data
+
+    def resend_organization_invitation(
+        self, input: ResendOrganizationInvitationInput
+    ) -> models.ResendOrganizationInvitationResponse:
+        "Resend an organization invitation"
+        return (self._raw_resource.resend_organization_invitation(input)).data
+
+    def revoke_organization_invitation(
+        self, input: RevokeOrganizationInvitationInput
+    ) -> models.RevokeOrganizationInvitationResponse:
+        "Revoke an organization invitation"
+        return (self._raw_resource.revoke_organization_invitation(input)).data
+
+    def revoke_service_identity_credential(
+        self, input: RevokeServiceIdentityCredentialInput
+    ) -> models.RevokeServiceIdentityCredentialResponse:
+        "Request Service Identity credential revocation"
+        return (self._raw_resource.revoke_service_identity_credential(input)).data
+
+    def rotate_organization_oauth_client_secret(
+        self, input: RotateOrganizationOauthClientSecretInput
+    ) -> models.RotateOrganizationOauthClientSecretResponse:
+        "Rotate an organization OAuth client's secret\n\nMints a new secret, then retires the one it replaces: `normal` keeps the old one working for one hour, `emergency` stops it now. A secret not created through Photon always stops now. Rotating again ends an earlier grace period. Retain the same UUID Idempotency-Key when retrying: only the delivering request returns plaintext."
+        return (self._raw_resource.rotate_organization_oauth_client_secret(input)).data
+
+    def setup_organization_oauth_client_secret(
+        self, input: SetupOrganizationOauthClientSecretInput
+    ) -> (
+        models.SetupOrganizationOauthClientSecretResponse
+        | models.SetupOrganizationOauthClientSecretCreatedResponse
+    ):
+        "Create an organization OAuth client's secret\n\nMints the app's first secret; once it has one, rotate it instead. Retain the same UUID Idempotency-Key when retrying: only the delivering request returns plaintext."
+        return (self._raw_resource.setup_organization_oauth_client_secret(input)).data
+
+    def subscribe_sso(self, input: SubscribeSsoInput) -> models.SubscribeSsoResponse:
+        "Subscribe to organization SSO"
+        return (self._raw_resource.subscribe_sso(input)).data
+
+    def transfer_organization_ownership(
+        self, input: TransferOrganizationOwnershipInput
+    ) -> models.TransferOrganizationOwnershipResponse:
+        "Transfer organization ownership to an existing member"
+        return (self._raw_resource.transfer_organization_ownership(input)).data
+
+    def update_organization(
+        self, input: UpdateOrganizationInput
+    ) -> models.UpdateOrganizationResponse:
+        "Change organization name"
+        return (self._raw_resource.update_organization(input)).data
+
+    def update_organization_member_role(
+        self, input: UpdateOrganizationMemberRoleInput
+    ) -> models.UpdateOrganizationMemberRoleResponse:
+        "Change an organization member's role across all projects"
+        return (self._raw_resource.update_organization_member_role(input)).data
+
+    def update_organization_oauth_client(
+        self, input: UpdateOrganizationOauthClientInput
+    ) -> models.UpdateOrganizationOauthClientResponse:
+        "Update an organization OAuth client\n\nRequires If-Match from the latest read. Stale versions return 412. A failed response may follow an applied provider update; reread before retrying. Version checking is not provider atomic CAS."
+        return (self._raw_resource.update_organization_oauth_client(input)).data
+
+    def update_service_identity(
+        self, input: UpdateServiceIdentityInput
+    ) -> models.UpdateServiceIdentityResponse:
+        "Update a Service Identity"
+        return (self._raw_resource.update_service_identity(input)).data
 
 
 class SyncProjectsPlatformsImessageAssignmentsResource:
@@ -6284,10 +7878,6 @@ class SyncProjectsPlatformsResource:
     def connect_telegram_bot(self, input: ConnectTelegramBotInput) -> models.Operation:
         "Connect Telegram bot\n\nStarts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to create a new bot, whose name and username are chosen in Telegram, or to connect an existing managed bot, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged."
         return (self._raw_resource.connect_telegram_bot(input)).data
-
-    def connect_whatsapp_business(self, input: ConnectWhatsappBusinessInput) -> models.Operation:
-        "Connect WhatsApp Business\n\nExchanges the authorization code Embedded Signup returned and connects exactly the selected phone number as one `whatsapp_sender`. Send the WABA id and phone-number id emitted by the same popup attempt; both are treated as selectors and verified against Meta before use. A selected number that matches a non-retired, same-project `voip_line` is linked to it; a number absent from Photon inventory stays unbound; a matching non-retired `cosmos_line`, foreign VoIP line or unassigned VoIP line fails the operation before registration. Connecting is free — no plan requirement — but Billing must report the project's organization as ready with a payment method on file. The Idempotency-Key is required and permanent: replaying the same key returns the original operation forever. Requires the platforms:write permission bound to the project resource in the path."
-        return (self._raw_resource.connect_whatsapp_business(input)).data
 
     def count_filtered_verification_codes(
         self, input: CountFilteredVerificationCodesInput
@@ -6412,12 +8002,6 @@ class SyncProjectsPlatformsResource:
     ) -> models.SharedLineAssignment:
         "Get WhatsApp shared line assignment\n\nReads one WhatsApp shared line assignment. Requires the platforms:read permission bound to the project resource in the path."
         return (self._raw_resource.get_whatsapp_shared_line_assignment(input)).data
-
-    def get_whatsapp_signup_config(
-        self, input: GetWhatsappSignupConfigInput
-    ) -> models.GetWhatsappSignupConfigResponse:
-        "Get WhatsApp signup config\n\nReturns what the browser needs to open Meta's Embedded Signup popup: the Facebook Login for Business configuration id, the Graph version to run against, and the scopes it will request. Answered in-process rather than forwarded, so the first step of onboarding survives an outage of the private service. Pass `configId` to `FB.login` as `config_id` with `response_type: 'code'` and `override_default_response_type: true`. Do NOT add a `featureType` — omitting it is what keeps the phone-number screen in the flow, and `only_waba_sharing` produces an account with no number that cannot be provisioned. Requires the platforms:read permission bound to the project resource in the path."
-        return (self._raw_resource.get_whatsapp_signup_config(input)).data
 
     def list_email_recommendations(
         self, input: ListEmailRecommendationsInput
@@ -6810,6 +8394,82 @@ class SyncProjectsResource:
         return (self._raw_resource.upload_attachment(input)).data
 
 
+class SyncAccountResource:
+    def __init__(self, transport: SyncTransport) -> None:
+        self._raw_resource = SyncRawAccountResource(transport)
+
+    def commit_profile_picture(self, input: CommitAccountProfilePictureInput) -> models.Account:
+        "Commit profile picture\n\nCommits a profile picture previously uploaded through createAccountProfilePictureUpload. Call this only after the direct multipart upload succeeds, using the uploadId from the same upload session and a stable Idempotency-Key. The service validates the temporary object's ownership, size, content type, image bytes, dimensions, encryption, and age before changing the Account."
+        return (self._raw_resource.commit_profile_picture(input)).data
+
+    def create_account_service_key(
+        self, input: CreateAccountServiceKeyInput
+    ) -> models.CreateAccountServiceKeyResponse:
+        "Create Account Service Key\n\nCreates a service key for the authenticated account with the supplied name and optional expiresAt. Returns key metadata and a one-time credential; store the credential securely because it cannot be retrieved through the listing endpoint. These credentials act as the account and must not be distributed as project-scoped keys. Supply the required Idempotency-Key header."
+        return (self._raw_resource.create_account_service_key(input)).data
+
+    def create_profile_picture_upload(
+        self, input: CreateAccountProfilePictureUploadInput
+    ) -> models.ProfilePictureUpload:
+        "Create profile picture upload\n\nCreates a ten-minute, Account-bound presigned S3 POST for a JPEG, PNG, or WebP profile picture up to 5 MiB. Copy every returned formFields entry into a multipart/form-data request to uploadUrl, append the local file as the final form part, and upload it directly without sending Photon credentials. After the upload succeeds, call commitAccountProfilePicture with the returned uploadId. Do not cache or log the upload URL or form fields."
+        return (self._raw_resource.create_profile_picture_upload(input)).data
+
+    def delete(self, input: DeleteAccountInput | None = None) -> models.Account:
+        "Delete account\n\nDeletes the authenticated account and returns its account tombstone. The operation is rejected while the account still owns organizations; transfer or close those organizations before retrying. This endpoint acts on the caller's account and does not accept another account's identifier."
+        return (self._raw_resource.delete(input)).data
+
+    def get(self, input: GetAccountInput | None = None) -> models.Account:
+        "Get account\n\nReturns the profile of the authenticated account. The account is selected from the credential rather than a request parameter. A missing or deleted account is reported as an error instead of an empty profile."
+        return (self._raw_resource.get(input)).data
+
+    def list_account_service_keys(
+        self, input: ListAccountServiceKeysInput | None = None
+    ) -> models.ListAccountServiceKeysResponse:
+        "List Account Service Keys\n\nReturns metadata for the authenticated account's unrevoked service keys, including expired keys, ordered newest first. Secret values are not returned; a key's credential is disclosed only when that key is created."
+        return (self._raw_resource.list_account_service_keys(input)).data
+
+    def list_authorized_applications(
+        self, input: ListAuthorizedApplicationsInput | None = None
+    ) -> models.ListAuthorizedApplicationsResponse:
+        "List connected applications\n\nLists the OAuth applications authorized by the authenticated user."
+        return (self._raw_resource.list_authorized_applications(input)).data
+
+    def reset_profile_picture(self, input: ResetAccountProfilePictureInput) -> models.Account:
+        "Remove profile picture\n\nRemoves the authenticated account's custom profile picture and returns the account using its default picture. This operation does not upload a replacement; use the upload-and-commit operations when setting a new custom picture. Supply the required Idempotency-Key header."
+        return (self._raw_resource.reset_profile_picture(input)).data
+
+    def revoke_account_service_key(
+        self, input: RevokeAccountServiceKeyInput
+    ) -> models.RevokeAccountServiceKeyResponse:
+        "Revoke Account Service Key\n\nRevokes the account-owned service key identified by serviceKeyId and returns its revoked metadata. Repeating the revocation is stable. Revocation changes the credential's validity; it does not create a replacement key. Supply the required Idempotency-Key header."
+        return (self._raw_resource.revoke_account_service_key(input)).data
+
+    def revoke_authorized_application(self, input: RevokeAuthorizedApplicationInput) -> None:
+        "Revoke connected application\n\nRevokes the authenticated user's grant for one OAuth application."
+        return (self._raw_resource.revoke_authorized_application(input)).data
+
+    def update(self, input: UpdateAccountInput) -> models.Account:
+        "Update account\n\nUpdates the supplied firstName and lastName fields on the authenticated account and returns the updated profile. Only the documented profile fields can be changed through this endpoint; profile-picture uploads and phone-number verification use their dedicated operations. Supply the required Idempotency-Key header."
+        return (self._raw_resource.update(input)).data
+
+
+class SyncSystemResource:
+    def __init__(self, transport: SyncTransport) -> None:
+        self._raw_resource = SyncRawSystemResource(transport)
+
+    def create_app_installation_request(
+        self, input: CreateAppInstallationRequestInput
+    ) -> models.CreateAppInstallationRequestResponse:
+        "Request app installation\n\nAuthenticates a registered app backend using a short-lived signed client assertion. Creates request metadata only; customer approval is still required."
+        return (self._raw_resource.create_app_installation_request(input)).data
+
+    def redeem_app_installation_delivery(
+        self, input: RedeemAppInstallationDeliveryInput
+    ) -> models.RedeemAppInstallationDeliveryResponse:
+        "Redeem installation credential\n\nThe registered app backend authenticates with a signed client assertion and a single-use code. Plaintext is returned only once; retries return status and never create another credential."
+        return (self._raw_resource.redeem_app_installation_delivery(input)).data
+
+
 class SyncAuthDeviceResource:
     def __init__(self, transport: SyncTransport) -> None:
         self._raw_resource = SyncRawAuthDeviceResource(transport)
@@ -6829,30 +8489,6 @@ class SyncAuthResource:
     def __init__(self, transport: SyncTransport) -> None:
         self._raw_resource = SyncRawAuthResource(transport)
         self.device = SyncAuthDeviceResource(transport)
-
-    def begin_invitation_sso(
-        self, input: BeginInvitationSsoInput
-    ) -> models.OrganizationAuthenticationRedirect:
-        "Sign in with invitation SSO\n\nReturns an authentication URL for the organization SSO connection associated with the supplied invitation token. Supply token and returnTo. Complete the returned authentication flow; requesting its URL does not itself accept the invitation."
-        return (self._raw_resource.begin_invitation_sso(input)).data
-
-    def begin_organization_authentication(
-        self, input: BeginOrganizationAuthenticationInput
-    ) -> models.OrganizationAuthenticationRedirect:
-        "Sign in with organization SSO\n\nReturns a URL to authenticate through the selected organization’s current SSO connection. Supply returnTo and open the returned URL to continue the flow. Receiving the URL does not establish an authenticated session."
-        return (self._raw_resource.begin_organization_authentication(input)).data
-
-    def begin_organization_closure_authentication(
-        self, input: BeginOrganizationClosureAuthenticationInput
-    ) -> models.OrganizationAuthenticationRedirect:
-        "Sign in to close organization\n\nReturns an authentication URL for the current organization owner to inspect organization closure. Supply returnTo and complete the returned flow. This operation initiates authentication and does not close the organization."
-        return (self._raw_resource.begin_organization_closure_authentication(input)).data
-
-    def begin_organization_sso_admission(
-        self, input: BeginOrganizationSsoAdmissionInput
-    ) -> models.OrganizationAuthenticationRedirect:
-        "Begin organization SSO admission\n\nReturns an SSO admission URL for an existing account and the selected organization. Supply returnTo for the continuation URL. Admission requires completing the returned authentication flow; creating the URL does not itself grant membership."
-        return (self._raw_resource.begin_organization_sso_admission(input)).data
 
     def create_organization_sso_portal_link(
         self, input: CreateOrganizationSsoPortalLinkInput
@@ -6909,225 +8545,435 @@ class SyncAuthResource:
         return (self._raw_resource.update_organization_sso_policy(input)).data
 
 
-class SyncOrganizationsBillingResource:
-    def __init__(self, transport: SyncTransport) -> None:
-        self._raw_resource = SyncRawOrganizationsBillingResource(transport)
+class AsyncRawOrganizationsBillingResource:
+    def __init__(self, transport: AsyncTransport) -> None:
+        self._transport = transport
 
-    def change_plan(
+    async def change_plan(
         self, input: ChangePlanInput
-    ) -> models.TerminalBillingOperation | models.PendingBillingOperation:
+    ) -> RawResponse[models.TerminalBillingOperation | models.PendingBillingOperation]:
         "Change plan\n\nPurchases or changes the selected project's plan for the supplied category and planCode. A 202 response means the change is pending: poll the returned operation URL and honor Retry-After until it succeeds or fails. A 200 response means the idempotency key resolved to an operation that is already terminal; inspect that result rather than assuming success from the status code alone. Supply the required Idempotency-Key header. Supply both organizationId and projectId to select the project within its organization."
-        return (self._raw_resource.change_plan(input)).data
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_CHANGE_PLAN, payload)
 
-    def create_organization_payment_method_checkout(
+    async def create_organization_payment_method_checkout(
         self, input: CreateOrganizationPaymentMethodCheckoutInput
-    ) -> models.CreateOrganizationPaymentMethodCheckoutResponse:
+    ) -> RawResponse[models.CreateOrganizationPaymentMethodCheckoutResponse]:
         "Create payment method checkout\n\nReturns a hosted payment-method collection URL for the selected organization. An Idempotency-Key header is optional; supply one to make retries safe. Complete the returned checkout flow. Receiving the URL does not mean a card has been saved; check payment-method status afterward."
-        return (self._raw_resource.create_organization_payment_method_checkout(input)).data
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(
+            _OP_CREATE_ORGANIZATION_PAYMENT_METHOD_CHECKOUT, payload
+        )
 
-    def create_organization_setup_intent(
-        self, input: CreateOrganizationSetupIntentInput
-    ) -> models.CreateOrganizationSetupIntentResponse:
-        "Create card setup intent\n\nCreates payment-provider configuration for collecting a card for the selected organization and returns clientSecret and publishableKey. Supply the required Idempotency-Key header. Complete the provider’s card-collection flow separately and avoid logging the returned client secret."
-        return (self._raw_resource.create_organization_setup_intent(input)).data
-
-    def get_effective_terms(
+    async def get_effective_terms(
         self, input: GetEffectiveTermsInput
-    ) -> models.GetEffectiveTermsResponse:
+    ) -> RawResponse[models.GetEffectiveTermsResponse]:
         "Get the project's effective billing terms\n\nReturns what the selected project is billed on now, per category it holds: the plan as its subscription has it, with any override applied, each fixed charge at the subscription's price and quantity, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. Supply both organizationId and projectId; the organization must pay for the project. This operation does not change billing."
-        return (self._raw_resource.get_effective_terms(input)).data
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_GET_EFFECTIVE_TERMS, payload)
 
-    def get_organization_billing_overview(
+    async def get_organization_billing_overview(
         self, input: GetOrganizationBillingOverviewInput
-    ) -> models.GetOrganizationBillingOverviewResponse:
+    ) -> RawResponse[models.GetOrganizationBillingOverviewResponse]:
         "Get organization billing overview\n\nReturns the selected organization’s billing subscription and entitlementsVersion. The subscription can be null. Read the returned plan, charges and entitlements to inspect organization billing; this operation does not purchase or change a plan."
-        return (self._raw_resource.get_organization_billing_overview(input)).data
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_GET_ORGANIZATION_BILLING_OVERVIEW, payload)
 
-    def get_organization_credit(
+    async def get_organization_credit(
         self, input: GetOrganizationCreditInput
-    ) -> models.GetOrganizationCreditResponse:
+    ) -> RawResponse[models.GetOrganizationCreditResponse]:
         "Get organization credit\n\nReturns the credit the selected organization holds: on credit notes, such as the unused time of a plan an upgrade replaced or the unused days of a prorated fixed charge it released, and in its wallet: the credit Photon granted it, such as a new account's first organization's welcome credit, and any prepaid credit it bought. It offsets that organization's invoices of any kind except one-off invoices, credit notes first. Reading it does not apply or change credit."
-        return (self._raw_resource.get_organization_credit(input)).data
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_GET_ORGANIZATION_CREDIT, payload)
 
-    def get_organization_payment_method(
+    async def get_organization_payment_method(
         self, input: GetOrganizationPaymentMethodInput
-    ) -> models.GetOrganizationPaymentMethodResponse:
+    ) -> RawResponse[models.GetOrganizationPaymentMethodResponse]:
         "Get organization payment method\n\nReports whether the selected organization has a card on file and returns its documented payment-method metadata. Reading this endpoint does not collect a new card or create a checkout session."
-        return (self._raw_resource.get_organization_payment_method(input)).data
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_GET_ORGANIZATION_PAYMENT_METHOD, payload)
 
-    def get_organization_terms(
+    async def get_organization_terms(
         self, input: GetOrganizationTermsInput
-    ) -> models.GetOrganizationTermsResponse:
+    ) -> RawResponse[models.GetOrganizationTermsResponse]:
         "Get the organization's effective billing terms\n\nReturns what the selected organization is billed on now on its own subscription, such as SSO and 10DLC campaigns: the plan as the subscription has it, with any override applied, each fixed charge at the subscription's price and the quantity the organization holds, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. subscription has a project subscription's terms without its category, and is null when the organization holds none. Project subscriptions are read per project. This operation does not change billing."
-        return (self._raw_resource.get_organization_terms(input)).data
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_GET_ORGANIZATION_TERMS, payload)
 
-    def list_credit_activity(
+    async def list_credit_activity(
         self, input: ListCreditActivityInput
-    ) -> models.ListCreditActivityResponse:
+    ) -> RawResponse[models.ListCreditActivityResponse]:
         "List credit activity\n\nReturns one page of how the selected organization's credit balance changed, newest first: credit notes issued and credit granted, credit applied to invoices, credit restored when the change an invoice paid for never applied, and credit voided. Each entry names the credit note (none for granted credit), the invoice when there is one, and the charge and subscription the credit note credits, or that the credit was a grant. Pass nextPage as page to read further. This operation does not change billing."
-        return (self._raw_resource.list_credit_activity(input)).data
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_LIST_CREDIT_ACTIVITY, payload)
 
-    def list_invoices(self, input: ListInvoicesInput) -> models.ListInvoicesResponse:
+    async def list_invoices(
+        self, input: ListInvoicesInput
+    ) -> RawResponse[models.ListInvoicesResponse]:
         "List invoices\n\nReturns one page of the selected organization's invoices, newest first: every invoice issued to it with a nonzero total or actual charges, including charges fully paid by credit; drafts and empty invoices are excluded. Each names what it charged the organization's own subscription and each project. Pass subject to list only the invoices that charge the organization itself or one of its projects, and nextCursor as cursor to read further. Listing invoices does not make a payment or modify a subscription."
-        return (self._raw_resource.list_invoices(input)).data
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_LIST_INVOICES, payload)
 
-    def preview_organization_change(
+    async def preview_organization_change(
         self, input: PreviewOrganizationChangeInput
-    ) -> models.PreviewOrganizationChangeResponse:
+    ) -> RawResponse[models.PreviewOrganizationChangeResponse]:
         "Preview an organization billing change\n\nPreviews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing."
-        return (self._raw_resource.preview_organization_change(input)).data
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_PREVIEW_ORGANIZATION_CHANGE, payload)
 
-    def preview_project_change(
+    async def preview_project_change(
         self, input: PreviewProjectChangeInput
-    ) -> models.PreviewProjectChangeResponse:
+    ) -> RawResponse[models.PreviewProjectChangeResponse]:
         "Preview a project billing change\n\nPreviews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. Supply both organizationId and projectId; the organization must pay for the project."
-        return (self._raw_resource.preview_project_change(input)).data
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_PREVIEW_PROJECT_CHANGE, payload)
 
 
-class SyncOrganizationsProjectsResource:
-    def __init__(self, transport: SyncTransport) -> None:
-        self._raw_resource = SyncRawOrganizationsProjectsResource(transport)
+class AsyncRawOrganizationsProjectsResource:
+    def __init__(self, transport: AsyncTransport) -> None:
+        self._transport = transport
 
-    def check_project_slug_availability(
+    async def check_project_slug_availability(
         self, input: CheckProjectSlugAvailabilityInput
-    ) -> models.CheckProjectSlugAvailabilityResponse:
+    ) -> RawResponse[models.CheckProjectSlugAvailabilityResponse]:
         "Check project slug availability\n\nReports whether createProject would accept `slug` right now. Advisory: only the create itself allocates, so a caller must still handle SLUG_TAKEN. A malformed slug is rejected on shape; a reserved slug, a slug held by an active project, and a slug retired with a deleted project each answer `available: false` with a reason."
-        return (self._raw_resource.check_project_slug_availability(input)).data
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_CHECK_PROJECT_SLUG_AVAILABILITY, payload)
 
-    def count(self, input: CountProjectsInput) -> models.ProjectCount:
+    async def count(self, input: CountProjectsInput) -> RawResponse[models.ProjectCount]:
         "Count projects\n\nCounts the projects the same filter would list. The count is read from the primary, so it is authoritative rather than replica-lagged."
-        return (self._raw_resource.count(input)).data
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_COUNT_PROJECTS, payload)
 
-    def create(self, input: CreateProjectInput) -> models.Project:
+    async def create(self, input: CreateProjectInput) -> RawResponse[models.Project]:
         "Create project\n\nCreates in the authorized organization. In addition to account credentials, explicitly granted Service Identity API keys and M2M tokens may create projects. Project API keys cannot create projects. Creator and private credential evidence come only from the trusted authorization context. The caller-selected slug is immutable, must be 3 to 63 lowercase ASCII alphanumerics separated by single hyphens, and cannot be reserved or held by any active or deleted project."
-        return (self._raw_resource.create(input)).data
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_CREATE_PROJECT, payload)
 
-    def get_project_closure_status(
+    async def get_project_closure_status(
         self, input: GetProjectClosureStatusInput
-    ) -> models.GetProjectClosureStatusResponse:
+    ) -> RawResponse[models.GetProjectClosureStatusResponse]:
         "Get project closure status\n\nReturns closure progress for projectId within organizationId, including deletionOperationId, domain progress and ready. This read operation does not initiate deletion."
-        return (self._raw_resource.get_project_closure_status(input)).data
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_GET_PROJECT_CLOSURE_STATUS, payload)
 
-    def list(self, input: ListProjectsInput) -> models.ProjectPage:
+    async def list(self, input: ListProjectsInput) -> RawResponse[models.ProjectPage]:
         "List projects\n\nReturns a cursor-paginated page of the active projects in organizationId. Filter using query and the documented creation-time bounds, and navigate with pageSize and pageToken. Project roles are not returned and role is not a supported filter."
-        return (self._raw_resource.list(input)).data
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_LIST_PROJECTS, payload)
 
 
-class SyncOrganizationsResource:
-    def __init__(self, transport: SyncTransport) -> None:
-        self._raw_resource = SyncRawOrganizationsResource(transport)
-        self.billing = SyncOrganizationsBillingResource(transport)
-        self.projects = SyncOrganizationsProjectsResource(transport)
+class AsyncRawOrganizationsResource:
+    def __init__(self, transport: AsyncTransport) -> None:
+        self._transport = transport
+        self.billing = AsyncRawOrganizationsBillingResource(transport)
+        self.projects = AsyncRawOrganizationsProjectsResource(transport)
 
+    async def accept_organization_invitation(
+        self, input: AcceptOrganizationInvitationInput
+    ) -> RawResponse[models.AcceptOrganizationInvitationResponse]:
+        "Accept an invitation to all organization projects"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_ACCEPT_ORGANIZATION_INVITATION, payload)
 
-class SyncAccountOnboardingResource:
-    def __init__(self, transport: SyncTransport) -> None:
-        self._raw_resource = SyncRawAccountOnboardingResource(transport)
+    async def cancel_sso_subscription(
+        self, input: CancelSsoSubscriptionInput
+    ) -> RawResponse[models.CancelSsoSubscriptionResponse]:
+        "Cancel the SSO subscription"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_CANCEL_SSO_SUBSCRIPTION, payload)
 
-    def complete(
-        self, input: CompleteAccountOnboardingInput | None = None
-    ) -> models.CompleteAccountOnboardingResponse:
-        "Complete onboarding\n\nMarks the authenticated account's onboarding flow complete and returns a confirmation with onboarded set to true. No prior update is required, but submit any onboarding information you want to keep with updateAccountOnboarding first, because further edits through updateAccountOnboarding are rejected after completion."
-        return (self._raw_resource.complete(input)).data
+    async def check_organization_deletion(
+        self, input: CheckOrganizationDeletionInput
+    ) -> RawResponse[models.CheckOrganizationDeletionResponse]:
+        "Check organization deletion prerequisites"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_CHECK_ORGANIZATION_DELETION, payload)
 
-    def get(
-        self, input: GetAccountOnboardingInput | None = None
-    ) -> models.GetAccountOnboardingResponse:
-        "Get onboarding state\n\nReturns the authenticated account's current onboarding state and collected onboarding information. Reading the state does not complete onboarding or modify the supplied account information."
-        return (self._raw_resource.get(input)).data
+    async def close_organization(self, input: CloseOrganizationInput) -> RawResponse[None]:
+        "Delete organization"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_CLOSE_ORGANIZATION, payload)
 
-    def update(self, input: UpdateAccountOnboardingInput) -> models.UpdateAccountOnboardingResponse:
-        "Update onboarding state\n\nUpdates the authenticated account's submitted onboarding information, including the documented company, background, platform and referral fields. Returns the updated onboarding state. Completed onboarding cannot be edited through this operation; completion is performed separately with completeAccountOnboarding. Supply the required Idempotency-Key header."
-        return (self._raw_resource.update(input)).data
+    async def commit_organization_avatar(
+        self, input: CommitOrganizationAvatarInput
+    ) -> RawResponse[models.CommitOrganizationAvatarResponse]:
+        "Commit an organization avatar"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_COMMIT_ORGANIZATION_AVATAR, payload)
 
+    async def create_organization(
+        self, input: CreateOrganizationInput
+    ) -> RawResponse[models.CreateOrganizationResponse]:
+        "Create an organization"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_CREATE_ORGANIZATION, payload)
 
-class SyncAccountResource:
-    def __init__(self, transport: SyncTransport) -> None:
-        self._raw_resource = SyncRawAccountResource(transport)
-        self.onboarding = SyncAccountOnboardingResource(transport)
+    async def create_organization_avatar_upload(
+        self, input: CreateOrganizationAvatarUploadInput
+    ) -> RawResponse[models.CreateOrganizationAvatarUploadResponse]:
+        "Create an organization avatar upload\n\nUpload a JPEG, PNG, or WebP image up to 5 MiB with every returned form field and the file last. Upload directly without Photon credentials, then commit the uploadId. Do not log or cache upload URLs or fields."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_CREATE_ORGANIZATION_AVATAR_UPLOAD, payload)
 
-    def commit_profile_picture(self, input: CommitAccountProfilePictureInput) -> models.Account:
-        "Commit profile picture\n\nCommits a profile picture previously uploaded through createAccountProfilePictureUpload. Call this only after the direct multipart upload succeeds, using the uploadId from the same upload session and a stable Idempotency-Key. The service validates the temporary object's ownership, size, content type, image bytes, dimensions, encryption, and age before changing the Account."
-        return (self._raw_resource.commit_profile_picture(input)).data
+    async def create_organization_invitation(
+        self, input: CreateOrganizationInvitationInput
+    ) -> RawResponse[models.CreateOrganizationInvitationResponse]:
+        "Invite a Member or Viewer to all organization projects"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_CREATE_ORGANIZATION_INVITATION, payload)
 
-    def confirm_phone_verification(
-        self, input: ConfirmAccountPhoneVerificationInput
-    ) -> models.Account:
-        "Confirm phone verification\n\nBinds the number once the code is approved. Repeat calls return the bound Account."
-        return (self._raw_resource.confirm_phone_verification(input)).data
+    async def create_organization_oauth_client(
+        self, input: CreateOrganizationOauthClientInput
+    ) -> RawResponse[models.CreateOrganizationOauthClientResponse]:
+        "Create an organization OAuth client\n\nUse the same UUID Idempotency-Key and payload when retrying. Unknown provider outcomes require recovery; do not use a new key to retry an uncertain creation."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_CREATE_ORGANIZATION_OAUTH_CLIENT, payload)
 
-    def create_account_service_key(
-        self, input: CreateAccountServiceKeyInput
-    ) -> models.CreateAccountServiceKeyResponse:
-        "Create Account Service Key\n\nCreates a service key for the authenticated account with the supplied name and optional expiresAt. Returns key metadata and a one-time credential; store the credential securely because it cannot be retrieved through the listing endpoint. These credentials act as the account and must not be distributed as project-scoped keys. Supply the required Idempotency-Key header."
-        return (self._raw_resource.create_account_service_key(input)).data
+    async def create_service_identity(
+        self, input: CreateServiceIdentityInput
+    ) -> RawResponse[models.CreateServiceIdentityResponse]:
+        "Create an organization Service Identity"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_CREATE_SERVICE_IDENTITY, payload)
 
-    def create_profile_picture_upload(
-        self, input: CreateAccountProfilePictureUploadInput
-    ) -> models.ProfilePictureUpload:
-        "Create profile picture upload\n\nCreates a ten-minute, Account-bound presigned S3 POST for a JPEG, PNG, or WebP profile picture up to 5 MiB. Copy every returned formFields entry into a multipart/form-data request to uploadUrl, append the local file as the final form part, and upload it directly without sending Photon credentials. After the upload succeeds, call commitAccountProfilePicture with the returned uploadId. Do not cache or log the upload URL or form fields."
-        return (self._raw_resource.create_profile_picture_upload(input)).data
+    async def create_service_identity_api_key(
+        self, input: CreateServiceIdentityApiKeyInput
+    ) -> RawResponse[models.CreateServiceIdentityApiKeyResponse]:
+        "Create a one-time Service Identity API key"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_CREATE_SERVICE_IDENTITY_API_KEY, payload)
 
-    def delete(self, input: DeleteAccountInput | None = None) -> models.Account:
-        "Delete account\n\nDeletes the authenticated account and returns its account tombstone. The operation is rejected while the account still owns organizations; transfer or close those organizations before retrying. This endpoint acts on the caller's account and does not accept another account's identifier."
-        return (self._raw_resource.delete(input)).data
+    async def create_service_identity_client_secret(
+        self, input: CreateServiceIdentityClientSecretInput
+    ) -> RawResponse[models.CreateServiceIdentityClientSecretResponse]:
+        "Create a one-time Service Identity M2M client secret"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_CREATE_SERVICE_IDENTITY_CLIENT_SECRET, payload)
 
-    def get(self, input: GetAccountInput | None = None) -> models.Account:
-        "Get account\n\nReturns the profile of the authenticated account. The account is selected from the credential rather than a request parameter. A missing or deleted account is reported as an error instead of an empty profile."
-        return (self._raw_resource.get(input)).data
+    async def delete_organization_oauth_client(
+        self, input: DeleteOrganizationOauthClientInput
+    ) -> RawResponse[models.DeleteOrganizationOauthClientResponse]:
+        "Delete an organization OAuth client\n\nQueues deletion of the exact provider application. Retry DELETE to read its current status. Accepted deletion does not promise immediate token revocation."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_DELETE_ORGANIZATION_OAUTH_CLIENT, payload)
 
-    def list_account_service_keys(
-        self, input: ListAccountServiceKeysInput | None = None
-    ) -> models.ListAccountServiceKeysResponse:
-        "List Account Service Keys\n\nReturns metadata for the authenticated account's unrevoked service keys, including expired keys, ordered newest first. Secret values are not returned; a key's credential is disclosed only when that key is created."
-        return (self._raw_resource.list_account_service_keys(input)).data
+    async def delete_organization_oauth_client_secret(
+        self, input: DeleteOrganizationOauthClientSecretInput
+    ) -> RawResponse[None]:
+        "Revoke an organization OAuth client's secret\n\nStops every secret of the app now, including one still in its grace period."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_DELETE_ORGANIZATION_OAUTH_CLIENT_SECRET, payload)
 
-    def list_authorized_applications(
-        self, input: ListAuthorizedApplicationsInput | None = None
-    ) -> models.ListAuthorizedApplicationsResponse:
-        "List connected applications\n\nLists the OAuth applications authorized by the authenticated user."
-        return (self._raw_resource.list_authorized_applications(input)).data
+    async def ensure_initial_organization(
+        self, input: EnsureInitialOrganizationInput
+    ) -> RawResponse[models.EnsureInitialOrganizationResponse]:
+        "Ensure the initial organization"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_ENSURE_INITIAL_ORGANIZATION, payload)
 
-    def reset_profile_picture(self, input: ResetAccountProfilePictureInput) -> models.Account:
-        "Remove profile picture\n\nRemoves the authenticated account's custom profile picture and returns the account using its default picture. This operation does not upload a replacement; use the upload-and-commit operations when setting a new custom picture. Supply the required Idempotency-Key header."
-        return (self._raw_resource.reset_profile_picture(input)).data
+    async def get_current_organization(
+        self, input: GetCurrentOrganizationInput | None = None
+    ) -> RawResponse[models.GetCurrentOrganizationResponse]:
+        "Read the credential's organization\n\nReads the organization the credential is bound to: the organization an OAuth grant was consented for, or a Service Identity's own organization. Use it to discover which organization an integration acts for, and pass its organizationId to organization-scoped operations."
+        payload = (input or GetCurrentOrganizationInput()).model_dump(
+            mode="json", by_alias=True, exclude_unset=True
+        )
+        return await self._transport.request(_OP_GET_CURRENT_ORGANIZATION, payload)
 
-    def revoke_account_service_key(
-        self, input: RevokeAccountServiceKeyInput
-    ) -> models.RevokeAccountServiceKeyResponse:
-        "Revoke Account Service Key\n\nRevokes the account-owned service key identified by serviceKeyId and returns its revoked metadata. Repeating the revocation is stable. Revocation changes the credential's validity; it does not create a replacement key. Supply the required Idempotency-Key header."
-        return (self._raw_resource.revoke_account_service_key(input)).data
+    async def get_organization(
+        self, input: GetOrganizationInput
+    ) -> RawResponse[models.GetOrganizationResponse]:
+        "Read organization name and avatar"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_GET_ORGANIZATION, payload)
 
-    def revoke_authorized_application(self, input: RevokeAuthorizedApplicationInput) -> None:
-        "Revoke connected application\n\nRevokes the authenticated user's grant for one OAuth application."
-        return (self._raw_resource.revoke_authorized_application(input)).data
+    async def get_organization_oauth_client(
+        self, input: GetOrganizationOauthClientInput
+    ) -> RawResponse[models.GetOrganizationOauthClientResponse]:
+        "Read an organization OAuth client"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_GET_ORGANIZATION_OAUTH_CLIENT, payload)
 
-    def start_phone_verification(
-        self, input: StartAccountPhoneVerificationInput
-    ) -> models.StartAccountPhoneVerificationResponse:
-        "Start phone verification\n\nSends an SMS code. Answers CAPTCHA_REQUIRED with the widget to render when no solved challenge accompanies the request; retry with the returned challengeContext and a token. Rate limited per account, per destination number, and globally; a rejection carries Retry-After."
-        return (self._raw_resource.start_phone_verification(input)).data
+    async def get_organization_oauth_client_secret(
+        self, input: GetOrganizationOauthClientSecretInput
+    ) -> RawResponse[models.GetOrganizationOauthClientSecretResponse]:
+        "Read an organization OAuth client's secret"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_GET_ORGANIZATION_OAUTH_CLIENT_SECRET, payload)
 
-    def update(self, input: UpdateAccountInput) -> models.Account:
-        "Update account\n\nUpdates the supplied firstName and lastName fields on the authenticated account and returns the updated profile. Only the documented profile fields can be changed through this endpoint; profile-picture uploads and phone-number verification use their dedicated operations. Supply the required Idempotency-Key header."
-        return (self._raw_resource.update(input)).data
+    async def get_service_identity(
+        self, input: GetServiceIdentityInput
+    ) -> RawResponse[models.GetServiceIdentityResponse]:
+        "Read a Service Identity"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_GET_SERVICE_IDENTITY, payload)
 
+    async def get_sso_subscription(
+        self, input: GetSsoSubscriptionInput
+    ) -> RawResponse[models.GetSsoSubscriptionResponse]:
+        "Read SSO subscription"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_GET_SSO_SUBSCRIPTION, payload)
 
-class SyncSystemResource:
-    def __init__(self, transport: SyncTransport) -> None:
-        self._raw_resource = SyncRawSystemResource(transport)
+    async def leave_organization(
+        self, input: LeaveOrganizationInput
+    ) -> RawResponse[models.LeaveOrganizationResponse]:
+        "Leave an organization; Owners must transfer or close first"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_LEAVE_ORGANIZATION, payload)
 
-    def create_app_installation_request(
-        self, input: CreateAppInstallationRequestInput
-    ) -> models.CreateAppInstallationRequestResponse:
-        "Request app installation\n\nAuthenticates a registered app backend using a short-lived signed client assertion. Creates request metadata only; customer approval is still required."
-        return (self._raw_resource.create_app_installation_request(input)).data
+    async def list_organization_invitations(
+        self, input: ListOrganizationInvitationsInput
+    ) -> RawResponse[models.ListOrganizationInvitationsResponse]:
+        "List pending organization invitations"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_LIST_ORGANIZATION_INVITATIONS, payload)
 
-    def redeem_app_installation_delivery(
-        self, input: RedeemAppInstallationDeliveryInput
-    ) -> models.RedeemAppInstallationDeliveryResponse:
-        "Redeem installation credential\n\nThe registered app backend authenticates with a signed client assertion and a single-use code. Plaintext is returned only once; retries return status and never create another credential."
-        return (self._raw_resource.redeem_app_installation_delivery(input)).data
+    async def list_organization_members(
+        self, input: ListOrganizationMembersInput
+    ) -> RawResponse[models.ListOrganizationMembersResponse]:
+        "List current organization members"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_LIST_ORGANIZATION_MEMBERS, payload)
+
+    async def list_organization_oauth_clients(
+        self, input: ListOrganizationOauthClientsInput
+    ) -> RawResponse[models.ListOrganizationOauthClientsResponse]:
+        "List organization OAuth clients"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_LIST_ORGANIZATION_OAUTH_CLIENTS, payload)
+
+    async def list_organizations(
+        self, input: ListOrganizationsInput | None = None
+    ) -> RawResponse[models.ListOrganizationsResponse]:
+        "List organizations"
+        payload = (input or ListOrganizationsInput()).model_dump(
+            mode="json", by_alias=True, exclude_unset=True
+        )
+        return await self._transport.request(_OP_LIST_ORGANIZATIONS, payload)
+
+    async def list_service_identities(
+        self, input: ListServiceIdentitiesInput
+    ) -> RawResponse[models.ListServiceIdentitiesResponse]:
+        "List organization Service Identities"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_LIST_SERVICE_IDENTITIES, payload)
+
+    async def list_service_identity_credentials(
+        self, input: ListServiceIdentityCredentialsInput
+    ) -> RawResponse[models.ListServiceIdentityCredentialsResponse]:
+        "List Service Identity credential metadata"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_LIST_SERVICE_IDENTITY_CREDENTIALS, payload)
+
+    async def list_service_identity_permissions(
+        self, input: ListServiceIdentityPermissionsInput
+    ) -> RawResponse[models.ListServiceIdentityPermissionsResponse]:
+        "List grantable Service Identity permissions\n\nThe permissions a Service Identity or installable app may be granted: the machine set of the current auth contract, sorted. Create, update, and app declarations accept exactly these values."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_LIST_SERVICE_IDENTITY_PERMISSIONS, payload)
+
+    async def preview_organization_invitation(
+        self, input: PreviewOrganizationInvitationInput
+    ) -> RawResponse[models.PreviewOrganizationInvitationResponse]:
+        "Preview an organization invitation after sign-in"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_PREVIEW_ORGANIZATION_INVITATION, payload)
+
+    async def remove_organization_avatar(
+        self, input: RemoveOrganizationAvatarInput
+    ) -> RawResponse[models.RemoveOrganizationAvatarResponse]:
+        "Remove an organization avatar"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_REMOVE_ORGANIZATION_AVATAR, payload)
+
+    async def remove_organization_member(
+        self, input: RemoveOrganizationMemberInput
+    ) -> RawResponse[models.RemoveOrganizationMemberResponse]:
+        "Remove an organization member's access to all projects"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_REMOVE_ORGANIZATION_MEMBER, payload)
+
+    async def resend_organization_invitation(
+        self, input: ResendOrganizationInvitationInput
+    ) -> RawResponse[models.ResendOrganizationInvitationResponse]:
+        "Resend an organization invitation"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_RESEND_ORGANIZATION_INVITATION, payload)
+
+    async def revoke_organization_invitation(
+        self, input: RevokeOrganizationInvitationInput
+    ) -> RawResponse[models.RevokeOrganizationInvitationResponse]:
+        "Revoke an organization invitation"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_REVOKE_ORGANIZATION_INVITATION, payload)
+
+    async def revoke_service_identity_credential(
+        self, input: RevokeServiceIdentityCredentialInput
+    ) -> RawResponse[models.RevokeServiceIdentityCredentialResponse]:
+        "Request Service Identity credential revocation"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_REVOKE_SERVICE_IDENTITY_CREDENTIAL, payload)
+
+    async def rotate_organization_oauth_client_secret(
+        self, input: RotateOrganizationOauthClientSecretInput
+    ) -> RawResponse[models.RotateOrganizationOauthClientSecretResponse]:
+        "Rotate an organization OAuth client's secret\n\nMints a new secret, then retires the one it replaces: `normal` keeps the old one working for one hour, `emergency` stops it now. A secret not created through Photon always stops now. Rotating again ends an earlier grace period. Retain the same UUID Idempotency-Key when retrying: only the delivering request returns plaintext."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_ROTATE_ORGANIZATION_OAUTH_CLIENT_SECRET, payload)
+
+    async def setup_organization_oauth_client_secret(
+        self, input: SetupOrganizationOauthClientSecretInput
+    ) -> RawResponse[
+        models.SetupOrganizationOauthClientSecretResponse
+        | models.SetupOrganizationOauthClientSecretCreatedResponse
+    ]:
+        "Create an organization OAuth client's secret\n\nMints the app's first secret; once it has one, rotate it instead. Retain the same UUID Idempotency-Key when retrying: only the delivering request returns plaintext."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_SETUP_ORGANIZATION_OAUTH_CLIENT_SECRET, payload)
+
+    async def subscribe_sso(
+        self, input: SubscribeSsoInput
+    ) -> RawResponse[models.SubscribeSsoResponse]:
+        "Subscribe to organization SSO"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_SUBSCRIBE_SSO, payload)
+
+    async def transfer_organization_ownership(
+        self, input: TransferOrganizationOwnershipInput
+    ) -> RawResponse[models.TransferOrganizationOwnershipResponse]:
+        "Transfer organization ownership to an existing member"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_TRANSFER_ORGANIZATION_OWNERSHIP, payload)
+
+    async def update_organization(
+        self, input: UpdateOrganizationInput
+    ) -> RawResponse[models.UpdateOrganizationResponse]:
+        "Change organization name"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_UPDATE_ORGANIZATION, payload)
+
+    async def update_organization_member_role(
+        self, input: UpdateOrganizationMemberRoleInput
+    ) -> RawResponse[models.UpdateOrganizationMemberRoleResponse]:
+        "Change an organization member's role across all projects"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_UPDATE_ORGANIZATION_MEMBER_ROLE, payload)
+
+    async def update_organization_oauth_client(
+        self, input: UpdateOrganizationOauthClientInput
+    ) -> RawResponse[models.UpdateOrganizationOauthClientResponse]:
+        "Update an organization OAuth client\n\nRequires If-Match from the latest read. Stale versions return 412. A failed response may follow an applied provider update; reread before retrying. Version checking is not provider atomic CAS."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_UPDATE_ORGANIZATION_OAUTH_CLIENT, payload)
+
+    async def update_service_identity(
+        self, input: UpdateServiceIdentityInput
+    ) -> RawResponse[models.UpdateServiceIdentityResponse]:
+        "Update a Service Identity"
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_UPDATE_SERVICE_IDENTITY, payload)
 
 
 class AsyncRawProjectsPlatformsImessageAssignmentsResource:
@@ -7222,13 +9068,6 @@ class AsyncRawProjectsPlatformsResource:
         "Connect Telegram bot\n\nStarts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to create a new bot, whose name and username are chosen in Telegram, or to connect an existing managed bot, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_CONNECT_TELEGRAM_BOT, payload)
-
-    async def connect_whatsapp_business(
-        self, input: ConnectWhatsappBusinessInput
-    ) -> RawResponse[models.Operation]:
-        "Connect WhatsApp Business\n\nExchanges the authorization code Embedded Signup returned and connects exactly the selected phone number as one `whatsapp_sender`. Send the WABA id and phone-number id emitted by the same popup attempt; both are treated as selectors and verified against Meta before use. A selected number that matches a non-retired, same-project `voip_line` is linked to it; a number absent from Photon inventory stays unbound; a matching non-retired `cosmos_line`, foreign VoIP line or unassigned VoIP line fails the operation before registration. Connecting is free — no plan requirement — but Billing must report the project's organization as ready with a payment method on file. The Idempotency-Key is required and permanent: replaying the same key returns the original operation forever. Requires the platforms:write permission bound to the project resource in the path."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CONNECT_WHATSAPP_BUSINESS, payload)
 
     async def count_filtered_verification_codes(
         self, input: CountFilteredVerificationCodesInput
@@ -7388,13 +9227,6 @@ class AsyncRawProjectsPlatformsResource:
         "Get WhatsApp shared line assignment\n\nReads one WhatsApp shared line assignment. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_GET_WHATSAPP_SHARED_LINE_ASSIGNMENT, payload)
-
-    async def get_whatsapp_signup_config(
-        self, input: GetWhatsappSignupConfigInput
-    ) -> RawResponse[models.GetWhatsappSignupConfigResponse]:
-        "Get WhatsApp signup config\n\nReturns what the browser needs to open Meta's Embedded Signup popup: the Facebook Login for Business configuration id, the Graph version to run against, and the scopes it will request. Answered in-process rather than forwarded, so the first step of onboarding survives an outage of the private service. Pass `configId` to `FB.login` as `config_id` with `response_type: 'code'` and `override_default_response_type: true`. Do NOT add a `featureType` — omitting it is what keeps the phone-number screen in the flow, and `only_waba_sharing` produces an account with no number that cannot be provisioned. Requires the platforms:read permission bound to the project resource in the path."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_WHATSAPP_SIGNUP_CONFIG, payload)
 
     async def list_email_recommendations(
         self, input: ListEmailRecommendationsInput
@@ -7902,290 +9734,9 @@ class AsyncRawProjectsResource:
         return await self._transport.request(_OP_UPLOAD_ATTACHMENT, payload)
 
 
-class AsyncRawAuthDeviceResource:
-    def __init__(self, transport: AsyncTransport) -> None:
-        self._transport = transport
-
-    async def authorize(
-        self, input: DeviceAuthorizeInput | None = None
-    ) -> RawResponse[models.DeviceAuthorizeResponse]:
-        "Start device authorization\n\nStarts the device authorization flow for a CLI or another device without a browser. Show the verification URL and user code, then poll the token endpoint at the returned interval. No request fields are required; any supplied body is ignored."
-        payload = (input or DeviceAuthorizeInput()).model_dump(
-            mode="json", by_alias=True, exclude_unset=True
-        )
-        return await self._transport.request(_OP_DEVICE_AUTHORIZE, payload)
-
-    async def token(self, input: DeviceTokenInput) -> RawResponse[models.DeviceTokenResponse]:
-        "Exchange device code or refresh token\n\nExchanges an authorized device code or a refresh token for an access token and rotating refresh token. Accepts JSON and form-encoded bodies. While polling, wait at least interval seconds and increase the interval on slow_down. Store the new refresh token after every successful grant.\n\nThis SDK method sends uncompressed JSON (application/json). Other request formats described above apply to direct HTTP requests."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_DEVICE_TOKEN, payload)
-
-
-class AsyncRawAuthResource:
-    def __init__(self, transport: AsyncTransport) -> None:
-        self._transport = transport
-        self.device = AsyncRawAuthDeviceResource(transport)
-
-    async def begin_invitation_sso(
-        self, input: BeginInvitationSsoInput
-    ) -> RawResponse[models.OrganizationAuthenticationRedirect]:
-        "Sign in with invitation SSO\n\nReturns an authentication URL for the organization SSO connection associated with the supplied invitation token. Supply token and returnTo. Complete the returned authentication flow; requesting its URL does not itself accept the invitation."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_BEGIN_INVITATION_SSO, payload)
-
-    async def begin_organization_authentication(
-        self, input: BeginOrganizationAuthenticationInput
-    ) -> RawResponse[models.OrganizationAuthenticationRedirect]:
-        "Sign in with organization SSO\n\nReturns a URL to authenticate through the selected organization’s current SSO connection. Supply returnTo and open the returned URL to continue the flow. Receiving the URL does not establish an authenticated session."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_BEGIN_ORGANIZATION_AUTHENTICATION, payload)
-
-    async def begin_organization_closure_authentication(
-        self, input: BeginOrganizationClosureAuthenticationInput
-    ) -> RawResponse[models.OrganizationAuthenticationRedirect]:
-        "Sign in to close organization\n\nReturns an authentication URL for the current organization owner to inspect organization closure. Supply returnTo and complete the returned flow. This operation initiates authentication and does not close the organization."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_BEGIN_ORGANIZATION_CLOSURE_AUTHENTICATION, payload)
-
-    async def begin_organization_sso_admission(
-        self, input: BeginOrganizationSsoAdmissionInput
-    ) -> RawResponse[models.OrganizationAuthenticationRedirect]:
-        "Begin organization SSO admission\n\nReturns an SSO admission URL for an existing account and the selected organization. Supply returnTo for the continuation URL. Admission requires completing the returned authentication flow; creating the URL does not itself grant membership."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_BEGIN_ORGANIZATION_SSO_ADMISSION, payload)
-
-    async def create_organization_sso_portal_link(
-        self, input: CreateOrganizationSsoPortalLinkInput
-    ) -> RawResponse[models.CreateOrganizationSsoPortalLinkResponse]:
-        "Create organization setup portal link\n\nReturns an organization setup portal URL. Supply returnTo and optionally intent, either sso or domain_verification; sso is the default. Open the returned URL to complete the selected setup flow."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CREATE_ORGANIZATION_SSO_PORTAL_LINK, payload)
-
-    async def disable_organization_sso(
-        self, input: DisableOrganizationSsoInput
-    ) -> RawResponse[models.OrganizationSsoConfiguration]:
-        "Disable organization SSO\n\nDeletes the provider connection, releases the SSO requirement once the connection is gone, then unbinds the chosen domains. Retry with the same Idempotency-Key to resume or await the same run."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_DISABLE_ORGANIZATION_SSO, payload)
-
-    async def get_organization_connection_status(
-        self, input: GetOrganizationConnectionStatusInput
-    ) -> RawResponse[models.OrganizationConnectionStatus]:
-        "Get organization connection status\n\nRequires current human organization membership. Synchronization status does not attest SSO configuration or completed authorization."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_ORGANIZATION_CONNECTION_STATUS, payload)
-
-    async def get_organization_sso_configuration(
-        self, input: GetOrganizationSsoConfigurationInput
-    ) -> RawResponse[models.OrganizationSsoConfiguration]:
-        "Get organization SSO configuration\n\nReturns the selected organization’s SSO connection state, configuration version, and desired and effective policy settings. Read policySyncStatus alongside the enforcement fields to distinguish requested settings from synchronized settings."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_ORGANIZATION_SSO_CONFIGURATION, payload)
-
-    async def list_oauth_scopes(
-        self, input: ListOauthScopesInput | None = None
-    ) -> RawResponse[models.ListOauthScopesResponse]:
-        "List OAuth scopes\n\nLists the business permissions available to OAuth applications."
-        payload = (input or ListOauthScopesInput()).model_dump(
-            mode="json", by_alias=True, exclude_unset=True
-        )
-        return await self._transport.request(_OP_LIST_OAUTH_SCOPES, payload)
-
-    async def refresh_organization_sso_connection(
-        self, input: RefreshOrganizationSsoConnectionInput
-    ) -> RawResponse[models.OrganizationSsoConfiguration]:
-        "Refresh organization SSO connection\n\nRefreshes the selected organization’s SSO connection and returns its current connection state, configuration version and policy synchronization status. This operation takes no request body."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_REFRESH_ORGANIZATION_SSO_CONNECTION, payload)
-
-    async def retry_organization_connection_sync(
-        self, input: RetryOrganizationConnectionSyncInput
-    ) -> RawResponse[models.OrganizationConnectionStatus]:
-        "Retry organization connection sync\n\nReconciles existing local intent. Takes no body and cannot change membership, roles or authentication policy."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_RETRY_ORGANIZATION_CONNECTION_SYNC, payload)
-
-    async def start_enterprise_login(
-        self, input: StartEnterpriseLoginInput
-    ) -> RawResponse[models.StartEnterpriseLoginResponse]:
-        "Start company sign-in\n\nReturns a sign-in URL without requiring an existing account: the company SSO connection when the target has a ready connection, otherwise ordinary account login. Supply one documented enrollment variant: organizationId with returnTo (optionally invitationToken), invitationToken with returnTo, or retryToken. Open the returned URL to continue authentication; receiving a URL does not complete sign-in. This is a browser flow: the request must come from an allowed Origin, and the retryToken variant also needs the retry cookie set by the failed sign-in, so send it with credentials."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_START_ENTERPRISE_LOGIN, payload)
-
-    async def update_organization_sso_policy(
-        self, input: UpdateOrganizationSsoPolicyInput
-    ) -> RawResponse[models.OrganizationSsoConfiguration]:
-        "Update organization SSO policy\n\nUpdates whether SSO can admit new members automatically using ssoJitEnabled and the current expectedVersion. Returns the organization’s SSO configuration and policy synchronization status; a successful response does not mean every desired policy setting has finished synchronizing."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_UPDATE_ORGANIZATION_SSO_POLICY, payload)
-
-
-class AsyncRawOrganizationsBillingResource:
-    def __init__(self, transport: AsyncTransport) -> None:
-        self._transport = transport
-
-    async def change_plan(
-        self, input: ChangePlanInput
-    ) -> RawResponse[models.TerminalBillingOperation | models.PendingBillingOperation]:
-        "Change plan\n\nPurchases or changes the selected project's plan for the supplied category and planCode. A 202 response means the change is pending: poll the returned operation URL and honor Retry-After until it succeeds or fails. A 200 response means the idempotency key resolved to an operation that is already terminal; inspect that result rather than assuming success from the status code alone. Supply the required Idempotency-Key header. Supply both organizationId and projectId to select the project within its organization."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CHANGE_PLAN, payload)
-
-    async def create_organization_payment_method_checkout(
-        self, input: CreateOrganizationPaymentMethodCheckoutInput
-    ) -> RawResponse[models.CreateOrganizationPaymentMethodCheckoutResponse]:
-        "Create payment method checkout\n\nReturns a hosted payment-method collection URL for the selected organization. An Idempotency-Key header is optional; supply one to make retries safe. Complete the returned checkout flow. Receiving the URL does not mean a card has been saved; check payment-method status afterward."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(
-            _OP_CREATE_ORGANIZATION_PAYMENT_METHOD_CHECKOUT, payload
-        )
-
-    async def create_organization_setup_intent(
-        self, input: CreateOrganizationSetupIntentInput
-    ) -> RawResponse[models.CreateOrganizationSetupIntentResponse]:
-        "Create card setup intent\n\nCreates payment-provider configuration for collecting a card for the selected organization and returns clientSecret and publishableKey. Supply the required Idempotency-Key header. Complete the provider’s card-collection flow separately and avoid logging the returned client secret."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CREATE_ORGANIZATION_SETUP_INTENT, payload)
-
-    async def get_effective_terms(
-        self, input: GetEffectiveTermsInput
-    ) -> RawResponse[models.GetEffectiveTermsResponse]:
-        "Get the project's effective billing terms\n\nReturns what the selected project is billed on now, per category it holds: the plan as its subscription has it, with any override applied, each fixed charge at the subscription's price and quantity, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. Supply both organizationId and projectId; the organization must pay for the project. This operation does not change billing."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_EFFECTIVE_TERMS, payload)
-
-    async def get_organization_billing_overview(
-        self, input: GetOrganizationBillingOverviewInput
-    ) -> RawResponse[models.GetOrganizationBillingOverviewResponse]:
-        "Get organization billing overview\n\nReturns the selected organization’s billing subscription and entitlementsVersion. The subscription can be null. Read the returned plan, charges and entitlements to inspect organization billing; this operation does not purchase or change a plan."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_ORGANIZATION_BILLING_OVERVIEW, payload)
-
-    async def get_organization_credit(
-        self, input: GetOrganizationCreditInput
-    ) -> RawResponse[models.GetOrganizationCreditResponse]:
-        "Get organization credit\n\nReturns the credit the selected organization holds: on credit notes, such as the unused time of a plan an upgrade replaced or the unused days of a prorated fixed charge it released, and in its wallet: the credit Photon granted it, such as a new account's first organization's welcome credit, and any prepaid credit it bought. It offsets that organization's invoices of any kind except one-off invoices, credit notes first. Reading it does not apply or change credit."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_ORGANIZATION_CREDIT, payload)
-
-    async def get_organization_payment_method(
-        self, input: GetOrganizationPaymentMethodInput
-    ) -> RawResponse[models.GetOrganizationPaymentMethodResponse]:
-        "Get organization payment method\n\nReports whether the selected organization has a card on file and returns its documented payment-method metadata. Reading this endpoint does not collect a new card or create a checkout session."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_ORGANIZATION_PAYMENT_METHOD, payload)
-
-    async def get_organization_terms(
-        self, input: GetOrganizationTermsInput
-    ) -> RawResponse[models.GetOrganizationTermsResponse]:
-        "Get the organization's effective billing terms\n\nReturns what the selected organization is billed on now on its own subscription, such as SSO and 10DLC campaigns: the plan as the subscription has it, with any override applied, each fixed charge at the subscription's price and the quantity the organization holds, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. subscription has a project subscription's terms without its category, and is null when the organization holds none. Project subscriptions are read per project. This operation does not change billing."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_ORGANIZATION_TERMS, payload)
-
-    async def list_credit_activity(
-        self, input: ListCreditActivityInput
-    ) -> RawResponse[models.ListCreditActivityResponse]:
-        "List credit activity\n\nReturns one page of how the selected organization's credit balance changed, newest first: credit notes issued and credit granted, credit applied to invoices, credit restored when the change an invoice paid for never applied, and credit voided. Each entry names the credit note (none for granted credit), the invoice when there is one, and the charge and subscription the credit note credits, or that the credit was a grant. Pass nextPage as page to read further. This operation does not change billing."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LIST_CREDIT_ACTIVITY, payload)
-
-    async def list_invoices(
-        self, input: ListInvoicesInput
-    ) -> RawResponse[models.ListInvoicesResponse]:
-        "List invoices\n\nReturns one page of the selected organization's invoices, newest first: every invoice issued to it with a nonzero total or actual charges, including charges fully paid by credit; drafts and empty invoices are excluded. Each names what it charged the organization's own subscription and each project. Pass subject to list only the invoices that charge the organization itself or one of its projects, and nextCursor as cursor to read further. Listing invoices does not make a payment or modify a subscription."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LIST_INVOICES, payload)
-
-    async def preview_organization_change(
-        self, input: PreviewOrganizationChangeInput
-    ) -> RawResponse[models.PreviewOrganizationChangeResponse]:
-        "Preview an organization billing change\n\nPreviews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_PREVIEW_ORGANIZATION_CHANGE, payload)
-
-    async def preview_project_change(
-        self, input: PreviewProjectChangeInput
-    ) -> RawResponse[models.PreviewProjectChangeResponse]:
-        "Preview a project billing change\n\nPreviews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. Supply both organizationId and projectId; the organization must pay for the project."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_PREVIEW_PROJECT_CHANGE, payload)
-
-
-class AsyncRawOrganizationsProjectsResource:
-    def __init__(self, transport: AsyncTransport) -> None:
-        self._transport = transport
-
-    async def check_project_slug_availability(
-        self, input: CheckProjectSlugAvailabilityInput
-    ) -> RawResponse[models.CheckProjectSlugAvailabilityResponse]:
-        "Check project slug availability\n\nReports whether createProject would accept `slug` right now. Advisory: only the create itself allocates, so a caller must still handle SLUG_TAKEN. A malformed slug is rejected on shape; a reserved slug, a slug held by an active project, and a slug retired with a deleted project each answer `available: false` with a reason."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CHECK_PROJECT_SLUG_AVAILABILITY, payload)
-
-    async def count(self, input: CountProjectsInput) -> RawResponse[models.ProjectCount]:
-        "Count projects\n\nCounts the projects the same filter would list. The count is read from the primary, so it is authoritative rather than replica-lagged."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_COUNT_PROJECTS, payload)
-
-    async def create(self, input: CreateProjectInput) -> RawResponse[models.Project]:
-        "Create project\n\nCreates in the authorized organization. In addition to account credentials, explicitly granted Service Identity API keys and M2M tokens may create projects. Project API keys cannot create projects. Creator and private credential evidence come only from the trusted authorization context. The caller-selected slug is immutable, must be 3 to 63 lowercase ASCII alphanumerics separated by single hyphens, and cannot be reserved or held by any active or deleted project."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CREATE_PROJECT, payload)
-
-    async def get_project_closure_status(
-        self, input: GetProjectClosureStatusInput
-    ) -> RawResponse[models.GetProjectClosureStatusResponse]:
-        "Get project closure status\n\nReturns closure progress for projectId within organizationId, including deletionOperationId, domain progress and ready. This read operation does not initiate deletion."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_PROJECT_CLOSURE_STATUS, payload)
-
-    async def list(self, input: ListProjectsInput) -> RawResponse[models.ProjectPage]:
-        "List projects\n\nReturns a cursor-paginated page of the active projects in organizationId. Filter using query and the documented creation-time bounds, and navigate with pageSize and pageToken. Project roles are not returned and role is not a supported filter."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LIST_PROJECTS, payload)
-
-
-class AsyncRawOrganizationsResource:
-    def __init__(self, transport: AsyncTransport) -> None:
-        self._transport = transport
-        self.billing = AsyncRawOrganizationsBillingResource(transport)
-        self.projects = AsyncRawOrganizationsProjectsResource(transport)
-
-
-class AsyncRawAccountOnboardingResource:
-    def __init__(self, transport: AsyncTransport) -> None:
-        self._transport = transport
-
-    async def complete(
-        self, input: CompleteAccountOnboardingInput | None = None
-    ) -> RawResponse[models.CompleteAccountOnboardingResponse]:
-        "Complete onboarding\n\nMarks the authenticated account's onboarding flow complete and returns a confirmation with onboarded set to true. No prior update is required, but submit any onboarding information you want to keep with updateAccountOnboarding first, because further edits through updateAccountOnboarding are rejected after completion."
-        payload = (input or CompleteAccountOnboardingInput()).model_dump(
-            mode="json", by_alias=True, exclude_unset=True
-        )
-        return await self._transport.request(_OP_COMPLETE_ACCOUNT_ONBOARDING, payload)
-
-    async def get(
-        self, input: GetAccountOnboardingInput | None = None
-    ) -> RawResponse[models.GetAccountOnboardingResponse]:
-        "Get onboarding state\n\nReturns the authenticated account's current onboarding state and collected onboarding information. Reading the state does not complete onboarding or modify the supplied account information."
-        payload = (input or GetAccountOnboardingInput()).model_dump(
-            mode="json", by_alias=True, exclude_unset=True
-        )
-        return await self._transport.request(_OP_GET_ACCOUNT_ONBOARDING, payload)
-
-    async def update(
-        self, input: UpdateAccountOnboardingInput
-    ) -> RawResponse[models.UpdateAccountOnboardingResponse]:
-        "Update onboarding state\n\nUpdates the authenticated account's submitted onboarding information, including the documented company, background, platform and referral fields. Returns the updated onboarding state. Completed onboarding cannot be edited through this operation; completion is performed separately with completeAccountOnboarding. Supply the required Idempotency-Key header."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_UPDATE_ACCOUNT_ONBOARDING, payload)
-
-
 class AsyncRawAccountResource:
     def __init__(self, transport: AsyncTransport) -> None:
         self._transport = transport
-        self.onboarding = AsyncRawAccountOnboardingResource(transport)
 
     async def commit_profile_picture(
         self, input: CommitAccountProfilePictureInput
@@ -8193,13 +9744,6 @@ class AsyncRawAccountResource:
         "Commit profile picture\n\nCommits a profile picture previously uploaded through createAccountProfilePictureUpload. Call this only after the direct multipart upload succeeds, using the uploadId from the same upload session and a stable Idempotency-Key. The service validates the temporary object's ownership, size, content type, image bytes, dimensions, encryption, and age before changing the Account."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_COMMIT_ACCOUNT_PROFILE_PICTURE, payload)
-
-    async def confirm_phone_verification(
-        self, input: ConfirmAccountPhoneVerificationInput
-    ) -> RawResponse[models.Account]:
-        "Confirm phone verification\n\nBinds the number once the code is approved. Repeat calls return the bound Account."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CONFIRM_ACCOUNT_PHONE_VERIFICATION, payload)
 
     async def create_account_service_key(
         self, input: CreateAccountServiceKeyInput
@@ -8268,13 +9812,6 @@ class AsyncRawAccountResource:
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_REVOKE_AUTHORIZED_APPLICATION, payload)
 
-    async def start_phone_verification(
-        self, input: StartAccountPhoneVerificationInput
-    ) -> RawResponse[models.StartAccountPhoneVerificationResponse]:
-        "Start phone verification\n\nSends an SMS code. Answers CAPTCHA_REQUIRED with the widget to render when no solved challenge accompanies the request; retry with the returned challengeContext and a token. Rate limited per account, per destination number, and globally; a rejection carries Retry-After."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_START_ACCOUNT_PHONE_VERIFICATION, payload)
-
     async def update(self, input: UpdateAccountInput) -> RawResponse[models.Account]:
         "Update account\n\nUpdates the supplied firstName and lastName fields on the authenticated account and returns the updated profile. Only the documented profile fields can be changed through this endpoint; profile-picture uploads and phone-number verification use their dedicated operations. Supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
@@ -8298,6 +9835,456 @@ class AsyncRawSystemResource:
         "Redeem installation credential\n\nThe registered app backend authenticates with a signed client assertion and a single-use code. Plaintext is returned only once; retries return status and never create another credential."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_REDEEM_APP_INSTALLATION_DELIVERY, payload)
+
+
+class AsyncRawAuthDeviceResource:
+    def __init__(self, transport: AsyncTransport) -> None:
+        self._transport = transport
+
+    async def authorize(
+        self, input: DeviceAuthorizeInput | None = None
+    ) -> RawResponse[models.DeviceAuthorizeResponse]:
+        "Start device authorization\n\nStarts the device authorization flow for a CLI or another device without a browser. Show the verification URL and user code, then poll the token endpoint at the returned interval. No request fields are required; any supplied body is ignored."
+        payload = (input or DeviceAuthorizeInput()).model_dump(
+            mode="json", by_alias=True, exclude_unset=True
+        )
+        return await self._transport.request(_OP_DEVICE_AUTHORIZE, payload)
+
+    async def token(self, input: DeviceTokenInput) -> RawResponse[models.DeviceTokenResponse]:
+        "Exchange device code or refresh token\n\nExchanges an authorized device code or a refresh token for an access token and rotating refresh token. Accepts JSON and form-encoded bodies. While polling, wait at least interval seconds and increase the interval on slow_down. Store the new refresh token after every successful grant.\n\nThis SDK method sends uncompressed JSON (application/json). Other request formats described above apply to direct HTTP requests."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_DEVICE_TOKEN, payload)
+
+
+class AsyncRawAuthResource:
+    def __init__(self, transport: AsyncTransport) -> None:
+        self._transport = transport
+        self.device = AsyncRawAuthDeviceResource(transport)
+
+    async def create_organization_sso_portal_link(
+        self, input: CreateOrganizationSsoPortalLinkInput
+    ) -> RawResponse[models.CreateOrganizationSsoPortalLinkResponse]:
+        "Create organization setup portal link\n\nReturns an organization setup portal URL. Supply returnTo and optionally intent, either sso or domain_verification; sso is the default. Open the returned URL to complete the selected setup flow."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_CREATE_ORGANIZATION_SSO_PORTAL_LINK, payload)
+
+    async def disable_organization_sso(
+        self, input: DisableOrganizationSsoInput
+    ) -> RawResponse[models.OrganizationSsoConfiguration]:
+        "Disable organization SSO\n\nDeletes the provider connection, releases the SSO requirement once the connection is gone, then unbinds the chosen domains. Retry with the same Idempotency-Key to resume or await the same run."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_DISABLE_ORGANIZATION_SSO, payload)
+
+    async def get_organization_connection_status(
+        self, input: GetOrganizationConnectionStatusInput
+    ) -> RawResponse[models.OrganizationConnectionStatus]:
+        "Get organization connection status\n\nRequires current human organization membership. Synchronization status does not attest SSO configuration or completed authorization."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_GET_ORGANIZATION_CONNECTION_STATUS, payload)
+
+    async def get_organization_sso_configuration(
+        self, input: GetOrganizationSsoConfigurationInput
+    ) -> RawResponse[models.OrganizationSsoConfiguration]:
+        "Get organization SSO configuration\n\nReturns the selected organization’s SSO connection state, configuration version, and desired and effective policy settings. Read policySyncStatus alongside the enforcement fields to distinguish requested settings from synchronized settings."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_GET_ORGANIZATION_SSO_CONFIGURATION, payload)
+
+    async def list_oauth_scopes(
+        self, input: ListOauthScopesInput | None = None
+    ) -> RawResponse[models.ListOauthScopesResponse]:
+        "List OAuth scopes\n\nLists the business permissions available to OAuth applications."
+        payload = (input or ListOauthScopesInput()).model_dump(
+            mode="json", by_alias=True, exclude_unset=True
+        )
+        return await self._transport.request(_OP_LIST_OAUTH_SCOPES, payload)
+
+    async def refresh_organization_sso_connection(
+        self, input: RefreshOrganizationSsoConnectionInput
+    ) -> RawResponse[models.OrganizationSsoConfiguration]:
+        "Refresh organization SSO connection\n\nRefreshes the selected organization’s SSO connection and returns its current connection state, configuration version and policy synchronization status. This operation takes no request body."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_REFRESH_ORGANIZATION_SSO_CONNECTION, payload)
+
+    async def retry_organization_connection_sync(
+        self, input: RetryOrganizationConnectionSyncInput
+    ) -> RawResponse[models.OrganizationConnectionStatus]:
+        "Retry organization connection sync\n\nReconciles existing local intent. Takes no body and cannot change membership, roles or authentication policy."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_RETRY_ORGANIZATION_CONNECTION_SYNC, payload)
+
+    async def start_enterprise_login(
+        self, input: StartEnterpriseLoginInput
+    ) -> RawResponse[models.StartEnterpriseLoginResponse]:
+        "Start company sign-in\n\nReturns a sign-in URL without requiring an existing account: the company SSO connection when the target has a ready connection, otherwise ordinary account login. Supply one documented enrollment variant: organizationId with returnTo (optionally invitationToken), invitationToken with returnTo, or retryToken. Open the returned URL to continue authentication; receiving a URL does not complete sign-in. This is a browser flow: the request must come from an allowed Origin, and the retryToken variant also needs the retry cookie set by the failed sign-in, so send it with credentials."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_START_ENTERPRISE_LOGIN, payload)
+
+    async def update_organization_sso_policy(
+        self, input: UpdateOrganizationSsoPolicyInput
+    ) -> RawResponse[models.OrganizationSsoConfiguration]:
+        "Update organization SSO policy\n\nUpdates whether SSO can admit new members automatically using ssoJitEnabled and the current expectedVersion. Returns the organization’s SSO configuration and policy synchronization status; a successful response does not mean every desired policy setting has finished synchronizing."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_UPDATE_ORGANIZATION_SSO_POLICY, payload)
+
+
+class AsyncOrganizationsBillingResource:
+    def __init__(self, transport: AsyncTransport) -> None:
+        self._raw_resource = AsyncRawOrganizationsBillingResource(transport)
+
+    async def change_plan(
+        self, input: ChangePlanInput
+    ) -> models.TerminalBillingOperation | models.PendingBillingOperation:
+        "Change plan\n\nPurchases or changes the selected project's plan for the supplied category and planCode. A 202 response means the change is pending: poll the returned operation URL and honor Retry-After until it succeeds or fails. A 200 response means the idempotency key resolved to an operation that is already terminal; inspect that result rather than assuming success from the status code alone. Supply the required Idempotency-Key header. Supply both organizationId and projectId to select the project within its organization."
+        return (await self._raw_resource.change_plan(input)).data
+
+    async def create_organization_payment_method_checkout(
+        self, input: CreateOrganizationPaymentMethodCheckoutInput
+    ) -> models.CreateOrganizationPaymentMethodCheckoutResponse:
+        "Create payment method checkout\n\nReturns a hosted payment-method collection URL for the selected organization. An Idempotency-Key header is optional; supply one to make retries safe. Complete the returned checkout flow. Receiving the URL does not mean a card has been saved; check payment-method status afterward."
+        return (await self._raw_resource.create_organization_payment_method_checkout(input)).data
+
+    async def get_effective_terms(
+        self, input: GetEffectiveTermsInput
+    ) -> models.GetEffectiveTermsResponse:
+        "Get the project's effective billing terms\n\nReturns what the selected project is billed on now, per category it holds: the plan as its subscription has it, with any override applied, each fixed charge at the subscription's price and quantity, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. Supply both organizationId and projectId; the organization must pay for the project. This operation does not change billing."
+        return (await self._raw_resource.get_effective_terms(input)).data
+
+    async def get_organization_billing_overview(
+        self, input: GetOrganizationBillingOverviewInput
+    ) -> models.GetOrganizationBillingOverviewResponse:
+        "Get organization billing overview\n\nReturns the selected organization’s billing subscription and entitlementsVersion. The subscription can be null. Read the returned plan, charges and entitlements to inspect organization billing; this operation does not purchase or change a plan."
+        return (await self._raw_resource.get_organization_billing_overview(input)).data
+
+    async def get_organization_credit(
+        self, input: GetOrganizationCreditInput
+    ) -> models.GetOrganizationCreditResponse:
+        "Get organization credit\n\nReturns the credit the selected organization holds: on credit notes, such as the unused time of a plan an upgrade replaced or the unused days of a prorated fixed charge it released, and in its wallet: the credit Photon granted it, such as a new account's first organization's welcome credit, and any prepaid credit it bought. It offsets that organization's invoices of any kind except one-off invoices, credit notes first. Reading it does not apply or change credit."
+        return (await self._raw_resource.get_organization_credit(input)).data
+
+    async def get_organization_payment_method(
+        self, input: GetOrganizationPaymentMethodInput
+    ) -> models.GetOrganizationPaymentMethodResponse:
+        "Get organization payment method\n\nReports whether the selected organization has a card on file and returns its documented payment-method metadata. Reading this endpoint does not collect a new card or create a checkout session."
+        return (await self._raw_resource.get_organization_payment_method(input)).data
+
+    async def get_organization_terms(
+        self, input: GetOrganizationTermsInput
+    ) -> models.GetOrganizationTermsResponse:
+        "Get the organization's effective billing terms\n\nReturns what the selected organization is billed on now on its own subscription, such as SSO and 10DLC campaigns: the plan as the subscription has it, with any override applied, each fixed charge at the subscription's price and the quantity the organization holds, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. subscription has a project subscription's terms without its category, and is null when the organization holds none. Project subscriptions are read per project. This operation does not change billing."
+        return (await self._raw_resource.get_organization_terms(input)).data
+
+    async def list_credit_activity(
+        self, input: ListCreditActivityInput
+    ) -> models.ListCreditActivityResponse:
+        "List credit activity\n\nReturns one page of how the selected organization's credit balance changed, newest first: credit notes issued and credit granted, credit applied to invoices, credit restored when the change an invoice paid for never applied, and credit voided. Each entry names the credit note (none for granted credit), the invoice when there is one, and the charge and subscription the credit note credits, or that the credit was a grant. Pass nextPage as page to read further. This operation does not change billing."
+        return (await self._raw_resource.list_credit_activity(input)).data
+
+    async def list_invoices(self, input: ListInvoicesInput) -> models.ListInvoicesResponse:
+        "List invoices\n\nReturns one page of the selected organization's invoices, newest first: every invoice issued to it with a nonzero total or actual charges, including charges fully paid by credit; drafts and empty invoices are excluded. Each names what it charged the organization's own subscription and each project. Pass subject to list only the invoices that charge the organization itself or one of its projects, and nextCursor as cursor to read further. Listing invoices does not make a payment or modify a subscription."
+        return (await self._raw_resource.list_invoices(input)).data
+
+    async def preview_organization_change(
+        self, input: PreviewOrganizationChangeInput
+    ) -> models.PreviewOrganizationChangeResponse:
+        "Preview an organization billing change\n\nPreviews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing."
+        return (await self._raw_resource.preview_organization_change(input)).data
+
+    async def preview_project_change(
+        self, input: PreviewProjectChangeInput
+    ) -> models.PreviewProjectChangeResponse:
+        "Preview a project billing change\n\nPreviews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. Supply both organizationId and projectId; the organization must pay for the project."
+        return (await self._raw_resource.preview_project_change(input)).data
+
+
+class AsyncOrganizationsProjectsResource:
+    def __init__(self, transport: AsyncTransport) -> None:
+        self._raw_resource = AsyncRawOrganizationsProjectsResource(transport)
+
+    async def check_project_slug_availability(
+        self, input: CheckProjectSlugAvailabilityInput
+    ) -> models.CheckProjectSlugAvailabilityResponse:
+        "Check project slug availability\n\nReports whether createProject would accept `slug` right now. Advisory: only the create itself allocates, so a caller must still handle SLUG_TAKEN. A malformed slug is rejected on shape; a reserved slug, a slug held by an active project, and a slug retired with a deleted project each answer `available: false` with a reason."
+        return (await self._raw_resource.check_project_slug_availability(input)).data
+
+    async def count(self, input: CountProjectsInput) -> models.ProjectCount:
+        "Count projects\n\nCounts the projects the same filter would list. The count is read from the primary, so it is authoritative rather than replica-lagged."
+        return (await self._raw_resource.count(input)).data
+
+    async def create(self, input: CreateProjectInput) -> models.Project:
+        "Create project\n\nCreates in the authorized organization. In addition to account credentials, explicitly granted Service Identity API keys and M2M tokens may create projects. Project API keys cannot create projects. Creator and private credential evidence come only from the trusted authorization context. The caller-selected slug is immutable, must be 3 to 63 lowercase ASCII alphanumerics separated by single hyphens, and cannot be reserved or held by any active or deleted project."
+        return (await self._raw_resource.create(input)).data
+
+    async def get_project_closure_status(
+        self, input: GetProjectClosureStatusInput
+    ) -> models.GetProjectClosureStatusResponse:
+        "Get project closure status\n\nReturns closure progress for projectId within organizationId, including deletionOperationId, domain progress and ready. This read operation does not initiate deletion."
+        return (await self._raw_resource.get_project_closure_status(input)).data
+
+    async def list(self, input: ListProjectsInput) -> models.ProjectPage:
+        "List projects\n\nReturns a cursor-paginated page of the active projects in organizationId. Filter using query and the documented creation-time bounds, and navigate with pageSize and pageToken. Project roles are not returned and role is not a supported filter."
+        return (await self._raw_resource.list(input)).data
+
+
+class AsyncOrganizationsResource:
+    def __init__(self, transport: AsyncTransport) -> None:
+        self._raw_resource = AsyncRawOrganizationsResource(transport)
+        self.billing = AsyncOrganizationsBillingResource(transport)
+        self.projects = AsyncOrganizationsProjectsResource(transport)
+
+    async def accept_organization_invitation(
+        self, input: AcceptOrganizationInvitationInput
+    ) -> models.AcceptOrganizationInvitationResponse:
+        "Accept an invitation to all organization projects"
+        return (await self._raw_resource.accept_organization_invitation(input)).data
+
+    async def cancel_sso_subscription(
+        self, input: CancelSsoSubscriptionInput
+    ) -> models.CancelSsoSubscriptionResponse:
+        "Cancel the SSO subscription"
+        return (await self._raw_resource.cancel_sso_subscription(input)).data
+
+    async def check_organization_deletion(
+        self, input: CheckOrganizationDeletionInput
+    ) -> models.CheckOrganizationDeletionResponse:
+        "Check organization deletion prerequisites"
+        return (await self._raw_resource.check_organization_deletion(input)).data
+
+    async def close_organization(self, input: CloseOrganizationInput) -> None:
+        "Delete organization"
+        return (await self._raw_resource.close_organization(input)).data
+
+    async def commit_organization_avatar(
+        self, input: CommitOrganizationAvatarInput
+    ) -> models.CommitOrganizationAvatarResponse:
+        "Commit an organization avatar"
+        return (await self._raw_resource.commit_organization_avatar(input)).data
+
+    async def create_organization(
+        self, input: CreateOrganizationInput
+    ) -> models.CreateOrganizationResponse:
+        "Create an organization"
+        return (await self._raw_resource.create_organization(input)).data
+
+    async def create_organization_avatar_upload(
+        self, input: CreateOrganizationAvatarUploadInput
+    ) -> models.CreateOrganizationAvatarUploadResponse:
+        "Create an organization avatar upload\n\nUpload a JPEG, PNG, or WebP image up to 5 MiB with every returned form field and the file last. Upload directly without Photon credentials, then commit the uploadId. Do not log or cache upload URLs or fields."
+        return (await self._raw_resource.create_organization_avatar_upload(input)).data
+
+    async def create_organization_invitation(
+        self, input: CreateOrganizationInvitationInput
+    ) -> models.CreateOrganizationInvitationResponse:
+        "Invite a Member or Viewer to all organization projects"
+        return (await self._raw_resource.create_organization_invitation(input)).data
+
+    async def create_organization_oauth_client(
+        self, input: CreateOrganizationOauthClientInput
+    ) -> models.CreateOrganizationOauthClientResponse:
+        "Create an organization OAuth client\n\nUse the same UUID Idempotency-Key and payload when retrying. Unknown provider outcomes require recovery; do not use a new key to retry an uncertain creation."
+        return (await self._raw_resource.create_organization_oauth_client(input)).data
+
+    async def create_service_identity(
+        self, input: CreateServiceIdentityInput
+    ) -> models.CreateServiceIdentityResponse:
+        "Create an organization Service Identity"
+        return (await self._raw_resource.create_service_identity(input)).data
+
+    async def create_service_identity_api_key(
+        self, input: CreateServiceIdentityApiKeyInput
+    ) -> models.CreateServiceIdentityApiKeyResponse:
+        "Create a one-time Service Identity API key"
+        return (await self._raw_resource.create_service_identity_api_key(input)).data
+
+    async def create_service_identity_client_secret(
+        self, input: CreateServiceIdentityClientSecretInput
+    ) -> models.CreateServiceIdentityClientSecretResponse:
+        "Create a one-time Service Identity M2M client secret"
+        return (await self._raw_resource.create_service_identity_client_secret(input)).data
+
+    async def delete_organization_oauth_client(
+        self, input: DeleteOrganizationOauthClientInput
+    ) -> models.DeleteOrganizationOauthClientResponse:
+        "Delete an organization OAuth client\n\nQueues deletion of the exact provider application. Retry DELETE to read its current status. Accepted deletion does not promise immediate token revocation."
+        return (await self._raw_resource.delete_organization_oauth_client(input)).data
+
+    async def delete_organization_oauth_client_secret(
+        self, input: DeleteOrganizationOauthClientSecretInput
+    ) -> None:
+        "Revoke an organization OAuth client's secret\n\nStops every secret of the app now, including one still in its grace period."
+        return (await self._raw_resource.delete_organization_oauth_client_secret(input)).data
+
+    async def ensure_initial_organization(
+        self, input: EnsureInitialOrganizationInput
+    ) -> models.EnsureInitialOrganizationResponse:
+        "Ensure the initial organization"
+        return (await self._raw_resource.ensure_initial_organization(input)).data
+
+    async def get_current_organization(
+        self, input: GetCurrentOrganizationInput | None = None
+    ) -> models.GetCurrentOrganizationResponse:
+        "Read the credential's organization\n\nReads the organization the credential is bound to: the organization an OAuth grant was consented for, or a Service Identity's own organization. Use it to discover which organization an integration acts for, and pass its organizationId to organization-scoped operations."
+        return (await self._raw_resource.get_current_organization(input)).data
+
+    async def get_organization(self, input: GetOrganizationInput) -> models.GetOrganizationResponse:
+        "Read organization name and avatar"
+        return (await self._raw_resource.get_organization(input)).data
+
+    async def get_organization_oauth_client(
+        self, input: GetOrganizationOauthClientInput
+    ) -> models.GetOrganizationOauthClientResponse:
+        "Read an organization OAuth client"
+        return (await self._raw_resource.get_organization_oauth_client(input)).data
+
+    async def get_organization_oauth_client_secret(
+        self, input: GetOrganizationOauthClientSecretInput
+    ) -> models.GetOrganizationOauthClientSecretResponse:
+        "Read an organization OAuth client's secret"
+        return (await self._raw_resource.get_organization_oauth_client_secret(input)).data
+
+    async def get_service_identity(
+        self, input: GetServiceIdentityInput
+    ) -> models.GetServiceIdentityResponse:
+        "Read a Service Identity"
+        return (await self._raw_resource.get_service_identity(input)).data
+
+    async def get_sso_subscription(
+        self, input: GetSsoSubscriptionInput
+    ) -> models.GetSsoSubscriptionResponse:
+        "Read SSO subscription"
+        return (await self._raw_resource.get_sso_subscription(input)).data
+
+    async def leave_organization(
+        self, input: LeaveOrganizationInput
+    ) -> models.LeaveOrganizationResponse:
+        "Leave an organization; Owners must transfer or close first"
+        return (await self._raw_resource.leave_organization(input)).data
+
+    async def list_organization_invitations(
+        self, input: ListOrganizationInvitationsInput
+    ) -> models.ListOrganizationInvitationsResponse:
+        "List pending organization invitations"
+        return (await self._raw_resource.list_organization_invitations(input)).data
+
+    async def list_organization_members(
+        self, input: ListOrganizationMembersInput
+    ) -> models.ListOrganizationMembersResponse:
+        "List current organization members"
+        return (await self._raw_resource.list_organization_members(input)).data
+
+    async def list_organization_oauth_clients(
+        self, input: ListOrganizationOauthClientsInput
+    ) -> models.ListOrganizationOauthClientsResponse:
+        "List organization OAuth clients"
+        return (await self._raw_resource.list_organization_oauth_clients(input)).data
+
+    async def list_organizations(
+        self, input: ListOrganizationsInput | None = None
+    ) -> models.ListOrganizationsResponse:
+        "List organizations"
+        return (await self._raw_resource.list_organizations(input)).data
+
+    async def list_service_identities(
+        self, input: ListServiceIdentitiesInput
+    ) -> models.ListServiceIdentitiesResponse:
+        "List organization Service Identities"
+        return (await self._raw_resource.list_service_identities(input)).data
+
+    async def list_service_identity_credentials(
+        self, input: ListServiceIdentityCredentialsInput
+    ) -> models.ListServiceIdentityCredentialsResponse:
+        "List Service Identity credential metadata"
+        return (await self._raw_resource.list_service_identity_credentials(input)).data
+
+    async def list_service_identity_permissions(
+        self, input: ListServiceIdentityPermissionsInput
+    ) -> models.ListServiceIdentityPermissionsResponse:
+        "List grantable Service Identity permissions\n\nThe permissions a Service Identity or installable app may be granted: the machine set of the current auth contract, sorted. Create, update, and app declarations accept exactly these values."
+        return (await self._raw_resource.list_service_identity_permissions(input)).data
+
+    async def preview_organization_invitation(
+        self, input: PreviewOrganizationInvitationInput
+    ) -> models.PreviewOrganizationInvitationResponse:
+        "Preview an organization invitation after sign-in"
+        return (await self._raw_resource.preview_organization_invitation(input)).data
+
+    async def remove_organization_avatar(
+        self, input: RemoveOrganizationAvatarInput
+    ) -> models.RemoveOrganizationAvatarResponse:
+        "Remove an organization avatar"
+        return (await self._raw_resource.remove_organization_avatar(input)).data
+
+    async def remove_organization_member(
+        self, input: RemoveOrganizationMemberInput
+    ) -> models.RemoveOrganizationMemberResponse:
+        "Remove an organization member's access to all projects"
+        return (await self._raw_resource.remove_organization_member(input)).data
+
+    async def resend_organization_invitation(
+        self, input: ResendOrganizationInvitationInput
+    ) -> models.ResendOrganizationInvitationResponse:
+        "Resend an organization invitation"
+        return (await self._raw_resource.resend_organization_invitation(input)).data
+
+    async def revoke_organization_invitation(
+        self, input: RevokeOrganizationInvitationInput
+    ) -> models.RevokeOrganizationInvitationResponse:
+        "Revoke an organization invitation"
+        return (await self._raw_resource.revoke_organization_invitation(input)).data
+
+    async def revoke_service_identity_credential(
+        self, input: RevokeServiceIdentityCredentialInput
+    ) -> models.RevokeServiceIdentityCredentialResponse:
+        "Request Service Identity credential revocation"
+        return (await self._raw_resource.revoke_service_identity_credential(input)).data
+
+    async def rotate_organization_oauth_client_secret(
+        self, input: RotateOrganizationOauthClientSecretInput
+    ) -> models.RotateOrganizationOauthClientSecretResponse:
+        "Rotate an organization OAuth client's secret\n\nMints a new secret, then retires the one it replaces: `normal` keeps the old one working for one hour, `emergency` stops it now. A secret not created through Photon always stops now. Rotating again ends an earlier grace period. Retain the same UUID Idempotency-Key when retrying: only the delivering request returns plaintext."
+        return (await self._raw_resource.rotate_organization_oauth_client_secret(input)).data
+
+    async def setup_organization_oauth_client_secret(
+        self, input: SetupOrganizationOauthClientSecretInput
+    ) -> (
+        models.SetupOrganizationOauthClientSecretResponse
+        | models.SetupOrganizationOauthClientSecretCreatedResponse
+    ):
+        "Create an organization OAuth client's secret\n\nMints the app's first secret; once it has one, rotate it instead. Retain the same UUID Idempotency-Key when retrying: only the delivering request returns plaintext."
+        return (await self._raw_resource.setup_organization_oauth_client_secret(input)).data
+
+    async def subscribe_sso(self, input: SubscribeSsoInput) -> models.SubscribeSsoResponse:
+        "Subscribe to organization SSO"
+        return (await self._raw_resource.subscribe_sso(input)).data
+
+    async def transfer_organization_ownership(
+        self, input: TransferOrganizationOwnershipInput
+    ) -> models.TransferOrganizationOwnershipResponse:
+        "Transfer organization ownership to an existing member"
+        return (await self._raw_resource.transfer_organization_ownership(input)).data
+
+    async def update_organization(
+        self, input: UpdateOrganizationInput
+    ) -> models.UpdateOrganizationResponse:
+        "Change organization name"
+        return (await self._raw_resource.update_organization(input)).data
+
+    async def update_organization_member_role(
+        self, input: UpdateOrganizationMemberRoleInput
+    ) -> models.UpdateOrganizationMemberRoleResponse:
+        "Change an organization member's role across all projects"
+        return (await self._raw_resource.update_organization_member_role(input)).data
+
+    async def update_organization_oauth_client(
+        self, input: UpdateOrganizationOauthClientInput
+    ) -> models.UpdateOrganizationOauthClientResponse:
+        "Update an organization OAuth client\n\nRequires If-Match from the latest read. Stale versions return 412. A failed response may follow an applied provider update; reread before retrying. Version checking is not provider atomic CAS."
+        return (await self._raw_resource.update_organization_oauth_client(input)).data
+
+    async def update_service_identity(
+        self, input: UpdateServiceIdentityInput
+    ) -> models.UpdateServiceIdentityResponse:
+        "Update a Service Identity"
+        return (await self._raw_resource.update_service_identity(input)).data
 
 
 class AsyncProjectsPlatformsImessageAssignmentsResource:
@@ -8365,12 +10352,6 @@ class AsyncProjectsPlatformsResource:
     async def connect_telegram_bot(self, input: ConnectTelegramBotInput) -> models.Operation:
         "Connect Telegram bot\n\nStarts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to create a new bot, whose name and username are chosen in Telegram, or to connect an existing managed bot, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged."
         return (await self._raw_resource.connect_telegram_bot(input)).data
-
-    async def connect_whatsapp_business(
-        self, input: ConnectWhatsappBusinessInput
-    ) -> models.Operation:
-        "Connect WhatsApp Business\n\nExchanges the authorization code Embedded Signup returned and connects exactly the selected phone number as one `whatsapp_sender`. Send the WABA id and phone-number id emitted by the same popup attempt; both are treated as selectors and verified against Meta before use. A selected number that matches a non-retired, same-project `voip_line` is linked to it; a number absent from Photon inventory stays unbound; a matching non-retired `cosmos_line`, foreign VoIP line or unassigned VoIP line fails the operation before registration. Connecting is free — no plan requirement — but Billing must report the project's organization as ready with a payment method on file. The Idempotency-Key is required and permanent: replaying the same key returns the original operation forever. Requires the platforms:write permission bound to the project resource in the path."
-        return (await self._raw_resource.connect_whatsapp_business(input)).data
 
     async def count_filtered_verification_codes(
         self, input: CountFilteredVerificationCodesInput
@@ -8499,12 +10480,6 @@ class AsyncProjectsPlatformsResource:
     ) -> models.SharedLineAssignment:
         "Get WhatsApp shared line assignment\n\nReads one WhatsApp shared line assignment. Requires the platforms:read permission bound to the project resource in the path."
         return (await self._raw_resource.get_whatsapp_shared_line_assignment(input)).data
-
-    async def get_whatsapp_signup_config(
-        self, input: GetWhatsappSignupConfigInput
-    ) -> models.GetWhatsappSignupConfigResponse:
-        "Get WhatsApp signup config\n\nReturns what the browser needs to open Meta's Embedded Signup popup: the Facebook Login for Business configuration id, the Graph version to run against, and the scopes it will request. Answered in-process rather than forwarded, so the first step of onboarding survives an outage of the private service. Pass `configId` to `FB.login` as `config_id` with `response_type: 'code'` and `override_default_response_type: true`. Do NOT add a `featureType` — omitting it is what keeps the phone-number screen in the flow, and `only_waba_sharing` produces an account with no number that cannot be provisioned. Requires the platforms:read permission bound to the project resource in the path."
-        return (await self._raw_resource.get_whatsapp_signup_config(input)).data
 
     async def list_email_recommendations(
         self, input: ListEmailRecommendationsInput
@@ -8905,6 +10880,84 @@ class AsyncProjectsResource:
         return (await self._raw_resource.upload_attachment(input)).data
 
 
+class AsyncAccountResource:
+    def __init__(self, transport: AsyncTransport) -> None:
+        self._raw_resource = AsyncRawAccountResource(transport)
+
+    async def commit_profile_picture(
+        self, input: CommitAccountProfilePictureInput
+    ) -> models.Account:
+        "Commit profile picture\n\nCommits a profile picture previously uploaded through createAccountProfilePictureUpload. Call this only after the direct multipart upload succeeds, using the uploadId from the same upload session and a stable Idempotency-Key. The service validates the temporary object's ownership, size, content type, image bytes, dimensions, encryption, and age before changing the Account."
+        return (await self._raw_resource.commit_profile_picture(input)).data
+
+    async def create_account_service_key(
+        self, input: CreateAccountServiceKeyInput
+    ) -> models.CreateAccountServiceKeyResponse:
+        "Create Account Service Key\n\nCreates a service key for the authenticated account with the supplied name and optional expiresAt. Returns key metadata and a one-time credential; store the credential securely because it cannot be retrieved through the listing endpoint. These credentials act as the account and must not be distributed as project-scoped keys. Supply the required Idempotency-Key header."
+        return (await self._raw_resource.create_account_service_key(input)).data
+
+    async def create_profile_picture_upload(
+        self, input: CreateAccountProfilePictureUploadInput
+    ) -> models.ProfilePictureUpload:
+        "Create profile picture upload\n\nCreates a ten-minute, Account-bound presigned S3 POST for a JPEG, PNG, or WebP profile picture up to 5 MiB. Copy every returned formFields entry into a multipart/form-data request to uploadUrl, append the local file as the final form part, and upload it directly without sending Photon credentials. After the upload succeeds, call commitAccountProfilePicture with the returned uploadId. Do not cache or log the upload URL or form fields."
+        return (await self._raw_resource.create_profile_picture_upload(input)).data
+
+    async def delete(self, input: DeleteAccountInput | None = None) -> models.Account:
+        "Delete account\n\nDeletes the authenticated account and returns its account tombstone. The operation is rejected while the account still owns organizations; transfer or close those organizations before retrying. This endpoint acts on the caller's account and does not accept another account's identifier."
+        return (await self._raw_resource.delete(input)).data
+
+    async def get(self, input: GetAccountInput | None = None) -> models.Account:
+        "Get account\n\nReturns the profile of the authenticated account. The account is selected from the credential rather than a request parameter. A missing or deleted account is reported as an error instead of an empty profile."
+        return (await self._raw_resource.get(input)).data
+
+    async def list_account_service_keys(
+        self, input: ListAccountServiceKeysInput | None = None
+    ) -> models.ListAccountServiceKeysResponse:
+        "List Account Service Keys\n\nReturns metadata for the authenticated account's unrevoked service keys, including expired keys, ordered newest first. Secret values are not returned; a key's credential is disclosed only when that key is created."
+        return (await self._raw_resource.list_account_service_keys(input)).data
+
+    async def list_authorized_applications(
+        self, input: ListAuthorizedApplicationsInput | None = None
+    ) -> models.ListAuthorizedApplicationsResponse:
+        "List connected applications\n\nLists the OAuth applications authorized by the authenticated user."
+        return (await self._raw_resource.list_authorized_applications(input)).data
+
+    async def reset_profile_picture(self, input: ResetAccountProfilePictureInput) -> models.Account:
+        "Remove profile picture\n\nRemoves the authenticated account's custom profile picture and returns the account using its default picture. This operation does not upload a replacement; use the upload-and-commit operations when setting a new custom picture. Supply the required Idempotency-Key header."
+        return (await self._raw_resource.reset_profile_picture(input)).data
+
+    async def revoke_account_service_key(
+        self, input: RevokeAccountServiceKeyInput
+    ) -> models.RevokeAccountServiceKeyResponse:
+        "Revoke Account Service Key\n\nRevokes the account-owned service key identified by serviceKeyId and returns its revoked metadata. Repeating the revocation is stable. Revocation changes the credential's validity; it does not create a replacement key. Supply the required Idempotency-Key header."
+        return (await self._raw_resource.revoke_account_service_key(input)).data
+
+    async def revoke_authorized_application(self, input: RevokeAuthorizedApplicationInput) -> None:
+        "Revoke connected application\n\nRevokes the authenticated user's grant for one OAuth application."
+        return (await self._raw_resource.revoke_authorized_application(input)).data
+
+    async def update(self, input: UpdateAccountInput) -> models.Account:
+        "Update account\n\nUpdates the supplied firstName and lastName fields on the authenticated account and returns the updated profile. Only the documented profile fields can be changed through this endpoint; profile-picture uploads and phone-number verification use their dedicated operations. Supply the required Idempotency-Key header."
+        return (await self._raw_resource.update(input)).data
+
+
+class AsyncSystemResource:
+    def __init__(self, transport: AsyncTransport) -> None:
+        self._raw_resource = AsyncRawSystemResource(transport)
+
+    async def create_app_installation_request(
+        self, input: CreateAppInstallationRequestInput
+    ) -> models.CreateAppInstallationRequestResponse:
+        "Request app installation\n\nAuthenticates a registered app backend using a short-lived signed client assertion. Creates request metadata only; customer approval is still required."
+        return (await self._raw_resource.create_app_installation_request(input)).data
+
+    async def redeem_app_installation_delivery(
+        self, input: RedeemAppInstallationDeliveryInput
+    ) -> models.RedeemAppInstallationDeliveryResponse:
+        "Redeem installation credential\n\nThe registered app backend authenticates with a signed client assertion and a single-use code. Plaintext is returned only once; retries return status and never create another credential."
+        return (await self._raw_resource.redeem_app_installation_delivery(input)).data
+
+
 class AsyncAuthDeviceResource:
     def __init__(self, transport: AsyncTransport) -> None:
         self._raw_resource = AsyncRawAuthDeviceResource(transport)
@@ -8924,30 +10977,6 @@ class AsyncAuthResource:
     def __init__(self, transport: AsyncTransport) -> None:
         self._raw_resource = AsyncRawAuthResource(transport)
         self.device = AsyncAuthDeviceResource(transport)
-
-    async def begin_invitation_sso(
-        self, input: BeginInvitationSsoInput
-    ) -> models.OrganizationAuthenticationRedirect:
-        "Sign in with invitation SSO\n\nReturns an authentication URL for the organization SSO connection associated with the supplied invitation token. Supply token and returnTo. Complete the returned authentication flow; requesting its URL does not itself accept the invitation."
-        return (await self._raw_resource.begin_invitation_sso(input)).data
-
-    async def begin_organization_authentication(
-        self, input: BeginOrganizationAuthenticationInput
-    ) -> models.OrganizationAuthenticationRedirect:
-        "Sign in with organization SSO\n\nReturns a URL to authenticate through the selected organization’s current SSO connection. Supply returnTo and open the returned URL to continue the flow. Receiving the URL does not establish an authenticated session."
-        return (await self._raw_resource.begin_organization_authentication(input)).data
-
-    async def begin_organization_closure_authentication(
-        self, input: BeginOrganizationClosureAuthenticationInput
-    ) -> models.OrganizationAuthenticationRedirect:
-        "Sign in to close organization\n\nReturns an authentication URL for the current organization owner to inspect organization closure. Supply returnTo and complete the returned flow. This operation initiates authentication and does not close the organization."
-        return (await self._raw_resource.begin_organization_closure_authentication(input)).data
-
-    async def begin_organization_sso_admission(
-        self, input: BeginOrganizationSsoAdmissionInput
-    ) -> models.OrganizationAuthenticationRedirect:
-        "Begin organization SSO admission\n\nReturns an SSO admission URL for an existing account and the selected organization. Supply returnTo for the continuation URL. Admission requires completing the returned authentication flow; creating the URL does not itself grant membership."
-        return (await self._raw_resource.begin_organization_sso_admission(input)).data
 
     async def create_organization_sso_portal_link(
         self, input: CreateOrganizationSsoPortalLinkInput
@@ -9002,231 +11031,6 @@ class AsyncAuthResource:
     ) -> models.OrganizationSsoConfiguration:
         "Update organization SSO policy\n\nUpdates whether SSO can admit new members automatically using ssoJitEnabled and the current expectedVersion. Returns the organization’s SSO configuration and policy synchronization status; a successful response does not mean every desired policy setting has finished synchronizing."
         return (await self._raw_resource.update_organization_sso_policy(input)).data
-
-
-class AsyncOrganizationsBillingResource:
-    def __init__(self, transport: AsyncTransport) -> None:
-        self._raw_resource = AsyncRawOrganizationsBillingResource(transport)
-
-    async def change_plan(
-        self, input: ChangePlanInput
-    ) -> models.TerminalBillingOperation | models.PendingBillingOperation:
-        "Change plan\n\nPurchases or changes the selected project's plan for the supplied category and planCode. A 202 response means the change is pending: poll the returned operation URL and honor Retry-After until it succeeds or fails. A 200 response means the idempotency key resolved to an operation that is already terminal; inspect that result rather than assuming success from the status code alone. Supply the required Idempotency-Key header. Supply both organizationId and projectId to select the project within its organization."
-        return (await self._raw_resource.change_plan(input)).data
-
-    async def create_organization_payment_method_checkout(
-        self, input: CreateOrganizationPaymentMethodCheckoutInput
-    ) -> models.CreateOrganizationPaymentMethodCheckoutResponse:
-        "Create payment method checkout\n\nReturns a hosted payment-method collection URL for the selected organization. An Idempotency-Key header is optional; supply one to make retries safe. Complete the returned checkout flow. Receiving the URL does not mean a card has been saved; check payment-method status afterward."
-        return (await self._raw_resource.create_organization_payment_method_checkout(input)).data
-
-    async def create_organization_setup_intent(
-        self, input: CreateOrganizationSetupIntentInput
-    ) -> models.CreateOrganizationSetupIntentResponse:
-        "Create card setup intent\n\nCreates payment-provider configuration for collecting a card for the selected organization and returns clientSecret and publishableKey. Supply the required Idempotency-Key header. Complete the provider’s card-collection flow separately and avoid logging the returned client secret."
-        return (await self._raw_resource.create_organization_setup_intent(input)).data
-
-    async def get_effective_terms(
-        self, input: GetEffectiveTermsInput
-    ) -> models.GetEffectiveTermsResponse:
-        "Get the project's effective billing terms\n\nReturns what the selected project is billed on now, per category it holds: the plan as its subscription has it, with any override applied, each fixed charge at the subscription's price and quantity, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. Supply both organizationId and projectId; the organization must pay for the project. This operation does not change billing."
-        return (await self._raw_resource.get_effective_terms(input)).data
-
-    async def get_organization_billing_overview(
-        self, input: GetOrganizationBillingOverviewInput
-    ) -> models.GetOrganizationBillingOverviewResponse:
-        "Get organization billing overview\n\nReturns the selected organization’s billing subscription and entitlementsVersion. The subscription can be null. Read the returned plan, charges and entitlements to inspect organization billing; this operation does not purchase or change a plan."
-        return (await self._raw_resource.get_organization_billing_overview(input)).data
-
-    async def get_organization_credit(
-        self, input: GetOrganizationCreditInput
-    ) -> models.GetOrganizationCreditResponse:
-        "Get organization credit\n\nReturns the credit the selected organization holds: on credit notes, such as the unused time of a plan an upgrade replaced or the unused days of a prorated fixed charge it released, and in its wallet: the credit Photon granted it, such as a new account's first organization's welcome credit, and any prepaid credit it bought. It offsets that organization's invoices of any kind except one-off invoices, credit notes first. Reading it does not apply or change credit."
-        return (await self._raw_resource.get_organization_credit(input)).data
-
-    async def get_organization_payment_method(
-        self, input: GetOrganizationPaymentMethodInput
-    ) -> models.GetOrganizationPaymentMethodResponse:
-        "Get organization payment method\n\nReports whether the selected organization has a card on file and returns its documented payment-method metadata. Reading this endpoint does not collect a new card or create a checkout session."
-        return (await self._raw_resource.get_organization_payment_method(input)).data
-
-    async def get_organization_terms(
-        self, input: GetOrganizationTermsInput
-    ) -> models.GetOrganizationTermsResponse:
-        "Get the organization's effective billing terms\n\nReturns what the selected organization is billed on now on its own subscription, such as SSO and 10DLC campaigns: the plan as the subscription has it, with any override applied, each fixed charge at the subscription's price and the quantity the organization holds, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. subscription has a project subscription's terms without its category, and is null when the organization holds none. Project subscriptions are read per project. This operation does not change billing."
-        return (await self._raw_resource.get_organization_terms(input)).data
-
-    async def list_credit_activity(
-        self, input: ListCreditActivityInput
-    ) -> models.ListCreditActivityResponse:
-        "List credit activity\n\nReturns one page of how the selected organization's credit balance changed, newest first: credit notes issued and credit granted, credit applied to invoices, credit restored when the change an invoice paid for never applied, and credit voided. Each entry names the credit note (none for granted credit), the invoice when there is one, and the charge and subscription the credit note credits, or that the credit was a grant. Pass nextPage as page to read further. This operation does not change billing."
-        return (await self._raw_resource.list_credit_activity(input)).data
-
-    async def list_invoices(self, input: ListInvoicesInput) -> models.ListInvoicesResponse:
-        "List invoices\n\nReturns one page of the selected organization's invoices, newest first: every invoice issued to it with a nonzero total or actual charges, including charges fully paid by credit; drafts and empty invoices are excluded. Each names what it charged the organization's own subscription and each project. Pass subject to list only the invoices that charge the organization itself or one of its projects, and nextCursor as cursor to read further. Listing invoices does not make a payment or modify a subscription."
-        return (await self._raw_resource.list_invoices(input)).data
-
-    async def preview_organization_change(
-        self, input: PreviewOrganizationChangeInput
-    ) -> models.PreviewOrganizationChangeResponse:
-        "Preview an organization billing change\n\nPreviews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing."
-        return (await self._raw_resource.preview_organization_change(input)).data
-
-    async def preview_project_change(
-        self, input: PreviewProjectChangeInput
-    ) -> models.PreviewProjectChangeResponse:
-        "Preview a project billing change\n\nPreviews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. Supply both organizationId and projectId; the organization must pay for the project."
-        return (await self._raw_resource.preview_project_change(input)).data
-
-
-class AsyncOrganizationsProjectsResource:
-    def __init__(self, transport: AsyncTransport) -> None:
-        self._raw_resource = AsyncRawOrganizationsProjectsResource(transport)
-
-    async def check_project_slug_availability(
-        self, input: CheckProjectSlugAvailabilityInput
-    ) -> models.CheckProjectSlugAvailabilityResponse:
-        "Check project slug availability\n\nReports whether createProject would accept `slug` right now. Advisory: only the create itself allocates, so a caller must still handle SLUG_TAKEN. A malformed slug is rejected on shape; a reserved slug, a slug held by an active project, and a slug retired with a deleted project each answer `available: false` with a reason."
-        return (await self._raw_resource.check_project_slug_availability(input)).data
-
-    async def count(self, input: CountProjectsInput) -> models.ProjectCount:
-        "Count projects\n\nCounts the projects the same filter would list. The count is read from the primary, so it is authoritative rather than replica-lagged."
-        return (await self._raw_resource.count(input)).data
-
-    async def create(self, input: CreateProjectInput) -> models.Project:
-        "Create project\n\nCreates in the authorized organization. In addition to account credentials, explicitly granted Service Identity API keys and M2M tokens may create projects. Project API keys cannot create projects. Creator and private credential evidence come only from the trusted authorization context. The caller-selected slug is immutable, must be 3 to 63 lowercase ASCII alphanumerics separated by single hyphens, and cannot be reserved or held by any active or deleted project."
-        return (await self._raw_resource.create(input)).data
-
-    async def get_project_closure_status(
-        self, input: GetProjectClosureStatusInput
-    ) -> models.GetProjectClosureStatusResponse:
-        "Get project closure status\n\nReturns closure progress for projectId within organizationId, including deletionOperationId, domain progress and ready. This read operation does not initiate deletion."
-        return (await self._raw_resource.get_project_closure_status(input)).data
-
-    async def list(self, input: ListProjectsInput) -> models.ProjectPage:
-        "List projects\n\nReturns a cursor-paginated page of the active projects in organizationId. Filter using query and the documented creation-time bounds, and navigate with pageSize and pageToken. Project roles are not returned and role is not a supported filter."
-        return (await self._raw_resource.list(input)).data
-
-
-class AsyncOrganizationsResource:
-    def __init__(self, transport: AsyncTransport) -> None:
-        self._raw_resource = AsyncRawOrganizationsResource(transport)
-        self.billing = AsyncOrganizationsBillingResource(transport)
-        self.projects = AsyncOrganizationsProjectsResource(transport)
-
-
-class AsyncAccountOnboardingResource:
-    def __init__(self, transport: AsyncTransport) -> None:
-        self._raw_resource = AsyncRawAccountOnboardingResource(transport)
-
-    async def complete(
-        self, input: CompleteAccountOnboardingInput | None = None
-    ) -> models.CompleteAccountOnboardingResponse:
-        "Complete onboarding\n\nMarks the authenticated account's onboarding flow complete and returns a confirmation with onboarded set to true. No prior update is required, but submit any onboarding information you want to keep with updateAccountOnboarding first, because further edits through updateAccountOnboarding are rejected after completion."
-        return (await self._raw_resource.complete(input)).data
-
-    async def get(
-        self, input: GetAccountOnboardingInput | None = None
-    ) -> models.GetAccountOnboardingResponse:
-        "Get onboarding state\n\nReturns the authenticated account's current onboarding state and collected onboarding information. Reading the state does not complete onboarding or modify the supplied account information."
-        return (await self._raw_resource.get(input)).data
-
-    async def update(
-        self, input: UpdateAccountOnboardingInput
-    ) -> models.UpdateAccountOnboardingResponse:
-        "Update onboarding state\n\nUpdates the authenticated account's submitted onboarding information, including the documented company, background, platform and referral fields. Returns the updated onboarding state. Completed onboarding cannot be edited through this operation; completion is performed separately with completeAccountOnboarding. Supply the required Idempotency-Key header."
-        return (await self._raw_resource.update(input)).data
-
-
-class AsyncAccountResource:
-    def __init__(self, transport: AsyncTransport) -> None:
-        self._raw_resource = AsyncRawAccountResource(transport)
-        self.onboarding = AsyncAccountOnboardingResource(transport)
-
-    async def commit_profile_picture(
-        self, input: CommitAccountProfilePictureInput
-    ) -> models.Account:
-        "Commit profile picture\n\nCommits a profile picture previously uploaded through createAccountProfilePictureUpload. Call this only after the direct multipart upload succeeds, using the uploadId from the same upload session and a stable Idempotency-Key. The service validates the temporary object's ownership, size, content type, image bytes, dimensions, encryption, and age before changing the Account."
-        return (await self._raw_resource.commit_profile_picture(input)).data
-
-    async def confirm_phone_verification(
-        self, input: ConfirmAccountPhoneVerificationInput
-    ) -> models.Account:
-        "Confirm phone verification\n\nBinds the number once the code is approved. Repeat calls return the bound Account."
-        return (await self._raw_resource.confirm_phone_verification(input)).data
-
-    async def create_account_service_key(
-        self, input: CreateAccountServiceKeyInput
-    ) -> models.CreateAccountServiceKeyResponse:
-        "Create Account Service Key\n\nCreates a service key for the authenticated account with the supplied name and optional expiresAt. Returns key metadata and a one-time credential; store the credential securely because it cannot be retrieved through the listing endpoint. These credentials act as the account and must not be distributed as project-scoped keys. Supply the required Idempotency-Key header."
-        return (await self._raw_resource.create_account_service_key(input)).data
-
-    async def create_profile_picture_upload(
-        self, input: CreateAccountProfilePictureUploadInput
-    ) -> models.ProfilePictureUpload:
-        "Create profile picture upload\n\nCreates a ten-minute, Account-bound presigned S3 POST for a JPEG, PNG, or WebP profile picture up to 5 MiB. Copy every returned formFields entry into a multipart/form-data request to uploadUrl, append the local file as the final form part, and upload it directly without sending Photon credentials. After the upload succeeds, call commitAccountProfilePicture with the returned uploadId. Do not cache or log the upload URL or form fields."
-        return (await self._raw_resource.create_profile_picture_upload(input)).data
-
-    async def delete(self, input: DeleteAccountInput | None = None) -> models.Account:
-        "Delete account\n\nDeletes the authenticated account and returns its account tombstone. The operation is rejected while the account still owns organizations; transfer or close those organizations before retrying. This endpoint acts on the caller's account and does not accept another account's identifier."
-        return (await self._raw_resource.delete(input)).data
-
-    async def get(self, input: GetAccountInput | None = None) -> models.Account:
-        "Get account\n\nReturns the profile of the authenticated account. The account is selected from the credential rather than a request parameter. A missing or deleted account is reported as an error instead of an empty profile."
-        return (await self._raw_resource.get(input)).data
-
-    async def list_account_service_keys(
-        self, input: ListAccountServiceKeysInput | None = None
-    ) -> models.ListAccountServiceKeysResponse:
-        "List Account Service Keys\n\nReturns metadata for the authenticated account's unrevoked service keys, including expired keys, ordered newest first. Secret values are not returned; a key's credential is disclosed only when that key is created."
-        return (await self._raw_resource.list_account_service_keys(input)).data
-
-    async def list_authorized_applications(
-        self, input: ListAuthorizedApplicationsInput | None = None
-    ) -> models.ListAuthorizedApplicationsResponse:
-        "List connected applications\n\nLists the OAuth applications authorized by the authenticated user."
-        return (await self._raw_resource.list_authorized_applications(input)).data
-
-    async def reset_profile_picture(self, input: ResetAccountProfilePictureInput) -> models.Account:
-        "Remove profile picture\n\nRemoves the authenticated account's custom profile picture and returns the account using its default picture. This operation does not upload a replacement; use the upload-and-commit operations when setting a new custom picture. Supply the required Idempotency-Key header."
-        return (await self._raw_resource.reset_profile_picture(input)).data
-
-    async def revoke_account_service_key(
-        self, input: RevokeAccountServiceKeyInput
-    ) -> models.RevokeAccountServiceKeyResponse:
-        "Revoke Account Service Key\n\nRevokes the account-owned service key identified by serviceKeyId and returns its revoked metadata. Repeating the revocation is stable. Revocation changes the credential's validity; it does not create a replacement key. Supply the required Idempotency-Key header."
-        return (await self._raw_resource.revoke_account_service_key(input)).data
-
-    async def revoke_authorized_application(self, input: RevokeAuthorizedApplicationInput) -> None:
-        "Revoke connected application\n\nRevokes the authenticated user's grant for one OAuth application."
-        return (await self._raw_resource.revoke_authorized_application(input)).data
-
-    async def start_phone_verification(
-        self, input: StartAccountPhoneVerificationInput
-    ) -> models.StartAccountPhoneVerificationResponse:
-        "Start phone verification\n\nSends an SMS code. Answers CAPTCHA_REQUIRED with the widget to render when no solved challenge accompanies the request; retry with the returned challengeContext and a token. Rate limited per account, per destination number, and globally; a rejection carries Retry-After."
-        return (await self._raw_resource.start_phone_verification(input)).data
-
-    async def update(self, input: UpdateAccountInput) -> models.Account:
-        "Update account\n\nUpdates the supplied firstName and lastName fields on the authenticated account and returns the updated profile. Only the documented profile fields can be changed through this endpoint; profile-picture uploads and phone-number verification use their dedicated operations. Supply the required Idempotency-Key header."
-        return (await self._raw_resource.update(input)).data
-
-
-class AsyncSystemResource:
-    def __init__(self, transport: AsyncTransport) -> None:
-        self._raw_resource = AsyncRawSystemResource(transport)
-
-    async def create_app_installation_request(
-        self, input: CreateAppInstallationRequestInput
-    ) -> models.CreateAppInstallationRequestResponse:
-        "Request app installation\n\nAuthenticates a registered app backend using a short-lived signed client assertion. Creates request metadata only; customer approval is still required."
-        return (await self._raw_resource.create_app_installation_request(input)).data
-
-    async def redeem_app_installation_delivery(
-        self, input: RedeemAppInstallationDeliveryInput
-    ) -> models.RedeemAppInstallationDeliveryResponse:
-        "Redeem installation credential\n\nThe registered app backend authenticates with a signed client assertion and a single-use code. Plaintext is returned only once; retries return status and never create another credential."
-        return (await self._raw_resource.redeem_app_installation_delivery(input)).data
 
 
 class SyncRawRoot:

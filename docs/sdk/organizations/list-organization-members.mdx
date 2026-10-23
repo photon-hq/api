@@ -1,0 +1,136 @@
+---
+title: "List current organization members"
+icon: arrow-down-left
+description: "List current organization members: listOrganizationMembers in the TypeScript, Python, Rust and Go clients."
+---
+
+`GET /v1/organizations/{organizationId}/members`
+
+
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.listOrganizationMembers(input: ListOrganizationMembersInput, options?: RequestOptions): Promise<ListOrganizationMembersOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.list_organization_members(input: ListOrganizationMembersInput) -> models.ListOrganizationMembersResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.list_organization_members(organization_id: String).await -> Result<ResponseValue<types::ListOrganizationMembersResponse>, Error<ListOrganizationMembersError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.ListOrganizationMembers(ctx context.Context, params *ListOrganizationMembersParams, opts ...RequestOption) (*ListOrganizationMembersResponse, error)
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.listOrganizationMembers({
+  path: {
+    organizationId: "organizationId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import ListOrganizationMembersInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.list_organization_members(
+    ListOrganizationMembersInput.model_validate({
+        "path": {
+            "organizationId": "organizationId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .list_organization_members("organizationId".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Organizations.ListOrganizationMembers(ctx, &photonapi.ListOrganizationMembersParams{
+	OrganizationID: "organizationId",
+})
+if err != nil {
+	return err
+}
+_ = result
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "members": [
+    {
+      "account": null,
+      "accountId": "string",
+      "createdAt": "2026-01-01T00:00:00Z",
+      "joinedVia": "creation",
+      "organizationId": "string",
+      "removedAt": null,
+      "role": "owner",
+      "roleManagedAt": null,
+      "status": "active",
+      "updatedAt": "2026-01-01T00:00:00Z",
+      "version": "string"
+    }
+  ]
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="organizationId" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** Current active organization memberships. ListOrganizationMembersResponse
+
+<ResponseField name="members" type={"array of ListOrganizationMembersResponseMembersItem"} required>
+
+</ResponseField>
+

@@ -6,6 +6,25 @@ import type * as WireTypes from "./generated/types.gen.js";
 /** Response schema for each documented success status (`2XX` for a range). */
 type OutputSchemas<Output> = Readonly<Record<string, z.ZodType<Output>>>;
 
+export const AcceptOrganizationInvitationInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    body: GeneratedZod.zAcceptOrganizationInvitationBody,
+    headers: z.strictObject({
+        idempotencyKey: GeneratedZod.zAcceptOrganizationInvitationHeaders.shape["Idempotency-Key"],
+    }),
+}))();
+export type AcceptOrganizationInvitationInput = {
+    body: WireTypes.AcceptOrganizationInvitationData["body"];
+    headers: {
+        idempotencyKey: NonNullable<WireTypes.AcceptOrganizationInvitationData["headers"]>["Idempotency-Key"];
+    };
+};
+
+export const AcceptOrganizationInvitationOutputSchema = GeneratedZod.zAcceptOrganizationInvitationResponse;
+export type AcceptOrganizationInvitationOutput = z.output<typeof AcceptOrganizationInvitationOutputSchema>;
+export const AcceptOrganizationInvitationOutputSchemas: OutputSchemas<AcceptOrganizationInvitationOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zAcceptOrganizationInvitationResponse,
+}))();
+
 export const AssignSmsLineCampaignInputSchema = /* @__PURE__ */ (() => z.strictObject({
     body: GeneratedZod.zAssignSmsLineCampaignBody,
     path: GeneratedZod.zAssignSmsLineCampaignPath.strict(),
@@ -58,66 +77,6 @@ export const BatchUpdateVoiceLineProfileAssignmentsOutputSchemas: OutputSchemas<
     "200": GeneratedZod.zBatchUpdateVoiceLineProfileAssignmentsResponse,
 }))();
 
-export const BeginInvitationSsoInputSchema = /* @__PURE__ */ (() => z.strictObject({
-    body: GeneratedZod.zBeginInvitationSsoBody,
-    path: GeneratedZod.zBeginInvitationSsoPath.strict(),
-}))();
-export type BeginInvitationSsoInput = {
-    body: WireTypes.BeginInvitationSsoData["body"];
-    path: NonNullable<WireTypes.BeginInvitationSsoData["path"]>;
-};
-
-export const BeginInvitationSsoOutputSchema = GeneratedZod.zOrganizationAuthenticationRedirect;
-export type BeginInvitationSsoOutput = z.output<typeof BeginInvitationSsoOutputSchema>;
-export const BeginInvitationSsoOutputSchemas: OutputSchemas<BeginInvitationSsoOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zOrganizationAuthenticationRedirect,
-}))();
-
-export const BeginOrganizationAuthenticationInputSchema = /* @__PURE__ */ (() => z.strictObject({
-    body: GeneratedZod.zBeginOrganizationAuthenticationBody,
-    path: GeneratedZod.zBeginOrganizationAuthenticationPath.strict(),
-}))();
-export type BeginOrganizationAuthenticationInput = {
-    body: WireTypes.BeginOrganizationAuthenticationData["body"];
-    path: NonNullable<WireTypes.BeginOrganizationAuthenticationData["path"]>;
-};
-
-export const BeginOrganizationAuthenticationOutputSchema = GeneratedZod.zOrganizationAuthenticationRedirect;
-export type BeginOrganizationAuthenticationOutput = z.output<typeof BeginOrganizationAuthenticationOutputSchema>;
-export const BeginOrganizationAuthenticationOutputSchemas: OutputSchemas<BeginOrganizationAuthenticationOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zOrganizationAuthenticationRedirect,
-}))();
-
-export const BeginOrganizationClosureAuthenticationInputSchema = /* @__PURE__ */ (() => z.strictObject({
-    body: GeneratedZod.zBeginOrganizationClosureAuthenticationBody,
-    path: GeneratedZod.zBeginOrganizationClosureAuthenticationPath.strict(),
-}))();
-export type BeginOrganizationClosureAuthenticationInput = {
-    body: WireTypes.BeginOrganizationClosureAuthenticationData["body"];
-    path: NonNullable<WireTypes.BeginOrganizationClosureAuthenticationData["path"]>;
-};
-
-export const BeginOrganizationClosureAuthenticationOutputSchema = GeneratedZod.zOrganizationAuthenticationRedirect;
-export type BeginOrganizationClosureAuthenticationOutput = z.output<typeof BeginOrganizationClosureAuthenticationOutputSchema>;
-export const BeginOrganizationClosureAuthenticationOutputSchemas: OutputSchemas<BeginOrganizationClosureAuthenticationOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zOrganizationAuthenticationRedirect,
-}))();
-
-export const BeginOrganizationSsoAdmissionInputSchema = /* @__PURE__ */ (() => z.strictObject({
-    body: GeneratedZod.zBeginOrganizationSsoAdmissionBody,
-    path: GeneratedZod.zBeginOrganizationSsoAdmissionPath.strict(),
-}))();
-export type BeginOrganizationSsoAdmissionInput = {
-    body: WireTypes.BeginOrganizationSsoAdmissionData["body"];
-    path: NonNullable<WireTypes.BeginOrganizationSsoAdmissionData["path"]>;
-};
-
-export const BeginOrganizationSsoAdmissionOutputSchema = GeneratedZod.zOrganizationAuthenticationRedirect;
-export type BeginOrganizationSsoAdmissionOutput = z.output<typeof BeginOrganizationSsoAdmissionOutputSchema>;
-export const BeginOrganizationSsoAdmissionOutputSchemas: OutputSchemas<BeginOrganizationSsoAdmissionOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zOrganizationAuthenticationRedirect,
-}))();
-
 export const CancelOperationInputSchema = /* @__PURE__ */ (() => z.strictObject({
     path: GeneratedZod.zCancelOperationPath.strict(),
 }))();
@@ -129,6 +88,25 @@ export const CancelOperationOutputSchema = GeneratedZod.zOperation;
 export type CancelOperationOutput = z.output<typeof CancelOperationOutputSchema>;
 export const CancelOperationOutputSchemas: OutputSchemas<CancelOperationOutput> = /* @__PURE__ */ (() => ({
     "200": GeneratedZod.zOperation,
+}))();
+
+export const CancelSsoSubscriptionInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zCancelSsoSubscriptionPath.strict(),
+    headers: z.strictObject({
+        idempotencyKey: GeneratedZod.zCancelSsoSubscriptionHeaders.shape["Idempotency-Key"],
+    }),
+}))();
+export type CancelSsoSubscriptionInput = {
+    path: NonNullable<WireTypes.CancelSsoSubscriptionData["path"]>;
+    headers: {
+        idempotencyKey: NonNullable<WireTypes.CancelSsoSubscriptionData["headers"]>["Idempotency-Key"];
+    };
+};
+
+export const CancelSsoSubscriptionOutputSchema = GeneratedZod.zCancelSsoSubscriptionResponse;
+export type CancelSsoSubscriptionOutput = z.output<typeof CancelSsoSubscriptionOutputSchema>;
+export const CancelSsoSubscriptionOutputSchemas: OutputSchemas<CancelSsoSubscriptionOutput> = /* @__PURE__ */ (() => ({
+    "202": GeneratedZod.zCancelSsoSubscriptionResponse,
 }))();
 
 export const ChangePlanInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -153,6 +131,19 @@ export const ChangePlanOutputSchemas: OutputSchemas<ChangePlanOutput> = /* @__PU
     "202": GeneratedZod.zPendingBillingOperation,
 }))();
 
+export const CheckOrganizationDeletionInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zCheckOrganizationDeletionPath.strict(),
+}))();
+export type CheckOrganizationDeletionInput = {
+    path: NonNullable<WireTypes.CheckOrganizationDeletionData["path"]>;
+};
+
+export const CheckOrganizationDeletionOutputSchema = GeneratedZod.zCheckOrganizationDeletionResponse;
+export type CheckOrganizationDeletionOutput = z.output<typeof CheckOrganizationDeletionOutputSchema>;
+export const CheckOrganizationDeletionOutputSchemas: OutputSchemas<CheckOrganizationDeletionOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zCheckOrganizationDeletionResponse,
+}))();
+
 export const CheckProjectSlugAvailabilityInputSchema = /* @__PURE__ */ (() => z.strictObject({
     path: GeneratedZod.zCheckProjectSlugAvailabilityPath.strict(),
     query: GeneratedZod.zCheckProjectSlugAvailabilityQuery.strict(),
@@ -166,6 +157,27 @@ export const CheckProjectSlugAvailabilityOutputSchema = GeneratedZod.zCheckProje
 export type CheckProjectSlugAvailabilityOutput = z.output<typeof CheckProjectSlugAvailabilityOutputSchema>;
 export const CheckProjectSlugAvailabilityOutputSchemas: OutputSchemas<CheckProjectSlugAvailabilityOutput> = /* @__PURE__ */ (() => ({
     "200": GeneratedZod.zCheckProjectSlugAvailabilityResponse,
+}))();
+
+export const CloseOrganizationInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    body: GeneratedZod.zCloseOrganizationBody,
+    path: GeneratedZod.zCloseOrganizationPath.strict(),
+    headers: z.strictObject({
+        idempotencyKey: GeneratedZod.zCloseOrganizationHeaders.shape["Idempotency-Key"],
+    }),
+}))();
+export type CloseOrganizationInput = {
+    body: WireTypes.CloseOrganizationData["body"];
+    path: NonNullable<WireTypes.CloseOrganizationData["path"]>;
+    headers: {
+        idempotencyKey: NonNullable<WireTypes.CloseOrganizationData["headers"]>["Idempotency-Key"];
+    };
+};
+
+export const CloseOrganizationOutputSchema = z.undefined();
+export type CloseOrganizationOutput = z.output<typeof CloseOrganizationOutputSchema>;
+export const CloseOrganizationOutputSchemas: OutputSchemas<CloseOrganizationOutput> = /* @__PURE__ */ (() => ({
+    "204": z.undefined(),
 }))();
 
 export const CommitAccountProfilePictureInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -208,15 +220,25 @@ export const CommitAgentProfileAvatarOutputSchemas: OutputSchemas<CommitAgentPro
     "200": GeneratedZod.zAgentProfile,
 }))();
 
-export const CompleteAccountOnboardingInputSchema = /* @__PURE__ */ (() => z.strictObject({
-
+export const CommitOrganizationAvatarInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    body: GeneratedZod.zCommitOrganizationAvatarBody,
+    path: GeneratedZod.zCommitOrganizationAvatarPath.strict(),
+    headers: z.strictObject({
+        idempotencyKey: GeneratedZod.zCommitOrganizationAvatarHeaders.shape["Idempotency-Key"],
+    }),
 }))();
-export type CompleteAccountOnboardingInput = Record<string, never>;
+export type CommitOrganizationAvatarInput = {
+    body: WireTypes.CommitOrganizationAvatarData["body"];
+    path: NonNullable<WireTypes.CommitOrganizationAvatarData["path"]>;
+    headers: {
+        idempotencyKey: NonNullable<WireTypes.CommitOrganizationAvatarData["headers"]>["Idempotency-Key"];
+    };
+};
 
-export const CompleteAccountOnboardingOutputSchema = GeneratedZod.zCompleteAccountOnboardingResponse;
-export type CompleteAccountOnboardingOutput = z.output<typeof CompleteAccountOnboardingOutputSchema>;
-export const CompleteAccountOnboardingOutputSchemas: OutputSchemas<CompleteAccountOnboardingOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zCompleteAccountOnboardingResponse,
+export const CommitOrganizationAvatarOutputSchema = GeneratedZod.zCommitOrganizationAvatarResponse;
+export type CommitOrganizationAvatarOutput = z.output<typeof CommitOrganizationAvatarOutputSchema>;
+export const CommitOrganizationAvatarOutputSchemas: OutputSchemas<CommitOrganizationAvatarOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zCommitOrganizationAvatarResponse,
 }))();
 
 export const ConfigureVoiceProfileOutboundInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -239,19 +261,6 @@ export type ConfigureVoiceProfileOutboundOutput = z.output<typeof ConfigureVoice
 export const ConfigureVoiceProfileOutboundOutputSchemas: OutputSchemas<ConfigureVoiceProfileOutboundOutput> = /* @__PURE__ */ (() => ({
     "200": GeneratedZod.zConfigureVoiceProfileOutboundResponse,
     "201": GeneratedZod.zConfigureVoiceProfileOutboundResponse,
-}))();
-
-export const ConfirmAccountPhoneVerificationInputSchema = /* @__PURE__ */ (() => z.strictObject({
-    body: GeneratedZod.zConfirmAccountPhoneVerificationBody,
-}))();
-export type ConfirmAccountPhoneVerificationInput = {
-    body: WireTypes.ConfirmAccountPhoneVerificationData["body"];
-};
-
-export const ConfirmAccountPhoneVerificationOutputSchema = GeneratedZod.zAccount;
-export type ConfirmAccountPhoneVerificationOutput = z.output<typeof ConfirmAccountPhoneVerificationOutputSchema>;
-export const ConfirmAccountPhoneVerificationOutputSchemas: OutputSchemas<ConfirmAccountPhoneVerificationOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zAccount,
 }))();
 
 export const ConnectEmailDomainInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -293,27 +302,6 @@ export type ConnectTelegramBotInput = {
 export const ConnectTelegramBotOutputSchema = GeneratedZod.zOperation;
 export type ConnectTelegramBotOutput = z.output<typeof ConnectTelegramBotOutputSchema>;
 export const ConnectTelegramBotOutputSchemas: OutputSchemas<ConnectTelegramBotOutput> = /* @__PURE__ */ (() => ({
-    "202": GeneratedZod.zOperation,
-}))();
-
-export const ConnectWhatsappBusinessInputSchema = /* @__PURE__ */ (() => z.strictObject({
-    body: GeneratedZod.zConnectWhatsappBusinessBody,
-    path: GeneratedZod.zConnectWhatsappBusinessPath.strict(),
-    headers: z.strictObject({
-        idempotencyKey: GeneratedZod.zConnectWhatsappBusinessHeaders.shape["Idempotency-Key"],
-    }),
-}))();
-export type ConnectWhatsappBusinessInput = {
-    body: WireTypes.ConnectWhatsappBusinessData["body"];
-    path: NonNullable<WireTypes.ConnectWhatsappBusinessData["path"]>;
-    headers: {
-        idempotencyKey: NonNullable<WireTypes.ConnectWhatsappBusinessData["headers"]>["Idempotency-Key"];
-    };
-};
-
-export const ConnectWhatsappBusinessOutputSchema = GeneratedZod.zOperation;
-export type ConnectWhatsappBusinessOutput = z.output<typeof ConnectWhatsappBusinessOutputSchema>;
-export const ConnectWhatsappBusinessOutputSchemas: OutputSchemas<ConnectWhatsappBusinessOutput> = /* @__PURE__ */ (() => ({
     "202": GeneratedZod.zOperation,
 }))();
 
@@ -483,6 +471,82 @@ export const CreateDefaultVoiceProfileOutputSchemas: OutputSchemas<CreateDefault
     "201": GeneratedZod.zVoiceProfile,
 }))();
 
+export const CreateOrganizationInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    body: GeneratedZod.zCreateOrganizationBody,
+    headers: z.strictObject({
+        idempotencyKey: GeneratedZod.zCreateOrganizationHeaders.shape["Idempotency-Key"],
+    }),
+}))();
+export type CreateOrganizationInput = {
+    body: WireTypes.CreateOrganizationData["body"];
+    headers: {
+        idempotencyKey: NonNullable<WireTypes.CreateOrganizationData["headers"]>["Idempotency-Key"];
+    };
+};
+
+export const CreateOrganizationOutputSchema = GeneratedZod.zCreateOrganizationResponse;
+export type CreateOrganizationOutput = z.output<typeof CreateOrganizationOutputSchema>;
+export const CreateOrganizationOutputSchemas: OutputSchemas<CreateOrganizationOutput> = /* @__PURE__ */ (() => ({
+    "201": GeneratedZod.zCreateOrganizationResponse,
+}))();
+
+export const CreateOrganizationAvatarUploadInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    body: GeneratedZod.zCreateOrganizationAvatarUploadBody,
+    path: GeneratedZod.zCreateOrganizationAvatarUploadPath.strict(),
+}))();
+export type CreateOrganizationAvatarUploadInput = {
+    body: WireTypes.CreateOrganizationAvatarUploadData["body"];
+    path: NonNullable<WireTypes.CreateOrganizationAvatarUploadData["path"]>;
+};
+
+export const CreateOrganizationAvatarUploadOutputSchema = GeneratedZod.zCreateOrganizationAvatarUploadResponse;
+export type CreateOrganizationAvatarUploadOutput = z.output<typeof CreateOrganizationAvatarUploadOutputSchema>;
+export const CreateOrganizationAvatarUploadOutputSchemas: OutputSchemas<CreateOrganizationAvatarUploadOutput> = /* @__PURE__ */ (() => ({
+    "201": GeneratedZod.zCreateOrganizationAvatarUploadResponse,
+}))();
+
+export const CreateOrganizationInvitationInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    body: GeneratedZod.zCreateOrganizationInvitationBody,
+    path: GeneratedZod.zCreateOrganizationInvitationPath.strict(),
+    headers: z.strictObject({
+        idempotencyKey: GeneratedZod.zCreateOrganizationInvitationHeaders.shape["Idempotency-Key"],
+    }),
+}))();
+export type CreateOrganizationInvitationInput = {
+    body: WireTypes.CreateOrganizationInvitationData["body"];
+    path: NonNullable<WireTypes.CreateOrganizationInvitationData["path"]>;
+    headers: {
+        idempotencyKey: NonNullable<WireTypes.CreateOrganizationInvitationData["headers"]>["Idempotency-Key"];
+    };
+};
+
+export const CreateOrganizationInvitationOutputSchema = GeneratedZod.zCreateOrganizationInvitationResponse;
+export type CreateOrganizationInvitationOutput = z.output<typeof CreateOrganizationInvitationOutputSchema>;
+export const CreateOrganizationInvitationOutputSchemas: OutputSchemas<CreateOrganizationInvitationOutput> = /* @__PURE__ */ (() => ({
+    "201": GeneratedZod.zCreateOrganizationInvitationResponse,
+}))();
+
+export const CreateOrganizationOauthClientInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    body: GeneratedZod.zCreateOrganizationOauthClientBody,
+    path: GeneratedZod.zCreateOrganizationOauthClientPath.strict(),
+    headers: z.strictObject({
+        "idempotency-key": GeneratedZod.zCreateOrganizationOauthClientHeaders.shape["idempotency-key"],
+    }),
+}))();
+export type CreateOrganizationOauthClientInput = {
+    body: WireTypes.CreateOrganizationOauthClientData["body"];
+    path: NonNullable<WireTypes.CreateOrganizationOauthClientData["path"]>;
+    headers: {
+        "idempotency-key": NonNullable<WireTypes.CreateOrganizationOauthClientData["headers"]>["idempotency-key"];
+    };
+};
+
+export const CreateOrganizationOauthClientOutputSchema = GeneratedZod.zCreateOrganizationOauthClientResponse;
+export type CreateOrganizationOauthClientOutput = z.output<typeof CreateOrganizationOauthClientOutputSchema>;
+export const CreateOrganizationOauthClientOutputSchemas: OutputSchemas<CreateOrganizationOauthClientOutput> = /* @__PURE__ */ (() => ({
+    "201": GeneratedZod.zCreateOrganizationOauthClientResponse,
+}))();
+
 export const CreateOrganizationPaymentMethodCheckoutInputSchema = /* @__PURE__ */ (() => z.strictObject({
     path: GeneratedZod.zCreateOrganizationPaymentMethodCheckoutPath.strict(),
     headers: z.strictObject({
@@ -500,25 +564,6 @@ export const CreateOrganizationPaymentMethodCheckoutOutputSchema = GeneratedZod.
 export type CreateOrganizationPaymentMethodCheckoutOutput = z.output<typeof CreateOrganizationPaymentMethodCheckoutOutputSchema>;
 export const CreateOrganizationPaymentMethodCheckoutOutputSchemas: OutputSchemas<CreateOrganizationPaymentMethodCheckoutOutput> = /* @__PURE__ */ (() => ({
     "200": GeneratedZod.zCreateOrganizationPaymentMethodCheckoutResponse,
-}))();
-
-export const CreateOrganizationSetupIntentInputSchema = /* @__PURE__ */ (() => z.strictObject({
-    path: GeneratedZod.zCreateOrganizationSetupIntentPath.strict(),
-    headers: z.strictObject({
-        idempotencyKey: GeneratedZod.zCreateOrganizationSetupIntentHeaders.shape["Idempotency-Key"],
-    }),
-}))();
-export type CreateOrganizationSetupIntentInput = {
-    path: NonNullable<WireTypes.CreateOrganizationSetupIntentData["path"]>;
-    headers: {
-        idempotencyKey: NonNullable<WireTypes.CreateOrganizationSetupIntentData["headers"]>["Idempotency-Key"];
-    };
-};
-
-export const CreateOrganizationSetupIntentOutputSchema = GeneratedZod.zCreateOrganizationSetupIntentResponse;
-export type CreateOrganizationSetupIntentOutput = z.output<typeof CreateOrganizationSetupIntentOutputSchema>;
-export const CreateOrganizationSetupIntentOutputSchemas: OutputSchemas<CreateOrganizationSetupIntentOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zCreateOrganizationSetupIntentResponse,
 }))();
 
 export const CreateOrganizationSsoPortalLinkInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -615,6 +660,69 @@ export const CreateProjectApiKeyOutputSchema = GeneratedZod.zCreateProjectApiKey
 export type CreateProjectApiKeyOutput = z.output<typeof CreateProjectApiKeyOutputSchema>;
 export const CreateProjectApiKeyOutputSchemas: OutputSchemas<CreateProjectApiKeyOutput> = /* @__PURE__ */ (() => ({
     "201": GeneratedZod.zCreateProjectApiKeyResponse,
+}))();
+
+export const CreateServiceIdentityInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    body: GeneratedZod.zCreateServiceIdentityBody,
+    path: GeneratedZod.zCreateServiceIdentityPath.strict(),
+    headers: z.strictObject({
+        idempotencyKey: GeneratedZod.zCreateServiceIdentityHeaders.shape["Idempotency-Key"],
+    }),
+}))();
+export type CreateServiceIdentityInput = {
+    body: WireTypes.CreateServiceIdentityData["body"];
+    path: NonNullable<WireTypes.CreateServiceIdentityData["path"]>;
+    headers: {
+        idempotencyKey: NonNullable<WireTypes.CreateServiceIdentityData["headers"]>["Idempotency-Key"];
+    };
+};
+
+export const CreateServiceIdentityOutputSchema = GeneratedZod.zCreateServiceIdentityResponse;
+export type CreateServiceIdentityOutput = z.output<typeof CreateServiceIdentityOutputSchema>;
+export const CreateServiceIdentityOutputSchemas: OutputSchemas<CreateServiceIdentityOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zCreateServiceIdentityResponse,
+}))();
+
+export const CreateServiceIdentityApiKeyInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    body: GeneratedZod.zCreateServiceIdentityApiKeyBody,
+    path: GeneratedZod.zCreateServiceIdentityApiKeyPath.strict(),
+    headers: z.strictObject({
+        idempotencyKey: GeneratedZod.zCreateServiceIdentityApiKeyHeaders.shape["Idempotency-Key"],
+    }),
+}))();
+export type CreateServiceIdentityApiKeyInput = {
+    body: WireTypes.CreateServiceIdentityApiKeyData["body"];
+    path: NonNullable<WireTypes.CreateServiceIdentityApiKeyData["path"]>;
+    headers: {
+        idempotencyKey: NonNullable<WireTypes.CreateServiceIdentityApiKeyData["headers"]>["Idempotency-Key"];
+    };
+};
+
+export const CreateServiceIdentityApiKeyOutputSchema = GeneratedZod.zCreateServiceIdentityApiKeyResponse;
+export type CreateServiceIdentityApiKeyOutput = z.output<typeof CreateServiceIdentityApiKeyOutputSchema>;
+export const CreateServiceIdentityApiKeyOutputSchemas: OutputSchemas<CreateServiceIdentityApiKeyOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zCreateServiceIdentityApiKeyResponse,
+}))();
+
+export const CreateServiceIdentityClientSecretInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    body: GeneratedZod.zCreateServiceIdentityClientSecretBody,
+    path: GeneratedZod.zCreateServiceIdentityClientSecretPath.strict(),
+    headers: z.strictObject({
+        idempotencyKey: GeneratedZod.zCreateServiceIdentityClientSecretHeaders.shape["Idempotency-Key"],
+    }),
+}))();
+export type CreateServiceIdentityClientSecretInput = {
+    body: WireTypes.CreateServiceIdentityClientSecretData["body"];
+    path: NonNullable<WireTypes.CreateServiceIdentityClientSecretData["path"]>;
+    headers: {
+        idempotencyKey: NonNullable<WireTypes.CreateServiceIdentityClientSecretData["headers"]>["Idempotency-Key"];
+    };
+};
+
+export const CreateServiceIdentityClientSecretOutputSchema = GeneratedZod.zCreateServiceIdentityClientSecretResponse;
+export type CreateServiceIdentityClientSecretOutput = z.output<typeof CreateServiceIdentityClientSecretOutputSchema>;
+export const CreateServiceIdentityClientSecretOutputSchemas: OutputSchemas<CreateServiceIdentityClientSecretOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zCreateServiceIdentityClientSecretResponse,
 }))();
 
 export const CreateSharedLineAssignmentInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -725,6 +833,33 @@ export const DeleteAccountOutputSchema = GeneratedZod.zAccount;
 export type DeleteAccountOutput = z.output<typeof DeleteAccountOutputSchema>;
 export const DeleteAccountOutputSchemas: OutputSchemas<DeleteAccountOutput> = /* @__PURE__ */ (() => ({
     "200": GeneratedZod.zAccount,
+}))();
+
+export const DeleteOrganizationOauthClientInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zDeleteOrganizationOauthClientPath.strict(),
+}))();
+export type DeleteOrganizationOauthClientInput = {
+    path: NonNullable<WireTypes.DeleteOrganizationOauthClientData["path"]>;
+};
+
+export const DeleteOrganizationOauthClientOutputSchema = GeneratedZod.zDeleteOrganizationOauthClientResponse;
+export type DeleteOrganizationOauthClientOutput = z.output<typeof DeleteOrganizationOauthClientOutputSchema>;
+export const DeleteOrganizationOauthClientOutputSchemas: OutputSchemas<DeleteOrganizationOauthClientOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zDeleteOrganizationOauthClientResponse,
+    "202": GeneratedZod.zDeleteOrganizationOauthClientResponse,
+}))();
+
+export const DeleteOrganizationOauthClientSecretInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zDeleteOrganizationOauthClientSecretPath.strict(),
+}))();
+export type DeleteOrganizationOauthClientSecretInput = {
+    path: NonNullable<WireTypes.DeleteOrganizationOauthClientSecretData["path"]>;
+};
+
+export const DeleteOrganizationOauthClientSecretOutputSchema = z.undefined();
+export type DeleteOrganizationOauthClientSecretOutput = z.output<typeof DeleteOrganizationOauthClientSecretOutputSchema>;
+export const DeleteOrganizationOauthClientSecretOutputSchemas: OutputSchemas<DeleteOrganizationOauthClientSecretOutput> = /* @__PURE__ */ (() => ({
+    "204": z.undefined(),
 }))();
 
 export const DeleteProjectInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -882,6 +1017,23 @@ export const DownloadAttachmentOutputSchemas: OutputSchemas<DownloadAttachmentOu
     "200": z.instanceof(Blob),
 }))();
 
+export const EnsureInitialOrganizationInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    headers: z.strictObject({
+        idempotencyKey: GeneratedZod.zEnsureInitialOrganizationHeaders.shape["Idempotency-Key"],
+    }),
+}))();
+export type EnsureInitialOrganizationInput = {
+    headers: {
+        idempotencyKey: NonNullable<WireTypes.EnsureInitialOrganizationData["headers"]>["Idempotency-Key"];
+    };
+};
+
+export const EnsureInitialOrganizationOutputSchema = GeneratedZod.zEnsureInitialOrganizationResponse;
+export type EnsureInitialOrganizationOutput = z.output<typeof EnsureInitialOrganizationOutputSchema>;
+export const EnsureInitialOrganizationOutputSchemas: OutputSchemas<EnsureInitialOrganizationOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zEnsureInitialOrganizationResponse,
+}))();
+
 export const GetAccountInputSchema = /* @__PURE__ */ (() => z.strictObject({
 
 }))();
@@ -891,17 +1043,6 @@ export const GetAccountOutputSchema = GeneratedZod.zAccount;
 export type GetAccountOutput = z.output<typeof GetAccountOutputSchema>;
 export const GetAccountOutputSchemas: OutputSchemas<GetAccountOutput> = /* @__PURE__ */ (() => ({
     "200": GeneratedZod.zAccount,
-}))();
-
-export const GetAccountOnboardingInputSchema = /* @__PURE__ */ (() => z.strictObject({
-
-}))();
-export type GetAccountOnboardingInput = Record<string, never>;
-
-export const GetAccountOnboardingOutputSchema = GeneratedZod.zGetAccountOnboardingResponse;
-export type GetAccountOnboardingOutput = z.output<typeof GetAccountOnboardingOutputSchema>;
-export const GetAccountOnboardingOutputSchemas: OutputSchemas<GetAccountOnboardingOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zGetAccountOnboardingResponse,
 }))();
 
 export const GetAgentProfileInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -954,6 +1095,17 @@ export const GetBillingOverviewOutputSchema = GeneratedZod.zGetBillingOverviewRe
 export type GetBillingOverviewOutput = z.output<typeof GetBillingOverviewOutputSchema>;
 export const GetBillingOverviewOutputSchemas: OutputSchemas<GetBillingOverviewOutput> = /* @__PURE__ */ (() => ({
     "200": GeneratedZod.zGetBillingOverviewResponse,
+}))();
+
+export const GetCurrentOrganizationInputSchema = /* @__PURE__ */ (() => z.strictObject({
+
+}))();
+export type GetCurrentOrganizationInput = Record<string, never>;
+
+export const GetCurrentOrganizationOutputSchema = GeneratedZod.zGetCurrentOrganizationResponse;
+export type GetCurrentOrganizationOutput = z.output<typeof GetCurrentOrganizationOutputSchema>;
+export const GetCurrentOrganizationOutputSchemas: OutputSchemas<GetCurrentOrganizationOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zGetCurrentOrganizationResponse,
 }))();
 
 export const GetDefaultVoiceProfileInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1081,6 +1233,19 @@ export const GetOperationOutputSchemas: OutputSchemas<GetOperationOutput> = /* @
     "200": GeneratedZod.zGetOperationResponse,
 }))();
 
+export const GetOrganizationInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zGetOrganizationPath.strict(),
+}))();
+export type GetOrganizationInput = {
+    path: NonNullable<WireTypes.GetOrganizationData["path"]>;
+};
+
+export const GetOrganizationOutputSchema = GeneratedZod.zGetOrganizationResponse;
+export type GetOrganizationOutput = z.output<typeof GetOrganizationOutputSchema>;
+export const GetOrganizationOutputSchemas: OutputSchemas<GetOrganizationOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zGetOrganizationResponse,
+}))();
+
 export const GetOrganizationBillingOverviewInputSchema = /* @__PURE__ */ (() => z.strictObject({
     path: GeneratedZod.zGetOrganizationBillingOverviewPath.strict(),
 }))();
@@ -1118,6 +1283,32 @@ export const GetOrganizationCreditOutputSchema = GeneratedZod.zGetOrganizationCr
 export type GetOrganizationCreditOutput = z.output<typeof GetOrganizationCreditOutputSchema>;
 export const GetOrganizationCreditOutputSchemas: OutputSchemas<GetOrganizationCreditOutput> = /* @__PURE__ */ (() => ({
     "200": GeneratedZod.zGetOrganizationCreditResponse,
+}))();
+
+export const GetOrganizationOauthClientInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zGetOrganizationOauthClientPath.strict(),
+}))();
+export type GetOrganizationOauthClientInput = {
+    path: NonNullable<WireTypes.GetOrganizationOauthClientData["path"]>;
+};
+
+export const GetOrganizationOauthClientOutputSchema = GeneratedZod.zGetOrganizationOauthClientResponse;
+export type GetOrganizationOauthClientOutput = z.output<typeof GetOrganizationOauthClientOutputSchema>;
+export const GetOrganizationOauthClientOutputSchemas: OutputSchemas<GetOrganizationOauthClientOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zGetOrganizationOauthClientResponse,
+}))();
+
+export const GetOrganizationOauthClientSecretInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zGetOrganizationOauthClientSecretPath.strict(),
+}))();
+export type GetOrganizationOauthClientSecretInput = {
+    path: NonNullable<WireTypes.GetOrganizationOauthClientSecretData["path"]>;
+};
+
+export const GetOrganizationOauthClientSecretOutputSchema = GeneratedZod.zGetOrganizationOauthClientSecretResponse;
+export type GetOrganizationOauthClientSecretOutput = z.output<typeof GetOrganizationOauthClientSecretOutputSchema>;
+export const GetOrganizationOauthClientSecretOutputSchemas: OutputSchemas<GetOrganizationOauthClientSecretOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zGetOrganizationOauthClientSecretResponse,
 }))();
 
 export const GetOrganizationPaymentMethodInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1226,6 +1417,19 @@ export const GetResourceOutputSchemas: OutputSchemas<GetResourceOutput> = /* @__
     "200": GeneratedZod.zResource,
 }))();
 
+export const GetServiceIdentityInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zGetServiceIdentityPath.strict(),
+}))();
+export type GetServiceIdentityInput = {
+    path: NonNullable<WireTypes.GetServiceIdentityData["path"]>;
+};
+
+export const GetServiceIdentityOutputSchema = GeneratedZod.zGetServiceIdentityResponse;
+export type GetServiceIdentityOutput = z.output<typeof GetServiceIdentityOutputSchema>;
+export const GetServiceIdentityOutputSchemas: OutputSchemas<GetServiceIdentityOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zGetServiceIdentityResponse,
+}))();
+
 export const GetSharedLineAssignmentInputSchema = /* @__PURE__ */ (() => z.strictObject({
     path: GeneratedZod.zGetSharedLineAssignmentPath.strict(),
 }))();
@@ -1270,6 +1474,19 @@ export type GetSpaceOutput = z.output<typeof GetSpaceOutputSchema>;
 export const GetSpaceOutputSchemas: OutputSchemas<GetSpaceOutput> = /* @__PURE__ */ (() => ({
     "200": GeneratedZod.zPlatformSpace,
     "304": z.undefined(),
+}))();
+
+export const GetSsoSubscriptionInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zGetSsoSubscriptionPath.strict(),
+}))();
+export type GetSsoSubscriptionInput = {
+    path: NonNullable<WireTypes.GetSsoSubscriptionData["path"]>;
+};
+
+export const GetSsoSubscriptionOutputSchema = GeneratedZod.zGetSsoSubscriptionResponse;
+export type GetSsoSubscriptionOutput = z.output<typeof GetSsoSubscriptionOutputSchema>;
+export const GetSsoSubscriptionOutputSchemas: OutputSchemas<GetSsoSubscriptionOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zGetSsoSubscriptionResponse,
 }))();
 
 export const GetUserInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1388,17 +1605,25 @@ export const GetWhatsappSharedLineAssignmentOutputSchemas: OutputSchemas<GetWhat
     "200": GeneratedZod.zSharedLineAssignment,
 }))();
 
-export const GetWhatsappSignupConfigInputSchema = /* @__PURE__ */ (() => z.strictObject({
-    path: GeneratedZod.zGetWhatsappSignupConfigPath.strict(),
+export const LeaveOrganizationInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    body: GeneratedZod.zLeaveOrganizationBody,
+    path: GeneratedZod.zLeaveOrganizationPath.strict(),
+    headers: z.strictObject({
+        idempotencyKey: GeneratedZod.zLeaveOrganizationHeaders.shape["Idempotency-Key"],
+    }),
 }))();
-export type GetWhatsappSignupConfigInput = {
-    path: NonNullable<WireTypes.GetWhatsappSignupConfigData["path"]>;
+export type LeaveOrganizationInput = {
+    body: WireTypes.LeaveOrganizationData["body"];
+    path: NonNullable<WireTypes.LeaveOrganizationData["path"]>;
+    headers: {
+        idempotencyKey: NonNullable<WireTypes.LeaveOrganizationData["headers"]>["Idempotency-Key"];
+    };
 };
 
-export const GetWhatsappSignupConfigOutputSchema = GeneratedZod.zGetWhatsappSignupConfigResponse;
-export type GetWhatsappSignupConfigOutput = z.output<typeof GetWhatsappSignupConfigOutputSchema>;
-export const GetWhatsappSignupConfigOutputSchemas: OutputSchemas<GetWhatsappSignupConfigOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zGetWhatsappSignupConfigResponse,
+export const LeaveOrganizationOutputSchema = GeneratedZod.zLeaveOrganizationResponse;
+export type LeaveOrganizationOutput = z.output<typeof LeaveOrganizationOutputSchema>;
+export const LeaveOrganizationOutputSchemas: OutputSchemas<LeaveOrganizationOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zLeaveOrganizationResponse,
 }))();
 
 export const ListAccountServiceKeysInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1582,6 +1807,56 @@ export const ListOperationsOutputSchemas: OutputSchemas<ListOperationsOutput> = 
     "200": GeneratedZod.zOperationPage,
 }))();
 
+export const ListOrganizationInvitationsInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zListOrganizationInvitationsPath.strict(),
+}))();
+export type ListOrganizationInvitationsInput = {
+    path: NonNullable<WireTypes.ListOrganizationInvitationsData["path"]>;
+};
+
+export const ListOrganizationInvitationsOutputSchema = GeneratedZod.zListOrganizationInvitationsResponse;
+export type ListOrganizationInvitationsOutput = z.output<typeof ListOrganizationInvitationsOutputSchema>;
+export const ListOrganizationInvitationsOutputSchemas: OutputSchemas<ListOrganizationInvitationsOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zListOrganizationInvitationsResponse,
+}))();
+
+export const ListOrganizationMembersInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zListOrganizationMembersPath.strict(),
+}))();
+export type ListOrganizationMembersInput = {
+    path: NonNullable<WireTypes.ListOrganizationMembersData["path"]>;
+};
+
+export const ListOrganizationMembersOutputSchema = GeneratedZod.zListOrganizationMembersResponse;
+export type ListOrganizationMembersOutput = z.output<typeof ListOrganizationMembersOutputSchema>;
+export const ListOrganizationMembersOutputSchemas: OutputSchemas<ListOrganizationMembersOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zListOrganizationMembersResponse,
+}))();
+
+export const ListOrganizationOauthClientsInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zListOrganizationOauthClientsPath.strict(),
+}))();
+export type ListOrganizationOauthClientsInput = {
+    path: NonNullable<WireTypes.ListOrganizationOauthClientsData["path"]>;
+};
+
+export const ListOrganizationOauthClientsOutputSchema = GeneratedZod.zListOrganizationOauthClientsResponse;
+export type ListOrganizationOauthClientsOutput = z.output<typeof ListOrganizationOauthClientsOutputSchema>;
+export const ListOrganizationOauthClientsOutputSchemas: OutputSchemas<ListOrganizationOauthClientsOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zListOrganizationOauthClientsResponse,
+}))();
+
+export const ListOrganizationsInputSchema = /* @__PURE__ */ (() => z.strictObject({
+
+}))();
+export type ListOrganizationsInput = Record<string, never>;
+
+export const ListOrganizationsOutputSchema = GeneratedZod.zListOrganizationsResponse;
+export type ListOrganizationsOutput = z.output<typeof ListOrganizationsOutputSchema>;
+export const ListOrganizationsOutputSchemas: OutputSchemas<ListOrganizationsOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zListOrganizationsResponse,
+}))();
+
 export const ListProjectApiKeysInputSchema = /* @__PURE__ */ (() => z.strictObject({
     path: GeneratedZod.zListProjectApiKeysPath.strict(),
 }))();
@@ -1664,6 +1939,45 @@ export const ListResourcesOutputSchema = GeneratedZod.zResourcePage;
 export type ListResourcesOutput = z.output<typeof ListResourcesOutputSchema>;
 export const ListResourcesOutputSchemas: OutputSchemas<ListResourcesOutput> = /* @__PURE__ */ (() => ({
     "200": GeneratedZod.zResourcePage,
+}))();
+
+export const ListServiceIdentitiesInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zListServiceIdentitiesPath.strict(),
+}))();
+export type ListServiceIdentitiesInput = {
+    path: NonNullable<WireTypes.ListServiceIdentitiesData["path"]>;
+};
+
+export const ListServiceIdentitiesOutputSchema = GeneratedZod.zListServiceIdentitiesResponse;
+export type ListServiceIdentitiesOutput = z.output<typeof ListServiceIdentitiesOutputSchema>;
+export const ListServiceIdentitiesOutputSchemas: OutputSchemas<ListServiceIdentitiesOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zListServiceIdentitiesResponse,
+}))();
+
+export const ListServiceIdentityCredentialsInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zListServiceIdentityCredentialsPath.strict(),
+}))();
+export type ListServiceIdentityCredentialsInput = {
+    path: NonNullable<WireTypes.ListServiceIdentityCredentialsData["path"]>;
+};
+
+export const ListServiceIdentityCredentialsOutputSchema = GeneratedZod.zListServiceIdentityCredentialsResponse;
+export type ListServiceIdentityCredentialsOutput = z.output<typeof ListServiceIdentityCredentialsOutputSchema>;
+export const ListServiceIdentityCredentialsOutputSchemas: OutputSchemas<ListServiceIdentityCredentialsOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zListServiceIdentityCredentialsResponse,
+}))();
+
+export const ListServiceIdentityPermissionsInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zListServiceIdentityPermissionsPath.strict(),
+}))();
+export type ListServiceIdentityPermissionsInput = {
+    path: NonNullable<WireTypes.ListServiceIdentityPermissionsData["path"]>;
+};
+
+export const ListServiceIdentityPermissionsOutputSchema = GeneratedZod.zListServiceIdentityPermissionsResponse;
+export type ListServiceIdentityPermissionsOutput = z.output<typeof ListServiceIdentityPermissionsOutputSchema>;
+export const ListServiceIdentityPermissionsOutputSchemas: OutputSchemas<ListServiceIdentityPermissionsOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zListServiceIdentityPermissionsResponse,
 }))();
 
 export const ListSharedLineAssignmentsInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -1845,6 +2159,19 @@ export const PreviewOrganizationChangeOutputSchema = GeneratedZod.zPreviewOrgani
 export type PreviewOrganizationChangeOutput = z.output<typeof PreviewOrganizationChangeOutputSchema>;
 export const PreviewOrganizationChangeOutputSchemas: OutputSchemas<PreviewOrganizationChangeOutput> = /* @__PURE__ */ (() => ({
     "200": GeneratedZod.zPreviewOrganizationChangeResponse,
+}))();
+
+export const PreviewOrganizationInvitationInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    body: GeneratedZod.zPreviewOrganizationInvitationBody,
+}))();
+export type PreviewOrganizationInvitationInput = {
+    body: WireTypes.PreviewOrganizationInvitationData["body"];
+};
+
+export const PreviewOrganizationInvitationOutputSchema = GeneratedZod.zPreviewOrganizationInvitationResponse;
+export type PreviewOrganizationInvitationOutput = z.output<typeof PreviewOrganizationInvitationOutputSchema>;
+export const PreviewOrganizationInvitationOutputSchemas: OutputSchemas<PreviewOrganizationInvitationOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zPreviewOrganizationInvitationResponse,
 }))();
 
 export const PreviewProjectChangeInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -2036,6 +2363,48 @@ export const ReleaseWhatsappSharedLineAssignmentOutputSchemas: OutputSchemas<Rel
     "200": GeneratedZod.zSharedLineAssignment,
 }))();
 
+export const RemoveOrganizationAvatarInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    body: GeneratedZod.zRemoveOrganizationAvatarBody,
+    path: GeneratedZod.zRemoveOrganizationAvatarPath.strict(),
+    headers: z.strictObject({
+        idempotencyKey: GeneratedZod.zRemoveOrganizationAvatarHeaders.shape["Idempotency-Key"],
+    }),
+}))();
+export type RemoveOrganizationAvatarInput = {
+    body: WireTypes.RemoveOrganizationAvatarData["body"];
+    path: NonNullable<WireTypes.RemoveOrganizationAvatarData["path"]>;
+    headers: {
+        idempotencyKey: NonNullable<WireTypes.RemoveOrganizationAvatarData["headers"]>["Idempotency-Key"];
+    };
+};
+
+export const RemoveOrganizationAvatarOutputSchema = GeneratedZod.zRemoveOrganizationAvatarResponse;
+export type RemoveOrganizationAvatarOutput = z.output<typeof RemoveOrganizationAvatarOutputSchema>;
+export const RemoveOrganizationAvatarOutputSchemas: OutputSchemas<RemoveOrganizationAvatarOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zRemoveOrganizationAvatarResponse,
+}))();
+
+export const RemoveOrganizationMemberInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    body: GeneratedZod.zRemoveOrganizationMemberBody,
+    path: GeneratedZod.zRemoveOrganizationMemberPath.strict(),
+    headers: z.strictObject({
+        idempotencyKey: GeneratedZod.zRemoveOrganizationMemberHeaders.shape["Idempotency-Key"],
+    }),
+}))();
+export type RemoveOrganizationMemberInput = {
+    body: WireTypes.RemoveOrganizationMemberData["body"];
+    path: NonNullable<WireTypes.RemoveOrganizationMemberData["path"]>;
+    headers: {
+        idempotencyKey: NonNullable<WireTypes.RemoveOrganizationMemberData["headers"]>["Idempotency-Key"];
+    };
+};
+
+export const RemoveOrganizationMemberOutputSchema = GeneratedZod.zRemoveOrganizationMemberResponse;
+export type RemoveOrganizationMemberOutput = z.output<typeof RemoveOrganizationMemberOutputSchema>;
+export const RemoveOrganizationMemberOutputSchemas: OutputSchemas<RemoveOrganizationMemberOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zRemoveOrganizationMemberResponse,
+}))();
+
 export const ReplaceVoiceProfileInboundInputSchema = /* @__PURE__ */ (() => z.strictObject({
     body: GeneratedZod.zReplaceVoiceProfileInboundBody,
     path: GeneratedZod.zReplaceVoiceProfileInboundPath.strict(),
@@ -2050,6 +2419,25 @@ export type ReplaceVoiceProfileInboundOutput = z.output<typeof ReplaceVoiceProfi
 export const ReplaceVoiceProfileInboundOutputSchemas: OutputSchemas<ReplaceVoiceProfileInboundOutput> = /* @__PURE__ */ (() => ({
     "200": GeneratedZod.zVoiceProfileInboundConfiguration,
     "201": GeneratedZod.zVoiceProfileInboundConfiguration,
+}))();
+
+export const ResendOrganizationInvitationInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zResendOrganizationInvitationPath.strict(),
+    headers: z.strictObject({
+        idempotencyKey: GeneratedZod.zResendOrganizationInvitationHeaders.shape["Idempotency-Key"],
+    }),
+}))();
+export type ResendOrganizationInvitationInput = {
+    path: NonNullable<WireTypes.ResendOrganizationInvitationData["path"]>;
+    headers: {
+        idempotencyKey: NonNullable<WireTypes.ResendOrganizationInvitationData["headers"]>["Idempotency-Key"];
+    };
+};
+
+export const ResendOrganizationInvitationOutputSchema = GeneratedZod.zResendOrganizationInvitationResponse;
+export type ResendOrganizationInvitationOutput = z.output<typeof ResendOrganizationInvitationOutputSchema>;
+export const ResendOrganizationInvitationOutputSchemas: OutputSchemas<ResendOrganizationInvitationOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zResendOrganizationInvitationResponse,
 }))();
 
 export const ResetAccountProfilePictureInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -2154,6 +2542,25 @@ export const RevokeAuthorizedApplicationOutputSchemas: OutputSchemas<RevokeAutho
     "204": z.undefined(),
 }))();
 
+export const RevokeOrganizationInvitationInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zRevokeOrganizationInvitationPath.strict(),
+    headers: z.strictObject({
+        idempotencyKey: GeneratedZod.zRevokeOrganizationInvitationHeaders.shape["Idempotency-Key"],
+    }),
+}))();
+export type RevokeOrganizationInvitationInput = {
+    path: NonNullable<WireTypes.RevokeOrganizationInvitationData["path"]>;
+    headers: {
+        idempotencyKey: NonNullable<WireTypes.RevokeOrganizationInvitationData["headers"]>["Idempotency-Key"];
+    };
+};
+
+export const RevokeOrganizationInvitationOutputSchema = GeneratedZod.zRevokeOrganizationInvitationResponse;
+export type RevokeOrganizationInvitationOutput = z.output<typeof RevokeOrganizationInvitationOutputSchema>;
+export const RevokeOrganizationInvitationOutputSchemas: OutputSchemas<RevokeOrganizationInvitationOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zRevokeOrganizationInvitationResponse,
+}))();
+
 export const RevokeProjectApiKeyInputSchema = /* @__PURE__ */ (() => z.strictObject({
     path: GeneratedZod.zRevokeProjectApiKeyPath.strict(),
     headers: z.strictObject({
@@ -2171,6 +2578,48 @@ export const RevokeProjectApiKeyOutputSchema = GeneratedZod.zProjectApiKeyRespon
 export type RevokeProjectApiKeyOutput = z.output<typeof RevokeProjectApiKeyOutputSchema>;
 export const RevokeProjectApiKeyOutputSchemas: OutputSchemas<RevokeProjectApiKeyOutput> = /* @__PURE__ */ (() => ({
     "200": GeneratedZod.zProjectApiKeyResponse,
+}))();
+
+export const RevokeServiceIdentityCredentialInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    body: GeneratedZod.zRevokeServiceIdentityCredentialBody,
+    path: GeneratedZod.zRevokeServiceIdentityCredentialPath.strict(),
+    headers: z.strictObject({
+        idempotencyKey: GeneratedZod.zRevokeServiceIdentityCredentialHeaders.shape["Idempotency-Key"],
+    }),
+}))();
+export type RevokeServiceIdentityCredentialInput = {
+    body: WireTypes.RevokeServiceIdentityCredentialData["body"];
+    path: NonNullable<WireTypes.RevokeServiceIdentityCredentialData["path"]>;
+    headers: {
+        idempotencyKey: NonNullable<WireTypes.RevokeServiceIdentityCredentialData["headers"]>["Idempotency-Key"];
+    };
+};
+
+export const RevokeServiceIdentityCredentialOutputSchema = GeneratedZod.zRevokeServiceIdentityCredentialResponse;
+export type RevokeServiceIdentityCredentialOutput = z.output<typeof RevokeServiceIdentityCredentialOutputSchema>;
+export const RevokeServiceIdentityCredentialOutputSchemas: OutputSchemas<RevokeServiceIdentityCredentialOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zRevokeServiceIdentityCredentialResponse,
+}))();
+
+export const RotateOrganizationOauthClientSecretInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    body: GeneratedZod.zRotateOrganizationOauthClientSecretBody,
+    path: GeneratedZod.zRotateOrganizationOauthClientSecretPath.strict(),
+    headers: z.strictObject({
+        "idempotency-key": GeneratedZod.zRotateOrganizationOauthClientSecretHeaders.shape["idempotency-key"],
+    }),
+}))();
+export type RotateOrganizationOauthClientSecretInput = {
+    body: WireTypes.RotateOrganizationOauthClientSecretData["body"];
+    path: NonNullable<WireTypes.RotateOrganizationOauthClientSecretData["path"]>;
+    headers: {
+        "idempotency-key": NonNullable<WireTypes.RotateOrganizationOauthClientSecretData["headers"]>["idempotency-key"];
+    };
+};
+
+export const RotateOrganizationOauthClientSecretOutputSchema = GeneratedZod.zRotateOrganizationOauthClientSecretResponse;
+export type RotateOrganizationOauthClientSecretOutput = z.output<typeof RotateOrganizationOauthClientSecretOutputSchema>;
+export const RotateOrganizationOauthClientSecretOutputSchemas: OutputSchemas<RotateOrganizationOauthClientSecretOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zRotateOrganizationOauthClientSecretResponse,
 }))();
 
 export const RotateVoiceProfileOutboundCredentialInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -2251,17 +2700,24 @@ export const SetSpaceTypingOutputSchemas: OutputSchemas<SetSpaceTypingOutput> = 
     "202": GeneratedZod.zSetSpaceTypingResponse,
 }))();
 
-export const StartAccountPhoneVerificationInputSchema = /* @__PURE__ */ (() => z.strictObject({
-    body: GeneratedZod.zStartAccountPhoneVerificationBody,
+export const SetupOrganizationOauthClientSecretInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zSetupOrganizationOauthClientSecretPath.strict(),
+    headers: z.strictObject({
+        "idempotency-key": GeneratedZod.zSetupOrganizationOauthClientSecretHeaders.shape["idempotency-key"],
+    }),
 }))();
-export type StartAccountPhoneVerificationInput = {
-    body: WireTypes.StartAccountPhoneVerificationData["body"];
+export type SetupOrganizationOauthClientSecretInput = {
+    path: NonNullable<WireTypes.SetupOrganizationOauthClientSecretData["path"]>;
+    headers: {
+        "idempotency-key": NonNullable<WireTypes.SetupOrganizationOauthClientSecretData["headers"]>["idempotency-key"];
+    };
 };
 
-export const StartAccountPhoneVerificationOutputSchema = GeneratedZod.zStartAccountPhoneVerificationResponse;
-export type StartAccountPhoneVerificationOutput = z.output<typeof StartAccountPhoneVerificationOutputSchema>;
-export const StartAccountPhoneVerificationOutputSchemas: OutputSchemas<StartAccountPhoneVerificationOutput> = /* @__PURE__ */ (() => ({
-    "201": GeneratedZod.zStartAccountPhoneVerificationResponse,
+export const SetupOrganizationOauthClientSecretOutputSchema = /* @__PURE__ */ (() => z.union([GeneratedZod.zSetupOrganizationOauthClientSecretResponse, GeneratedZod.zSetupOrganizationOauthClientSecretCreatedResponse]))();
+export type SetupOrganizationOauthClientSecretOutput = z.output<typeof SetupOrganizationOauthClientSecretOutputSchema>;
+export const SetupOrganizationOauthClientSecretOutputSchemas: OutputSchemas<SetupOrganizationOauthClientSecretOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zSetupOrganizationOauthClientSecretResponse,
+    "201": GeneratedZod.zSetupOrganizationOauthClientSecretCreatedResponse,
 }))();
 
 export const StartEnterpriseLoginInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -2275,6 +2731,48 @@ export const StartEnterpriseLoginOutputSchema = GeneratedZod.zStartEnterpriseLog
 export type StartEnterpriseLoginOutput = z.output<typeof StartEnterpriseLoginOutputSchema>;
 export const StartEnterpriseLoginOutputSchemas: OutputSchemas<StartEnterpriseLoginOutput> = /* @__PURE__ */ (() => ({
     "200": GeneratedZod.zStartEnterpriseLoginResponse,
+}))();
+
+export const SubscribeSsoInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    body: GeneratedZod.zSubscribeSsoBody,
+    path: GeneratedZod.zSubscribeSsoPath.strict(),
+    headers: z.strictObject({
+        idempotencyKey: GeneratedZod.zSubscribeSsoHeaders.shape["Idempotency-Key"],
+    }),
+}))();
+export type SubscribeSsoInput = {
+    body: WireTypes.SubscribeSsoData["body"];
+    path: NonNullable<WireTypes.SubscribeSsoData["path"]>;
+    headers: {
+        idempotencyKey: NonNullable<WireTypes.SubscribeSsoData["headers"]>["Idempotency-Key"];
+    };
+};
+
+export const SubscribeSsoOutputSchema = GeneratedZod.zSubscribeSsoResponse;
+export type SubscribeSsoOutput = z.output<typeof SubscribeSsoOutputSchema>;
+export const SubscribeSsoOutputSchemas: OutputSchemas<SubscribeSsoOutput> = /* @__PURE__ */ (() => ({
+    "202": GeneratedZod.zSubscribeSsoResponse,
+}))();
+
+export const TransferOrganizationOwnershipInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    body: GeneratedZod.zTransferOrganizationOwnershipBody,
+    path: GeneratedZod.zTransferOrganizationOwnershipPath.strict(),
+    headers: z.strictObject({
+        idempotencyKey: GeneratedZod.zTransferOrganizationOwnershipHeaders.shape["Idempotency-Key"],
+    }),
+}))();
+export type TransferOrganizationOwnershipInput = {
+    body: WireTypes.TransferOrganizationOwnershipData["body"];
+    path: NonNullable<WireTypes.TransferOrganizationOwnershipData["path"]>;
+    headers: {
+        idempotencyKey: NonNullable<WireTypes.TransferOrganizationOwnershipData["headers"]>["Idempotency-Key"];
+    };
+};
+
+export const TransferOrganizationOwnershipOutputSchema = GeneratedZod.zTransferOrganizationOwnershipResponse;
+export type TransferOrganizationOwnershipOutput = z.output<typeof TransferOrganizationOwnershipOutputSchema>;
+export const TransferOrganizationOwnershipOutputSchemas: OutputSchemas<TransferOrganizationOwnershipOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zTransferOrganizationOwnershipResponse,
 }))();
 
 export const UnassignSmsLineCampaignInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -2333,25 +2831,6 @@ export const UpdateAccountOutputSchemas: OutputSchemas<UpdateAccountOutput> = /*
     "200": GeneratedZod.zAccount,
 }))();
 
-export const UpdateAccountOnboardingInputSchema = /* @__PURE__ */ (() => z.strictObject({
-    body: GeneratedZod.zUpdateAccountOnboardingBody,
-    headers: z.strictObject({
-        idempotencyKey: GeneratedZod.zUpdateAccountOnboardingHeaders.shape["Idempotency-Key"],
-    }),
-}))();
-export type UpdateAccountOnboardingInput = {
-    body: WireTypes.UpdateAccountOnboardingData["body"];
-    headers: {
-        idempotencyKey: NonNullable<WireTypes.UpdateAccountOnboardingData["headers"]>["Idempotency-Key"];
-    };
-};
-
-export const UpdateAccountOnboardingOutputSchema = GeneratedZod.zUpdateAccountOnboardingResponse;
-export type UpdateAccountOnboardingOutput = z.output<typeof UpdateAccountOnboardingOutputSchema>;
-export const UpdateAccountOnboardingOutputSchemas: OutputSchemas<UpdateAccountOnboardingOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zUpdateAccountOnboardingResponse,
-}))();
-
 export const UpdateAgentProfileInputSchema = /* @__PURE__ */ (() => z.strictObject({
     body: GeneratedZod.zUpdateAgentProfileBody,
     path: GeneratedZod.zUpdateAgentProfilePath.strict(),
@@ -2386,6 +2865,69 @@ export const UpdateDefaultVoiceProfileOutputSchema = GeneratedZod.zVoiceProfile;
 export type UpdateDefaultVoiceProfileOutput = z.output<typeof UpdateDefaultVoiceProfileOutputSchema>;
 export const UpdateDefaultVoiceProfileOutputSchemas: OutputSchemas<UpdateDefaultVoiceProfileOutput> = /* @__PURE__ */ (() => ({
     "200": GeneratedZod.zVoiceProfile,
+}))();
+
+export const UpdateOrganizationInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    body: GeneratedZod.zUpdateOrganizationBody,
+    path: GeneratedZod.zUpdateOrganizationPath.strict(),
+    headers: z.strictObject({
+        idempotencyKey: GeneratedZod.zUpdateOrganizationHeaders.shape["Idempotency-Key"],
+    }),
+}))();
+export type UpdateOrganizationInput = {
+    body: WireTypes.UpdateOrganizationData["body"];
+    path: NonNullable<WireTypes.UpdateOrganizationData["path"]>;
+    headers: {
+        idempotencyKey: NonNullable<WireTypes.UpdateOrganizationData["headers"]>["Idempotency-Key"];
+    };
+};
+
+export const UpdateOrganizationOutputSchema = GeneratedZod.zUpdateOrganizationResponse;
+export type UpdateOrganizationOutput = z.output<typeof UpdateOrganizationOutputSchema>;
+export const UpdateOrganizationOutputSchemas: OutputSchemas<UpdateOrganizationOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zUpdateOrganizationResponse,
+}))();
+
+export const UpdateOrganizationMemberRoleInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    body: GeneratedZod.zUpdateOrganizationMemberRoleBody,
+    path: GeneratedZod.zUpdateOrganizationMemberRolePath.strict(),
+    headers: z.strictObject({
+        idempotencyKey: GeneratedZod.zUpdateOrganizationMemberRoleHeaders.shape["Idempotency-Key"],
+    }),
+}))();
+export type UpdateOrganizationMemberRoleInput = {
+    body: WireTypes.UpdateOrganizationMemberRoleData["body"];
+    path: NonNullable<WireTypes.UpdateOrganizationMemberRoleData["path"]>;
+    headers: {
+        idempotencyKey: NonNullable<WireTypes.UpdateOrganizationMemberRoleData["headers"]>["Idempotency-Key"];
+    };
+};
+
+export const UpdateOrganizationMemberRoleOutputSchema = GeneratedZod.zUpdateOrganizationMemberRoleResponse;
+export type UpdateOrganizationMemberRoleOutput = z.output<typeof UpdateOrganizationMemberRoleOutputSchema>;
+export const UpdateOrganizationMemberRoleOutputSchemas: OutputSchemas<UpdateOrganizationMemberRoleOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zUpdateOrganizationMemberRoleResponse,
+}))();
+
+export const UpdateOrganizationOauthClientInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    body: GeneratedZod.zUpdateOrganizationOauthClientBody,
+    path: GeneratedZod.zUpdateOrganizationOauthClientPath.strict(),
+    headers: z.strictObject({
+        "if-match": GeneratedZod.zUpdateOrganizationOauthClientHeaders.shape["if-match"],
+    }),
+}))();
+export type UpdateOrganizationOauthClientInput = {
+    body: WireTypes.UpdateOrganizationOauthClientData["body"];
+    path: NonNullable<WireTypes.UpdateOrganizationOauthClientData["path"]>;
+    headers: {
+        "if-match": NonNullable<WireTypes.UpdateOrganizationOauthClientData["headers"]>["if-match"];
+    };
+};
+
+export const UpdateOrganizationOauthClientOutputSchema = GeneratedZod.zUpdateOrganizationOauthClientResponse;
+export type UpdateOrganizationOauthClientOutput = z.output<typeof UpdateOrganizationOauthClientOutputSchema>;
+export const UpdateOrganizationOauthClientOutputSchemas: OutputSchemas<UpdateOrganizationOauthClientOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zUpdateOrganizationOauthClientResponse,
 }))();
 
 export const UpdateOrganizationSsoPolicyInputSchema = /* @__PURE__ */ (() => z.strictObject({
@@ -2443,6 +2985,27 @@ export const UpdateProjectApiKeyOutputSchema = GeneratedZod.zProjectApiKeyRespon
 export type UpdateProjectApiKeyOutput = z.output<typeof UpdateProjectApiKeyOutputSchema>;
 export const UpdateProjectApiKeyOutputSchemas: OutputSchemas<UpdateProjectApiKeyOutput> = /* @__PURE__ */ (() => ({
     "200": GeneratedZod.zProjectApiKeyResponse,
+}))();
+
+export const UpdateServiceIdentityInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    body: GeneratedZod.zUpdateServiceIdentityBody,
+    path: GeneratedZod.zUpdateServiceIdentityPath.strict(),
+    headers: z.strictObject({
+        idempotencyKey: GeneratedZod.zUpdateServiceIdentityHeaders.shape["Idempotency-Key"],
+    }),
+}))();
+export type UpdateServiceIdentityInput = {
+    body: WireTypes.UpdateServiceIdentityData["body"];
+    path: NonNullable<WireTypes.UpdateServiceIdentityData["path"]>;
+    headers: {
+        idempotencyKey: NonNullable<WireTypes.UpdateServiceIdentityData["headers"]>["Idempotency-Key"];
+    };
+};
+
+export const UpdateServiceIdentityOutputSchema = GeneratedZod.zUpdateServiceIdentityResponse;
+export type UpdateServiceIdentityOutput = z.output<typeof UpdateServiceIdentityOutputSchema>;
+export const UpdateServiceIdentityOutputSchemas: OutputSchemas<UpdateServiceIdentityOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zUpdateServiceIdentityResponse,
 }))();
 
 export const UpdateVoiceProfileInputSchema = /* @__PURE__ */ (() => z.strictObject({
