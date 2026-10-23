@@ -2,6 +2,26 @@
 
 package photonapi
 
+type AcceptOrganizationInvitationRequest struct {
+	Token string `json:"token"`
+}
+
+type AcceptOrganizationInvitationResponse struct {
+	AllProjects      bool                                       `json:"allProjects"`
+	OrganizationID   string                                     `json:"organizationId"`
+	OrganizationName string                                     `json:"organizationName"`
+	Role             OrganizationMemberRole                     `json:"role"`
+	Status           AcceptOrganizationInvitationResponseStatus `json:"status"`
+}
+
+type AcceptOrganizationInvitationResponseStatus string
+
+const (
+	AcceptOrganizationInvitationResponseStatusAccepted      AcceptOrganizationInvitationResponseStatus = "accepted"
+	AcceptOrganizationInvitationResponseStatusAlreadyMember AcceptOrganizationInvitationResponseStatus = "already_member"
+	AcceptOrganizationInvitationResponseStatusRoleManaged   AcceptOrganizationInvitationResponseStatus = "role_managed"
+)
+
 type AcceptedEmailMessage struct {
 	Acceptance  MessageAcceptance   `json:"acceptance"`
 	AddressedTo *UserSnapshot       `json:"addressedTo,omitempty"`
@@ -162,25 +182,6 @@ type Account struct {
 	UpdatedAt       *Timestamp `json:"updatedAt"`
 }
 
-type AccountOnboardingBackground string
-
-const (
-	AccountOnboardingBackgroundHobbyist AccountOnboardingBackground = "hobbyist"
-	AccountOnboardingBackgroundCompany  AccountOnboardingBackground = "company"
-)
-
-type AccountOnboardingPlatform string
-
-const (
-	AccountOnboardingPlatformImessage AccountOnboardingPlatform = "imessage"
-	AccountOnboardingPlatformSms      AccountOnboardingPlatform = "sms"
-	AccountOnboardingPlatformWhatsapp AccountOnboardingPlatform = "whatsapp"
-	AccountOnboardingPlatformSlack    AccountOnboardingPlatform = "slack"
-	AccountOnboardingPlatformDiscord  AccountOnboardingPlatform = "discord"
-	AccountOnboardingPlatformTelegram AccountOnboardingPlatform = "telegram"
-	AccountOnboardingPlatformVoice    AccountOnboardingPlatform = "voice"
-)
-
 type AccountServiceKey struct {
 	AccountID    string     `json:"accountId"`
 	CreatedAt    Timestamp  `json:"createdAt"`
@@ -327,11 +328,6 @@ type BatchUpdateVoiceLineProfileAssignmentsResponse struct {
 	Assignments []VoiceLineProfileAssignment `json:"assignments"`
 }
 
-type BeginInvitationSsoRequest struct {
-	ReturnTo string `json:"returnTo"`
-	Token    string `json:"token"`
-}
-
 // What the change does beside what it bills, by the kind of change requested: fixed_charge for a fixed-charge change, plan_change for a plan change.
 type BillingChangeEffect struct{ Union }
 
@@ -404,6 +400,10 @@ const (
 	BillingOperationFailureDetailCancellationScheduled  BillingOperationFailureDetail = "cancellation_scheduled"
 	BillingOperationFailureDetailFeatureNotSoldByPlan   BillingOperationFailureDetail = "feature_not_sold_by_plan"
 	BillingOperationFailureDetailFeatureNotFound        BillingOperationFailureDetail = "feature_not_found"
+	BillingOperationFailureDetailInsufficientFunds      BillingOperationFailureDetail = "insufficient_funds"
+	BillingOperationFailureDetailPaymentDeclined        BillingOperationFailureDetail = "payment_declined"
+	BillingOperationFailureDetailPaymentMethodExpired   BillingOperationFailureDetail = "payment_method_expired"
+	BillingOperationFailureDetailPaymentMethodInvalid   BillingOperationFailureDetail = "payment_method_invalid"
 	BillingOperationFailureDetailPaymentTimeout         BillingOperationFailureDetail = "payment_timeout"
 	BillingOperationFailureDetailPlanActivationTimeout  BillingOperationFailureDetail = "plan_activation_timeout"
 	BillingOperationFailureDetailPlanNotFound           BillingOperationFailureDetail = "plan_not_found"
@@ -425,6 +425,34 @@ type BillingOperationResult struct {
 	Type        string  `json:"type"`
 	Version     string  `json:"version"`
 }
+
+// A payment the customer's bank asked them to authenticate (3DS). The invoice's pay route completes it.
+type BillingPaymentAction struct {
+	// Amount of the payment, in cents.
+	AmountCents int64 `json:"amountCents"`
+	// ISO currency code.
+	Currency  string     `json:"currency"`
+	ExpiresAt *Timestamp `json:"expiresAt"`
+	// The invoice whose payment it is. Pay it to complete the payment.
+	InvoiceID     string                         `json:"invoiceId"`
+	InvoiceNumber *string                        `json:"invoiceNumber"`
+	Operation     *BillingPaymentActionOperation `json:"operation"`
+	// What it pays for: the operation's project or organization, or those the invoice bills.
+	Subjects []InvoiceSubject `json:"subjects"`
+}
+
+type BillingPaymentActionOperation struct {
+	Kind        BillingPaymentActionOperationKind `json:"kind"`
+	OperationID string                            `json:"operationId"`
+}
+
+type BillingPaymentActionOperationKind string
+
+const (
+	BillingPaymentActionOperationKindChangePlan                BillingPaymentActionOperationKind = "change_plan"
+	BillingPaymentActionOperationKindAdjustFixedChargeQuantity BillingPaymentActionOperationKind = "adjust_fixed_charge_quantity"
+	BillingPaymentActionOperationKindCreateOneOffInvoice       BillingPaymentActionOperationKind = "create_one_off_invoice"
+)
 
 type BillingPlan struct {
 	// Recurring base price in whole cents.
@@ -586,11 +614,22 @@ type BillingPreviewPlanChange struct {
 	PlanCode string `json:"planCode"`
 }
 
+type CancelSsoSubscriptionResponse struct {
+	Accepted bool `json:"accepted"`
+}
+
 type ChangePlanRequest struct {
 	// Category slug, e.g. analytics or messaging.
 	Category string `json:"category"`
 	// Plan to subscribe to, e.g. analytics_pro.
 	PlanCode string `json:"planCode"`
+}
+
+type CheckOrganizationDeletionResponse struct {
+	Blockers       []string `json:"blockers"`
+	CanDelete      bool     `json:"canDelete"`
+	OrganizationID string   `json:"organizationId"`
+	Version        string   `json:"version"`
 }
 
 type CheckProjectSlugAvailabilityResponse struct{ Union }
@@ -610,6 +649,10 @@ type ClickHouseSqlQueryRequest struct {
 	Sql        string            `json:"sql"`
 }
 
+type CloseOrganizationRequest struct {
+	ExpectedVersion string `json:"expectedVersion"`
+}
+
 type CommitAccountProfilePictureRequest struct {
 	UploadID string `json:"uploadId"`
 }
@@ -618,8 +661,19 @@ type CommitAgentProfileAvatarRequest struct {
 	UploadID string `json:"uploadId"`
 }
 
-type CompleteAccountOnboardingResponse struct {
-	Onboarded bool `json:"onboarded"`
+type CommitOrganizationAvatarRequest struct {
+	ExpectedVersion string `json:"expectedVersion"`
+	UploadID        string `json:"uploadId"`
+}
+
+type CommitOrganizationAvatarResponse struct {
+	AvatarURL             *string                            `json:"avatarUrl"`
+	BillingInitialization *OrganizationBillingInitialization `json:"billingInitialization,omitempty"`
+	CreatedAt             Timestamp                          `json:"createdAt"`
+	Name                  string                             `json:"name"`
+	OrganizationID        string                             `json:"organizationId"`
+	UpdatedAt             Timestamp                          `json:"updatedAt"`
+	Version               string                             `json:"version"`
 }
 
 type ConfigureVoiceProfileOutboundRequest struct {
@@ -631,11 +685,6 @@ type ConfigureVoiceProfileOutboundResponse struct {
 	Outbound       SipOutboundConfiguration `json:"outbound"`
 	Password       *string                  `json:"password"`
 	ProfileVersion int64                    `json:"profileVersion"`
-}
-
-type ConfirmAccountPhoneVerificationRequest struct {
-	Code        string `json:"code"`
-	PhoneNumber string `json:"phoneNumber"`
 }
 
 type ConfirmedRecipient struct {
@@ -650,12 +699,6 @@ type ConnectEmailDomainRequest struct {
 }
 
 type ConnectTelegramBotRequest map[string]any
-
-type ConnectWhatsappBusinessRequest struct {
-	Code          string `json:"code"`
-	PhoneNumberID string `json:"phoneNumberId"`
-	WabaID        string `json:"wabaId"`
-}
 
 type Content struct{ Union }
 
@@ -782,16 +825,79 @@ type CreateOrGetUserRequest struct {
 	Platform Platform `json:"platform"`
 }
 
+type CreateOrganizationAvatarUploadRequest struct {
+	ContentType CreateOrganizationAvatarUploadRequestContentType `json:"contentType"`
+}
+
+type CreateOrganizationAvatarUploadRequestContentType string
+
+const (
+	CreateOrganizationAvatarUploadRequestContentTypeImageJpeg CreateOrganizationAvatarUploadRequestContentType = "image/jpeg"
+	CreateOrganizationAvatarUploadRequestContentTypeImagePng  CreateOrganizationAvatarUploadRequestContentType = "image/png"
+	CreateOrganizationAvatarUploadRequestContentTypeImageWebp CreateOrganizationAvatarUploadRequestContentType = "image/webp"
+)
+
+type CreateOrganizationAvatarUploadResponse struct {
+	ExpiresAt  Timestamp         `json:"expiresAt"`
+	FormFields map[string]string `json:"formFields"`
+	UploadID   string            `json:"uploadId"`
+	UploadURL  string            `json:"uploadUrl"`
+}
+
+type CreateOrganizationInvitationRequest struct {
+	Email string                     `json:"email"`
+	Role  OrganizationInvitationRole `json:"role"`
+}
+
+type CreateOrganizationInvitationResponse struct {
+	AcceptedAt          *Timestamp                   `json:"acceptedAt"`
+	AcceptedByAccountID *string                      `json:"acceptedByAccountId"`
+	AllProjects         bool                         `json:"allProjects"`
+	CreatedAt           Timestamp                    `json:"createdAt"`
+	Email               string                       `json:"email"`
+	ExpiresAt           Timestamp                    `json:"expiresAt"`
+	InvitationID        string                       `json:"invitationId"`
+	InvitedByAccountID  string                       `json:"invitedByAccountId"`
+	OrganizationID      string                       `json:"organizationId"`
+	Role                OrganizationInvitationRole   `json:"role"`
+	Status              OrganizationInvitationStatus `json:"status"`
+	UpdatedAt           Timestamp                    `json:"updatedAt"`
+}
+
+type CreateOrganizationOauthClientRequest struct {
+	Description  Nullable[string]                          `json:"description,omitzero"`
+	Name         string                                    `json:"name"`
+	RedirectUris []OrganizationOauthClientRedirectUriInput `json:"redirectUris"`
+	Scopes       []string                                  `json:"scopes"`
+}
+
+type CreateOrganizationOauthClientResponse struct {
+	ClientID     string                               `json:"clientId"`
+	CreatedAt    Timestamp                            `json:"createdAt"`
+	Description  *string                              `json:"description"`
+	Name         string                               `json:"name"`
+	RedirectUris []OrganizationOauthClientRedirectUri `json:"redirectUris"`
+	Scopes       []string                             `json:"scopes"`
+	UpdatedAt    Timestamp                            `json:"updatedAt"`
+}
+
 type CreateOrganizationPaymentMethodCheckoutResponse struct {
 	// Hosted Stripe page; send the user here.
 	CheckoutURL string `json:"checkoutUrl"`
 }
 
-type CreateOrganizationSetupIntentResponse struct {
-	// Stripe SetupIntent client secret.
-	ClientSecret string `json:"clientSecret"`
-	// Publishable key for the Stripe account backing billing.
-	PublishableKey string `json:"publishableKey"`
+type CreateOrganizationRequest struct {
+	Name string `json:"name"`
+}
+
+type CreateOrganizationResponse struct {
+	AvatarURL             *string                            `json:"avatarUrl"`
+	BillingInitialization *OrganizationBillingInitialization `json:"billingInitialization,omitempty"`
+	CreatedAt             Timestamp                          `json:"createdAt"`
+	Name                  string                             `json:"name"`
+	OrganizationID        string                             `json:"organizationId"`
+	UpdatedAt             Timestamp                          `json:"updatedAt"`
+	Version               string                             `json:"version"`
 }
 
 type CreateOrganizationSsoPortalLinkRequest struct {
@@ -824,6 +930,119 @@ type CreateProjectApiKeyResponse struct {
 type CreateProjectRequest struct {
 	Name string `json:"name"`
 	Slug string `json:"slug"`
+}
+
+type CreateServiceIdentityApiKeyRequest struct {
+	ExpectedIdentityVersion string `json:"expectedIdentityVersion"`
+	Label                   string `json:"label"`
+}
+
+type CreateServiceIdentityApiKeyResponse struct{ Union }
+
+// AsCreateServiceIdentityApiKeyResponseCreated decodes the value as CreateServiceIdentityApiKeyResponseCreated.
+func (u CreateServiceIdentityApiKeyResponse) AsCreateServiceIdentityApiKeyResponseCreated() (CreateServiceIdentityApiKeyResponseCreated, error) {
+	return UnionAs[CreateServiceIdentityApiKeyResponseCreated](u.Union)
+}
+
+// AsCreateServiceIdentityApiKeyResponseUndelivered decodes the value as CreateServiceIdentityApiKeyResponseUndelivered.
+func (u CreateServiceIdentityApiKeyResponse) AsCreateServiceIdentityApiKeyResponseUndelivered() (CreateServiceIdentityApiKeyResponseUndelivered, error) {
+	return UnionAs[CreateServiceIdentityApiKeyResponseUndelivered](u.Union)
+}
+
+type CreateServiceIdentityApiKeyResponseCreated struct {
+	CredentialID string `json:"credentialId"`
+	Status       string `json:"status"`
+	Value        string `json:"value"`
+}
+
+type CreateServiceIdentityApiKeyResponseUndelivered struct {
+	CredentialID string                                               `json:"credentialId"`
+	Status       CreateServiceIdentityApiKeyResponseUndeliveredStatus `json:"status"`
+}
+
+type CreateServiceIdentityApiKeyResponseUndeliveredStatus string
+
+const (
+	CreateServiceIdentityApiKeyResponseUndeliveredStatusDeliveryConsumed CreateServiceIdentityApiKeyResponseUndeliveredStatus = "delivery_consumed"
+	CreateServiceIdentityApiKeyResponseUndeliveredStatusRecoveryRequired CreateServiceIdentityApiKeyResponseUndeliveredStatus = "recovery_required"
+	CreateServiceIdentityApiKeyResponseUndeliveredStatusRevoked          CreateServiceIdentityApiKeyResponseUndeliveredStatus = "revoked"
+)
+
+type CreateServiceIdentityClientSecretRequest struct {
+	ExpectedIdentityVersion string `json:"expectedIdentityVersion"`
+	Label                   string `json:"label"`
+}
+
+type CreateServiceIdentityClientSecretResponse struct{ Union }
+
+// AsCreateServiceIdentityClientSecretResponseCreated decodes the value as CreateServiceIdentityClientSecretResponseCreated.
+func (u CreateServiceIdentityClientSecretResponse) AsCreateServiceIdentityClientSecretResponseCreated() (CreateServiceIdentityClientSecretResponseCreated, error) {
+	return UnionAs[CreateServiceIdentityClientSecretResponseCreated](u.Union)
+}
+
+// AsCreateServiceIdentityClientSecretResponseUndelivered decodes the value as CreateServiceIdentityClientSecretResponseUndelivered.
+func (u CreateServiceIdentityClientSecretResponse) AsCreateServiceIdentityClientSecretResponseUndelivered() (CreateServiceIdentityClientSecretResponseUndelivered, error) {
+	return UnionAs[CreateServiceIdentityClientSecretResponseUndelivered](u.Union)
+}
+
+// AsCreateServiceIdentityClientSecretResponseApplicationPending decodes the value as CreateServiceIdentityClientSecretResponseApplicationPending.
+func (u CreateServiceIdentityClientSecretResponse) AsCreateServiceIdentityClientSecretResponseApplicationPending() (CreateServiceIdentityClientSecretResponseApplicationPending, error) {
+	return UnionAs[CreateServiceIdentityClientSecretResponseApplicationPending](u.Union)
+}
+
+type CreateServiceIdentityClientSecretResponseApplicationPending struct {
+	OperationID string                                                            `json:"operationId"`
+	Stage       string                                                            `json:"stage"`
+	Status      CreateServiceIdentityClientSecretResponseApplicationPendingStatus `json:"status"`
+}
+
+type CreateServiceIdentityClientSecretResponseApplicationPendingStatus string
+
+const (
+	CreateServiceIdentityClientSecretResponseApplicationPendingStatusRecoveryRequired CreateServiceIdentityClientSecretResponseApplicationPendingStatus = "recovery_required"
+	CreateServiceIdentityClientSecretResponseApplicationPendingStatusCleanupRequired  CreateServiceIdentityClientSecretResponseApplicationPendingStatus = "cleanup_required"
+)
+
+type CreateServiceIdentityClientSecretResponseCreated struct {
+	ClientID     string `json:"clientId"`
+	CredentialID string `json:"credentialId"`
+	Stage        string `json:"stage"`
+	Status       string `json:"status"`
+	Value        string `json:"value"`
+}
+
+type CreateServiceIdentityClientSecretResponseUndelivered struct {
+	CredentialID string                                                     `json:"credentialId"`
+	Stage        string                                                     `json:"stage"`
+	Status       CreateServiceIdentityClientSecretResponseUndeliveredStatus `json:"status"`
+}
+
+type CreateServiceIdentityClientSecretResponseUndeliveredStatus string
+
+const (
+	CreateServiceIdentityClientSecretResponseUndeliveredStatusDeliveryConsumed  CreateServiceIdentityClientSecretResponseUndeliveredStatus = "delivery_consumed"
+	CreateServiceIdentityClientSecretResponseUndeliveredStatusRecoveryRequired  CreateServiceIdentityClientSecretResponseUndeliveredStatus = "recovery_required"
+	CreateServiceIdentityClientSecretResponseUndeliveredStatusRevocationPending CreateServiceIdentityClientSecretResponseUndeliveredStatus = "revocation_pending"
+	CreateServiceIdentityClientSecretResponseUndeliveredStatusRevoked           CreateServiceIdentityClientSecretResponseUndeliveredStatus = "revoked"
+)
+
+type CreateServiceIdentityRequest struct {
+	Name        string   `json:"name"`
+	Permissions []string `json:"permissions"`
+}
+
+type CreateServiceIdentityResponse struct {
+	AppInstallationManaged bool                  `json:"appInstallationManaged"`
+	CreatedAt              Timestamp             `json:"createdAt"`
+	CreatedByAccountID     string                `json:"createdByAccountId"`
+	Name                   string                `json:"name"`
+	OrganizationID         string                `json:"organizationId"`
+	Permissions            []string              `json:"permissions"`
+	ServiceIdentityID      string                `json:"serviceIdentityId"`
+	Status                 ServiceIdentityStatus `json:"status"`
+	UpdatedAt              Timestamp             `json:"updatedAt"`
+	UpdatedByAccountID     string                `json:"updatedByAccountId"`
+	Version                string                `json:"version"`
 }
 
 type CreateSharedLineAssignmentRequest struct {
@@ -952,6 +1171,18 @@ type DedicatedProjectPlatformSettings struct {
 	DedicatedLineAvailableNow bool   `json:"dedicatedLineAvailableNow"`
 	Mode                      string `json:"mode"`
 }
+
+type DeleteOrganizationOauthClientResponse struct {
+	OperationID string                                      `json:"operationId"`
+	Status      DeleteOrganizationOauthClientResponseStatus `json:"status"`
+}
+
+type DeleteOrganizationOauthClientResponseStatus string
+
+const (
+	DeleteOrganizationOauthClientResponseStatusCleanupRequired DeleteOrganizationOauthClientResponseStatus = "cleanup_required"
+	DeleteOrganizationOauthClientResponseStatusDeleted         DeleteOrganizationOauthClientResponseStatus = "deleted"
+)
 
 type DeleteVoiceProfileForceInput string
 
@@ -1877,6 +2108,10 @@ type EmailUserSnapshot struct {
 	ProjectID ProjectId        `json:"projectId"`
 }
 
+type EnsureInitialOrganizationResponse struct {
+	Organization *Organization `json:"organization"`
+}
+
 type ExistingAppInstallationDelivery struct {
 	InstallationID string                                `json:"installationId"`
 	Status         ExistingAppInstallationDeliveryStatus `json:"status"`
@@ -1895,9 +2130,10 @@ type FailedBillingOperation struct {
 	Failure BillingOperationFailure `json:"failure"`
 	Kind    BillingOperationKind    `json:"kind"`
 	// Stable handle for this provisioning action.
-	OperationID string  `json:"operationId"`
-	ResolvedAt  *string `json:"resolvedAt"`
-	Result      any     `json:"result"`
+	OperationID   string  `json:"operationId"`
+	PaymentAction any     `json:"paymentAction"`
+	ResolvedAt    *string `json:"resolvedAt"`
+	Result        any     `json:"result"`
 	// Terminal. Failure contains a stable code and retryability.
 	Status      string  `json:"status"`
 	SubmittedAt *string `json:"submittedAt"`
@@ -2134,15 +2370,6 @@ type FixedChargeTier struct {
 	ToUnit        *int64  `json:"toUnit"`
 }
 
-type GetAccountOnboardingResponse struct {
-	Background     *string                     `json:"background"`
-	CompanyName    *string                     `json:"companyName"`
-	CompanyURL     *string                     `json:"companyUrl"`
-	Onboarded      bool                        `json:"onboarded"`
-	Platforms      []AccountOnboardingPlatform `json:"platforms"`
-	ReferralSource *string                     `json:"referralSource"`
-}
-
 type GetBillingOverviewResponse struct {
 	// Bumps on every entitlement change in any category.
 	EntitlementsVersion int64 `json:"entitlementsVersion"`
@@ -2150,6 +2377,16 @@ type GetBillingOverviewResponse struct {
 	Subscriptions []ProjectSubscription `json:"subscriptions"`
 	// Current-period metered usage, priced.
 	Usage []MeteredUsage `json:"usage"`
+}
+
+type GetCurrentOrganizationResponse struct {
+	AvatarURL             *string                            `json:"avatarUrl"`
+	BillingInitialization *OrganizationBillingInitialization `json:"billingInitialization,omitempty"`
+	CreatedAt             Timestamp                          `json:"createdAt"`
+	Name                  string                             `json:"name"`
+	OrganizationID        string                             `json:"organizationId"`
+	UpdatedAt             Timestamp                          `json:"updatedAt"`
+	Version               string                             `json:"version"`
 }
 
 type GetEffectiveTermsResponse struct {
@@ -2194,10 +2431,48 @@ type GetOrganizationCreditResponse struct {
 	Currency string `json:"currency"`
 }
 
+type GetOrganizationOauthClientResponse struct {
+	ClientID     string                               `json:"clientId"`
+	CreatedAt    Timestamp                            `json:"createdAt"`
+	Description  *string                              `json:"description"`
+	Name         string                               `json:"name"`
+	RedirectUris []OrganizationOauthClientRedirectUri `json:"redirectUris"`
+	Scopes       []string                             `json:"scopes"`
+	UpdatedAt    Timestamp                            `json:"updatedAt"`
+}
+
+type GetOrganizationOauthClientSecretResponse struct {
+	Current  *GetOrganizationOauthClientSecretResponseCurrent  `json:"current"`
+	Previous *GetOrganizationOauthClientSecretResponsePrevious `json:"previous"`
+}
+
+type GetOrganizationOauthClientSecretResponseCurrent struct {
+	CreatedAt  Timestamp  `json:"createdAt"`
+	Hint       string     `json:"hint"`
+	LastUsedAt *Timestamp `json:"lastUsedAt"`
+}
+
+type GetOrganizationOauthClientSecretResponsePrevious struct {
+	CreatedAt  Timestamp  `json:"createdAt"`
+	Hint       string     `json:"hint"`
+	LastUsedAt *Timestamp `json:"lastUsedAt"`
+	ValidUntil *Timestamp `json:"validUntil"`
+}
+
 type GetOrganizationPaymentMethodResponse struct {
 	// True once a card is captured for the payer.
 	CardOnFile    bool           `json:"cardOnFile"`
 	PaymentMethod *PaymentMethod `json:"paymentMethod"`
+}
+
+type GetOrganizationResponse struct {
+	AvatarURL             *string                            `json:"avatarUrl"`
+	BillingInitialization *OrganizationBillingInitialization `json:"billingInitialization,omitempty"`
+	CreatedAt             Timestamp                          `json:"createdAt"`
+	Name                  string                             `json:"name"`
+	OrganizationID        string                             `json:"organizationId"`
+	UpdatedAt             Timestamp                          `json:"updatedAt"`
+	Version               string                             `json:"version"`
 }
 
 type GetOrganizationTermsResponse struct {
@@ -2214,6 +2489,20 @@ type GetProjectClosureStatusResponse struct {
 	Ready               bool                         `json:"ready"`
 }
 
+type GetServiceIdentityResponse struct {
+	AppInstallationManaged bool                  `json:"appInstallationManaged"`
+	CreatedAt              Timestamp             `json:"createdAt"`
+	CreatedByAccountID     string                `json:"createdByAccountId"`
+	Name                   string                `json:"name"`
+	OrganizationID         string                `json:"organizationId"`
+	Permissions            []string              `json:"permissions"`
+	ServiceIdentityID      string                `json:"serviceIdentityId"`
+	Status                 ServiceIdentityStatus `json:"status"`
+	UpdatedAt              Timestamp             `json:"updatedAt"`
+	UpdatedByAccountID     string                `json:"updatedByAccountId"`
+	Version                string                `json:"version"`
+}
+
 type GetSmsLineCampaignAssignmentResponse struct {
 	Campaign    *SmsLineCampaign           `json:"campaign"`
 	Eligibility SmsLineCampaignEligibility `json:"eligibility"`
@@ -2222,15 +2511,36 @@ type GetSmsLineCampaignAssignmentResponse struct {
 	Version     int64                      `json:"version"`
 }
 
+type GetSsoSubscriptionResponse struct {
+	Amount                string                          `json:"amount"`
+	CanConfigure          bool                            `json:"canConfigure"`
+	CancelsAt             *Timestamp                      `json:"cancelsAt"`
+	Currency              string                          `json:"currency"`
+	CurrentPeriodEnd      Timestamp                       `json:"currentPeriodEnd"`
+	FailureCode           *string                         `json:"failureCode"`
+	FirstChargeAt         *Timestamp                      `json:"firstChargeAt"`
+	Interval              string                          `json:"interval"`
+	NextRenewalAt         Timestamp                       `json:"nextRenewalAt"`
+	OperationID           *string                         `json:"operationId"`
+	PaymentMethodRequired bool                            `json:"paymentMethodRequired"`
+	State                 GetSsoSubscriptionResponseState `json:"state"`
+}
+
+type GetSsoSubscriptionResponseState string
+
+const (
+	GetSsoSubscriptionResponseStateNotSubscribed       GetSsoSubscriptionResponseState = "not_subscribed"
+	GetSsoSubscriptionResponseStateSubscribing         GetSsoSubscriptionResponseState = "subscribing"
+	GetSsoSubscriptionResponseStateSubscribed          GetSsoSubscriptionResponseState = "subscribed"
+	GetSsoSubscriptionResponseStateCancellationPending GetSsoSubscriptionResponseState = "cancellation_pending"
+	GetSsoSubscriptionResponseStateCancelScheduled     GetSsoSubscriptionResponseState = "cancel_scheduled"
+	GetSsoSubscriptionResponseStateCancelled           GetSsoSubscriptionResponseState = "cancelled"
+	GetSsoSubscriptionResponseStateNeedsAttention      GetSsoSubscriptionResponseState = "needs_attention"
+)
+
 type GetWhatsappBusinessVerificationCodeResponse struct {
 	Code       string    `json:"code"`
 	ReceivedAt Timestamp `json:"receivedAt"`
-}
-
-type GetWhatsappSignupConfigResponse struct {
-	ConfigID     string   `json:"configId"`
-	GraphVersion string   `json:"graphVersion"`
-	Scopes       []string `json:"scopes"`
 }
 
 type GroupContent struct {
@@ -2459,10 +2769,15 @@ type Invoice struct {
 	IssuedAt  *string     `json:"issuedAt"`
 	Kind      InvoiceKind `json:"kind"`
 	// Human invoice number.
-	Number        string               `json:"number"`
-	PaymentStatus InvoicePaymentStatus `json:"paymentStatus"`
-	PdfURL        *string              `json:"pdfUrl"`
-	Status        InvoiceStatus        `json:"status"`
+	Number string `json:"number"`
+	// Its payment waits on the customer's authentication (3DS). Pay the invoice to complete it.
+	PaymentActionRequired bool    `json:"paymentActionRequired"`
+	PaymentDueAt          *string `json:"paymentDueAt"`
+	// Unpaid past its due date. Overdue invoices set the organization's dunning stage.
+	PaymentOverdue bool                 `json:"paymentOverdue"`
+	PaymentStatus  InvoicePaymentStatus `json:"paymentStatus"`
+	PdfURL         *string              `json:"pdfUrl"`
+	Status         InvoiceStatus        `json:"status"`
 	// Every billing subject on the invoice, deduplicated, including one it charged nothing. Empty when none is known.
 	Subjects []InvoiceSubject `json:"subjects"`
 	// Invoice total in cents.
@@ -2511,6 +2826,23 @@ func (u InvoiceSubject) AsOrganizationInvoiceSubject() (OrganizationInvoiceSubje
 }
 
 type JsonValue = any
+
+type LeaveOrganizationRequest struct {
+	ExpectedVersion string `json:"expectedVersion"`
+}
+
+type LeaveOrganizationResponse struct {
+	AccountID      string                      `json:"accountId"`
+	CreatedAt      Timestamp                   `json:"createdAt"`
+	JoinedVia      OrganizationMemberJoinedVia `json:"joinedVia"`
+	OrganizationID string                      `json:"organizationId"`
+	RemovedAt      *Timestamp                  `json:"removedAt"`
+	Role           OrganizationMemberRole      `json:"role"`
+	RoleManagedAt  *Timestamp                  `json:"roleManagedAt"`
+	Status         OrganizationMemberStatus    `json:"status"`
+	UpdatedAt      Timestamp                   `json:"updatedAt"`
+	Version        string                      `json:"version"`
+}
 
 type ListAccountServiceKeysResponse struct {
 	ServiceKeys []AccountServiceKey `json:"serviceKeys"`
@@ -2570,6 +2902,73 @@ type ListOauthScopesResponse struct {
 	Scopes []string `json:"scopes"`
 }
 
+type ListOrganizationInvitationsResponse struct {
+	Invitations []ListOrganizationInvitationsResponseInvitationsItem `json:"invitations"`
+}
+
+type ListOrganizationInvitationsResponseInvitationsItem struct {
+	AcceptedAt          *Timestamp                   `json:"acceptedAt"`
+	AcceptedByAccountID *string                      `json:"acceptedByAccountId"`
+	AllProjects         bool                         `json:"allProjects"`
+	CreatedAt           Timestamp                    `json:"createdAt"`
+	Email               string                       `json:"email"`
+	ExpiresAt           Timestamp                    `json:"expiresAt"`
+	InvitationID        string                       `json:"invitationId"`
+	InvitedByAccountID  string                       `json:"invitedByAccountId"`
+	OrganizationID      string                       `json:"organizationId"`
+	Role                OrganizationInvitationRole   `json:"role"`
+	Status              OrganizationInvitationStatus `json:"status"`
+	UpdatedAt           Timestamp                    `json:"updatedAt"`
+}
+
+type ListOrganizationMembersResponse struct {
+	Members []ListOrganizationMembersResponseMembersItem `json:"members"`
+}
+
+type ListOrganizationMembersResponseMembersItem struct {
+	Account        *ListOrganizationMembersResponseMembersItemAccount `json:"account"`
+	AccountID      string                                             `json:"accountId"`
+	CreatedAt      Timestamp                                          `json:"createdAt"`
+	JoinedVia      OrganizationMemberJoinedVia                        `json:"joinedVia"`
+	OrganizationID string                                             `json:"organizationId"`
+	RemovedAt      *Timestamp                                         `json:"removedAt"`
+	Role           OrganizationMemberRole                             `json:"role"`
+	RoleManagedAt  *Timestamp                                         `json:"roleManagedAt"`
+	Status         OrganizationMemberStatus                           `json:"status"`
+	UpdatedAt      Timestamp                                          `json:"updatedAt"`
+	Version        string                                             `json:"version"`
+}
+
+type ListOrganizationMembersResponseMembersItemAccount struct {
+	DisplayName *string `json:"displayName"`
+	Email       string  `json:"email"`
+	FirstName   *string `json:"firstName"`
+	LastName    *string `json:"lastName"`
+	PictureURL  string  `json:"pictureUrl"`
+}
+
+type ListOrganizationOauthClientsResponse struct {
+	OauthClients []ListOrganizationOauthClientsResponseOauthClientsItem `json:"oauthClients"`
+}
+
+type ListOrganizationOauthClientsResponseOauthClientsItem struct {
+	ClientID     string                               `json:"clientId"`
+	CreatedAt    Timestamp                            `json:"createdAt"`
+	Description  *string                              `json:"description"`
+	Name         string                               `json:"name"`
+	RedirectUris []OrganizationOauthClientRedirectUri `json:"redirectUris"`
+	Scopes       []string                             `json:"scopes"`
+	UpdatedAt    Timestamp                            `json:"updatedAt"`
+}
+
+type ListOrganizationsResponse struct {
+	// An active invitation membership exempts acquisition questions; not CRM completion or phone verification.
+	AcquisitionQuestionnaireExempt bool           `json:"acquisitionQuestionnaireExempt"`
+	Organizations                  []Organization `json:"organizations"`
+	// Listed organizations where the caller is the Owner.
+	OwnedOrganizationIds []string `json:"ownedOrganizationIds"`
+}
+
 type ListProjectApiKeysResponse struct {
 	APIKeys []ApiKey `json:"apiKeys"`
 }
@@ -2581,6 +2980,50 @@ type ListProjectPlatformsResponse struct {
 type ListProjectSubscriptionsResponse struct {
 	// One entry per category that currently holds a subscription. Empty means none do — cancelled, or never opened.
 	Subscriptions []ProjectHeldPlan `json:"subscriptions"`
+}
+
+type ListServiceIdentitiesResponse struct {
+	ServiceIdentities []ListServiceIdentitiesResponseServiceIdentitiesItem `json:"serviceIdentities"`
+}
+
+type ListServiceIdentitiesResponseServiceIdentitiesItem struct {
+	AppInstallationManaged bool                  `json:"appInstallationManaged"`
+	CreatedAt              Timestamp             `json:"createdAt"`
+	CreatedByAccountID     string                `json:"createdByAccountId"`
+	Name                   string                `json:"name"`
+	OrganizationID         string                `json:"organizationId"`
+	Permissions            []string              `json:"permissions"`
+	ServiceIdentityID      string                `json:"serviceIdentityId"`
+	Status                 ServiceIdentityStatus `json:"status"`
+	UpdatedAt              Timestamp             `json:"updatedAt"`
+	UpdatedByAccountID     string                `json:"updatedByAccountId"`
+	Version                string                `json:"version"`
+}
+
+type ListServiceIdentityCredentialsResponse struct {
+	Credentials []ListServiceIdentityCredentialsResponseCredentialsItem `json:"credentials"`
+}
+
+type ListServiceIdentityCredentialsResponseCredentialsItem struct {
+	Bound                      bool                            `json:"bound"`
+	CreatedAt                  Timestamp                       `json:"createdAt"`
+	CreationStartedAt          *Timestamp                      `json:"creationStartedAt"`
+	CredentialID               string                          `json:"credentialId"`
+	DeliveryConsumedAt         *Timestamp                      `json:"deliveryConsumedAt"`
+	ExpiresAt                  *Timestamp                      `json:"expiresAt"`
+	Hint                       *string                         `json:"hint"`
+	Kind                       ServiceIdentityCredentialKind   `json:"kind"`
+	Label                      string                          `json:"label"`
+	ProviderCleanupCompletedAt *Timestamp                      `json:"providerCleanupCompletedAt"`
+	RevocationRequestedAt      *Timestamp                      `json:"revocationRequestedAt"`
+	ServiceIdentityID          string                          `json:"serviceIdentityId"`
+	Status                     ServiceIdentityCredentialStatus `json:"status"`
+	UpdatedAt                  Timestamp                       `json:"updatedAt"`
+	Version                    string                          `json:"version"`
+}
+
+type ListServiceIdentityPermissionsResponse struct {
+	Permissions []string `json:"permissions"`
 }
 
 type ListVoiceProfilesDefaultInput string
@@ -3147,13 +3590,24 @@ const (
 	OperationTypeSmsCampaignUnassign       OperationType = "sms.campaign.unassign"
 )
 
-type OrganizationAuthenticationRedirect struct {
-	URL string `json:"url"`
+type Organization struct {
+	AvatarURL             *string                            `json:"avatarUrl"`
+	BillingInitialization *OrganizationBillingInitialization `json:"billingInitialization,omitempty"`
+	CreatedAt             Timestamp                          `json:"createdAt"`
+	Name                  string                             `json:"name"`
+	OrganizationID        string                             `json:"organizationId"`
+	UpdatedAt             Timestamp                          `json:"updatedAt"`
+	Version               string                             `json:"version"`
 }
 
-type OrganizationAuthenticationRequest struct {
-	ReturnTo string `json:"returnTo"`
-}
+type OrganizationBillingInitialization string
+
+const (
+	OrganizationBillingInitializationPending       OrganizationBillingInitialization = "pending"
+	OrganizationBillingInitializationRetryRequired OrganizationBillingInitialization = "retry_required"
+	OrganizationBillingInitializationCompleted     OrganizationBillingInitialization = "completed"
+	OrganizationBillingInitializationUnknown       OrganizationBillingInitialization = "unknown"
+)
 
 type OrganizationConnectionStatus struct {
 	Membership     OrganizationConnectionStatusMembership   `json:"membership"`
@@ -3193,9 +3647,73 @@ type OrganizationEnterpriseLoginRequest struct {
 	ReturnTo        string  `json:"returnTo"`
 }
 
+type OrganizationInvitationRole string
+
+const (
+	OrganizationInvitationRoleMember OrganizationInvitationRole = "member"
+	OrganizationInvitationRoleViewer OrganizationInvitationRole = "viewer"
+)
+
+type OrganizationInvitationStatus string
+
+const (
+	OrganizationInvitationStatusPending  OrganizationInvitationStatus = "pending"
+	OrganizationInvitationStatusAccepted OrganizationInvitationStatus = "accepted"
+	OrganizationInvitationStatusRevoked  OrganizationInvitationStatus = "revoked"
+)
+
 type OrganizationInvoiceSubject struct {
 	OrganizationID string `json:"organizationId"`
 	Type           string `json:"type"`
+}
+
+type OrganizationMemberJoinedVia string
+
+const (
+	OrganizationMemberJoinedViaCreation   OrganizationMemberJoinedVia = "creation"
+	OrganizationMemberJoinedViaInvitation OrganizationMemberJoinedVia = "invitation"
+	OrganizationMemberJoinedViaSsoJit     OrganizationMemberJoinedVia = "sso_jit"
+	OrganizationMemberJoinedViaMigration  OrganizationMemberJoinedVia = "migration"
+	OrganizationMemberJoinedViaRecovery   OrganizationMemberJoinedVia = "recovery"
+)
+
+type OrganizationMemberRole string
+
+const (
+	OrganizationMemberRoleOwner  OrganizationMemberRole = "owner"
+	OrganizationMemberRoleAdmin  OrganizationMemberRole = "admin"
+	OrganizationMemberRoleMember OrganizationMemberRole = "member"
+	OrganizationMemberRoleViewer OrganizationMemberRole = "viewer"
+)
+
+type OrganizationMemberStatus string
+
+const (
+	OrganizationMemberStatusActive  OrganizationMemberStatus = "active"
+	OrganizationMemberStatusRemoved OrganizationMemberStatus = "removed"
+)
+
+type OrganizationMembership struct {
+	AccountID      string                      `json:"accountId"`
+	CreatedAt      Timestamp                   `json:"createdAt"`
+	JoinedVia      OrganizationMemberJoinedVia `json:"joinedVia"`
+	OrganizationID string                      `json:"organizationId"`
+	RemovedAt      *Timestamp                  `json:"removedAt"`
+	Role           OrganizationMemberRole      `json:"role"`
+	RoleManagedAt  *Timestamp                  `json:"roleManagedAt"`
+	Status         OrganizationMemberStatus    `json:"status"`
+	UpdatedAt      Timestamp                   `json:"updatedAt"`
+	Version        string                      `json:"version"`
+}
+
+type OrganizationOauthClientRedirectUri struct {
+	Default bool   `json:"default"`
+	URI     string `json:"uri"`
+}
+
+type OrganizationOauthClientRedirectUriInput struct {
+	Default bool   `json:"default"`
+	URI     string `json:"uri"`
 }
 
 type OrganizationSsoConfiguration struct {
@@ -3300,9 +3818,10 @@ type PendingBillingOperation struct {
 	Failure any                  `json:"failure"`
 	Kind    BillingOperationKind `json:"kind"`
 	// Stable handle for this provisioning action.
-	OperationID string `json:"operationId"`
-	ResolvedAt  any    `json:"resolvedAt"`
-	Result      any    `json:"result"`
+	OperationID   string                `json:"operationId"`
+	PaymentAction *BillingPaymentAction `json:"paymentAction"`
+	ResolvedAt    any                   `json:"resolvedAt"`
+	Result        any                   `json:"result"`
 	// Accepted and still executing. Poll the operation route.
 	Status      string  `json:"status"`
 	SubmittedAt *string `json:"submittedAt"`
@@ -3314,11 +3833,6 @@ type PhoneCarrier struct {
 	MobileNetworkCode *string `json:"mobileNetworkCode,omitempty"`
 	Name              *string `json:"name,omitempty"`
 	NormalizedName    *string `json:"normalizedName,omitempty"`
-}
-
-type PhoneVerificationCaptcha struct {
-	ChallengeContext string `json:"challengeContext"`
-	Token            string `json:"token"`
 }
 
 type PlanSource string
@@ -3503,6 +4017,39 @@ type PreviewOrganizationChangeResponse struct {
 	// The IANA time zone the payer is billed in, e.g. America/Los_Angeles. Billing periods start and end at its midnights, so read their calendar dates in it.
 	TimeZone string `json:"timeZone"`
 }
+
+type PreviewOrganizationInvitationRequest struct {
+	Token string `json:"token"`
+}
+
+type PreviewOrganizationInvitationResponse struct {
+	AllProjects           bool                                          `json:"allProjects"`
+	EmailMatches          bool                                          `json:"emailMatches"`
+	ExpiresAt             Timestamp                                     `json:"expiresAt"`
+	Inviter               *PreviewOrganizationInvitationResponseInviter `json:"inviter"`
+	MaskedEmail           string                                        `json:"maskedEmail"`
+	MemberCount           int64                                         `json:"memberCount"`
+	OrganizationAvatarURL *string                                       `json:"organizationAvatarUrl"`
+	OrganizationID        string                                        `json:"organizationId"`
+	OrganizationName      string                                        `json:"organizationName"`
+	Role                  OrganizationInvitationRole                    `json:"role"`
+	SSORequired           bool                                          `json:"ssoRequired"`
+	Status                PreviewOrganizationInvitationResponseStatus   `json:"status"`
+}
+
+type PreviewOrganizationInvitationResponseInviter struct {
+	AccountID   string  `json:"accountId"`
+	AvatarURL   string  `json:"avatarUrl"`
+	MaskedEmail string  `json:"maskedEmail"`
+	Name        *string `json:"name"`
+}
+
+type PreviewOrganizationInvitationResponseStatus string
+
+const (
+	PreviewOrganizationInvitationResponseStatusPending  PreviewOrganizationInvitationResponseStatus = "pending"
+	PreviewOrganizationInvitationResponseStatusAccepted PreviewOrganizationInvitationResponseStatus = "accepted"
+)
 
 type PreviewProjectChangeRequest struct{ Union }
 
@@ -3880,10 +4427,56 @@ type RefreshTokenGrantRequest struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
+type RemoveOrganizationAvatarRequest struct {
+	ExpectedVersion string `json:"expectedVersion"`
+}
+
+type RemoveOrganizationAvatarResponse struct {
+	AvatarURL             *string                            `json:"avatarUrl"`
+	BillingInitialization *OrganizationBillingInitialization `json:"billingInitialization,omitempty"`
+	CreatedAt             Timestamp                          `json:"createdAt"`
+	Name                  string                             `json:"name"`
+	OrganizationID        string                             `json:"organizationId"`
+	UpdatedAt             Timestamp                          `json:"updatedAt"`
+	Version               string                             `json:"version"`
+}
+
+type RemoveOrganizationMemberRequest struct {
+	ExpectedVersion string `json:"expectedVersion"`
+}
+
+type RemoveOrganizationMemberResponse struct {
+	AccountID      string                      `json:"accountId"`
+	CreatedAt      Timestamp                   `json:"createdAt"`
+	JoinedVia      OrganizationMemberJoinedVia `json:"joinedVia"`
+	OrganizationID string                      `json:"organizationId"`
+	RemovedAt      *Timestamp                  `json:"removedAt"`
+	Role           OrganizationMemberRole      `json:"role"`
+	RoleManagedAt  *Timestamp                  `json:"roleManagedAt"`
+	Status         OrganizationMemberStatus    `json:"status"`
+	UpdatedAt      Timestamp                   `json:"updatedAt"`
+	Version        string                      `json:"version"`
+}
+
 type ReplaceVoiceProfileInboundRequest struct {
 	Credentials     *SipInboundCredentialsWithPassword `json:"credentials"`
 	DestinationURI  string                             `json:"destinationUri"`
 	ExpectedVersion int64                              `json:"expectedVersion"`
+}
+
+type ResendOrganizationInvitationResponse struct {
+	AcceptedAt          *Timestamp                   `json:"acceptedAt"`
+	AcceptedByAccountID *string                      `json:"acceptedByAccountId"`
+	AllProjects         bool                         `json:"allProjects"`
+	CreatedAt           Timestamp                    `json:"createdAt"`
+	Email               string                       `json:"email"`
+	ExpiresAt           Timestamp                    `json:"expiresAt"`
+	InvitationID        string                       `json:"invitationId"`
+	InvitedByAccountID  string                       `json:"invitedByAccountId"`
+	OrganizationID      string                       `json:"organizationId"`
+	Role                OrganizationInvitationRole   `json:"role"`
+	Status              OrganizationInvitationStatus `json:"status"`
+	UpdatedAt           Timestamp                    `json:"updatedAt"`
 }
 
 type Resource struct {
@@ -3935,6 +4528,59 @@ type RetryWebhookDeliveryResponse struct {
 
 type RevokeAccountServiceKeyResponse struct {
 	ServiceKey AccountServiceKey `json:"serviceKey"`
+}
+
+type RevokeOrganizationInvitationResponse struct {
+	AcceptedAt          *Timestamp                   `json:"acceptedAt"`
+	AcceptedByAccountID *string                      `json:"acceptedByAccountId"`
+	AllProjects         bool                         `json:"allProjects"`
+	CreatedAt           Timestamp                    `json:"createdAt"`
+	Email               string                       `json:"email"`
+	ExpiresAt           Timestamp                    `json:"expiresAt"`
+	InvitationID        string                       `json:"invitationId"`
+	InvitedByAccountID  string                       `json:"invitedByAccountId"`
+	OrganizationID      string                       `json:"organizationId"`
+	Role                OrganizationInvitationRole   `json:"role"`
+	Status              OrganizationInvitationStatus `json:"status"`
+	UpdatedAt           Timestamp                    `json:"updatedAt"`
+}
+
+type RevokeServiceIdentityCredentialRequest struct {
+	ExpectedVersion string `json:"expectedVersion"`
+}
+
+type RevokeServiceIdentityCredentialResponse struct {
+	Bound                      bool                            `json:"bound"`
+	CreatedAt                  Timestamp                       `json:"createdAt"`
+	CreationStartedAt          *Timestamp                      `json:"creationStartedAt"`
+	CredentialID               string                          `json:"credentialId"`
+	DeliveryConsumedAt         *Timestamp                      `json:"deliveryConsumedAt"`
+	ExpiresAt                  *Timestamp                      `json:"expiresAt"`
+	Hint                       *string                         `json:"hint"`
+	Kind                       ServiceIdentityCredentialKind   `json:"kind"`
+	Label                      string                          `json:"label"`
+	ProviderCleanupCompletedAt *Timestamp                      `json:"providerCleanupCompletedAt"`
+	RevocationRequestedAt      *Timestamp                      `json:"revocationRequestedAt"`
+	ServiceIdentityID          string                          `json:"serviceIdentityId"`
+	Status                     ServiceIdentityCredentialStatus `json:"status"`
+	UpdatedAt                  Timestamp                       `json:"updatedAt"`
+	Version                    string                          `json:"version"`
+}
+
+type RotateOrganizationOauthClientSecretRequest struct {
+	Mode RotateOrganizationOauthClientSecretRequestMode `json:"mode"`
+}
+
+type RotateOrganizationOauthClientSecretRequestMode string
+
+const (
+	RotateOrganizationOauthClientSecretRequestModeNormal    RotateOrganizationOauthClientSecretRequestMode = "normal"
+	RotateOrganizationOauthClientSecretRequestModeEmergency RotateOrganizationOauthClientSecretRequestMode = "emergency"
+)
+
+type RotateOrganizationOauthClientSecretResponse struct {
+	PreviousSecretValidUntil *Timestamp `json:"previousSecretValidUntil"`
+	Value                    *string    `json:"value"`
 }
 
 type RotateVoiceProfileOutboundCredentialRequest struct {
@@ -4307,6 +4953,27 @@ const (
 	SentMessageStatusFailed     SentMessageStatus = "failed"
 )
 
+type ServiceIdentityCredentialKind string
+
+const (
+	ServiceIdentityCredentialKindApiKey       ServiceIdentityCredentialKind = "api_key"
+	ServiceIdentityCredentialKindClientSecret ServiceIdentityCredentialKind = "client_secret"
+)
+
+type ServiceIdentityCredentialStatus string
+
+const (
+	ServiceIdentityCredentialStatusActive  ServiceIdentityCredentialStatus = "active"
+	ServiceIdentityCredentialStatusRevoked ServiceIdentityCredentialStatus = "revoked"
+)
+
+type ServiceIdentityStatus string
+
+const (
+	ServiceIdentityStatusActive   ServiceIdentityStatus = "active"
+	ServiceIdentityStatusDisabled ServiceIdentityStatus = "disabled"
+)
+
 type SetSpaceTypingConstraint struct {
 	Content SetSpaceTypingContent `json:"content"`
 	Status  string                `json:"status"`
@@ -4364,6 +5031,14 @@ func (u SetSpaceTypingResponse) AsTelegramMessage() (TelegramMessage, error) {
 // AsUnknownMessage decodes the value as UnknownMessage.
 func (u SetSpaceTypingResponse) AsUnknownMessage() (UnknownMessage, error) {
 	return UnionAs[UnknownMessage](u.Union)
+}
+
+type SetupOrganizationOauthClientSecretCreatedResponse struct {
+	Value string `json:"value"`
+}
+
+type SetupOrganizationOauthClientSecretResponse struct {
+	Value any `json:"value"`
 }
 
 type SharedLineAssignment struct {
@@ -4814,17 +5489,6 @@ type SpamClassification struct {
 	Status       string     `json:"status"`
 }
 
-type StartAccountPhoneVerificationRequest struct {
-	Captcha     *PhoneVerificationCaptcha `json:"captcha,omitempty"`
-	PhoneNumber string                    `json:"phoneNumber"`
-}
-
-type StartAccountPhoneVerificationResponse struct {
-	Channel           string    `json:"channel"`
-	ExpiresAt         Timestamp `json:"expiresAt"`
-	ResendAvailableAt Timestamp `json:"resendAvailableAt"`
-}
-
 type StartEnterpriseLoginRequest struct{ Union }
 
 // AsOrganizationEnterpriseLoginRequest decodes the value as OrganizationEnterpriseLoginRequest.
@@ -4844,6 +5508,16 @@ func (u StartEnterpriseLoginRequest) AsRetryEnterpriseLoginRequest() (RetryEnter
 
 type StartEnterpriseLoginResponse struct {
 	URL string `json:"url"`
+}
+
+type SubscribeSsoRequest struct {
+	ExpectedAmount           string    `json:"expectedAmount"`
+	ExpectedCurrency         string    `json:"expectedCurrency"`
+	ExpectedCurrentPeriodEnd Timestamp `json:"expectedCurrentPeriodEnd"`
+}
+
+type SubscribeSsoResponse struct {
+	Accepted bool `json:"accepted"`
 }
 
 // State of one category's subscription: the payer's dunning stage while it holds one. Dunning is organization-level, so the stage applies to every category at once, and paying clears it. Entitlements are unaffected at every stage; viewing, paying and releasing resources stay available. Only categories that hold a subscription appear at all; a cancelled category is absent rather than listed as terminated.
@@ -4879,9 +5553,10 @@ type SucceededBillingOperation struct {
 	Failure any                  `json:"failure"`
 	Kind    BillingOperationKind `json:"kind"`
 	// Stable handle for this provisioning action.
-	OperationID string                 `json:"operationId"`
-	ResolvedAt  *string                `json:"resolvedAt"`
-	Result      BillingOperationResult `json:"result"`
+	OperationID   string                 `json:"operationId"`
+	PaymentAction any                    `json:"paymentAction"`
+	ResolvedAt    *string                `json:"resolvedAt"`
+	Result        BillingOperationResult `json:"result"`
 	// Terminal. The result is authoritative.
 	Status      string  `json:"status"`
 	SubmittedAt *string `json:"submittedAt"`
@@ -5062,6 +5737,17 @@ const (
 	TimestampOrderByUpdatedAt TimestampOrderBy = "updated_at"
 )
 
+type TransferOrganizationOwnershipRequest struct {
+	ExpectedVersion   string `json:"expectedVersion"`
+	NewOwnerAccountID string `json:"newOwnerAccountId"`
+}
+
+type TransferOrganizationOwnershipResponse struct {
+	NewOwner            OrganizationMembership `json:"newOwner"`
+	OrganizationVersion string                 `json:"organizationVersion"`
+	PreviousOwner       OrganizationMembership `json:"previousOwner"`
+}
+
 type UnavailableProjectSlug struct {
 	Available  bool                         `json:"available"`
 	Reason     UnavailableProjectSlugReason `json:"reason"`
@@ -5151,23 +5837,6 @@ type UnknownUserSnapshot struct {
 	ProjectID ProjectId            `json:"projectId"`
 }
 
-type UpdateAccountOnboardingRequest struct {
-	Background     Nullable[AccountOnboardingBackground] `json:"background,omitzero"`
-	CompanyName    Nullable[string]                      `json:"companyName,omitzero"`
-	CompanyURL     Nullable[string]                      `json:"companyUrl,omitzero"`
-	Platforms      []AccountOnboardingPlatform           `json:"platforms,omitempty"`
-	ReferralSource Nullable[string]                      `json:"referralSource,omitzero"`
-}
-
-type UpdateAccountOnboardingResponse struct {
-	Background     *string                     `json:"background"`
-	CompanyName    *string                     `json:"companyName"`
-	CompanyURL     *string                     `json:"companyUrl"`
-	Onboarded      bool                        `json:"onboarded"`
-	Platforms      []AccountOnboardingPlatform `json:"platforms"`
-	ReferralSource *string                     `json:"referralSource"`
-}
-
 type UpdateAccountRequest struct {
 	FirstName *string          `json:"firstName,omitempty"`
 	LastName  Nullable[string] `json:"lastName,omitzero"`
@@ -5184,6 +5853,64 @@ type UpdateDefaultVoiceProfileRequest struct {
 	Protocol        *string                      `json:"protocol,omitempty"`
 }
 
+type UpdateOrganizationMemberRoleRequest struct {
+	ExpectedVersion string                                  `json:"expectedVersion"`
+	Role            UpdateOrganizationMemberRoleRequestRole `json:"role"`
+}
+
+type UpdateOrganizationMemberRoleRequestRole string
+
+const (
+	UpdateOrganizationMemberRoleRequestRoleAdmin  UpdateOrganizationMemberRoleRequestRole = "admin"
+	UpdateOrganizationMemberRoleRequestRoleMember UpdateOrganizationMemberRoleRequestRole = "member"
+	UpdateOrganizationMemberRoleRequestRoleViewer UpdateOrganizationMemberRoleRequestRole = "viewer"
+)
+
+type UpdateOrganizationMemberRoleResponse struct {
+	AccountID      string                      `json:"accountId"`
+	CreatedAt      Timestamp                   `json:"createdAt"`
+	JoinedVia      OrganizationMemberJoinedVia `json:"joinedVia"`
+	OrganizationID string                      `json:"organizationId"`
+	RemovedAt      *Timestamp                  `json:"removedAt"`
+	Role           OrganizationMemberRole      `json:"role"`
+	RoleManagedAt  *Timestamp                  `json:"roleManagedAt"`
+	Status         OrganizationMemberStatus    `json:"status"`
+	UpdatedAt      Timestamp                   `json:"updatedAt"`
+	Version        string                      `json:"version"`
+}
+
+type UpdateOrganizationOauthClientRequest struct {
+	Description  Nullable[string]                          `json:"description,omitzero"`
+	Name         *string                                   `json:"name,omitempty"`
+	RedirectUris []OrganizationOauthClientRedirectUriInput `json:"redirectUris,omitempty"`
+	Scopes       []string                                  `json:"scopes,omitempty"`
+}
+
+type UpdateOrganizationOauthClientResponse struct {
+	ClientID     string                               `json:"clientId"`
+	CreatedAt    Timestamp                            `json:"createdAt"`
+	Description  *string                              `json:"description"`
+	Name         string                               `json:"name"`
+	RedirectUris []OrganizationOauthClientRedirectUri `json:"redirectUris"`
+	Scopes       []string                             `json:"scopes"`
+	UpdatedAt    Timestamp                            `json:"updatedAt"`
+}
+
+type UpdateOrganizationRequest struct {
+	ExpectedVersion string `json:"expectedVersion"`
+	Name            string `json:"name"`
+}
+
+type UpdateOrganizationResponse struct {
+	AvatarURL             *string                            `json:"avatarUrl"`
+	BillingInitialization *OrganizationBillingInitialization `json:"billingInitialization,omitempty"`
+	CreatedAt             Timestamp                          `json:"createdAt"`
+	Name                  string                             `json:"name"`
+	OrganizationID        string                             `json:"organizationId"`
+	UpdatedAt             Timestamp                          `json:"updatedAt"`
+	Version               string                             `json:"version"`
+}
+
 type UpdateOrganizationSsoPolicyRequest struct {
 	ExpectedVersion string `json:"expectedVersion"`
 	SSOJitEnabled   bool   `json:"ssoJitEnabled"`
@@ -5195,6 +5922,27 @@ type UpdateProjectApiKeyRequest struct {
 
 type UpdateProjectRequest struct {
 	Name string `json:"name"`
+}
+
+type UpdateServiceIdentityRequest struct {
+	ExpectedVersion string                 `json:"expectedVersion"`
+	Name            *string                `json:"name,omitempty"`
+	Permissions     []string               `json:"permissions,omitempty"`
+	Status          *ServiceIdentityStatus `json:"status,omitempty"`
+}
+
+type UpdateServiceIdentityResponse struct {
+	AppInstallationManaged bool                  `json:"appInstallationManaged"`
+	CreatedAt              Timestamp             `json:"createdAt"`
+	CreatedByAccountID     string                `json:"createdByAccountId"`
+	Name                   string                `json:"name"`
+	OrganizationID         string                `json:"organizationId"`
+	Permissions            []string              `json:"permissions"`
+	ServiceIdentityID      string                `json:"serviceIdentityId"`
+	Status                 ServiceIdentityStatus `json:"status"`
+	UpdatedAt              Timestamp             `json:"updatedAt"`
+	UpdatedByAccountID     string                `json:"updatedByAccountId"`
+	Version                string                `json:"version"`
 }
 
 type UpdateVoiceProfileInboundRequest struct {

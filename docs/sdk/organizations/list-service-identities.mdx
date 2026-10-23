@@ -1,0 +1,138 @@
+---
+title: "List organization Service Identities"
+icon: arrow-down-left
+description: "List organization Service Identities: listServiceIdentities in the TypeScript, Python, Rust and Go clients."
+---
+
+`GET /v1/organizations/{organizationId}/service-identities`
+
+
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.listServiceIdentities(input: ListServiceIdentitiesInput, options?: RequestOptions): Promise<ListServiceIdentitiesOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.list_service_identities(input: ListServiceIdentitiesInput) -> models.ListServiceIdentitiesResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.list_service_identities(organization_id: String).await -> Result<ResponseValue<types::ListServiceIdentitiesResponse>, Error<ListServiceIdentitiesError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.ListServiceIdentities(ctx context.Context, params *ListServiceIdentitiesParams, opts ...RequestOption) (*ListServiceIdentitiesResponse, error)
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.listServiceIdentities({
+  path: {
+    organizationId: "organizationId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import ListServiceIdentitiesInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.list_service_identities(
+    ListServiceIdentitiesInput.model_validate({
+        "path": {
+            "organizationId": "organizationId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .list_service_identities("organizationId".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Organizations.ListServiceIdentities(ctx, &photonapi.ListServiceIdentitiesParams{
+	OrganizationID: "organizationId",
+})
+if err != nil {
+	return err
+}
+_ = result
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "serviceIdentities": [
+    {
+      "appInstallationManaged": true,
+      "createdAt": "2026-01-01T00:00:00Z",
+      "createdByAccountId": "string",
+      "name": "string",
+      "organizationId": "string",
+      "permissions": [
+        "string"
+      ],
+      "serviceIdentityId": "string",
+      "status": "active",
+      "updatedAt": "2026-01-01T00:00:00Z",
+      "updatedByAccountId": "string",
+      "version": "string"
+    }
+  ]
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="organizationId" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** Current organization identity metadata. ListServiceIdentitiesResponse
+
+<ResponseField name="serviceIdentities" type={"array of ListServiceIdentitiesResponseServiceIdentitiesItem"} required>
+
+</ResponseField>
+

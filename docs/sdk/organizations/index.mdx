@@ -3,8 +3,2459 @@ title: "Organizations"
 description: "The Organizations resource in the TypeScript, Python, Rust and Go clients."
 ---
 
+## Methods
+
+<Tabs>
+<Tab title="TypeScript">
+**[List pending organization invitations](/api-client/sdk/organizations/list-organization-invitations)**
+
+```typescript TypeScript
+photon.organizations.listOrganizationInvitations(input: ListOrganizationInvitationsInput, options?: RequestOptions): Promise<ListOrganizationInvitationsOutput>
+```
+`GET /v1/organizations/{organizationId}/invitations`
+
+**[List current organization members](/api-client/sdk/organizations/list-organization-members)**
+
+```typescript TypeScript
+photon.organizations.listOrganizationMembers(input: ListOrganizationMembersInput, options?: RequestOptions): Promise<ListOrganizationMembersOutput>
+```
+`GET /v1/organizations/{organizationId}/members`
+
+**[List organization OAuth clients](/api-client/sdk/organizations/list-organization-oauth-clients)**
+
+```typescript TypeScript
+photon.organizations.listOrganizationOauthClients(input: ListOrganizationOauthClientsInput, options?: RequestOptions): Promise<ListOrganizationOauthClientsOutput>
+```
+`GET /v1/organizations/{organizationId}/oauth/clients`
+
+**[List organizations](/api-client/sdk/organizations/list-organizations)**
+
+```typescript TypeScript
+photon.organizations.listOrganizations(input?: ListOrganizationsInput, options?: RequestOptions): Promise<ListOrganizationsOutput>
+```
+`GET /v1/organizations`
+
+**[List organization Service Identities](/api-client/sdk/organizations/list-service-identities)**
+
+```typescript TypeScript
+photon.organizations.listServiceIdentities(input: ListServiceIdentitiesInput, options?: RequestOptions): Promise<ListServiceIdentitiesOutput>
+```
+`GET /v1/organizations/{organizationId}/service-identities`
+
+**[List Service Identity credential metadata](/api-client/sdk/organizations/list-service-identity-credentials)**
+
+```typescript TypeScript
+photon.organizations.listServiceIdentityCredentials(input: ListServiceIdentityCredentialsInput, options?: RequestOptions): Promise<ListServiceIdentityCredentialsOutput>
+```
+`GET /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials`
+
+**[List grantable Service Identity permissions](/api-client/sdk/organizations/list-service-identity-permissions)**
+
+```typescript TypeScript
+photon.organizations.listServiceIdentityPermissions(input: ListServiceIdentityPermissionsInput, options?: RequestOptions): Promise<ListServiceIdentityPermissionsOutput>
+```
+`GET /v1/organizations/{organizationId}/service-identities/permissions`
+
+**[Check organization deletion prerequisites](/api-client/sdk/organizations/check-organization-deletion)**
+
+```typescript TypeScript
+photon.organizations.checkOrganizationDeletion(input: CheckOrganizationDeletionInput, options?: RequestOptions): Promise<CheckOrganizationDeletionOutput>
+```
+`GET /v1/organizations/{organizationId}/deletion-check`
+
+**[Read the credential's organization](/api-client/sdk/organizations/get-current-organization)**
+
+```typescript TypeScript
+photon.organizations.getCurrentOrganization(input?: GetCurrentOrganizationInput, options?: RequestOptions): Promise<GetCurrentOrganizationOutput>
+```
+`GET /v1/organizations/current`
+
+**[Read organization name and avatar](/api-client/sdk/organizations/get-organization)**
+
+```typescript TypeScript
+photon.organizations.getOrganization(input: GetOrganizationInput, options?: RequestOptions): Promise<GetOrganizationOutput>
+```
+`GET /v1/organizations/{organizationId}`
+
+**[Read an organization OAuth client](/api-client/sdk/organizations/get-organization-oauth-client)**
+
+```typescript TypeScript
+photon.organizations.getOrganizationOauthClient(input: GetOrganizationOauthClientInput, options?: RequestOptions): Promise<GetOrganizationOauthClientOutput>
+```
+`GET /v1/organizations/{organizationId}/oauth/clients/{clientId}`
+
+**[Read an organization OAuth client's secret](/api-client/sdk/organizations/get-organization-oauth-client-secret)**
+
+```typescript TypeScript
+photon.organizations.getOrganizationOauthClientSecret(input: GetOrganizationOauthClientSecretInput, options?: RequestOptions): Promise<GetOrganizationOauthClientSecretOutput>
+```
+`GET /v1/organizations/{organizationId}/oauth/clients/{clientId}/secret`
+
+**[Read a Service Identity](/api-client/sdk/organizations/get-service-identity)**
+
+```typescript TypeScript
+photon.organizations.getServiceIdentity(input: GetServiceIdentityInput, options?: RequestOptions): Promise<GetServiceIdentityOutput>
+```
+`GET /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}`
+
+**[Read SSO subscription](/api-client/sdk/organizations/get-sso-subscription)**
+
+```typescript TypeScript
+photon.organizations.getSsoSubscription(input: GetSsoSubscriptionInput, options?: RequestOptions): Promise<GetSsoSubscriptionOutput>
+```
+`GET /v1/organizations/{organizationId}/sso/subscription`
+
+**[Accept an invitation to all organization projects](/api-client/sdk/organizations/accept-organization-invitation)**
+
+```typescript TypeScript
+photon.organizations.acceptOrganizationInvitation(input: AcceptOrganizationInvitationInput, options?: RequestOptions): Promise<AcceptOrganizationInvitationOutput>
+```
+`POST /v1/organizations/invitations/accept`
+
+**[Cancel the SSO subscription](/api-client/sdk/organizations/cancel-sso-subscription)**
+
+```typescript TypeScript
+photon.organizations.cancelSsoSubscription(input: CancelSsoSubscriptionInput, options?: RequestOptions): Promise<CancelSsoSubscriptionOutput>
+```
+`POST /v1/organizations/{organizationId}/sso/subscription/cancel`
+
+**[Commit an organization avatar](/api-client/sdk/organizations/commit-organization-avatar)**
+
+```typescript TypeScript
+photon.organizations.commitOrganizationAvatar(input: CommitOrganizationAvatarInput, options?: RequestOptions): Promise<CommitOrganizationAvatarOutput>
+```
+`POST /v1/organizations/{organizationId}/avatar/commit`
+
+**[Create an organization](/api-client/sdk/organizations/create-organization)**
+
+```typescript TypeScript
+photon.organizations.createOrganization(input: CreateOrganizationInput, options?: RequestOptions): Promise<CreateOrganizationOutput>
+```
+`POST /v1/organizations`
+
+**[Create an organization avatar upload](/api-client/sdk/organizations/create-organization-avatar-upload)**
+
+```typescript TypeScript
+photon.organizations.createOrganizationAvatarUpload(input: CreateOrganizationAvatarUploadInput, options?: RequestOptions): Promise<CreateOrganizationAvatarUploadOutput>
+```
+`POST /v1/organizations/{organizationId}/avatar/uploads`
+
+**[Invite a Member or Viewer to all organization projects](/api-client/sdk/organizations/create-organization-invitation)**
+
+```typescript TypeScript
+photon.organizations.createOrganizationInvitation(input: CreateOrganizationInvitationInput, options?: RequestOptions): Promise<CreateOrganizationInvitationOutput>
+```
+`POST /v1/organizations/{organizationId}/invitations`
+
+**[Create an organization OAuth client](/api-client/sdk/organizations/create-organization-oauth-client)**
+
+```typescript TypeScript
+photon.organizations.createOrganizationOauthClient(input: CreateOrganizationOauthClientInput, options?: RequestOptions): Promise<CreateOrganizationOauthClientOutput>
+```
+`POST /v1/organizations/{organizationId}/oauth/clients`
+
+**[Create an organization Service Identity](/api-client/sdk/organizations/create-service-identity)**
+
+```typescript TypeScript
+photon.organizations.createServiceIdentity(input: CreateServiceIdentityInput, options?: RequestOptions): Promise<CreateServiceIdentityOutput>
+```
+`POST /v1/organizations/{organizationId}/service-identities`
+
+**[Create a one-time Service Identity API key](/api-client/sdk/organizations/create-service-identity-api-key)**
+
+```typescript TypeScript
+photon.organizations.createServiceIdentityApiKey(input: CreateServiceIdentityApiKeyInput, options?: RequestOptions): Promise<CreateServiceIdentityApiKeyOutput>
+```
+`POST /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials/api-keys`
+
+**[Create a one-time Service Identity M2M client secret](/api-client/sdk/organizations/create-service-identity-client-secret)**
+
+```typescript TypeScript
+photon.organizations.createServiceIdentityClientSecret(input: CreateServiceIdentityClientSecretInput, options?: RequestOptions): Promise<CreateServiceIdentityClientSecretOutput>
+```
+`POST /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials/client-secrets`
+
+**[Ensure the initial organization](/api-client/sdk/organizations/ensure-initial-organization)**
+
+```typescript TypeScript
+photon.organizations.ensureInitialOrganization(input: EnsureInitialOrganizationInput, options?: RequestOptions): Promise<EnsureInitialOrganizationOutput>
+```
+`POST /v1/organizations/initial`
+
+**[Leave an organization; Owners must transfer or close first](/api-client/sdk/organizations/leave-organization)**
+
+```typescript TypeScript
+photon.organizations.leaveOrganization(input: LeaveOrganizationInput, options?: RequestOptions): Promise<LeaveOrganizationOutput>
+```
+`POST /v1/organizations/{organizationId}/leave`
+
+**[Preview an organization invitation after sign-in](/api-client/sdk/organizations/preview-organization-invitation)**
+
+```typescript TypeScript
+photon.organizations.previewOrganizationInvitation(input: PreviewOrganizationInvitationInput, options?: RequestOptions): Promise<PreviewOrganizationInvitationOutput>
+```
+`POST /v1/organizations/invitations/preview`
+
+**[Resend an organization invitation](/api-client/sdk/organizations/resend-organization-invitation)**
+
+```typescript TypeScript
+photon.organizations.resendOrganizationInvitation(input: ResendOrganizationInvitationInput, options?: RequestOptions): Promise<ResendOrganizationInvitationOutput>
+```
+`POST /v1/organizations/{organizationId}/invitations/{invitationId}/resend`
+
+**[Revoke an organization invitation](/api-client/sdk/organizations/revoke-organization-invitation)**
+
+```typescript TypeScript
+photon.organizations.revokeOrganizationInvitation(input: RevokeOrganizationInvitationInput, options?: RequestOptions): Promise<RevokeOrganizationInvitationOutput>
+```
+`POST /v1/organizations/{organizationId}/invitations/{invitationId}/revoke`
+
+**[Request Service Identity credential revocation](/api-client/sdk/organizations/revoke-service-identity-credential)**
+
+```typescript TypeScript
+photon.organizations.revokeServiceIdentityCredential(input: RevokeServiceIdentityCredentialInput, options?: RequestOptions): Promise<RevokeServiceIdentityCredentialOutput>
+```
+`POST /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials/{credentialId}/revoke`
+
+**[Rotate an organization OAuth client's secret](/api-client/sdk/organizations/rotate-organization-oauth-client-secret)**
+
+```typescript TypeScript
+photon.organizations.rotateOrganizationOauthClientSecret(input: RotateOrganizationOauthClientSecretInput, options?: RequestOptions): Promise<RotateOrganizationOauthClientSecretOutput>
+```
+`POST /v1/organizations/{organizationId}/oauth/clients/{clientId}/secret/rotate`
+
+**[Subscribe to organization SSO](/api-client/sdk/organizations/subscribe-sso)**
+
+```typescript TypeScript
+photon.organizations.subscribeSso(input: SubscribeSsoInput, options?: RequestOptions): Promise<SubscribeSsoOutput>
+```
+`POST /v1/organizations/{organizationId}/sso/subscription`
+
+**[Transfer organization ownership to an existing member](/api-client/sdk/organizations/transfer-organization-ownership)**
+
+```typescript TypeScript
+photon.organizations.transferOrganizationOwnership(input: TransferOrganizationOwnershipInput, options?: RequestOptions): Promise<TransferOrganizationOwnershipOutput>
+```
+`POST /v1/organizations/{organizationId}/transfer-ownership`
+
+**[Create an organization OAuth client's secret](/api-client/sdk/organizations/setup-organization-oauth-client-secret)**
+
+```typescript TypeScript
+photon.organizations.setupOrganizationOauthClientSecret(input: SetupOrganizationOauthClientSecretInput, options?: RequestOptions): Promise<SetupOrganizationOauthClientSecretOutput>
+```
+`PUT /v1/organizations/{organizationId}/oauth/clients/{clientId}/secret`
+
+**[Change organization name](/api-client/sdk/organizations/update-organization)**
+
+```typescript TypeScript
+photon.organizations.updateOrganization(input: UpdateOrganizationInput, options?: RequestOptions): Promise<UpdateOrganizationOutput>
+```
+`PATCH /v1/organizations/{organizationId}`
+
+**[Change an organization member's role across all projects](/api-client/sdk/organizations/update-organization-member-role)**
+
+```typescript TypeScript
+photon.organizations.updateOrganizationMemberRole(input: UpdateOrganizationMemberRoleInput, options?: RequestOptions): Promise<UpdateOrganizationMemberRoleOutput>
+```
+`PATCH /v1/organizations/{organizationId}/members/{memberAccountId}`
+
+**[Update an organization OAuth client](/api-client/sdk/organizations/update-organization-oauth-client)**
+
+```typescript TypeScript
+photon.organizations.updateOrganizationOauthClient(input: UpdateOrganizationOauthClientInput, options?: RequestOptions): Promise<UpdateOrganizationOauthClientOutput>
+```
+`PATCH /v1/organizations/{organizationId}/oauth/clients/{clientId}`
+
+**[Update a Service Identity](/api-client/sdk/organizations/update-service-identity)**
+
+```typescript TypeScript
+photon.organizations.updateServiceIdentity(input: UpdateServiceIdentityInput, options?: RequestOptions): Promise<UpdateServiceIdentityOutput>
+```
+`PATCH /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}`
+
+**[Delete organization](/api-client/sdk/organizations/close-organization)**
+
+```typescript TypeScript
+photon.organizations.closeOrganization(input: CloseOrganizationInput, options?: RequestOptions): Promise<CloseOrganizationOutput>
+```
+`DELETE /v1/organizations/{organizationId}`
+
+**[Delete an organization OAuth client](/api-client/sdk/organizations/delete-organization-oauth-client)**
+
+```typescript TypeScript
+photon.organizations.deleteOrganizationOauthClient(input: DeleteOrganizationOauthClientInput, options?: RequestOptions): Promise<DeleteOrganizationOauthClientOutput>
+```
+`DELETE /v1/organizations/{organizationId}/oauth/clients/{clientId}`
+
+**[Revoke an organization OAuth client's secret](/api-client/sdk/organizations/delete-organization-oauth-client-secret)**
+
+```typescript TypeScript
+photon.organizations.deleteOrganizationOauthClientSecret(input: DeleteOrganizationOauthClientSecretInput, options?: RequestOptions): Promise<DeleteOrganizationOauthClientSecretOutput>
+```
+`DELETE /v1/organizations/{organizationId}/oauth/clients/{clientId}/secret`
+
+**[Remove an organization avatar](/api-client/sdk/organizations/remove-organization-avatar)**
+
+```typescript TypeScript
+photon.organizations.removeOrganizationAvatar(input: RemoveOrganizationAvatarInput, options?: RequestOptions): Promise<RemoveOrganizationAvatarOutput>
+```
+`DELETE /v1/organizations/{organizationId}/avatar`
+
+**[Remove an organization member's access to all projects](/api-client/sdk/organizations/remove-organization-member)**
+
+```typescript TypeScript
+photon.organizations.removeOrganizationMember(input: RemoveOrganizationMemberInput, options?: RequestOptions): Promise<RemoveOrganizationMemberOutput>
+```
+`DELETE /v1/organizations/{organizationId}/members/{memberAccountId}`
+
+</Tab>
+<Tab title="Python">
+**[List pending organization invitations](/api-client/sdk/organizations/list-organization-invitations)**
+
+```python Python
+photon.organizations.list_organization_invitations(input: ListOrganizationInvitationsInput) -> models.ListOrganizationInvitationsResponse
+```
+`GET /v1/organizations/{organizationId}/invitations`
+
+**[List current organization members](/api-client/sdk/organizations/list-organization-members)**
+
+```python Python
+photon.organizations.list_organization_members(input: ListOrganizationMembersInput) -> models.ListOrganizationMembersResponse
+```
+`GET /v1/organizations/{organizationId}/members`
+
+**[List organization OAuth clients](/api-client/sdk/organizations/list-organization-oauth-clients)**
+
+```python Python
+photon.organizations.list_organization_oauth_clients(input: ListOrganizationOauthClientsInput) -> models.ListOrganizationOauthClientsResponse
+```
+`GET /v1/organizations/{organizationId}/oauth/clients`
+
+**[List organizations](/api-client/sdk/organizations/list-organizations)**
+
+```python Python
+photon.organizations.list_organizations(input: ListOrganizationsInput | None = None) -> models.ListOrganizationsResponse
+```
+`GET /v1/organizations`
+
+**[List organization Service Identities](/api-client/sdk/organizations/list-service-identities)**
+
+```python Python
+photon.organizations.list_service_identities(input: ListServiceIdentitiesInput) -> models.ListServiceIdentitiesResponse
+```
+`GET /v1/organizations/{organizationId}/service-identities`
+
+**[List Service Identity credential metadata](/api-client/sdk/organizations/list-service-identity-credentials)**
+
+```python Python
+photon.organizations.list_service_identity_credentials(input: ListServiceIdentityCredentialsInput) -> models.ListServiceIdentityCredentialsResponse
+```
+`GET /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials`
+
+**[List grantable Service Identity permissions](/api-client/sdk/organizations/list-service-identity-permissions)**
+
+```python Python
+photon.organizations.list_service_identity_permissions(input: ListServiceIdentityPermissionsInput) -> models.ListServiceIdentityPermissionsResponse
+```
+`GET /v1/organizations/{organizationId}/service-identities/permissions`
+
+**[Check organization deletion prerequisites](/api-client/sdk/organizations/check-organization-deletion)**
+
+```python Python
+photon.organizations.check_organization_deletion(input: CheckOrganizationDeletionInput) -> models.CheckOrganizationDeletionResponse
+```
+`GET /v1/organizations/{organizationId}/deletion-check`
+
+**[Read the credential's organization](/api-client/sdk/organizations/get-current-organization)**
+
+```python Python
+photon.organizations.get_current_organization(input: GetCurrentOrganizationInput | None = None) -> models.GetCurrentOrganizationResponse
+```
+`GET /v1/organizations/current`
+
+**[Read organization name and avatar](/api-client/sdk/organizations/get-organization)**
+
+```python Python
+photon.organizations.get_organization(input: GetOrganizationInput) -> models.GetOrganizationResponse
+```
+`GET /v1/organizations/{organizationId}`
+
+**[Read an organization OAuth client](/api-client/sdk/organizations/get-organization-oauth-client)**
+
+```python Python
+photon.organizations.get_organization_oauth_client(input: GetOrganizationOauthClientInput) -> models.GetOrganizationOauthClientResponse
+```
+`GET /v1/organizations/{organizationId}/oauth/clients/{clientId}`
+
+**[Read an organization OAuth client's secret](/api-client/sdk/organizations/get-organization-oauth-client-secret)**
+
+```python Python
+photon.organizations.get_organization_oauth_client_secret(input: GetOrganizationOauthClientSecretInput) -> models.GetOrganizationOauthClientSecretResponse
+```
+`GET /v1/organizations/{organizationId}/oauth/clients/{clientId}/secret`
+
+**[Read a Service Identity](/api-client/sdk/organizations/get-service-identity)**
+
+```python Python
+photon.organizations.get_service_identity(input: GetServiceIdentityInput) -> models.GetServiceIdentityResponse
+```
+`GET /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}`
+
+**[Read SSO subscription](/api-client/sdk/organizations/get-sso-subscription)**
+
+```python Python
+photon.organizations.get_sso_subscription(input: GetSsoSubscriptionInput) -> models.GetSsoSubscriptionResponse
+```
+`GET /v1/organizations/{organizationId}/sso/subscription`
+
+**[Accept an invitation to all organization projects](/api-client/sdk/organizations/accept-organization-invitation)**
+
+```python Python
+photon.organizations.accept_organization_invitation(input: AcceptOrganizationInvitationInput) -> models.AcceptOrganizationInvitationResponse
+```
+`POST /v1/organizations/invitations/accept`
+
+**[Cancel the SSO subscription](/api-client/sdk/organizations/cancel-sso-subscription)**
+
+```python Python
+photon.organizations.cancel_sso_subscription(input: CancelSsoSubscriptionInput) -> models.CancelSsoSubscriptionResponse
+```
+`POST /v1/organizations/{organizationId}/sso/subscription/cancel`
+
+**[Commit an organization avatar](/api-client/sdk/organizations/commit-organization-avatar)**
+
+```python Python
+photon.organizations.commit_organization_avatar(input: CommitOrganizationAvatarInput) -> models.CommitOrganizationAvatarResponse
+```
+`POST /v1/organizations/{organizationId}/avatar/commit`
+
+**[Create an organization](/api-client/sdk/organizations/create-organization)**
+
+```python Python
+photon.organizations.create_organization(input: CreateOrganizationInput) -> models.CreateOrganizationResponse
+```
+`POST /v1/organizations`
+
+**[Create an organization avatar upload](/api-client/sdk/organizations/create-organization-avatar-upload)**
+
+```python Python
+photon.organizations.create_organization_avatar_upload(input: CreateOrganizationAvatarUploadInput) -> models.CreateOrganizationAvatarUploadResponse
+```
+`POST /v1/organizations/{organizationId}/avatar/uploads`
+
+**[Invite a Member or Viewer to all organization projects](/api-client/sdk/organizations/create-organization-invitation)**
+
+```python Python
+photon.organizations.create_organization_invitation(input: CreateOrganizationInvitationInput) -> models.CreateOrganizationInvitationResponse
+```
+`POST /v1/organizations/{organizationId}/invitations`
+
+**[Create an organization OAuth client](/api-client/sdk/organizations/create-organization-oauth-client)**
+
+```python Python
+photon.organizations.create_organization_oauth_client(input: CreateOrganizationOauthClientInput) -> models.CreateOrganizationOauthClientResponse
+```
+`POST /v1/organizations/{organizationId}/oauth/clients`
+
+**[Create an organization Service Identity](/api-client/sdk/organizations/create-service-identity)**
+
+```python Python
+photon.organizations.create_service_identity(input: CreateServiceIdentityInput) -> models.CreateServiceIdentityResponse
+```
+`POST /v1/organizations/{organizationId}/service-identities`
+
+**[Create a one-time Service Identity API key](/api-client/sdk/organizations/create-service-identity-api-key)**
+
+```python Python
+photon.organizations.create_service_identity_api_key(input: CreateServiceIdentityApiKeyInput) -> models.CreateServiceIdentityApiKeyResponse
+```
+`POST /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials/api-keys`
+
+**[Create a one-time Service Identity M2M client secret](/api-client/sdk/organizations/create-service-identity-client-secret)**
+
+```python Python
+photon.organizations.create_service_identity_client_secret(input: CreateServiceIdentityClientSecretInput) -> models.CreateServiceIdentityClientSecretResponse
+```
+`POST /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials/client-secrets`
+
+**[Ensure the initial organization](/api-client/sdk/organizations/ensure-initial-organization)**
+
+```python Python
+photon.organizations.ensure_initial_organization(input: EnsureInitialOrganizationInput) -> models.EnsureInitialOrganizationResponse
+```
+`POST /v1/organizations/initial`
+
+**[Leave an organization; Owners must transfer or close first](/api-client/sdk/organizations/leave-organization)**
+
+```python Python
+photon.organizations.leave_organization(input: LeaveOrganizationInput) -> models.LeaveOrganizationResponse
+```
+`POST /v1/organizations/{organizationId}/leave`
+
+**[Preview an organization invitation after sign-in](/api-client/sdk/organizations/preview-organization-invitation)**
+
+```python Python
+photon.organizations.preview_organization_invitation(input: PreviewOrganizationInvitationInput) -> models.PreviewOrganizationInvitationResponse
+```
+`POST /v1/organizations/invitations/preview`
+
+**[Resend an organization invitation](/api-client/sdk/organizations/resend-organization-invitation)**
+
+```python Python
+photon.organizations.resend_organization_invitation(input: ResendOrganizationInvitationInput) -> models.ResendOrganizationInvitationResponse
+```
+`POST /v1/organizations/{organizationId}/invitations/{invitationId}/resend`
+
+**[Revoke an organization invitation](/api-client/sdk/organizations/revoke-organization-invitation)**
+
+```python Python
+photon.organizations.revoke_organization_invitation(input: RevokeOrganizationInvitationInput) -> models.RevokeOrganizationInvitationResponse
+```
+`POST /v1/organizations/{organizationId}/invitations/{invitationId}/revoke`
+
+**[Request Service Identity credential revocation](/api-client/sdk/organizations/revoke-service-identity-credential)**
+
+```python Python
+photon.organizations.revoke_service_identity_credential(input: RevokeServiceIdentityCredentialInput) -> models.RevokeServiceIdentityCredentialResponse
+```
+`POST /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials/{credentialId}/revoke`
+
+**[Rotate an organization OAuth client's secret](/api-client/sdk/organizations/rotate-organization-oauth-client-secret)**
+
+```python Python
+photon.organizations.rotate_organization_oauth_client_secret(input: RotateOrganizationOauthClientSecretInput) -> models.RotateOrganizationOauthClientSecretResponse
+```
+`POST /v1/organizations/{organizationId}/oauth/clients/{clientId}/secret/rotate`
+
+**[Subscribe to organization SSO](/api-client/sdk/organizations/subscribe-sso)**
+
+```python Python
+photon.organizations.subscribe_sso(input: SubscribeSsoInput) -> models.SubscribeSsoResponse
+```
+`POST /v1/organizations/{organizationId}/sso/subscription`
+
+**[Transfer organization ownership to an existing member](/api-client/sdk/organizations/transfer-organization-ownership)**
+
+```python Python
+photon.organizations.transfer_organization_ownership(input: TransferOrganizationOwnershipInput) -> models.TransferOrganizationOwnershipResponse
+```
+`POST /v1/organizations/{organizationId}/transfer-ownership`
+
+**[Create an organization OAuth client's secret](/api-client/sdk/organizations/setup-organization-oauth-client-secret)**
+
+```python Python
+photon.organizations.setup_organization_oauth_client_secret(input: SetupOrganizationOauthClientSecretInput) -> ( models.SetupOrganizationOauthClientSecretResponse | models.SetupOrganizationOauthClientSecretCreatedResponse )
+```
+`PUT /v1/organizations/{organizationId}/oauth/clients/{clientId}/secret`
+
+**[Change organization name](/api-client/sdk/organizations/update-organization)**
+
+```python Python
+photon.organizations.update_organization(input: UpdateOrganizationInput) -> models.UpdateOrganizationResponse
+```
+`PATCH /v1/organizations/{organizationId}`
+
+**[Change an organization member's role across all projects](/api-client/sdk/organizations/update-organization-member-role)**
+
+```python Python
+photon.organizations.update_organization_member_role(input: UpdateOrganizationMemberRoleInput) -> models.UpdateOrganizationMemberRoleResponse
+```
+`PATCH /v1/organizations/{organizationId}/members/{memberAccountId}`
+
+**[Update an organization OAuth client](/api-client/sdk/organizations/update-organization-oauth-client)**
+
+```python Python
+photon.organizations.update_organization_oauth_client(input: UpdateOrganizationOauthClientInput) -> models.UpdateOrganizationOauthClientResponse
+```
+`PATCH /v1/organizations/{organizationId}/oauth/clients/{clientId}`
+
+**[Update a Service Identity](/api-client/sdk/organizations/update-service-identity)**
+
+```python Python
+photon.organizations.update_service_identity(input: UpdateServiceIdentityInput) -> models.UpdateServiceIdentityResponse
+```
+`PATCH /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}`
+
+**[Delete organization](/api-client/sdk/organizations/close-organization)**
+
+```python Python
+photon.organizations.close_organization(input: CloseOrganizationInput) -> None
+```
+`DELETE /v1/organizations/{organizationId}`
+
+**[Delete an organization OAuth client](/api-client/sdk/organizations/delete-organization-oauth-client)**
+
+```python Python
+photon.organizations.delete_organization_oauth_client(input: DeleteOrganizationOauthClientInput) -> models.DeleteOrganizationOauthClientResponse
+```
+`DELETE /v1/organizations/{organizationId}/oauth/clients/{clientId}`
+
+**[Revoke an organization OAuth client's secret](/api-client/sdk/organizations/delete-organization-oauth-client-secret)**
+
+```python Python
+photon.organizations.delete_organization_oauth_client_secret(input: DeleteOrganizationOauthClientSecretInput) -> None
+```
+`DELETE /v1/organizations/{organizationId}/oauth/clients/{clientId}/secret`
+
+**[Remove an organization avatar](/api-client/sdk/organizations/remove-organization-avatar)**
+
+```python Python
+photon.organizations.remove_organization_avatar(input: RemoveOrganizationAvatarInput) -> models.RemoveOrganizationAvatarResponse
+```
+`DELETE /v1/organizations/{organizationId}/avatar`
+
+**[Remove an organization member's access to all projects](/api-client/sdk/organizations/remove-organization-member)**
+
+```python Python
+photon.organizations.remove_organization_member(input: RemoveOrganizationMemberInput) -> models.RemoveOrganizationMemberResponse
+```
+`DELETE /v1/organizations/{organizationId}/members/{memberAccountId}`
+
+</Tab>
+<Tab title="Rust">
+**[List pending organization invitations](/api-client/sdk/organizations/list-organization-invitations)**
+
+```rust Rust
+client.list_organization_invitations(organization_id: String).await -> Result<ResponseValue<types::ListOrganizationInvitationsResponse>, Error<ListOrganizationInvitationsError>>
+```
+`GET /v1/organizations/{organizationId}/invitations`
+
+**[List current organization members](/api-client/sdk/organizations/list-organization-members)**
+
+```rust Rust
+client.list_organization_members(organization_id: String).await -> Result<ResponseValue<types::ListOrganizationMembersResponse>, Error<ListOrganizationMembersError>>
+```
+`GET /v1/organizations/{organizationId}/members`
+
+**[List organization OAuth clients](/api-client/sdk/organizations/list-organization-oauth-clients)**
+
+```rust Rust
+client.list_organization_oauth_clients(organization_id: String).await -> Result<ResponseValue<types::ListOrganizationOauthClientsResponse>, Error<ListOrganizationOauthClientsError>>
+```
+`GET /v1/organizations/{organizationId}/oauth/clients`
+
+**[List organizations](/api-client/sdk/organizations/list-organizations)**
+
+```rust Rust
+client.list_organizations().await -> Result<ResponseValue<types::ListOrganizationsResponse>, Error<ListOrganizationsError>>
+```
+`GET /v1/organizations`
+
+**[List organization Service Identities](/api-client/sdk/organizations/list-service-identities)**
+
+```rust Rust
+client.list_service_identities(organization_id: String).await -> Result<ResponseValue<types::ListServiceIdentitiesResponse>, Error<ListServiceIdentitiesError>>
+```
+`GET /v1/organizations/{organizationId}/service-identities`
+
+**[List Service Identity credential metadata](/api-client/sdk/organizations/list-service-identity-credentials)**
+
+```rust Rust
+client.list_service_identity_credentials(organization_id: String, service_identity_id: String).await -> Result<ResponseValue<types::ListServiceIdentityCredentialsResponse>, Error<ListServiceIdentityCredentialsError>>
+```
+`GET /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials`
+
+**[List grantable Service Identity permissions](/api-client/sdk/organizations/list-service-identity-permissions)**
+
+```rust Rust
+client.list_service_identity_permissions(organization_id: String).await -> Result<ResponseValue<types::ListServiceIdentityPermissionsResponse>, Error<ListServiceIdentityPermissionsError>>
+```
+`GET /v1/organizations/{organizationId}/service-identities/permissions`
+
+**[Check organization deletion prerequisites](/api-client/sdk/organizations/check-organization-deletion)**
+
+```rust Rust
+client.check_organization_deletion(organization_id: String).await -> Result<ResponseValue<types::CheckOrganizationDeletionResponse>, Error<CheckOrganizationDeletionError>>
+```
+`GET /v1/organizations/{organizationId}/deletion-check`
+
+**[Read the credential's organization](/api-client/sdk/organizations/get-current-organization)**
+
+```rust Rust
+client.get_current_organization().await -> Result<ResponseValue<types::GetCurrentOrganizationResponse>, Error<GetCurrentOrganizationError>>
+```
+`GET /v1/organizations/current`
+
+**[Read organization name and avatar](/api-client/sdk/organizations/get-organization)**
+
+```rust Rust
+client.get_organization(organization_id: String).await -> Result<ResponseValue<types::GetOrganizationResponse>, Error<GetOrganizationError>>
+```
+`GET /v1/organizations/{organizationId}`
+
+**[Read an organization OAuth client](/api-client/sdk/organizations/get-organization-oauth-client)**
+
+```rust Rust
+client.get_organization_oauth_client(organization_id: String, client_id: String).await -> Result<ResponseValue<types::GetOrganizationOauthClientResponse>, Error<GetOrganizationOauthClientError>>
+```
+`GET /v1/organizations/{organizationId}/oauth/clients/{clientId}`
+
+**[Read an organization OAuth client's secret](/api-client/sdk/organizations/get-organization-oauth-client-secret)**
+
+```rust Rust
+client.get_organization_oauth_client_secret(organization_id: String, client_id: String).await -> Result<ResponseValue<types::GetOrganizationOauthClientSecretResponse>, Error<GetOrganizationOauthClientSecretError>>
+```
+`GET /v1/organizations/{organizationId}/oauth/clients/{clientId}/secret`
+
+**[Read a Service Identity](/api-client/sdk/organizations/get-service-identity)**
+
+```rust Rust
+client.get_service_identity(organization_id: String, service_identity_id: String).await -> Result<ResponseValue<types::GetServiceIdentityResponse>, Error<GetServiceIdentityError>>
+```
+`GET /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}`
+
+**[Read SSO subscription](/api-client/sdk/organizations/get-sso-subscription)**
+
+```rust Rust
+client.get_sso_subscription(organization_id: String).await -> Result<ResponseValue<types::GetSsoSubscriptionResponse>, Error<GetSsoSubscriptionError>>
+```
+`GET /v1/organizations/{organizationId}/sso/subscription`
+
+**[Accept an invitation to all organization projects](/api-client/sdk/organizations/accept-organization-invitation)**
+
+```rust Rust
+client.accept_organization_invitation(idempotency_key: String, body: &types::AcceptOrganizationInvitationRequest).await -> Result<ResponseValue<types::AcceptOrganizationInvitationResponse>, Error<AcceptOrganizationInvitationError>>
+```
+`POST /v1/organizations/invitations/accept`
+
+**[Cancel the SSO subscription](/api-client/sdk/organizations/cancel-sso-subscription)**
+
+```rust Rust
+client.cancel_sso_subscription(idempotency_key: String, organization_id: String).await -> Result<ResponseValue<types::CancelSsoSubscriptionResponse>, Error<CancelSsoSubscriptionError>>
+```
+`POST /v1/organizations/{organizationId}/sso/subscription/cancel`
+
+**[Commit an organization avatar](/api-client/sdk/organizations/commit-organization-avatar)**
+
+```rust Rust
+client.commit_organization_avatar(idempotency_key: String, organization_id: String, body: &types::CommitOrganizationAvatarRequest).await -> Result<ResponseValue<types::CommitOrganizationAvatarResponse>, Error<CommitOrganizationAvatarError>>
+```
+`POST /v1/organizations/{organizationId}/avatar/commit`
+
+**[Create an organization](/api-client/sdk/organizations/create-organization)**
+
+```rust Rust
+client.create_organization(idempotency_key: String, body: &types::CreateOrganizationRequest).await -> Result<ResponseValue<types::CreateOrganizationResponse>, Error<CreateOrganizationError>>
+```
+`POST /v1/organizations`
+
+**[Create an organization avatar upload](/api-client/sdk/organizations/create-organization-avatar-upload)**
+
+```rust Rust
+client.create_organization_avatar_upload(organization_id: String, body: &types::CreateOrganizationAvatarUploadRequest).await -> Result<ResponseValue<types::CreateOrganizationAvatarUploadResponse>, Error<CreateOrganizationAvatarUploadError>>
+```
+`POST /v1/organizations/{organizationId}/avatar/uploads`
+
+**[Invite a Member or Viewer to all organization projects](/api-client/sdk/organizations/create-organization-invitation)**
+
+```rust Rust
+client.create_organization_invitation(idempotency_key: String, organization_id: String, body: &types::CreateOrganizationInvitationRequest).await -> Result<ResponseValue<types::CreateOrganizationInvitationResponse>, Error<CreateOrganizationInvitationError>>
+```
+`POST /v1/organizations/{organizationId}/invitations`
+
+**[Create an organization OAuth client](/api-client/sdk/organizations/create-organization-oauth-client)**
+
+```rust Rust
+client.create_organization_oauth_client(organization_id: String, idempotency_key: String, body: &types::CreateOrganizationOauthClientRequest).await -> Result<ResponseValue<types::CreateOrganizationOauthClientResponse>, Error<CreateOrganizationOauthClientError>>
+```
+`POST /v1/organizations/{organizationId}/oauth/clients`
+
+**[Create an organization Service Identity](/api-client/sdk/organizations/create-service-identity)**
+
+```rust Rust
+client.create_service_identity(idempotency_key: String, organization_id: String, body: &types::CreateServiceIdentityRequest).await -> Result<ResponseValue<types::CreateServiceIdentityResponse>, Error<CreateServiceIdentityError>>
+```
+`POST /v1/organizations/{organizationId}/service-identities`
+
+**[Create a one-time Service Identity API key](/api-client/sdk/organizations/create-service-identity-api-key)**
+
+```rust Rust
+client.create_service_identity_api_key(idempotency_key: String, organization_id: String, service_identity_id: String, body: &types::CreateServiceIdentityApiKeyRequest).await -> Result<ResponseValue<types::CreateServiceIdentityApiKeyResponse>, Error<CreateServiceIdentityApiKeyError>>
+```
+`POST /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials/api-keys`
+
+**[Create a one-time Service Identity M2M client secret](/api-client/sdk/organizations/create-service-identity-client-secret)**
+
+```rust Rust
+client.create_service_identity_client_secret(idempotency_key: String, organization_id: String, service_identity_id: String, body: &types::CreateServiceIdentityClientSecretRequest).await -> Result<ResponseValue<types::CreateServiceIdentityClientSecretResponse>, Error<CreateServiceIdentityClientSecretError>>
+```
+`POST /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials/client-secrets`
+
+**[Ensure the initial organization](/api-client/sdk/organizations/ensure-initial-organization)**
+
+```rust Rust
+client.ensure_initial_organization(idempotency_key: String).await -> Result<ResponseValue<types::EnsureInitialOrganizationResponse>, Error<EnsureInitialOrganizationError>>
+```
+`POST /v1/organizations/initial`
+
+**[Leave an organization; Owners must transfer or close first](/api-client/sdk/organizations/leave-organization)**
+
+```rust Rust
+client.leave_organization(idempotency_key: String, organization_id: String, body: &types::LeaveOrganizationRequest).await -> Result<ResponseValue<types::LeaveOrganizationResponse>, Error<LeaveOrganizationError>>
+```
+`POST /v1/organizations/{organizationId}/leave`
+
+**[Preview an organization invitation after sign-in](/api-client/sdk/organizations/preview-organization-invitation)**
+
+```rust Rust
+client.preview_organization_invitation(body: &types::PreviewOrganizationInvitationRequest).await -> Result<ResponseValue<types::PreviewOrganizationInvitationResponse>, Error<PreviewOrganizationInvitationError>>
+```
+`POST /v1/organizations/invitations/preview`
+
+**[Resend an organization invitation](/api-client/sdk/organizations/resend-organization-invitation)**
+
+```rust Rust
+client.resend_organization_invitation(idempotency_key: String, organization_id: String, invitation_id: String).await -> Result<ResponseValue<types::ResendOrganizationInvitationResponse>, Error<ResendOrganizationInvitationError>>
+```
+`POST /v1/organizations/{organizationId}/invitations/{invitationId}/resend`
+
+**[Revoke an organization invitation](/api-client/sdk/organizations/revoke-organization-invitation)**
+
+```rust Rust
+client.revoke_organization_invitation(idempotency_key: String, organization_id: String, invitation_id: String).await -> Result<ResponseValue<types::RevokeOrganizationInvitationResponse>, Error<RevokeOrganizationInvitationError>>
+```
+`POST /v1/organizations/{organizationId}/invitations/{invitationId}/revoke`
+
+**[Request Service Identity credential revocation](/api-client/sdk/organizations/revoke-service-identity-credential)**
+
+```rust Rust
+client.revoke_service_identity_credential(idempotency_key: String, organization_id: String, service_identity_id: String, credential_id: String, body: &types::RevokeServiceIdentityCredentialRequest).await -> Result<ResponseValue<types::RevokeServiceIdentityCredentialResponse>, Error<RevokeServiceIdentityCredentialError>>
+```
+`POST /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials/{credentialId}/revoke`
+
+**[Rotate an organization OAuth client's secret](/api-client/sdk/organizations/rotate-organization-oauth-client-secret)**
+
+```rust Rust
+client.rotate_organization_oauth_client_secret(organization_id: String, client_id: String, idempotency_key: String, body: &types::RotateOrganizationOauthClientSecretRequest).await -> Result<ResponseValue<types::RotateOrganizationOauthClientSecretResponse>, Error<RotateOrganizationOauthClientSecretError>>
+```
+`POST /v1/organizations/{organizationId}/oauth/clients/{clientId}/secret/rotate`
+
+**[Subscribe to organization SSO](/api-client/sdk/organizations/subscribe-sso)**
+
+```rust Rust
+client.subscribe_sso(idempotency_key: String, organization_id: String, body: &types::SubscribeSsoRequest).await -> Result<ResponseValue<types::SubscribeSsoResponse>, Error<SubscribeSsoError>>
+```
+`POST /v1/organizations/{organizationId}/sso/subscription`
+
+**[Transfer organization ownership to an existing member](/api-client/sdk/organizations/transfer-organization-ownership)**
+
+```rust Rust
+client.transfer_organization_ownership(idempotency_key: String, organization_id: String, body: &types::TransferOrganizationOwnershipRequest).await -> Result<ResponseValue<types::TransferOrganizationOwnershipResponse>, Error<TransferOrganizationOwnershipError>>
+```
+`POST /v1/organizations/{organizationId}/transfer-ownership`
+
+**[Create an organization OAuth client's secret](/api-client/sdk/organizations/setup-organization-oauth-client-secret)**
+
+```rust Rust
+client.setup_organization_oauth_client_secret(organization_id: String, client_id: String, idempotency_key: String).await -> Result<ResponseValue<SetupOrganizationOauthClientSecretResponse>, Error<SetupOrganizationOauthClientSecretError>>
+```
+`PUT /v1/organizations/{organizationId}/oauth/clients/{clientId}/secret`
+
+**[Change organization name](/api-client/sdk/organizations/update-organization)**
+
+```rust Rust
+client.update_organization(idempotency_key: String, organization_id: String, body: &types::UpdateOrganizationRequest).await -> Result<ResponseValue<types::UpdateOrganizationResponse>, Error<UpdateOrganizationError>>
+```
+`PATCH /v1/organizations/{organizationId}`
+
+**[Change an organization member's role across all projects](/api-client/sdk/organizations/update-organization-member-role)**
+
+```rust Rust
+client.update_organization_member_role(idempotency_key: String, organization_id: String, member_account_id: String, body: &types::UpdateOrganizationMemberRoleRequest).await -> Result<ResponseValue<types::UpdateOrganizationMemberRoleResponse>, Error<UpdateOrganizationMemberRoleError>>
+```
+`PATCH /v1/organizations/{organizationId}/members/{memberAccountId}`
+
+**[Update an organization OAuth client](/api-client/sdk/organizations/update-organization-oauth-client)**
+
+```rust Rust
+client.update_organization_oauth_client(organization_id: String, client_id: String, if_match: String, body: &types::UpdateOrganizationOauthClientRequest).await -> Result<ResponseValue<types::UpdateOrganizationOauthClientResponse>, Error<UpdateOrganizationOauthClientError>>
+```
+`PATCH /v1/organizations/{organizationId}/oauth/clients/{clientId}`
+
+**[Update a Service Identity](/api-client/sdk/organizations/update-service-identity)**
+
+```rust Rust
+client.update_service_identity(idempotency_key: String, organization_id: String, service_identity_id: String, body: &types::UpdateServiceIdentityRequest).await -> Result<ResponseValue<types::UpdateServiceIdentityResponse>, Error<UpdateServiceIdentityError>>
+```
+`PATCH /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}`
+
+**[Delete organization](/api-client/sdk/organizations/close-organization)**
+
+```rust Rust
+client.close_organization(idempotency_key: String, organization_id: String, body: &types::CloseOrganizationRequest).await -> Result<ResponseValue<()>, Error<CloseOrganizationError>>
+```
+`DELETE /v1/organizations/{organizationId}`
+
+**[Delete an organization OAuth client](/api-client/sdk/organizations/delete-organization-oauth-client)**
+
+```rust Rust
+client.delete_organization_oauth_client(organization_id: String, client_id: String).await -> Result<ResponseValue<DeleteOrganizationOauthClientResponse>, Error<DeleteOrganizationOauthClientError>>
+```
+`DELETE /v1/organizations/{organizationId}/oauth/clients/{clientId}`
+
+**[Revoke an organization OAuth client's secret](/api-client/sdk/organizations/delete-organization-oauth-client-secret)**
+
+```rust Rust
+client.delete_organization_oauth_client_secret(organization_id: String, client_id: String).await -> Result<ResponseValue<()>, Error<DeleteOrganizationOauthClientSecretError>>
+```
+`DELETE /v1/organizations/{organizationId}/oauth/clients/{clientId}/secret`
+
+**[Remove an organization avatar](/api-client/sdk/organizations/remove-organization-avatar)**
+
+```rust Rust
+client.remove_organization_avatar(idempotency_key: String, organization_id: String, body: &types::RemoveOrganizationAvatarRequest).await -> Result<ResponseValue<types::RemoveOrganizationAvatarResponse>, Error<RemoveOrganizationAvatarError>>
+```
+`DELETE /v1/organizations/{organizationId}/avatar`
+
+**[Remove an organization member's access to all projects](/api-client/sdk/organizations/remove-organization-member)**
+
+```rust Rust
+client.remove_organization_member(idempotency_key: String, organization_id: String, member_account_id: String, body: &types::RemoveOrganizationMemberRequest).await -> Result<ResponseValue<types::RemoveOrganizationMemberResponse>, Error<RemoveOrganizationMemberError>>
+```
+`DELETE /v1/organizations/{organizationId}/members/{memberAccountId}`
+
+</Tab>
+<Tab title="Go">
+**[List pending organization invitations](/api-client/sdk/organizations/list-organization-invitations)**
+
+```go Go
+client.Organizations.ListOrganizationInvitations(ctx context.Context, params *ListOrganizationInvitationsParams, opts ...RequestOption) (*ListOrganizationInvitationsResponse, error)
+```
+`GET /v1/organizations/{organizationId}/invitations`
+
+**[List current organization members](/api-client/sdk/organizations/list-organization-members)**
+
+```go Go
+client.Organizations.ListOrganizationMembers(ctx context.Context, params *ListOrganizationMembersParams, opts ...RequestOption) (*ListOrganizationMembersResponse, error)
+```
+`GET /v1/organizations/{organizationId}/members`
+
+**[List organization OAuth clients](/api-client/sdk/organizations/list-organization-oauth-clients)**
+
+```go Go
+client.Organizations.ListOrganizationOauthClients(ctx context.Context, params *ListOrganizationOauthClientsParams, opts ...RequestOption) (*ListOrganizationOauthClientsResponse, error)
+```
+`GET /v1/organizations/{organizationId}/oauth/clients`
+
+**[List organizations](/api-client/sdk/organizations/list-organizations)**
+
+```go Go
+client.Organizations.ListOrganizations(ctx context.Context, opts ...RequestOption) (*ListOrganizationsResponse, error)
+```
+`GET /v1/organizations`
+
+**[List organization Service Identities](/api-client/sdk/organizations/list-service-identities)**
+
+```go Go
+client.Organizations.ListServiceIdentities(ctx context.Context, params *ListServiceIdentitiesParams, opts ...RequestOption) (*ListServiceIdentitiesResponse, error)
+```
+`GET /v1/organizations/{organizationId}/service-identities`
+
+**[List Service Identity credential metadata](/api-client/sdk/organizations/list-service-identity-credentials)**
+
+```go Go
+client.Organizations.ListServiceIdentityCredentials(ctx context.Context, params *ListServiceIdentityCredentialsParams, opts ...RequestOption) (*ListServiceIdentityCredentialsResponse, error)
+```
+`GET /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials`
+
+**[List grantable Service Identity permissions](/api-client/sdk/organizations/list-service-identity-permissions)**
+
+```go Go
+client.Organizations.ListServiceIdentityPermissions(ctx context.Context, params *ListServiceIdentityPermissionsParams, opts ...RequestOption) (*ListServiceIdentityPermissionsResponse, error)
+```
+`GET /v1/organizations/{organizationId}/service-identities/permissions`
+
+**[Check organization deletion prerequisites](/api-client/sdk/organizations/check-organization-deletion)**
+
+```go Go
+client.Organizations.CheckOrganizationDeletion(ctx context.Context, params *CheckOrganizationDeletionParams, opts ...RequestOption) (*CheckOrganizationDeletionResponse, error)
+```
+`GET /v1/organizations/{organizationId}/deletion-check`
+
+**[Read the credential's organization](/api-client/sdk/organizations/get-current-organization)**
+
+```go Go
+client.Organizations.GetCurrentOrganization(ctx context.Context, opts ...RequestOption) (*GetCurrentOrganizationResponse, error)
+```
+`GET /v1/organizations/current`
+
+**[Read organization name and avatar](/api-client/sdk/organizations/get-organization)**
+
+```go Go
+client.Organizations.GetOrganization(ctx context.Context, params *GetOrganizationParams, opts ...RequestOption) (*GetOrganizationResponse, error)
+```
+`GET /v1/organizations/{organizationId}`
+
+**[Read an organization OAuth client](/api-client/sdk/organizations/get-organization-oauth-client)**
+
+```go Go
+client.Organizations.GetOrganizationOauthClient(ctx context.Context, params *GetOrganizationOauthClientParams, opts ...RequestOption) (*GetOrganizationOauthClientResponse, error)
+```
+`GET /v1/organizations/{organizationId}/oauth/clients/{clientId}`
+
+**[Read an organization OAuth client's secret](/api-client/sdk/organizations/get-organization-oauth-client-secret)**
+
+```go Go
+client.Organizations.GetOrganizationOauthClientSecret(ctx context.Context, params *GetOrganizationOauthClientSecretParams, opts ...RequestOption) (*GetOrganizationOauthClientSecretResponse, error)
+```
+`GET /v1/organizations/{organizationId}/oauth/clients/{clientId}/secret`
+
+**[Read a Service Identity](/api-client/sdk/organizations/get-service-identity)**
+
+```go Go
+client.Organizations.GetServiceIdentity(ctx context.Context, params *GetServiceIdentityParams, opts ...RequestOption) (*GetServiceIdentityResponse, error)
+```
+`GET /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}`
+
+**[Read SSO subscription](/api-client/sdk/organizations/get-sso-subscription)**
+
+```go Go
+client.Organizations.GetSsoSubscription(ctx context.Context, params *GetSsoSubscriptionParams, opts ...RequestOption) (*GetSsoSubscriptionResponse, error)
+```
+`GET /v1/organizations/{organizationId}/sso/subscription`
+
+**[Accept an invitation to all organization projects](/api-client/sdk/organizations/accept-organization-invitation)**
+
+```go Go
+client.Organizations.AcceptOrganizationInvitation(ctx context.Context, params *AcceptOrganizationInvitationParams, opts ...RequestOption) (*AcceptOrganizationInvitationResponse, error)
+```
+`POST /v1/organizations/invitations/accept`
+
+**[Cancel the SSO subscription](/api-client/sdk/organizations/cancel-sso-subscription)**
+
+```go Go
+client.Organizations.CancelSsoSubscription(ctx context.Context, params *CancelSsoSubscriptionParams, opts ...RequestOption) (*CancelSsoSubscriptionResponse, error)
+```
+`POST /v1/organizations/{organizationId}/sso/subscription/cancel`
+
+**[Commit an organization avatar](/api-client/sdk/organizations/commit-organization-avatar)**
+
+```go Go
+client.Organizations.CommitOrganizationAvatar(ctx context.Context, params *CommitOrganizationAvatarParams, opts ...RequestOption) (*CommitOrganizationAvatarResponse, error)
+```
+`POST /v1/organizations/{organizationId}/avatar/commit`
+
+**[Create an organization](/api-client/sdk/organizations/create-organization)**
+
+```go Go
+client.Organizations.CreateOrganization(ctx context.Context, params *CreateOrganizationParams, opts ...RequestOption) (*CreateOrganizationResponse, error)
+```
+`POST /v1/organizations`
+
+**[Create an organization avatar upload](/api-client/sdk/organizations/create-organization-avatar-upload)**
+
+```go Go
+client.Organizations.CreateOrganizationAvatarUpload(ctx context.Context, params *CreateOrganizationAvatarUploadParams, opts ...RequestOption) (*CreateOrganizationAvatarUploadResponse, error)
+```
+`POST /v1/organizations/{organizationId}/avatar/uploads`
+
+**[Invite a Member or Viewer to all organization projects](/api-client/sdk/organizations/create-organization-invitation)**
+
+```go Go
+client.Organizations.CreateOrganizationInvitation(ctx context.Context, params *CreateOrganizationInvitationParams, opts ...RequestOption) (*CreateOrganizationInvitationResponse, error)
+```
+`POST /v1/organizations/{organizationId}/invitations`
+
+**[Create an organization OAuth client](/api-client/sdk/organizations/create-organization-oauth-client)**
+
+```go Go
+client.Organizations.CreateOrganizationOauthClient(ctx context.Context, params *CreateOrganizationOauthClientParams, opts ...RequestOption) (*CreateOrganizationOauthClientResponse, error)
+```
+`POST /v1/organizations/{organizationId}/oauth/clients`
+
+**[Create an organization Service Identity](/api-client/sdk/organizations/create-service-identity)**
+
+```go Go
+client.Organizations.CreateServiceIdentity(ctx context.Context, params *CreateServiceIdentityParams, opts ...RequestOption) (*CreateServiceIdentityResponse, error)
+```
+`POST /v1/organizations/{organizationId}/service-identities`
+
+**[Create a one-time Service Identity API key](/api-client/sdk/organizations/create-service-identity-api-key)**
+
+```go Go
+client.Organizations.CreateServiceIdentityApiKey(ctx context.Context, params *CreateServiceIdentityApiKeyParams, opts ...RequestOption) (*CreateServiceIdentityApiKeyResponse, error)
+```
+`POST /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials/api-keys`
+
+**[Create a one-time Service Identity M2M client secret](/api-client/sdk/organizations/create-service-identity-client-secret)**
+
+```go Go
+client.Organizations.CreateServiceIdentityClientSecret(ctx context.Context, params *CreateServiceIdentityClientSecretParams, opts ...RequestOption) (*CreateServiceIdentityClientSecretResponse, error)
+```
+`POST /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials/client-secrets`
+
+**[Ensure the initial organization](/api-client/sdk/organizations/ensure-initial-organization)**
+
+```go Go
+client.Organizations.EnsureInitialOrganization(ctx context.Context, params *EnsureInitialOrganizationParams, opts ...RequestOption) (*EnsureInitialOrganizationResponse, error)
+```
+`POST /v1/organizations/initial`
+
+**[Leave an organization; Owners must transfer or close first](/api-client/sdk/organizations/leave-organization)**
+
+```go Go
+client.Organizations.LeaveOrganization(ctx context.Context, params *LeaveOrganizationParams, opts ...RequestOption) (*LeaveOrganizationResponse, error)
+```
+`POST /v1/organizations/{organizationId}/leave`
+
+**[Preview an organization invitation after sign-in](/api-client/sdk/organizations/preview-organization-invitation)**
+
+```go Go
+client.Organizations.PreviewOrganizationInvitation(ctx context.Context, params *PreviewOrganizationInvitationParams, opts ...RequestOption) (*PreviewOrganizationInvitationResponse, error)
+```
+`POST /v1/organizations/invitations/preview`
+
+**[Resend an organization invitation](/api-client/sdk/organizations/resend-organization-invitation)**
+
+```go Go
+client.Organizations.ResendOrganizationInvitation(ctx context.Context, params *ResendOrganizationInvitationParams, opts ...RequestOption) (*ResendOrganizationInvitationResponse, error)
+```
+`POST /v1/organizations/{organizationId}/invitations/{invitationId}/resend`
+
+**[Revoke an organization invitation](/api-client/sdk/organizations/revoke-organization-invitation)**
+
+```go Go
+client.Organizations.RevokeOrganizationInvitation(ctx context.Context, params *RevokeOrganizationInvitationParams, opts ...RequestOption) (*RevokeOrganizationInvitationResponse, error)
+```
+`POST /v1/organizations/{organizationId}/invitations/{invitationId}/revoke`
+
+**[Request Service Identity credential revocation](/api-client/sdk/organizations/revoke-service-identity-credential)**
+
+```go Go
+client.Organizations.RevokeServiceIdentityCredential(ctx context.Context, params *RevokeServiceIdentityCredentialParams, opts ...RequestOption) (*RevokeServiceIdentityCredentialResponse, error)
+```
+`POST /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials/{credentialId}/revoke`
+
+**[Rotate an organization OAuth client's secret](/api-client/sdk/organizations/rotate-organization-oauth-client-secret)**
+
+```go Go
+client.Organizations.RotateOrganizationOauthClientSecret(ctx context.Context, params *RotateOrganizationOauthClientSecretParams, opts ...RequestOption) (*RotateOrganizationOauthClientSecretResponse, error)
+```
+`POST /v1/organizations/{organizationId}/oauth/clients/{clientId}/secret/rotate`
+
+**[Subscribe to organization SSO](/api-client/sdk/organizations/subscribe-sso)**
+
+```go Go
+client.Organizations.SubscribeSso(ctx context.Context, params *SubscribeSsoParams, opts ...RequestOption) (*SubscribeSsoResponse, error)
+```
+`POST /v1/organizations/{organizationId}/sso/subscription`
+
+**[Transfer organization ownership to an existing member](/api-client/sdk/organizations/transfer-organization-ownership)**
+
+```go Go
+client.Organizations.TransferOrganizationOwnership(ctx context.Context, params *TransferOrganizationOwnershipParams, opts ...RequestOption) (*TransferOrganizationOwnershipResponse, error)
+```
+`POST /v1/organizations/{organizationId}/transfer-ownership`
+
+**[Create an organization OAuth client's secret](/api-client/sdk/organizations/setup-organization-oauth-client-secret)**
+
+```go Go
+client.Organizations.SetupOrganizationOauthClientSecret(ctx context.Context, params *SetupOrganizationOauthClientSecretParams, opts ...RequestOption) (*SetupOrganizationOauthClientSecretResult, error)
+```
+`PUT /v1/organizations/{organizationId}/oauth/clients/{clientId}/secret`
+
+**[Change organization name](/api-client/sdk/organizations/update-organization)**
+
+```go Go
+client.Organizations.UpdateOrganization(ctx context.Context, params *UpdateOrganizationParams, opts ...RequestOption) (*UpdateOrganizationResponse, error)
+```
+`PATCH /v1/organizations/{organizationId}`
+
+**[Change an organization member's role across all projects](/api-client/sdk/organizations/update-organization-member-role)**
+
+```go Go
+client.Organizations.UpdateOrganizationMemberRole(ctx context.Context, params *UpdateOrganizationMemberRoleParams, opts ...RequestOption) (*UpdateOrganizationMemberRoleResponse, error)
+```
+`PATCH /v1/organizations/{organizationId}/members/{memberAccountId}`
+
+**[Update an organization OAuth client](/api-client/sdk/organizations/update-organization-oauth-client)**
+
+```go Go
+client.Organizations.UpdateOrganizationOauthClient(ctx context.Context, params *UpdateOrganizationOauthClientParams, opts ...RequestOption) (*UpdateOrganizationOauthClientResponse, error)
+```
+`PATCH /v1/organizations/{organizationId}/oauth/clients/{clientId}`
+
+**[Update a Service Identity](/api-client/sdk/organizations/update-service-identity)**
+
+```go Go
+client.Organizations.UpdateServiceIdentity(ctx context.Context, params *UpdateServiceIdentityParams, opts ...RequestOption) (*UpdateServiceIdentityResponse, error)
+```
+`PATCH /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}`
+
+**[Delete organization](/api-client/sdk/organizations/close-organization)**
+
+```go Go
+client.Organizations.CloseOrganization(ctx context.Context, params *CloseOrganizationParams, opts ...RequestOption) error
+```
+`DELETE /v1/organizations/{organizationId}`
+
+**[Delete an organization OAuth client](/api-client/sdk/organizations/delete-organization-oauth-client)**
+
+```go Go
+client.Organizations.DeleteOrganizationOauthClient(ctx context.Context, params *DeleteOrganizationOauthClientParams, opts ...RequestOption) (*DeleteOrganizationOauthClientResponse, error)
+```
+`DELETE /v1/organizations/{organizationId}/oauth/clients/{clientId}`
+
+**[Revoke an organization OAuth client's secret](/api-client/sdk/organizations/delete-organization-oauth-client-secret)**
+
+```go Go
+client.Organizations.DeleteOrganizationOauthClientSecret(ctx context.Context, params *DeleteOrganizationOauthClientSecretParams, opts ...RequestOption) error
+```
+`DELETE /v1/organizations/{organizationId}/oauth/clients/{clientId}/secret`
+
+**[Remove an organization avatar](/api-client/sdk/organizations/remove-organization-avatar)**
+
+```go Go
+client.Organizations.RemoveOrganizationAvatar(ctx context.Context, params *RemoveOrganizationAvatarParams, opts ...RequestOption) (*RemoveOrganizationAvatarResponse, error)
+```
+`DELETE /v1/organizations/{organizationId}/avatar`
+
+**[Remove an organization member's access to all projects](/api-client/sdk/organizations/remove-organization-member)**
+
+```go Go
+client.Organizations.RemoveOrganizationMember(ctx context.Context, params *RemoveOrganizationMemberParams, opts ...RequestOption) (*RemoveOrganizationMemberResponse, error)
+```
+`DELETE /v1/organizations/{organizationId}/members/{memberAccountId}`
+
+</Tab>
+</Tabs>
+
 ## Resources
 
 - [Billing](/api-client/sdk/organizations/billing)
 - [Projects](/api-client/sdk/organizations/projects)
+
+## Models
+
+### ListOrganizationInvitationsResponse
+
+
+
+<ResponseField name="invitations" type={"array of ListOrganizationInvitationsResponseInvitationsItem"} required>
+
+</ResponseField>
+
+
+### ListOrganizationMembersResponse
+
+
+
+<ResponseField name="members" type={"array of ListOrganizationMembersResponseMembersItem"} required>
+
+</ResponseField>
+
+
+### ListOrganizationOauthClientsResponse
+
+
+
+<ResponseField name="oauthClients" type={"array of ListOrganizationOauthClientsResponseOauthClientsItem"} required>
+
+</ResponseField>
+
+
+### ListOrganizationsResponse
+
+
+
+<ResponseField name="acquisitionQuestionnaireExempt" type={"boolean"} required>
+An active invitation membership exempts acquisition questions; not CRM completion or phone verification.
+</ResponseField>
+
+<ResponseField name="organizations" type={"array of Organization"} required>
+
+</ResponseField>
+
+<ResponseField name="ownedOrganizationIds" type={"array of string"} required>
+Listed organizations where the caller is the Owner.
+</ResponseField>
+
+
+### ListServiceIdentitiesResponse
+
+
+
+<ResponseField name="serviceIdentities" type={"array of ListServiceIdentitiesResponseServiceIdentitiesItem"} required>
+
+</ResponseField>
+
+
+### ListServiceIdentityCredentialsResponse
+
+
+
+<ResponseField name="credentials" type={"array of ListServiceIdentityCredentialsResponseCredentialsItem"} required>
+
+</ResponseField>
+
+
+### ListServiceIdentityPermissionsResponse
+
+
+
+<ResponseField name="permissions" type={"array of string"} required>
+
+</ResponseField>
+
+
+### CheckOrganizationDeletionResponse
+
+
+
+<ResponseField name="blockers" type={"array of string"} required>
+
+</ResponseField>
+
+<ResponseField name="canDelete" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="version" type={"string"} required>
+
+</ResponseField>
+
+
+### GetCurrentOrganizationResponse
+
+
+
+<ResponseField name="avatarUrl" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="billingInitialization" type={"OrganizationBillingInitialization"}>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="name" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="version" type={"string"} required>
+
+</ResponseField>
+
+
+### GetOrganizationResponse
+
+
+
+<ResponseField name="avatarUrl" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="billingInitialization" type={"OrganizationBillingInitialization"}>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="name" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="version" type={"string"} required>
+
+</ResponseField>
+
+
+### GetOrganizationOauthClientResponse
+
+
+
+<ResponseField name="clientId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="description" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="name" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="redirectUris" type={"array of OrganizationOauthClientRedirectUri"} required>
+
+</ResponseField>
+
+<ResponseField name="scopes" type={"array of string"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+
+### GetOrganizationOauthClientSecretResponse
+
+
+
+<ResponseField name="current" type={"GetOrganizationOauthClientSecretResponseCurrent | null"} required>
+
+</ResponseField>
+
+<ResponseField name="previous" type={"GetOrganizationOauthClientSecretResponsePrevious | null"} required>
+
+</ResponseField>
+
+
+### GetServiceIdentityResponse
+
+
+
+<ResponseField name="appInstallationManaged" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="createdByAccountId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="name" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="permissions" type={"array of string"} required>
+
+</ResponseField>
+
+<ResponseField name="serviceIdentityId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"ServiceIdentityStatus"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedByAccountId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="version" type={"string"} required>
+
+</ResponseField>
+
+
+### GetSsoSubscriptionResponse
+
+
+
+<ResponseField name="amount" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="canConfigure" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="cancelsAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="currency" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="currentPeriodEnd" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="failureCode" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="firstChargeAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="interval" type={"\"monthly\""} required>
+
+</ResponseField>
+
+<ResponseField name="nextRenewalAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="operationId" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="paymentMethodRequired" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="state" type={"GetSsoSubscriptionResponseState"} required>
+
+</ResponseField>
+
+
+### AcceptOrganizationInvitationResponse
+
+
+
+<ResponseField name="allProjects" type={"true"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationName" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="role" type={"OrganizationMemberRole"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"AcceptOrganizationInvitationResponseStatus"} required>
+
+</ResponseField>
+
+
+### CancelSsoSubscriptionResponse
+
+
+
+<ResponseField name="accepted" type={"boolean"} required>
+
+</ResponseField>
+
+
+### CommitOrganizationAvatarResponse
+
+
+
+<ResponseField name="avatarUrl" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="billingInitialization" type={"OrganizationBillingInitialization"}>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="name" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="version" type={"string"} required>
+
+</ResponseField>
+
+
+### CreateOrganizationResponse
+
+
+
+<ResponseField name="avatarUrl" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="billingInitialization" type={"OrganizationBillingInitialization"}>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="name" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="version" type={"string"} required>
+
+</ResponseField>
+
+
+### CreateOrganizationAvatarUploadResponse
+
+
+
+<ResponseField name="expiresAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="formFields" type={"object"} required>
+
+</ResponseField>
+
+<ResponseField name="uploadId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="uploadUrl" type={"string (uri)"} required>
+
+</ResponseField>
+
+
+### CreateOrganizationInvitationResponse
+
+
+
+<ResponseField name="acceptedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="acceptedByAccountId" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="allProjects" type={"true"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="email" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="expiresAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="invitationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="invitedByAccountId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="role" type={"OrganizationInvitationRole"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"OrganizationInvitationStatus"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+
+### CreateOrganizationOauthClientResponse
+
+
+
+<ResponseField name="clientId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="description" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="name" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="redirectUris" type={"array of OrganizationOauthClientRedirectUri"} required>
+
+</ResponseField>
+
+<ResponseField name="scopes" type={"array of string"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+
+### CreateServiceIdentityResponse
+
+
+
+<ResponseField name="appInstallationManaged" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="createdByAccountId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="name" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="permissions" type={"array of string"} required>
+
+</ResponseField>
+
+<ResponseField name="serviceIdentityId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"ServiceIdentityStatus"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedByAccountId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="version" type={"string"} required>
+
+</ResponseField>
+
+
+### CreateServiceIdentityApiKeyResponse
+
+
+
+**One of: CreateServiceIdentityApiKeyResponseCreated**
+
+<ResponseField name="credentialId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"\"created\""} required>
+
+</ResponseField>
+
+<ResponseField name="value" type={"string"} required>
+
+</ResponseField>
+
+**One of: CreateServiceIdentityApiKeyResponseUndelivered**
+
+<ResponseField name="credentialId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"CreateServiceIdentityApiKeyResponseUndeliveredStatus"} required>
+
+</ResponseField>
+
+
+### CreateServiceIdentityClientSecretResponse
+
+
+
+**One of: CreateServiceIdentityClientSecretResponseCreated**
+
+<ResponseField name="clientId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="credentialId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="stage" type={"\"credential\""} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"\"created\""} required>
+
+</ResponseField>
+
+<ResponseField name="value" type={"string"} required>
+
+</ResponseField>
+
+**One of: CreateServiceIdentityClientSecretResponseUndelivered**
+
+<ResponseField name="credentialId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="stage" type={"\"credential\""} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"CreateServiceIdentityClientSecretResponseUndeliveredStatus"} required>
+
+</ResponseField>
+
+**One of: CreateServiceIdentityClientSecretResponseApplicationPending**
+
+<ResponseField name="operationId" type={"string (uuid)"} required>
+
+</ResponseField>
+
+<ResponseField name="stage" type={"\"application\""} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"CreateServiceIdentityClientSecretResponseApplicationPendingStatus"} required>
+
+</ResponseField>
+
+
+### EnsureInitialOrganizationResponse
+
+
+
+<ResponseField name="organization" type={"Organization | null"} required>
+The initial organization this request created; null when the account already had one.
+</ResponseField>
+
+
+### LeaveOrganizationResponse
+
+
+
+<ResponseField name="accountId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="joinedVia" type={"OrganizationMemberJoinedVia"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="removedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="role" type={"OrganizationMemberRole"} required>
+
+</ResponseField>
+
+<ResponseField name="roleManagedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"OrganizationMemberStatus"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="version" type={"string"} required>
+
+</ResponseField>
+
+
+### PreviewOrganizationInvitationResponse
+
+
+
+<ResponseField name="allProjects" type={"true"} required>
+
+</ResponseField>
+
+<ResponseField name="emailMatches" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="expiresAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="inviter" type={"PreviewOrganizationInvitationResponseInviter | null"} required>
+
+</ResponseField>
+
+<ResponseField name="maskedEmail" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="memberCount" type={"integer"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationAvatarUrl" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationName" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="role" type={"OrganizationInvitationRole"} required>
+
+</ResponseField>
+
+<ResponseField name="ssoRequired" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"PreviewOrganizationInvitationResponseStatus"} required>
+
+</ResponseField>
+
+
+### ResendOrganizationInvitationResponse
+
+
+
+<ResponseField name="acceptedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="acceptedByAccountId" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="allProjects" type={"true"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="email" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="expiresAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="invitationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="invitedByAccountId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="role" type={"OrganizationInvitationRole"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"OrganizationInvitationStatus"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+
+### RevokeOrganizationInvitationResponse
+
+
+
+<ResponseField name="acceptedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="acceptedByAccountId" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="allProjects" type={"true"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="email" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="expiresAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="invitationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="invitedByAccountId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="role" type={"OrganizationInvitationRole"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"OrganizationInvitationStatus"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+
+### RevokeServiceIdentityCredentialResponse
+
+
+
+<ResponseField name="bound" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="creationStartedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="credentialId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="deliveryConsumedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="expiresAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="hint" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="kind" type={"ServiceIdentityCredentialKind"} required>
+
+</ResponseField>
+
+<ResponseField name="label" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="providerCleanupCompletedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="revocationRequestedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="serviceIdentityId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"ServiceIdentityCredentialStatus"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="version" type={"string"} required>
+
+</ResponseField>
+
+
+### RotateOrganizationOauthClientSecretResponse
+
+
+
+<ResponseField name="previousSecretValidUntil" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="value" type={"string | null"} required>
+
+</ResponseField>
+
+
+### SubscribeSsoResponse
+
+
+
+<ResponseField name="accepted" type={"boolean"} required>
+
+</ResponseField>
+
+
+### TransferOrganizationOwnershipResponse
+
+
+
+<ResponseField name="newOwner" type={"OrganizationMembership"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationVersion" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="previousOwner" type={"OrganizationMembership"} required>
+
+</ResponseField>
+
+
+### SetupOrganizationOauthClientSecretResponse
+
+
+
+<ResponseField name="value" type={"null"} required>
+
+</ResponseField>
+
+
+### SetupOrganizationOauthClientSecretCreatedResponse
+
+
+
+<ResponseField name="value" type={"string"} required>
+
+</ResponseField>
+
+
+### UpdateOrganizationResponse
+
+
+
+<ResponseField name="avatarUrl" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="billingInitialization" type={"OrganizationBillingInitialization"}>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="name" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="version" type={"string"} required>
+
+</ResponseField>
+
+
+### UpdateOrganizationMemberRoleResponse
+
+
+
+<ResponseField name="accountId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="joinedVia" type={"OrganizationMemberJoinedVia"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="removedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="role" type={"OrganizationMemberRole"} required>
+
+</ResponseField>
+
+<ResponseField name="roleManagedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"OrganizationMemberStatus"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="version" type={"string"} required>
+
+</ResponseField>
+
+
+### UpdateOrganizationOauthClientResponse
+
+
+
+<ResponseField name="clientId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="description" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="name" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="redirectUris" type={"array of OrganizationOauthClientRedirectUri"} required>
+
+</ResponseField>
+
+<ResponseField name="scopes" type={"array of string"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+
+### UpdateServiceIdentityResponse
+
+
+
+<ResponseField name="appInstallationManaged" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="createdByAccountId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="name" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="permissions" type={"array of string"} required>
+
+</ResponseField>
+
+<ResponseField name="serviceIdentityId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"ServiceIdentityStatus"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedByAccountId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="version" type={"string"} required>
+
+</ResponseField>
+
+
+### DeleteOrganizationOauthClientResponse
+
+
+
+<ResponseField name="operationId" type={"string (uuid)"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"DeleteOrganizationOauthClientResponseStatus"} required>
+
+</ResponseField>
+
+
+### RemoveOrganizationAvatarResponse
+
+
+
+<ResponseField name="avatarUrl" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="billingInitialization" type={"OrganizationBillingInitialization"}>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="name" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="version" type={"string"} required>
+
+</ResponseField>
+
+
+### RemoveOrganizationMemberResponse
+
+
+
+<ResponseField name="accountId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="joinedVia" type={"OrganizationMemberJoinedVia"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="removedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="role" type={"OrganizationMemberRole"} required>
+
+</ResponseField>
+
+<ResponseField name="roleManagedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"OrganizationMemberStatus"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="version" type={"string"} required>
+
+</ResponseField>
+
 

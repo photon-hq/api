@@ -1,0 +1,221 @@
+---
+title: "Change an organization member's role across all projects"
+icon: pencil
+description: "Change an organization member's role across all projects: updateOrganizationMemberRole in the TypeScript, Python, Rust and Go clients."
+---
+
+`PATCH /v1/organizations/{organizationId}/members/{memberAccountId}`
+
+
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.updateOrganizationMemberRole(input: UpdateOrganizationMemberRoleInput, options?: RequestOptions): Promise<UpdateOrganizationMemberRoleOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.update_organization_member_role(input: UpdateOrganizationMemberRoleInput) -> models.UpdateOrganizationMemberRoleResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.update_organization_member_role(idempotency_key: String, organization_id: String, member_account_id: String, body: &types::UpdateOrganizationMemberRoleRequest).await -> Result<ResponseValue<types::UpdateOrganizationMemberRoleResponse>, Error<UpdateOrganizationMemberRoleError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.UpdateOrganizationMemberRole(ctx context.Context, params *UpdateOrganizationMemberRoleParams, opts ...RequestOption) (*UpdateOrganizationMemberRoleResponse, error)
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.updateOrganizationMemberRole({
+  path: {
+    organizationId: "organizationId",
+    memberAccountId: "memberAccountId",
+  },
+  headers: {
+    idempotencyKey: "idempotencyKey",
+  },
+  body: {
+    expectedVersion: "expectedVersion",
+    role: "admin",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import UpdateOrganizationMemberRoleInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.update_organization_member_role(
+    UpdateOrganizationMemberRoleInput.model_validate({
+        "path": {
+            "organizationId": "organizationId",
+            "memberAccountId": "memberAccountId",
+        },
+        "headers": {
+            "Idempotency-Key": "idempotencyKey",
+        },
+        "body": {
+            "expectedVersion": "expectedVersion",
+            "role": "admin",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .update_organization_member_role(
+        "idempotencyKey".to_owned(),
+        "organizationId".to_owned(),
+        "memberAccountId".to_owned(),
+        &serde_json::from_value(serde_json::json!({
+            "expectedVersion": "expectedVersion",
+            "role": "admin",
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.UpdateOrganizationMemberRoleRequest
+if err := json.Unmarshal([]byte(`{
+	"expectedVersion": "expectedVersion",
+	"role": "admin"
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Organizations.UpdateOrganizationMemberRole(ctx, &photonapi.UpdateOrganizationMemberRoleParams{
+	IdempotencyKey: "idempotencyKey",
+	OrganizationID: "organizationId",
+	MemberAccountID: "memberAccountId",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "accountId": "string",
+  "createdAt": "2026-01-01T00:00:00Z",
+  "joinedVia": "creation",
+  "organizationId": "string",
+  "removedAt": null,
+  "role": "owner",
+  "roleManagedAt": null,
+  "status": "active",
+  "updatedAt": "2026-01-01T00:00:00Z",
+  "version": "string"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField header="Idempotency-Key" type={"string"} required>
+Identifies one logical mutation across retries.
+</ParamField>
+
+<ParamField path="organizationId" type={"string"} required>
+
+</ParamField>
+
+<ParamField path="memberAccountId" type={"string"} required>
+
+</ParamField>
+
+
+## Body
+
+<ParamField body="expectedVersion" type={"string"} required>
+
+</ParamField>
+
+<ParamField body="role" type={"UpdateOrganizationMemberRoleRequestRole"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** Committed membership result; refresh the member list for current state. UpdateOrganizationMemberRoleResponse
+
+<ResponseField name="accountId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="joinedVia" type={"OrganizationMemberJoinedVia"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="removedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="role" type={"OrganizationMemberRole"} required>
+
+</ResponseField>
+
+<ResponseField name="roleManagedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"OrganizationMemberStatus"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="version" type={"string"} required>
+
+</ResponseField>
+

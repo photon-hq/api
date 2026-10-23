@@ -70,13 +70,6 @@ photon.organizations.billing.createOrganizationPaymentMethodCheckout(input: Crea
 ```
 `POST /v1/organizations/{organizationId}/billing/checkout`
 
-**[Create card setup intent](/api-client/sdk/organizations/billing/create-organization-setup-intent)**
-
-```typescript TypeScript
-photon.organizations.billing.createOrganizationSetupIntent(input: CreateOrganizationSetupIntentInput, options?: RequestOptions): Promise<CreateOrganizationSetupIntentOutput>
-```
-`POST /v1/organizations/{organizationId}/billing/setup-intent`
-
 **[Preview an organization billing change](/api-client/sdk/organizations/billing/preview-organization-change)**
 
 ```typescript TypeScript
@@ -155,13 +148,6 @@ photon.organizations.billing.change_plan(input: ChangePlanInput) -> models.Termi
 photon.organizations.billing.create_organization_payment_method_checkout(input: CreateOrganizationPaymentMethodCheckoutInput) -> models.CreateOrganizationPaymentMethodCheckoutResponse
 ```
 `POST /v1/organizations/{organizationId}/billing/checkout`
-
-**[Create card setup intent](/api-client/sdk/organizations/billing/create-organization-setup-intent)**
-
-```python Python
-photon.organizations.billing.create_organization_setup_intent(input: CreateOrganizationSetupIntentInput) -> models.CreateOrganizationSetupIntentResponse
-```
-`POST /v1/organizations/{organizationId}/billing/setup-intent`
 
 **[Preview an organization billing change](/api-client/sdk/organizations/billing/preview-organization-change)**
 
@@ -242,13 +228,6 @@ client.create_organization_payment_method_checkout(organization_id: String, para
 ```
 `POST /v1/organizations/{organizationId}/billing/checkout`
 
-**[Create card setup intent](/api-client/sdk/organizations/billing/create-organization-setup-intent)**
-
-```rust Rust
-client.create_organization_setup_intent(idempotency_key: String, organization_id: String).await -> Result<ResponseValue<types::CreateOrganizationSetupIntentResponse>, Error<CreateOrganizationSetupIntentError>>
-```
-`POST /v1/organizations/{organizationId}/billing/setup-intent`
-
 **[Preview an organization billing change](/api-client/sdk/organizations/billing/preview-organization-change)**
 
 ```rust Rust
@@ -327,13 +306,6 @@ client.Organizations.Billing.ChangePlan(ctx context.Context, params *ChangePlanP
 client.Organizations.Billing.CreateOrganizationPaymentMethodCheckout(ctx context.Context, params *CreateOrganizationPaymentMethodCheckoutParams, opts ...RequestOption) (*CreateOrganizationPaymentMethodCheckoutResponse, error)
 ```
 `POST /v1/organizations/{organizationId}/billing/checkout`
-
-**[Create card setup intent](/api-client/sdk/organizations/billing/create-organization-setup-intent)**
-
-```go Go
-client.Organizations.Billing.CreateOrganizationSetupIntent(ctx context.Context, params *CreateOrganizationSetupIntentParams, opts ...RequestOption) (*CreateOrganizationSetupIntentResponse, error)
-```
-`POST /v1/organizations/{organizationId}/billing/setup-intent`
 
 **[Preview an organization billing change](/api-client/sdk/organizations/billing/preview-organization-change)**
 
@@ -463,6 +435,10 @@ The IANA time zone the payer is billed in, e.g. America/Los_Angeles. Billing per
 Stable handle for this provisioning action.
 </ResponseField>
 
+<ResponseField name="paymentAction" type={"null"} required>
+
+</ResponseField>
+
 <ResponseField name="resolvedAt" type={"string | null"} required>
 
 </ResponseField>
@@ -491,6 +467,10 @@ Terminal. The result is authoritative.
 
 <ResponseField name="operationId" type={"string"} required>
 Stable handle for this provisioning action.
+</ResponseField>
+
+<ResponseField name="paymentAction" type={"null"} required>
+
 </ResponseField>
 
 <ResponseField name="resolvedAt" type={"string | null"} required>
@@ -526,6 +506,10 @@ Terminal. Failure contains a stable code and retryability.
 Stable handle for this provisioning action.
 </ResponseField>
 
+<ResponseField name="paymentAction" type={"BillingPaymentAction | null"} required>
+Set while a payment the operation waits for needs the customer's authentication. Completing it within the payment window completes the operation.
+</ResponseField>
+
 <ResponseField name="resolvedAt" type={"null"} required>
 
 </ResponseField>
@@ -549,19 +533,6 @@ Accepted and still executing. Poll the operation route.
 
 <ResponseField name="checkoutUrl" type={"string (uri)"} required>
 Hosted Stripe page; send the user here.
-</ResponseField>
-
-
-### CreateOrganizationSetupIntentResponse
-
-
-
-<ResponseField name="clientSecret" type={"string"} required>
-Stripe SetupIntent client secret.
-</ResponseField>
-
-<ResponseField name="publishableKey" type={"string"} required>
-Publishable key for the Stripe account backing billing.
 </ResponseField>
 
 

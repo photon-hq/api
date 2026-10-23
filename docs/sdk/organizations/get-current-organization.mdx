@@ -1,0 +1,132 @@
+---
+title: "Read the credential's organization"
+icon: arrow-down-left
+description: "Read the credential's organization: getCurrentOrganization in the TypeScript, Python, Rust and Go clients."
+---
+
+`GET /v1/organizations/current`
+
+Reads the organization the credential is bound to: the organization an OAuth grant was consented for, or a Service Identity's own organization. Use it to discover which organization an integration acts for, and pass its organizationId to organization-scoped operations.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.getCurrentOrganization(input?: GetCurrentOrganizationInput, options?: RequestOptions): Promise<GetCurrentOrganizationOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.get_current_organization(input: GetCurrentOrganizationInput | None = None) -> models.GetCurrentOrganizationResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.get_current_organization().await -> Result<ResponseValue<types::GetCurrentOrganizationResponse>, Error<GetCurrentOrganizationError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.GetCurrentOrganization(ctx context.Context, opts ...RequestOption) (*GetCurrentOrganizationResponse, error)
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.getCurrentOrganization();
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.get_current_organization()
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("serviceIdentityBearer", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .get_current_organization()
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Organizations.GetCurrentOrganization(ctx)
+if err != nil {
+	return err
+}
+_ = result
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "avatarUrl": null,
+  "billingInitialization": "pending",
+  "createdAt": "2026-01-01T00:00:00Z",
+  "name": "string",
+  "organizationId": "string",
+  "updatedAt": "2026-01-01T00:00:00Z",
+  "version": "string"
+}
+```
+
+</ResponseExample>
+
+## Returns
+
+**`200`** The credential's organization presentation. GetCurrentOrganizationResponse
+
+<ResponseField name="avatarUrl" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="billingInitialization" type={"OrganizationBillingInitialization"}>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="name" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="version" type={"string"} required>
+
+</ResponseField>
+

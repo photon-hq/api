@@ -137,6 +137,7 @@ _ = result
   "failure": null,
   "kind": "change_plan",
   "operationId": "string",
+  "paymentAction": null,
   "resolvedAt": null,
   "result": {
     "effectiveAt": null,
@@ -153,6 +154,7 @@ _ = result
   "failure": null,
   "kind": "change_plan",
   "operationId": "string",
+  "paymentAction": null,
   "resolvedAt": null,
   "result": null,
   "status": "pending",
@@ -206,6 +208,10 @@ Plan to subscribe to, e.g. analytics_pro.
 Stable handle for this provisioning action.
 </ResponseField>
 
+<ResponseField name="paymentAction" type={"null"} required>
+
+</ResponseField>
+
 <ResponseField name="resolvedAt" type={"string | null"} required>
 
 </ResponseField>
@@ -234,6 +240,10 @@ Terminal. The result is authoritative.
 
 <ResponseField name="operationId" type={"string"} required>
 Stable handle for this provisioning action.
+</ResponseField>
+
+<ResponseField name="paymentAction" type={"null"} required>
+
 </ResponseField>
 
 <ResponseField name="resolvedAt" type={"string | null"} required>
@@ -266,6 +276,10 @@ Headers: `Location`. The raw response carries these headers; see [Raw responses]
 
 <ResponseField name="operationId" type={"string"} required>
 Stable handle for this provisioning action.
+</ResponseField>
+
+<ResponseField name="paymentAction" type={"BillingPaymentAction | null"} required>
+Set while a payment the operation waits for needs the customer's authentication. Completing it within the payment window completes the operation.
 </ResponseField>
 
 <ResponseField name="resolvedAt" type={"null"} required>

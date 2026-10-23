@@ -8,6 +8,578 @@ import (
 	"io"
 )
 
+// AcceptOrganizationInvitationParams holds the parameters of AcceptOrganizationInvitation.
+type AcceptOrganizationInvitationParams struct {
+	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
+	IdempotencyKey string
+	// Body is the request body.
+	Body AcceptOrganizationInvitationRequest
+}
+
+// CancelSsoSubscriptionParams holds the parameters of CancelSsoSubscription.
+type CancelSsoSubscriptionParams struct {
+	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
+	IdempotencyKey string
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+}
+
+// CheckOrganizationDeletionParams holds the parameters of CheckOrganizationDeletion.
+type CheckOrganizationDeletionParams struct {
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+}
+
+// CloseOrganizationParams holds the parameters of CloseOrganization.
+type CloseOrganizationParams struct {
+	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
+	IdempotencyKey string
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// Body is the request body.
+	Body CloseOrganizationRequest
+}
+
+// CommitOrganizationAvatarParams holds the parameters of CommitOrganizationAvatar.
+type CommitOrganizationAvatarParams struct {
+	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
+	IdempotencyKey string
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// Body is the request body.
+	Body CommitOrganizationAvatarRequest
+}
+
+// CreateOrganizationParams holds the parameters of CreateOrganization.
+type CreateOrganizationParams struct {
+	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
+	IdempotencyKey string
+	// Body is the request body.
+	Body CreateOrganizationRequest
+}
+
+// CreateOrganizationAvatarUploadParams holds the parameters of CreateOrganizationAvatarUpload.
+type CreateOrganizationAvatarUploadParams struct {
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// Body is the request body.
+	Body CreateOrganizationAvatarUploadRequest
+}
+
+// CreateOrganizationInvitationParams holds the parameters of CreateOrganizationInvitation.
+type CreateOrganizationInvitationParams struct {
+	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
+	IdempotencyKey string
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// Body is the request body.
+	Body CreateOrganizationInvitationRequest
+}
+
+// CreateOrganizationOauthClientParams holds the parameters of CreateOrganizationOauthClient.
+type CreateOrganizationOauthClientParams struct {
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// IdempotencyKey is the header parameter idempotency-key. Generated when empty.
+	IdempotencyKey string
+	// Body is the request body.
+	Body CreateOrganizationOauthClientRequest
+}
+
+// CreateServiceIdentityParams holds the parameters of CreateServiceIdentity.
+type CreateServiceIdentityParams struct {
+	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
+	IdempotencyKey string
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// Body is the request body.
+	Body CreateServiceIdentityRequest
+}
+
+// CreateServiceIdentityApiKeyParams holds the parameters of CreateServiceIdentityApiKey.
+type CreateServiceIdentityApiKeyParams struct {
+	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
+	IdempotencyKey string
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// ServiceIdentityID is the path parameter serviceIdentityId.
+	ServiceIdentityID string
+	// Body is the request body.
+	Body CreateServiceIdentityApiKeyRequest
+}
+
+// CreateServiceIdentityClientSecretParams holds the parameters of CreateServiceIdentityClientSecret.
+type CreateServiceIdentityClientSecretParams struct {
+	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
+	IdempotencyKey string
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// ServiceIdentityID is the path parameter serviceIdentityId.
+	ServiceIdentityID string
+	// Body is the request body.
+	Body CreateServiceIdentityClientSecretRequest
+}
+
+// DeleteOrganizationOauthClientParams holds the parameters of DeleteOrganizationOauthClient.
+type DeleteOrganizationOauthClientParams struct {
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// ClientID is the path parameter clientId.
+	ClientID string
+}
+
+// DeleteOrganizationOauthClientSecretParams holds the parameters of DeleteOrganizationOauthClientSecret.
+type DeleteOrganizationOauthClientSecretParams struct {
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// ClientID is the path parameter clientId.
+	ClientID string
+}
+
+// EnsureInitialOrganizationParams holds the parameters of EnsureInitialOrganization.
+type EnsureInitialOrganizationParams struct {
+	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
+	IdempotencyKey string
+}
+
+// GetOrganizationParams holds the parameters of GetOrganization.
+type GetOrganizationParams struct {
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+}
+
+// GetOrganizationOauthClientParams holds the parameters of GetOrganizationOauthClient.
+type GetOrganizationOauthClientParams struct {
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// ClientID is the path parameter clientId.
+	ClientID string
+}
+
+// GetOrganizationOauthClientSecretParams holds the parameters of GetOrganizationOauthClientSecret.
+type GetOrganizationOauthClientSecretParams struct {
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// ClientID is the path parameter clientId.
+	ClientID string
+}
+
+// GetServiceIdentityParams holds the parameters of GetServiceIdentity.
+type GetServiceIdentityParams struct {
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// ServiceIdentityID is the path parameter serviceIdentityId.
+	ServiceIdentityID string
+}
+
+// GetSsoSubscriptionParams holds the parameters of GetSsoSubscription.
+type GetSsoSubscriptionParams struct {
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+}
+
+// LeaveOrganizationParams holds the parameters of LeaveOrganization.
+type LeaveOrganizationParams struct {
+	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
+	IdempotencyKey string
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// Body is the request body.
+	Body LeaveOrganizationRequest
+}
+
+// ListOrganizationInvitationsParams holds the parameters of ListOrganizationInvitations.
+type ListOrganizationInvitationsParams struct {
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+}
+
+// ListOrganizationMembersParams holds the parameters of ListOrganizationMembers.
+type ListOrganizationMembersParams struct {
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+}
+
+// ListOrganizationOauthClientsParams holds the parameters of ListOrganizationOauthClients.
+type ListOrganizationOauthClientsParams struct {
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+}
+
+// ListServiceIdentitiesParams holds the parameters of ListServiceIdentities.
+type ListServiceIdentitiesParams struct {
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+}
+
+// ListServiceIdentityCredentialsParams holds the parameters of ListServiceIdentityCredentials.
+type ListServiceIdentityCredentialsParams struct {
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// ServiceIdentityID is the path parameter serviceIdentityId.
+	ServiceIdentityID string
+}
+
+// ListServiceIdentityPermissionsParams holds the parameters of ListServiceIdentityPermissions.
+type ListServiceIdentityPermissionsParams struct {
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+}
+
+// PreviewOrganizationInvitationParams holds the parameters of PreviewOrganizationInvitation.
+type PreviewOrganizationInvitationParams struct {
+	// Body is the request body.
+	Body PreviewOrganizationInvitationRequest
+}
+
+// RemoveOrganizationAvatarParams holds the parameters of RemoveOrganizationAvatar.
+type RemoveOrganizationAvatarParams struct {
+	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
+	IdempotencyKey string
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// Body is the request body.
+	Body RemoveOrganizationAvatarRequest
+}
+
+// RemoveOrganizationMemberParams holds the parameters of RemoveOrganizationMember.
+type RemoveOrganizationMemberParams struct {
+	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
+	IdempotencyKey string
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// MemberAccountID is the path parameter memberAccountId.
+	MemberAccountID string
+	// Body is the request body.
+	Body RemoveOrganizationMemberRequest
+}
+
+// ResendOrganizationInvitationParams holds the parameters of ResendOrganizationInvitation.
+type ResendOrganizationInvitationParams struct {
+	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
+	IdempotencyKey string
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// InvitationID is the path parameter invitationId.
+	InvitationID string
+}
+
+// RevokeOrganizationInvitationParams holds the parameters of RevokeOrganizationInvitation.
+type RevokeOrganizationInvitationParams struct {
+	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
+	IdempotencyKey string
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// InvitationID is the path parameter invitationId.
+	InvitationID string
+}
+
+// RevokeServiceIdentityCredentialParams holds the parameters of RevokeServiceIdentityCredential.
+type RevokeServiceIdentityCredentialParams struct {
+	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
+	IdempotencyKey string
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// ServiceIdentityID is the path parameter serviceIdentityId.
+	ServiceIdentityID string
+	// CredentialID is the path parameter credentialId.
+	CredentialID string
+	// Body is the request body.
+	Body RevokeServiceIdentityCredentialRequest
+}
+
+// RotateOrganizationOauthClientSecretParams holds the parameters of RotateOrganizationOauthClientSecret.
+type RotateOrganizationOauthClientSecretParams struct {
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// ClientID is the path parameter clientId.
+	ClientID string
+	// IdempotencyKey is the header parameter idempotency-key. Generated when empty.
+	IdempotencyKey string
+	// Body is the request body.
+	Body RotateOrganizationOauthClientSecretRequest
+}
+
+// SetupOrganizationOauthClientSecretResult is the body of SetupOrganizationOauthClientSecret: one schema per success status.
+type SetupOrganizationOauthClientSecretResult struct {
+	Union
+	status int
+}
+
+// Status returns the HTTP status that produced this body, or 0 when the
+// value was not decoded from a response.
+func (u SetupOrganizationOauthClientSecretResult) Status() int { return u.status }
+
+func (u *SetupOrganizationOauthClientSecretResult) setStatus(code int) { u.status = code }
+
+// AsSetupOrganizationOauthClientSecretResponse decodes the value as SetupOrganizationOauthClientSecretResponse, the body of status 200.
+func (u SetupOrganizationOauthClientSecretResult) AsSetupOrganizationOauthClientSecretResponse() (SetupOrganizationOauthClientSecretResponse, error) {
+	if u.status != 0 && u.status != 200 {
+		var zero SetupOrganizationOauthClientSecretResponse
+		return zero, fmt.Errorf("photonapi: the status %d body is not SetupOrganizationOauthClientSecretResponse (status 200)", u.status)
+	}
+	return UnionAs[SetupOrganizationOauthClientSecretResponse](u.Union)
+}
+
+// AsSetupOrganizationOauthClientSecretCreatedResponse decodes the value as SetupOrganizationOauthClientSecretCreatedResponse, the body of status 201.
+func (u SetupOrganizationOauthClientSecretResult) AsSetupOrganizationOauthClientSecretCreatedResponse() (SetupOrganizationOauthClientSecretCreatedResponse, error) {
+	if u.status != 0 && u.status != 201 {
+		var zero SetupOrganizationOauthClientSecretCreatedResponse
+		return zero, fmt.Errorf("photonapi: the status %d body is not SetupOrganizationOauthClientSecretCreatedResponse (status 201)", u.status)
+	}
+	return UnionAs[SetupOrganizationOauthClientSecretCreatedResponse](u.Union)
+}
+
+// SetupOrganizationOauthClientSecretParams holds the parameters of SetupOrganizationOauthClientSecret.
+type SetupOrganizationOauthClientSecretParams struct {
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// ClientID is the path parameter clientId.
+	ClientID string
+	// IdempotencyKey is the header parameter idempotency-key. Generated when empty.
+	IdempotencyKey string
+}
+
+// SubscribeSsoParams holds the parameters of SubscribeSso.
+type SubscribeSsoParams struct {
+	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
+	IdempotencyKey string
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// Body is the request body.
+	Body SubscribeSsoRequest
+}
+
+// TransferOrganizationOwnershipParams holds the parameters of TransferOrganizationOwnership.
+type TransferOrganizationOwnershipParams struct {
+	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
+	IdempotencyKey string
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// Body is the request body.
+	Body TransferOrganizationOwnershipRequest
+}
+
+// UpdateOrganizationParams holds the parameters of UpdateOrganization.
+type UpdateOrganizationParams struct {
+	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
+	IdempotencyKey string
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// Body is the request body.
+	Body UpdateOrganizationRequest
+}
+
+// UpdateOrganizationMemberRoleParams holds the parameters of UpdateOrganizationMemberRole.
+type UpdateOrganizationMemberRoleParams struct {
+	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
+	IdempotencyKey string
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// MemberAccountID is the path parameter memberAccountId.
+	MemberAccountID string
+	// Body is the request body.
+	Body UpdateOrganizationMemberRoleRequest
+}
+
+// UpdateOrganizationOauthClientParams holds the parameters of UpdateOrganizationOauthClient.
+type UpdateOrganizationOauthClientParams struct {
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// ClientID is the path parameter clientId.
+	ClientID string
+	// IfMatch is the header parameter if-match.
+	IfMatch string
+	// Body is the request body.
+	Body UpdateOrganizationOauthClientRequest
+}
+
+// UpdateServiceIdentityParams holds the parameters of UpdateServiceIdentity.
+type UpdateServiceIdentityParams struct {
+	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
+	IdempotencyKey string
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// ServiceIdentityID is the path parameter serviceIdentityId.
+	ServiceIdentityID string
+	// Body is the request body.
+	Body UpdateServiceIdentityRequest
+}
+
+// ChangePlanResponse is the body of ChangePlan: one schema per success status.
+type ChangePlanResponse struct {
+	Union
+	status int
+}
+
+// Status returns the HTTP status that produced this body, or 0 when the
+// value was not decoded from a response.
+func (u ChangePlanResponse) Status() int { return u.status }
+
+func (u *ChangePlanResponse) setStatus(code int) { u.status = code }
+
+// AsTerminalBillingOperation decodes the value as TerminalBillingOperation, the body of status 200.
+func (u ChangePlanResponse) AsTerminalBillingOperation() (TerminalBillingOperation, error) {
+	if u.status != 0 && u.status != 200 {
+		var zero TerminalBillingOperation
+		return zero, fmt.Errorf("photonapi: the status %d body is not TerminalBillingOperation (status 200)", u.status)
+	}
+	return UnionAs[TerminalBillingOperation](u.Union)
+}
+
+// AsPendingBillingOperation decodes the value as PendingBillingOperation, the body of status 202.
+func (u ChangePlanResponse) AsPendingBillingOperation() (PendingBillingOperation, error) {
+	if u.status != 0 && u.status != 202 {
+		var zero PendingBillingOperation
+		return zero, fmt.Errorf("photonapi: the status %d body is not PendingBillingOperation (status 202)", u.status)
+	}
+	return UnionAs[PendingBillingOperation](u.Union)
+}
+
+// ChangePlanParams holds the parameters of ChangePlan.
+type ChangePlanParams struct {
+	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
+	IdempotencyKey string
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// ProjectID is the path parameter projectId.
+	ProjectID string
+	// Body is the request body.
+	Body ChangePlanRequest
+}
+
+// CreateOrganizationPaymentMethodCheckoutParams holds the parameters of CreateOrganizationPaymentMethodCheckout.
+type CreateOrganizationPaymentMethodCheckoutParams struct {
+	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
+	IdempotencyKey *string
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+}
+
+// GetEffectiveTermsParams holds the parameters of GetEffectiveTerms.
+type GetEffectiveTermsParams struct {
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// ProjectID is the path parameter projectId.
+	ProjectID string
+}
+
+// GetOrganizationBillingOverviewParams holds the parameters of GetOrganizationBillingOverview.
+type GetOrganizationBillingOverviewParams struct {
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+}
+
+// GetOrganizationCreditParams holds the parameters of GetOrganizationCredit.
+type GetOrganizationCreditParams struct {
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+}
+
+// GetOrganizationPaymentMethodParams holds the parameters of GetOrganizationPaymentMethod.
+type GetOrganizationPaymentMethodParams struct {
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+}
+
+// GetOrganizationTermsParams holds the parameters of GetOrganizationTerms.
+type GetOrganizationTermsParams struct {
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+}
+
+// ListCreditActivityParams holds the parameters of ListCreditActivity.
+type ListCreditActivityParams struct {
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// Page is the query parameter page.
+	Page *int64
+}
+
+// ListInvoicesParams holds the parameters of ListInvoices.
+type ListInvoicesParams struct {
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// Cursor is the query parameter cursor.
+	Cursor *string
+	// Limit is the query parameter limit.
+	Limit *int64
+	// Subject is the query parameter subject.
+	Subject *ListInvoicesSubjectParam
+}
+
+// PreviewOrganizationChangeParams holds the parameters of PreviewOrganizationChange.
+type PreviewOrganizationChangeParams struct {
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// Body is the request body.
+	Body PreviewOrganizationChangeRequest
+}
+
+// PreviewProjectChangeParams holds the parameters of PreviewProjectChange.
+type PreviewProjectChangeParams struct {
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// ProjectID is the path parameter projectId.
+	ProjectID string
+	// Body is the request body.
+	Body PreviewProjectChangeRequest
+}
+
+// CheckProjectSlugAvailabilityParams holds the parameters of CheckProjectSlugAvailability.
+type CheckProjectSlugAvailabilityParams struct {
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// Slug is the query parameter slug.
+	Slug string
+}
+
+// CountProjectsParams holds the parameters of Count.
+type CountProjectsParams struct {
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// CreatedAfter is the query parameter createdAfter.
+	CreatedAfter *string
+	// CreatedBefore is the query parameter createdBefore.
+	CreatedBefore *string
+	// Query is the query parameter query.
+	Query *string
+}
+
+// CreateProjectParams holds the parameters of Create.
+type CreateProjectParams struct {
+	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
+	IdempotencyKey string
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// Body is the request body.
+	Body CreateProjectRequest
+}
+
+// GetProjectClosureStatusParams holds the parameters of GetProjectClosureStatus.
+type GetProjectClosureStatusParams struct {
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// ProjectID is the query parameter projectId.
+	ProjectID string
+}
+
+// ListProjectsParams holds the parameters of List.
+type ListProjectsParams struct {
+	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+	// CreatedAfter is the query parameter createdAfter.
+	CreatedAfter *string
+	// CreatedBefore is the query parameter createdBefore.
+	CreatedBefore *string
+	// Query is the query parameter query.
+	Query *string
+	// PageSize is the query parameter pageSize.
+	PageSize *int64
+	// PageToken is the query parameter pageToken.
+	PageToken *string
+}
+
 // CountMessagesParams holds the parameters of CountMessages.
 type CountMessagesParams struct {
 	// ID is the path parameter id.
@@ -590,16 +1162,6 @@ type ConnectTelegramBotParams struct {
 	Body ConnectTelegramBotRequest
 }
 
-// ConnectWhatsappBusinessParams holds the parameters of ConnectWhatsappBusiness.
-type ConnectWhatsappBusinessParams struct {
-	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
-	IdempotencyKey string
-	// ID is the path parameter id.
-	ID string
-	// Body is the request body.
-	Body ConnectWhatsappBusinessRequest
-}
-
 // CountFilteredVerificationCodesParams holds the parameters of CountFilteredVerificationCodes.
 type CountFilteredVerificationCodesParams struct {
 	// ID is the path parameter id.
@@ -794,12 +1356,6 @@ type GetWhatsappBusinessVerificationCodeParams struct {
 type GetWhatsappSharedLineAssignmentParams struct {
 	// AssignmentID is the path parameter assignmentId.
 	AssignmentID string
-	// ID is the path parameter id.
-	ID string
-}
-
-// GetWhatsappSignupConfigParams holds the parameters of GetWhatsappSignupConfig.
-type GetWhatsappSignupConfigParams struct {
 	// ID is the path parameter id.
 	ID string
 }
@@ -1178,36 +1734,78 @@ type ListProjectSubscriptionsParams struct {
 	ProjectID string
 }
 
-// BeginInvitationSsoParams holds the parameters of BeginInvitationSso.
-type BeginInvitationSsoParams struct {
-	// OrgID is the path parameter orgId.
-	OrgID string
+// CommitAccountProfilePictureParams holds the parameters of CommitProfilePicture.
+type CommitAccountProfilePictureParams struct {
+	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
+	IdempotencyKey string
 	// Body is the request body.
-	Body BeginInvitationSsoRequest
+	Body CommitAccountProfilePictureRequest
 }
 
-// BeginOrganizationAuthenticationParams holds the parameters of BeginOrganizationAuthentication.
-type BeginOrganizationAuthenticationParams struct {
-	// OrgID is the path parameter orgId.
-	OrgID string
+// CreateAccountProfilePictureUploadParams holds the parameters of CreateProfilePictureUpload.
+type CreateAccountProfilePictureUploadParams struct {
 	// Body is the request body.
-	Body OrganizationAuthenticationRequest
+	Body ProfilePictureUploadRequest
 }
 
-// BeginOrganizationClosureAuthenticationParams holds the parameters of BeginOrganizationClosureAuthentication.
-type BeginOrganizationClosureAuthenticationParams struct {
-	// OrgID is the path parameter orgId.
-	OrgID string
+// CreateAccountServiceKeyParams holds the parameters of CreateAccountServiceKey.
+type CreateAccountServiceKeyParams struct {
+	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
+	IdempotencyKey string
 	// Body is the request body.
-	Body OrganizationAuthenticationRequest
+	Body CreateAccountServiceKeyRequest
 }
 
-// BeginOrganizationSsoAdmissionParams holds the parameters of BeginOrganizationSsoAdmission.
-type BeginOrganizationSsoAdmissionParams struct {
-	// OrgID is the path parameter orgId.
-	OrgID string
+// ListAuthorizedApplicationsParams holds the parameters of ListAuthorizedApplications.
+type ListAuthorizedApplicationsParams struct {
+	// After is the query parameter after.
+	After *string
+	// Before is the query parameter before.
+	Before *string
+	// Limit is the query parameter limit.
+	Limit *int64
+	// Order is the query parameter order.
+	Order *ListAuthorizedApplicationsOrder
+}
+
+// ResetAccountProfilePictureParams holds the parameters of ResetProfilePicture.
+type ResetAccountProfilePictureParams struct {
+	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
+	IdempotencyKey string
+}
+
+// RevokeAccountServiceKeyParams holds the parameters of RevokeAccountServiceKey.
+type RevokeAccountServiceKeyParams struct {
+	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
+	IdempotencyKey string
+	// ServiceKeyID is the path parameter serviceKeyId.
+	ServiceKeyID string
+}
+
+// RevokeAuthorizedApplicationParams holds the parameters of RevokeAuthorizedApplication.
+type RevokeAuthorizedApplicationParams struct {
+	// ApplicationID is the path parameter applicationId.
+	ApplicationID string
+}
+
+// UpdateAccountParams holds the parameters of Update.
+type UpdateAccountParams struct {
+	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
+	IdempotencyKey string
 	// Body is the request body.
-	Body OrganizationAuthenticationRequest
+	Body UpdateAccountRequest
+}
+
+// CreateAppInstallationRequestParams holds the parameters of CreateAppInstallationRequest.
+type CreateAppInstallationRequestParams struct {
+	// Body is the request body.
+	Body CreateAppInstallationRequestRequest
+}
+
+// RedeemAppInstallationDeliveryParams holds the parameters of RedeemAppInstallationDelivery.
+type RedeemAppInstallationDeliveryParams struct {
+	// Body is the request body.
+	Body RedeemAppInstallationDeliveryRequest
 }
 
 // CreateOrganizationSsoPortalLinkParams holds the parameters of CreateOrganizationSsoPortalLink.
@@ -1272,300 +1870,1054 @@ type DeviceTokenParams struct {
 	Body DeviceTokenRequest
 }
 
-// ChangePlanResponse is the body of ChangePlan: one schema per success status.
-type ChangePlanResponse struct {
-	Union
-	status int
-}
-
-// Status returns the HTTP status that produced this body, or 0 when the
-// value was not decoded from a response.
-func (u ChangePlanResponse) Status() int { return u.status }
-
-func (u *ChangePlanResponse) setStatus(code int) { u.status = code }
-
-// AsTerminalBillingOperation decodes the value as TerminalBillingOperation, the body of status 200.
-func (u ChangePlanResponse) AsTerminalBillingOperation() (TerminalBillingOperation, error) {
-	if u.status != 0 && u.status != 200 {
-		var zero TerminalBillingOperation
-		return zero, fmt.Errorf("photonapi: the status %d body is not TerminalBillingOperation (status 200)", u.status)
-	}
-	return UnionAs[TerminalBillingOperation](u.Union)
-}
-
-// AsPendingBillingOperation decodes the value as PendingBillingOperation, the body of status 202.
-func (u ChangePlanResponse) AsPendingBillingOperation() (PendingBillingOperation, error) {
-	if u.status != 0 && u.status != 202 {
-		var zero PendingBillingOperation
-		return zero, fmt.Errorf("photonapi: the status %d body is not PendingBillingOperation (status 202)", u.status)
-	}
-	return UnionAs[PendingBillingOperation](u.Union)
-}
-
-// ChangePlanParams holds the parameters of ChangePlan.
-type ChangePlanParams struct {
-	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
-	IdempotencyKey string
-	// OrganizationID is the path parameter organizationId.
-	OrganizationID string
-	// ProjectID is the path parameter projectId.
-	ProjectID string
-	// Body is the request body.
-	Body ChangePlanRequest
-}
-
-// CreateOrganizationPaymentMethodCheckoutParams holds the parameters of CreateOrganizationPaymentMethodCheckout.
-type CreateOrganizationPaymentMethodCheckoutParams struct {
-	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
-	IdempotencyKey *string
-	// OrganizationID is the path parameter organizationId.
-	OrganizationID string
-}
-
-// CreateOrganizationSetupIntentParams holds the parameters of CreateOrganizationSetupIntent.
-type CreateOrganizationSetupIntentParams struct {
-	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
-	IdempotencyKey string
-	// OrganizationID is the path parameter organizationId.
-	OrganizationID string
-}
-
-// GetEffectiveTermsParams holds the parameters of GetEffectiveTerms.
-type GetEffectiveTermsParams struct {
-	// OrganizationID is the path parameter organizationId.
-	OrganizationID string
-	// ProjectID is the path parameter projectId.
-	ProjectID string
-}
-
-// GetOrganizationBillingOverviewParams holds the parameters of GetOrganizationBillingOverview.
-type GetOrganizationBillingOverviewParams struct {
-	// OrganizationID is the path parameter organizationId.
-	OrganizationID string
-}
-
-// GetOrganizationCreditParams holds the parameters of GetOrganizationCredit.
-type GetOrganizationCreditParams struct {
-	// OrganizationID is the path parameter organizationId.
-	OrganizationID string
-}
-
-// GetOrganizationPaymentMethodParams holds the parameters of GetOrganizationPaymentMethod.
-type GetOrganizationPaymentMethodParams struct {
-	// OrganizationID is the path parameter organizationId.
-	OrganizationID string
-}
-
-// GetOrganizationTermsParams holds the parameters of GetOrganizationTerms.
-type GetOrganizationTermsParams struct {
-	// OrganizationID is the path parameter organizationId.
-	OrganizationID string
-}
-
-// ListCreditActivityParams holds the parameters of ListCreditActivity.
-type ListCreditActivityParams struct {
-	// OrganizationID is the path parameter organizationId.
-	OrganizationID string
-	// Page is the query parameter page.
-	Page *int64
-}
-
-// ListInvoicesParams holds the parameters of ListInvoices.
-type ListInvoicesParams struct {
-	// OrganizationID is the path parameter organizationId.
-	OrganizationID string
-	// Cursor is the query parameter cursor.
-	Cursor *string
-	// Limit is the query parameter limit.
-	Limit *int64
-	// Subject is the query parameter subject.
-	Subject *ListInvoicesSubjectParam
-}
-
-// PreviewOrganizationChangeParams holds the parameters of PreviewOrganizationChange.
-type PreviewOrganizationChangeParams struct {
-	// OrganizationID is the path parameter organizationId.
-	OrganizationID string
-	// Body is the request body.
-	Body PreviewOrganizationChangeRequest
-}
-
-// PreviewProjectChangeParams holds the parameters of PreviewProjectChange.
-type PreviewProjectChangeParams struct {
-	// OrganizationID is the path parameter organizationId.
-	OrganizationID string
-	// ProjectID is the path parameter projectId.
-	ProjectID string
-	// Body is the request body.
-	Body PreviewProjectChangeRequest
-}
-
-// CheckProjectSlugAvailabilityParams holds the parameters of CheckProjectSlugAvailability.
-type CheckProjectSlugAvailabilityParams struct {
-	// OrganizationID is the path parameter organizationId.
-	OrganizationID string
-	// Slug is the query parameter slug.
-	Slug string
-}
-
-// CountProjectsParams holds the parameters of Count.
-type CountProjectsParams struct {
-	// OrganizationID is the path parameter organizationId.
-	OrganizationID string
-	// CreatedAfter is the query parameter createdAfter.
-	CreatedAfter *string
-	// CreatedBefore is the query parameter createdBefore.
-	CreatedBefore *string
-	// Query is the query parameter query.
-	Query *string
-}
-
-// CreateProjectParams holds the parameters of Create.
-type CreateProjectParams struct {
-	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
-	IdempotencyKey string
-	// OrganizationID is the path parameter organizationId.
-	OrganizationID string
-	// Body is the request body.
-	Body CreateProjectRequest
-}
-
-// GetProjectClosureStatusParams holds the parameters of GetProjectClosureStatus.
-type GetProjectClosureStatusParams struct {
-	// OrganizationID is the path parameter organizationId.
-	OrganizationID string
-	// ProjectID is the query parameter projectId.
-	ProjectID string
-}
-
-// ListProjectsParams holds the parameters of List.
-type ListProjectsParams struct {
-	// OrganizationID is the path parameter organizationId.
-	OrganizationID string
-	// CreatedAfter is the query parameter createdAfter.
-	CreatedAfter *string
-	// CreatedBefore is the query parameter createdBefore.
-	CreatedBefore *string
-	// Query is the query parameter query.
-	Query *string
-	// PageSize is the query parameter pageSize.
-	PageSize *int64
-	// PageToken is the query parameter pageToken.
-	PageToken *string
-}
-
-// CommitAccountProfilePictureParams holds the parameters of CommitProfilePicture.
-type CommitAccountProfilePictureParams struct {
-	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
-	IdempotencyKey string
-	// Body is the request body.
-	Body CommitAccountProfilePictureRequest
-}
-
-// ConfirmAccountPhoneVerificationParams holds the parameters of ConfirmPhoneVerification.
-type ConfirmAccountPhoneVerificationParams struct {
-	// Body is the request body.
-	Body ConfirmAccountPhoneVerificationRequest
-}
-
-// CreateAccountProfilePictureUploadParams holds the parameters of CreateProfilePictureUpload.
-type CreateAccountProfilePictureUploadParams struct {
-	// Body is the request body.
-	Body ProfilePictureUploadRequest
-}
-
-// CreateAccountServiceKeyParams holds the parameters of CreateAccountServiceKey.
-type CreateAccountServiceKeyParams struct {
-	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
-	IdempotencyKey string
-	// Body is the request body.
-	Body CreateAccountServiceKeyRequest
-}
-
-// ListAuthorizedApplicationsParams holds the parameters of ListAuthorizedApplications.
-type ListAuthorizedApplicationsParams struct {
-	// After is the query parameter after.
-	After *string
-	// Before is the query parameter before.
-	Before *string
-	// Limit is the query parameter limit.
-	Limit *int64
-	// Order is the query parameter order.
-	Order *ListAuthorizedApplicationsOrder
-}
-
-// ResetAccountProfilePictureParams holds the parameters of ResetProfilePicture.
-type ResetAccountProfilePictureParams struct {
-	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
-	IdempotencyKey string
-}
-
-// RevokeAccountServiceKeyParams holds the parameters of RevokeAccountServiceKey.
-type RevokeAccountServiceKeyParams struct {
-	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
-	IdempotencyKey string
-	// ServiceKeyID is the path parameter serviceKeyId.
-	ServiceKeyID string
-}
-
-// RevokeAuthorizedApplicationParams holds the parameters of RevokeAuthorizedApplication.
-type RevokeAuthorizedApplicationParams struct {
-	// ApplicationID is the path parameter applicationId.
-	ApplicationID string
-}
-
-// StartAccountPhoneVerificationParams holds the parameters of StartPhoneVerification.
-type StartAccountPhoneVerificationParams struct {
-	// Body is the request body.
-	Body StartAccountPhoneVerificationRequest
-}
-
-// UpdateAccountParams holds the parameters of Update.
-type UpdateAccountParams struct {
-	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
-	IdempotencyKey string
-	// Body is the request body.
-	Body UpdateAccountRequest
-}
-
-// UpdateAccountOnboardingParams holds the parameters of Update.
-type UpdateAccountOnboardingParams struct {
-	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
-	IdempotencyKey string
-	// Body is the request body.
-	Body UpdateAccountOnboardingRequest
-}
-
-// CreateAppInstallationRequestParams holds the parameters of CreateAppInstallationRequest.
-type CreateAppInstallationRequestParams struct {
-	// Body is the request body.
-	Body CreateAppInstallationRequestRequest
-}
-
-// RedeemAppInstallationDeliveryParams holds the parameters of RedeemAppInstallationDelivery.
-type RedeemAppInstallationDeliveryParams struct {
-	// Body is the request body.
-	Body RedeemAppInstallationDeliveryRequest
-}
-
 // Client calls the Photon API. Build one with NewClient.
 type Client struct {
 	c             *core
-	Projects      *ProjectsService
-	Auth          *AuthService
 	Organizations *OrganizationsService
+	Projects      *ProjectsService
 	Account       *AccountService
 	System        *SystemService
+	Auth          *AuthService
 }
 
 func newClient(c *core) *Client {
 	client := &Client{c: c}
-	client.Projects = newProjectsService(c)
-	client.Auth = newAuthService(c)
 	client.Organizations = newOrganizationsService(c)
+	client.Projects = newProjectsService(c)
 	client.Account = newAccountService(c)
 	client.System = newSystemService(c)
+	client.Auth = newAuthService(c)
 	return client
+}
+
+// OrganizationsService groups the organizations operations.
+type OrganizationsService struct {
+	c        *core
+	Billing  *OrganizationsBillingService
+	Projects *OrganizationsProjectsService
+}
+
+func newOrganizationsService(c *core) *OrganizationsService {
+	s := &OrganizationsService{c: c}
+	s.Billing = newOrganizationsBillingService(c)
+	s.Projects = newOrganizationsProjectsService(c)
+	return s
+}
+
+// Accept an invitation to all organization projects
+func (s *OrganizationsService) AcceptOrganizationInvitation(ctx context.Context, params *AcceptOrganizationInvitationParams, opts ...RequestOption) (*AcceptOrganizationInvitationResponse, error) {
+	if params == nil {
+		params = &AcceptOrganizationInvitationParams{}
+	}
+	spec := newSpec("acceptOrganizationInvitation", "POST", "/v1/organizations/invitations/accept")
+	spec.idempotent = true
+	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
+	spec.setJSON(params.Body)
+	var out AcceptOrganizationInvitationResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Cancel the SSO subscription
+func (s *OrganizationsService) CancelSsoSubscription(ctx context.Context, params *CancelSsoSubscriptionParams, opts ...RequestOption) (*CancelSsoSubscriptionResponse, error) {
+	if params == nil {
+		params = &CancelSsoSubscriptionParams{}
+	}
+	spec := newSpec("cancelSsoSubscription", "POST", "/v1/organizations/{organizationId}/sso/subscription/cancel")
+	spec.idempotent = true
+	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
+	spec.setPath("organizationId", params.OrganizationID)
+	var out CancelSsoSubscriptionResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Check organization deletion prerequisites
+func (s *OrganizationsService) CheckOrganizationDeletion(ctx context.Context, params *CheckOrganizationDeletionParams, opts ...RequestOption) (*CheckOrganizationDeletionResponse, error) {
+	if params == nil {
+		params = &CheckOrganizationDeletionParams{}
+	}
+	spec := newSpec("checkOrganizationDeletion", "GET", "/v1/organizations/{organizationId}/deletion-check")
+	spec.safe = true
+	spec.setPath("organizationId", params.OrganizationID)
+	var out CheckOrganizationDeletionResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Delete organization
+func (s *OrganizationsService) CloseOrganization(ctx context.Context, params *CloseOrganizationParams, opts ...RequestOption) error {
+	if params == nil {
+		params = &CloseOrganizationParams{}
+	}
+	spec := newSpec("closeOrganization", "DELETE", "/v1/organizations/{organizationId}")
+	spec.idempotent = true
+	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.setJSON(params.Body)
+	return s.c.do(ctx, spec, nil, opts)
+}
+
+// Commit an organization avatar
+func (s *OrganizationsService) CommitOrganizationAvatar(ctx context.Context, params *CommitOrganizationAvatarParams, opts ...RequestOption) (*CommitOrganizationAvatarResponse, error) {
+	if params == nil {
+		params = &CommitOrganizationAvatarParams{}
+	}
+	spec := newSpec("commitOrganizationAvatar", "POST", "/v1/organizations/{organizationId}/avatar/commit")
+	spec.idempotent = true
+	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.setJSON(params.Body)
+	var out CommitOrganizationAvatarResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Create an organization
+func (s *OrganizationsService) CreateOrganization(ctx context.Context, params *CreateOrganizationParams, opts ...RequestOption) (*CreateOrganizationResponse, error) {
+	if params == nil {
+		params = &CreateOrganizationParams{}
+	}
+	spec := newSpec("createOrganization", "POST", "/v1/organizations")
+	spec.idempotent = true
+	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
+	spec.setJSON(params.Body)
+	var out CreateOrganizationResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Create an organization avatar upload
+//
+// Upload a JPEG, PNG, or WebP image up to 5 MiB with every returned form field and the file last. Upload directly without Photon credentials, then commit the uploadId. Do not log or cache upload URLs or fields.
+func (s *OrganizationsService) CreateOrganizationAvatarUpload(ctx context.Context, params *CreateOrganizationAvatarUploadParams, opts ...RequestOption) (*CreateOrganizationAvatarUploadResponse, error) {
+	if params == nil {
+		params = &CreateOrganizationAvatarUploadParams{}
+	}
+	spec := newSpec("createOrganizationAvatarUpload", "POST", "/v1/organizations/{organizationId}/avatar/uploads")
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.setJSON(params.Body)
+	var out CreateOrganizationAvatarUploadResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Invite a Member or Viewer to all organization projects
+func (s *OrganizationsService) CreateOrganizationInvitation(ctx context.Context, params *CreateOrganizationInvitationParams, opts ...RequestOption) (*CreateOrganizationInvitationResponse, error) {
+	if params == nil {
+		params = &CreateOrganizationInvitationParams{}
+	}
+	spec := newSpec("createOrganizationInvitation", "POST", "/v1/organizations/{organizationId}/invitations")
+	spec.idempotent = true
+	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.setJSON(params.Body)
+	var out CreateOrganizationInvitationResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Create an organization OAuth client
+//
+// Use the same UUID Idempotency-Key and payload when retrying. Unknown provider outcomes require recovery; do not use a new key to retry an uncertain creation.
+func (s *OrganizationsService) CreateOrganizationOauthClient(ctx context.Context, params *CreateOrganizationOauthClientParams, opts ...RequestOption) (*CreateOrganizationOauthClientResponse, error) {
+	if params == nil {
+		params = &CreateOrganizationOauthClientParams{}
+	}
+	spec := newSpec("createOrganizationOauthClient", "POST", "/v1/organizations/{organizationId}/oauth/clients")
+	spec.idempotent = true
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.setHeader("idempotency-key", params.IdempotencyKey)
+	spec.setJSON(params.Body)
+	var out CreateOrganizationOauthClientResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Create an organization Service Identity
+func (s *OrganizationsService) CreateServiceIdentity(ctx context.Context, params *CreateServiceIdentityParams, opts ...RequestOption) (*CreateServiceIdentityResponse, error) {
+	if params == nil {
+		params = &CreateServiceIdentityParams{}
+	}
+	spec := newSpec("createServiceIdentity", "POST", "/v1/organizations/{organizationId}/service-identities")
+	spec.idempotent = true
+	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.setJSON(params.Body)
+	var out CreateServiceIdentityResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Create a one-time Service Identity API key
+func (s *OrganizationsService) CreateServiceIdentityApiKey(ctx context.Context, params *CreateServiceIdentityApiKeyParams, opts ...RequestOption) (*CreateServiceIdentityApiKeyResponse, error) {
+	if params == nil {
+		params = &CreateServiceIdentityApiKeyParams{}
+	}
+	spec := newSpec("createServiceIdentityApiKey", "POST", "/v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials/api-keys")
+	spec.idempotent = true
+	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.setPath("serviceIdentityId", params.ServiceIdentityID)
+	spec.setJSON(params.Body)
+	var out CreateServiceIdentityApiKeyResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Create a one-time Service Identity M2M client secret
+func (s *OrganizationsService) CreateServiceIdentityClientSecret(ctx context.Context, params *CreateServiceIdentityClientSecretParams, opts ...RequestOption) (*CreateServiceIdentityClientSecretResponse, error) {
+	if params == nil {
+		params = &CreateServiceIdentityClientSecretParams{}
+	}
+	spec := newSpec("createServiceIdentityClientSecret", "POST", "/v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials/client-secrets")
+	spec.idempotent = true
+	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.setPath("serviceIdentityId", params.ServiceIdentityID)
+	spec.setJSON(params.Body)
+	var out CreateServiceIdentityClientSecretResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Delete an organization OAuth client
+//
+// Queues deletion of the exact provider application. Retry DELETE to read its current status. Accepted deletion does not promise immediate token revocation.
+func (s *OrganizationsService) DeleteOrganizationOauthClient(ctx context.Context, params *DeleteOrganizationOauthClientParams, opts ...RequestOption) (*DeleteOrganizationOauthClientResponse, error) {
+	if params == nil {
+		params = &DeleteOrganizationOauthClientParams{}
+	}
+	spec := newSpec("deleteOrganizationOauthClient", "DELETE", "/v1/organizations/{organizationId}/oauth/clients/{clientId}")
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.setPath("clientId", params.ClientID)
+	var out DeleteOrganizationOauthClientResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Revoke an organization OAuth client's secret
+//
+// Stops every secret of the app now, including one still in its grace period.
+func (s *OrganizationsService) DeleteOrganizationOauthClientSecret(ctx context.Context, params *DeleteOrganizationOauthClientSecretParams, opts ...RequestOption) error {
+	if params == nil {
+		params = &DeleteOrganizationOauthClientSecretParams{}
+	}
+	spec := newSpec("deleteOrganizationOauthClientSecret", "DELETE", "/v1/organizations/{organizationId}/oauth/clients/{clientId}/secret")
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.setPath("clientId", params.ClientID)
+	return s.c.do(ctx, spec, nil, opts)
+}
+
+// Ensure the initial organization
+func (s *OrganizationsService) EnsureInitialOrganization(ctx context.Context, params *EnsureInitialOrganizationParams, opts ...RequestOption) (*EnsureInitialOrganizationResponse, error) {
+	if params == nil {
+		params = &EnsureInitialOrganizationParams{}
+	}
+	spec := newSpec("ensureInitialOrganization", "POST", "/v1/organizations/initial")
+	spec.idempotent = true
+	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
+	var out EnsureInitialOrganizationResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Read the credential's organization
+//
+// Reads the organization the credential is bound to: the organization an OAuth grant was consented for, or a Service Identity's own organization. Use it to discover which organization an integration acts for, and pass its organizationId to organization-scoped operations.
+func (s *OrganizationsService) GetCurrentOrganization(ctx context.Context, opts ...RequestOption) (*GetCurrentOrganizationResponse, error) {
+	spec := newSpec("getCurrentOrganization", "GET", "/v1/organizations/current")
+	spec.safe = true
+	var out GetCurrentOrganizationResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Read organization name and avatar
+func (s *OrganizationsService) GetOrganization(ctx context.Context, params *GetOrganizationParams, opts ...RequestOption) (*GetOrganizationResponse, error) {
+	if params == nil {
+		params = &GetOrganizationParams{}
+	}
+	spec := newSpec("getOrganization", "GET", "/v1/organizations/{organizationId}")
+	spec.safe = true
+	spec.setPath("organizationId", params.OrganizationID)
+	var out GetOrganizationResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Read an organization OAuth client
+func (s *OrganizationsService) GetOrganizationOauthClient(ctx context.Context, params *GetOrganizationOauthClientParams, opts ...RequestOption) (*GetOrganizationOauthClientResponse, error) {
+	if params == nil {
+		params = &GetOrganizationOauthClientParams{}
+	}
+	spec := newSpec("getOrganizationOauthClient", "GET", "/v1/organizations/{organizationId}/oauth/clients/{clientId}")
+	spec.safe = true
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.setPath("clientId", params.ClientID)
+	var out GetOrganizationOauthClientResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Read an organization OAuth client's secret
+func (s *OrganizationsService) GetOrganizationOauthClientSecret(ctx context.Context, params *GetOrganizationOauthClientSecretParams, opts ...RequestOption) (*GetOrganizationOauthClientSecretResponse, error) {
+	if params == nil {
+		params = &GetOrganizationOauthClientSecretParams{}
+	}
+	spec := newSpec("getOrganizationOauthClientSecret", "GET", "/v1/organizations/{organizationId}/oauth/clients/{clientId}/secret")
+	spec.safe = true
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.setPath("clientId", params.ClientID)
+	var out GetOrganizationOauthClientSecretResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Read a Service Identity
+func (s *OrganizationsService) GetServiceIdentity(ctx context.Context, params *GetServiceIdentityParams, opts ...RequestOption) (*GetServiceIdentityResponse, error) {
+	if params == nil {
+		params = &GetServiceIdentityParams{}
+	}
+	spec := newSpec("getServiceIdentity", "GET", "/v1/organizations/{organizationId}/service-identities/{serviceIdentityId}")
+	spec.safe = true
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.setPath("serviceIdentityId", params.ServiceIdentityID)
+	var out GetServiceIdentityResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Read SSO subscription
+func (s *OrganizationsService) GetSsoSubscription(ctx context.Context, params *GetSsoSubscriptionParams, opts ...RequestOption) (*GetSsoSubscriptionResponse, error) {
+	if params == nil {
+		params = &GetSsoSubscriptionParams{}
+	}
+	spec := newSpec("getSsoSubscription", "GET", "/v1/organizations/{organizationId}/sso/subscription")
+	spec.safe = true
+	spec.setPath("organizationId", params.OrganizationID)
+	var out GetSsoSubscriptionResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Leave an organization; Owners must transfer or close first
+func (s *OrganizationsService) LeaveOrganization(ctx context.Context, params *LeaveOrganizationParams, opts ...RequestOption) (*LeaveOrganizationResponse, error) {
+	if params == nil {
+		params = &LeaveOrganizationParams{}
+	}
+	spec := newSpec("leaveOrganization", "POST", "/v1/organizations/{organizationId}/leave")
+	spec.idempotent = true
+	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.setJSON(params.Body)
+	var out LeaveOrganizationResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// List pending organization invitations
+func (s *OrganizationsService) ListOrganizationInvitations(ctx context.Context, params *ListOrganizationInvitationsParams, opts ...RequestOption) (*ListOrganizationInvitationsResponse, error) {
+	if params == nil {
+		params = &ListOrganizationInvitationsParams{}
+	}
+	spec := newSpec("listOrganizationInvitations", "GET", "/v1/organizations/{organizationId}/invitations")
+	spec.safe = true
+	spec.setPath("organizationId", params.OrganizationID)
+	var out ListOrganizationInvitationsResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// List current organization members
+func (s *OrganizationsService) ListOrganizationMembers(ctx context.Context, params *ListOrganizationMembersParams, opts ...RequestOption) (*ListOrganizationMembersResponse, error) {
+	if params == nil {
+		params = &ListOrganizationMembersParams{}
+	}
+	spec := newSpec("listOrganizationMembers", "GET", "/v1/organizations/{organizationId}/members")
+	spec.safe = true
+	spec.setPath("organizationId", params.OrganizationID)
+	var out ListOrganizationMembersResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// List organization OAuth clients
+func (s *OrganizationsService) ListOrganizationOauthClients(ctx context.Context, params *ListOrganizationOauthClientsParams, opts ...RequestOption) (*ListOrganizationOauthClientsResponse, error) {
+	if params == nil {
+		params = &ListOrganizationOauthClientsParams{}
+	}
+	spec := newSpec("listOrganizationOauthClients", "GET", "/v1/organizations/{organizationId}/oauth/clients")
+	spec.safe = true
+	spec.setPath("organizationId", params.OrganizationID)
+	var out ListOrganizationOauthClientsResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// List organizations
+func (s *OrganizationsService) ListOrganizations(ctx context.Context, opts ...RequestOption) (*ListOrganizationsResponse, error) {
+	spec := newSpec("listOrganizations", "GET", "/v1/organizations")
+	spec.safe = true
+	var out ListOrganizationsResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// List organization Service Identities
+func (s *OrganizationsService) ListServiceIdentities(ctx context.Context, params *ListServiceIdentitiesParams, opts ...RequestOption) (*ListServiceIdentitiesResponse, error) {
+	if params == nil {
+		params = &ListServiceIdentitiesParams{}
+	}
+	spec := newSpec("listServiceIdentities", "GET", "/v1/organizations/{organizationId}/service-identities")
+	spec.safe = true
+	spec.setPath("organizationId", params.OrganizationID)
+	var out ListServiceIdentitiesResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// List Service Identity credential metadata
+func (s *OrganizationsService) ListServiceIdentityCredentials(ctx context.Context, params *ListServiceIdentityCredentialsParams, opts ...RequestOption) (*ListServiceIdentityCredentialsResponse, error) {
+	if params == nil {
+		params = &ListServiceIdentityCredentialsParams{}
+	}
+	spec := newSpec("listServiceIdentityCredentials", "GET", "/v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials")
+	spec.safe = true
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.setPath("serviceIdentityId", params.ServiceIdentityID)
+	var out ListServiceIdentityCredentialsResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// List grantable Service Identity permissions
+//
+// The permissions a Service Identity or installable app may be granted: the machine set of the current auth contract, sorted. Create, update, and app declarations accept exactly these values.
+func (s *OrganizationsService) ListServiceIdentityPermissions(ctx context.Context, params *ListServiceIdentityPermissionsParams, opts ...RequestOption) (*ListServiceIdentityPermissionsResponse, error) {
+	if params == nil {
+		params = &ListServiceIdentityPermissionsParams{}
+	}
+	spec := newSpec("listServiceIdentityPermissions", "GET", "/v1/organizations/{organizationId}/service-identities/permissions")
+	spec.safe = true
+	spec.setPath("organizationId", params.OrganizationID)
+	var out ListServiceIdentityPermissionsResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Preview an organization invitation after sign-in
+func (s *OrganizationsService) PreviewOrganizationInvitation(ctx context.Context, params *PreviewOrganizationInvitationParams, opts ...RequestOption) (*PreviewOrganizationInvitationResponse, error) {
+	if params == nil {
+		params = &PreviewOrganizationInvitationParams{}
+	}
+	spec := newSpec("previewOrganizationInvitation", "POST", "/v1/organizations/invitations/preview")
+	spec.setJSON(params.Body)
+	var out PreviewOrganizationInvitationResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Remove an organization avatar
+func (s *OrganizationsService) RemoveOrganizationAvatar(ctx context.Context, params *RemoveOrganizationAvatarParams, opts ...RequestOption) (*RemoveOrganizationAvatarResponse, error) {
+	if params == nil {
+		params = &RemoveOrganizationAvatarParams{}
+	}
+	spec := newSpec("removeOrganizationAvatar", "DELETE", "/v1/organizations/{organizationId}/avatar")
+	spec.idempotent = true
+	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.setJSON(params.Body)
+	var out RemoveOrganizationAvatarResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Remove an organization member's access to all projects
+func (s *OrganizationsService) RemoveOrganizationMember(ctx context.Context, params *RemoveOrganizationMemberParams, opts ...RequestOption) (*RemoveOrganizationMemberResponse, error) {
+	if params == nil {
+		params = &RemoveOrganizationMemberParams{}
+	}
+	spec := newSpec("removeOrganizationMember", "DELETE", "/v1/organizations/{organizationId}/members/{memberAccountId}")
+	spec.idempotent = true
+	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.setPath("memberAccountId", params.MemberAccountID)
+	spec.setJSON(params.Body)
+	var out RemoveOrganizationMemberResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Resend an organization invitation
+func (s *OrganizationsService) ResendOrganizationInvitation(ctx context.Context, params *ResendOrganizationInvitationParams, opts ...RequestOption) (*ResendOrganizationInvitationResponse, error) {
+	if params == nil {
+		params = &ResendOrganizationInvitationParams{}
+	}
+	spec := newSpec("resendOrganizationInvitation", "POST", "/v1/organizations/{organizationId}/invitations/{invitationId}/resend")
+	spec.idempotent = true
+	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.setPath("invitationId", params.InvitationID)
+	var out ResendOrganizationInvitationResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Revoke an organization invitation
+func (s *OrganizationsService) RevokeOrganizationInvitation(ctx context.Context, params *RevokeOrganizationInvitationParams, opts ...RequestOption) (*RevokeOrganizationInvitationResponse, error) {
+	if params == nil {
+		params = &RevokeOrganizationInvitationParams{}
+	}
+	spec := newSpec("revokeOrganizationInvitation", "POST", "/v1/organizations/{organizationId}/invitations/{invitationId}/revoke")
+	spec.idempotent = true
+	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.setPath("invitationId", params.InvitationID)
+	var out RevokeOrganizationInvitationResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Request Service Identity credential revocation
+func (s *OrganizationsService) RevokeServiceIdentityCredential(ctx context.Context, params *RevokeServiceIdentityCredentialParams, opts ...RequestOption) (*RevokeServiceIdentityCredentialResponse, error) {
+	if params == nil {
+		params = &RevokeServiceIdentityCredentialParams{}
+	}
+	spec := newSpec("revokeServiceIdentityCredential", "POST", "/v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials/{credentialId}/revoke")
+	spec.idempotent = true
+	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.setPath("serviceIdentityId", params.ServiceIdentityID)
+	spec.setPath("credentialId", params.CredentialID)
+	spec.setJSON(params.Body)
+	var out RevokeServiceIdentityCredentialResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Rotate an organization OAuth client's secret
+//
+// Mints a new secret, then retires the one it replaces: `normal` keeps the old one working for one hour, `emergency` stops it now. A secret not created through Photon always stops now. Rotating again ends an earlier grace period. Retain the same UUID Idempotency-Key when retrying: only the delivering request returns plaintext.
+func (s *OrganizationsService) RotateOrganizationOauthClientSecret(ctx context.Context, params *RotateOrganizationOauthClientSecretParams, opts ...RequestOption) (*RotateOrganizationOauthClientSecretResponse, error) {
+	if params == nil {
+		params = &RotateOrganizationOauthClientSecretParams{}
+	}
+	spec := newSpec("rotateOrganizationOauthClientSecret", "POST", "/v1/organizations/{organizationId}/oauth/clients/{clientId}/secret/rotate")
+	spec.idempotent = true
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.setPath("clientId", params.ClientID)
+	spec.setHeader("idempotency-key", params.IdempotencyKey)
+	spec.setJSON(params.Body)
+	var out RotateOrganizationOauthClientSecretResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Create an organization OAuth client's secret
+//
+// Mints the app's first secret; once it has one, rotate it instead. Retain the same UUID Idempotency-Key when retrying: only the delivering request returns plaintext.
+func (s *OrganizationsService) SetupOrganizationOauthClientSecret(ctx context.Context, params *SetupOrganizationOauthClientSecretParams, opts ...RequestOption) (*SetupOrganizationOauthClientSecretResult, error) {
+	if params == nil {
+		params = &SetupOrganizationOauthClientSecretParams{}
+	}
+	spec := newSpec("setupOrganizationOauthClientSecret", "PUT", "/v1/organizations/{organizationId}/oauth/clients/{clientId}/secret")
+	spec.idempotent = true
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.setPath("clientId", params.ClientID)
+	spec.setHeader("idempotency-key", params.IdempotencyKey)
+	var out SetupOrganizationOauthClientSecretResult
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Subscribe to organization SSO
+func (s *OrganizationsService) SubscribeSso(ctx context.Context, params *SubscribeSsoParams, opts ...RequestOption) (*SubscribeSsoResponse, error) {
+	if params == nil {
+		params = &SubscribeSsoParams{}
+	}
+	spec := newSpec("subscribeSso", "POST", "/v1/organizations/{organizationId}/sso/subscription")
+	spec.idempotent = true
+	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.setJSON(params.Body)
+	var out SubscribeSsoResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Transfer organization ownership to an existing member
+func (s *OrganizationsService) TransferOrganizationOwnership(ctx context.Context, params *TransferOrganizationOwnershipParams, opts ...RequestOption) (*TransferOrganizationOwnershipResponse, error) {
+	if params == nil {
+		params = &TransferOrganizationOwnershipParams{}
+	}
+	spec := newSpec("transferOrganizationOwnership", "POST", "/v1/organizations/{organizationId}/transfer-ownership")
+	spec.idempotent = true
+	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.setJSON(params.Body)
+	var out TransferOrganizationOwnershipResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Change organization name
+func (s *OrganizationsService) UpdateOrganization(ctx context.Context, params *UpdateOrganizationParams, opts ...RequestOption) (*UpdateOrganizationResponse, error) {
+	if params == nil {
+		params = &UpdateOrganizationParams{}
+	}
+	spec := newSpec("updateOrganization", "PATCH", "/v1/organizations/{organizationId}")
+	spec.idempotent = true
+	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.setJSON(params.Body)
+	var out UpdateOrganizationResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Change an organization member's role across all projects
+func (s *OrganizationsService) UpdateOrganizationMemberRole(ctx context.Context, params *UpdateOrganizationMemberRoleParams, opts ...RequestOption) (*UpdateOrganizationMemberRoleResponse, error) {
+	if params == nil {
+		params = &UpdateOrganizationMemberRoleParams{}
+	}
+	spec := newSpec("updateOrganizationMemberRole", "PATCH", "/v1/organizations/{organizationId}/members/{memberAccountId}")
+	spec.idempotent = true
+	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.setPath("memberAccountId", params.MemberAccountID)
+	spec.setJSON(params.Body)
+	var out UpdateOrganizationMemberRoleResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Update an organization OAuth client
+//
+// Requires If-Match from the latest read. Stale versions return 412. A failed response may follow an applied provider update; reread before retrying. Version checking is not provider atomic CAS.
+func (s *OrganizationsService) UpdateOrganizationOauthClient(ctx context.Context, params *UpdateOrganizationOauthClientParams, opts ...RequestOption) (*UpdateOrganizationOauthClientResponse, error) {
+	if params == nil {
+		params = &UpdateOrganizationOauthClientParams{}
+	}
+	spec := newSpec("updateOrganizationOauthClient", "PATCH", "/v1/organizations/{organizationId}/oauth/clients/{clientId}")
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.setPath("clientId", params.ClientID)
+	spec.setHeader("if-match", params.IfMatch)
+	spec.setJSON(params.Body)
+	var out UpdateOrganizationOauthClientResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Update a Service Identity
+func (s *OrganizationsService) UpdateServiceIdentity(ctx context.Context, params *UpdateServiceIdentityParams, opts ...RequestOption) (*UpdateServiceIdentityResponse, error) {
+	if params == nil {
+		params = &UpdateServiceIdentityParams{}
+	}
+	spec := newSpec("updateServiceIdentity", "PATCH", "/v1/organizations/{organizationId}/service-identities/{serviceIdentityId}")
+	spec.idempotent = true
+	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.setPath("serviceIdentityId", params.ServiceIdentityID)
+	spec.setJSON(params.Body)
+	var out UpdateServiceIdentityResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// OrganizationsBillingService groups the organizations.billing operations.
+type OrganizationsBillingService struct {
+	c *core
+}
+
+func newOrganizationsBillingService(c *core) *OrganizationsBillingService {
+	s := &OrganizationsBillingService{c: c}
+	return s
+}
+
+// Change plan
+//
+// Purchases or changes the selected project's plan for the supplied category and planCode. A 202 response means the change is pending: poll the returned operation URL and honor Retry-After until it succeeds or fails. A 200 response means the idempotency key resolved to an operation that is already terminal; inspect that result rather than assuming success from the status code alone. Supply the required Idempotency-Key header. Supply both organizationId and projectId to select the project within its organization.
+func (s *OrganizationsBillingService) ChangePlan(ctx context.Context, params *ChangePlanParams, opts ...RequestOption) (*ChangePlanResponse, error) {
+	if params == nil {
+		params = &ChangePlanParams{}
+	}
+	spec := newSpec("changePlan", "POST", "/v1/organizations/{organizationId}/billing/projects/{projectId}/purchase")
+	spec.idempotent = true
+	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.setPath("projectId", params.ProjectID)
+	spec.setJSON(params.Body)
+	var out ChangePlanResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Create payment method checkout
+//
+// Returns a hosted payment-method collection URL for the selected organization. An Idempotency-Key header is optional; supply one to make retries safe. Complete the returned checkout flow. Receiving the URL does not mean a card has been saved; check payment-method status afterward.
+func (s *OrganizationsBillingService) CreateOrganizationPaymentMethodCheckout(ctx context.Context, params *CreateOrganizationPaymentMethodCheckoutParams, opts ...RequestOption) (*CreateOrganizationPaymentMethodCheckoutResponse, error) {
+	if params == nil {
+		params = &CreateOrganizationPaymentMethodCheckoutParams{}
+	}
+	spec := newSpec("createOrganizationPaymentMethodCheckout", "POST", "/v1/organizations/{organizationId}/billing/checkout")
+	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
+	spec.setPath("organizationId", params.OrganizationID)
+	var out CreateOrganizationPaymentMethodCheckoutResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Get the project's effective billing terms
+//
+// Returns what the selected project is billed on now, per category it holds: the plan as its subscription has it, with any override applied, each fixed charge at the subscription's price and quantity, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. Supply both organizationId and projectId; the organization must pay for the project. This operation does not change billing.
+func (s *OrganizationsBillingService) GetEffectiveTerms(ctx context.Context, params *GetEffectiveTermsParams, opts ...RequestOption) (*GetEffectiveTermsResponse, error) {
+	if params == nil {
+		params = &GetEffectiveTermsParams{}
+	}
+	spec := newSpec("getEffectiveTerms", "GET", "/v1/organizations/{organizationId}/billing/projects/{projectId}/terms")
+	spec.safe = true
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.setPath("projectId", params.ProjectID)
+	var out GetEffectiveTermsResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Get organization billing overview
+//
+// Returns the selected organization’s billing subscription and entitlementsVersion. The subscription can be null. Read the returned plan, charges and entitlements to inspect organization billing; this operation does not purchase or change a plan.
+func (s *OrganizationsBillingService) GetOrganizationBillingOverview(ctx context.Context, params *GetOrganizationBillingOverviewParams, opts ...RequestOption) (*GetOrganizationBillingOverviewResponse, error) {
+	if params == nil {
+		params = &GetOrganizationBillingOverviewParams{}
+	}
+	spec := newSpec("getOrganizationBillingOverview", "GET", "/v1/organizations/{organizationId}/billing")
+	spec.safe = true
+	spec.setPath("organizationId", params.OrganizationID)
+	var out GetOrganizationBillingOverviewResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Get organization credit
+//
+// Returns the credit the selected organization holds: on credit notes, such as the unused time of a plan an upgrade replaced or the unused days of a prorated fixed charge it released, and in its wallet: the credit Photon granted it, such as a new account's first organization's welcome credit, and any prepaid credit it bought. It offsets that organization's invoices of any kind except one-off invoices, credit notes first. Reading it does not apply or change credit.
+func (s *OrganizationsBillingService) GetOrganizationCredit(ctx context.Context, params *GetOrganizationCreditParams, opts ...RequestOption) (*GetOrganizationCreditResponse, error) {
+	if params == nil {
+		params = &GetOrganizationCreditParams{}
+	}
+	spec := newSpec("getOrganizationCredit", "GET", "/v1/organizations/{organizationId}/billing/credit")
+	spec.safe = true
+	spec.setPath("organizationId", params.OrganizationID)
+	var out GetOrganizationCreditResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Get organization payment method
+//
+// Reports whether the selected organization has a card on file and returns its documented payment-method metadata. Reading this endpoint does not collect a new card or create a checkout session.
+func (s *OrganizationsBillingService) GetOrganizationPaymentMethod(ctx context.Context, params *GetOrganizationPaymentMethodParams, opts ...RequestOption) (*GetOrganizationPaymentMethodResponse, error) {
+	if params == nil {
+		params = &GetOrganizationPaymentMethodParams{}
+	}
+	spec := newSpec("getOrganizationPaymentMethod", "GET", "/v1/organizations/{organizationId}/billing/payment-method")
+	spec.safe = true
+	spec.setPath("organizationId", params.OrganizationID)
+	var out GetOrganizationPaymentMethodResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Get the organization's effective billing terms
+//
+// Returns what the selected organization is billed on now on its own subscription, such as SSO and 10DLC campaigns: the plan as the subscription has it, with any override applied, each fixed charge at the subscription's price and the quantity the organization holds, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. subscription has a project subscription's terms without its category, and is null when the organization holds none. Project subscriptions are read per project. This operation does not change billing.
+func (s *OrganizationsBillingService) GetOrganizationTerms(ctx context.Context, params *GetOrganizationTermsParams, opts ...RequestOption) (*GetOrganizationTermsResponse, error) {
+	if params == nil {
+		params = &GetOrganizationTermsParams{}
+	}
+	spec := newSpec("getOrganizationTerms", "GET", "/v1/organizations/{organizationId}/billing/terms")
+	spec.safe = true
+	spec.setPath("organizationId", params.OrganizationID)
+	var out GetOrganizationTermsResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// List credit activity
+//
+// Returns one page of how the selected organization's credit balance changed, newest first: credit notes issued and credit granted, credit applied to invoices, credit restored when the change an invoice paid for never applied, and credit voided. Each entry names the credit note (none for granted credit), the invoice when there is one, and the charge and subscription the credit note credits, or that the credit was a grant. Pass nextPage as page to read further. This operation does not change billing.
+func (s *OrganizationsBillingService) ListCreditActivity(ctx context.Context, params *ListCreditActivityParams, opts ...RequestOption) (*ListCreditActivityResponse, error) {
+	if params == nil {
+		params = &ListCreditActivityParams{}
+	}
+	spec := newSpec("listCreditActivity", "GET", "/v1/organizations/{organizationId}/billing/credit/activity")
+	spec.safe = true
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.addQuery("page", params.Page)
+	var out ListCreditActivityResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// List invoices
+//
+// Returns one page of the selected organization's invoices, newest first: every invoice issued to it with a nonzero total or actual charges, including charges fully paid by credit; drafts and empty invoices are excluded. Each names what it charged the organization's own subscription and each project. Pass subject to list only the invoices that charge the organization itself or one of its projects, and nextCursor as cursor to read further. Listing invoices does not make a payment or modify a subscription.
+func (s *OrganizationsBillingService) ListInvoices(ctx context.Context, params *ListInvoicesParams, opts ...RequestOption) (*ListInvoicesResponse, error) {
+	if params == nil {
+		params = &ListInvoicesParams{}
+	}
+	spec := newSpec("listInvoices", "GET", "/v1/organizations/{organizationId}/billing/invoices")
+	spec.safe = true
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.addQuery("cursor", params.Cursor)
+	spec.addQuery("limit", params.Limit)
+	spec.addQuery("subject", params.Subject)
+	var out ListInvoicesResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Preview an organization billing change
+//
+// Previews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing.
+func (s *OrganizationsBillingService) PreviewOrganizationChange(ctx context.Context, params *PreviewOrganizationChangeParams, opts ...RequestOption) (*PreviewOrganizationChangeResponse, error) {
+	if params == nil {
+		params = &PreviewOrganizationChangeParams{}
+	}
+	spec := newSpec("previewOrganizationChange", "POST", "/v1/organizations/{organizationId}/billing/preview")
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.setJSON(params.Body)
+	var out PreviewOrganizationChangeResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Preview a project billing change
+//
+// Previews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. Supply both organizationId and projectId; the organization must pay for the project.
+func (s *OrganizationsBillingService) PreviewProjectChange(ctx context.Context, params *PreviewProjectChangeParams, opts ...RequestOption) (*PreviewProjectChangeResponse, error) {
+	if params == nil {
+		params = &PreviewProjectChangeParams{}
+	}
+	spec := newSpec("previewProjectChange", "POST", "/v1/organizations/{organizationId}/billing/projects/{projectId}/preview")
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.setPath("projectId", params.ProjectID)
+	spec.setJSON(params.Body)
+	var out PreviewProjectChangeResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// OrganizationsProjectsService groups the organizations.projects operations.
+type OrganizationsProjectsService struct {
+	c *core
+}
+
+func newOrganizationsProjectsService(c *core) *OrganizationsProjectsService {
+	s := &OrganizationsProjectsService{c: c}
+	return s
+}
+
+// Check project slug availability
+//
+// Reports whether createProject would accept `slug` right now. Advisory: only the create itself allocates, so a caller must still handle SLUG_TAKEN. A malformed slug is rejected on shape; a reserved slug, a slug held by an active project, and a slug retired with a deleted project each answer `available: false` with a reason.
+func (s *OrganizationsProjectsService) CheckProjectSlugAvailability(ctx context.Context, params *CheckProjectSlugAvailabilityParams, opts ...RequestOption) (*CheckProjectSlugAvailabilityResponse, error) {
+	if params == nil {
+		params = &CheckProjectSlugAvailabilityParams{}
+	}
+	spec := newSpec("checkProjectSlugAvailability", "GET", "/v1/organizations/{organizationId}/projects/slug-availability")
+	spec.safe = true
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.addQuery("slug", params.Slug)
+	var out CheckProjectSlugAvailabilityResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Count projects
+//
+// Counts the projects the same filter would list. The count is read from the primary, so it is authoritative rather than replica-lagged.
+func (s *OrganizationsProjectsService) Count(ctx context.Context, params *CountProjectsParams, opts ...RequestOption) (*ProjectCount, error) {
+	if params == nil {
+		params = &CountProjectsParams{}
+	}
+	spec := newSpec("countProjects", "GET", "/v1/organizations/{organizationId}/projects/count")
+	spec.safe = true
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.addQuery("createdAfter", params.CreatedAfter)
+	spec.addQuery("createdBefore", params.CreatedBefore)
+	spec.addQuery("query", params.Query)
+	var out ProjectCount
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Create project
+//
+// Creates in the authorized organization. In addition to account credentials, explicitly granted Service Identity API keys and M2M tokens may create projects. Project API keys cannot create projects. Creator and private credential evidence come only from the trusted authorization context. The caller-selected slug is immutable, must be 3 to 63 lowercase ASCII alphanumerics separated by single hyphens, and cannot be reserved or held by any active or deleted project.
+func (s *OrganizationsProjectsService) Create(ctx context.Context, params *CreateProjectParams, opts ...RequestOption) (*Project, error) {
+	if params == nil {
+		params = &CreateProjectParams{}
+	}
+	spec := newSpec("createProject", "POST", "/v1/organizations/{organizationId}/projects")
+	spec.idempotent = true
+	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.setJSON(params.Body)
+	var out Project
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Get project closure status
+//
+// Returns closure progress for projectId within organizationId, including deletionOperationId, domain progress and ready. This read operation does not initiate deletion.
+func (s *OrganizationsProjectsService) GetProjectClosureStatus(ctx context.Context, params *GetProjectClosureStatusParams, opts ...RequestOption) (*GetProjectClosureStatusResponse, error) {
+	if params == nil {
+		params = &GetProjectClosureStatusParams{}
+	}
+	spec := newSpec("getProjectClosureStatus", "GET", "/v1/organizations/{organizationId}/projects/closure-status")
+	spec.safe = true
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.addQuery("projectId", params.ProjectID)
+	var out GetProjectClosureStatusResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// List projects
+//
+// Returns a cursor-paginated page of the active projects in organizationId. Filter using query and the documented creation-time bounds, and navigate with pageSize and pageToken. Project roles are not returned and role is not a supported filter.
+func (s *OrganizationsProjectsService) List(ctx context.Context, params *ListProjectsParams, opts ...RequestOption) (*ProjectPage, error) {
+	if params == nil {
+		params = &ListProjectsParams{}
+	}
+	spec := newSpec("listProjects", "GET", "/v1/organizations/{organizationId}/projects")
+	spec.safe = true
+	spec.setPath("organizationId", params.OrganizationID)
+	spec.addQuery("createdAfter", params.CreatedAfter)
+	spec.addQuery("createdBefore", params.CreatedBefore)
+	spec.addQuery("query", params.Query)
+	spec.addQuery("pageSize", params.PageSize)
+	spec.addQuery("pageToken", params.PageToken)
+	var out ProjectPage
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
 }
 
 // ProjectsService groups the projects operations.
@@ -2532,25 +3884,6 @@ func (s *ProjectsPlatformsService) ConnectTelegramBot(ctx context.Context, param
 	return &out, nil
 }
 
-// Connect WhatsApp Business
-//
-// Exchanges the authorization code Embedded Signup returned and connects exactly the selected phone number as one `whatsapp_sender`. Send the WABA id and phone-number id emitted by the same popup attempt; both are treated as selectors and verified against Meta before use. A selected number that matches a non-retired, same-project `voip_line` is linked to it; a number absent from Photon inventory stays unbound; a matching non-retired `cosmos_line`, foreign VoIP line or unassigned VoIP line fails the operation before registration. Connecting is free — no plan requirement — but Billing must report the project's organization as ready with a payment method on file. The Idempotency-Key is required and permanent: replaying the same key returns the original operation forever. Requires the platforms:write permission bound to the project resource in the path.
-func (s *ProjectsPlatformsService) ConnectWhatsappBusiness(ctx context.Context, params *ConnectWhatsappBusinessParams, opts ...RequestOption) (*Operation, error) {
-	if params == nil {
-		params = &ConnectWhatsappBusinessParams{}
-	}
-	spec := newSpec("connectWhatsappBusiness", "POST", "/v1/projects/{id}/platforms/whatsapp-business/numbers")
-	spec.idempotent = true
-	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
-	spec.setPath("id", params.ID)
-	spec.setJSON(params.Body)
-	var out Operation
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
 // Count filtered verification codes
 //
 // Counts the verification codes Photon kept from this project's dedicated lines and numbers, optionally for one `platform`. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Requires the platforms:read permission bound to the project resource in the path.
@@ -2957,23 +4290,6 @@ func (s *ProjectsPlatformsService) GetWhatsappSharedLineAssignment(ctx context.C
 	spec.setPath("assignmentId", params.AssignmentID)
 	spec.setPath("id", params.ID)
 	var out SharedLineAssignment
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// Get WhatsApp signup config
-//
-// Returns what the browser needs to open Meta's Embedded Signup popup: the Facebook Login for Business configuration id, the Graph version to run against, and the scopes it will request. Answered in-process rather than forwarded, so the first step of onboarding survives an outage of the private service. Pass `configId` to `FB.login` as `config_id` with `response_type: 'code'` and `override_default_response_type: true`. Do NOT add a `featureType` — omitting it is what keeps the phone-number screen in the flow, and `only_waba_sharing` produces an account with no number that cannot be provisioned. Requires the platforms:read permission bound to the project resource in the path.
-func (s *ProjectsPlatformsService) GetWhatsappSignupConfig(ctx context.Context, params *GetWhatsappSignupConfigParams, opts ...RequestOption) (*GetWhatsappSignupConfigResponse, error) {
-	if params == nil {
-		params = &GetWhatsappSignupConfigParams{}
-	}
-	spec := newSpec("getWhatsappSignupConfig", "GET", "/v1/projects/{id}/platforms/whatsapp-business/signup-config")
-	spec.safe = true
-	spec.setPath("id", params.ID)
-	var out GetWhatsappSignupConfigResponse
 	if err := s.c.do(ctx, spec, &out, opts); err != nil {
 		return nil, err
 	}
@@ -3739,6 +5055,233 @@ func (s *ProjectsBillingService) ListProjectSubscriptions(ctx context.Context, p
 	return &out, nil
 }
 
+// AccountService groups the account operations.
+type AccountService struct {
+	c *core
+}
+
+func newAccountService(c *core) *AccountService {
+	s := &AccountService{c: c}
+	return s
+}
+
+// Commit profile picture
+//
+// Commits a profile picture previously uploaded through createAccountProfilePictureUpload. Call this only after the direct multipart upload succeeds, using the uploadId from the same upload session and a stable Idempotency-Key. The service validates the temporary object's ownership, size, content type, image bytes, dimensions, encryption, and age before changing the Account.
+func (s *AccountService) CommitProfilePicture(ctx context.Context, params *CommitAccountProfilePictureParams, opts ...RequestOption) (*Account, error) {
+	if params == nil {
+		params = &CommitAccountProfilePictureParams{}
+	}
+	spec := newSpec("commitAccountProfilePicture", "PUT", "/v1/account/profile-picture")
+	spec.idempotent = true
+	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
+	spec.setJSON(params.Body)
+	var out Account
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Create profile picture upload
+//
+// Creates a ten-minute, Account-bound presigned S3 POST for a JPEG, PNG, or WebP profile picture up to 5 MiB. Copy every returned formFields entry into a multipart/form-data request to uploadUrl, append the local file as the final form part, and upload it directly without sending Photon credentials. After the upload succeeds, call commitAccountProfilePicture with the returned uploadId. Do not cache or log the upload URL or form fields.
+func (s *AccountService) CreateProfilePictureUpload(ctx context.Context, params *CreateAccountProfilePictureUploadParams, opts ...RequestOption) (*ProfilePictureUpload, error) {
+	if params == nil {
+		params = &CreateAccountProfilePictureUploadParams{}
+	}
+	spec := newSpec("createAccountProfilePictureUpload", "POST", "/v1/account/profile-picture/uploads")
+	spec.setJSON(params.Body)
+	var out ProfilePictureUpload
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Create Account Service Key
+//
+// Creates a service key for the authenticated account with the supplied name and optional expiresAt. Returns key metadata and a one-time credential; store the credential securely because it cannot be retrieved through the listing endpoint. These credentials act as the account and must not be distributed as project-scoped keys. Supply the required Idempotency-Key header.
+func (s *AccountService) CreateAccountServiceKey(ctx context.Context, params *CreateAccountServiceKeyParams, opts ...RequestOption) (*CreateAccountServiceKeyResponse, error) {
+	if params == nil {
+		params = &CreateAccountServiceKeyParams{}
+	}
+	spec := newSpec("createAccountServiceKey", "POST", "/v1/account/service-keys")
+	spec.idempotent = true
+	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
+	spec.setJSON(params.Body)
+	var out CreateAccountServiceKeyResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Delete account
+//
+// Deletes the authenticated account and returns its account tombstone. The operation is rejected while the account still owns organizations; transfer or close those organizations before retrying. This endpoint acts on the caller's account and does not accept another account's identifier.
+func (s *AccountService) Delete(ctx context.Context, opts ...RequestOption) (*Account, error) {
+	spec := newSpec("deleteAccount", "DELETE", "/v1/account")
+	var out Account
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Get account
+//
+// Returns the profile of the authenticated account. The account is selected from the credential rather than a request parameter. A missing or deleted account is reported as an error instead of an empty profile.
+func (s *AccountService) Get(ctx context.Context, opts ...RequestOption) (*Account, error) {
+	spec := newSpec("getAccount", "GET", "/v1/account")
+	spec.safe = true
+	var out Account
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// List Account Service Keys
+//
+// Returns metadata for the authenticated account's unrevoked service keys, including expired keys, ordered newest first. Secret values are not returned; a key's credential is disclosed only when that key is created.
+func (s *AccountService) ListAccountServiceKeys(ctx context.Context, opts ...RequestOption) (*ListAccountServiceKeysResponse, error) {
+	spec := newSpec("listAccountServiceKeys", "GET", "/v1/account/service-keys")
+	spec.safe = true
+	var out ListAccountServiceKeysResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// List connected applications
+//
+// Lists the OAuth applications authorized by the authenticated user.
+func (s *AccountService) ListAuthorizedApplications(ctx context.Context, params *ListAuthorizedApplicationsParams, opts ...RequestOption) (*ListAuthorizedApplicationsResponse, error) {
+	if params == nil {
+		params = &ListAuthorizedApplicationsParams{}
+	}
+	spec := newSpec("listAuthorizedApplications", "GET", "/v1/account/oauth/authorized-applications")
+	spec.safe = true
+	spec.addQuery("after", params.After)
+	spec.addQuery("before", params.Before)
+	spec.addQuery("limit", params.Limit)
+	spec.addQuery("order", params.Order)
+	var out ListAuthorizedApplicationsResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Remove profile picture
+//
+// Removes the authenticated account's custom profile picture and returns the account using its default picture. This operation does not upload a replacement; use the upload-and-commit operations when setting a new custom picture. Supply the required Idempotency-Key header.
+func (s *AccountService) ResetProfilePicture(ctx context.Context, params *ResetAccountProfilePictureParams, opts ...RequestOption) (*Account, error) {
+	if params == nil {
+		params = &ResetAccountProfilePictureParams{}
+	}
+	spec := newSpec("resetAccountProfilePicture", "DELETE", "/v1/account/profile-picture")
+	spec.idempotent = true
+	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
+	var out Account
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Revoke Account Service Key
+//
+// Revokes the account-owned service key identified by serviceKeyId and returns its revoked metadata. Repeating the revocation is stable. Revocation changes the credential's validity; it does not create a replacement key. Supply the required Idempotency-Key header.
+func (s *AccountService) RevokeAccountServiceKey(ctx context.Context, params *RevokeAccountServiceKeyParams, opts ...RequestOption) (*RevokeAccountServiceKeyResponse, error) {
+	if params == nil {
+		params = &RevokeAccountServiceKeyParams{}
+	}
+	spec := newSpec("revokeAccountServiceKey", "DELETE", "/v1/account/service-keys/{serviceKeyId}")
+	spec.idempotent = true
+	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
+	spec.setPath("serviceKeyId", params.ServiceKeyID)
+	var out RevokeAccountServiceKeyResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Revoke connected application
+//
+// Revokes the authenticated user's grant for one OAuth application.
+func (s *AccountService) RevokeAuthorizedApplication(ctx context.Context, params *RevokeAuthorizedApplicationParams, opts ...RequestOption) error {
+	if params == nil {
+		params = &RevokeAuthorizedApplicationParams{}
+	}
+	spec := newSpec("revokeAuthorizedApplication", "DELETE", "/v1/account/oauth/authorized-applications/{applicationId}")
+	spec.setPath("applicationId", params.ApplicationID)
+	return s.c.do(ctx, spec, nil, opts)
+}
+
+// Update account
+//
+// Updates the supplied firstName and lastName fields on the authenticated account and returns the updated profile. Only the documented profile fields can be changed through this endpoint; profile-picture uploads and phone-number verification use their dedicated operations. Supply the required Idempotency-Key header.
+func (s *AccountService) Update(ctx context.Context, params *UpdateAccountParams, opts ...RequestOption) (*Account, error) {
+	if params == nil {
+		params = &UpdateAccountParams{}
+	}
+	spec := newSpec("updateAccount", "PATCH", "/v1/account")
+	spec.idempotent = true
+	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
+	spec.setJSON(params.Body)
+	var out Account
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// SystemService groups the system operations.
+type SystemService struct {
+	c *core
+}
+
+func newSystemService(c *core) *SystemService {
+	s := &SystemService{c: c}
+	return s
+}
+
+// Request app installation
+//
+// Authenticates a registered app backend using a short-lived signed client assertion. Creates request metadata only; customer approval is still required.
+func (s *SystemService) CreateAppInstallationRequest(ctx context.Context, params *CreateAppInstallationRequestParams, opts ...RequestOption) (*CreateAppInstallationRequestResponse, error) {
+	if params == nil {
+		params = &CreateAppInstallationRequestParams{}
+	}
+	spec := newSpec("createAppInstallationRequest", "POST", "/v1/installation-requests")
+	spec.setJSON(params.Body)
+	var out CreateAppInstallationRequestResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Redeem installation credential
+//
+// The registered app backend authenticates with a signed client assertion and a single-use code. Plaintext is returned only once; retries return status and never create another credential.
+func (s *SystemService) RedeemAppInstallationDelivery(ctx context.Context, params *RedeemAppInstallationDeliveryParams, opts ...RequestOption) (*RedeemAppInstallationDeliveryResponse, error) {
+	if params == nil {
+		params = &RedeemAppInstallationDeliveryParams{}
+	}
+	spec := newSpec("redeemAppInstallationDelivery", "POST", "/v1/installation-requests/redeem")
+	spec.setJSON(params.Body)
+	var out RedeemAppInstallationDeliveryResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
 // AuthService groups the auth operations.
 type AuthService struct {
 	c      *core
@@ -3749,74 +5292,6 @@ func newAuthService(c *core) *AuthService {
 	s := &AuthService{c: c}
 	s.Device = newAuthDeviceService(c)
 	return s
-}
-
-// Sign in with invitation SSO
-//
-// Returns an authentication URL for the organization SSO connection associated with the supplied invitation token. Supply token and returnTo. Complete the returned authentication flow; requesting its URL does not itself accept the invitation.
-func (s *AuthService) BeginInvitationSso(ctx context.Context, params *BeginInvitationSsoParams, opts ...RequestOption) (*OrganizationAuthenticationRedirect, error) {
-	if params == nil {
-		params = &BeginInvitationSsoParams{}
-	}
-	spec := newSpec("beginInvitationSso", "POST", "/v1/auth/organizations/{orgId}/sso/invitation")
-	spec.setPath("orgId", params.OrgID)
-	spec.setJSON(params.Body)
-	var out OrganizationAuthenticationRedirect
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// Sign in with organization SSO
-//
-// Returns a URL to authenticate through the selected organization’s current SSO connection. Supply returnTo and open the returned URL to continue the flow. Receiving the URL does not establish an authenticated session.
-func (s *AuthService) BeginOrganizationAuthentication(ctx context.Context, params *BeginOrganizationAuthenticationParams, opts ...RequestOption) (*OrganizationAuthenticationRedirect, error) {
-	if params == nil {
-		params = &BeginOrganizationAuthenticationParams{}
-	}
-	spec := newSpec("beginOrganizationAuthentication", "POST", "/v1/auth/organizations/{orgId}/sso/authenticate")
-	spec.setPath("orgId", params.OrgID)
-	spec.setJSON(params.Body)
-	var out OrganizationAuthenticationRedirect
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// Sign in to close organization
-//
-// Returns an authentication URL for the current organization owner to inspect organization closure. Supply returnTo and complete the returned flow. This operation initiates authentication and does not close the organization.
-func (s *AuthService) BeginOrganizationClosureAuthentication(ctx context.Context, params *BeginOrganizationClosureAuthenticationParams, opts ...RequestOption) (*OrganizationAuthenticationRedirect, error) {
-	if params == nil {
-		params = &BeginOrganizationClosureAuthenticationParams{}
-	}
-	spec := newSpec("beginOrganizationClosureAuthentication", "POST", "/v1/auth/organizations/{orgId}/sso/closure-authenticate")
-	spec.setPath("orgId", params.OrgID)
-	spec.setJSON(params.Body)
-	var out OrganizationAuthenticationRedirect
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// Begin organization SSO admission
-//
-// Returns an SSO admission URL for an existing account and the selected organization. Supply returnTo for the continuation URL. Admission requires completing the returned authentication flow; creating the URL does not itself grant membership.
-func (s *AuthService) BeginOrganizationSsoAdmission(ctx context.Context, params *BeginOrganizationSsoAdmissionParams, opts ...RequestOption) (*OrganizationAuthenticationRedirect, error) {
-	if params == nil {
-		params = &BeginOrganizationSsoAdmissionParams{}
-	}
-	spec := newSpec("beginOrganizationSsoAdmission", "POST", "/v1/auth/organizations/{orgId}/sso/admission")
-	spec.setPath("orgId", params.OrgID)
-	spec.setJSON(params.Body)
-	var out OrganizationAuthenticationRedirect
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
 }
 
 // Create organization setup portal link
@@ -3999,665 +5474,6 @@ func (s *AuthDeviceService) Token(ctx context.Context, params *DeviceTokenParams
 	spec := newSpec("deviceToken", "POST", "/v1/auth/device/token")
 	spec.setJSON(params.Body)
 	var out DeviceTokenResponse
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// OrganizationsService groups the organizations operations.
-type OrganizationsService struct {
-	c        *core
-	Billing  *OrganizationsBillingService
-	Projects *OrganizationsProjectsService
-}
-
-func newOrganizationsService(c *core) *OrganizationsService {
-	s := &OrganizationsService{c: c}
-	s.Billing = newOrganizationsBillingService(c)
-	s.Projects = newOrganizationsProjectsService(c)
-	return s
-}
-
-// OrganizationsBillingService groups the organizations.billing operations.
-type OrganizationsBillingService struct {
-	c *core
-}
-
-func newOrganizationsBillingService(c *core) *OrganizationsBillingService {
-	s := &OrganizationsBillingService{c: c}
-	return s
-}
-
-// Change plan
-//
-// Purchases or changes the selected project's plan for the supplied category and planCode. A 202 response means the change is pending: poll the returned operation URL and honor Retry-After until it succeeds or fails. A 200 response means the idempotency key resolved to an operation that is already terminal; inspect that result rather than assuming success from the status code alone. Supply the required Idempotency-Key header. Supply both organizationId and projectId to select the project within its organization.
-func (s *OrganizationsBillingService) ChangePlan(ctx context.Context, params *ChangePlanParams, opts ...RequestOption) (*ChangePlanResponse, error) {
-	if params == nil {
-		params = &ChangePlanParams{}
-	}
-	spec := newSpec("changePlan", "POST", "/v1/organizations/{organizationId}/billing/projects/{projectId}/purchase")
-	spec.idempotent = true
-	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
-	spec.setPath("organizationId", params.OrganizationID)
-	spec.setPath("projectId", params.ProjectID)
-	spec.setJSON(params.Body)
-	var out ChangePlanResponse
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// Create payment method checkout
-//
-// Returns a hosted payment-method collection URL for the selected organization. An Idempotency-Key header is optional; supply one to make retries safe. Complete the returned checkout flow. Receiving the URL does not mean a card has been saved; check payment-method status afterward.
-func (s *OrganizationsBillingService) CreateOrganizationPaymentMethodCheckout(ctx context.Context, params *CreateOrganizationPaymentMethodCheckoutParams, opts ...RequestOption) (*CreateOrganizationPaymentMethodCheckoutResponse, error) {
-	if params == nil {
-		params = &CreateOrganizationPaymentMethodCheckoutParams{}
-	}
-	spec := newSpec("createOrganizationPaymentMethodCheckout", "POST", "/v1/organizations/{organizationId}/billing/checkout")
-	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
-	spec.setPath("organizationId", params.OrganizationID)
-	var out CreateOrganizationPaymentMethodCheckoutResponse
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// Create card setup intent
-//
-// Creates payment-provider configuration for collecting a card for the selected organization and returns clientSecret and publishableKey. Supply the required Idempotency-Key header. Complete the provider’s card-collection flow separately and avoid logging the returned client secret.
-func (s *OrganizationsBillingService) CreateOrganizationSetupIntent(ctx context.Context, params *CreateOrganizationSetupIntentParams, opts ...RequestOption) (*CreateOrganizationSetupIntentResponse, error) {
-	if params == nil {
-		params = &CreateOrganizationSetupIntentParams{}
-	}
-	spec := newSpec("createOrganizationSetupIntent", "POST", "/v1/organizations/{organizationId}/billing/setup-intent")
-	spec.idempotent = true
-	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
-	spec.setPath("organizationId", params.OrganizationID)
-	var out CreateOrganizationSetupIntentResponse
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// Get the project's effective billing terms
-//
-// Returns what the selected project is billed on now, per category it holds: the plan as its subscription has it, with any override applied, each fixed charge at the subscription's price and quantity, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. Supply both organizationId and projectId; the organization must pay for the project. This operation does not change billing.
-func (s *OrganizationsBillingService) GetEffectiveTerms(ctx context.Context, params *GetEffectiveTermsParams, opts ...RequestOption) (*GetEffectiveTermsResponse, error) {
-	if params == nil {
-		params = &GetEffectiveTermsParams{}
-	}
-	spec := newSpec("getEffectiveTerms", "GET", "/v1/organizations/{organizationId}/billing/projects/{projectId}/terms")
-	spec.safe = true
-	spec.setPath("organizationId", params.OrganizationID)
-	spec.setPath("projectId", params.ProjectID)
-	var out GetEffectiveTermsResponse
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// Get organization billing overview
-//
-// Returns the selected organization’s billing subscription and entitlementsVersion. The subscription can be null. Read the returned plan, charges and entitlements to inspect organization billing; this operation does not purchase or change a plan.
-func (s *OrganizationsBillingService) GetOrganizationBillingOverview(ctx context.Context, params *GetOrganizationBillingOverviewParams, opts ...RequestOption) (*GetOrganizationBillingOverviewResponse, error) {
-	if params == nil {
-		params = &GetOrganizationBillingOverviewParams{}
-	}
-	spec := newSpec("getOrganizationBillingOverview", "GET", "/v1/organizations/{organizationId}/billing")
-	spec.safe = true
-	spec.setPath("organizationId", params.OrganizationID)
-	var out GetOrganizationBillingOverviewResponse
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// Get organization credit
-//
-// Returns the credit the selected organization holds: on credit notes, such as the unused time of a plan an upgrade replaced or the unused days of a prorated fixed charge it released, and in its wallet: the credit Photon granted it, such as a new account's first organization's welcome credit, and any prepaid credit it bought. It offsets that organization's invoices of any kind except one-off invoices, credit notes first. Reading it does not apply or change credit.
-func (s *OrganizationsBillingService) GetOrganizationCredit(ctx context.Context, params *GetOrganizationCreditParams, opts ...RequestOption) (*GetOrganizationCreditResponse, error) {
-	if params == nil {
-		params = &GetOrganizationCreditParams{}
-	}
-	spec := newSpec("getOrganizationCredit", "GET", "/v1/organizations/{organizationId}/billing/credit")
-	spec.safe = true
-	spec.setPath("organizationId", params.OrganizationID)
-	var out GetOrganizationCreditResponse
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// Get organization payment method
-//
-// Reports whether the selected organization has a card on file and returns its documented payment-method metadata. Reading this endpoint does not collect a new card or create a checkout session.
-func (s *OrganizationsBillingService) GetOrganizationPaymentMethod(ctx context.Context, params *GetOrganizationPaymentMethodParams, opts ...RequestOption) (*GetOrganizationPaymentMethodResponse, error) {
-	if params == nil {
-		params = &GetOrganizationPaymentMethodParams{}
-	}
-	spec := newSpec("getOrganizationPaymentMethod", "GET", "/v1/organizations/{organizationId}/billing/payment-method")
-	spec.safe = true
-	spec.setPath("organizationId", params.OrganizationID)
-	var out GetOrganizationPaymentMethodResponse
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// Get the organization's effective billing terms
-//
-// Returns what the selected organization is billed on now on its own subscription, such as SSO and 10DLC campaigns: the plan as the subscription has it, with any override applied, each fixed charge at the subscription's price and the quantity the organization holds, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. subscription has a project subscription's terms without its category, and is null when the organization holds none. Project subscriptions are read per project. This operation does not change billing.
-func (s *OrganizationsBillingService) GetOrganizationTerms(ctx context.Context, params *GetOrganizationTermsParams, opts ...RequestOption) (*GetOrganizationTermsResponse, error) {
-	if params == nil {
-		params = &GetOrganizationTermsParams{}
-	}
-	spec := newSpec("getOrganizationTerms", "GET", "/v1/organizations/{organizationId}/billing/terms")
-	spec.safe = true
-	spec.setPath("organizationId", params.OrganizationID)
-	var out GetOrganizationTermsResponse
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// List credit activity
-//
-// Returns one page of how the selected organization's credit balance changed, newest first: credit notes issued and credit granted, credit applied to invoices, credit restored when the change an invoice paid for never applied, and credit voided. Each entry names the credit note (none for granted credit), the invoice when there is one, and the charge and subscription the credit note credits, or that the credit was a grant. Pass nextPage as page to read further. This operation does not change billing.
-func (s *OrganizationsBillingService) ListCreditActivity(ctx context.Context, params *ListCreditActivityParams, opts ...RequestOption) (*ListCreditActivityResponse, error) {
-	if params == nil {
-		params = &ListCreditActivityParams{}
-	}
-	spec := newSpec("listCreditActivity", "GET", "/v1/organizations/{organizationId}/billing/credit/activity")
-	spec.safe = true
-	spec.setPath("organizationId", params.OrganizationID)
-	spec.addQuery("page", params.Page)
-	var out ListCreditActivityResponse
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// List invoices
-//
-// Returns one page of the selected organization's invoices, newest first: every invoice issued to it with a nonzero total or actual charges, including charges fully paid by credit; drafts and empty invoices are excluded. Each names what it charged the organization's own subscription and each project. Pass subject to list only the invoices that charge the organization itself or one of its projects, and nextCursor as cursor to read further. Listing invoices does not make a payment or modify a subscription.
-func (s *OrganizationsBillingService) ListInvoices(ctx context.Context, params *ListInvoicesParams, opts ...RequestOption) (*ListInvoicesResponse, error) {
-	if params == nil {
-		params = &ListInvoicesParams{}
-	}
-	spec := newSpec("listInvoices", "GET", "/v1/organizations/{organizationId}/billing/invoices")
-	spec.safe = true
-	spec.setPath("organizationId", params.OrganizationID)
-	spec.addQuery("cursor", params.Cursor)
-	spec.addQuery("limit", params.Limit)
-	spec.addQuery("subject", params.Subject)
-	var out ListInvoicesResponse
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// Preview an organization billing change
-//
-// Previews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing.
-func (s *OrganizationsBillingService) PreviewOrganizationChange(ctx context.Context, params *PreviewOrganizationChangeParams, opts ...RequestOption) (*PreviewOrganizationChangeResponse, error) {
-	if params == nil {
-		params = &PreviewOrganizationChangeParams{}
-	}
-	spec := newSpec("previewOrganizationChange", "POST", "/v1/organizations/{organizationId}/billing/preview")
-	spec.setPath("organizationId", params.OrganizationID)
-	spec.setJSON(params.Body)
-	var out PreviewOrganizationChangeResponse
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// Preview a project billing change
-//
-// Previews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. Supply both organizationId and projectId; the organization must pay for the project.
-func (s *OrganizationsBillingService) PreviewProjectChange(ctx context.Context, params *PreviewProjectChangeParams, opts ...RequestOption) (*PreviewProjectChangeResponse, error) {
-	if params == nil {
-		params = &PreviewProjectChangeParams{}
-	}
-	spec := newSpec("previewProjectChange", "POST", "/v1/organizations/{organizationId}/billing/projects/{projectId}/preview")
-	spec.setPath("organizationId", params.OrganizationID)
-	spec.setPath("projectId", params.ProjectID)
-	spec.setJSON(params.Body)
-	var out PreviewProjectChangeResponse
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// OrganizationsProjectsService groups the organizations.projects operations.
-type OrganizationsProjectsService struct {
-	c *core
-}
-
-func newOrganizationsProjectsService(c *core) *OrganizationsProjectsService {
-	s := &OrganizationsProjectsService{c: c}
-	return s
-}
-
-// Check project slug availability
-//
-// Reports whether createProject would accept `slug` right now. Advisory: only the create itself allocates, so a caller must still handle SLUG_TAKEN. A malformed slug is rejected on shape; a reserved slug, a slug held by an active project, and a slug retired with a deleted project each answer `available: false` with a reason.
-func (s *OrganizationsProjectsService) CheckProjectSlugAvailability(ctx context.Context, params *CheckProjectSlugAvailabilityParams, opts ...RequestOption) (*CheckProjectSlugAvailabilityResponse, error) {
-	if params == nil {
-		params = &CheckProjectSlugAvailabilityParams{}
-	}
-	spec := newSpec("checkProjectSlugAvailability", "GET", "/v1/organizations/{organizationId}/projects/slug-availability")
-	spec.safe = true
-	spec.setPath("organizationId", params.OrganizationID)
-	spec.addQuery("slug", params.Slug)
-	var out CheckProjectSlugAvailabilityResponse
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// Count projects
-//
-// Counts the projects the same filter would list. The count is read from the primary, so it is authoritative rather than replica-lagged.
-func (s *OrganizationsProjectsService) Count(ctx context.Context, params *CountProjectsParams, opts ...RequestOption) (*ProjectCount, error) {
-	if params == nil {
-		params = &CountProjectsParams{}
-	}
-	spec := newSpec("countProjects", "GET", "/v1/organizations/{organizationId}/projects/count")
-	spec.safe = true
-	spec.setPath("organizationId", params.OrganizationID)
-	spec.addQuery("createdAfter", params.CreatedAfter)
-	spec.addQuery("createdBefore", params.CreatedBefore)
-	spec.addQuery("query", params.Query)
-	var out ProjectCount
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// Create project
-//
-// Creates in the authorized organization. In addition to account credentials, explicitly granted Service Identity API keys and M2M tokens may create projects. Project API keys cannot create projects. Creator and private credential evidence come only from the trusted authorization context. The caller-selected slug is immutable, must be 3 to 63 lowercase ASCII alphanumerics separated by single hyphens, and cannot be reserved or held by any active or deleted project.
-func (s *OrganizationsProjectsService) Create(ctx context.Context, params *CreateProjectParams, opts ...RequestOption) (*Project, error) {
-	if params == nil {
-		params = &CreateProjectParams{}
-	}
-	spec := newSpec("createProject", "POST", "/v1/organizations/{organizationId}/projects")
-	spec.idempotent = true
-	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
-	spec.setPath("organizationId", params.OrganizationID)
-	spec.setJSON(params.Body)
-	var out Project
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// Get project closure status
-//
-// Returns closure progress for projectId within organizationId, including deletionOperationId, domain progress and ready. This read operation does not initiate deletion.
-func (s *OrganizationsProjectsService) GetProjectClosureStatus(ctx context.Context, params *GetProjectClosureStatusParams, opts ...RequestOption) (*GetProjectClosureStatusResponse, error) {
-	if params == nil {
-		params = &GetProjectClosureStatusParams{}
-	}
-	spec := newSpec("getProjectClosureStatus", "GET", "/v1/organizations/{organizationId}/projects/closure-status")
-	spec.safe = true
-	spec.setPath("organizationId", params.OrganizationID)
-	spec.addQuery("projectId", params.ProjectID)
-	var out GetProjectClosureStatusResponse
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// List projects
-//
-// Returns a cursor-paginated page of the active projects in organizationId. Filter using query and the documented creation-time bounds, and navigate with pageSize and pageToken. Project roles are not returned and role is not a supported filter.
-func (s *OrganizationsProjectsService) List(ctx context.Context, params *ListProjectsParams, opts ...RequestOption) (*ProjectPage, error) {
-	if params == nil {
-		params = &ListProjectsParams{}
-	}
-	spec := newSpec("listProjects", "GET", "/v1/organizations/{organizationId}/projects")
-	spec.safe = true
-	spec.setPath("organizationId", params.OrganizationID)
-	spec.addQuery("createdAfter", params.CreatedAfter)
-	spec.addQuery("createdBefore", params.CreatedBefore)
-	spec.addQuery("query", params.Query)
-	spec.addQuery("pageSize", params.PageSize)
-	spec.addQuery("pageToken", params.PageToken)
-	var out ProjectPage
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// AccountService groups the account operations.
-type AccountService struct {
-	c          *core
-	Onboarding *AccountOnboardingService
-}
-
-func newAccountService(c *core) *AccountService {
-	s := &AccountService{c: c}
-	s.Onboarding = newAccountOnboardingService(c)
-	return s
-}
-
-// Commit profile picture
-//
-// Commits a profile picture previously uploaded through createAccountProfilePictureUpload. Call this only after the direct multipart upload succeeds, using the uploadId from the same upload session and a stable Idempotency-Key. The service validates the temporary object's ownership, size, content type, image bytes, dimensions, encryption, and age before changing the Account.
-func (s *AccountService) CommitProfilePicture(ctx context.Context, params *CommitAccountProfilePictureParams, opts ...RequestOption) (*Account, error) {
-	if params == nil {
-		params = &CommitAccountProfilePictureParams{}
-	}
-	spec := newSpec("commitAccountProfilePicture", "PUT", "/v1/account/profile-picture")
-	spec.idempotent = true
-	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
-	spec.setJSON(params.Body)
-	var out Account
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// Confirm phone verification
-//
-// Binds the number once the code is approved. Repeat calls return the bound Account.
-func (s *AccountService) ConfirmPhoneVerification(ctx context.Context, params *ConfirmAccountPhoneVerificationParams, opts ...RequestOption) (*Account, error) {
-	if params == nil {
-		params = &ConfirmAccountPhoneVerificationParams{}
-	}
-	spec := newSpec("confirmAccountPhoneVerification", "PUT", "/v1/account/phone")
-	spec.setJSON(params.Body)
-	var out Account
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// Create profile picture upload
-//
-// Creates a ten-minute, Account-bound presigned S3 POST for a JPEG, PNG, or WebP profile picture up to 5 MiB. Copy every returned formFields entry into a multipart/form-data request to uploadUrl, append the local file as the final form part, and upload it directly without sending Photon credentials. After the upload succeeds, call commitAccountProfilePicture with the returned uploadId. Do not cache or log the upload URL or form fields.
-func (s *AccountService) CreateProfilePictureUpload(ctx context.Context, params *CreateAccountProfilePictureUploadParams, opts ...RequestOption) (*ProfilePictureUpload, error) {
-	if params == nil {
-		params = &CreateAccountProfilePictureUploadParams{}
-	}
-	spec := newSpec("createAccountProfilePictureUpload", "POST", "/v1/account/profile-picture/uploads")
-	spec.setJSON(params.Body)
-	var out ProfilePictureUpload
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// Create Account Service Key
-//
-// Creates a service key for the authenticated account with the supplied name and optional expiresAt. Returns key metadata and a one-time credential; store the credential securely because it cannot be retrieved through the listing endpoint. These credentials act as the account and must not be distributed as project-scoped keys. Supply the required Idempotency-Key header.
-func (s *AccountService) CreateAccountServiceKey(ctx context.Context, params *CreateAccountServiceKeyParams, opts ...RequestOption) (*CreateAccountServiceKeyResponse, error) {
-	if params == nil {
-		params = &CreateAccountServiceKeyParams{}
-	}
-	spec := newSpec("createAccountServiceKey", "POST", "/v1/account/service-keys")
-	spec.idempotent = true
-	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
-	spec.setJSON(params.Body)
-	var out CreateAccountServiceKeyResponse
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// Delete account
-//
-// Deletes the authenticated account and returns its account tombstone. The operation is rejected while the account still owns organizations; transfer or close those organizations before retrying. This endpoint acts on the caller's account and does not accept another account's identifier.
-func (s *AccountService) Delete(ctx context.Context, opts ...RequestOption) (*Account, error) {
-	spec := newSpec("deleteAccount", "DELETE", "/v1/account")
-	var out Account
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// Get account
-//
-// Returns the profile of the authenticated account. The account is selected from the credential rather than a request parameter. A missing or deleted account is reported as an error instead of an empty profile.
-func (s *AccountService) Get(ctx context.Context, opts ...RequestOption) (*Account, error) {
-	spec := newSpec("getAccount", "GET", "/v1/account")
-	spec.safe = true
-	var out Account
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// List Account Service Keys
-//
-// Returns metadata for the authenticated account's unrevoked service keys, including expired keys, ordered newest first. Secret values are not returned; a key's credential is disclosed only when that key is created.
-func (s *AccountService) ListAccountServiceKeys(ctx context.Context, opts ...RequestOption) (*ListAccountServiceKeysResponse, error) {
-	spec := newSpec("listAccountServiceKeys", "GET", "/v1/account/service-keys")
-	spec.safe = true
-	var out ListAccountServiceKeysResponse
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// List connected applications
-//
-// Lists the OAuth applications authorized by the authenticated user.
-func (s *AccountService) ListAuthorizedApplications(ctx context.Context, params *ListAuthorizedApplicationsParams, opts ...RequestOption) (*ListAuthorizedApplicationsResponse, error) {
-	if params == nil {
-		params = &ListAuthorizedApplicationsParams{}
-	}
-	spec := newSpec("listAuthorizedApplications", "GET", "/v1/account/oauth/authorized-applications")
-	spec.safe = true
-	spec.addQuery("after", params.After)
-	spec.addQuery("before", params.Before)
-	spec.addQuery("limit", params.Limit)
-	spec.addQuery("order", params.Order)
-	var out ListAuthorizedApplicationsResponse
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// Remove profile picture
-//
-// Removes the authenticated account's custom profile picture and returns the account using its default picture. This operation does not upload a replacement; use the upload-and-commit operations when setting a new custom picture. Supply the required Idempotency-Key header.
-func (s *AccountService) ResetProfilePicture(ctx context.Context, params *ResetAccountProfilePictureParams, opts ...RequestOption) (*Account, error) {
-	if params == nil {
-		params = &ResetAccountProfilePictureParams{}
-	}
-	spec := newSpec("resetAccountProfilePicture", "DELETE", "/v1/account/profile-picture")
-	spec.idempotent = true
-	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
-	var out Account
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// Revoke Account Service Key
-//
-// Revokes the account-owned service key identified by serviceKeyId and returns its revoked metadata. Repeating the revocation is stable. Revocation changes the credential's validity; it does not create a replacement key. Supply the required Idempotency-Key header.
-func (s *AccountService) RevokeAccountServiceKey(ctx context.Context, params *RevokeAccountServiceKeyParams, opts ...RequestOption) (*RevokeAccountServiceKeyResponse, error) {
-	if params == nil {
-		params = &RevokeAccountServiceKeyParams{}
-	}
-	spec := newSpec("revokeAccountServiceKey", "DELETE", "/v1/account/service-keys/{serviceKeyId}")
-	spec.idempotent = true
-	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
-	spec.setPath("serviceKeyId", params.ServiceKeyID)
-	var out RevokeAccountServiceKeyResponse
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// Revoke connected application
-//
-// Revokes the authenticated user's grant for one OAuth application.
-func (s *AccountService) RevokeAuthorizedApplication(ctx context.Context, params *RevokeAuthorizedApplicationParams, opts ...RequestOption) error {
-	if params == nil {
-		params = &RevokeAuthorizedApplicationParams{}
-	}
-	spec := newSpec("revokeAuthorizedApplication", "DELETE", "/v1/account/oauth/authorized-applications/{applicationId}")
-	spec.setPath("applicationId", params.ApplicationID)
-	return s.c.do(ctx, spec, nil, opts)
-}
-
-// Start phone verification
-//
-// Sends an SMS code. Answers CAPTCHA_REQUIRED with the widget to render when no solved challenge accompanies the request; retry with the returned challengeContext and a token. Rate limited per account, per destination number, and globally; a rejection carries Retry-After.
-func (s *AccountService) StartPhoneVerification(ctx context.Context, params *StartAccountPhoneVerificationParams, opts ...RequestOption) (*StartAccountPhoneVerificationResponse, error) {
-	if params == nil {
-		params = &StartAccountPhoneVerificationParams{}
-	}
-	spec := newSpec("startAccountPhoneVerification", "POST", "/v1/account/phone/verifications")
-	spec.setJSON(params.Body)
-	var out StartAccountPhoneVerificationResponse
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// Update account
-//
-// Updates the supplied firstName and lastName fields on the authenticated account and returns the updated profile. Only the documented profile fields can be changed through this endpoint; profile-picture uploads and phone-number verification use their dedicated operations. Supply the required Idempotency-Key header.
-func (s *AccountService) Update(ctx context.Context, params *UpdateAccountParams, opts ...RequestOption) (*Account, error) {
-	if params == nil {
-		params = &UpdateAccountParams{}
-	}
-	spec := newSpec("updateAccount", "PATCH", "/v1/account")
-	spec.idempotent = true
-	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
-	spec.setJSON(params.Body)
-	var out Account
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// AccountOnboardingService groups the account.onboarding operations.
-type AccountOnboardingService struct {
-	c *core
-}
-
-func newAccountOnboardingService(c *core) *AccountOnboardingService {
-	s := &AccountOnboardingService{c: c}
-	return s
-}
-
-// Complete onboarding
-//
-// Marks the authenticated account's onboarding flow complete and returns a confirmation with onboarded set to true. No prior update is required, but submit any onboarding information you want to keep with updateAccountOnboarding first, because further edits through updateAccountOnboarding are rejected after completion.
-func (s *AccountOnboardingService) Complete(ctx context.Context, opts ...RequestOption) (*CompleteAccountOnboardingResponse, error) {
-	spec := newSpec("completeAccountOnboarding", "POST", "/v1/account/onboarding/complete")
-	var out CompleteAccountOnboardingResponse
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// Get onboarding state
-//
-// Returns the authenticated account's current onboarding state and collected onboarding information. Reading the state does not complete onboarding or modify the supplied account information.
-func (s *AccountOnboardingService) Get(ctx context.Context, opts ...RequestOption) (*GetAccountOnboardingResponse, error) {
-	spec := newSpec("getAccountOnboarding", "GET", "/v1/account/onboarding")
-	spec.safe = true
-	var out GetAccountOnboardingResponse
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// Update onboarding state
-//
-// Updates the authenticated account's submitted onboarding information, including the documented company, background, platform and referral fields. Returns the updated onboarding state. Completed onboarding cannot be edited through this operation; completion is performed separately with completeAccountOnboarding. Supply the required Idempotency-Key header.
-func (s *AccountOnboardingService) Update(ctx context.Context, params *UpdateAccountOnboardingParams, opts ...RequestOption) (*UpdateAccountOnboardingResponse, error) {
-	if params == nil {
-		params = &UpdateAccountOnboardingParams{}
-	}
-	spec := newSpec("updateAccountOnboarding", "PATCH", "/v1/account/onboarding")
-	spec.idempotent = true
-	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
-	spec.setJSON(params.Body)
-	var out UpdateAccountOnboardingResponse
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// SystemService groups the system operations.
-type SystemService struct {
-	c *core
-}
-
-func newSystemService(c *core) *SystemService {
-	s := &SystemService{c: c}
-	return s
-}
-
-// Request app installation
-//
-// Authenticates a registered app backend using a short-lived signed client assertion. Creates request metadata only; customer approval is still required.
-func (s *SystemService) CreateAppInstallationRequest(ctx context.Context, params *CreateAppInstallationRequestParams, opts ...RequestOption) (*CreateAppInstallationRequestResponse, error) {
-	if params == nil {
-		params = &CreateAppInstallationRequestParams{}
-	}
-	spec := newSpec("createAppInstallationRequest", "POST", "/v1/installation-requests")
-	spec.setJSON(params.Body)
-	var out CreateAppInstallationRequestResponse
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// Redeem installation credential
-//
-// The registered app backend authenticates with a signed client assertion and a single-use code. Plaintext is returned only once; retries return status and never create another credential.
-func (s *SystemService) RedeemAppInstallationDelivery(ctx context.Context, params *RedeemAppInstallationDeliveryParams, opts ...RequestOption) (*RedeemAppInstallationDeliveryResponse, error) {
-	if params == nil {
-		params = &RedeemAppInstallationDeliveryParams{}
-	}
-	spec := newSpec("redeemAppInstallationDelivery", "POST", "/v1/installation-requests/redeem")
-	spec.setJSON(params.Body)
-	var out RedeemAppInstallationDeliveryResponse
 	if err := s.c.do(ctx, spec, &out, opts); err != nil {
 		return nil, err
 	}

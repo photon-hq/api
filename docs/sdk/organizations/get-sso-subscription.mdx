@@ -1,0 +1,177 @@
+---
+title: "Read SSO subscription"
+icon: arrow-down-left
+description: "Read SSO subscription: getSsoSubscription in the TypeScript, Python, Rust and Go clients."
+---
+
+`GET /v1/organizations/{organizationId}/sso/subscription`
+
+
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.getSsoSubscription(input: GetSsoSubscriptionInput, options?: RequestOptions): Promise<GetSsoSubscriptionOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.get_sso_subscription(input: GetSsoSubscriptionInput) -> models.GetSsoSubscriptionResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.get_sso_subscription(organization_id: String).await -> Result<ResponseValue<types::GetSsoSubscriptionResponse>, Error<GetSsoSubscriptionError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.GetSsoSubscription(ctx context.Context, params *GetSsoSubscriptionParams, opts ...RequestOption) (*GetSsoSubscriptionResponse, error)
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.getSsoSubscription({
+  path: {
+    organizationId: "organizationId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import GetSsoSubscriptionInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.get_sso_subscription(
+    GetSsoSubscriptionInput.model_validate({
+        "path": {
+            "organizationId": "organizationId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .get_sso_subscription("organizationId".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Organizations.GetSsoSubscription(ctx, &photonapi.GetSsoSubscriptionParams{
+	OrganizationID: "organizationId",
+})
+if err != nil {
+	return err
+}
+_ = result
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "amount": "string",
+  "canConfigure": true,
+  "cancelsAt": null,
+  "currency": "string",
+  "currentPeriodEnd": "2026-01-01T00:00:00Z",
+  "failureCode": null,
+  "firstChargeAt": null,
+  "interval": "monthly",
+  "nextRenewalAt": "2026-01-01T00:00:00Z",
+  "operationId": null,
+  "paymentMethodRequired": true,
+  "state": "not_subscribed"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="organizationId" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** Organization SSO subscription and current billing terms GetSsoSubscriptionResponse
+
+<ResponseField name="amount" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="canConfigure" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="cancelsAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="currency" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="currentPeriodEnd" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="failureCode" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="firstChargeAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="interval" type={"\"monthly\""} required>
+
+</ResponseField>
+
+<ResponseField name="nextRenewalAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="operationId" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="paymentMethodRequired" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="state" type={"GetSsoSubscriptionResponseState"} required>
+
+</ResponseField>
+

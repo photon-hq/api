@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.6.0 (2026-10-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* **sync:** the SDKs no longer expose getAccountOnboarding, updateAccountOnboarding, completeAccountOnboarding, or createOrganizationSetupIntent. These dashboard onboarding and billing setup flows moved behind the dashboard session on 2026-10-17 and have rejected API credentials since.
+* **release:** the SDKs no longer expose startAccountPhoneVerification, confirmAccountPhoneVerification, beginOrganizationSsoAdmission, beginOrganizationAuthentication, beginOrganizationClosureAuthentication, beginInvitationSso, connectWhatsappBusiness, or getWhatsappSignupConfig. These operations moved behind the dashboard session and have rejected API credentials since 2026-10-17.
+
+### Features
+
+* **sync:** add the organizations and service identity API: 43 operations covering organizations and members, invitations, OAuth clients, service identities and their credentials, avatars, and SSO subscriptions
+
+
+### Bug Fixes
+
+* **release:** exclude browser-session operations from the public API (ENG-4375)
+
+
+### Documentation
+
+* **release:** correct three Go guide claims
+
 ## 0.5.0 (2026-10-16)
 
 

@@ -1,0 +1,163 @@
+---
+title: "Create an organization avatar upload"
+icon: arrow-up-right
+description: "Create an organization avatar upload: createOrganizationAvatarUpload in the TypeScript, Python, Rust and Go clients."
+---
+
+`POST /v1/organizations/{organizationId}/avatar/uploads`
+
+Upload a JPEG, PNG, or WebP image up to 5 MiB with every returned form field and the file last. Upload directly without Photon credentials, then commit the uploadId. Do not log or cache upload URLs or fields.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.createOrganizationAvatarUpload(input: CreateOrganizationAvatarUploadInput, options?: RequestOptions): Promise<CreateOrganizationAvatarUploadOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.create_organization_avatar_upload(input: CreateOrganizationAvatarUploadInput) -> models.CreateOrganizationAvatarUploadResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.create_organization_avatar_upload(organization_id: String, body: &types::CreateOrganizationAvatarUploadRequest).await -> Result<ResponseValue<types::CreateOrganizationAvatarUploadResponse>, Error<CreateOrganizationAvatarUploadError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.CreateOrganizationAvatarUpload(ctx context.Context, params *CreateOrganizationAvatarUploadParams, opts ...RequestOption) (*CreateOrganizationAvatarUploadResponse, error)
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.createOrganizationAvatarUpload({
+  path: {
+    organizationId: "organizationId",
+  },
+  body: {
+    contentType: "image/jpeg",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import CreateOrganizationAvatarUploadInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.create_organization_avatar_upload(
+    CreateOrganizationAvatarUploadInput.model_validate({
+        "path": {
+            "organizationId": "organizationId",
+        },
+        "body": {
+            "contentType": "image/jpeg",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .create_organization_avatar_upload(
+        "organizationId".to_owned(),
+        &serde_json::from_value(serde_json::json!({
+            "contentType": "image/jpeg",
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.CreateOrganizationAvatarUploadRequest
+if err := json.Unmarshal([]byte(`{
+	"contentType": "image/jpeg"
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Organizations.CreateOrganizationAvatarUpload(ctx, &photonapi.CreateOrganizationAvatarUploadParams{
+	OrganizationID: "organizationId",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 201
+{
+  "expiresAt": "2026-01-01T00:00:00Z",
+  "formFields": {},
+  "uploadId": "string",
+  "uploadUrl": "https://example.com"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="organizationId" type={"string"} required>
+
+</ParamField>
+
+
+## Body
+
+<ParamField body="contentType" type={"CreateOrganizationAvatarUploadRequestContentType"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`201`** A ten-minute organization-bound presigned upload. CreateOrganizationAvatarUploadResponse
+
+<ResponseField name="expiresAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="formFields" type={"object"} required>
+
+</ResponseField>
+
+<ResponseField name="uploadId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="uploadUrl" type={"string (uri)"} required>
+
+</ResponseField>
+

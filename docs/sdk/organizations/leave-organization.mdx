@@ -1,0 +1,205 @@
+---
+title: "Leave an organization; Owners must transfer or close first"
+icon: arrow-up-right
+description: "Leave an organization; Owners must transfer or close first: leaveOrganization in the TypeScript, Python, Rust and Go clients."
+---
+
+`POST /v1/organizations/{organizationId}/leave`
+
+
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.leaveOrganization(input: LeaveOrganizationInput, options?: RequestOptions): Promise<LeaveOrganizationOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.leave_organization(input: LeaveOrganizationInput) -> models.LeaveOrganizationResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.leave_organization(idempotency_key: String, organization_id: String, body: &types::LeaveOrganizationRequest).await -> Result<ResponseValue<types::LeaveOrganizationResponse>, Error<LeaveOrganizationError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.LeaveOrganization(ctx context.Context, params *LeaveOrganizationParams, opts ...RequestOption) (*LeaveOrganizationResponse, error)
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.leaveOrganization({
+  path: {
+    organizationId: "organizationId",
+  },
+  headers: {
+    idempotencyKey: "idempotencyKey",
+  },
+  body: {
+    expectedVersion: "expectedVersion",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import LeaveOrganizationInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.leave_organization(
+    LeaveOrganizationInput.model_validate({
+        "path": {
+            "organizationId": "organizationId",
+        },
+        "headers": {
+            "Idempotency-Key": "idempotencyKey",
+        },
+        "body": {
+            "expectedVersion": "expectedVersion",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .leave_organization(
+        "idempotencyKey".to_owned(),
+        "organizationId".to_owned(),
+        &serde_json::from_value(serde_json::json!({
+            "expectedVersion": "expectedVersion",
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.LeaveOrganizationRequest
+if err := json.Unmarshal([]byte(`{
+	"expectedVersion": "expectedVersion"
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Organizations.LeaveOrganization(ctx, &photonapi.LeaveOrganizationParams{
+	IdempotencyKey: "idempotencyKey",
+	OrganizationID: "organizationId",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "accountId": "string",
+  "createdAt": "2026-01-01T00:00:00Z",
+  "joinedVia": "creation",
+  "organizationId": "string",
+  "removedAt": null,
+  "role": "owner",
+  "roleManagedAt": null,
+  "status": "active",
+  "updatedAt": "2026-01-01T00:00:00Z",
+  "version": "string"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField header="Idempotency-Key" type={"string"} required>
+Identifies one logical mutation across retries.
+</ParamField>
+
+<ParamField path="organizationId" type={"string"} required>
+
+</ParamField>
+
+
+## Body
+
+<ParamField body="expectedVersion" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** Committed removal of the authenticated member. LeaveOrganizationResponse
+
+<ResponseField name="accountId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="joinedVia" type={"OrganizationMemberJoinedVia"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="removedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="role" type={"OrganizationMemberRole"} required>
+
+</ResponseField>
+
+<ResponseField name="roleManagedAt" type={"string (date-time) | null"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"OrganizationMemberStatus"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="version" type={"string"} required>
+
+</ResponseField>
+

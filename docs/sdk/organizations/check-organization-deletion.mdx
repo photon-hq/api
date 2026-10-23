@@ -1,0 +1,139 @@
+---
+title: "Check organization deletion prerequisites"
+icon: arrow-down-left
+description: "Check organization deletion prerequisites: checkOrganizationDeletion in the TypeScript, Python, Rust and Go clients."
+---
+
+`GET /v1/organizations/{organizationId}/deletion-check`
+
+
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.checkOrganizationDeletion(input: CheckOrganizationDeletionInput, options?: RequestOptions): Promise<CheckOrganizationDeletionOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.check_organization_deletion(input: CheckOrganizationDeletionInput) -> models.CheckOrganizationDeletionResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.check_organization_deletion(organization_id: String).await -> Result<ResponseValue<types::CheckOrganizationDeletionResponse>, Error<CheckOrganizationDeletionError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.CheckOrganizationDeletion(ctx context.Context, params *CheckOrganizationDeletionParams, opts ...RequestOption) (*CheckOrganizationDeletionResponse, error)
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.checkOrganizationDeletion({
+  path: {
+    organizationId: "organizationId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import CheckOrganizationDeletionInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.check_organization_deletion(
+    CheckOrganizationDeletionInput.model_validate({
+        "path": {
+            "organizationId": "organizationId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .check_organization_deletion("organizationId".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Organizations.CheckOrganizationDeletion(ctx, &photonapi.CheckOrganizationDeletionParams{
+	OrganizationID: "organizationId",
+})
+if err != nil {
+	return err
+}
+_ = result
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "blockers": [
+    "string"
+  ],
+  "canDelete": true,
+  "organizationId": "string",
+  "version": "string"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="organizationId" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** Check whether the organization can be deleted and list prerequisites. CheckOrganizationDeletionResponse
+
+<ResponseField name="blockers" type={"array of string"} required>
+
+</ResponseField>
+
+<ResponseField name="canDelete" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="version" type={"string"} required>
+
+</ResponseField>
+

@@ -42,26 +42,12 @@ photon.account.createProfilePictureUpload(input: CreateAccountProfilePictureUplo
 ```
 `POST /v1/account/profile-picture/uploads`
 
-**[Start phone verification](/api-client/sdk/account/start-phone-verification)**
-
-```typescript TypeScript
-photon.account.startPhoneVerification(input: StartAccountPhoneVerificationInput, options?: RequestOptions): Promise<StartAccountPhoneVerificationOutput>
-```
-`POST /v1/account/phone/verifications`
-
 **[Commit profile picture](/api-client/sdk/account/commit-profile-picture)**
 
 ```typescript TypeScript
 photon.account.commitProfilePicture(input: CommitAccountProfilePictureInput, options?: RequestOptions): Promise<CommitAccountProfilePictureOutput>
 ```
 `PUT /v1/account/profile-picture`
-
-**[Confirm phone verification](/api-client/sdk/account/confirm-phone-verification)**
-
-```typescript TypeScript
-photon.account.confirmPhoneVerification(input: ConfirmAccountPhoneVerificationInput, options?: RequestOptions): Promise<ConfirmAccountPhoneVerificationOutput>
-```
-`PUT /v1/account/phone`
 
 **[Update account](/api-client/sdk/account/update)**
 
@@ -135,26 +121,12 @@ photon.account.create_profile_picture_upload(input: CreateAccountProfilePictureU
 ```
 `POST /v1/account/profile-picture/uploads`
 
-**[Start phone verification](/api-client/sdk/account/start-phone-verification)**
-
-```python Python
-photon.account.start_phone_verification(input: StartAccountPhoneVerificationInput) -> models.StartAccountPhoneVerificationResponse
-```
-`POST /v1/account/phone/verifications`
-
 **[Commit profile picture](/api-client/sdk/account/commit-profile-picture)**
 
 ```python Python
 photon.account.commit_profile_picture(input: CommitAccountProfilePictureInput) -> models.Account
 ```
 `PUT /v1/account/profile-picture`
-
-**[Confirm phone verification](/api-client/sdk/account/confirm-phone-verification)**
-
-```python Python
-photon.account.confirm_phone_verification(input: ConfirmAccountPhoneVerificationInput) -> models.Account
-```
-`PUT /v1/account/phone`
 
 **[Update account](/api-client/sdk/account/update)**
 
@@ -228,26 +200,12 @@ client.create_account_profile_picture_upload(body: &types::ProfilePictureUploadR
 ```
 `POST /v1/account/profile-picture/uploads`
 
-**[Start phone verification](/api-client/sdk/account/start-phone-verification)**
-
-```rust Rust
-client.start_account_phone_verification(body: &types::StartAccountPhoneVerificationRequest).await -> Result<ResponseValue<types::StartAccountPhoneVerificationResponse>, Error<StartAccountPhoneVerificationError>>
-```
-`POST /v1/account/phone/verifications`
-
 **[Commit profile picture](/api-client/sdk/account/commit-profile-picture)**
 
 ```rust Rust
 client.commit_account_profile_picture(idempotency_key: String, body: &types::CommitAccountProfilePictureRequest).await -> Result<ResponseValue<types::Account>, Error<CommitAccountProfilePictureError>>
 ```
 `PUT /v1/account/profile-picture`
-
-**[Confirm phone verification](/api-client/sdk/account/confirm-phone-verification)**
-
-```rust Rust
-client.confirm_account_phone_verification(body: &types::ConfirmAccountPhoneVerificationRequest).await -> Result<ResponseValue<types::Account>, Error<ConfirmAccountPhoneVerificationError>>
-```
-`PUT /v1/account/phone`
 
 **[Update account](/api-client/sdk/account/update)**
 
@@ -321,26 +279,12 @@ client.Account.CreateProfilePictureUpload(ctx context.Context, params *CreateAcc
 ```
 `POST /v1/account/profile-picture/uploads`
 
-**[Start phone verification](/api-client/sdk/account/start-phone-verification)**
-
-```go Go
-client.Account.StartPhoneVerification(ctx context.Context, params *StartAccountPhoneVerificationParams, opts ...RequestOption) (*StartAccountPhoneVerificationResponse, error)
-```
-`POST /v1/account/phone/verifications`
-
 **[Commit profile picture](/api-client/sdk/account/commit-profile-picture)**
 
 ```go Go
 client.Account.CommitProfilePicture(ctx context.Context, params *CommitAccountProfilePictureParams, opts ...RequestOption) (*Account, error)
 ```
 `PUT /v1/account/profile-picture`
-
-**[Confirm phone verification](/api-client/sdk/account/confirm-phone-verification)**
-
-```go Go
-client.Account.ConfirmPhoneVerification(ctx context.Context, params *ConfirmAccountPhoneVerificationParams, opts ...RequestOption) (*Account, error)
-```
-`PUT /v1/account/phone`
 
 **[Update account](/api-client/sdk/account/update)**
 
@@ -379,10 +323,6 @@ client.Account.RevokeAuthorizedApplication(ctx context.Context, params *RevokeAu
 
 </Tab>
 </Tabs>
-
-## Resources
-
-- [Onboarding](/api-client/sdk/account/onboarding)
 
 ## Models
 
@@ -483,23 +423,6 @@ Pagination cursors to pass as after or before in the next list request.
 </ResponseField>
 
 <ResponseField name="uploadUrl" type={"string (uri)"} required>
-
-</ResponseField>
-
-
-### StartAccountPhoneVerificationResponse
-
-
-
-<ResponseField name="channel" type={"\"sms\""} required>
-
-</ResponseField>
-
-<ResponseField name="expiresAt" type={"string (date-time)"} required>
-
-</ResponseField>
-
-<ResponseField name="resendAvailableAt" type={"string (date-time)"} required>
 
 </ResponseField>
 

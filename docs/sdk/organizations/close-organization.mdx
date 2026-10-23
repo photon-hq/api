@@ -1,0 +1,145 @@
+---
+title: "Delete organization"
+icon: x
+description: "Delete organization: closeOrganization in the TypeScript, Python, Rust and Go clients."
+---
+
+`DELETE /v1/organizations/{organizationId}`
+
+
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.closeOrganization(input: CloseOrganizationInput, options?: RequestOptions): Promise<CloseOrganizationOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.close_organization(input: CloseOrganizationInput) -> None
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.close_organization(idempotency_key: String, organization_id: String, body: &types::CloseOrganizationRequest).await -> Result<ResponseValue<()>, Error<CloseOrganizationError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.CloseOrganization(ctx context.Context, params *CloseOrganizationParams, opts ...RequestOption) error
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+await photon.organizations.closeOrganization({
+  path: {
+    organizationId: "organizationId",
+  },
+  headers: {
+    idempotencyKey: "idempotencyKey",
+  },
+  body: {
+    expectedVersion: "expectedVersion",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import CloseOrganizationInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+photon.organizations.close_organization(
+    CloseOrganizationInput.model_validate({
+        "path": {
+            "organizationId": "organizationId",
+        },
+        "headers": {
+            "Idempotency-Key": "idempotencyKey",
+        },
+        "body": {
+            "expectedVersion": "expectedVersion",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+client
+    .close_organization(
+        "idempotencyKey".to_owned(),
+        "organizationId".to_owned(),
+        &serde_json::from_value(serde_json::json!({
+            "expectedVersion": "expectedVersion",
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?;
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.CloseOrganizationRequest
+if err := json.Unmarshal([]byte(`{
+	"expectedVersion": "expectedVersion"
+}`), &body); err != nil {
+	return err
+}
+err := client.Organizations.CloseOrganization(ctx, &photonapi.CloseOrganizationParams{
+	IdempotencyKey: "idempotencyKey",
+	OrganizationID: "organizationId",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+```
+
+</RequestExample>
+
+## Parameters
+
+<ParamField header="Idempotency-Key" type={"string"} required>
+Identifies one logical mutation across retries.
+</ParamField>
+
+<ParamField path="organizationId" type={"string"} required>
+
+</ParamField>
+
+
+## Body
+
+<ParamField body="expectedVersion" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`204`** The organization has been removed from normal access. No body.
+

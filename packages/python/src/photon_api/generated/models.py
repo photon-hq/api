@@ -11,6 +11,19 @@ from pydantic.experimental.missing_sentinel import MISSING
 from photon_api._model_base import BaseModel, PrefixItems, RootModel, validate_all_of
 
 
+class AcceptOrganizationInvitationRequest(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    token: str
+
+
+class AcceptOrganizationInvitationResponseStatus(
+    RootModel[Literal["accepted", "already_member", "role_managed"] | str]
+):
+    root: Literal["accepted", "already_member", "role_managed"] | str
+
+
 class AcceptedMessageTimestamps(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -42,16 +55,6 @@ class Account(BaseModel):
     phoneVerifiedAt: str | None
     pictureUrl: str
     updatedAt: str | None
-
-
-class AccountOnboardingBackground(RootModel[Literal["hobbyist", "company"] | str]):
-    root: Literal["hobbyist", "company"] | str
-
-
-class AccountOnboardingPlatform(
-    RootModel[Literal["imessage", "sms", "whatsapp", "slack", "discord", "telegram", "voice"] | str]
-):
-    root: Literal["imessage", "sms", "whatsapp", "slack", "discord", "telegram", "voice"] | str
 
 
 class AccountServiceKey(BaseModel):
@@ -204,14 +207,6 @@ class AvailableProjectSlug(BaseModel):
     slug: str
 
 
-class BeginInvitationSsoRequest(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    returnTo: str
-    token: str
-
-
 class BillingHeldFixedCharge(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -265,6 +260,10 @@ class BillingOperationFailureDetail(
             "cancellation_scheduled",
             "feature_not_sold_by_plan",
             "feature_not_found",
+            "insufficient_funds",
+            "payment_declined",
+            "payment_method_expired",
+            "payment_method_invalid",
             "payment_timeout",
             "plan_activation_timeout",
             "plan_not_found",
@@ -281,6 +280,10 @@ class BillingOperationFailureDetail(
             "cancellation_scheduled",
             "feature_not_sold_by_plan",
             "feature_not_found",
+            "insufficient_funds",
+            "payment_declined",
+            "payment_method_expired",
+            "payment_method_invalid",
             "payment_timeout",
             "plan_activation_timeout",
             "plan_not_found",
@@ -304,6 +307,14 @@ class BillingOperationResult(BaseModel):
     effectiveAt: str | None
     type: Literal["version"]
     version: str
+
+
+class BillingPaymentActionOperationKind(
+    RootModel[
+        Literal["change_plan", "adjust_fixed_charge_quantity", "create_one_off_invoice"] | str
+    ]
+):
+    root: Literal["change_plan", "adjust_fixed_charge_quantity", "create_one_off_invoice"] | str
 
 
 class BillingPlanChangeTiming(RootModel[Literal["immediate", "on_payment", "period_end"] | str]):
@@ -415,8 +426,11 @@ class BillingPreviewMinimumCommitment(BaseModel):
     """
 
 
-class CaptchaProvider(RootModel[Literal["turnstile", "hcaptcha"] | str]):
-    root: Literal["turnstile", "hcaptcha"] | str
+class CancelSsoSubscriptionResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    accepted: bool
 
 
 class ChangePlanRequest(BaseModel):
@@ -433,12 +447,29 @@ class ChangePlanRequest(BaseModel):
     """
 
 
+class CheckOrganizationDeletionResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    blockers: list[str]
+    canDelete: bool
+    organizationId: str
+    version: str
+
+
 class ClickHouseSqlQueryRequest(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
     parameters: dict[str, str] | MISSING = MISSING
     sql: str
+
+
+class CloseOrganizationRequest(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    expectedVersion: str
 
 
 class CommitAccountProfilePictureRequest(BaseModel):
@@ -455,22 +486,12 @@ class CommitAgentProfileAvatarRequest(BaseModel):
     uploadId: str
 
 
-class CompleteAccountOnboardingResponse(BaseModel):
+class CommitOrganizationAvatarRequest(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    __annotations__ = {
-        "__pydantic_extra__": dict[str, Any],
-    }
-    onboarded: Literal[True]
-
-
-class ConfirmAccountPhoneVerificationRequest(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    code: str
-    phoneNumber: str
+    expectedVersion: str
+    uploadId: str
 
 
 class ConnectEmailDomainRequest(BaseModel):
@@ -484,15 +505,6 @@ class ConnectTelegramBotRequest(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-
-
-class ConnectWhatsappBusinessRequest(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    code: str
-    phoneNumberId: str
-    wabaId: str
 
 
 class ContentIssueCode(
@@ -567,6 +579,22 @@ class CreateAppInstallationRequestResponse(BaseModel):
     state: str
 
 
+class CreateOrganizationAvatarUploadRequestContentType(
+    RootModel[Literal["image/jpeg", "image/png", "image/webp"] | str]
+):
+    root: Literal["image/jpeg", "image/png", "image/webp"] | str
+
+
+class CreateOrganizationAvatarUploadResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    expiresAt: str
+    formFields: dict[str, str]
+    uploadId: str
+    uploadUrl: str
+
+
 class CreateOrganizationPaymentMethodCheckoutResponse(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -577,18 +605,11 @@ class CreateOrganizationPaymentMethodCheckoutResponse(BaseModel):
     """
 
 
-class CreateOrganizationSetupIntentResponse(BaseModel):
+class CreateOrganizationRequest(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    clientSecret: str
-    """
-    Stripe SetupIntent client secret.
-    """
-    publishableKey: str
-    """
-    Publishable key for the Stripe account backing billing.
-    """
+    name: str
 
 
 class CreateOrganizationSsoPortalLinkRequestIntent(
@@ -640,6 +661,70 @@ class CreateProjectRequest(BaseModel):
     )
     name: str
     slug: str
+
+
+class CreateServiceIdentityApiKeyRequest(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    expectedIdentityVersion: str
+    label: str
+
+
+class CreateServiceIdentityApiKeyResponseCreated(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    credentialId: str
+    status: Literal["created"]
+    value: str
+
+
+class CreateServiceIdentityApiKeyResponseUndeliveredStatus(
+    RootModel[Literal["delivery_consumed", "recovery_required", "revoked"] | str]
+):
+    root: Literal["delivery_consumed", "recovery_required", "revoked"] | str
+
+
+class CreateServiceIdentityClientSecretRequest(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    expectedIdentityVersion: str
+    label: str
+
+
+class CreateServiceIdentityClientSecretResponseApplicationPendingStatus(
+    RootModel[Literal["recovery_required", "cleanup_required"] | str]
+):
+    root: Literal["recovery_required", "cleanup_required"] | str
+
+
+class CreateServiceIdentityClientSecretResponseCreated(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    clientId: str
+    credentialId: str
+    stage: Literal["credential"]
+    status: Literal["created"]
+    value: str
+
+
+class CreateServiceIdentityClientSecretResponseUndeliveredStatus(
+    RootModel[
+        Literal["delivery_consumed", "recovery_required", "revocation_pending", "revoked"] | str
+    ]
+):
+    root: Literal["delivery_consumed", "recovery_required", "revocation_pending", "revoked"] | str
+
+
+class CreateServiceIdentityRequest(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    name: str
+    permissions: list[str]
 
 
 class CreateWhatsappSharedLineAssignmentRequest(BaseModel):
@@ -708,6 +793,12 @@ class DedicatedProjectPlatformSettings(BaseModel):
     )
     dedicatedLineAvailableNow: bool
     mode: Literal["dedicated"]
+
+
+class DeleteOrganizationOauthClientResponseStatus(
+    RootModel[Literal["cleanup_required", "deleted"] | str]
+):
+    root: Literal["cleanup_required", "deleted"] | str
 
 
 class DeleteVoiceProfileForceInput(RootModel[Literal["true", "false"] | str]):
@@ -1225,24 +1316,6 @@ class FixedChargeTier(BaseModel):
     toUnit: int | None
 
 
-class GetAccountOnboardingResponse(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    __annotations__ = {
-        "__pydantic_extra__": dict[str, Any],
-    }
-    background: str | None
-    companyName: str | None
-    companyUrl: str | None
-    onboarded: bool
-    platforms: (
-        list[Literal["imessage", "sms", "whatsapp", "slack", "discord", "telegram", "voice"] | str]
-        | None
-    )
-    referralSource: str | None
-
-
 class GetOrganizationCreditResponse(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -1257,21 +1330,59 @@ class GetOrganizationCreditResponse(BaseModel):
     """
 
 
+class GetOrganizationOauthClientSecretResponseCurrent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    createdAt: str
+    hint: str
+    lastUsedAt: str | None
+
+
+class GetOrganizationOauthClientSecretResponsePrevious(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    createdAt: str
+    hint: str
+    lastUsedAt: str | None
+    validUntil: str | None
+
+
+class GetSsoSubscriptionResponseState(
+    RootModel[
+        Literal[
+            "not_subscribed",
+            "subscribing",
+            "subscribed",
+            "cancellation_pending",
+            "cancel_scheduled",
+            "cancelled",
+            "needs_attention",
+        ]
+        | str
+    ]
+):
+    root: (
+        Literal[
+            "not_subscribed",
+            "subscribing",
+            "subscribed",
+            "cancellation_pending",
+            "cancel_scheduled",
+            "cancelled",
+            "needs_attention",
+        ]
+        | str
+    )
+
+
 class GetWhatsappBusinessVerificationCodeResponse(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
     code: str
     receivedAt: str = Field(..., examples=["2026-01-01T00:00:00.000Z"])
-
-
-class GetWhatsappSignupConfigResponse(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    configId: str
-    graphVersion: str
-    scopes: list[str]
 
 
 class IdempotentReplayedValue(RootModel[Literal["true", "false"] | str]):
@@ -1331,6 +1442,13 @@ class JsonValue(
     ]
 
 
+class LeaveOrganizationRequest(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    expectedVersion: str
+
+
 class ListAccountServiceKeysResponse(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -1388,11 +1506,29 @@ class ListOauthScopesResponse(BaseModel):
     """
 
 
+class ListOrganizationMembersResponseMembersItemAccount(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    displayName: str | None
+    email: str
+    firstName: str | None
+    lastName: str | None
+    pictureUrl: str
+
+
 class ListProjectApiKeysResponse(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
     apiKeys: list[ApiKey]
+
+
+class ListServiceIdentityPermissionsResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    permissions: list[str]
 
 
 class ListVoiceProfilesDefaultInput(RootModel[Literal["true", "false"] | str]):
@@ -1727,20 +1863,148 @@ class NumberCountry(BaseModel):
     displayName: str
 
 
-class OnboardingCompletedProblem(BaseModel):
+class OauthClientCreationConflictProblem(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
     __annotations__ = {
         "__pydantic_extra__": dict[str, JsonValue | None],
     }
-    code: Literal["ONBOARDING_COMPLETED"]
+    code: Literal["OAUTH_CLIENT_CREATION_CONFLICT"]
     detail: str | MISSING = MISSING
     instance: str | MISSING = MISSING
     requestId: str | MISSING = MISSING
     status: Literal[409]
-    title: Literal["Onboarding Completed"]
-    type: Literal["https://photon.codes/docs/problems/onboarding-completed"]
+    title: Literal["OAuth Client Creation Conflict"]
+    type: Literal["https://photon.codes/docs/problems/oauth-client-creation-conflict"]
+
+
+class OauthClientDeletionConflictProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["OAUTH_CLIENT_DELETION_CONFLICT"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["OAuth Client Deletion Conflict"]
+    type: Literal["https://photon.codes/docs/problems/oauth-client-deletion-conflict"]
+
+
+class OauthClientNotFoundProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["OAUTH_CLIENT_NOT_FOUND"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[404]
+    title: Literal["OAuth Client Not Found"]
+    type: Literal["https://photon.codes/docs/problems/oauth-client-not-found"]
+
+
+class OauthClientPreconditionFailedProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["OAUTH_CLIENT_PRECONDITION_FAILED"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[412]
+    title: Literal["OAuth Client Precondition Failed"]
+    type: Literal["https://photon.codes/docs/problems/oauth-client-precondition-failed"]
+
+
+class OauthClientQuotaExceededProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["OAUTH_CLIENT_QUOTA_EXCEEDED"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[429]
+    title: Literal["OAuth Client Quota Exceeded"]
+    type: Literal["https://photon.codes/docs/problems/oauth-client-quota-exceeded"]
+
+
+class OauthSecretConfiguredProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["OAUTH_SECRET_CONFIGURED"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["OAuth Secret Already Configured"]
+    type: Literal["https://photon.codes/docs/problems/oauth-secret-configured"]
+
+
+class OauthSecretCreationConflictProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["OAUTH_SECRET_CREATION_CONFLICT"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["OAuth Secret Creation Conflict"]
+    type: Literal["https://photon.codes/docs/problems/oauth-secret-creation-conflict"]
+
+
+class OauthSecretNotConfiguredProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["OAUTH_SECRET_NOT_CONFIGURED"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["OAuth Secret Not Configured"]
+    type: Literal["https://photon.codes/docs/problems/oauth-secret-not-configured"]
+
+
+class OauthSecretRevocationConflictProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["OAUTH_SECRET_REVOCATION_CONFLICT"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["OAuth Secret Revocation Conflict"]
+    type: Literal["https://photon.codes/docs/problems/oauth-secret-revocation-conflict"]
 
 
 class OperationError(BaseModel):
@@ -1835,18 +2099,26 @@ class OperationUnavailableProblem(BaseModel):
     type: Literal["https://photon.codes/docs/problems/operation-unavailable"]
 
 
-class OrganizationAuthenticationRedirect(BaseModel):
+class OrganizationAuthPolicyChangedProblem(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    url: str
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["ORGANIZATION_AUTH_POLICY_CHANGED"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["Organization Authentication Policy Changed"]
+    type: Literal["https://photon.codes/docs/problems/organization-auth-policy-changed"]
 
 
-class OrganizationAuthenticationRequest(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    returnTo: str
+class OrganizationBillingInitialization(
+    RootModel[Literal["pending", "retry_required", "completed", "unknown"] | str]
+):
+    root: Literal["pending", "retry_required", "completed", "unknown"] | str
 
 
 class OrganizationConnectionNotFoundProblem(BaseModel):
@@ -1887,12 +2159,178 @@ class OrganizationEnterpriseLoginRequest(BaseModel):
     returnTo: str
 
 
+class OrganizationInvitationRole(RootModel[Literal["member", "viewer"] | str]):
+    root: Literal["member", "viewer"] | str
+
+
+class OrganizationInvitationStatus(RootModel[Literal["pending", "accepted", "revoked"] | str]):
+    root: Literal["pending", "accepted", "revoked"] | str
+
+
 class OrganizationInvoiceSubject(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
     organizationId: str
     type: Literal["organization"]
+
+
+class OrganizationMemberJoinedVia(
+    RootModel[Literal["creation", "invitation", "sso_jit", "migration", "recovery"] | str]
+):
+    root: Literal["creation", "invitation", "sso_jit", "migration", "recovery"] | str
+
+
+class OrganizationMemberNotFoundProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["ORGANIZATION_MEMBER_NOT_FOUND"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[404]
+    title: Literal["Organization Member Not Found"]
+    type: Literal["https://photon.codes/docs/problems/organization-member-not-found"]
+
+
+class OrganizationMemberRemovedProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["ORGANIZATION_MEMBER_REMOVED"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["Organization Member Removed"]
+    type: Literal["https://photon.codes/docs/problems/organization-member-removed"]
+
+
+class OrganizationMemberRole(RootModel[Literal["owner", "admin", "member", "viewer"] | str]):
+    root: Literal["owner", "admin", "member", "viewer"] | str
+
+
+class OrganizationMemberStatus(RootModel[Literal["active", "removed"] | str]):
+    root: Literal["active", "removed"] | str
+
+
+class OrganizationMembership(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    accountId: str
+    createdAt: str
+    joinedVia: Literal["creation", "invitation", "sso_jit", "migration", "recovery"] | str
+    organizationId: str
+    removedAt: str | None
+    role: Literal["owner", "admin", "member", "viewer"] | str
+    roleManagedAt: str | None
+    status: Literal["active", "removed"] | str
+    updatedAt: str
+    version: str
+
+
+class OrganizationMembershipVersionConflictProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["ORGANIZATION_MEMBERSHIP_VERSION_CONFLICT"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["Organization Membership Version Conflict"]
+    type: Literal["https://photon.codes/docs/problems/organization-membership-version-conflict"]
+
+
+class OrganizationOauthClientRedirectUri(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    default: bool
+    uri: str
+
+
+class OrganizationOauthClientRedirectUriInput(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    default: bool
+    uri: str
+
+
+class OrganizationOwnerInvariantProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["ORGANIZATION_OWNER_INVARIANT"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["Organization Ownership Requires Recovery"]
+    type: Literal["https://photon.codes/docs/problems/organization-owner-invariant"]
+
+
+class OrganizationOwnerProtectedProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["ORGANIZATION_OWNER_PROTECTED"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["Organization Owner Protected"]
+    type: Literal["https://photon.codes/docs/problems/organization-owner-protected"]
+
+
+class OrganizationRecoveryRequiredProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["ORGANIZATION_RECOVERY_REQUIRED"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["Organization Recovery Required"]
+    type: Literal["https://photon.codes/docs/problems/organization-recovery-required"]
+
+
+class OrganizationSelfManagementForbiddenProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["ORGANIZATION_SELF_MANAGEMENT_FORBIDDEN"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["Use Leave Organization"]
+    type: Literal["https://photon.codes/docs/problems/organization-self-management-forbidden"]
 
 
 class OrganizationSsoConfigurationConnectionState(
@@ -1925,6 +2363,22 @@ class OrganizationSsoConflictProblem(BaseModel):
 
 class OrganizationSsoDomainState(RootModel[Literal["verified", "pending", "failed"] | str]):
     root: Literal["verified", "pending", "failed"] | str
+
+
+class OrganizationSsoEnabledProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["ORGANIZATION_SSO_ENABLED"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["Organization SSO Enabled"]
+    type: Literal["https://photon.codes/docs/problems/organization-sso-enabled"]
 
 
 class OrganizationSsoNotFoundProblem(BaseModel):
@@ -2005,6 +2459,54 @@ class OrganizationSyncUnavailableProblem(BaseModel):
     type: Literal["https://photon.codes/docs/problems/organization-sync-unavailable"]
 
 
+class OrganizationTransferToSelfProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["ORGANIZATION_TRANSFER_TO_SELF"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["Choose Another Organization Owner"]
+    type: Literal["https://photon.codes/docs/problems/organization-transfer-to-self"]
+
+
+class OrganizationUnavailableProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["ORGANIZATION_UNAVAILABLE"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["Organization Unavailable"]
+    type: Literal["https://photon.codes/docs/problems/organization-unavailable"]
+
+
+class OrganizationVersionConflictProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["ORGANIZATION_VERSION_CONFLICT"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["Organization Version Conflict"]
+    type: Literal["https://photon.codes/docs/problems/organization-version-conflict"]
+
+
 class PayloadTooLargeProblem(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -2063,25 +2565,6 @@ class PaymentProviderNotReadyProblem(BaseModel):
     type: Literal["https://photon.codes/docs/problems/payment-provider-not-ready"]
 
 
-class PendingBillingOperation(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    failure: None
-    kind: Literal["change_plan", "adjust_fixed_charge_quantity"] | str
-    operationId: str
-    """
-    Stable handle for this provisioning action.
-    """
-    resolvedAt: None
-    result: None
-    status: Literal["pending"]
-    """
-    Accepted and still executing. Poll the operation route.
-    """
-    submittedAt: str | None
-
-
 class PhoneCarrier(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -2091,14 +2574,6 @@ class PhoneCarrier(BaseModel):
     mobileNetworkCode: str | MISSING = MISSING
     name: str | MISSING = MISSING
     normalizedName: str | MISSING = MISSING
-
-
-class PhoneVerificationCaptcha(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    challengeContext: str
-    token: str
 
 
 class PlanSource(RootModel[Literal["catalog", "override"] | str]):
@@ -2134,6 +2609,27 @@ class PreviewOrganizationChangeRequest(BaseModel):
         extra="allow",
     )
     fixedCharge: FixedChargeChange
+
+
+class PreviewOrganizationInvitationRequest(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    token: str
+
+
+class PreviewOrganizationInvitationResponseInviter(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    accountId: str
+    avatarUrl: str
+    maskedEmail: str
+    name: str | None
+
+
+class PreviewOrganizationInvitationResponseStatus(RootModel[Literal["pending", "accepted"] | str]):
+    root: Literal["pending", "accepted"] | str
 
 
 class ProfilePictureContentType(RootModel[Literal["image/jpeg", "image/png", "image/webp"] | str]):
@@ -2401,6 +2897,65 @@ class RefreshTokenGrantRequest(BaseModel):
     """
 
 
+class RemoveOrganizationAvatarConflictProblem(
+    RootModel[
+        OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+        | OrganizationVersionConflictProblem
+    ]
+):
+    root: (
+        OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+        | OrganizationVersionConflictProblem
+    )
+
+
+class RemoveOrganizationAvatarRequest(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    expectedVersion: str
+
+
+class RemoveOrganizationAvatarResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    avatarUrl: str | None
+    billingInitialization: (
+        Literal["pending", "retry_required", "completed", "unknown"] | str | MISSING
+    ) = MISSING
+    createdAt: str
+    name: str
+    organizationId: str
+    updatedAt: str
+    version: str
+
+
+class RemoveOrganizationMemberRequest(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    expectedVersion: str
+
+
+class RemoveOrganizationMemberResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    accountId: str
+    createdAt: str
+    joinedVia: Literal["creation", "invitation", "sso_jit", "migration", "recovery"] | str
+    organizationId: str
+    removedAt: str | None
+    role: Literal["owner", "admin", "member", "viewer"] | str
+    roleManagedAt: str | None
+    status: Literal["active", "removed"] | str
+    updatedAt: str
+    version: str
+
+
 class RequestTimeoutProblem(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -2415,6 +2970,24 @@ class RequestTimeoutProblem(BaseModel):
     status: Literal[504]
     title: Literal["Request Timeout"]
     type: Literal["https://photon.codes/docs/problems/request-timeout"]
+
+
+class ResendOrganizationInvitationResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    acceptedAt: str | None
+    acceptedByAccountId: str | None
+    allProjects: Literal[True]
+    createdAt: str
+    email: str
+    expiresAt: str
+    invitationId: str
+    invitedByAccountId: str
+    organizationId: str
+    role: Literal["member", "viewer"] | str
+    status: Literal["pending", "accepted", "revoked"] | str
+    updatedAt: str
 
 
 class ResourceId(RootModel[str]):
@@ -2485,6 +3058,59 @@ class RevokeAccountServiceKeyResponse(BaseModel):
         extra="allow",
     )
     serviceKey: AccountServiceKey
+
+
+class RevokeOrganizationInvitationResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    acceptedAt: str | None
+    acceptedByAccountId: str | None
+    allProjects: Literal[True]
+    createdAt: str
+    email: str
+    expiresAt: str
+    invitationId: str
+    invitedByAccountId: str
+    organizationId: str
+    role: Literal["member", "viewer"] | str
+    status: Literal["pending", "accepted", "revoked"] | str
+    updatedAt: str
+
+
+class RevokeServiceIdentityCredentialRequest(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    expectedVersion: str
+
+
+class RotateOrganizationOauthClientSecretConflictProblem(
+    RootModel[
+        OrganizationUnavailableProblem
+        | OauthSecretNotConfiguredProblem
+        | OauthSecretCreationConflictProblem
+    ]
+):
+    root: (
+        OrganizationUnavailableProblem
+        | OauthSecretNotConfiguredProblem
+        | OauthSecretCreationConflictProblem
+    )
+
+
+class RotateOrganizationOauthClientSecretRequestMode(
+    RootModel[Literal["normal", "emergency"] | str]
+):
+    root: Literal["normal", "emergency"] | str
+
+
+class RotateOrganizationOauthClientSecretResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    previousSecretValidUntil: str | None
+    value: str | None
 
 
 class RotateVoiceProfileOutboundCredentialResponse(BaseModel):
@@ -2724,6 +3350,98 @@ class SentMessageStatus(RootModel[Literal["dispatched", "accepted", "delivered",
     root: Literal["dispatched", "accepted", "delivered", "failed"] | str
 
 
+class ServiceCredentialConflictProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["SERVICE_CREDENTIAL_CONFLICT"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["Service Credential Conflict"]
+    type: Literal["https://photon.codes/docs/problems/service-credential-conflict"]
+
+
+class ServiceCredentialNotFoundProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["SERVICE_CREDENTIAL_NOT_FOUND"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[404]
+    title: Literal["Service Credential Not Found"]
+    type: Literal["https://photon.codes/docs/problems/service-credential-not-found"]
+
+
+class ServiceCredentialPreconditionFailedProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["SERVICE_CREDENTIAL_PRECONDITION_FAILED"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[412]
+    title: Literal["Service Credential Precondition Failed"]
+    type: Literal["https://photon.codes/docs/problems/service-credential-precondition-failed"]
+
+
+class ServiceIdentityCredentialKind(RootModel[Literal["api_key", "client_secret"] | str]):
+    root: Literal["api_key", "client_secret"] | str
+
+
+class ServiceIdentityCredentialStatus(RootModel[Literal["active", "revoked"] | str]):
+    root: Literal["active", "revoked"] | str
+
+
+class ServiceIdentityNotFoundProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["SERVICE_IDENTITY_NOT_FOUND"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[404]
+    title: Literal["Service Identity Not Found"]
+    type: Literal["https://photon.codes/docs/problems/service-identity-not-found"]
+
+
+class ServiceIdentityStatus(RootModel[Literal["active", "disabled"] | str]):
+    root: Literal["active", "disabled"] | str
+
+
+class ServiceIdentityVersionConflictProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["SERVICE_IDENTITY_VERSION_CONFLICT"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["Service Identity Version Conflict"]
+    type: Literal["https://photon.codes/docs/problems/service-identity-version-conflict"]
+
+
 class SetSpaceTypingContent(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -2741,6 +3459,34 @@ class SetSpaceTypingRequest(BaseModel):
     """
     True starts or refreshes typing; false stops it.
     """
+
+
+class SetupOrganizationOauthClientSecretConflictProblem(
+    RootModel[
+        OrganizationUnavailableProblem
+        | OauthSecretConfiguredProblem
+        | OauthSecretCreationConflictProblem
+    ]
+):
+    root: (
+        OrganizationUnavailableProblem
+        | OauthSecretConfiguredProblem
+        | OauthSecretCreationConflictProblem
+    )
+
+
+class SetupOrganizationOauthClientSecretCreatedResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    value: str
+
+
+class SetupOrganizationOauthClientSecretResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    value: None
 
 
 class SharedLineAssignmentPlatform(RootModel[Literal["imessage", "whatsapp"] | str]):
@@ -3232,23 +3978,6 @@ class SsoSubscriptionRequiredProblem(BaseModel):
     type: Literal["https://photon.codes/docs/problems/sso-subscription-required"]
 
 
-class StartAccountPhoneVerificationRequest(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    captcha: PhoneVerificationCaptcha | MISSING = MISSING
-    phoneNumber: str
-
-
-class StartAccountPhoneVerificationResponse(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    channel: Literal["sms"]
-    expiresAt: str = Field(..., examples=["2026-01-01T00:00:00.000Z"])
-    resendAvailableAt: str = Field(..., examples=["2026-01-01T00:00:00.000Z"])
-
-
 class StartEnterpriseLoginRequest(
     RootModel[
         OrganizationEnterpriseLoginRequest
@@ -3273,6 +4002,36 @@ class StartEnterpriseLoginResponse(BaseModel):
     url: str
 
 
+class SubscribeSsoConflictProblem(
+    RootModel[
+        OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+        | OrganizationVersionConflictProblem
+    ]
+):
+    root: (
+        OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+        | OrganizationVersionConflictProblem
+    )
+
+
+class SubscribeSsoRequest(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    expectedAmount: str
+    expectedCurrency: str
+    expectedCurrentPeriodEnd: str
+
+
+class SubscribeSsoResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    accepted: bool
+
+
 class SubscriptionStatus(
     RootModel[Literal["active", "past_due", "restricted", "suspended", "terminated"] | str]
 ):
@@ -3292,6 +4051,7 @@ class SucceededBillingOperation(BaseModel):
     """
     Stable handle for this provisioning action.
     """
+    paymentAction: None
     resolvedAt: str | None
     result: BillingOperationResult
     status: Literal["succeeded"]
@@ -3368,6 +4128,23 @@ class TimestampOrderBy(RootModel[Literal["created_at", "updated_at"] | str]):
     root: Literal["created_at", "updated_at"] | str
 
 
+class TransferOrganizationOwnershipRequest(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    expectedVersion: str
+    newOwnerAccountId: str
+
+
+class TransferOrganizationOwnershipResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    newOwner: OrganizationMembership
+    organizationVersion: str
+    previousOwner: OrganizationMembership
+
+
 class UnassignSmsLineCampaignConflictProblem(
     RootModel[
         ProjectClosingProblem
@@ -3418,38 +4195,6 @@ class UnsupportedContentProblem(BaseModel):
     type: Literal["https://photon.codes/docs/problems/unsupported-content"]
 
 
-class UpdateAccountOnboardingRequest(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    background: Literal["hobbyist", "company"] | str | None | MISSING = MISSING
-    companyName: str | None | MISSING = MISSING
-    companyUrl: str | None | MISSING = MISSING
-    platforms: (
-        list[Literal["imessage", "sms", "whatsapp", "slack", "discord", "telegram", "voice"] | str]
-        | MISSING
-    ) = MISSING
-    referralSource: str | None | MISSING = MISSING
-
-
-class UpdateAccountOnboardingResponse(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    __annotations__ = {
-        "__pydantic_extra__": dict[str, Any],
-    }
-    background: str | None
-    companyName: str | None
-    companyUrl: str | None
-    onboarded: bool
-    platforms: (
-        list[Literal["imessage", "sms", "whatsapp", "slack", "discord", "telegram", "voice"] | str]
-        | None
-    )
-    referralSource: str | None
-
-
 class UpdateAccountRequest(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -3464,6 +4209,88 @@ class UpdateAgentProfileRequest(BaseModel):
     )
     firstName: str | MISSING = MISSING
     lastName: str | None | MISSING = MISSING
+
+
+class UpdateOrganizationConflictProblem(
+    RootModel[
+        OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+        | OrganizationVersionConflictProblem
+    ]
+):
+    root: (
+        OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+        | OrganizationVersionConflictProblem
+    )
+
+
+class UpdateOrganizationMemberRoleRequestRole(
+    RootModel[Literal["admin", "member", "viewer"] | str]
+):
+    root: Literal["admin", "member", "viewer"] | str
+
+
+class UpdateOrganizationMemberRoleResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    accountId: str
+    createdAt: str
+    joinedVia: Literal["creation", "invitation", "sso_jit", "migration", "recovery"] | str
+    organizationId: str
+    removedAt: str | None
+    role: Literal["owner", "admin", "member", "viewer"] | str
+    roleManagedAt: str | None
+    status: Literal["active", "removed"] | str
+    updatedAt: str
+    version: str
+
+
+class UpdateOrganizationOauthClientRequest(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    description: str | None | MISSING = MISSING
+    name: str | MISSING = MISSING
+    redirectUris: list[OrganizationOauthClientRedirectUriInput] | MISSING = MISSING
+    scopes: list[str] | MISSING = MISSING
+
+
+class UpdateOrganizationOauthClientResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    clientId: str
+    createdAt: str
+    description: str | None
+    name: str
+    redirectUris: list[OrganizationOauthClientRedirectUri]
+    scopes: list[str]
+    updatedAt: str
+
+
+class UpdateOrganizationRequest(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    expectedVersion: str
+    name: str
+
+
+class UpdateOrganizationResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    avatarUrl: str | None
+    billingInitialization: (
+        Literal["pending", "retry_required", "completed", "unknown"] | str | MISSING
+    ) = MISSING
+    createdAt: str
+    name: str
+    organizationId: str
+    updatedAt: str
+    version: str
 
 
 class UpdateOrganizationSsoPolicyPreconditionFailedProblem(
@@ -3502,6 +4329,33 @@ class UpdateProjectRequest(BaseModel):
         extra="allow",
     )
     name: str
+
+
+class UpdateServiceIdentityRequest(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    expectedVersion: str
+    name: str | MISSING = MISSING
+    permissions: list[str] | MISSING = MISSING
+    status: Literal["active", "disabled"] | str | MISSING = MISSING
+
+
+class UpdateServiceIdentityResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    appInstallationManaged: bool
+    createdAt: str
+    createdByAccountId: str
+    name: str
+    organizationId: str
+    permissions: list[str]
+    serviceIdentityId: str
+    status: Literal["active", "disabled"] | str
+    updatedAt: str
+    updatedByAccountId: str
+    version: str
 
 
 class UpdateVoiceProfileInboundRequest(BaseModel):
@@ -4212,6 +5066,39 @@ class WhatsappWabaNotConnectedProblem(BaseModel):
     type: Literal["https://photon.codes/docs/problems/whatsapp-waba-not-connected"]
 
 
+class AcceptOrganizationInvitationGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class AcceptOrganizationInvitationResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    allProjects: Literal[True]
+    organizationId: str
+    organizationName: str
+    role: Literal["owner", "admin", "member", "viewer"] | str
+    status: Literal["accepted", "already_member", "role_managed"] | str
+
+
+class AccountClosingProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["ACCOUNT_CLOSING"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["Account Is Closing"]
+    type: Literal["https://photon.codes/docs/problems/account-closing"]
+
+
 class AccountDeletedProblem(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -4412,6 +5299,22 @@ class AppInstallationDeliveryUnavailableProblem(BaseModel):
     status: Literal[409]
     title: Literal["Installation Delivery Unavailable"]
     type: Literal["https://photon.codes/docs/problems/app-installation-delivery-unavailable"]
+
+
+class AppInstallationManagedProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["APP_INSTALLATION_MANAGED"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["App Installation Managed"]
+    type: Literal["https://photon.codes/docs/problems/app-installation-managed"]
 
 
 class AssignSmsLineCampaignConflictProblem(
@@ -4673,54 +5576,6 @@ class BatchUpdateVoiceLineProfileAssignmentsResponse(BaseModel):
     assignments: list[VoiceLineProfileAssignment]
 
 
-class BeginInvitationSsoGatewayTimeoutProblem(
-    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
-):
-    root: UpstreamTimeoutProblem | RequestTimeoutProblem
-
-
-class BeginInvitationSsoPreconditionFailedProblem(
-    RootModel[OrganizationSsoPreconditionFailedProblem | SsoSubscriptionRequiredProblem]
-):
-    root: OrganizationSsoPreconditionFailedProblem | SsoSubscriptionRequiredProblem
-
-
-class BeginOrganizationAuthenticationGatewayTimeoutProblem(
-    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
-):
-    root: UpstreamTimeoutProblem | RequestTimeoutProblem
-
-
-class BeginOrganizationAuthenticationPreconditionFailedProblem(
-    RootModel[OrganizationSsoPreconditionFailedProblem | SsoSubscriptionRequiredProblem]
-):
-    root: OrganizationSsoPreconditionFailedProblem | SsoSubscriptionRequiredProblem
-
-
-class BeginOrganizationClosureAuthenticationGatewayTimeoutProblem(
-    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
-):
-    root: UpstreamTimeoutProblem | RequestTimeoutProblem
-
-
-class BeginOrganizationClosureAuthenticationPreconditionFailedProblem(
-    RootModel[OrganizationSsoPreconditionFailedProblem | SsoSubscriptionRequiredProblem]
-):
-    root: OrganizationSsoPreconditionFailedProblem | SsoSubscriptionRequiredProblem
-
-
-class BeginOrganizationSsoAdmissionGatewayTimeoutProblem(
-    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
-):
-    root: UpstreamTimeoutProblem | RequestTimeoutProblem
-
-
-class BeginOrganizationSsoAdmissionPreconditionFailedProblem(
-    RootModel[OrganizationSsoPreconditionFailedProblem | SsoSubscriptionRequiredProblem]
-):
-    root: OrganizationSsoPreconditionFailedProblem | SsoSubscriptionRequiredProblem
-
-
 class BillingEntitlementsPendingProblem(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -4783,6 +5638,10 @@ class BillingOperationFailure(BaseModel):
             "cancellation_scheduled",
             "feature_not_sold_by_plan",
             "feature_not_found",
+            "insufficient_funds",
+            "payment_declined",
+            "payment_method_expired",
+            "payment_method_invalid",
             "payment_timeout",
             "plan_activation_timeout",
             "plan_not_found",
@@ -4796,6 +5655,14 @@ class BillingOperationFailure(BaseModel):
     )
     retryable: bool
     unsoldFixedCharges: list[BillingHeldFixedCharge]
+
+
+class BillingPaymentActionOperation(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    kind: Literal["change_plan", "adjust_fixed_charge_quantity", "create_one_off_invoice"] | str
+    operationId: str
 
 
 class BillingPlanChangeEffect(BaseModel):
@@ -4898,33 +5765,70 @@ class CancelOperationGatewayTimeoutProblem(
     root: RequestTimeoutProblem | UpstreamTimeoutProblem
 
 
-class CaptchaRequiredProblem(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
+class CancelSsoSubscriptionConflictProblem(
+    RootModel[
+        OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+        | OrganizationVersionConflictProblem
+        | OrganizationSsoEnabledProblem
+    ]
+):
+    root: (
+        OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+        | OrganizationVersionConflictProblem
+        | OrganizationSsoEnabledProblem
     )
-    __annotations__ = {
-        "__pydantic_extra__": dict[str, JsonValue | None],
-    }
-    challengeContext: str
-    code: Literal["CAPTCHA_REQUIRED"]
-    detail: str | MISSING = MISSING
-    instance: str | MISSING = MISSING
-    provider: Literal["turnstile", "hcaptcha"] | str
-    requestId: str | MISSING = MISSING
-    siteKey: str
-    status: Literal[403]
-    title: Literal["Captcha Required"]
-    type: Literal["https://photon.codes/docs/problems/captcha-required"]
+
+
+class CancelSsoSubscriptionGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
 
 
 class ChangePlanGatewayTimeoutProblem(RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]):
     root: RequestTimeoutProblem | UpstreamTimeoutProblem
 
 
+class CheckOrganizationDeletionConflictProblem(
+    RootModel[OrganizationAuthPolicyChangedProblem | OrganizationUnavailableProblem]
+):
+    root: OrganizationAuthPolicyChangedProblem | OrganizationUnavailableProblem
+
+
+class CheckOrganizationDeletionGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
 class CheckProjectSlugAvailabilityGatewayTimeoutProblem(
     RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
 ):
     root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class CloseOrganizationGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class ClosureBlockedProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["CLOSURE_BLOCKED"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["Organization Closure Blocked"]
+    type: Literal["https://photon.codes/docs/problems/organization-closure-blocked"]
 
 
 class CommitAccountProfilePictureGatewayTimeoutProblem(
@@ -4939,10 +5843,39 @@ class CommitAgentProfileAvatarGatewayTimeoutProblem(
     root: UpstreamTimeoutProblem | RequestTimeoutProblem
 
 
-class CompleteAccountOnboardingGatewayTimeoutProblem(
+class CommitOrganizationAvatarConflictProblem(
+    RootModel[
+        OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+        | OrganizationVersionConflictProblem
+    ]
+):
+    root: (
+        OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+        | OrganizationVersionConflictProblem
+    )
+
+
+class CommitOrganizationAvatarGatewayTimeoutProblem(
     RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
 ):
     root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class CommitOrganizationAvatarResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    avatarUrl: str | None
+    billingInitialization: (
+        Literal["pending", "retry_required", "completed", "unknown"] | str | MISSING
+    ) = MISSING
+    createdAt: str
+    name: str
+    organizationId: str
+    updatedAt: str
+    version: str
 
 
 class ConfigureVoiceProfileOutboundConflictProblem(
@@ -4973,12 +5906,6 @@ class ConfigureVoiceProfileOutboundRequest(BaseModel):
     )
     authentication: SipOutboundAuthenticationPolicy
     expectedVersion: int
-
-
-class ConfirmAccountPhoneVerificationGatewayTimeoutProblem(
-    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
-):
-    root: UpstreamTimeoutProblem | RequestTimeoutProblem
 
 
 class ConfirmedRecipient(BaseModel):
@@ -5027,26 +5954,6 @@ class ConnectTelegramBotGatewayTimeoutProblem(
     RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
 ):
     root: RequestTimeoutProblem | UpstreamTimeoutProblem
-
-
-class ConnectWhatsappBusinessGatewayTimeoutProblem(
-    RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
-):
-    root: RequestTimeoutProblem | UpstreamTimeoutProblem
-
-
-class ConnectWhatsappBusinessServiceUnavailableProblem(
-    RootModel[
-        BillingEntitlementsPendingProblem
-        | BillingNotProvisionedProblem
-        | UpstreamUnavailableProblem
-    ]
-):
-    root: (
-        BillingEntitlementsPendingProblem
-        | BillingNotProvisionedProblem
-        | UpstreamUnavailableProblem
-    )
 
 
 class ContentIssue(BaseModel):
@@ -5188,6 +6095,106 @@ class CreateOrGetUserRequest(BaseModel):
     platform: Platform
 
 
+class CreateOrganizationAvatarUploadConflictProblem(
+    RootModel[
+        OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+        | OrganizationVersionConflictProblem
+    ]
+):
+    root: (
+        OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+        | OrganizationVersionConflictProblem
+    )
+
+
+class CreateOrganizationAvatarUploadGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class CreateOrganizationAvatarUploadRequest(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    contentType: Literal["image/jpeg", "image/png", "image/webp"] | str
+
+
+class CreateOrganizationGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class CreateOrganizationInvitationGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class CreateOrganizationInvitationRequest(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    email: str
+    role: Literal["member", "viewer"] | str
+
+
+class CreateOrganizationInvitationResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    acceptedAt: str | None
+    acceptedByAccountId: str | None
+    allProjects: Literal[True]
+    createdAt: str
+    email: str
+    expiresAt: str
+    invitationId: str
+    invitedByAccountId: str
+    organizationId: str
+    role: Literal["member", "viewer"] | str
+    status: Literal["pending", "accepted", "revoked"] | str
+    updatedAt: str
+
+
+class CreateOrganizationOauthClientConflictProblem(
+    RootModel[OrganizationUnavailableProblem | OauthClientCreationConflictProblem]
+):
+    root: OrganizationUnavailableProblem | OauthClientCreationConflictProblem
+
+
+class CreateOrganizationOauthClientGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class CreateOrganizationOauthClientRequest(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    description: str | None | MISSING = MISSING
+    name: str
+    redirectUris: list[OrganizationOauthClientRedirectUriInput]
+    scopes: list[str]
+
+
+class CreateOrganizationOauthClientResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    clientId: str
+    createdAt: str
+    description: str | None
+    name: str
+    redirectUris: list[OrganizationOauthClientRedirectUri]
+    scopes: list[str]
+    updatedAt: str
+
+
 class CreateOrganizationPaymentMethodCheckoutGatewayTimeoutProblem(
     RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
 ):
@@ -5200,10 +6207,19 @@ class CreateOrganizationPaymentMethodCheckoutServiceUnavailableProblem(
     root: PaymentProviderNotReadyProblem | UpstreamUnavailableProblem
 
 
-class CreateOrganizationSetupIntentGatewayTimeoutProblem(
-    RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
-):
-    root: RequestTimeoutProblem | UpstreamTimeoutProblem
+class CreateOrganizationResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    avatarUrl: str | None
+    billingInitialization: (
+        Literal["pending", "retry_required", "completed", "unknown"] | str | MISSING
+    ) = MISSING
+    createdAt: str
+    name: str
+    organizationId: str
+    updatedAt: str
+    version: str
 
 
 class CreateOrganizationSsoPortalLinkGatewayTimeoutProblem(
@@ -5228,6 +6244,97 @@ class CreateOrganizationSsoPortalLinkRequest(BaseModel):
 
 class CreateProjectGatewayTimeoutProblem(RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]):
     root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class CreateServiceIdentityApiKeyConflictProblem(
+    RootModel[AppInstallationManagedProblem | ServiceCredentialConflictProblem]
+):
+    root: AppInstallationManagedProblem | ServiceCredentialConflictProblem
+
+
+class CreateServiceIdentityApiKeyGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class CreateServiceIdentityApiKeyResponseUndelivered(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    credentialId: str
+    status: Literal["delivery_consumed", "recovery_required", "revoked"] | str
+
+
+class CreateServiceIdentityClientSecretConflictProblem(
+    RootModel[AppInstallationManagedProblem | ServiceCredentialConflictProblem]
+):
+    root: AppInstallationManagedProblem | ServiceCredentialConflictProblem
+
+
+class CreateServiceIdentityClientSecretGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class CreateServiceIdentityClientSecretResponseApplicationPending(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    operationId: str
+    stage: Literal["application"]
+    status: Literal["recovery_required", "cleanup_required"] | str
+
+
+class CreateServiceIdentityClientSecretResponseUndelivered(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    credentialId: str
+    stage: Literal["credential"]
+    status: Literal["delivery_consumed", "recovery_required", "revocation_pending", "revoked"] | str
+
+
+class CreateServiceIdentityConflictProblem(
+    RootModel[
+        AccountClosingProblem
+        | OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+        | AppInstallationManagedProblem
+        | ServiceIdentityVersionConflictProblem
+    ]
+):
+    root: (
+        AccountClosingProblem
+        | OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+        | AppInstallationManagedProblem
+        | ServiceIdentityVersionConflictProblem
+    )
+
+
+class CreateServiceIdentityGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class CreateServiceIdentityResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    appInstallationManaged: bool
+    createdAt: str
+    createdByAccountId: str
+    name: str
+    organizationId: str
+    permissions: list[str]
+    serviceIdentityId: str
+    status: Literal["active", "disabled"] | str
+    updatedAt: str
+    updatedByAccountId: str
+    version: str
 
 
 class CreateSharedLineAssignmentGatewayTimeoutProblem(
@@ -5378,6 +6485,38 @@ class CreditSubject(RootModel[OrganizationCreditSubject | ProjectCreditSubject])
 
 
 class DeleteAccountGatewayTimeoutProblem(RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class DeleteOrganizationOauthClientConflictProblem(
+    RootModel[OrganizationUnavailableProblem | OauthClientDeletionConflictProblem]
+):
+    root: OrganizationUnavailableProblem | OauthClientDeletionConflictProblem
+
+
+class DeleteOrganizationOauthClientGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class DeleteOrganizationOauthClientResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    operationId: str
+    status: Literal["cleanup_required", "deleted"] | str
+
+
+class DeleteOrganizationOauthClientSecretConflictProblem(
+    RootModel[OrganizationUnavailableProblem | OauthSecretRevocationConflictProblem]
+):
+    root: OrganizationUnavailableProblem | OauthSecretRevocationConflictProblem
+
+
+class DeleteOrganizationOauthClientSecretGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
     root: UpstreamTimeoutProblem | RequestTimeoutProblem
 
 
@@ -5669,6 +6808,12 @@ class EmailUserDetails(BaseModel):
     resourceId: str | MISSING = MISSING
 
 
+class EnsureInitialOrganizationGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
 class EntitlementRequiredProblem(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -5715,6 +6860,7 @@ class FailedBillingOperation(BaseModel):
     """
     Stable handle for this provisioning action.
     """
+    paymentAction: None
     resolvedAt: str | None
     result: None
     status: Literal["failed"]
@@ -5768,12 +6914,6 @@ class GetAccountGatewayTimeoutProblem(RootModel[UpstreamTimeoutProblem | Request
     root: UpstreamTimeoutProblem | RequestTimeoutProblem
 
 
-class GetAccountOnboardingGatewayTimeoutProblem(
-    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
-):
-    root: UpstreamTimeoutProblem | RequestTimeoutProblem
-
-
 class GetAgentProfileGatewayTimeoutProblem(
     RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
 ):
@@ -5794,6 +6934,41 @@ class GetBillingOverviewGatewayTimeoutProblem(
     RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
 ):
     root: RequestTimeoutProblem | UpstreamTimeoutProblem
+
+
+class GetCurrentOrganizationConflictProblem(
+    RootModel[
+        OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+        | OrganizationVersionConflictProblem
+    ]
+):
+    root: (
+        OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+        | OrganizationVersionConflictProblem
+    )
+
+
+class GetCurrentOrganizationGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class GetCurrentOrganizationResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    avatarUrl: str | None
+    billingInitialization: (
+        Literal["pending", "retry_required", "completed", "unknown"] | str | MISSING
+    ) = MISSING
+    createdAt: str
+    name: str
+    organizationId: str
+    updatedAt: str
+    version: str
 
 
 class GetDefaultVoiceProfileGatewayTimeoutProblem(
@@ -5851,6 +7026,20 @@ class GetOrganizationBillingOverviewGatewayTimeoutProblem(
     root: RequestTimeoutProblem | UpstreamTimeoutProblem
 
 
+class GetOrganizationConflictProblem(
+    RootModel[
+        OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+        | OrganizationVersionConflictProblem
+    ]
+):
+    root: (
+        OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+        | OrganizationVersionConflictProblem
+    )
+
+
 class GetOrganizationConnectionStatusGatewayTimeoutProblem(
     RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
 ):
@@ -5861,6 +7050,45 @@ class GetOrganizationCreditGatewayTimeoutProblem(
     RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
 ):
     root: RequestTimeoutProblem | UpstreamTimeoutProblem
+
+
+class GetOrganizationGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class GetOrganizationOauthClientGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class GetOrganizationOauthClientResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    clientId: str
+    createdAt: str
+    description: str | None
+    name: str
+    redirectUris: list[OrganizationOauthClientRedirectUri]
+    scopes: list[str]
+    updatedAt: str
+
+
+class GetOrganizationOauthClientSecretGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class GetOrganizationOauthClientSecretResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    current: GetOrganizationOauthClientSecretResponseCurrent | None
+    previous: GetOrganizationOauthClientSecretResponsePrevious | None
 
 
 class GetOrganizationPaymentMethodGatewayTimeoutProblem(
@@ -5881,6 +7109,21 @@ class GetOrganizationPaymentMethodResponse(BaseModel):
     """
     Metadata for the default card, or null.
     """
+
+
+class GetOrganizationResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    avatarUrl: str | None
+    billingInitialization: (
+        Literal["pending", "retry_required", "completed", "unknown"] | str | MISSING
+    ) = MISSING
+    createdAt: str
+    name: str
+    organizationId: str
+    updatedAt: str
+    version: str
 
 
 class GetOrganizationSsoConfigurationGatewayTimeoutProblem(
@@ -5969,6 +7212,47 @@ class GetResourceGatewayTimeoutProblem(RootModel[RequestTimeoutProblem | Upstrea
     root: RequestTimeoutProblem | UpstreamTimeoutProblem
 
 
+class GetServiceIdentityConflictProblem(
+    RootModel[
+        AccountClosingProblem
+        | OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+        | AppInstallationManagedProblem
+        | ServiceIdentityVersionConflictProblem
+    ]
+):
+    root: (
+        AccountClosingProblem
+        | OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+        | AppInstallationManagedProblem
+        | ServiceIdentityVersionConflictProblem
+    )
+
+
+class GetServiceIdentityGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class GetServiceIdentityResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    appInstallationManaged: bool
+    createdAt: str
+    createdByAccountId: str
+    name: str
+    organizationId: str
+    permissions: list[str]
+    serviceIdentityId: str
+    status: Literal["active", "disabled"] | str
+    updatedAt: str
+    updatedByAccountId: str
+    version: str
+
+
 class GetSharedLineAssignmentGatewayTimeoutProblem(
     RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
 ):
@@ -6031,6 +7315,55 @@ class GetSmsLineCampaignAssignmentServiceUnavailableProblem(
 
 class GetSpaceGatewayTimeoutProblem(RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]):
     root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class GetSsoSubscriptionConflictProblem(
+    RootModel[
+        OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+        | OrganizationVersionConflictProblem
+    ]
+):
+    root: (
+        OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+        | OrganizationVersionConflictProblem
+    )
+
+
+class GetSsoSubscriptionGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class GetSsoSubscriptionResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    amount: str
+    canConfigure: bool
+    cancelsAt: str | None
+    currency: str
+    currentPeriodEnd: str
+    failureCode: str | None
+    firstChargeAt: str | None
+    interval: Literal["monthly"]
+    nextRenewalAt: str
+    operationId: str | None
+    paymentMethodRequired: bool
+    state: (
+        Literal[
+            "not_subscribed",
+            "subscribing",
+            "subscribed",
+            "cancellation_pending",
+            "cancel_scheduled",
+            "cancelled",
+            "needs_attention",
+        ]
+        | str
+    )
 
 
 class GetUserGatewayTimeoutProblem(RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]):
@@ -6351,8 +7684,210 @@ class InvalidReturnToProblem(BaseModel):
     type: Literal["https://photon.codes/docs/problems/invalid-return-to"]
 
 
+class InvitationEmailMismatchProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["INVITATION_EMAIL_MISMATCH"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[403]
+    title: Literal["Invitation Email Mismatch"]
+    type: Literal["https://photon.codes/docs/problems/invitation-email-mismatch"]
+
+
+class InvitationExpiredProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["INVITATION_EXPIRED"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["Invitation Expired"]
+    type: Literal["https://photon.codes/docs/problems/invitation-expired"]
+
+
+class InvitationInviterIneligibleProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["INVITATION_INVITER_INELIGIBLE"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[403]
+    title: Literal["Invitation Inviter Ineligible"]
+    type: Literal["https://photon.codes/docs/problems/invitation-inviter-ineligible"]
+
+
+class InvitationNotFoundProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["INVITATION_NOT_FOUND"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[404]
+    title: Literal["Invitation Not Found"]
+    type: Literal["https://photon.codes/docs/problems/invitation-not-found"]
+
+
+class InvitationPredatesRemovalProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["INVITATION_PREDATES_REMOVAL"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["Invitation Predates Removal"]
+    type: Literal["https://photon.codes/docs/problems/invitation-predates-removal"]
+
+
+class InvitationRevokedProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["INVITATION_REVOKED"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["Invitation Revoked"]
+    type: Literal["https://photon.codes/docs/problems/invitation-revoked"]
+
+
+class InvitationRoleConflictProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["INVITATION_ROLE_CONFLICT"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["Invitation Role Conflict"]
+    type: Literal["https://photon.codes/docs/problems/invitation-role-conflict"]
+
+
+class InvitationTerminalProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["INVITATION_TERMINAL"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["Invitation Terminal"]
+    type: Literal["https://photon.codes/docs/problems/invitation-terminal"]
+
+
 class InvoiceSubject(RootModel[ProjectInvoiceSubject | OrganizationInvoiceSubject]):
     root: ProjectInvoiceSubject | OrganizationInvoiceSubject
+
+
+class LeaveOrganizationBadRequestProblem(
+    RootModel[InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+):
+    root: InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+
+
+class LeaveOrganizationConflictProblem(
+    RootModel[
+        AccountClosingProblem
+        | OrganizationVersionConflictProblem
+        | OrganizationTransferToSelfProblem
+        | OrganizationOwnerInvariantProblem
+        | OrganizationOwnerProtectedProblem
+        | OrganizationSelfManagementForbiddenProblem
+        | OrganizationMembershipVersionConflictProblem
+        | OrganizationMemberRemovedProblem
+        | OrganizationRecoveryRequiredProblem
+        | OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+    ]
+):
+    root: (
+        AccountClosingProblem
+        | OrganizationVersionConflictProblem
+        | OrganizationTransferToSelfProblem
+        | OrganizationOwnerInvariantProblem
+        | OrganizationOwnerProtectedProblem
+        | OrganizationSelfManagementForbiddenProblem
+        | OrganizationMembershipVersionConflictProblem
+        | OrganizationMemberRemovedProblem
+        | OrganizationRecoveryRequiredProblem
+        | OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+    )
+
+
+class LeaveOrganizationForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class LeaveOrganizationGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class LeaveOrganizationResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    accountId: str
+    createdAt: str
+    joinedVia: Literal["creation", "invitation", "sso_jit", "migration", "recovery"] | str
+    organizationId: str
+    removedAt: str | None
+    role: Literal["owner", "admin", "member", "viewer"] | str
+    roleManagedAt: str | None
+    status: Literal["active", "removed"] | str
+    updatedAt: str
+    version: str
 
 
 class ListAccountServiceKeysForbiddenProblem(
@@ -6694,6 +8229,206 @@ class ListOperationsInternalServerErrorProblem(
     root: InternalErrorProblem | InvalidAuthContextProblem
 
 
+class ListOrganizationInvitationsConflictProblem(
+    RootModel[
+        AccountClosingProblem
+        | InvitationExpiredProblem
+        | InvitationRevokedProblem
+        | InvitationRoleConflictProblem
+        | InvitationTerminalProblem
+        | InvitationPredatesRemovalProblem
+        | OrganizationUnavailableProblem
+        | OrganizationAuthPolicyChangedProblem
+    ]
+):
+    root: (
+        AccountClosingProblem
+        | InvitationExpiredProblem
+        | InvitationRevokedProblem
+        | InvitationRoleConflictProblem
+        | InvitationTerminalProblem
+        | InvitationPredatesRemovalProblem
+        | OrganizationUnavailableProblem
+        | OrganizationAuthPolicyChangedProblem
+    )
+
+
+class ListOrganizationInvitationsForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | InvitationEmailMismatchProblem
+        | InvitationInviterIneligibleProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | InvitationEmailMismatchProblem
+        | InvitationInviterIneligibleProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class ListOrganizationInvitationsGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class ListOrganizationInvitationsResponseInvitationsItem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    acceptedAt: str | None
+    acceptedByAccountId: str | None
+    allProjects: Literal[True]
+    createdAt: str
+    email: str
+    expiresAt: str
+    invitationId: str
+    invitedByAccountId: str
+    organizationId: str
+    role: Literal["member", "viewer"] | str
+    status: Literal["pending", "accepted", "revoked"] | str
+    updatedAt: str
+
+
+class ListOrganizationMembersConflictProblem(
+    RootModel[
+        AccountClosingProblem
+        | OrganizationVersionConflictProblem
+        | OrganizationTransferToSelfProblem
+        | OrganizationOwnerInvariantProblem
+        | OrganizationOwnerProtectedProblem
+        | OrganizationSelfManagementForbiddenProblem
+        | OrganizationMembershipVersionConflictProblem
+        | OrganizationMemberRemovedProblem
+        | OrganizationRecoveryRequiredProblem
+        | OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+    ]
+):
+    root: (
+        AccountClosingProblem
+        | OrganizationVersionConflictProblem
+        | OrganizationTransferToSelfProblem
+        | OrganizationOwnerInvariantProblem
+        | OrganizationOwnerProtectedProblem
+        | OrganizationSelfManagementForbiddenProblem
+        | OrganizationMembershipVersionConflictProblem
+        | OrganizationMemberRemovedProblem
+        | OrganizationRecoveryRequiredProblem
+        | OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+    )
+
+
+class ListOrganizationMembersForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class ListOrganizationMembersGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class ListOrganizationMembersResponseMembersItem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    account: ListOrganizationMembersResponseMembersItemAccount | None
+    accountId: str
+    createdAt: str
+    joinedVia: Literal["creation", "invitation", "sso_jit", "migration", "recovery"] | str
+    organizationId: str
+    removedAt: str | None
+    role: Literal["owner", "admin", "member", "viewer"] | str
+    roleManagedAt: str | None
+    status: Literal["active", "removed"] | str
+    updatedAt: str
+    version: str
+
+
+class ListOrganizationOauthClientsForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class ListOrganizationOauthClientsGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class ListOrganizationOauthClientsInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class ListOrganizationOauthClientsResponseOauthClientsItem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    clientId: str
+    createdAt: str
+    description: str | None
+    name: str
+    redirectUris: list[OrganizationOauthClientRedirectUri]
+    scopes: list[str]
+    updatedAt: str
+
+
+class ListOrganizationsForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class ListOrganizationsGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
 class ListProjectApiKeysForbiddenProblem(
     RootModel[
         ForbiddenProblem
@@ -6839,6 +8574,158 @@ class ListResourcesInternalServerErrorProblem(
     RootModel[InternalErrorProblem | InvalidAuthContextProblem]
 ):
     root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class ListServiceIdentitiesConflictProblem(
+    RootModel[
+        AccountClosingProblem
+        | OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+        | AppInstallationManagedProblem
+        | ServiceIdentityVersionConflictProblem
+    ]
+):
+    root: (
+        AccountClosingProblem
+        | OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+        | AppInstallationManagedProblem
+        | ServiceIdentityVersionConflictProblem
+    )
+
+
+class ListServiceIdentitiesForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class ListServiceIdentitiesGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class ListServiceIdentitiesResponseServiceIdentitiesItem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    appInstallationManaged: bool
+    createdAt: str
+    createdByAccountId: str
+    name: str
+    organizationId: str
+    permissions: list[str]
+    serviceIdentityId: str
+    status: Literal["active", "disabled"] | str
+    updatedAt: str
+    updatedByAccountId: str
+    version: str
+
+
+class ListServiceIdentityCredentialsBadRequestProblem(
+    RootModel[InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+):
+    root: InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+
+
+class ListServiceIdentityCredentialsConflictProblem(
+    RootModel[AppInstallationManagedProblem | ServiceCredentialConflictProblem]
+):
+    root: AppInstallationManagedProblem | ServiceCredentialConflictProblem
+
+
+class ListServiceIdentityCredentialsForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class ListServiceIdentityCredentialsGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class ListServiceIdentityCredentialsResponseCredentialsItem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    bound: bool
+    createdAt: str
+    creationStartedAt: str | None
+    credentialId: str
+    deliveryConsumedAt: str | None
+    expiresAt: str | None
+    hint: str | None
+    kind: Literal["api_key", "client_secret"] | str
+    label: str
+    providerCleanupCompletedAt: str | None
+    revocationRequestedAt: str | None
+    serviceIdentityId: str
+    status: Literal["active", "revoked"] | str
+    updatedAt: str
+    version: str
+
+
+class ListServiceIdentityPermissionsConflictProblem(
+    RootModel[
+        AccountClosingProblem
+        | OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+        | AppInstallationManagedProblem
+        | ServiceIdentityVersionConflictProblem
+    ]
+):
+    root: (
+        AccountClosingProblem
+        | OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+        | AppInstallationManagedProblem
+        | ServiceIdentityVersionConflictProblem
+    )
+
+
+class ListServiceIdentityPermissionsForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class ListServiceIdentityPermissionsGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
 
 
 class ListSharedLineAssignmentsForbiddenProblem(
@@ -7303,6 +9190,21 @@ class OperationPage(BaseModel):
     operations: list[Operation]
 
 
+class Organization(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    avatarUrl: str | None
+    billingInitialization: (
+        Literal["pending", "retry_required", "completed", "unknown"] | str | MISSING
+    ) = MISSING
+    createdAt: str
+    name: str
+    organizationId: str
+    updatedAt: str
+    version: str
+
+
 class OrganizationConnectionStatusMembership(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -7394,6 +9296,74 @@ class PreviewOrganizationChangeInternalServerErrorProblem(
     RootModel[InternalErrorProblem | InvalidAuthContextProblem]
 ):
     root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class PreviewOrganizationInvitationConflictProblem(
+    RootModel[
+        AccountClosingProblem
+        | InvitationExpiredProblem
+        | InvitationRevokedProblem
+        | InvitationRoleConflictProblem
+        | InvitationTerminalProblem
+        | InvitationPredatesRemovalProblem
+        | OrganizationUnavailableProblem
+        | OrganizationAuthPolicyChangedProblem
+    ]
+):
+    root: (
+        AccountClosingProblem
+        | InvitationExpiredProblem
+        | InvitationRevokedProblem
+        | InvitationRoleConflictProblem
+        | InvitationTerminalProblem
+        | InvitationPredatesRemovalProblem
+        | OrganizationUnavailableProblem
+        | OrganizationAuthPolicyChangedProblem
+    )
+
+
+class PreviewOrganizationInvitationForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | InvitationEmailMismatchProblem
+        | InvitationInviterIneligibleProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | InvitationEmailMismatchProblem
+        | InvitationInviterIneligibleProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class PreviewOrganizationInvitationGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class PreviewOrganizationInvitationResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    allProjects: Literal[True]
+    emailMatches: bool
+    expiresAt: str
+    inviter: PreviewOrganizationInvitationResponseInviter | None
+    maskedEmail: str
+    memberCount: int
+    organizationAvatarUrl: str | None
+    organizationId: str
+    organizationName: str
+    role: Literal["member", "viewer"] | str
+    ssoRequired: bool
+    status: Literal["pending", "accepted"] | str
 
 
 class PreviewProjectChangeForbiddenProblem(
@@ -7877,6 +9847,92 @@ class ReleaseWhatsappSharedLineAssignmentInternalServerErrorProblem(
     root: InternalErrorProblem | InvalidAuthContextProblem
 
 
+class RemoveOrganizationAvatarBadRequestProblem(
+    RootModel[InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+):
+    root: InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+
+
+class RemoveOrganizationAvatarForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class RemoveOrganizationAvatarGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class RemoveOrganizationMemberBadRequestProblem(
+    RootModel[InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+):
+    root: InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+
+
+class RemoveOrganizationMemberConflictProblem(
+    RootModel[
+        AccountClosingProblem
+        | OrganizationVersionConflictProblem
+        | OrganizationTransferToSelfProblem
+        | OrganizationOwnerInvariantProblem
+        | OrganizationOwnerProtectedProblem
+        | OrganizationSelfManagementForbiddenProblem
+        | OrganizationMembershipVersionConflictProblem
+        | OrganizationMemberRemovedProblem
+        | OrganizationRecoveryRequiredProblem
+        | OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+    ]
+):
+    root: (
+        AccountClosingProblem
+        | OrganizationVersionConflictProblem
+        | OrganizationTransferToSelfProblem
+        | OrganizationOwnerInvariantProblem
+        | OrganizationOwnerProtectedProblem
+        | OrganizationSelfManagementForbiddenProblem
+        | OrganizationMembershipVersionConflictProblem
+        | OrganizationMemberRemovedProblem
+        | OrganizationRecoveryRequiredProblem
+        | OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+    )
+
+
+class RemoveOrganizationMemberForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class RemoveOrganizationMemberGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
 class ReplaceVoiceProfileInboundConflictProblem(
     RootModel[
         ProjectClosingProblem
@@ -7926,6 +9982,62 @@ class ReplaceVoiceProfileInboundRequest(BaseModel):
     credentials: SipInboundCredentialsWithPassword | None
     destinationUri: str
     expectedVersion: int
+
+
+class ResendOrganizationInvitationBadRequestProblem(
+    RootModel[InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+):
+    root: InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+
+
+class ResendOrganizationInvitationConflictProblem(
+    RootModel[
+        AccountClosingProblem
+        | InvitationExpiredProblem
+        | InvitationRevokedProblem
+        | InvitationRoleConflictProblem
+        | InvitationTerminalProblem
+        | InvitationPredatesRemovalProblem
+        | OrganizationUnavailableProblem
+        | OrganizationAuthPolicyChangedProblem
+    ]
+):
+    root: (
+        AccountClosingProblem
+        | InvitationExpiredProblem
+        | InvitationRevokedProblem
+        | InvitationRoleConflictProblem
+        | InvitationTerminalProblem
+        | InvitationPredatesRemovalProblem
+        | OrganizationUnavailableProblem
+        | OrganizationAuthPolicyChangedProblem
+    )
+
+
+class ResendOrganizationInvitationForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | InvitationEmailMismatchProblem
+        | InvitationInviterIneligibleProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | InvitationEmailMismatchProblem
+        | InvitationInviterIneligibleProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class ResendOrganizationInvitationGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
 
 
 class ResetAccountProfilePictureBadRequestProblem(
@@ -8123,6 +10235,62 @@ class RevokeAuthorizedApplicationInternalServerErrorProblem(
     root: InternalErrorProblem | InvalidAuthContextProblem
 
 
+class RevokeOrganizationInvitationBadRequestProblem(
+    RootModel[InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+):
+    root: InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+
+
+class RevokeOrganizationInvitationConflictProblem(
+    RootModel[
+        AccountClosingProblem
+        | InvitationExpiredProblem
+        | InvitationRevokedProblem
+        | InvitationRoleConflictProblem
+        | InvitationTerminalProblem
+        | InvitationPredatesRemovalProblem
+        | OrganizationUnavailableProblem
+        | OrganizationAuthPolicyChangedProblem
+    ]
+):
+    root: (
+        AccountClosingProblem
+        | InvitationExpiredProblem
+        | InvitationRevokedProblem
+        | InvitationRoleConflictProblem
+        | InvitationTerminalProblem
+        | InvitationPredatesRemovalProblem
+        | OrganizationUnavailableProblem
+        | OrganizationAuthPolicyChangedProblem
+    )
+
+
+class RevokeOrganizationInvitationForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | InvitationEmailMismatchProblem
+        | InvitationInviterIneligibleProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | InvitationEmailMismatchProblem
+        | InvitationInviterIneligibleProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class RevokeOrganizationInvitationGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
 class RevokeProjectApiKeyBadRequestProblem(
     RootModel[IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem]
 ):
@@ -8147,6 +10315,96 @@ class RevokeProjectApiKeyForbiddenProblem(
 
 class RevokeProjectApiKeyNotFoundProblem(RootModel[ProjectNotFoundProblem | ApiKeyNotFoundProblem]):
     root: ProjectNotFoundProblem | ApiKeyNotFoundProblem
+
+
+class RevokeServiceIdentityCredentialBadRequestProblem(
+    RootModel[InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+):
+    root: InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+
+
+class RevokeServiceIdentityCredentialConflictProblem(
+    RootModel[AppInstallationManagedProblem | ServiceCredentialConflictProblem]
+):
+    root: AppInstallationManagedProblem | ServiceCredentialConflictProblem
+
+
+class RevokeServiceIdentityCredentialForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class RevokeServiceIdentityCredentialGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class RevokeServiceIdentityCredentialResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    bound: bool
+    createdAt: str
+    creationStartedAt: str | None
+    credentialId: str
+    deliveryConsumedAt: str | None
+    expiresAt: str | None
+    hint: str | None
+    kind: Literal["api_key", "client_secret"] | str
+    label: str
+    providerCleanupCompletedAt: str | None
+    revocationRequestedAt: str | None
+    serviceIdentityId: str
+    status: Literal["active", "revoked"] | str
+    updatedAt: str
+    version: str
+
+
+class RotateOrganizationOauthClientSecretForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class RotateOrganizationOauthClientSecretGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class RotateOrganizationOauthClientSecretInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class RotateOrganizationOauthClientSecretRequest(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    mode: Literal["normal", "emergency"] | str
 
 
 class RotateVoiceProfileOutboundCredentialBadRequestProblem(
@@ -8364,6 +10622,34 @@ class SetSpaceTypingNotFoundProblem(RootModel[SpaceNotFoundProblem | UserNotFoun
     root: SpaceNotFoundProblem | UserNotFoundProblem
 
 
+class SetupOrganizationOauthClientSecretForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class SetupOrganizationOauthClientSecretGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class SetupOrganizationOauthClientSecretInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
 class SharedLineAssignment(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -8494,34 +10780,20 @@ class SpaceTypingUpdateContent(BaseModel):
     """
 
 
-class StartAccountPhoneVerificationForbiddenProblem(
-    RootModel[
-        CaptchaRequiredProblem
-        | ForbiddenProblem
-        | InsufficientScopeProblem
-        | OrganizationSsoRequiredProblem
-        | ResourceMismatchProblem
-    ]
+class SubscribeSsoBadRequestProblem(
+    RootModel[InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
 ):
-    root: (
-        CaptchaRequiredProblem
-        | ForbiddenProblem
-        | InsufficientScopeProblem
-        | OrganizationSsoRequiredProblem
-        | ResourceMismatchProblem
-    )
+    root: InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
 
 
-class StartAccountPhoneVerificationGatewayTimeoutProblem(
-    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+class SubscribeSsoForbiddenProblem(
+    RootModel[ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem]
 ):
+    root: ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem
+
+
+class SubscribeSsoGatewayTimeoutProblem(RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]):
     root: UpstreamTimeoutProblem | RequestTimeoutProblem
-
-
-class StartAccountPhoneVerificationInternalServerErrorProblem(
-    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
-):
-    root: InternalErrorProblem | InvalidAuthContextProblem
 
 
 class TelegramSpace(BaseModel):
@@ -8614,6 +10886,64 @@ class TextUpdateContent(BaseModel):
     metadata: ContentMetadata | MISSING = MISSING
     text: str
     type: Literal["text.update"]
+
+
+class TransferOrganizationOwnershipBadRequestProblem(
+    RootModel[InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+):
+    root: InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+
+
+class TransferOrganizationOwnershipConflictProblem(
+    RootModel[
+        AccountClosingProblem
+        | OrganizationVersionConflictProblem
+        | OrganizationTransferToSelfProblem
+        | OrganizationOwnerInvariantProblem
+        | OrganizationOwnerProtectedProblem
+        | OrganizationSelfManagementForbiddenProblem
+        | OrganizationMembershipVersionConflictProblem
+        | OrganizationMemberRemovedProblem
+        | OrganizationRecoveryRequiredProblem
+        | OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+    ]
+):
+    root: (
+        AccountClosingProblem
+        | OrganizationVersionConflictProblem
+        | OrganizationTransferToSelfProblem
+        | OrganizationOwnerInvariantProblem
+        | OrganizationOwnerProtectedProblem
+        | OrganizationSelfManagementForbiddenProblem
+        | OrganizationMembershipVersionConflictProblem
+        | OrganizationMemberRemovedProblem
+        | OrganizationRecoveryRequiredProblem
+        | OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+    )
+
+
+class TransferOrganizationOwnershipForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class TransferOrganizationOwnershipGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
 
 
 class UnassignSmsLineCampaignBadRequestProblem(
@@ -8820,50 +11150,6 @@ class UpdateAccountInternalServerErrorProblem(
     root: InternalErrorProblem | InvalidAuthContextProblem
 
 
-class UpdateAccountOnboardingBadRequestProblem(
-    RootModel[
-        HttpErrorProblem
-        | InvalidArgumentProblem
-        | IdempotencyKeyInvalidProblem
-        | IdempotencyKeyRequiredProblem
-    ]
-):
-    root: (
-        HttpErrorProblem
-        | InvalidArgumentProblem
-        | IdempotencyKeyInvalidProblem
-        | IdempotencyKeyRequiredProblem
-    )
-
-
-class UpdateAccountOnboardingForbiddenProblem(
-    RootModel[
-        ForbiddenProblem
-        | InsufficientScopeProblem
-        | OrganizationSsoRequiredProblem
-        | ResourceMismatchProblem
-    ]
-):
-    root: (
-        ForbiddenProblem
-        | InsufficientScopeProblem
-        | OrganizationSsoRequiredProblem
-        | ResourceMismatchProblem
-    )
-
-
-class UpdateAccountOnboardingGatewayTimeoutProblem(
-    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
-):
-    root: UpstreamTimeoutProblem | RequestTimeoutProblem
-
-
-class UpdateAccountOnboardingInternalServerErrorProblem(
-    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
-):
-    root: InternalErrorProblem | InvalidAuthContextProblem
-
-
 class UpdateAgentProfileBadRequestProblem(
     RootModel[IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
 ):
@@ -8945,6 +11231,128 @@ class UpdateDefaultVoiceProfileRequest(BaseModel):
     protocol: Literal["sip"] | MISSING = MISSING
 
 
+class UpdateOrganizationBadRequestProblem(
+    RootModel[InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+):
+    root: InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+
+
+class UpdateOrganizationForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class UpdateOrganizationGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class UpdateOrganizationMemberRoleBadRequestProblem(
+    RootModel[InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+):
+    root: InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+
+
+class UpdateOrganizationMemberRoleConflictProblem(
+    RootModel[
+        AccountClosingProblem
+        | OrganizationVersionConflictProblem
+        | OrganizationTransferToSelfProblem
+        | OrganizationOwnerInvariantProblem
+        | OrganizationOwnerProtectedProblem
+        | OrganizationSelfManagementForbiddenProblem
+        | OrganizationMembershipVersionConflictProblem
+        | OrganizationMemberRemovedProblem
+        | OrganizationRecoveryRequiredProblem
+        | OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+    ]
+):
+    root: (
+        AccountClosingProblem
+        | OrganizationVersionConflictProblem
+        | OrganizationTransferToSelfProblem
+        | OrganizationOwnerInvariantProblem
+        | OrganizationOwnerProtectedProblem
+        | OrganizationSelfManagementForbiddenProblem
+        | OrganizationMembershipVersionConflictProblem
+        | OrganizationMemberRemovedProblem
+        | OrganizationRecoveryRequiredProblem
+        | OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+    )
+
+
+class UpdateOrganizationMemberRoleForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class UpdateOrganizationMemberRoleGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class UpdateOrganizationMemberRoleRequest(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    expectedVersion: str
+    role: Literal["admin", "member", "viewer"] | str
+
+
+class UpdateOrganizationOauthClientForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class UpdateOrganizationOauthClientGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class UpdateOrganizationOauthClientInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
 class UpdateOrganizationSsoPolicyBadRequestProblem(
     RootModel[InvalidReturnToProblem | InvalidArgumentProblem]
 ):
@@ -9018,6 +11426,52 @@ class UpdateProjectForbiddenProblem(
 
 
 class UpdateProjectGatewayTimeoutProblem(RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]):
+    root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class UpdateServiceIdentityBadRequestProblem(
+    RootModel[InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+):
+    root: InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+
+
+class UpdateServiceIdentityConflictProblem(
+    RootModel[
+        AccountClosingProblem
+        | OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+        | AppInstallationManagedProblem
+        | ServiceIdentityVersionConflictProblem
+    ]
+):
+    root: (
+        AccountClosingProblem
+        | OrganizationAuthPolicyChangedProblem
+        | OrganizationUnavailableProblem
+        | AppInstallationManagedProblem
+        | ServiceIdentityVersionConflictProblem
+    )
+
+
+class UpdateServiceIdentityForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class UpdateServiceIdentityGatewayTimeoutProblem(
+    RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
+):
     root: UpstreamTimeoutProblem | RequestTimeoutProblem
 
 
@@ -9519,6 +11973,56 @@ class WhatsappUserSnapshot(BaseModel):
     projectId: str
 
 
+class AcceptOrganizationInvitationBadRequestProblem(
+    RootModel[InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+):
+    root: InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+
+
+class AcceptOrganizationInvitationConflictProblem(
+    RootModel[
+        AccountClosingProblem
+        | InvitationExpiredProblem
+        | InvitationRevokedProblem
+        | InvitationRoleConflictProblem
+        | InvitationTerminalProblem
+        | InvitationPredatesRemovalProblem
+        | OrganizationUnavailableProblem
+        | OrganizationAuthPolicyChangedProblem
+    ]
+):
+    root: (
+        AccountClosingProblem
+        | InvitationExpiredProblem
+        | InvitationRevokedProblem
+        | InvitationRoleConflictProblem
+        | InvitationTerminalProblem
+        | InvitationPredatesRemovalProblem
+        | OrganizationUnavailableProblem
+        | OrganizationAuthPolicyChangedProblem
+    )
+
+
+class AcceptOrganizationInvitationForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | InvitationEmailMismatchProblem
+        | InvitationInviterIneligibleProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | InvitationEmailMismatchProblem
+        | InvitationInviterIneligibleProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
 class AssignSmsLineCampaignBadRequestProblem(
     RootModel[
         SmsCampaignInvalidRequestProblem
@@ -9632,78 +12136,6 @@ class BatchUpdateVoiceLineProfileAssignmentsInternalServerErrorProblem(
     root: InternalErrorProblem | InvalidAuthContextProblem
 
 
-class BeginInvitationSsoBadRequestProblem(
-    RootModel[InvalidReturnToProblem | InvalidArgumentProblem]
-):
-    root: InvalidReturnToProblem | InvalidArgumentProblem
-
-
-class BeginInvitationSsoForbiddenProblem(
-    RootModel[ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem]
-):
-    root: ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem
-
-
-class BeginInvitationSsoInternalServerErrorProblem(
-    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
-):
-    root: InternalErrorProblem | InvalidAuthContextProblem
-
-
-class BeginOrganizationAuthenticationBadRequestProblem(
-    RootModel[InvalidReturnToProblem | InvalidArgumentProblem]
-):
-    root: InvalidReturnToProblem | InvalidArgumentProblem
-
-
-class BeginOrganizationAuthenticationForbiddenProblem(
-    RootModel[ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem]
-):
-    root: ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem
-
-
-class BeginOrganizationAuthenticationInternalServerErrorProblem(
-    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
-):
-    root: InternalErrorProblem | InvalidAuthContextProblem
-
-
-class BeginOrganizationClosureAuthenticationBadRequestProblem(
-    RootModel[InvalidReturnToProblem | InvalidArgumentProblem]
-):
-    root: InvalidReturnToProblem | InvalidArgumentProblem
-
-
-class BeginOrganizationClosureAuthenticationForbiddenProblem(
-    RootModel[ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem]
-):
-    root: ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem
-
-
-class BeginOrganizationClosureAuthenticationInternalServerErrorProblem(
-    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
-):
-    root: InternalErrorProblem | InvalidAuthContextProblem
-
-
-class BeginOrganizationSsoAdmissionBadRequestProblem(
-    RootModel[InvalidReturnToProblem | InvalidArgumentProblem]
-):
-    root: InvalidReturnToProblem | InvalidArgumentProblem
-
-
-class BeginOrganizationSsoAdmissionForbiddenProblem(
-    RootModel[ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem]
-):
-    root: ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem
-
-
-class BeginOrganizationSsoAdmissionInternalServerErrorProblem(
-    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
-):
-    root: InternalErrorProblem | InvalidAuthContextProblem
-
-
 class BillingChangeEffect(RootModel[BillingFixedChargeEffect | BillingPlanChangeEffect]):
     root: BillingFixedChargeEffect | BillingPlanChangeEffect
     """
@@ -9711,12 +12143,41 @@ class BillingChangeEffect(RootModel[BillingFixedChargeEffect | BillingPlanChange
     """
 
 
-class BillingOperation(
-    RootModel[PendingBillingOperation | SucceededBillingOperation | FailedBillingOperation]
-):
-    root: PendingBillingOperation | SucceededBillingOperation | FailedBillingOperation
+class BillingPaymentAction(BaseModel):
     """
-    Authoritative provisioning state. Poll the operation route while pending.
+    A payment the customer's bank asked them to authenticate (3DS). The invoice's pay route completes it.
+    """
+
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    amountCents: int
+    """
+    Amount of the payment, in cents.
+    """
+    currency: str
+    """
+    ISO currency code.
+    """
+    expiresAt: str | None
+    """
+    When the operation stops waiting: past it, the payment is cancelled and the operation fails. Null without an operation.
+    """
+    invoiceId: str
+    """
+    The invoice whose payment it is. Pay it to complete the payment.
+    """
+    invoiceNumber: str | None
+    """
+    The invoice's number. Null until the invoice is issued: a plan change is invoiced once it is paid.
+    """
+    operation: BillingPaymentActionOperation | None
+    """
+    The pending operation it completes. Null for an invoice no operation waits on, such as a renewal.
+    """
+    subjects: list[ProjectInvoiceSubject | OrganizationInvoiceSubject]
+    """
+    What it pays for: the operation's project or organization, or those the invoice bills.
     """
 
 
@@ -9787,6 +12248,18 @@ class CancelOperationInternalServerErrorProblem(
     root: InternalErrorProblem | InvalidAuthContextProblem
 
 
+class CancelSsoSubscriptionBadRequestProblem(
+    RootModel[InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+):
+    root: InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+
+
+class CancelSsoSubscriptionForbiddenProblem(
+    RootModel[ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem]
+):
+    root: ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem
+
+
 class ChangePlanBadRequestProblem(
     RootModel[InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
 ):
@@ -9827,6 +12300,22 @@ class ChangePlanServiceUnavailableProblem(
     root: IdempotencyUnavailableProblem | UpstreamUnavailableProblem
 
 
+class CheckOrganizationDeletionForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
 class CheckProjectSlugAvailabilityForbiddenProblem(
     RootModel[
         ForbiddenProblem
@@ -9847,6 +12336,46 @@ class CheckProjectSlugAvailabilityResponse(
     RootModel[AvailableProjectSlug | UnavailableProjectSlug]
 ):
     root: AvailableProjectSlug | UnavailableProjectSlug
+
+
+class CloseOrganizationBadRequestProblem(
+    RootModel[InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+):
+    root: InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+
+
+class CloseOrganizationConflictProblem(
+    RootModel[
+        OrganizationAuthPolicyChangedProblem
+        | ClosureBlockedProblem
+        | OrganizationVersionConflictProblem
+        | AccountClosingProblem
+        | OrganizationUnavailableProblem
+    ]
+):
+    root: (
+        OrganizationAuthPolicyChangedProblem
+        | ClosureBlockedProblem
+        | OrganizationVersionConflictProblem
+        | AccountClosingProblem
+        | OrganizationUnavailableProblem
+    )
+
+
+class CloseOrganizationForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
 
 
 class CommitAccountProfilePictureBadRequestProblem(
@@ -9899,7 +12428,13 @@ class CommitAgentProfileAvatarForbiddenProblem(
     )
 
 
-class CompleteAccountOnboardingForbiddenProblem(
+class CommitOrganizationAvatarBadRequestProblem(
+    RootModel[InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+):
+    root: InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+
+
+class CommitOrganizationAvatarForbiddenProblem(
     RootModel[
         ForbiddenProblem
         | InsufficientScopeProblem
@@ -9913,12 +12448,6 @@ class CompleteAccountOnboardingForbiddenProblem(
         | OrganizationSsoRequiredProblem
         | ResourceMismatchProblem
     )
-
-
-class CompleteAccountOnboardingInternalServerErrorProblem(
-    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
-):
-    root: InternalErrorProblem | InvalidAuthContextProblem
 
 
 class ConfigureVoiceProfileOutboundBadRequestProblem(
@@ -9944,28 +12473,6 @@ class ConfigureVoiceProfileOutboundForbiddenProblem(
 
 
 class ConfigureVoiceProfileOutboundInternalServerErrorProblem(
-    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
-):
-    root: InternalErrorProblem | InvalidAuthContextProblem
-
-
-class ConfirmAccountPhoneVerificationForbiddenProblem(
-    RootModel[
-        ForbiddenProblem
-        | InsufficientScopeProblem
-        | OrganizationSsoRequiredProblem
-        | ResourceMismatchProblem
-    ]
-):
-    root: (
-        ForbiddenProblem
-        | InsufficientScopeProblem
-        | OrganizationSsoRequiredProblem
-        | ResourceMismatchProblem
-    )
-
-
-class ConfirmAccountPhoneVerificationInternalServerErrorProblem(
     RootModel[InternalErrorProblem | InvalidAuthContextProblem]
 ):
     root: InternalErrorProblem | InvalidAuthContextProblem
@@ -10030,34 +12537,6 @@ class ConnectTelegramBotForbiddenProblem(
 
 
 class ConnectTelegramBotInternalServerErrorProblem(
-    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
-):
-    root: InternalErrorProblem | InvalidAuthContextProblem
-
-
-class ConnectWhatsappBusinessBadRequestProblem(
-    RootModel[IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
-):
-    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
-
-
-class ConnectWhatsappBusinessForbiddenProblem(
-    RootModel[
-        ForbiddenProblem
-        | InsufficientScopeProblem
-        | OrganizationSsoRequiredProblem
-        | ResourceMismatchProblem
-    ]
-):
-    root: (
-        ForbiddenProblem
-        | InsufficientScopeProblem
-        | OrganizationSsoRequiredProblem
-        | ResourceMismatchProblem
-    )
-
-
-class ConnectWhatsappBusinessInternalServerErrorProblem(
     RootModel[InternalErrorProblem | InvalidAuthContextProblem]
 ):
     root: InternalErrorProblem | InvalidAuthContextProblem
@@ -10343,6 +12822,116 @@ class CreateOrGetUserInternalServerErrorProblem(
     root: InternalErrorProblem | InvalidAuthContextProblem
 
 
+class CreateOrganizationAvatarUploadForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class CreateOrganizationBadRequestProblem(
+    RootModel[IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem]
+):
+    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem
+
+
+class CreateOrganizationForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class CreateOrganizationInvitationBadRequestProblem(
+    RootModel[InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+):
+    root: InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+
+
+class CreateOrganizationInvitationConflictProblem(
+    RootModel[
+        AccountClosingProblem
+        | InvitationExpiredProblem
+        | InvitationRevokedProblem
+        | InvitationRoleConflictProblem
+        | InvitationTerminalProblem
+        | InvitationPredatesRemovalProblem
+        | OrganizationUnavailableProblem
+        | OrganizationAuthPolicyChangedProblem
+    ]
+):
+    root: (
+        AccountClosingProblem
+        | InvitationExpiredProblem
+        | InvitationRevokedProblem
+        | InvitationRoleConflictProblem
+        | InvitationTerminalProblem
+        | InvitationPredatesRemovalProblem
+        | OrganizationUnavailableProblem
+        | OrganizationAuthPolicyChangedProblem
+    )
+
+
+class CreateOrganizationInvitationForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | InvitationEmailMismatchProblem
+        | InvitationInviterIneligibleProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | InvitationEmailMismatchProblem
+        | InvitationInviterIneligibleProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class CreateOrganizationOauthClientForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class CreateOrganizationOauthClientInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
 class CreateOrganizationPaymentMethodCheckoutBadRequestProblem(
     RootModel[InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
 ):
@@ -10366,34 +12955,6 @@ class CreateOrganizationPaymentMethodCheckoutForbiddenProblem(
 
 
 class CreateOrganizationPaymentMethodCheckoutInternalServerErrorProblem(
-    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
-):
-    root: InternalErrorProblem | InvalidAuthContextProblem
-
-
-class CreateOrganizationSetupIntentBadRequestProblem(
-    RootModel[InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
-):
-    root: InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
-
-
-class CreateOrganizationSetupIntentForbiddenProblem(
-    RootModel[
-        ForbiddenProblem
-        | InsufficientScopeProblem
-        | OrganizationSsoRequiredProblem
-        | ResourceMismatchProblem
-    ]
-):
-    root: (
-        ForbiddenProblem
-        | InsufficientScopeProblem
-        | OrganizationSsoRequiredProblem
-        | ResourceMismatchProblem
-    )
-
-
-class CreateOrganizationSetupIntentInternalServerErrorProblem(
     RootModel[InternalErrorProblem | InvalidAuthContextProblem]
 ):
     root: InternalErrorProblem | InvalidAuthContextProblem
@@ -10446,6 +13007,96 @@ class CreateProjectBadRequestProblem(
 
 
 class CreateProjectForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class CreateServiceIdentityApiKeyBadRequestProblem(
+    RootModel[InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+):
+    root: InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+
+
+class CreateServiceIdentityApiKeyForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class CreateServiceIdentityApiKeyResponse(
+    RootModel[
+        CreateServiceIdentityApiKeyResponseCreated | CreateServiceIdentityApiKeyResponseUndelivered
+    ]
+):
+    root: (
+        CreateServiceIdentityApiKeyResponseCreated | CreateServiceIdentityApiKeyResponseUndelivered
+    )
+
+
+class CreateServiceIdentityBadRequestProblem(
+    RootModel[InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+):
+    root: InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+
+
+class CreateServiceIdentityClientSecretBadRequestProblem(
+    RootModel[InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+):
+    root: InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+
+
+class CreateServiceIdentityClientSecretForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class CreateServiceIdentityClientSecretResponse(
+    RootModel[
+        CreateServiceIdentityClientSecretResponseCreated
+        | CreateServiceIdentityClientSecretResponseUndelivered
+        | CreateServiceIdentityClientSecretResponseApplicationPending
+    ]
+):
+    root: (
+        CreateServiceIdentityClientSecretResponseCreated
+        | CreateServiceIdentityClientSecretResponseUndelivered
+        | CreateServiceIdentityClientSecretResponseApplicationPending
+    )
+
+
+class CreateServiceIdentityForbiddenProblem(
     RootModel[
         ForbiddenProblem
         | InsufficientScopeProblem
@@ -10656,6 +13307,50 @@ class DeleteAccountForbiddenProblem(
 
 
 class DeleteAccountInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class DeleteOrganizationOauthClientForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class DeleteOrganizationOauthClientInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class DeleteOrganizationOauthClientSecretForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class DeleteOrganizationOauthClientSecretInternalServerErrorProblem(
     RootModel[InternalErrorProblem | InvalidAuthContextProblem]
 ):
     root: InternalErrorProblem | InvalidAuthContextProblem
@@ -11018,6 +13713,38 @@ class EmailUserSnapshot(BaseModel):
     projectId: str
 
 
+class EnsureInitialOrganizationBadRequestProblem(
+    RootModel[IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+):
+    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+
+
+class EnsureInitialOrganizationForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class EnsureInitialOrganizationResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    organization: Organization | None
+    """
+    The initial organization this request created; null when the account already had one.
+    """
+
+
 class FixedCharge(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -11048,28 +13775,6 @@ class GetAccountForbiddenProblem(
 
 
 class GetAccountInternalServerErrorProblem(
-    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
-):
-    root: InternalErrorProblem | InvalidAuthContextProblem
-
-
-class GetAccountOnboardingForbiddenProblem(
-    RootModel[
-        ForbiddenProblem
-        | InsufficientScopeProblem
-        | OrganizationSsoRequiredProblem
-        | ResourceMismatchProblem
-    ]
-):
-    root: (
-        ForbiddenProblem
-        | InsufficientScopeProblem
-        | OrganizationSsoRequiredProblem
-        | ResourceMismatchProblem
-    )
-
-
-class GetAccountOnboardingInternalServerErrorProblem(
     RootModel[InternalErrorProblem | InvalidAuthContextProblem]
 ):
     root: InternalErrorProblem | InvalidAuthContextProblem
@@ -11155,6 +13860,22 @@ class GetBillingOverviewInternalServerErrorProblem(
     RootModel[InternalErrorProblem | InvalidAuthContextProblem]
 ):
     root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class GetCurrentOrganizationForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
 
 
 class GetDefaultVoiceProfileForbiddenProblem(
@@ -11385,6 +14106,66 @@ class GetOrganizationCreditInternalServerErrorProblem(
     root: InternalErrorProblem | InvalidAuthContextProblem
 
 
+class GetOrganizationForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class GetOrganizationOauthClientForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class GetOrganizationOauthClientInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class GetOrganizationOauthClientSecretForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
+class GetOrganizationOauthClientSecretInternalServerErrorProblem(
+    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
+):
+    root: InternalErrorProblem | InvalidAuthContextProblem
+
+
 class GetOrganizationPaymentMethodForbiddenProblem(
     RootModel[
         ForbiddenProblem
@@ -11545,6 +14326,22 @@ class GetResourceInternalServerErrorProblem(
     root: InternalErrorProblem | InvalidAuthContextProblem
 
 
+class GetServiceIdentityForbiddenProblem(
+    RootModel[
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    ]
+):
+    root: (
+        ForbiddenProblem
+        | InsufficientScopeProblem
+        | OrganizationSsoRequiredProblem
+        | ResourceMismatchProblem
+    )
+
+
 class GetSharedLineAssignmentForbiddenProblem(
     RootModel[
         ForbiddenProblem
@@ -11611,6 +14408,12 @@ class GetSpaceInternalServerErrorProblem(
     RootModel[InternalErrorProblem | InvalidAuthContextProblem]
 ):
     root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class GetSsoSubscriptionForbiddenProblem(
+    RootModel[ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem]
+):
+    root: ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem
 
 
 class GetUserForbiddenProblem(
@@ -11777,28 +14580,6 @@ class GetWhatsappSharedLineAssignmentInternalServerErrorProblem(
     root: InternalErrorProblem | InvalidAuthContextProblem
 
 
-class GetWhatsappSignupConfigForbiddenProblem(
-    RootModel[
-        ForbiddenProblem
-        | InsufficientScopeProblem
-        | OrganizationSsoRequiredProblem
-        | ResourceMismatchProblem
-    ]
-):
-    root: (
-        ForbiddenProblem
-        | InsufficientScopeProblem
-        | OrganizationSsoRequiredProblem
-        | ResourceMismatchProblem
-    )
-
-
-class GetWhatsappSignupConfigInternalServerErrorProblem(
-    RootModel[InternalErrorProblem | InvalidAuthContextProblem]
-):
-    root: InternalErrorProblem | InvalidAuthContextProblem
-
-
 class ImessageGroupContentPart(
     RootModel[TextContent | AttachmentContent | MessageReadContent | SpaceTypingUpdateContent]
 ):
@@ -11897,6 +14678,18 @@ class Invoice(BaseModel):
     """
     Human invoice number.
     """
+    paymentActionRequired: bool
+    """
+    Its payment waits on the customer's authentication (3DS). Pay the invoice to complete it.
+    """
+    paymentDueAt: str | None
+    """
+    When payment is due, ISO 8601.
+    """
+    paymentOverdue: bool
+    """
+    Unpaid past its due date. Overdue invoices set the organization's dunning stage.
+    """
     paymentStatus: Literal["pending", "succeeded", "failed"] | str
     """
     Provider-neutral payment status.
@@ -11944,6 +14737,42 @@ class ListInvoicesResponse(BaseModel):
     """
 
 
+class ListOrganizationInvitationsResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    invitations: list[ListOrganizationInvitationsResponseInvitationsItem]
+
+
+class ListOrganizationMembersResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    members: list[ListOrganizationMembersResponseMembersItem]
+
+
+class ListOrganizationOauthClientsResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    oauthClients: list[ListOrganizationOauthClientsResponseOauthClientsItem]
+
+
+class ListOrganizationsResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    acquisitionQuestionnaireExempt: bool
+    """
+    An active invitation membership exempts acquisition questions; not CRM completion or phone verification.
+    """
+    organizations: list[Organization]
+    ownedOrganizationIds: list[str]
+    """
+    Listed organizations where the caller is the Owner.
+    """
+
+
 class ListProjectSubscriptionsResponse(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -11952,6 +14781,20 @@ class ListProjectSubscriptionsResponse(BaseModel):
     """
     One entry per category that currently holds a subscription. Empty means none do — cancelled, or never opened.
     """
+
+
+class ListServiceIdentitiesResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    serviceIdentities: list[ListServiceIdentitiesResponseServiceIdentitiesItem]
+
+
+class ListServiceIdentityCredentialsResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    credentials: list[ListServiceIdentityCredentialsResponseCredentialsItem]
 
 
 class ListWebhookApiVersionsResponse(BaseModel):
@@ -12075,6 +14918,29 @@ class OrganizationSubscription(BaseModel):
     """
     State of one category's subscription: the payer's dunning stage while it holds one. Dunning is organization-level, so the stage applies to every category at once, and paying clears it. Entitlements are unaffected at every stage; viewing, paying and releasing resources stay available. Only categories that hold a subscription appear at all; a cancelled category is absent rather than listed as terminated.
     """
+
+
+class PendingBillingOperation(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    failure: None
+    kind: Literal["change_plan", "adjust_fixed_charge_quantity"] | str
+    operationId: str
+    """
+    Stable handle for this provisioning action.
+    """
+    paymentAction: BillingPaymentAction | None
+    """
+    Set while a payment the operation waits for needs the customer's authentication. Completing it within the payment window completes the operation.
+    """
+    resolvedAt: None
+    result: None
+    status: Literal["pending"]
+    """
+    Accepted and still executing. Poll the operation route.
+    """
+    submittedAt: str | None
 
 
 class PreviewOrganizationChangeResponse(BaseModel):
@@ -12370,7 +15236,34 @@ class WhatsappBusinessAccount(BaseModel):
     wabaId: str
 
 
+class AcceptOrganizationInvitationUnprocessableEntityProblem(
+    RootModel[ValidationFailedProblem | IdempotencyKeyReusedProblem]
+):
+    root: ValidationFailedProblem | IdempotencyKeyReusedProblem
+
+
+class BillingOperation(
+    RootModel[PendingBillingOperation | SucceededBillingOperation | FailedBillingOperation]
+):
+    root: PendingBillingOperation | SucceededBillingOperation | FailedBillingOperation
+    """
+    Authoritative provisioning state. Poll the operation route while pending.
+    """
+
+
+class CancelSsoSubscriptionUnprocessableEntityProblem(
+    RootModel[ValidationFailedProblem | IdempotencyKeyReusedProblem]
+):
+    root: ValidationFailedProblem | IdempotencyKeyReusedProblem
+
+
 class ChangePlanUnprocessableEntityProblem(
+    RootModel[ValidationFailedProblem | IdempotencyKeyReusedProblem]
+):
+    root: ValidationFailedProblem | IdempotencyKeyReusedProblem
+
+
+class CloseOrganizationUnprocessableEntityProblem(
     RootModel[ValidationFailedProblem | IdempotencyKeyReusedProblem]
 ):
     root: ValidationFailedProblem | IdempotencyKeyReusedProblem
@@ -12383,6 +15276,12 @@ class CommitAccountProfilePictureUnprocessableEntityProblem(
 
 
 class CommitAgentProfileAvatarUnprocessableEntityProblem(
+    RootModel[ValidationFailedProblem | IdempotencyKeyReusedProblem]
+):
+    root: ValidationFailedProblem | IdempotencyKeyReusedProblem
+
+
+class CommitOrganizationAvatarUnprocessableEntityProblem(
     RootModel[ValidationFailedProblem | IdempotencyKeyReusedProblem]
 ):
     root: ValidationFailedProblem | IdempotencyKeyReusedProblem
@@ -12410,12 +15309,6 @@ class ConnectEmailDomainUnprocessableEntityProblem(
 
 
 class ConnectTelegramBotUnprocessableEntityProblem(
-    RootModel[ValidationFailedProblem | IdempotencyKeyReusedProblem]
-):
-    root: ValidationFailedProblem | IdempotencyKeyReusedProblem
-
-
-class ConnectWhatsappBusinessUnprocessableEntityProblem(
     RootModel[ValidationFailedProblem | IdempotencyKeyReusedProblem]
 ):
     root: ValidationFailedProblem | IdempotencyKeyReusedProblem
@@ -12453,13 +15346,19 @@ class CreateOrGetUserUnprocessableEntityProblem(
     root: OperationUnavailableProblem | ValidationFailedProblem
 
 
+class CreateOrganizationInvitationUnprocessableEntityProblem(
+    RootModel[ValidationFailedProblem | IdempotencyKeyReusedProblem]
+):
+    root: ValidationFailedProblem | IdempotencyKeyReusedProblem
+
+
 class CreateOrganizationPaymentMethodCheckoutUnprocessableEntityProblem(
     RootModel[ValidationFailedProblem | IdempotencyKeyReusedProblem]
 ):
     root: ValidationFailedProblem | IdempotencyKeyReusedProblem
 
 
-class CreateOrganizationSetupIntentUnprocessableEntityProblem(
+class CreateOrganizationUnprocessableEntityProblem(
     RootModel[ValidationFailedProblem | IdempotencyKeyReusedProblem]
 ):
     root: ValidationFailedProblem | IdempotencyKeyReusedProblem
@@ -12472,6 +15371,24 @@ class CreateProjectApiKeyUnprocessableEntityProblem(
 
 
 class CreateProjectUnprocessableEntityProblem(
+    RootModel[ValidationFailedProblem | IdempotencyKeyReusedProblem]
+):
+    root: ValidationFailedProblem | IdempotencyKeyReusedProblem
+
+
+class CreateServiceIdentityApiKeyUnprocessableEntityProblem(
+    RootModel[ValidationFailedProblem | IdempotencyKeyReusedProblem]
+):
+    root: ValidationFailedProblem | IdempotencyKeyReusedProblem
+
+
+class CreateServiceIdentityClientSecretUnprocessableEntityProblem(
+    RootModel[ValidationFailedProblem | IdempotencyKeyReusedProblem]
+):
+    root: ValidationFailedProblem | IdempotencyKeyReusedProblem
+
+
+class CreateServiceIdentityUnprocessableEntityProblem(
     RootModel[ValidationFailedProblem | IdempotencyKeyReusedProblem]
 ):
     root: ValidationFailedProblem | IdempotencyKeyReusedProblem
@@ -12695,6 +15612,12 @@ class ImessageMessageContent(
     )
 
 
+class LeaveOrganizationUnprocessableEntityProblem(
+    RootModel[ValidationFailedProblem | IdempotencyKeyReusedProblem]
+):
+    root: ValidationFailedProblem | IdempotencyKeyReusedProblem
+
+
 class ListCreditActivityResponse(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -12707,6 +15630,12 @@ class ListCreditActivityResponse(BaseModel):
     """
     Pass as page to read the next page. Null on the last page.
     """
+
+
+class ListServiceIdentityCredentialsUnprocessableEntityProblem(
+    RootModel[ValidationFailedProblem | IdempotencyKeyReusedProblem]
+):
+    root: ValidationFailedProblem | IdempotencyKeyReusedProblem
 
 
 class ListWebhookEventTypesResponse(
@@ -12804,6 +15733,24 @@ class ReceivedImessageMessage(BaseModel):
     """
 
 
+class RemoveOrganizationAvatarUnprocessableEntityProblem(
+    RootModel[ValidationFailedProblem | IdempotencyKeyReusedProblem]
+):
+    root: ValidationFailedProblem | IdempotencyKeyReusedProblem
+
+
+class RemoveOrganizationMemberUnprocessableEntityProblem(
+    RootModel[ValidationFailedProblem | IdempotencyKeyReusedProblem]
+):
+    root: ValidationFailedProblem | IdempotencyKeyReusedProblem
+
+
+class ResendOrganizationInvitationUnprocessableEntityProblem(
+    RootModel[ValidationFailedProblem | IdempotencyKeyReusedProblem]
+):
+    root: ValidationFailedProblem | IdempotencyKeyReusedProblem
+
+
 class ResetAccountProfilePictureUnprocessableEntityProblem(
     RootModel[IdempotencyKeyReusedProblem | ValidationFailedProblem]
 ):
@@ -12822,7 +15769,19 @@ class RevokeAccountServiceKeyUnprocessableEntityProblem(
     root: IdempotencyKeyReusedProblem | ValidationFailedProblem
 
 
+class RevokeOrganizationInvitationUnprocessableEntityProblem(
+    RootModel[ValidationFailedProblem | IdempotencyKeyReusedProblem]
+):
+    root: ValidationFailedProblem | IdempotencyKeyReusedProblem
+
+
 class RevokeProjectApiKeyUnprocessableEntityProblem(
+    RootModel[ValidationFailedProblem | IdempotencyKeyReusedProblem]
+):
+    root: ValidationFailedProblem | IdempotencyKeyReusedProblem
+
+
+class RevokeServiceIdentityCredentialUnprocessableEntityProblem(
     RootModel[ValidationFailedProblem | IdempotencyKeyReusedProblem]
 ):
     root: ValidationFailedProblem | IdempotencyKeyReusedProblem
@@ -12926,6 +15885,12 @@ class SpaceParticipantsUpdateContent(BaseModel):
     type: Literal["space.participants.update"]
 
 
+class SubscribeSsoUnprocessableEntityProblem(
+    RootModel[ValidationFailedProblem | IdempotencyKeyReusedProblem]
+):
+    root: ValidationFailedProblem | IdempotencyKeyReusedProblem
+
+
 class TelegramGroupContent(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -12941,10 +15906,10 @@ class TelegramMessageContent(
     root: TextContent | AttachmentContent | VoiceContent | TelegramGroupContent
 
 
-class UpdateAccountOnboardingUnprocessableEntityProblem(
-    RootModel[IdempotencyKeyReusedProblem | ValidationFailedProblem]
+class TransferOrganizationOwnershipUnprocessableEntityProblem(
+    RootModel[ValidationFailedProblem | IdempotencyKeyReusedProblem]
 ):
-    root: IdempotencyKeyReusedProblem | ValidationFailedProblem
+    root: ValidationFailedProblem | IdempotencyKeyReusedProblem
 
 
 class UpdateAccountUnprocessableEntityProblem(
@@ -12959,6 +15924,18 @@ class UpdateAgentProfileUnprocessableEntityProblem(
     root: ValidationFailedProblem | IdempotencyKeyReusedProblem
 
 
+class UpdateOrganizationMemberRoleUnprocessableEntityProblem(
+    RootModel[ValidationFailedProblem | IdempotencyKeyReusedProblem]
+):
+    root: ValidationFailedProblem | IdempotencyKeyReusedProblem
+
+
+class UpdateOrganizationUnprocessableEntityProblem(
+    RootModel[ValidationFailedProblem | IdempotencyKeyReusedProblem]
+):
+    root: ValidationFailedProblem | IdempotencyKeyReusedProblem
+
+
 class UpdateProjectApiKeyUnprocessableEntityProblem(
     RootModel[ValidationFailedProblem | IdempotencyKeyReusedProblem]
 ):
@@ -12966,6 +15943,12 @@ class UpdateProjectApiKeyUnprocessableEntityProblem(
 
 
 class UpdateProjectUnprocessableEntityProblem(
+    RootModel[ValidationFailedProblem | IdempotencyKeyReusedProblem]
+):
+    root: ValidationFailedProblem | IdempotencyKeyReusedProblem
+
+
+class UpdateServiceIdentityUnprocessableEntityProblem(
     RootModel[ValidationFailedProblem | IdempotencyKeyReusedProblem]
 ):
     root: ValidationFailedProblem | IdempotencyKeyReusedProblem

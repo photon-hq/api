@@ -1,0 +1,188 @@
+---
+title: "Preview an organization invitation after sign-in"
+icon: arrow-up-right
+description: "Preview an organization invitation after sign-in: previewOrganizationInvitation in the TypeScript, Python, Rust and Go clients."
+---
+
+`POST /v1/organizations/invitations/preview`
+
+
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.previewOrganizationInvitation(input: PreviewOrganizationInvitationInput, options?: RequestOptions): Promise<PreviewOrganizationInvitationOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.preview_organization_invitation(input: PreviewOrganizationInvitationInput) -> models.PreviewOrganizationInvitationResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.preview_organization_invitation(body: &types::PreviewOrganizationInvitationRequest).await -> Result<ResponseValue<types::PreviewOrganizationInvitationResponse>, Error<PreviewOrganizationInvitationError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.PreviewOrganizationInvitation(ctx context.Context, params *PreviewOrganizationInvitationParams, opts ...RequestOption) (*PreviewOrganizationInvitationResponse, error)
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.previewOrganizationInvitation({
+  body: {
+    token: "token",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import PreviewOrganizationInvitationInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.preview_organization_invitation(
+    PreviewOrganizationInvitationInput.model_validate({
+        "body": {
+            "token": "token",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .preview_organization_invitation(
+        &serde_json::from_value(serde_json::json!({
+            "token": "token",
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.PreviewOrganizationInvitationRequest
+if err := json.Unmarshal([]byte(`{
+	"token": "token"
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Organizations.PreviewOrganizationInvitation(ctx, &photonapi.PreviewOrganizationInvitationParams{
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "allProjects": true,
+  "emailMatches": true,
+  "expiresAt": "2026-01-01T00:00:00Z",
+  "inviter": null,
+  "maskedEmail": "string",
+  "memberCount": 0,
+  "organizationAvatarUrl": null,
+  "organizationId": "string",
+  "organizationName": "string",
+  "role": "member",
+  "ssoRequired": true,
+  "status": "pending"
+}
+```
+
+</ResponseExample>
+
+## Body
+
+<ParamField body="token" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** Masked target, role, organization and masked inviter for all organization projects. PreviewOrganizationInvitationResponse
+
+<ResponseField name="allProjects" type={"true"} required>
+
+</ResponseField>
+
+<ResponseField name="emailMatches" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="expiresAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="inviter" type={"PreviewOrganizationInvitationResponseInviter | null"} required>
+
+</ResponseField>
+
+<ResponseField name="maskedEmail" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="memberCount" type={"integer"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationAvatarUrl" type={"string | null"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationName" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="role" type={"OrganizationInvitationRole"} required>
+
+</ResponseField>
+
+<ResponseField name="ssoRequired" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"PreviewOrganizationInvitationResponseStatus"} required>
+
+</ResponseField>
+

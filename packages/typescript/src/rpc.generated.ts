@@ -4,6 +4,19 @@ import * as Sdk from "./generated/sdk.gen.js";
 import * as Schemas from "./schemas.js";
 
 export const operationMediaTypes: Record<string, { request?: string; rawRequest?: true; responses: string[]; accept: string[]; responseKinds: Record<string, "binary" | "json" | "empty"> }> = {
+  "acceptOrganizationInvitation": {
+    "request": "application/json",
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
   "assignSmsLineCampaign": {
     "request": "application/json",
     "responses": [
@@ -44,58 +57,6 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "200": "json"
     }
   },
-  "beginInvitationSso": {
-    "request": "application/json",
-    "responses": [
-      "application/json"
-    ],
-    "accept": [
-      "application/json",
-      "application/problem+json"
-    ],
-    "responseKinds": {
-      "200": "json"
-    }
-  },
-  "beginOrganizationAuthentication": {
-    "request": "application/json",
-    "responses": [
-      "application/json"
-    ],
-    "accept": [
-      "application/json",
-      "application/problem+json"
-    ],
-    "responseKinds": {
-      "200": "json"
-    }
-  },
-  "beginOrganizationClosureAuthentication": {
-    "request": "application/json",
-    "responses": [
-      "application/json"
-    ],
-    "accept": [
-      "application/json",
-      "application/problem+json"
-    ],
-    "responseKinds": {
-      "200": "json"
-    }
-  },
-  "beginOrganizationSsoAdmission": {
-    "request": "application/json",
-    "responses": [
-      "application/json"
-    ],
-    "accept": [
-      "application/json",
-      "application/problem+json"
-    ],
-    "responseKinds": {
-      "200": "json"
-    }
-  },
   "cancelOperation": {
     "responses": [
       "application/json"
@@ -106,6 +67,18 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
     ],
     "responseKinds": {
       "200": "json"
+    }
+  },
+  "cancelSsoSubscription": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "202": "json"
     }
   },
   "changePlan": {
@@ -122,6 +95,18 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "202": "json"
     }
   },
+  "checkOrganizationDeletion": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
   "checkProjectSlugAvailability": {
     "responses": [
       "application/json"
@@ -132,6 +117,16 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
     ],
     "responseKinds": {
       "200": "json"
+    }
+  },
+  "closeOrganization": {
+    "request": "application/json",
+    "responses": [],
+    "accept": [
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "204": "empty"
     }
   },
   "commitAccountProfilePicture": {
@@ -160,7 +155,8 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "200": "json"
     }
   },
-  "completeAccountOnboarding": {
+  "commitOrganizationAvatar": {
+    "request": "application/json",
     "responses": [
       "application/json"
     ],
@@ -186,19 +182,6 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "201": "json"
     }
   },
-  "confirmAccountPhoneVerification": {
-    "request": "application/json",
-    "responses": [
-      "application/json"
-    ],
-    "accept": [
-      "application/json",
-      "application/problem+json"
-    ],
-    "responseKinds": {
-      "200": "json"
-    }
-  },
   "connectEmailDomain": {
     "request": "application/json",
     "responses": [
@@ -213,19 +196,6 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
     }
   },
   "connectTelegramBot": {
-    "request": "application/json",
-    "responses": [
-      "application/json"
-    ],
-    "accept": [
-      "application/json",
-      "application/problem+json"
-    ],
-    "responseKinds": {
-      "202": "json"
-    }
-  },
-  "connectWhatsappBusiness": {
     "request": "application/json",
     "responses": [
       "application/json"
@@ -376,7 +346,8 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "201": "json"
     }
   },
-  "createOrganizationPaymentMethodCheckout": {
+  "createOrganization": {
+    "request": "application/json",
     "responses": [
       "application/json"
     ],
@@ -385,10 +356,49 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "application/problem+json"
     ],
     "responseKinds": {
-      "200": "json"
+      "201": "json"
     }
   },
-  "createOrganizationSetupIntent": {
+  "createOrganizationAvatarUpload": {
+    "request": "application/json",
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "201": "json"
+    }
+  },
+  "createOrganizationInvitation": {
+    "request": "application/json",
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "201": "json"
+    }
+  },
+  "createOrganizationOauthClient": {
+    "request": "application/json",
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "201": "json"
+    }
+  },
+  "createOrganizationPaymentMethodCheckout": {
     "responses": [
       "application/json"
     ],
@@ -468,6 +478,45 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "201": "json"
     }
   },
+  "createServiceIdentity": {
+    "request": "application/json",
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
+  "createServiceIdentityApiKey": {
+    "request": "application/json",
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
+  "createServiceIdentityClientSecret": {
+    "request": "application/json",
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
   "createSharedLineAssignment": {
     "request": "application/json",
     "responses": [
@@ -543,6 +592,28 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
     ],
     "responseKinds": {
       "200": "json"
+    }
+  },
+  "deleteOrganizationOauthClient": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json",
+      "202": "json"
+    }
+  },
+  "deleteOrganizationOauthClientSecret": {
+    "responses": [],
+    "accept": [
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "204": "empty"
     }
   },
   "deleteProject": {
@@ -665,7 +736,7 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "200": "binary"
     }
   },
-  "getAccount": {
+  "ensureInitialOrganization": {
     "responses": [
       "application/json"
     ],
@@ -677,7 +748,7 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "200": "json"
     }
   },
-  "getAccountOnboarding": {
+  "getAccount": {
     "responses": [
       "application/json"
     ],
@@ -726,6 +797,18 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
     }
   },
   "getBillingOverview": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
+  "getCurrentOrganization": {
     "responses": [
       "application/json"
     ],
@@ -834,6 +917,18 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "200": "json"
     }
   },
+  "getOrganization": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
   "getOrganizationBillingOverview": {
     "responses": [
       "application/json"
@@ -859,6 +954,30 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
     }
   },
   "getOrganizationCredit": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
+  "getOrganizationOauthClient": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
+  "getOrganizationOauthClientSecret": {
     "responses": [
       "application/json"
     ],
@@ -966,6 +1085,18 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "200": "json"
     }
   },
+  "getServiceIdentity": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
   "getSharedLineAssignment": {
     "responses": [
       "application/json"
@@ -1001,6 +1132,18 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
     "responseKinds": {
       "200": "json",
       "304": "empty"
+    }
+  },
+  "getSsoSubscription": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
     }
   },
   "getUser": {
@@ -1101,7 +1244,8 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "200": "json"
     }
   },
-  "getWhatsappSignupConfig": {
+  "leaveOrganization": {
+    "request": "application/json",
     "responses": [
       "application/json"
     ],
@@ -1269,6 +1413,54 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "200": "json"
     }
   },
+  "listOrganizationInvitations": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
+  "listOrganizationMembers": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
+  "listOrganizationOauthClients": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
+  "listOrganizations": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
   "listProjectApiKeys": {
     "responses": [
       "application/json"
@@ -1330,6 +1522,42 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
     }
   },
   "listResources": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
+  "listServiceIdentities": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
+  "listServiceIdentityCredentials": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
+  "listServiceIdentityPermissions": {
     "responses": [
       "application/json"
     ],
@@ -1477,6 +1705,19 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
     }
   },
   "previewOrganizationChange": {
+    "request": "application/json",
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
+  "previewOrganizationInvitation": {
     "request": "application/json",
     "responses": [
       "application/json"
@@ -1640,6 +1881,32 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "200": "json"
     }
   },
+  "removeOrganizationAvatar": {
+    "request": "application/json",
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
+  "removeOrganizationMember": {
+    "request": "application/json",
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
   "replaceVoiceProfileInbound": {
     "request": "application/json",
     "responses": [
@@ -1652,6 +1919,18 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
     "responseKinds": {
       "200": "json",
       "201": "json"
+    }
+  },
+  "resendOrganizationInvitation": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
     }
   },
   "resetAccountProfilePicture": {
@@ -1724,7 +2003,45 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "204": "empty"
     }
   },
+  "revokeOrganizationInvitation": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
   "revokeProjectApiKey": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
+  "revokeServiceIdentityCredential": {
+    "request": "application/json",
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
+  "rotateOrganizationOauthClientSecret": {
+    "request": "application/json",
     "responses": [
       "application/json"
     ],
@@ -1788,7 +2105,20 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "202": "json"
     }
   },
-  "startAccountPhoneVerification": {
+  "setupOrganizationOauthClientSecret": {
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json",
+      "201": "json"
+    }
+  },
+  "startEnterpriseLogin": {
     "request": "application/json",
     "responses": [
       "application/json"
@@ -1798,10 +2128,23 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "application/problem+json"
     ],
     "responseKinds": {
-      "201": "json"
+      "200": "json"
     }
   },
-  "startEnterpriseLogin": {
+  "subscribeSso": {
+    "request": "application/json",
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "202": "json"
+    }
+  },
+  "transferOrganizationOwnership": {
     "request": "application/json",
     "responses": [
       "application/json"
@@ -1849,19 +2192,6 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "200": "json"
     }
   },
-  "updateAccountOnboarding": {
-    "request": "application/json",
-    "responses": [
-      "application/json"
-    ],
-    "accept": [
-      "application/json",
-      "application/problem+json"
-    ],
-    "responseKinds": {
-      "200": "json"
-    }
-  },
   "updateAgentProfile": {
     "request": "application/json",
     "responses": [
@@ -1876,6 +2206,45 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
     }
   },
   "updateDefaultVoiceProfile": {
+    "request": "application/json",
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
+  "updateOrganization": {
+    "request": "application/json",
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
+  "updateOrganizationMemberRole": {
+    "request": "application/json",
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
+  "updateOrganizationOauthClient": {
     "request": "application/json",
     "responses": [
       "application/json"
@@ -1915,6 +2284,19 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
     }
   },
   "updateProjectApiKey": {
+    "request": "application/json",
+    "responses": [
+      "application/json"
+    ],
+    "accept": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "responseKinds": {
+      "200": "json"
+    }
+  },
+  "updateServiceIdentity": {
     "request": "application/json",
     "responses": [
       "application/json"
@@ -2032,44 +2414,6 @@ export interface RpcInvokers {
 export function createRpcNamespaces(invokers: RpcInvokers) {
   const data = {
     account: {
-        onboarding: {
-            /**
-             * Complete onboarding
-             *
-             * Marks the authenticated account's onboarding flow complete and returns a confirmation with onboarded set to true. No prior update is required, but submit any onboarding information you want to keep with updateAccountOnboarding first, because further edits through updateAccountOnboarding are rejected after completion.
-             */
-            complete: (input: Schemas.CompleteAccountOnboardingInput = {}, options?: RequestOptions) => invokers.data<Schemas.CompleteAccountOnboardingInput, Schemas.CompleteAccountOnboardingOutput>(
-                "completeAccountOnboarding",
-                Sdk.completeAccountOnboarding,
-                Schemas.CompleteAccountOnboardingOutputSchemas,
-                input,
-                options,
-            ),
-            /**
-             * Get onboarding state
-             *
-             * Returns the authenticated account's current onboarding state and collected onboarding information. Reading the state does not complete onboarding or modify the supplied account information.
-             */
-            get: (input: Schemas.GetAccountOnboardingInput = {}, options?: RequestOptions) => invokers.data<Schemas.GetAccountOnboardingInput, Schemas.GetAccountOnboardingOutput>(
-                "getAccountOnboarding",
-                Sdk.getAccountOnboarding,
-                Schemas.GetAccountOnboardingOutputSchemas,
-                input,
-                options,
-            ),
-            /**
-             * Update onboarding state
-             *
-             * Updates the authenticated account's submitted onboarding information, including the documented company, background, platform and referral fields. Returns the updated onboarding state. Completed onboarding cannot be edited through this operation; completion is performed separately with completeAccountOnboarding. Supply the required Idempotency-Key header.
-             */
-            update: (input: Schemas.UpdateAccountOnboardingInput, options?: RequestOptions) => invokers.data<Schemas.UpdateAccountOnboardingInput, Schemas.UpdateAccountOnboardingOutput>(
-                "updateAccountOnboarding",
-                Sdk.updateAccountOnboarding,
-                Schemas.UpdateAccountOnboardingOutputSchemas,
-                input,
-                options,
-            ),
-        },
         /**
          * Commit profile picture
          *
@@ -2079,18 +2423,6 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             "commitAccountProfilePicture",
             Sdk.commitAccountProfilePicture,
             Schemas.CommitAccountProfilePictureOutputSchemas,
-            input,
-            options,
-        ),
-        /**
-         * Confirm phone verification
-         *
-         * Binds the number once the code is approved. Repeat calls return the bound Account.
-         */
-        confirmPhoneVerification: (input: Schemas.ConfirmAccountPhoneVerificationInput, options?: RequestOptions) => invokers.data<Schemas.ConfirmAccountPhoneVerificationInput, Schemas.ConfirmAccountPhoneVerificationOutput>(
-            "confirmAccountPhoneVerification",
-            Sdk.confirmAccountPhoneVerification,
-            Schemas.ConfirmAccountPhoneVerificationOutputSchemas,
             input,
             options,
         ),
@@ -2203,18 +2535,6 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Start phone verification
-         *
-         * Sends an SMS code. Answers CAPTCHA_REQUIRED with the widget to render when no solved challenge accompanies the request; retry with the returned challengeContext and a token. Rate limited per account, per destination number, and globally; a rejection carries Retry-After.
-         */
-        startPhoneVerification: (input: Schemas.StartAccountPhoneVerificationInput, options?: RequestOptions) => invokers.data<Schemas.StartAccountPhoneVerificationInput, Schemas.StartAccountPhoneVerificationOutput>(
-            "startAccountPhoneVerification",
-            Sdk.startAccountPhoneVerification,
-            Schemas.StartAccountPhoneVerificationOutputSchemas,
-            input,
-            options,
-        ),
-        /**
          * Update account
          *
          * Updates the supplied firstName and lastName fields on the authenticated account and returns the updated profile. Only the documented profile fields can be changed through this endpoint; profile-picture uploads and phone-number verification use their dedicated operations. Supply the required Idempotency-Key header.
@@ -2256,54 +2576,6 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
         },
-        /**
-         * Sign in with invitation SSO
-         *
-         * Returns an authentication URL for the organization SSO connection associated with the supplied invitation token. Supply token and returnTo. Complete the returned authentication flow; requesting its URL does not itself accept the invitation.
-         */
-        beginInvitationSso: (input: Schemas.BeginInvitationSsoInput, options?: RequestOptions) => invokers.data<Schemas.BeginInvitationSsoInput, Schemas.BeginInvitationSsoOutput>(
-            "beginInvitationSso",
-            Sdk.beginInvitationSso,
-            Schemas.BeginInvitationSsoOutputSchemas,
-            input,
-            options,
-        ),
-        /**
-         * Sign in with organization SSO
-         *
-         * Returns a URL to authenticate through the selected organization’s current SSO connection. Supply returnTo and open the returned URL to continue the flow. Receiving the URL does not establish an authenticated session.
-         */
-        beginOrganizationAuthentication: (input: Schemas.BeginOrganizationAuthenticationInput, options?: RequestOptions) => invokers.data<Schemas.BeginOrganizationAuthenticationInput, Schemas.BeginOrganizationAuthenticationOutput>(
-            "beginOrganizationAuthentication",
-            Sdk.beginOrganizationAuthentication,
-            Schemas.BeginOrganizationAuthenticationOutputSchemas,
-            input,
-            options,
-        ),
-        /**
-         * Sign in to close organization
-         *
-         * Returns an authentication URL for the current organization owner to inspect organization closure. Supply returnTo and complete the returned flow. This operation initiates authentication and does not close the organization.
-         */
-        beginOrganizationClosureAuthentication: (input: Schemas.BeginOrganizationClosureAuthenticationInput, options?: RequestOptions) => invokers.data<Schemas.BeginOrganizationClosureAuthenticationInput, Schemas.BeginOrganizationClosureAuthenticationOutput>(
-            "beginOrganizationClosureAuthentication",
-            Sdk.beginOrganizationClosureAuthentication,
-            Schemas.BeginOrganizationClosureAuthenticationOutputSchemas,
-            input,
-            options,
-        ),
-        /**
-         * Begin organization SSO admission
-         *
-         * Returns an SSO admission URL for an existing account and the selected organization. Supply returnTo for the continuation URL. Admission requires completing the returned authentication flow; creating the URL does not itself grant membership.
-         */
-        beginOrganizationSsoAdmission: (input: Schemas.BeginOrganizationSsoAdmissionInput, options?: RequestOptions) => invokers.data<Schemas.BeginOrganizationSsoAdmissionInput, Schemas.BeginOrganizationSsoAdmissionOutput>(
-            "beginOrganizationSsoAdmission",
-            Sdk.beginOrganizationSsoAdmission,
-            Schemas.BeginOrganizationSsoAdmissionOutputSchemas,
-            input,
-            options,
-        ),
         /**
          * Create organization setup portal link
          *
@@ -2436,18 +2708,6 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 "createOrganizationPaymentMethodCheckout",
                 Sdk.createOrganizationPaymentMethodCheckout,
                 Schemas.CreateOrganizationPaymentMethodCheckoutOutputSchemas,
-                input,
-                options,
-            ),
-            /**
-             * Create card setup intent
-             *
-             * Creates payment-provider configuration for collecting a card for the selected organization and returns clientSecret and publishableKey. Supply the required Idempotency-Key header. Complete the provider’s card-collection flow separately and avoid logging the returned client secret.
-             */
-            createOrganizationSetupIntent: (input: Schemas.CreateOrganizationSetupIntentInput, options?: RequestOptions) => invokers.data<Schemas.CreateOrganizationSetupIntentInput, Schemas.CreateOrganizationSetupIntentOutput>(
-                "createOrganizationSetupIntent",
-                Sdk.createOrganizationSetupIntent,
-                Schemas.CreateOrganizationSetupIntentOutputSchemas,
                 input,
                 options,
             ),
@@ -2622,6 +2882,454 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
         },
+        /**
+         * Accept an invitation to all organization projects
+         */
+        acceptOrganizationInvitation: (input: Schemas.AcceptOrganizationInvitationInput, options?: RequestOptions) => invokers.data<Schemas.AcceptOrganizationInvitationInput, Schemas.AcceptOrganizationInvitationOutput>(
+            "acceptOrganizationInvitation",
+            Sdk.acceptOrganizationInvitation,
+            Schemas.AcceptOrganizationInvitationOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Cancel the SSO subscription
+         */
+        cancelSsoSubscription: (input: Schemas.CancelSsoSubscriptionInput, options?: RequestOptions) => invokers.data<Schemas.CancelSsoSubscriptionInput, Schemas.CancelSsoSubscriptionOutput>(
+            "cancelSsoSubscription",
+            Sdk.cancelSsoSubscription,
+            Schemas.CancelSsoSubscriptionOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Check organization deletion prerequisites
+         */
+        checkOrganizationDeletion: (input: Schemas.CheckOrganizationDeletionInput, options?: RequestOptions) => invokers.data<Schemas.CheckOrganizationDeletionInput, Schemas.CheckOrganizationDeletionOutput>(
+            "checkOrganizationDeletion",
+            Sdk.checkOrganizationDeletion,
+            Schemas.CheckOrganizationDeletionOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Delete organization
+         */
+        closeOrganization: (input: Schemas.CloseOrganizationInput, options?: RequestOptions) => invokers.data<Schemas.CloseOrganizationInput, Schemas.CloseOrganizationOutput>(
+            "closeOrganization",
+            Sdk.closeOrganization,
+            Schemas.CloseOrganizationOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Commit an organization avatar
+         */
+        commitOrganizationAvatar: (input: Schemas.CommitOrganizationAvatarInput, options?: RequestOptions) => invokers.data<Schemas.CommitOrganizationAvatarInput, Schemas.CommitOrganizationAvatarOutput>(
+            "commitOrganizationAvatar",
+            Sdk.commitOrganizationAvatar,
+            Schemas.CommitOrganizationAvatarOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Create an organization
+         */
+        createOrganization: (input: Schemas.CreateOrganizationInput, options?: RequestOptions) => invokers.data<Schemas.CreateOrganizationInput, Schemas.CreateOrganizationOutput>(
+            "createOrganization",
+            Sdk.createOrganization,
+            Schemas.CreateOrganizationOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Create an organization avatar upload
+         *
+         * Upload a JPEG, PNG, or WebP image up to 5 MiB with every returned form field and the file last. Upload directly without Photon credentials, then commit the uploadId. Do not log or cache upload URLs or fields.
+         */
+        createOrganizationAvatarUpload: (input: Schemas.CreateOrganizationAvatarUploadInput, options?: RequestOptions) => invokers.data<Schemas.CreateOrganizationAvatarUploadInput, Schemas.CreateOrganizationAvatarUploadOutput>(
+            "createOrganizationAvatarUpload",
+            Sdk.createOrganizationAvatarUpload,
+            Schemas.CreateOrganizationAvatarUploadOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Invite a Member or Viewer to all organization projects
+         */
+        createOrganizationInvitation: (input: Schemas.CreateOrganizationInvitationInput, options?: RequestOptions) => invokers.data<Schemas.CreateOrganizationInvitationInput, Schemas.CreateOrganizationInvitationOutput>(
+            "createOrganizationInvitation",
+            Sdk.createOrganizationInvitation,
+            Schemas.CreateOrganizationInvitationOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Create an organization OAuth client
+         *
+         * Use the same UUID Idempotency-Key and payload when retrying. Unknown provider outcomes require recovery; do not use a new key to retry an uncertain creation.
+         */
+        createOrganizationOauthClient: (input: Schemas.CreateOrganizationOauthClientInput, options?: RequestOptions) => invokers.data<Schemas.CreateOrganizationOauthClientInput, Schemas.CreateOrganizationOauthClientOutput>(
+            "createOrganizationOauthClient",
+            Sdk.createOrganizationOauthClient,
+            Schemas.CreateOrganizationOauthClientOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Create an organization Service Identity
+         */
+        createServiceIdentity: (input: Schemas.CreateServiceIdentityInput, options?: RequestOptions) => invokers.data<Schemas.CreateServiceIdentityInput, Schemas.CreateServiceIdentityOutput>(
+            "createServiceIdentity",
+            Sdk.createServiceIdentity,
+            Schemas.CreateServiceIdentityOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Create a one-time Service Identity API key
+         */
+        createServiceIdentityApiKey: (input: Schemas.CreateServiceIdentityApiKeyInput, options?: RequestOptions) => invokers.data<Schemas.CreateServiceIdentityApiKeyInput, Schemas.CreateServiceIdentityApiKeyOutput>(
+            "createServiceIdentityApiKey",
+            Sdk.createServiceIdentityApiKey,
+            Schemas.CreateServiceIdentityApiKeyOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Create a one-time Service Identity M2M client secret
+         */
+        createServiceIdentityClientSecret: (input: Schemas.CreateServiceIdentityClientSecretInput, options?: RequestOptions) => invokers.data<Schemas.CreateServiceIdentityClientSecretInput, Schemas.CreateServiceIdentityClientSecretOutput>(
+            "createServiceIdentityClientSecret",
+            Sdk.createServiceIdentityClientSecret,
+            Schemas.CreateServiceIdentityClientSecretOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Delete an organization OAuth client
+         *
+         * Queues deletion of the exact provider application. Retry DELETE to read its current status. Accepted deletion does not promise immediate token revocation.
+         */
+        deleteOrganizationOauthClient: (input: Schemas.DeleteOrganizationOauthClientInput, options?: RequestOptions) => invokers.data<Schemas.DeleteOrganizationOauthClientInput, Schemas.DeleteOrganizationOauthClientOutput>(
+            "deleteOrganizationOauthClient",
+            Sdk.deleteOrganizationOauthClient,
+            Schemas.DeleteOrganizationOauthClientOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Revoke an organization OAuth client's secret
+         *
+         * Stops every secret of the app now, including one still in its grace period.
+         */
+        deleteOrganizationOauthClientSecret: (input: Schemas.DeleteOrganizationOauthClientSecretInput, options?: RequestOptions) => invokers.data<Schemas.DeleteOrganizationOauthClientSecretInput, Schemas.DeleteOrganizationOauthClientSecretOutput>(
+            "deleteOrganizationOauthClientSecret",
+            Sdk.deleteOrganizationOauthClientSecret,
+            Schemas.DeleteOrganizationOauthClientSecretOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Ensure the initial organization
+         */
+        ensureInitialOrganization: (input: Schemas.EnsureInitialOrganizationInput, options?: RequestOptions) => invokers.data<Schemas.EnsureInitialOrganizationInput, Schemas.EnsureInitialOrganizationOutput>(
+            "ensureInitialOrganization",
+            Sdk.ensureInitialOrganization,
+            Schemas.EnsureInitialOrganizationOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Read the credential's organization
+         *
+         * Reads the organization the credential is bound to: the organization an OAuth grant was consented for, or a Service Identity's own organization. Use it to discover which organization an integration acts for, and pass its organizationId to organization-scoped operations.
+         */
+        getCurrentOrganization: (input: Schemas.GetCurrentOrganizationInput = {}, options?: RequestOptions) => invokers.data<Schemas.GetCurrentOrganizationInput, Schemas.GetCurrentOrganizationOutput>(
+            "getCurrentOrganization",
+            Sdk.getCurrentOrganization,
+            Schemas.GetCurrentOrganizationOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Read organization name and avatar
+         */
+        getOrganization: (input: Schemas.GetOrganizationInput, options?: RequestOptions) => invokers.data<Schemas.GetOrganizationInput, Schemas.GetOrganizationOutput>(
+            "getOrganization",
+            Sdk.getOrganization,
+            Schemas.GetOrganizationOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Read an organization OAuth client
+         */
+        getOrganizationOauthClient: (input: Schemas.GetOrganizationOauthClientInput, options?: RequestOptions) => invokers.data<Schemas.GetOrganizationOauthClientInput, Schemas.GetOrganizationOauthClientOutput>(
+            "getOrganizationOauthClient",
+            Sdk.getOrganizationOauthClient,
+            Schemas.GetOrganizationOauthClientOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Read an organization OAuth client's secret
+         */
+        getOrganizationOauthClientSecret: (input: Schemas.GetOrganizationOauthClientSecretInput, options?: RequestOptions) => invokers.data<Schemas.GetOrganizationOauthClientSecretInput, Schemas.GetOrganizationOauthClientSecretOutput>(
+            "getOrganizationOauthClientSecret",
+            Sdk.getOrganizationOauthClientSecret,
+            Schemas.GetOrganizationOauthClientSecretOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Read a Service Identity
+         */
+        getServiceIdentity: (input: Schemas.GetServiceIdentityInput, options?: RequestOptions) => invokers.data<Schemas.GetServiceIdentityInput, Schemas.GetServiceIdentityOutput>(
+            "getServiceIdentity",
+            Sdk.getServiceIdentity,
+            Schemas.GetServiceIdentityOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Read SSO subscription
+         */
+        getSsoSubscription: (input: Schemas.GetSsoSubscriptionInput, options?: RequestOptions) => invokers.data<Schemas.GetSsoSubscriptionInput, Schemas.GetSsoSubscriptionOutput>(
+            "getSsoSubscription",
+            Sdk.getSsoSubscription,
+            Schemas.GetSsoSubscriptionOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Leave an organization; Owners must transfer or close first
+         */
+        leaveOrganization: (input: Schemas.LeaveOrganizationInput, options?: RequestOptions) => invokers.data<Schemas.LeaveOrganizationInput, Schemas.LeaveOrganizationOutput>(
+            "leaveOrganization",
+            Sdk.leaveOrganization,
+            Schemas.LeaveOrganizationOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * List pending organization invitations
+         */
+        listOrganizationInvitations: (input: Schemas.ListOrganizationInvitationsInput, options?: RequestOptions) => invokers.data<Schemas.ListOrganizationInvitationsInput, Schemas.ListOrganizationInvitationsOutput>(
+            "listOrganizationInvitations",
+            Sdk.listOrganizationInvitations,
+            Schemas.ListOrganizationInvitationsOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * List current organization members
+         */
+        listOrganizationMembers: (input: Schemas.ListOrganizationMembersInput, options?: RequestOptions) => invokers.data<Schemas.ListOrganizationMembersInput, Schemas.ListOrganizationMembersOutput>(
+            "listOrganizationMembers",
+            Sdk.listOrganizationMembers,
+            Schemas.ListOrganizationMembersOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * List organization OAuth clients
+         */
+        listOrganizationOauthClients: (input: Schemas.ListOrganizationOauthClientsInput, options?: RequestOptions) => invokers.data<Schemas.ListOrganizationOauthClientsInput, Schemas.ListOrganizationOauthClientsOutput>(
+            "listOrganizationOauthClients",
+            Sdk.listOrganizationOauthClients,
+            Schemas.ListOrganizationOauthClientsOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * List organizations
+         */
+        listOrganizations: (input: Schemas.ListOrganizationsInput = {}, options?: RequestOptions) => invokers.data<Schemas.ListOrganizationsInput, Schemas.ListOrganizationsOutput>(
+            "listOrganizations",
+            Sdk.listOrganizations,
+            Schemas.ListOrganizationsOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * List organization Service Identities
+         */
+        listServiceIdentities: (input: Schemas.ListServiceIdentitiesInput, options?: RequestOptions) => invokers.data<Schemas.ListServiceIdentitiesInput, Schemas.ListServiceIdentitiesOutput>(
+            "listServiceIdentities",
+            Sdk.listServiceIdentities,
+            Schemas.ListServiceIdentitiesOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * List Service Identity credential metadata
+         */
+        listServiceIdentityCredentials: (input: Schemas.ListServiceIdentityCredentialsInput, options?: RequestOptions) => invokers.data<Schemas.ListServiceIdentityCredentialsInput, Schemas.ListServiceIdentityCredentialsOutput>(
+            "listServiceIdentityCredentials",
+            Sdk.listServiceIdentityCredentials,
+            Schemas.ListServiceIdentityCredentialsOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * List grantable Service Identity permissions
+         *
+         * The permissions a Service Identity or installable app may be granted: the machine set of the current auth contract, sorted. Create, update, and app declarations accept exactly these values.
+         */
+        listServiceIdentityPermissions: (input: Schemas.ListServiceIdentityPermissionsInput, options?: RequestOptions) => invokers.data<Schemas.ListServiceIdentityPermissionsInput, Schemas.ListServiceIdentityPermissionsOutput>(
+            "listServiceIdentityPermissions",
+            Sdk.listServiceIdentityPermissions,
+            Schemas.ListServiceIdentityPermissionsOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Preview an organization invitation after sign-in
+         */
+        previewOrganizationInvitation: (input: Schemas.PreviewOrganizationInvitationInput, options?: RequestOptions) => invokers.data<Schemas.PreviewOrganizationInvitationInput, Schemas.PreviewOrganizationInvitationOutput>(
+            "previewOrganizationInvitation",
+            Sdk.previewOrganizationInvitation,
+            Schemas.PreviewOrganizationInvitationOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Remove an organization avatar
+         */
+        removeOrganizationAvatar: (input: Schemas.RemoveOrganizationAvatarInput, options?: RequestOptions) => invokers.data<Schemas.RemoveOrganizationAvatarInput, Schemas.RemoveOrganizationAvatarOutput>(
+            "removeOrganizationAvatar",
+            Sdk.removeOrganizationAvatar,
+            Schemas.RemoveOrganizationAvatarOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Remove an organization member's access to all projects
+         */
+        removeOrganizationMember: (input: Schemas.RemoveOrganizationMemberInput, options?: RequestOptions) => invokers.data<Schemas.RemoveOrganizationMemberInput, Schemas.RemoveOrganizationMemberOutput>(
+            "removeOrganizationMember",
+            Sdk.removeOrganizationMember,
+            Schemas.RemoveOrganizationMemberOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Resend an organization invitation
+         */
+        resendOrganizationInvitation: (input: Schemas.ResendOrganizationInvitationInput, options?: RequestOptions) => invokers.data<Schemas.ResendOrganizationInvitationInput, Schemas.ResendOrganizationInvitationOutput>(
+            "resendOrganizationInvitation",
+            Sdk.resendOrganizationInvitation,
+            Schemas.ResendOrganizationInvitationOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Revoke an organization invitation
+         */
+        revokeOrganizationInvitation: (input: Schemas.RevokeOrganizationInvitationInput, options?: RequestOptions) => invokers.data<Schemas.RevokeOrganizationInvitationInput, Schemas.RevokeOrganizationInvitationOutput>(
+            "revokeOrganizationInvitation",
+            Sdk.revokeOrganizationInvitation,
+            Schemas.RevokeOrganizationInvitationOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Request Service Identity credential revocation
+         */
+        revokeServiceIdentityCredential: (input: Schemas.RevokeServiceIdentityCredentialInput, options?: RequestOptions) => invokers.data<Schemas.RevokeServiceIdentityCredentialInput, Schemas.RevokeServiceIdentityCredentialOutput>(
+            "revokeServiceIdentityCredential",
+            Sdk.revokeServiceIdentityCredential,
+            Schemas.RevokeServiceIdentityCredentialOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Rotate an organization OAuth client's secret
+         *
+         * Mints a new secret, then retires the one it replaces: `normal` keeps the old one working for one hour, `emergency` stops it now. A secret not created through Photon always stops now. Rotating again ends an earlier grace period. Retain the same UUID Idempotency-Key when retrying: only the delivering request returns plaintext.
+         */
+        rotateOrganizationOauthClientSecret: (input: Schemas.RotateOrganizationOauthClientSecretInput, options?: RequestOptions) => invokers.data<Schemas.RotateOrganizationOauthClientSecretInput, Schemas.RotateOrganizationOauthClientSecretOutput>(
+            "rotateOrganizationOauthClientSecret",
+            Sdk.rotateOrganizationOauthClientSecret,
+            Schemas.RotateOrganizationOauthClientSecretOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Create an organization OAuth client's secret
+         *
+         * Mints the app's first secret; once it has one, rotate it instead. Retain the same UUID Idempotency-Key when retrying: only the delivering request returns plaintext.
+         */
+        setupOrganizationOauthClientSecret: (input: Schemas.SetupOrganizationOauthClientSecretInput, options?: RequestOptions) => invokers.data<Schemas.SetupOrganizationOauthClientSecretInput, Schemas.SetupOrganizationOauthClientSecretOutput>(
+            "setupOrganizationOauthClientSecret",
+            Sdk.setupOrganizationOauthClientSecret,
+            Schemas.SetupOrganizationOauthClientSecretOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Subscribe to organization SSO
+         */
+        subscribeSso: (input: Schemas.SubscribeSsoInput, options?: RequestOptions) => invokers.data<Schemas.SubscribeSsoInput, Schemas.SubscribeSsoOutput>(
+            "subscribeSso",
+            Sdk.subscribeSso,
+            Schemas.SubscribeSsoOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Transfer organization ownership to an existing member
+         */
+        transferOrganizationOwnership: (input: Schemas.TransferOrganizationOwnershipInput, options?: RequestOptions) => invokers.data<Schemas.TransferOrganizationOwnershipInput, Schemas.TransferOrganizationOwnershipOutput>(
+            "transferOrganizationOwnership",
+            Sdk.transferOrganizationOwnership,
+            Schemas.TransferOrganizationOwnershipOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Change organization name
+         */
+        updateOrganization: (input: Schemas.UpdateOrganizationInput, options?: RequestOptions) => invokers.data<Schemas.UpdateOrganizationInput, Schemas.UpdateOrganizationOutput>(
+            "updateOrganization",
+            Sdk.updateOrganization,
+            Schemas.UpdateOrganizationOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Change an organization member's role across all projects
+         */
+        updateOrganizationMemberRole: (input: Schemas.UpdateOrganizationMemberRoleInput, options?: RequestOptions) => invokers.data<Schemas.UpdateOrganizationMemberRoleInput, Schemas.UpdateOrganizationMemberRoleOutput>(
+            "updateOrganizationMemberRole",
+            Sdk.updateOrganizationMemberRole,
+            Schemas.UpdateOrganizationMemberRoleOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Update an organization OAuth client
+         *
+         * Requires If-Match from the latest read. Stale versions return 412. A failed response may follow an applied provider update; reread before retrying. Version checking is not provider atomic CAS.
+         */
+        updateOrganizationOauthClient: (input: Schemas.UpdateOrganizationOauthClientInput, options?: RequestOptions) => invokers.data<Schemas.UpdateOrganizationOauthClientInput, Schemas.UpdateOrganizationOauthClientOutput>(
+            "updateOrganizationOauthClient",
+            Sdk.updateOrganizationOauthClient,
+            Schemas.UpdateOrganizationOauthClientOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Update a Service Identity
+         */
+        updateServiceIdentity: (input: Schemas.UpdateServiceIdentityInput, options?: RequestOptions) => invokers.data<Schemas.UpdateServiceIdentityInput, Schemas.UpdateServiceIdentityOutput>(
+            "updateServiceIdentity",
+            Sdk.updateServiceIdentity,
+            Schemas.UpdateServiceIdentityOutputSchemas,
+            input,
+            options,
+        ),
     },
     projects: {
         agentProfile: {
@@ -2870,18 +3578,6 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 "connectTelegramBot",
                 Sdk.connectTelegramBot,
                 Schemas.ConnectTelegramBotOutputSchemas,
-                input,
-                options,
-            ),
-            /**
-             * Connect WhatsApp Business
-             *
-             * Exchanges the authorization code Embedded Signup returned and connects exactly the selected phone number as one `whatsapp_sender`. Send the WABA id and phone-number id emitted by the same popup attempt; both are treated as selectors and verified against Meta before use. A selected number that matches a non-retired, same-project `voip_line` is linked to it; a number absent from Photon inventory stays unbound; a matching non-retired `cosmos_line`, foreign VoIP line or unassigned VoIP line fails the operation before registration. Connecting is free — no plan requirement — but Billing must report the project's organization as ready with a payment method on file. The Idempotency-Key is required and permanent: replaying the same key returns the original operation forever. Requires the platforms:write permission bound to the project resource in the path.
-             */
-            connectWhatsappBusiness: (input: Schemas.ConnectWhatsappBusinessInput, options?: RequestOptions) => invokers.data<Schemas.ConnectWhatsappBusinessInput, Schemas.ConnectWhatsappBusinessOutput>(
-                "connectWhatsappBusiness",
-                Sdk.connectWhatsappBusiness,
-                Schemas.ConnectWhatsappBusinessOutputSchemas,
                 input,
                 options,
             ),
@@ -3158,18 +3854,6 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 "getWhatsappSharedLineAssignment",
                 Sdk.getWhatsappSharedLineAssignment,
                 Schemas.GetWhatsappSharedLineAssignmentOutputSchemas,
-                input,
-                options,
-            ),
-            /**
-             * Get WhatsApp signup config
-             *
-             * Returns what the browser needs to open Meta's Embedded Signup popup: the Facebook Login for Business configuration id, the Graph version to run against, and the scopes it will request. Answered in-process rather than forwarded, so the first step of onboarding survives an outage of the private service. Pass `configId` to `FB.login` as `config_id` with `response_type: 'code'` and `override_default_response_type: true`. Do NOT add a `featureType` — omitting it is what keeps the phone-number screen in the flow, and `only_waba_sharing` produces an account with no number that cannot be provisioned. Requires the platforms:read permission bound to the project resource in the path.
-             */
-            getWhatsappSignupConfig: (input: Schemas.GetWhatsappSignupConfigInput, options?: RequestOptions) => invokers.data<Schemas.GetWhatsappSignupConfigInput, Schemas.GetWhatsappSignupConfigOutput>(
-                "getWhatsappSignupConfig",
-                Sdk.getWhatsappSignupConfig,
-                Schemas.GetWhatsappSignupConfigOutputSchemas,
                 input,
                 options,
             ),
@@ -3984,44 +4668,6 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
   };
   const raw = {
     account: {
-        onboarding: {
-            /**
-             * Complete onboarding
-             *
-             * Marks the authenticated account's onboarding flow complete and returns a confirmation with onboarded set to true. No prior update is required, but submit any onboarding information you want to keep with updateAccountOnboarding first, because further edits through updateAccountOnboarding are rejected after completion.
-             */
-            complete: (input: Schemas.CompleteAccountOnboardingInput = {}, options?: RequestOptions) => invokers.raw<Schemas.CompleteAccountOnboardingInput, Schemas.CompleteAccountOnboardingOutput>(
-                "completeAccountOnboarding",
-                Sdk.completeAccountOnboarding,
-                Schemas.CompleteAccountOnboardingOutputSchemas,
-                input,
-                options,
-            ),
-            /**
-             * Get onboarding state
-             *
-             * Returns the authenticated account's current onboarding state and collected onboarding information. Reading the state does not complete onboarding or modify the supplied account information.
-             */
-            get: (input: Schemas.GetAccountOnboardingInput = {}, options?: RequestOptions) => invokers.raw<Schemas.GetAccountOnboardingInput, Schemas.GetAccountOnboardingOutput>(
-                "getAccountOnboarding",
-                Sdk.getAccountOnboarding,
-                Schemas.GetAccountOnboardingOutputSchemas,
-                input,
-                options,
-            ),
-            /**
-             * Update onboarding state
-             *
-             * Updates the authenticated account's submitted onboarding information, including the documented company, background, platform and referral fields. Returns the updated onboarding state. Completed onboarding cannot be edited through this operation; completion is performed separately with completeAccountOnboarding. Supply the required Idempotency-Key header.
-             */
-            update: (input: Schemas.UpdateAccountOnboardingInput, options?: RequestOptions) => invokers.raw<Schemas.UpdateAccountOnboardingInput, Schemas.UpdateAccountOnboardingOutput>(
-                "updateAccountOnboarding",
-                Sdk.updateAccountOnboarding,
-                Schemas.UpdateAccountOnboardingOutputSchemas,
-                input,
-                options,
-            ),
-        },
         /**
          * Commit profile picture
          *
@@ -4031,18 +4677,6 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             "commitAccountProfilePicture",
             Sdk.commitAccountProfilePicture,
             Schemas.CommitAccountProfilePictureOutputSchemas,
-            input,
-            options,
-        ),
-        /**
-         * Confirm phone verification
-         *
-         * Binds the number once the code is approved. Repeat calls return the bound Account.
-         */
-        confirmPhoneVerification: (input: Schemas.ConfirmAccountPhoneVerificationInput, options?: RequestOptions) => invokers.raw<Schemas.ConfirmAccountPhoneVerificationInput, Schemas.ConfirmAccountPhoneVerificationOutput>(
-            "confirmAccountPhoneVerification",
-            Sdk.confirmAccountPhoneVerification,
-            Schemas.ConfirmAccountPhoneVerificationOutputSchemas,
             input,
             options,
         ),
@@ -4155,18 +4789,6 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             options,
         ),
         /**
-         * Start phone verification
-         *
-         * Sends an SMS code. Answers CAPTCHA_REQUIRED with the widget to render when no solved challenge accompanies the request; retry with the returned challengeContext and a token. Rate limited per account, per destination number, and globally; a rejection carries Retry-After.
-         */
-        startPhoneVerification: (input: Schemas.StartAccountPhoneVerificationInput, options?: RequestOptions) => invokers.raw<Schemas.StartAccountPhoneVerificationInput, Schemas.StartAccountPhoneVerificationOutput>(
-            "startAccountPhoneVerification",
-            Sdk.startAccountPhoneVerification,
-            Schemas.StartAccountPhoneVerificationOutputSchemas,
-            input,
-            options,
-        ),
-        /**
          * Update account
          *
          * Updates the supplied firstName and lastName fields on the authenticated account and returns the updated profile. Only the documented profile fields can be changed through this endpoint; profile-picture uploads and phone-number verification use their dedicated operations. Supply the required Idempotency-Key header.
@@ -4208,54 +4830,6 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
         },
-        /**
-         * Sign in with invitation SSO
-         *
-         * Returns an authentication URL for the organization SSO connection associated with the supplied invitation token. Supply token and returnTo. Complete the returned authentication flow; requesting its URL does not itself accept the invitation.
-         */
-        beginInvitationSso: (input: Schemas.BeginInvitationSsoInput, options?: RequestOptions) => invokers.raw<Schemas.BeginInvitationSsoInput, Schemas.BeginInvitationSsoOutput>(
-            "beginInvitationSso",
-            Sdk.beginInvitationSso,
-            Schemas.BeginInvitationSsoOutputSchemas,
-            input,
-            options,
-        ),
-        /**
-         * Sign in with organization SSO
-         *
-         * Returns a URL to authenticate through the selected organization’s current SSO connection. Supply returnTo and open the returned URL to continue the flow. Receiving the URL does not establish an authenticated session.
-         */
-        beginOrganizationAuthentication: (input: Schemas.BeginOrganizationAuthenticationInput, options?: RequestOptions) => invokers.raw<Schemas.BeginOrganizationAuthenticationInput, Schemas.BeginOrganizationAuthenticationOutput>(
-            "beginOrganizationAuthentication",
-            Sdk.beginOrganizationAuthentication,
-            Schemas.BeginOrganizationAuthenticationOutputSchemas,
-            input,
-            options,
-        ),
-        /**
-         * Sign in to close organization
-         *
-         * Returns an authentication URL for the current organization owner to inspect organization closure. Supply returnTo and complete the returned flow. This operation initiates authentication and does not close the organization.
-         */
-        beginOrganizationClosureAuthentication: (input: Schemas.BeginOrganizationClosureAuthenticationInput, options?: RequestOptions) => invokers.raw<Schemas.BeginOrganizationClosureAuthenticationInput, Schemas.BeginOrganizationClosureAuthenticationOutput>(
-            "beginOrganizationClosureAuthentication",
-            Sdk.beginOrganizationClosureAuthentication,
-            Schemas.BeginOrganizationClosureAuthenticationOutputSchemas,
-            input,
-            options,
-        ),
-        /**
-         * Begin organization SSO admission
-         *
-         * Returns an SSO admission URL for an existing account and the selected organization. Supply returnTo for the continuation URL. Admission requires completing the returned authentication flow; creating the URL does not itself grant membership.
-         */
-        beginOrganizationSsoAdmission: (input: Schemas.BeginOrganizationSsoAdmissionInput, options?: RequestOptions) => invokers.raw<Schemas.BeginOrganizationSsoAdmissionInput, Schemas.BeginOrganizationSsoAdmissionOutput>(
-            "beginOrganizationSsoAdmission",
-            Sdk.beginOrganizationSsoAdmission,
-            Schemas.BeginOrganizationSsoAdmissionOutputSchemas,
-            input,
-            options,
-        ),
         /**
          * Create organization setup portal link
          *
@@ -4388,18 +4962,6 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 "createOrganizationPaymentMethodCheckout",
                 Sdk.createOrganizationPaymentMethodCheckout,
                 Schemas.CreateOrganizationPaymentMethodCheckoutOutputSchemas,
-                input,
-                options,
-            ),
-            /**
-             * Create card setup intent
-             *
-             * Creates payment-provider configuration for collecting a card for the selected organization and returns clientSecret and publishableKey. Supply the required Idempotency-Key header. Complete the provider’s card-collection flow separately and avoid logging the returned client secret.
-             */
-            createOrganizationSetupIntent: (input: Schemas.CreateOrganizationSetupIntentInput, options?: RequestOptions) => invokers.raw<Schemas.CreateOrganizationSetupIntentInput, Schemas.CreateOrganizationSetupIntentOutput>(
-                "createOrganizationSetupIntent",
-                Sdk.createOrganizationSetupIntent,
-                Schemas.CreateOrganizationSetupIntentOutputSchemas,
                 input,
                 options,
             ),
@@ -4574,6 +5136,454 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 options,
             ),
         },
+        /**
+         * Accept an invitation to all organization projects
+         */
+        acceptOrganizationInvitation: (input: Schemas.AcceptOrganizationInvitationInput, options?: RequestOptions) => invokers.raw<Schemas.AcceptOrganizationInvitationInput, Schemas.AcceptOrganizationInvitationOutput>(
+            "acceptOrganizationInvitation",
+            Sdk.acceptOrganizationInvitation,
+            Schemas.AcceptOrganizationInvitationOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Cancel the SSO subscription
+         */
+        cancelSsoSubscription: (input: Schemas.CancelSsoSubscriptionInput, options?: RequestOptions) => invokers.raw<Schemas.CancelSsoSubscriptionInput, Schemas.CancelSsoSubscriptionOutput>(
+            "cancelSsoSubscription",
+            Sdk.cancelSsoSubscription,
+            Schemas.CancelSsoSubscriptionOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Check organization deletion prerequisites
+         */
+        checkOrganizationDeletion: (input: Schemas.CheckOrganizationDeletionInput, options?: RequestOptions) => invokers.raw<Schemas.CheckOrganizationDeletionInput, Schemas.CheckOrganizationDeletionOutput>(
+            "checkOrganizationDeletion",
+            Sdk.checkOrganizationDeletion,
+            Schemas.CheckOrganizationDeletionOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Delete organization
+         */
+        closeOrganization: (input: Schemas.CloseOrganizationInput, options?: RequestOptions) => invokers.raw<Schemas.CloseOrganizationInput, Schemas.CloseOrganizationOutput>(
+            "closeOrganization",
+            Sdk.closeOrganization,
+            Schemas.CloseOrganizationOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Commit an organization avatar
+         */
+        commitOrganizationAvatar: (input: Schemas.CommitOrganizationAvatarInput, options?: RequestOptions) => invokers.raw<Schemas.CommitOrganizationAvatarInput, Schemas.CommitOrganizationAvatarOutput>(
+            "commitOrganizationAvatar",
+            Sdk.commitOrganizationAvatar,
+            Schemas.CommitOrganizationAvatarOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Create an organization
+         */
+        createOrganization: (input: Schemas.CreateOrganizationInput, options?: RequestOptions) => invokers.raw<Schemas.CreateOrganizationInput, Schemas.CreateOrganizationOutput>(
+            "createOrganization",
+            Sdk.createOrganization,
+            Schemas.CreateOrganizationOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Create an organization avatar upload
+         *
+         * Upload a JPEG, PNG, or WebP image up to 5 MiB with every returned form field and the file last. Upload directly without Photon credentials, then commit the uploadId. Do not log or cache upload URLs or fields.
+         */
+        createOrganizationAvatarUpload: (input: Schemas.CreateOrganizationAvatarUploadInput, options?: RequestOptions) => invokers.raw<Schemas.CreateOrganizationAvatarUploadInput, Schemas.CreateOrganizationAvatarUploadOutput>(
+            "createOrganizationAvatarUpload",
+            Sdk.createOrganizationAvatarUpload,
+            Schemas.CreateOrganizationAvatarUploadOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Invite a Member or Viewer to all organization projects
+         */
+        createOrganizationInvitation: (input: Schemas.CreateOrganizationInvitationInput, options?: RequestOptions) => invokers.raw<Schemas.CreateOrganizationInvitationInput, Schemas.CreateOrganizationInvitationOutput>(
+            "createOrganizationInvitation",
+            Sdk.createOrganizationInvitation,
+            Schemas.CreateOrganizationInvitationOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Create an organization OAuth client
+         *
+         * Use the same UUID Idempotency-Key and payload when retrying. Unknown provider outcomes require recovery; do not use a new key to retry an uncertain creation.
+         */
+        createOrganizationOauthClient: (input: Schemas.CreateOrganizationOauthClientInput, options?: RequestOptions) => invokers.raw<Schemas.CreateOrganizationOauthClientInput, Schemas.CreateOrganizationOauthClientOutput>(
+            "createOrganizationOauthClient",
+            Sdk.createOrganizationOauthClient,
+            Schemas.CreateOrganizationOauthClientOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Create an organization Service Identity
+         */
+        createServiceIdentity: (input: Schemas.CreateServiceIdentityInput, options?: RequestOptions) => invokers.raw<Schemas.CreateServiceIdentityInput, Schemas.CreateServiceIdentityOutput>(
+            "createServiceIdentity",
+            Sdk.createServiceIdentity,
+            Schemas.CreateServiceIdentityOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Create a one-time Service Identity API key
+         */
+        createServiceIdentityApiKey: (input: Schemas.CreateServiceIdentityApiKeyInput, options?: RequestOptions) => invokers.raw<Schemas.CreateServiceIdentityApiKeyInput, Schemas.CreateServiceIdentityApiKeyOutput>(
+            "createServiceIdentityApiKey",
+            Sdk.createServiceIdentityApiKey,
+            Schemas.CreateServiceIdentityApiKeyOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Create a one-time Service Identity M2M client secret
+         */
+        createServiceIdentityClientSecret: (input: Schemas.CreateServiceIdentityClientSecretInput, options?: RequestOptions) => invokers.raw<Schemas.CreateServiceIdentityClientSecretInput, Schemas.CreateServiceIdentityClientSecretOutput>(
+            "createServiceIdentityClientSecret",
+            Sdk.createServiceIdentityClientSecret,
+            Schemas.CreateServiceIdentityClientSecretOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Delete an organization OAuth client
+         *
+         * Queues deletion of the exact provider application. Retry DELETE to read its current status. Accepted deletion does not promise immediate token revocation.
+         */
+        deleteOrganizationOauthClient: (input: Schemas.DeleteOrganizationOauthClientInput, options?: RequestOptions) => invokers.raw<Schemas.DeleteOrganizationOauthClientInput, Schemas.DeleteOrganizationOauthClientOutput>(
+            "deleteOrganizationOauthClient",
+            Sdk.deleteOrganizationOauthClient,
+            Schemas.DeleteOrganizationOauthClientOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Revoke an organization OAuth client's secret
+         *
+         * Stops every secret of the app now, including one still in its grace period.
+         */
+        deleteOrganizationOauthClientSecret: (input: Schemas.DeleteOrganizationOauthClientSecretInput, options?: RequestOptions) => invokers.raw<Schemas.DeleteOrganizationOauthClientSecretInput, Schemas.DeleteOrganizationOauthClientSecretOutput>(
+            "deleteOrganizationOauthClientSecret",
+            Sdk.deleteOrganizationOauthClientSecret,
+            Schemas.DeleteOrganizationOauthClientSecretOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Ensure the initial organization
+         */
+        ensureInitialOrganization: (input: Schemas.EnsureInitialOrganizationInput, options?: RequestOptions) => invokers.raw<Schemas.EnsureInitialOrganizationInput, Schemas.EnsureInitialOrganizationOutput>(
+            "ensureInitialOrganization",
+            Sdk.ensureInitialOrganization,
+            Schemas.EnsureInitialOrganizationOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Read the credential's organization
+         *
+         * Reads the organization the credential is bound to: the organization an OAuth grant was consented for, or a Service Identity's own organization. Use it to discover which organization an integration acts for, and pass its organizationId to organization-scoped operations.
+         */
+        getCurrentOrganization: (input: Schemas.GetCurrentOrganizationInput = {}, options?: RequestOptions) => invokers.raw<Schemas.GetCurrentOrganizationInput, Schemas.GetCurrentOrganizationOutput>(
+            "getCurrentOrganization",
+            Sdk.getCurrentOrganization,
+            Schemas.GetCurrentOrganizationOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Read organization name and avatar
+         */
+        getOrganization: (input: Schemas.GetOrganizationInput, options?: RequestOptions) => invokers.raw<Schemas.GetOrganizationInput, Schemas.GetOrganizationOutput>(
+            "getOrganization",
+            Sdk.getOrganization,
+            Schemas.GetOrganizationOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Read an organization OAuth client
+         */
+        getOrganizationOauthClient: (input: Schemas.GetOrganizationOauthClientInput, options?: RequestOptions) => invokers.raw<Schemas.GetOrganizationOauthClientInput, Schemas.GetOrganizationOauthClientOutput>(
+            "getOrganizationOauthClient",
+            Sdk.getOrganizationOauthClient,
+            Schemas.GetOrganizationOauthClientOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Read an organization OAuth client's secret
+         */
+        getOrganizationOauthClientSecret: (input: Schemas.GetOrganizationOauthClientSecretInput, options?: RequestOptions) => invokers.raw<Schemas.GetOrganizationOauthClientSecretInput, Schemas.GetOrganizationOauthClientSecretOutput>(
+            "getOrganizationOauthClientSecret",
+            Sdk.getOrganizationOauthClientSecret,
+            Schemas.GetOrganizationOauthClientSecretOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Read a Service Identity
+         */
+        getServiceIdentity: (input: Schemas.GetServiceIdentityInput, options?: RequestOptions) => invokers.raw<Schemas.GetServiceIdentityInput, Schemas.GetServiceIdentityOutput>(
+            "getServiceIdentity",
+            Sdk.getServiceIdentity,
+            Schemas.GetServiceIdentityOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Read SSO subscription
+         */
+        getSsoSubscription: (input: Schemas.GetSsoSubscriptionInput, options?: RequestOptions) => invokers.raw<Schemas.GetSsoSubscriptionInput, Schemas.GetSsoSubscriptionOutput>(
+            "getSsoSubscription",
+            Sdk.getSsoSubscription,
+            Schemas.GetSsoSubscriptionOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Leave an organization; Owners must transfer or close first
+         */
+        leaveOrganization: (input: Schemas.LeaveOrganizationInput, options?: RequestOptions) => invokers.raw<Schemas.LeaveOrganizationInput, Schemas.LeaveOrganizationOutput>(
+            "leaveOrganization",
+            Sdk.leaveOrganization,
+            Schemas.LeaveOrganizationOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * List pending organization invitations
+         */
+        listOrganizationInvitations: (input: Schemas.ListOrganizationInvitationsInput, options?: RequestOptions) => invokers.raw<Schemas.ListOrganizationInvitationsInput, Schemas.ListOrganizationInvitationsOutput>(
+            "listOrganizationInvitations",
+            Sdk.listOrganizationInvitations,
+            Schemas.ListOrganizationInvitationsOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * List current organization members
+         */
+        listOrganizationMembers: (input: Schemas.ListOrganizationMembersInput, options?: RequestOptions) => invokers.raw<Schemas.ListOrganizationMembersInput, Schemas.ListOrganizationMembersOutput>(
+            "listOrganizationMembers",
+            Sdk.listOrganizationMembers,
+            Schemas.ListOrganizationMembersOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * List organization OAuth clients
+         */
+        listOrganizationOauthClients: (input: Schemas.ListOrganizationOauthClientsInput, options?: RequestOptions) => invokers.raw<Schemas.ListOrganizationOauthClientsInput, Schemas.ListOrganizationOauthClientsOutput>(
+            "listOrganizationOauthClients",
+            Sdk.listOrganizationOauthClients,
+            Schemas.ListOrganizationOauthClientsOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * List organizations
+         */
+        listOrganizations: (input: Schemas.ListOrganizationsInput = {}, options?: RequestOptions) => invokers.raw<Schemas.ListOrganizationsInput, Schemas.ListOrganizationsOutput>(
+            "listOrganizations",
+            Sdk.listOrganizations,
+            Schemas.ListOrganizationsOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * List organization Service Identities
+         */
+        listServiceIdentities: (input: Schemas.ListServiceIdentitiesInput, options?: RequestOptions) => invokers.raw<Schemas.ListServiceIdentitiesInput, Schemas.ListServiceIdentitiesOutput>(
+            "listServiceIdentities",
+            Sdk.listServiceIdentities,
+            Schemas.ListServiceIdentitiesOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * List Service Identity credential metadata
+         */
+        listServiceIdentityCredentials: (input: Schemas.ListServiceIdentityCredentialsInput, options?: RequestOptions) => invokers.raw<Schemas.ListServiceIdentityCredentialsInput, Schemas.ListServiceIdentityCredentialsOutput>(
+            "listServiceIdentityCredentials",
+            Sdk.listServiceIdentityCredentials,
+            Schemas.ListServiceIdentityCredentialsOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * List grantable Service Identity permissions
+         *
+         * The permissions a Service Identity or installable app may be granted: the machine set of the current auth contract, sorted. Create, update, and app declarations accept exactly these values.
+         */
+        listServiceIdentityPermissions: (input: Schemas.ListServiceIdentityPermissionsInput, options?: RequestOptions) => invokers.raw<Schemas.ListServiceIdentityPermissionsInput, Schemas.ListServiceIdentityPermissionsOutput>(
+            "listServiceIdentityPermissions",
+            Sdk.listServiceIdentityPermissions,
+            Schemas.ListServiceIdentityPermissionsOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Preview an organization invitation after sign-in
+         */
+        previewOrganizationInvitation: (input: Schemas.PreviewOrganizationInvitationInput, options?: RequestOptions) => invokers.raw<Schemas.PreviewOrganizationInvitationInput, Schemas.PreviewOrganizationInvitationOutput>(
+            "previewOrganizationInvitation",
+            Sdk.previewOrganizationInvitation,
+            Schemas.PreviewOrganizationInvitationOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Remove an organization avatar
+         */
+        removeOrganizationAvatar: (input: Schemas.RemoveOrganizationAvatarInput, options?: RequestOptions) => invokers.raw<Schemas.RemoveOrganizationAvatarInput, Schemas.RemoveOrganizationAvatarOutput>(
+            "removeOrganizationAvatar",
+            Sdk.removeOrganizationAvatar,
+            Schemas.RemoveOrganizationAvatarOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Remove an organization member's access to all projects
+         */
+        removeOrganizationMember: (input: Schemas.RemoveOrganizationMemberInput, options?: RequestOptions) => invokers.raw<Schemas.RemoveOrganizationMemberInput, Schemas.RemoveOrganizationMemberOutput>(
+            "removeOrganizationMember",
+            Sdk.removeOrganizationMember,
+            Schemas.RemoveOrganizationMemberOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Resend an organization invitation
+         */
+        resendOrganizationInvitation: (input: Schemas.ResendOrganizationInvitationInput, options?: RequestOptions) => invokers.raw<Schemas.ResendOrganizationInvitationInput, Schemas.ResendOrganizationInvitationOutput>(
+            "resendOrganizationInvitation",
+            Sdk.resendOrganizationInvitation,
+            Schemas.ResendOrganizationInvitationOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Revoke an organization invitation
+         */
+        revokeOrganizationInvitation: (input: Schemas.RevokeOrganizationInvitationInput, options?: RequestOptions) => invokers.raw<Schemas.RevokeOrganizationInvitationInput, Schemas.RevokeOrganizationInvitationOutput>(
+            "revokeOrganizationInvitation",
+            Sdk.revokeOrganizationInvitation,
+            Schemas.RevokeOrganizationInvitationOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Request Service Identity credential revocation
+         */
+        revokeServiceIdentityCredential: (input: Schemas.RevokeServiceIdentityCredentialInput, options?: RequestOptions) => invokers.raw<Schemas.RevokeServiceIdentityCredentialInput, Schemas.RevokeServiceIdentityCredentialOutput>(
+            "revokeServiceIdentityCredential",
+            Sdk.revokeServiceIdentityCredential,
+            Schemas.RevokeServiceIdentityCredentialOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Rotate an organization OAuth client's secret
+         *
+         * Mints a new secret, then retires the one it replaces: `normal` keeps the old one working for one hour, `emergency` stops it now. A secret not created through Photon always stops now. Rotating again ends an earlier grace period. Retain the same UUID Idempotency-Key when retrying: only the delivering request returns plaintext.
+         */
+        rotateOrganizationOauthClientSecret: (input: Schemas.RotateOrganizationOauthClientSecretInput, options?: RequestOptions) => invokers.raw<Schemas.RotateOrganizationOauthClientSecretInput, Schemas.RotateOrganizationOauthClientSecretOutput>(
+            "rotateOrganizationOauthClientSecret",
+            Sdk.rotateOrganizationOauthClientSecret,
+            Schemas.RotateOrganizationOauthClientSecretOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Create an organization OAuth client's secret
+         *
+         * Mints the app's first secret; once it has one, rotate it instead. Retain the same UUID Idempotency-Key when retrying: only the delivering request returns plaintext.
+         */
+        setupOrganizationOauthClientSecret: (input: Schemas.SetupOrganizationOauthClientSecretInput, options?: RequestOptions) => invokers.raw<Schemas.SetupOrganizationOauthClientSecretInput, Schemas.SetupOrganizationOauthClientSecretOutput>(
+            "setupOrganizationOauthClientSecret",
+            Sdk.setupOrganizationOauthClientSecret,
+            Schemas.SetupOrganizationOauthClientSecretOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Subscribe to organization SSO
+         */
+        subscribeSso: (input: Schemas.SubscribeSsoInput, options?: RequestOptions) => invokers.raw<Schemas.SubscribeSsoInput, Schemas.SubscribeSsoOutput>(
+            "subscribeSso",
+            Sdk.subscribeSso,
+            Schemas.SubscribeSsoOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Transfer organization ownership to an existing member
+         */
+        transferOrganizationOwnership: (input: Schemas.TransferOrganizationOwnershipInput, options?: RequestOptions) => invokers.raw<Schemas.TransferOrganizationOwnershipInput, Schemas.TransferOrganizationOwnershipOutput>(
+            "transferOrganizationOwnership",
+            Sdk.transferOrganizationOwnership,
+            Schemas.TransferOrganizationOwnershipOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Change organization name
+         */
+        updateOrganization: (input: Schemas.UpdateOrganizationInput, options?: RequestOptions) => invokers.raw<Schemas.UpdateOrganizationInput, Schemas.UpdateOrganizationOutput>(
+            "updateOrganization",
+            Sdk.updateOrganization,
+            Schemas.UpdateOrganizationOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Change an organization member's role across all projects
+         */
+        updateOrganizationMemberRole: (input: Schemas.UpdateOrganizationMemberRoleInput, options?: RequestOptions) => invokers.raw<Schemas.UpdateOrganizationMemberRoleInput, Schemas.UpdateOrganizationMemberRoleOutput>(
+            "updateOrganizationMemberRole",
+            Sdk.updateOrganizationMemberRole,
+            Schemas.UpdateOrganizationMemberRoleOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Update an organization OAuth client
+         *
+         * Requires If-Match from the latest read. Stale versions return 412. A failed response may follow an applied provider update; reread before retrying. Version checking is not provider atomic CAS.
+         */
+        updateOrganizationOauthClient: (input: Schemas.UpdateOrganizationOauthClientInput, options?: RequestOptions) => invokers.raw<Schemas.UpdateOrganizationOauthClientInput, Schemas.UpdateOrganizationOauthClientOutput>(
+            "updateOrganizationOauthClient",
+            Sdk.updateOrganizationOauthClient,
+            Schemas.UpdateOrganizationOauthClientOutputSchemas,
+            input,
+            options,
+        ),
+        /**
+         * Update a Service Identity
+         */
+        updateServiceIdentity: (input: Schemas.UpdateServiceIdentityInput, options?: RequestOptions) => invokers.raw<Schemas.UpdateServiceIdentityInput, Schemas.UpdateServiceIdentityOutput>(
+            "updateServiceIdentity",
+            Sdk.updateServiceIdentity,
+            Schemas.UpdateServiceIdentityOutputSchemas,
+            input,
+            options,
+        ),
     },
     projects: {
         agentProfile: {
@@ -4822,18 +5832,6 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 "connectTelegramBot",
                 Sdk.connectTelegramBot,
                 Schemas.ConnectTelegramBotOutputSchemas,
-                input,
-                options,
-            ),
-            /**
-             * Connect WhatsApp Business
-             *
-             * Exchanges the authorization code Embedded Signup returned and connects exactly the selected phone number as one `whatsapp_sender`. Send the WABA id and phone-number id emitted by the same popup attempt; both are treated as selectors and verified against Meta before use. A selected number that matches a non-retired, same-project `voip_line` is linked to it; a number absent from Photon inventory stays unbound; a matching non-retired `cosmos_line`, foreign VoIP line or unassigned VoIP line fails the operation before registration. Connecting is free — no plan requirement — but Billing must report the project's organization as ready with a payment method on file. The Idempotency-Key is required and permanent: replaying the same key returns the original operation forever. Requires the platforms:write permission bound to the project resource in the path.
-             */
-            connectWhatsappBusiness: (input: Schemas.ConnectWhatsappBusinessInput, options?: RequestOptions) => invokers.raw<Schemas.ConnectWhatsappBusinessInput, Schemas.ConnectWhatsappBusinessOutput>(
-                "connectWhatsappBusiness",
-                Sdk.connectWhatsappBusiness,
-                Schemas.ConnectWhatsappBusinessOutputSchemas,
                 input,
                 options,
             ),
@@ -5110,18 +6108,6 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
                 "getWhatsappSharedLineAssignment",
                 Sdk.getWhatsappSharedLineAssignment,
                 Schemas.GetWhatsappSharedLineAssignmentOutputSchemas,
-                input,
-                options,
-            ),
-            /**
-             * Get WhatsApp signup config
-             *
-             * Returns what the browser needs to open Meta's Embedded Signup popup: the Facebook Login for Business configuration id, the Graph version to run against, and the scopes it will request. Answered in-process rather than forwarded, so the first step of onboarding survives an outage of the private service. Pass `configId` to `FB.login` as `config_id` with `response_type: 'code'` and `override_default_response_type: true`. Do NOT add a `featureType` — omitting it is what keeps the phone-number screen in the flow, and `only_waba_sharing` produces an account with no number that cannot be provisioned. Requires the platforms:read permission bound to the project resource in the path.
-             */
-            getWhatsappSignupConfig: (input: Schemas.GetWhatsappSignupConfigInput, options?: RequestOptions) => invokers.raw<Schemas.GetWhatsappSignupConfigInput, Schemas.GetWhatsappSignupConfigOutput>(
-                "getWhatsappSignupConfig",
-                Sdk.getWhatsappSignupConfig,
-                Schemas.GetWhatsappSignupConfigOutputSchemas,
                 input,
                 options,
             ),

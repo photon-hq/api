@@ -1,0 +1,151 @@
+---
+title: "Delete an organization OAuth client"
+icon: x
+description: "Delete an organization OAuth client: deleteOrganizationOauthClient in the TypeScript, Python, Rust and Go clients."
+---
+
+`DELETE /v1/organizations/{organizationId}/oauth/clients/{clientId}`
+
+Queues deletion of the exact provider application. Retry DELETE to read its current status. Accepted deletion does not promise immediate token revocation.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.deleteOrganizationOauthClient(input: DeleteOrganizationOauthClientInput, options?: RequestOptions): Promise<DeleteOrganizationOauthClientOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.delete_organization_oauth_client(input: DeleteOrganizationOauthClientInput) -> models.DeleteOrganizationOauthClientResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.delete_organization_oauth_client(organization_id: String, client_id: String).await -> Result<ResponseValue<DeleteOrganizationOauthClientResponse>, Error<DeleteOrganizationOauthClientError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.DeleteOrganizationOauthClient(ctx context.Context, params *DeleteOrganizationOauthClientParams, opts ...RequestOption) (*DeleteOrganizationOauthClientResponse, error)
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.deleteOrganizationOauthClient({
+  path: {
+    organizationId: "organizationId",
+    clientId: "clientId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import DeleteOrganizationOauthClientInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.delete_organization_oauth_client(
+    DeleteOrganizationOauthClientInput.model_validate({
+        "path": {
+            "organizationId": "organizationId",
+            "clientId": "clientId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .delete_organization_oauth_client("organizationId".to_owned(), "clientId".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Organizations.DeleteOrganizationOauthClient(ctx, &photonapi.DeleteOrganizationOauthClientParams{
+	OrganizationID: "organizationId",
+	ClientID: "clientId",
+})
+if err != nil {
+	return err
+}
+_ = result
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "operationId": "string",
+  "status": "cleanup_required"
+}
+```
+
+```json 202
+{
+  "operationId": "string",
+  "status": "cleanup_required"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="organizationId" type={"string"} required>
+
+</ParamField>
+
+<ParamField path="clientId" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** Provider deletion has been confirmed. DeleteOrganizationOauthClientResponse
+
+<ResponseField name="operationId" type={"string (uuid)"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"DeleteOrganizationOauthClientResponseStatus"} required>
+
+</ResponseField>
+
+**`202`** Deletion accepted; provider cleanup is pending. DeleteOrganizationOauthClientResponse
+
+<ResponseField name="operationId" type={"string (uuid)"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"DeleteOrganizationOauthClientResponseStatus"} required>
+
+</ResponseField>
+

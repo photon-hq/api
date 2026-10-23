@@ -189,13 +189,6 @@ photon.projects.platforms.getWhatsappSharedLineAssignment(input: GetWhatsappShar
 ```
 `GET /v1/projects/{id}/platforms/whatsapp/assignments/{assignmentId}`
 
-**[Get WhatsApp signup config](/api-client/sdk/projects/platforms/get-whatsapp-signup-config)**
-
-```typescript TypeScript
-photon.projects.platforms.getWhatsappSignupConfig(input: GetWhatsappSignupConfigInput, options?: RequestOptions): Promise<GetWhatsappSignupConfigOutput>
-```
-`GET /v1/projects/{id}/platforms/whatsapp-business/signup-config`
-
 **[Batch update Voice line assignments](/api-client/sdk/projects/platforms/batch-update-voice-line-profile-assignments)**
 
 ```typescript TypeScript
@@ -223,13 +216,6 @@ photon.projects.platforms.connectEmailDomain(input: ConnectEmailDomainInput, opt
 photon.projects.platforms.connectTelegramBot(input: ConnectTelegramBotInput, options?: RequestOptions): Promise<ConnectTelegramBotOutput>
 ```
 `POST /v1/projects/{id}/platforms/telegram/bots`
-
-**[Connect WhatsApp Business](/api-client/sdk/projects/platforms/connect-whatsapp-business)**
-
-```typescript TypeScript
-photon.projects.platforms.connectWhatsappBusiness(input: ConnectWhatsappBusinessInput, options?: RequestOptions): Promise<ConnectWhatsappBusinessOutput>
-```
-`POST /v1/projects/{id}/platforms/whatsapp-business/numbers`
 
 **[Create Voice profile](/api-client/sdk/projects/platforms/create-voice-profile)**
 
@@ -597,13 +583,6 @@ photon.projects.platforms.get_whatsapp_shared_line_assignment(input: GetWhatsapp
 ```
 `GET /v1/projects/{id}/platforms/whatsapp/assignments/{assignmentId}`
 
-**[Get WhatsApp signup config](/api-client/sdk/projects/platforms/get-whatsapp-signup-config)**
-
-```python Python
-photon.projects.platforms.get_whatsapp_signup_config(input: GetWhatsappSignupConfigInput) -> models.GetWhatsappSignupConfigResponse
-```
-`GET /v1/projects/{id}/platforms/whatsapp-business/signup-config`
-
 **[Batch update Voice line assignments](/api-client/sdk/projects/platforms/batch-update-voice-line-profile-assignments)**
 
 ```python Python
@@ -631,13 +610,6 @@ photon.projects.platforms.connect_email_domain(input: ConnectEmailDomainInput) -
 photon.projects.platforms.connect_telegram_bot(input: ConnectTelegramBotInput) -> models.Operation
 ```
 `POST /v1/projects/{id}/platforms/telegram/bots`
-
-**[Connect WhatsApp Business](/api-client/sdk/projects/platforms/connect-whatsapp-business)**
-
-```python Python
-photon.projects.platforms.connect_whatsapp_business(input: ConnectWhatsappBusinessInput) -> models.Operation
-```
-`POST /v1/projects/{id}/platforms/whatsapp-business/numbers`
 
 **[Create Voice profile](/api-client/sdk/projects/platforms/create-voice-profile)**
 
@@ -1005,13 +977,6 @@ client.get_whatsapp_shared_line_assignment(assignment_id: String, id: String).aw
 ```
 `GET /v1/projects/{id}/platforms/whatsapp/assignments/{assignmentId}`
 
-**[Get WhatsApp signup config](/api-client/sdk/projects/platforms/get-whatsapp-signup-config)**
-
-```rust Rust
-client.get_whatsapp_signup_config(id: String).await -> Result<ResponseValue<types::GetWhatsappSignupConfigResponse>, Error<GetWhatsappSignupConfigError>>
-```
-`GET /v1/projects/{id}/platforms/whatsapp-business/signup-config`
-
 **[Batch update Voice line assignments](/api-client/sdk/projects/platforms/batch-update-voice-line-profile-assignments)**
 
 ```rust Rust
@@ -1039,13 +1004,6 @@ client.connect_email_domain(idempotency_key: String, id: String, body: &types::C
 client.connect_telegram_bot(idempotency_key: String, id: String, body: &types::ConnectTelegramBotRequest).await -> Result<ResponseValue<types::Operation>, Error<ConnectTelegramBotError>>
 ```
 `POST /v1/projects/{id}/platforms/telegram/bots`
-
-**[Connect WhatsApp Business](/api-client/sdk/projects/platforms/connect-whatsapp-business)**
-
-```rust Rust
-client.connect_whatsapp_business(idempotency_key: String, id: String, body: &types::ConnectWhatsappBusinessRequest).await -> Result<ResponseValue<types::Operation>, Error<ConnectWhatsappBusinessError>>
-```
-`POST /v1/projects/{id}/platforms/whatsapp-business/numbers`
 
 **[Create Voice profile](/api-client/sdk/projects/platforms/create-voice-profile)**
 
@@ -1413,13 +1371,6 @@ client.Projects.Platforms.GetWhatsappSharedLineAssignment(ctx context.Context, p
 ```
 `GET /v1/projects/{id}/platforms/whatsapp/assignments/{assignmentId}`
 
-**[Get WhatsApp signup config](/api-client/sdk/projects/platforms/get-whatsapp-signup-config)**
-
-```go Go
-client.Projects.Platforms.GetWhatsappSignupConfig(ctx context.Context, params *GetWhatsappSignupConfigParams, opts ...RequestOption) (*GetWhatsappSignupConfigResponse, error)
-```
-`GET /v1/projects/{id}/platforms/whatsapp-business/signup-config`
-
 **[Batch update Voice line assignments](/api-client/sdk/projects/platforms/batch-update-voice-line-profile-assignments)**
 
 ```go Go
@@ -1447,13 +1398,6 @@ client.Projects.Platforms.ConnectEmailDomain(ctx context.Context, params *Connec
 client.Projects.Platforms.ConnectTelegramBot(ctx context.Context, params *ConnectTelegramBotParams, opts ...RequestOption) (*Operation, error)
 ```
 `POST /v1/projects/{id}/platforms/telegram/bots`
-
-**[Connect WhatsApp Business](/api-client/sdk/projects/platforms/connect-whatsapp-business)**
-
-```go Go
-client.Projects.Platforms.ConnectWhatsappBusiness(ctx context.Context, params *ConnectWhatsappBusinessParams, opts ...RequestOption) (*Operation, error)
-```
-`POST /v1/projects/{id}/platforms/whatsapp-business/numbers`
 
 **[Create Voice profile](/api-client/sdk/projects/platforms/create-voice-profile)**
 
@@ -2148,23 +2092,6 @@ client.Projects.Platforms.UnassignVoiceLineProfile(ctx context.Context, params *
 </ResponseField>
 
 <ResponseField name="updatedAt" type={"string (date-time)"} required>
-
-</ResponseField>
-
-
-### GetWhatsappSignupConfigResponse
-
-
-
-<ResponseField name="configId" type={"string"} required>
-
-</ResponseField>
-
-<ResponseField name="graphVersion" type={"string"} required>
-
-</ResponseField>
-
-<ResponseField name="scopes" type={"array of string"} required>
 
 </ResponseField>
 

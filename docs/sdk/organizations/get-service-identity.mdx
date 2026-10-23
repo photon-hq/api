@@ -1,0 +1,181 @@
+---
+title: "Read a Service Identity"
+icon: arrow-down-left
+description: "Read a Service Identity: getServiceIdentity in the TypeScript, Python, Rust and Go clients."
+---
+
+`GET /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}`
+
+
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.getServiceIdentity(input: GetServiceIdentityInput, options?: RequestOptions): Promise<GetServiceIdentityOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.get_service_identity(input: GetServiceIdentityInput) -> models.GetServiceIdentityResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.get_service_identity(organization_id: String, service_identity_id: String).await -> Result<ResponseValue<types::GetServiceIdentityResponse>, Error<GetServiceIdentityError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.GetServiceIdentity(ctx context.Context, params *GetServiceIdentityParams, opts ...RequestOption) (*GetServiceIdentityResponse, error)
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.getServiceIdentity({
+  path: {
+    organizationId: "organizationId",
+    serviceIdentityId: "serviceIdentityId",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import GetServiceIdentityInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.get_service_identity(
+    GetServiceIdentityInput.model_validate({
+        "path": {
+            "organizationId": "organizationId",
+            "serviceIdentityId": "serviceIdentityId",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .get_service_identity("organizationId".to_owned(), "serviceIdentityId".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Organizations.GetServiceIdentity(ctx, &photonapi.GetServiceIdentityParams{
+	OrganizationID: "organizationId",
+	ServiceIdentityID: "serviceIdentityId",
+})
+if err != nil {
+	return err
+}
+_ = result
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "appInstallationManaged": true,
+  "createdAt": "2026-01-01T00:00:00Z",
+  "createdByAccountId": "string",
+  "name": "string",
+  "organizationId": "string",
+  "permissions": [
+    "string"
+  ],
+  "serviceIdentityId": "string",
+  "status": "active",
+  "updatedAt": "2026-01-01T00:00:00Z",
+  "updatedByAccountId": "string",
+  "version": "string"
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="organizationId" type={"string"} required>
+
+</ParamField>
+
+<ParamField path="serviceIdentityId" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** Current identity metadata. GetServiceIdentityResponse
+
+<ResponseField name="appInstallationManaged" type={"boolean"} required>
+
+</ResponseField>
+
+<ResponseField name="createdAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="createdByAccountId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="name" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="organizationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="permissions" type={"array of string"} required>
+
+</ResponseField>
+
+<ResponseField name="serviceIdentityId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="status" type={"ServiceIdentityStatus"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedAt" type={"string (date-time)"} required>
+
+</ResponseField>
+
+<ResponseField name="updatedByAccountId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="version" type={"string"} required>
+
+</ResponseField>
+

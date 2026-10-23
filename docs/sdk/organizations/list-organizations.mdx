@@ -1,0 +1,124 @@
+---
+title: "List organizations"
+icon: arrow-down-left
+description: "List organizations: listOrganizations in the TypeScript, Python, Rust and Go clients."
+---
+
+`GET /v1/organizations`
+
+
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.listOrganizations(input?: ListOrganizationsInput, options?: RequestOptions): Promise<ListOrganizationsOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.list_organizations(input: ListOrganizationsInput | None = None) -> models.ListOrganizationsResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.list_organizations().await -> Result<ResponseValue<types::ListOrganizationsResponse>, Error<ListOrganizationsError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.ListOrganizations(ctx context.Context, opts ...RequestOption) (*ListOrganizationsResponse, error)
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.listOrganizations();
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.list_organizations()
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .list_organizations()
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Organizations.ListOrganizations(ctx)
+if err != nil {
+	return err
+}
+_ = result
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "acquisitionQuestionnaireExempt": true,
+  "organizations": [
+    {
+      "avatarUrl": null,
+      "billingInitialization": "pending",
+      "createdAt": "2026-01-01T00:00:00Z",
+      "name": "string",
+      "organizationId": "string",
+      "updatedAt": "2026-01-01T00:00:00Z",
+      "version": "string"
+    }
+  ],
+  "ownedOrganizationIds": [
+    "string"
+  ]
+}
+```
+
+</ResponseExample>
+
+## Returns
+
+**`200`** The account's accessible organizations. ListOrganizationsResponse
+
+<ResponseField name="acquisitionQuestionnaireExempt" type={"boolean"} required>
+An active invitation membership exempts acquisition questions; not CRM completion or phone verification.
+</ResponseField>
+
+<ResponseField name="organizations" type={"array of Organization"} required>
+
+</ResponseField>
+
+<ResponseField name="ownedOrganizationIds" type={"array of string"} required>
+Listed organizations where the caller is the Owner.
+</ResponseField>
+
