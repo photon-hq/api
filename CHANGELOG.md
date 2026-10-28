@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.6.1 (2026-10-28)
+
+
+### Bug Fixes
+
+* **python:** type webhook event objects as the full Message union
+
 ## 0.6.0 (2026-10-23)
 
 

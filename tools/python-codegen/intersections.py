@@ -75,10 +75,13 @@ def _narrows_union(schemas: dict, schema: dict) -> bool:
     return unions == 1
 
 
-def _hoist_nested(schemas: dict, reachable: set[str]) -> None:
+def _hoist_nested(schemas: dict) -> None:
     """Make each union-narrowing `allOf` nested inside a component a component itself.
 
-    (The internal lane's hoisted list responses: `items: {allOf: [Message, {...}]}`.)
+    (The internal lane's hoisted list responses, `items: {allOf: [Message, {...}]}`,
+    and webhook event data, `object: {allOf: [Message, {...}]}`.) Every component
+    is visited, including those no operation reaches: the generator emits a class
+    for each of them.
     """
 
     def visit(node, owner: str, counter: list[int]) -> None:
@@ -107,39 +110,15 @@ def _hoist_nested(schemas: dict, reachable: set[str]) -> None:
                     node[index] = {"$ref": PREFIX + name}
                 visit(child, owner, counter)
 
-    for owner in sorted(reachable):
+    for owner in sorted(schemas):
         visit(schemas[owner], owner, [0])
-
-
-def _reachable(document: dict) -> set[str]:
-    """Components the operations reach (unreached ones are not generated as used models)."""
-    schemas = document.get("components", {}).get("schemas", {})
-    found: set[str] = set()
-
-    def visit(node) -> None:
-        if isinstance(node, dict):
-            reference = node.get("$ref")
-            if isinstance(reference, str) and reference.startswith(PREFIX):
-                name = reference[len(PREFIX) :]
-                if name in schemas and name not in found:
-                    found.add(name)
-                    visit(schemas[name])
-            for key, child in node.items():
-                if key not in ("example", "examples", "const", "enum", "default"):
-                    visit(child)
-        elif isinstance(node, list):
-            for child in node:
-                visit(child)
-
-    visit(document.get("paths", {}))
-    return found
 
 
 def rewrite(document: dict) -> dict[str, list[str]]:
     """Rewrite each union-narrowing component in place; return its constraint names."""
     schemas = document.get("components", {}).get("schemas", {})
     constraints: dict[str, list[str]] = {}
-    _hoist_nested(schemas, _reachable(document))
+    _hoist_nested(schemas)
     for name, schema in list(schemas.items()):
         if not isinstance(schema, dict) or not isinstance(schema.get("allOf"), list):
             continue

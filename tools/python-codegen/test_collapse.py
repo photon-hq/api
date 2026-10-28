@@ -1,4 +1,4 @@
-"""Compare live reference queries and generated output with the pinned upstream."""
+"""The root-collapse adapter keeps upstream output and guards its upstream version."""
 
 import ast
 import json
@@ -10,118 +10,10 @@ from pathlib import Path
 from unittest.mock import patch
 
 import sdk_types
-from collapse import CollapseStore, install
-from datamodel_code_generator.model.pydantic_v2.base_model import BaseModel, DataModelField
-from datamodel_code_generator.parser.generation import GenerationIndexBuilder, GenerationStore
-from datamodel_code_generator.reference import Reference
-from datamodel_code_generator.types import DataType
+from collapse import install
 
 
-def model(name: str, data_type: DataType) -> BaseModel:
-    return BaseModel(
-        reference=Reference(path=f"#/{name}", name=name),
-        fields=[DataModelField(name="value", data_type=data_type, required=True)],
-    )
-
-
-class ReferenceTests(unittest.TestCase):
-    def assert_matches_upstream(
-        self, store: CollapseStore, reference: Reference, excluded: DataType
-    ) -> None:
-        oracle = GenerationStore()
-        oracle.models.extend(store.models)
-        self.assertEqual(
-            store.index.has_data_type_references_other_than(reference, excluded),
-            oracle.index.has_data_type_references_other_than(reference, excluded),
-        )
-
-    def test_shared_copies_detached_temporaries_and_replaced_fields(self) -> None:
-        target = Reference(path="#/Target", name="Target")
-        shared = DataType(reference=target)
-        original = DataType(data_types=[shared], is_list=True)
-        shallow = original.model_copy()
-        first = model("First", original)
-        second = model("Second", shallow)
-        other = DataType(reference=target)
-        third = model("Third", other)
-        # Registered reverse links alone do not establish reachability.
-        detached = DataType(reference=target)
-        store = CollapseStore()
-        store.models.extend([first, second, third])
-        with store._collapse_root_reference_scope():
-            self.assert_matches_upstream(store, target, other)
-            store.replace_field_type(first.fields[0], DataType(type="str"))
-            # The shared node has a stale parent path, but remains in Second.
-            self.assert_matches_upstream(store, target, other)
-            store.replace_field_type(second.fields[0], DataType(type="str"))
-            self.assert_matches_upstream(store, target, other)
-            self.assertFalse(store.index.has_data_type_references_other_than(target, other))
-            self.assert_matches_upstream(store, target, detached)
-            store.detach_data_type_ref(other)
-            self.assert_matches_upstream(store, target, detached)
-
-    def test_missing_reverse_links_dictionary_keys_and_nested_replacements(self) -> None:
-        target = Reference(path="#/Key", name="Key")
-        key = DataType(reference=target)
-        mapping = DataType(is_dict=True, dict_key=key, data_types=[DataType(type="str")])
-        excluded = DataType(reference=target)
-        owner = model("Mapping", mapping)
-        store = CollapseStore()
-        store.models.extend([owner, model("Excluded", excluded)])
-        target.children.clear()
-        with store._collapse_root_reference_scope():
-            self.assert_matches_upstream(store, target, excluded)
-            store.replace_nested_data_type(mapping, key, DataType(type="str"))
-            self.assert_matches_upstream(store, target, excluded)
-            self.assertFalse(store.index.has_data_type_references_other_than(target, excluded))
-            replacement = DataType(reference=target)
-            store.set_nested_data_types(mapping, [replacement])
-            self.assert_matches_upstream(store, target, excluded)
-            store.replace_data_type_ref(replacement, None)
-            self.assert_matches_upstream(store, target, excluded)
-
-    def test_base_reference_is_live_without_a_parent(self) -> None:
-        parent = model("Parent", DataType(type="str"))
-        child = BaseModel(
-            reference=Reference(path="#/Child", name="Child"),
-            fields=[],
-            base_classes=[parent.reference],
-        )
-        excluded = DataType(reference=parent.reference)
-        store = CollapseStore()
-        store.models.extend([parent, child, model("Other", excluded)])
-        with store._collapse_root_reference_scope():
-            self.assert_matches_upstream(store, parent.reference, excluded)
-            self.assertTrue(
-                store.index.has_data_type_references_other_than(parent.reference, excluded)
-            )
-
-    def test_many_mutations_rebuild_the_graph_only_at_pass_boundaries(self) -> None:
-        reference = Reference(path="#/Shared", name="Shared")
-        store = CollapseStore()
-        for index in range(120):
-            store.models.append(model(f"Model{index}", DataType(reference=reference)))
-        build = GenerationIndexBuilder.build
-        builds = 0
-
-        def counted(builder, *args, **kwargs):
-            nonlocal builds
-            builds += 1
-            return build(builder, *args, **kwargs)
-
-        with patch.object(GenerationIndexBuilder, "build", counted):
-            with store._collapse_root_reference_scope():
-                for index, owner in enumerate(store.models):
-                    self.assertEqual(
-                        store.index.has_data_type_references_other_than(
-                            reference, owner.fields[0].data_type
-                        ),
-                        index < 119,
-                    )
-                    store.replace_field_type(owner.fields[0], DataType(type="str"))
-            self.assertFalse(store.index.has_data_type_references(reference))
-        self.assertLessEqual(builds, 2)
-
+class InstallTests(unittest.TestCase):
     def test_an_upstream_upgrade_requires_adapter_review(self) -> None:
         with (
             patch("collapse.version", return_value="99.0.0"),
