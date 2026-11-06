@@ -249,7 +249,6 @@ class GenerationTests(unittest.TestCase):
         schemas["ItemPage"]["properties"]["items"]["items"] = {
             "allOf": [ref("Item"), copy.deepcopy(SCHEMAS["SupportedPlatform"])]
         }
-        # Only what an operation reaches is hoisted.
         source["paths"] = {
             "/items": {
                 "get": {
@@ -270,6 +269,47 @@ class GenerationTests(unittest.TestCase):
             {"model": "ItemPage", "value": {"items": [voice]}, "accepts": True},
             {"model": "ItemPage", "value": {"items": [{**sms, "extra": 1}]}, "accepts": True},
             {"model": "ItemPage", "value": {"items": [{"platform": "sms"}]}, "accepts": False},
+        ]
+        checked = probe(generated, cases)
+        self.assertEqual(checked.returncode, 0, checked.stderr)
+
+    def test_internal_lane_validates_a_narrowed_union_no_operation_reaches(self):
+        # Webhook event data: no operation reaches it, and `object` is the
+        # narrowed union, written inline.
+        source = document()
+        schemas = source["components"]["schemas"]
+        schemas["ItemEventData"] = {
+            "type": "object",
+            "additionalProperties": False,
+            "properties": {
+                "object": {
+                    "allOf": [
+                        ref("Item"),
+                        {
+                            "type": "object",
+                            "properties": {"platform": {"type": "string", "const": "sms"}},
+                            "required": ["platform"],
+                        },
+                    ]
+                }
+            },
+            "required": ["object"],
+        }
+        generated = generate(source, None)
+        # The union keeps its members' fields; the constraint is a validator.
+        self.assertIn(
+            "class ItemEventDataAllOf1(RootModel[SmsItem | VoiceItem | EmailSent | EmailDraft]):",
+            generated,
+        )
+        sms = {"platform": "sms", "id": "itm_1"}
+        cases = [
+            {"model": "ItemEventData", "value": {"object": sms}, "accepts": True},
+            {"model": "ItemEventData", "value": {"object": {"platform": "sms"}}, "accepts": False},
+            {
+                "model": "ItemEventData",
+                "value": {"object": {"platform": "voice", "id": "itm_2"}},
+                "accepts": False,
+            },
         ]
         checked = probe(generated, cases)
         self.assertEqual(checked.returncode, 0, checked.stderr)

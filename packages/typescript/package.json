@@ -1,6 +1,6 @@
 {
   "name": "@photon-ai/api",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Generated Photon API RPC client for Node.js and browsers",
   "license": "MIT",
   "type": "module",
@@ -33,7 +33,7 @@
     "pack:check": "npm pack --dry-run"
   },
   "dependencies": {
-    "zod": "^4.6.5"
+    "zod": "^4.6.7"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",

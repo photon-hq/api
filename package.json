@@ -50,13 +50,13 @@
     "test": "npm run test:tools && npm run test:publish && npm run test:postman && npm run test:oas31 && npm run test:typescript && npm run test:python-codegen && npm run test:python && npm run test:rust && npm run test:go-codegen && npm run test:go"
   },
   "devDependencies": {
-    "@redocly/cli": "2.62.1",
-    "@types/node": "26.4.1",
+    "@redocly/cli": "2.72.1",
+    "@types/node": "26.6.6",
     "esbuild": "0.28.2",
     "handlebars": "4.7.10",
-    "json-canonicalize": "2.0.0",
+    "json-canonicalize": "3.0.1",
     "typescript": "7.0.2",
-    "yaml": "2.9.0"
+    "yaml": "2.9.1"
   },
   "overrides": {
     "js-yaml": "5.4.2"
