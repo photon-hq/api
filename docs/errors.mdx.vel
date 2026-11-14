@@ -26,9 +26,12 @@ and `requestId` when they are known.
 
 | Class | Thrown when | Fields |
 | --- | --- | --- |
-| `ApiError` | The API returns an error status. The message is the problem's `detail`, or `Photon API returned HTTP <status>`. | `status`, `headers`, `body` (the parsed JSON, or the text), `rawBody` (the body as text; for a JSON body, the parsed body serialized again), `requestId` |
-| `TransportError` | The request did not complete: a network failure or an attempt that exceeded `timeoutMs`, before or while the body arrived, or a call cancelled through its `signal`. | `cause`, the underlying error or the signal's abort reason |
+| `ApiError` | The API returns an error status. The message is the problem's `detail`, or `Photon API returned HTTP <status>`. | `status`, `headers`, `body` (the parsed JSON, or the text), `rawBody` (the body as text; for a JSON body, the parsed body serialized again), `requestId`, `attempts` |
+| `TransportError` | The request did not complete: a network failure or an attempt that exceeded `timeoutMs`, before or while the body arrived, or a call cancelled through its `signal`. | `cause`, the underlying error or the signal's abort reason; `attempts` |
 | `ResponseValidationError` | A successful response has a status the contract does not list, cannot be decoded, or does not match its schema. | `status`, `issues` (Zod issues), `requestId`, `cause` |
+
+`attempts` is the number of attempts the client sent for the call, counting the
+first; a call cancelled through its `signal` has none.
 
 `error.body` is typed `unknown`: the client does not check error bodies against
 the contract. The contract's error types are exported for reference, per

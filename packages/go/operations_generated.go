@@ -1850,12 +1850,6 @@ type RetryOrganizationConnectionSyncParams struct {
 	OrgID string
 }
 
-// StartEnterpriseLoginParams holds the parameters of StartEnterpriseLogin.
-type StartEnterpriseLoginParams struct {
-	// Body is the request body.
-	Body StartEnterpriseLoginRequest
-}
-
 // UpdateOrganizationSsoPolicyParams holds the parameters of UpdateOrganizationSsoPolicy.
 type UpdateOrganizationSsoPolicyParams struct {
 	// OrgID is the path parameter orgId.
@@ -5403,22 +5397,6 @@ func (s *AuthService) RetryOrganizationConnectionSync(ctx context.Context, param
 	spec := newSpec("retryOrganizationConnectionSync", "POST", "/v1/auth/organizations/{orgId}/connection-sync/retry")
 	spec.setPath("orgId", params.OrgID)
 	var out OrganizationConnectionStatus
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// Start company sign-in
-//
-// Returns a sign-in URL without requiring an existing account: the company SSO connection when the target has a ready connection, otherwise ordinary account login. Supply one documented enrollment variant: organizationId with returnTo (optionally invitationToken), invitationToken with returnTo, or retryToken. Open the returned URL to continue authentication; receiving a URL does not complete sign-in. This is a browser flow: the request must come from an allowed Origin, and the retryToken variant also needs the retry cookie set by the failed sign-in, so send it with credentials.
-func (s *AuthService) StartEnterpriseLogin(ctx context.Context, params *StartEnterpriseLoginParams, opts ...RequestOption) (*StartEnterpriseLoginResponse, error) {
-	if params == nil {
-		params = &StartEnterpriseLoginParams{}
-	}
-	spec := newSpec("startEnterpriseLogin", "POST", "/v1/auth/login/enrollment")
-	spec.setJSON(params.Body)
-	var out StartEnterpriseLoginResponse
 	if err := s.c.do(ctx, spec, &out, opts); err != nil {
 		return nil, err
 	}

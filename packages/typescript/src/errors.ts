@@ -4,11 +4,18 @@ export interface PhotonErrorOptions {
   cause?: unknown;
   operationId?: string;
   requestId?: string;
+  attempts?: number;
 }
 
 export class PhotonError extends Error {
   readonly operationId?: string;
   readonly requestId?: string;
+  /**
+   * How many attempts the client sent for the call, counting the first. Set
+   * on an `ApiError`, and on a `TransportError` for a network failure or
+   * timeout; a call cancelled through its `signal` has none.
+   */
+  readonly attempts?: number;
 
   constructor(message: string, options: PhotonErrorOptions = {}) {
     super(message, { cause: options.cause });
@@ -18,6 +25,9 @@ export class PhotonError extends Error {
     }
     if (options.requestId !== undefined) {
       this.requestId = options.requestId;
+    }
+    if (options.attempts !== undefined) {
+      this.attempts = options.attempts;
     }
   }
 }

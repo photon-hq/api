@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.7.0 (2026-11-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* **release:** startEnterpriseLogin is removed from the public SDKs. It is routed only on the dashboard origin and answers 404 on the API host, so no working integration calls it.
+
+### Features
+
+* **typescript:** call onRetry before each automatic retry (ENG-5444)
+
+
+### Bug Fixes
+
+* **python:** type webhook event objects as the full Message union
+* **release:** exclude the remaining Dashboard-only operations from the public API (ENG-4219)
+
 ## 0.6.0 (2026-10-23)
 
 

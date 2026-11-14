@@ -4,11 +4,11 @@ build-backend = "hatchling.build"
 
 [project]
 name = "photonhq-api"
-version = "0.6.0"
+version = "0.7.0"
 description = "Generated Photon API RPC client"
 readme = "README.md"
 requires-python = ">=3.11"
-license = "MIT"
+license = "Apache-2.0"
 authors = [{ name = "Photon" }]
 dependencies = [
   "email-validator>=2.3.0,<3",

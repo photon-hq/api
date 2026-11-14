@@ -2803,12 +2803,6 @@ class SetupOrganizationOauthClientSecretInput(BaseModel):
     headers: SetupOrganizationOauthClientSecretHeader
 
 
-class StartEnterpriseLoginInput(BaseModel):
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    body: models.StartEnterpriseLoginRequest
-
-
 class SubscribeSsoPath(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
@@ -5791,22 +5785,6 @@ _OP_SETUP_ORGANIZATION_OAUTH_CLIENT_SECRET = OperationSpec(
     },
 )
 
-_OP_START_ENTERPRISE_LOGIN = OperationSpec(
-    operation_id="startEnterpriseLogin",
-    method="POST",
-    path="/v1/auth/login/enrollment",
-    safe=False,
-    idempotency_key_required=False,
-    request_media_type="application/json",
-    accept_media_types=(
-        "application/json",
-        "application/problem+json",
-    ),
-    success_responses={
-        "200": TypeAdapter(models.StartEnterpriseLoginResponse),
-    },
-)
-
 _OP_SUBSCRIBE_SSO = OperationSpec(
     operation_id="subscribeSso",
     method="POST",
@@ -7440,13 +7418,6 @@ class SyncRawAuthResource:
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_RETRY_ORGANIZATION_CONNECTION_SYNC, payload)
 
-    def start_enterprise_login(
-        self, input: StartEnterpriseLoginInput
-    ) -> RawResponse[models.StartEnterpriseLoginResponse]:
-        "Start company sign-in\n\nReturns a sign-in URL without requiring an existing account: the company SSO connection when the target has a ready connection, otherwise ordinary account login. Supply one documented enrollment variant: organizationId with returnTo (optionally invitationToken), invitationToken with returnTo, or retryToken. Open the returned URL to continue authentication; receiving a URL does not complete sign-in. This is a browser flow: the request must come from an allowed Origin, and the retryToken variant also needs the retry cookie set by the failed sign-in, so send it with credentials."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_START_ENTERPRISE_LOGIN, payload)
-
     def update_organization_sso_policy(
         self, input: UpdateOrganizationSsoPolicyInput
     ) -> RawResponse[models.OrganizationSsoConfiguration]:
@@ -8531,12 +8502,6 @@ class SyncAuthResource:
     ) -> models.OrganizationConnectionStatus:
         "Retry organization connection sync\n\nReconciles existing local intent. Takes no body and cannot change membership, roles or authentication policy."
         return (self._raw_resource.retry_organization_connection_sync(input)).data
-
-    def start_enterprise_login(
-        self, input: StartEnterpriseLoginInput
-    ) -> models.StartEnterpriseLoginResponse:
-        "Start company sign-in\n\nReturns a sign-in URL without requiring an existing account: the company SSO connection when the target has a ready connection, otherwise ordinary account login. Supply one documented enrollment variant: organizationId with returnTo (optionally invitationToken), invitationToken with returnTo, or retryToken. Open the returned URL to continue authentication; receiving a URL does not complete sign-in. This is a browser flow: the request must come from an allowed Origin, and the retryToken variant also needs the retry cookie set by the failed sign-in, so send it with credentials."
-        return (self._raw_resource.start_enterprise_login(input)).data
 
     def update_organization_sso_policy(
         self, input: UpdateOrganizationSsoPolicyInput
@@ -9912,13 +9877,6 @@ class AsyncRawAuthResource:
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_RETRY_ORGANIZATION_CONNECTION_SYNC, payload)
 
-    async def start_enterprise_login(
-        self, input: StartEnterpriseLoginInput
-    ) -> RawResponse[models.StartEnterpriseLoginResponse]:
-        "Start company sign-in\n\nReturns a sign-in URL without requiring an existing account: the company SSO connection when the target has a ready connection, otherwise ordinary account login. Supply one documented enrollment variant: organizationId with returnTo (optionally invitationToken), invitationToken with returnTo, or retryToken. Open the returned URL to continue authentication; receiving a URL does not complete sign-in. This is a browser flow: the request must come from an allowed Origin, and the retryToken variant also needs the retry cookie set by the failed sign-in, so send it with credentials."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_START_ENTERPRISE_LOGIN, payload)
-
     async def update_organization_sso_policy(
         self, input: UpdateOrganizationSsoPolicyInput
     ) -> RawResponse[models.OrganizationSsoConfiguration]:
@@ -11019,12 +10977,6 @@ class AsyncAuthResource:
     ) -> models.OrganizationConnectionStatus:
         "Retry organization connection sync\n\nReconciles existing local intent. Takes no body and cannot change membership, roles or authentication policy."
         return (await self._raw_resource.retry_organization_connection_sync(input)).data
-
-    async def start_enterprise_login(
-        self, input: StartEnterpriseLoginInput
-    ) -> models.StartEnterpriseLoginResponse:
-        "Start company sign-in\n\nReturns a sign-in URL without requiring an existing account: the company SSO connection when the target has a ready connection, otherwise ordinary account login. Supply one documented enrollment variant: organizationId with returnTo (optionally invitationToken), invitationToken with returnTo, or retryToken. Open the returned URL to continue authentication; receiving a URL does not complete sign-in. This is a browser flow: the request must come from an allowed Origin, and the retryToken variant also needs the retry cookie set by the failed sign-in, so send it with credentials."
-        return (await self._raw_resource.start_enterprise_login(input)).data
 
     async def update_organization_sso_policy(
         self, input: UpdateOrganizationSsoPolicyInput

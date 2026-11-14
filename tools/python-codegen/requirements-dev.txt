@@ -1,10 +1,10 @@
 -r requirements.txt
 # Audit installer tooling too; runner images may include vulnerable older versions.
 pip==26.2.1
-setuptools==84.0.0
+setuptools==84.2.1
 hatchling==1.32.4
 pip-audit==2.10.1
-pytest==9.1.1
+pytest==9.2.0
 # OpenAPI 3.1 conformance check (tools/openapi/check_oas31.py). The JSON Schema
 # 2020-12 meta-schemas come from jsonschema-specifications, so pin it too.
 jsonschema==4.26.0

@@ -2118,19 +2118,6 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "201": "json"
     }
   },
-  "startEnterpriseLogin": {
-    "request": "application/json",
-    "responses": [
-      "application/json"
-    ],
-    "accept": [
-      "application/json",
-      "application/problem+json"
-    ],
-    "responseKinds": {
-      "200": "json"
-    }
-  },
   "subscribeSso": {
     "request": "application/json",
     "responses": [
@@ -2657,18 +2644,6 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             "retryOrganizationConnectionSync",
             Sdk.retryOrganizationConnectionSync,
             Schemas.RetryOrganizationConnectionSyncOutputSchemas,
-            input,
-            options,
-        ),
-        /**
-         * Start company sign-in
-         *
-         * Returns a sign-in URL without requiring an existing account: the company SSO connection when the target has a ready connection, otherwise ordinary account login. Supply one documented enrollment variant: organizationId with returnTo (optionally invitationToken), invitationToken with returnTo, or retryToken. Open the returned URL to continue authentication; receiving a URL does not complete sign-in. This is a browser flow: the request must come from an allowed Origin, and the retryToken variant also needs the retry cookie set by the failed sign-in, so send it with credentials.
-         */
-        startEnterpriseLogin: (input: Schemas.StartEnterpriseLoginInput, options?: RequestOptions) => invokers.data<Schemas.StartEnterpriseLoginInput, Schemas.StartEnterpriseLoginOutput>(
-            "startEnterpriseLogin",
-            Sdk.startEnterpriseLogin,
-            Schemas.StartEnterpriseLoginOutputSchemas,
             input,
             options,
         ),
@@ -4911,18 +4886,6 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             "retryOrganizationConnectionSync",
             Sdk.retryOrganizationConnectionSync,
             Schemas.RetryOrganizationConnectionSyncOutputSchemas,
-            input,
-            options,
-        ),
-        /**
-         * Start company sign-in
-         *
-         * Returns a sign-in URL without requiring an existing account: the company SSO connection when the target has a ready connection, otherwise ordinary account login. Supply one documented enrollment variant: organizationId with returnTo (optionally invitationToken), invitationToken with returnTo, or retryToken. Open the returned URL to continue authentication; receiving a URL does not complete sign-in. This is a browser flow: the request must come from an allowed Origin, and the retryToken variant also needs the retry cookie set by the failed sign-in, so send it with credentials.
-         */
-        startEnterpriseLogin: (input: Schemas.StartEnterpriseLoginInput, options?: RequestOptions) => invokers.raw<Schemas.StartEnterpriseLoginInput, Schemas.StartEnterpriseLoginOutput>(
-            "startEnterpriseLogin",
-            Sdk.startEnterpriseLogin,
-            Schemas.StartEnterpriseLoginOutputSchemas,
             input,
             options,
         ),

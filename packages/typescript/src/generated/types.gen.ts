@@ -3978,11 +3978,6 @@ export type InvitationEmailMismatchProblem = {
     [key: string]: JsonValue | 'INVITATION_EMAIL_MISMATCH' | string | never | 403 | 'Invitation Email Mismatch' | 'https://photon.codes/docs/problems/invitation-email-mismatch' | undefined;
 };
 
-export type InvitationEnterpriseLoginRequest = {
-    invitationToken: string;
-    returnTo: string;
-};
-
 export type InvitationExpiredProblem = {
     code: 'INVITATION_EXPIRED';
     detail?: string;
@@ -5177,12 +5172,6 @@ export type OrganizationConnectionSyncStatus = 'pending' | 'syncing' | 'ready' |
 
 export type OrganizationCreditSubject = {
     type: 'organization';
-};
-
-export type OrganizationEnterpriseLoginRequest = {
-    invitationToken?: string;
-    organizationId: string;
-    returnTo: string;
 };
 
 export type OrganizationInvitationRole = 'member' | 'viewer' | (string & {});
@@ -6469,10 +6458,6 @@ export type ResourcePage = {
 
 export type ResourceState = 'unallocated' | 'active' | 'retired' | (string & {});
 
-export type RetryEnterpriseLoginRequest = {
-    retryToken: string;
-};
-
 export type RetryOrganizationConnectionSyncForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem;
 
 export type RetryOrganizationConnectionSyncGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
@@ -7470,13 +7455,6 @@ export type SsoSubscriptionRequiredProblem = {
     title: 'SSO Subscription Required';
     type: 'https://photon.codes/docs/problems/sso-subscription-required';
     [key: string]: JsonValue | 'SSO_SUBSCRIPTION_REQUIRED' | string | never | 412 | 'SSO Subscription Required' | 'https://photon.codes/docs/problems/sso-subscription-required' | undefined;
-};
-
-export type StartEnterpriseLoginRequest = OrganizationEnterpriseLoginRequest | InvitationEnterpriseLoginRequest | RetryEnterpriseLoginRequest;
-
-export type StartEnterpriseLoginResponse = {
-    url: string;
-    [key: string]: unknown;
 };
 
 export type SubscribeSsoBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
@@ -9744,31 +9722,6 @@ export type DeviceTokenResponses = {
 };
 
 export type DeviceTokenResult = DeviceTokenResponses[keyof DeviceTokenResponses];
-
-export type StartEnterpriseLoginData = {
-    body: StartEnterpriseLoginRequest;
-    path?: never;
-    query?: never;
-    url: '/v1/auth/login/enrollment';
-};
-
-export type StartEnterpriseLoginErrors = {
-    /**
-     * INVALID_RETURN_TO: Invalid Return To
-     */
-    400: InvalidReturnToProblem;
-};
-
-export type StartEnterpriseLoginError = StartEnterpriseLoginErrors[keyof StartEnterpriseLoginErrors];
-
-export type StartEnterpriseLoginResponses = {
-    /**
-     * Company SSO URL when the target has a ready connection, otherwise the ordinary Account login URL. The response never says which, and access is decided only after authentication.
-     */
-    200: StartEnterpriseLoginResponse;
-};
-
-export type StartEnterpriseLoginResult = StartEnterpriseLoginResponses[keyof StartEnterpriseLoginResponses];
 
 export type ListOauthScopesData = {
     body?: never;

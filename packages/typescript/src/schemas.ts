@@ -2720,19 +2720,6 @@ export const SetupOrganizationOauthClientSecretOutputSchemas: OutputSchemas<Setu
     "201": GeneratedZod.zSetupOrganizationOauthClientSecretCreatedResponse,
 }))();
 
-export const StartEnterpriseLoginInputSchema = /* @__PURE__ */ (() => z.strictObject({
-    body: GeneratedZod.zStartEnterpriseLoginBody,
-}))();
-export type StartEnterpriseLoginInput = {
-    body: WireTypes.StartEnterpriseLoginData["body"];
-};
-
-export const StartEnterpriseLoginOutputSchema = GeneratedZod.zStartEnterpriseLoginResponse;
-export type StartEnterpriseLoginOutput = z.output<typeof StartEnterpriseLoginOutputSchema>;
-export const StartEnterpriseLoginOutputSchemas: OutputSchemas<StartEnterpriseLoginOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zStartEnterpriseLoginResponse,
-}))();
-
 export const SubscribeSsoInputSchema = /* @__PURE__ */ (() => z.strictObject({
     body: GeneratedZod.zSubscribeSsoBody,
     path: GeneratedZod.zSubscribeSsoPath.strict(),

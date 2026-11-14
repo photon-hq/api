@@ -15118,25 +15118,6 @@
         ],
         "type": "object"
       },
-      "InvitationEnterpriseLoginRequest": {
-        "additionalProperties": false,
-        "properties": {
-          "invitationToken": {
-            "pattern": "^[A-Za-z0-9_-]{43}$",
-            "type": "string"
-          },
-          "returnTo": {
-            "maxLength": 2048,
-            "minLength": 1,
-            "type": "string"
-          }
-        },
-        "required": [
-          "invitationToken",
-          "returnTo"
-        ],
-        "type": "object"
-      },
       "InvitationExpiredProblem": {
         "additionalProperties": {
           "$ref": "#/components/schemas/JsonValue"
@@ -19931,29 +19912,6 @@
         },
         "required": [
           "type"
-        ],
-        "type": "object"
-      },
-      "OrganizationEnterpriseLoginRequest": {
-        "additionalProperties": false,
-        "properties": {
-          "invitationToken": {
-            "pattern": "^[A-Za-z0-9_-]{43}$",
-            "type": "string"
-          },
-          "organizationId": {
-            "pattern": "^pho_org_[0-7][0-9a-hjkmnp-tv-z]{25}$",
-            "type": "string"
-          },
-          "returnTo": {
-            "maxLength": 2048,
-            "minLength": 1,
-            "type": "string"
-          }
-        },
-        "required": [
-          "organizationId",
-          "returnTo"
         ],
         "type": "object"
       },
@@ -24874,19 +24832,6 @@
         ],
         "type": "string"
       },
-      "RetryEnterpriseLoginRequest": {
-        "additionalProperties": false,
-        "properties": {
-          "retryToken": {
-            "pattern": "^enroll_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
-            "type": "string"
-          }
-        },
-        "required": [
-          "retryToken"
-        ],
-        "type": "object"
-      },
       "RetryOrganizationConnectionSyncForbiddenProblem": {
         "oneOf": [
           {
@@ -29429,32 +29374,6 @@
           "status",
           "title",
           "type"
-        ],
-        "type": "object"
-      },
-      "StartEnterpriseLoginRequest": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/OrganizationEnterpriseLoginRequest"
-          },
-          {
-            "$ref": "#/components/schemas/InvitationEnterpriseLoginRequest"
-          },
-          {
-            "$ref": "#/components/schemas/RetryEnterpriseLoginRequest"
-          }
-        ]
-      },
-      "StartEnterpriseLoginResponse": {
-        "additionalProperties": {},
-        "properties": {
-          "url": {
-            "format": "uri",
-            "type": "string"
-          }
-        },
-        "required": [
-          "url"
         ],
         "type": "object"
       },
@@ -44018,133 +43937,6 @@
             "lang": "go",
             "label": "Go",
             "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient()\nvar body photonapi.DeviceTokenRequest\nif err := json.Unmarshal([]byte(`{\n\t\"device_code\": \"device_code\",\n\t\"grant_type\": \"urn:ietf:params:oauth:grant-type:device_code\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Auth.Device.Token(ctx, &photonapi.DeviceTokenParams{\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
-          }
-        ]
-      }
-    },
-    "/v1/auth/login/enrollment": {
-      "post": {
-        "description": "Returns a sign-in URL without requiring an existing account: the company SSO connection when the target has a ready connection, otherwise ordinary account login. Supply one documented enrollment variant: organizationId with returnTo (optionally invitationToken), invitationToken with returnTo, or retryToken. Open the returned URL to continue authentication; receiving a URL does not complete sign-in. This is a browser flow: the request must come from an allowed Origin, and the retryToken variant also needs the retry cookie set by the failed sign-in, so send it with credentials.",
-        "operationId": "startEnterpriseLogin",
-        "parameters": [],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/StartEnterpriseLoginRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StartEnterpriseLoginResponse"
-                }
-              }
-            },
-            "description": "Company SSO URL when the target has a ready connection, otherwise the ordinary Account login URL. The response never says which, and access is decided only after authentication.",
-            "headers": {
-              "Deprecation": {
-                "$ref": "#/components/headers/Deprecation"
-              },
-              "Idempotent-Replayed": {
-                "$ref": "#/components/headers/Idempotent-Replayed"
-              },
-              "Link": {
-                "$ref": "#/components/headers/Link"
-              },
-              "RateLimit": {
-                "$ref": "#/components/headers/RateLimit"
-              },
-              "RateLimit-Policy": {
-                "$ref": "#/components/headers/RateLimit-Policy"
-              },
-              "Retry-After": {
-                "$ref": "#/components/headers/Retry-After"
-              },
-              "Sunset": {
-                "$ref": "#/components/headers/Sunset"
-              },
-              "X-Request-ID": {
-                "$ref": "#/components/headers/X-Request-ID"
-              },
-              "X-Trace-ID": {
-                "$ref": "#/components/headers/X-Trace-ID"
-              }
-            }
-          },
-          "400": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InvalidReturnToProblem"
-                }
-              }
-            },
-            "description": "INVALID_RETURN_TO: Invalid Return To",
-            "headers": {
-              "Deprecation": {
-                "$ref": "#/components/headers/Deprecation"
-              },
-              "Idempotent-Replayed": {
-                "$ref": "#/components/headers/Idempotent-Replayed"
-              },
-              "Link": {
-                "$ref": "#/components/headers/Link"
-              },
-              "RateLimit": {
-                "$ref": "#/components/headers/RateLimit"
-              },
-              "RateLimit-Policy": {
-                "$ref": "#/components/headers/RateLimit-Policy"
-              },
-              "Retry-After": {
-                "$ref": "#/components/headers/Retry-After"
-              },
-              "Sunset": {
-                "$ref": "#/components/headers/Sunset"
-              },
-              "X-Request-ID": {
-                "$ref": "#/components/headers/X-Request-ID"
-              },
-              "X-Trace-ID": {
-                "$ref": "#/components/headers/X-Trace-ID"
-              }
-            }
-          }
-        },
-        "security": [],
-        "summary": "Start company sign-in",
-        "tags": [
-          "Authentication"
-        ],
-        "x-photon-mcp": {
-          "enabled": false
-        },
-        "x-codeSamples": [
-          {
-            "lang": "typescript",
-            "label": "TypeScript",
-            "source": "import { Photon } from \"@photon-ai/api\";\n\nconst photon = new Photon();\nconst result = await photon.auth.startEnterpriseLogin({\n  body: {\n    organizationId: \"organizationId\",\n    returnTo: \"returnTo\",\n  },\n});"
-          },
-          {
-            "lang": "python",
-            "label": "Python",
-            "source": "from photon_api import Photon\nfrom photon_api.rpc_generated import StartEnterpriseLoginInput\n\nphoton = Photon()\nresult = photon.auth.start_enterprise_login(\n    StartEnterpriseLoginInput.model_validate({\n        \"body\": {\n            \"organizationId\": \"organizationId\",\n            \"returnTo\": \"returnTo\",\n        },\n    })\n)"
-          },
-          {
-            "lang": "rust",
-            "label": "Rust",
-            "source": "use photon_ai_api::PhotonClientBuilder;\n\nlet client = PhotonClientBuilder::new().build()?;\nlet result = client\n    .start_enterprise_login(\n        &serde_json::from_value(serde_json::json!({\n            \"organizationId\": \"organizationId\",\n            \"returnTo\": \"returnTo\",\n        }))?,\n    )\n    .await\n    .map_err(|error| format!(\"{error:?}\"))?\n    .into_inner();"
-          },
-          {
-            "lang": "go",
-            "label": "Go",
-            "source": "import (\n\t\"context\"\n\t\"encoding/json\"\n\n\tphotonapi \"github.com/photon-hq/api/packages/go\"\n)\n\nctx := context.Background()\nclient := photonapi.NewClient()\nvar body photonapi.StartEnterpriseLoginRequest\nif err := json.Unmarshal([]byte(`{\n\t\"organizationId\": \"organizationId\",\n\t\"returnTo\": \"returnTo\"\n}`), &body); err != nil {\n\treturn err\n}\nresult, err := client.Auth.StartEnterpriseLogin(ctx, &photonapi.StartEnterpriseLoginParams{\n\tBody: body,\n})\nif err != nil {\n\treturn err\n}\n_ = result"
           }
         ]
       }

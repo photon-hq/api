@@ -1799,15 +1799,6 @@ export type ImessageSpaceDetailsZodInput = z.input<typeof zImessageSpaceDetails>
 
 export type ImessageSpaceDetailsZodOutput = z.output<typeof zImessageSpaceDetails>;
 
-export const zInvitationEnterpriseLoginRequest = /* @__PURE__ */ (() => z.looseObject({
-    invitationToken: z.string(),
-    returnTo: z.string()
-}))();
-
-export type InvitationEnterpriseLoginRequestZodInput = z.input<typeof zInvitationEnterpriseLoginRequest>;
-
-export type InvitationEnterpriseLoginRequestZodOutput = z.output<typeof zInvitationEnterpriseLoginRequest>;
-
 /**
  * What produced the invoice.
  */
@@ -4867,16 +4858,6 @@ export const zOrganizationCreditSubject = /* @__PURE__ */ (() => z.looseObject({
 export type OrganizationCreditSubjectZodInput = z.input<typeof zOrganizationCreditSubject>;
 
 export type OrganizationCreditSubjectZodOutput = z.output<typeof zOrganizationCreditSubject>;
-
-export const zOrganizationEnterpriseLoginRequest = /* @__PURE__ */ (() => z.looseObject({
-    invitationToken: z.string().optional(),
-    organizationId: z.string(),
-    returnTo: z.string()
-}))();
-
-export type OrganizationEnterpriseLoginRequestZodInput = z.input<typeof zOrganizationEnterpriseLoginRequest>;
-
-export type OrganizationEnterpriseLoginRequestZodOutput = z.output<typeof zOrganizationEnterpriseLoginRequest>;
 
 export const zOrganizationInvitationRole = /* @__PURE__ */ (() => openEnum(['member', 'viewer']))();
 
@@ -8420,14 +8401,6 @@ export type ResourcePageZodInput = z.input<typeof zResourcePage>;
 
 export type ResourcePageZodOutput = z.output<typeof zResourcePage>;
 
-export const zRetryEnterpriseLoginRequest = /* @__PURE__ */ (() => z.looseObject({
-    retryToken: z.string()
-}))();
-
-export type RetryEnterpriseLoginRequestZodInput = z.input<typeof zRetryEnterpriseLoginRequest>;
-
-export type RetryEnterpriseLoginRequestZodOutput = z.output<typeof zRetryEnterpriseLoginRequest>;
-
 export const zRetryOrganizationConnectionSyncForbiddenProblem: z.ZodType<PhotonWireTypes.RetryOrganizationConnectionSyncForbiddenProblem, PhotonWireTypes.RetryOrganizationConnectionSyncForbiddenProblem> = /* @__PURE__ */ (() => z.union([
     zForbiddenProblem,
     zInsufficientScopeProblem,
@@ -10280,24 +10253,6 @@ export const zRefreshOrganizationSsoConnectionPreconditionFailedProblem: z.ZodTy
 export type RefreshOrganizationSsoConnectionPreconditionFailedProblemZodInput = z.input<typeof zRefreshOrganizationSsoConnectionPreconditionFailedProblem>;
 
 export type RefreshOrganizationSsoConnectionPreconditionFailedProblemZodOutput = z.output<typeof zRefreshOrganizationSsoConnectionPreconditionFailedProblem>;
-
-export const zStartEnterpriseLoginRequest: z.ZodType<PhotonWireTypes.StartEnterpriseLoginRequest, PhotonWireTypes.StartEnterpriseLoginRequest> = /* @__PURE__ */ (() => z.union([
-    zOrganizationEnterpriseLoginRequest,
-    zInvitationEnterpriseLoginRequest,
-    zRetryEnterpriseLoginRequest
-]))();
-
-export type StartEnterpriseLoginRequestZodInput = z.input<typeof zStartEnterpriseLoginRequest>;
-
-export type StartEnterpriseLoginRequestZodOutput = z.output<typeof zStartEnterpriseLoginRequest>;
-
-export const zStartEnterpriseLoginResponse = /* @__PURE__ */ (() => z.looseObject({
-    url: z.string()
-}))();
-
-export type StartEnterpriseLoginResponseZodInput = z.input<typeof zStartEnterpriseLoginResponse>;
-
-export type StartEnterpriseLoginResponseZodOutput = z.output<typeof zStartEnterpriseLoginResponse>;
 
 export const zSubscribeSsoBadRequestProblem: z.ZodType<PhotonWireTypes.SubscribeSsoBadRequestProblem, PhotonWireTypes.SubscribeSsoBadRequestProblem> = /* @__PURE__ */ (() => z.union([
     zInvalidArgumentProblem,
@@ -17399,15 +17354,6 @@ export const zDeviceTokenBody = zDeviceTokenRequest;
 export const zDeviceTokenResult = zDeviceTokenResponse;
 
 export type deviceTokenResultZodOutput = z.output<typeof zDeviceTokenResult>;
-
-export const zStartEnterpriseLoginBody = zStartEnterpriseLoginRequest;
-
-/**
- * Company SSO URL when the target has a ready connection, otherwise the ordinary Account login URL. The response never says which, and access is decided only after authentication.
- */
-export const zStartEnterpriseLoginResult = zStartEnterpriseLoginResponse;
-
-export type startEnterpriseLoginResultZodOutput = z.output<typeof zStartEnterpriseLoginResult>;
 
 /**
  * The configurable OAuth business permissions.

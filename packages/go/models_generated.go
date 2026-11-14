@@ -2756,11 +2756,6 @@ type ImessageUserSnapshot struct {
 	ProjectID ProjectId           `json:"projectId"`
 }
 
-type InvitationEnterpriseLoginRequest struct {
-	InvitationToken string `json:"invitationToken"`
-	ReturnTo        string `json:"returnTo"`
-}
-
 type Invoice struct {
 	// ISO currency code.
 	Currency string `json:"currency"`
@@ -3641,12 +3636,6 @@ type OrganizationCreditSubject struct {
 	Type string `json:"type"`
 }
 
-type OrganizationEnterpriseLoginRequest struct {
-	InvitationToken *string `json:"invitationToken,omitempty"`
-	OrganizationID  string  `json:"organizationId"`
-	ReturnTo        string  `json:"returnTo"`
-}
-
 type OrganizationInvitationRole string
 
 const (
@@ -4511,10 +4500,6 @@ const (
 	ResourceStateActive      ResourceState = "active"
 	ResourceStateRetired     ResourceState = "retired"
 )
-
-type RetryEnterpriseLoginRequest struct {
-	RetryToken string `json:"retryToken"`
-}
 
 type RetryWebhookDeliveryRequest struct {
 	EventID              string `json:"eventId"`
@@ -5487,27 +5472,6 @@ type SpamClassification struct {
 	Confidence   *float64   `json:"confidence,omitempty"`
 	Source       string     `json:"source"`
 	Status       string     `json:"status"`
-}
-
-type StartEnterpriseLoginRequest struct{ Union }
-
-// AsOrganizationEnterpriseLoginRequest decodes the value as OrganizationEnterpriseLoginRequest.
-func (u StartEnterpriseLoginRequest) AsOrganizationEnterpriseLoginRequest() (OrganizationEnterpriseLoginRequest, error) {
-	return UnionAs[OrganizationEnterpriseLoginRequest](u.Union)
-}
-
-// AsInvitationEnterpriseLoginRequest decodes the value as InvitationEnterpriseLoginRequest.
-func (u StartEnterpriseLoginRequest) AsInvitationEnterpriseLoginRequest() (InvitationEnterpriseLoginRequest, error) {
-	return UnionAs[InvitationEnterpriseLoginRequest](u.Union)
-}
-
-// AsRetryEnterpriseLoginRequest decodes the value as RetryEnterpriseLoginRequest.
-func (u StartEnterpriseLoginRequest) AsRetryEnterpriseLoginRequest() (RetryEnterpriseLoginRequest, error) {
-	return UnionAs[RetryEnterpriseLoginRequest](u.Union)
-}
-
-type StartEnterpriseLoginResponse struct {
-	URL string `json:"url"`
 }
 
 type SubscribeSsoRequest struct {

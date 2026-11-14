@@ -1,6 +1,6 @@
 {
-  "sourceSha256": "05c9950d00f61fa42b68dadc9a265181116cc899bca9a384bc0f17381cc7ee76",
-  "operationCount": 191,
+  "sourceSha256": "0597168fab150ce112521c2f5034ba3ebc4f6c79b884905d9582a047dcf429ff",
+  "operationCount": 190,
   "operations": [
     {
       "operationId": "acceptOrganizationInvitation",
@@ -12735,34 +12735,6 @@
       },
       "summary": "Create an organization OAuth client's secret",
       "description": "Mints the app's first secret; once it has one, rotate it instead. Retain the same UUID Idempotency-Key when retrying: only the delivering request returns plaintext."
-    },
-    {
-      "operationId": "startEnterpriseLogin",
-      "rpcMethod": "startEnterpriseLogin",
-      "namespace": [
-        "auth"
-      ],
-      "httpMethod": "POST",
-      "path": "/v1/auth/login/enrollment",
-      "safe": false,
-      "idempotencyKeyRequired": false,
-      "parameters": [],
-      "responses": {
-        "200": {
-          "application/json": "#/components/schemas/StartEnterpriseLoginResponse"
-        },
-        "400": {
-          "application/problem+json": "#/components/schemas/InvalidReturnToProblem"
-        }
-      },
-      "summary": "Start company sign-in",
-      "description": "Returns a sign-in URL without requiring an existing account: the company SSO connection when the target has a ready connection, otherwise ordinary account login. Supply one documented enrollment variant: organizationId with returnTo (optionally invitationToken), invitationToken with returnTo, or retryToken. Open the returned URL to continue authentication; receiving a URL does not complete sign-in. This is a browser flow: the request must come from an allowed Origin, and the retryToken variant also needs the retry cookie set by the failed sign-in, so send it with credentials.",
-      "requestBody": {
-        "required": true,
-        "content": {
-          "application/json": "#/components/schemas/StartEnterpriseLoginRequest"
-        }
-      }
     },
     {
       "operationId": "subscribeSso",

@@ -1,5 +1,5 @@
 Photon API clients
-Copyright (c) Photon
+Copyright 2026 Something Great Inc.
 
 This repository contains code generated from the Photon API OpenAPI contract.
 Generation uses Hey API, datamodel-code-generator, Spargen and Postman's

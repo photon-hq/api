@@ -227,5 +227,5 @@ This repository is generated, so external pull requests are not accepted. See
 
 ## License
 
-MIT. See [LICENSE](https://github.com/photon-hq/api/blob/main/LICENSE) and
+Apache-2.0. See [LICENSE](https://github.com/photon-hq/api/blob/main/LICENSE) and
 [NOTICE](https://github.com/photon-hq/api/blob/main/NOTICE).

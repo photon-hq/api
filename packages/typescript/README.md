@@ -101,9 +101,13 @@ known.
 
 | Class | Thrown when | Fields |
 | --- | --- | --- |
-| `ApiError` | The API returns a non-success status. The message is the problem `detail` when present. | `status`, `headers`, `body` (parsed JSON, or text), `rawBody`, `operationId`, `requestId` |
+| `ApiError` | The API returns a non-success status. The message is the problem `detail` when present. | `status`, `headers`, `body` (parsed JSON, or text), `rawBody`, `operationId`, `requestId`, `attempts` |
 | `ResponseValidationError` | A successful response has an undocumented status, cannot be decoded, or does not match its schema. | `status`, `issues`, `operationId`, `requestId`, `cause` |
-| `TransportError` | The request could not complete: network failure, timeout, cancellation, or a response body that could not be read. | `cause` (the underlying error, or the `signal`'s abort reason) |
+| `TransportError` | The request could not complete: network failure, timeout, cancellation, or a response body that could not be read. | `cause` (the underlying error, or the `signal`'s abort reason), `attempts` |
+
+`attempts` is the number of attempts the client sent for the call, counting the
+first. It is set on an `ApiError`, and on a `TransportError` for a network
+failure or timeout.
 
 ```ts
 import { ApiError } from "@photon-ai/api";
@@ -128,6 +132,7 @@ try {
 | `retry.baseDelayMs` | `250` | Backoff base. |
 | `retry.maximumDelayMs` | `2000` | Backoff ceiling. |
 | `retry.maximumRetryAfterMs` | `60000` | Longest `Retry-After` the client waits for. |
+| `retry.onRetry` | None | Called once before each automatic retry. |
 
 - Only `GET`, `HEAD`, `OPTIONS` and `TRACE` requests, and requests that carry an
   `Idempotency-Key` header (from the input or from the `headers` option), are
@@ -149,6 +154,27 @@ const photon = new Photon({
   headers: { Authorization: `Bearer ${token}` },
   timeoutMs: 10_000,
   retry: { maxAttempts: 2, statuses: [429, 503] },
+});
+```
+
+`retry.onRetry` is called before the client waits for each retry, with a
+`RetryContext`: `attempt` (the attempt about to be sent, 2 for the first retry),
+`maxAttempts`, `delayMs` (the wait before it), and why the previous attempt is
+retried: `status` and `response` for a retried status (its body already
+discarded), or `error` for a network failure or timeout. The callback only
+observes: the client does not await it, it cannot change, delay or cancel the
+retry, and what it throws or rejects with is ignored. A call cancelled through
+its `signal` during the wait does not send the attempt it reported.
+
+```ts
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${token}` },
+  retry: {
+    onRetry: ({ attempt, maxAttempts, delayMs, status, error }) => {
+      const reason = status === undefined ? String(error) : `HTTP ${status}`;
+      console.warn(`Retrying (${attempt} of ${maxAttempts}) in ${delayMs} ms after ${reason}`);
+    },
+  },
 });
 ```
 
@@ -207,5 +233,5 @@ This repository is generated, so external pull requests are not accepted. See
 
 ## License
 
-MIT. See [LICENSE](https://github.com/photon-hq/api/blob/main/LICENSE) and
+Apache-2.0. See [LICENSE](https://github.com/photon-hq/api/blob/main/LICENSE) and
 [NOTICE](https://github.com/photon-hq/api/blob/main/NOTICE).

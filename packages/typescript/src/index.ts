@@ -9,6 +9,7 @@ export {
 export type {
   HeaderProvider,
   HeaderValues,
+  RetryContext,
   RetryOptions,
 } from "./transport.js";
 export type {

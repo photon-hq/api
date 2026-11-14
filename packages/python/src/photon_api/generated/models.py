@@ -1399,14 +1399,6 @@ class ImessageSpaceDetails(BaseModel):
     )
 
 
-class InvitationEnterpriseLoginRequest(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    invitationToken: str
-    returnTo: str
-
-
 class InvoiceKind(RootModel[Literal["subscription", "one_off", "credit"] | str]):
     root: Literal["subscription", "one_off", "credit"] | str
     """
@@ -2148,15 +2140,6 @@ class OrganizationCreditSubject(BaseModel):
         extra="allow",
     )
     type: Literal["organization"]
-
-
-class OrganizationEnterpriseLoginRequest(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    invitationToken: str | MISSING = MISSING
-    organizationId: str
-    returnTo: str
 
 
 class OrganizationInvitationRole(RootModel[Literal["member", "viewer"] | str]):
@@ -3028,13 +3011,6 @@ class ResourceNotFoundProblem(BaseModel):
 
 class ResourceState(RootModel[Literal["unallocated", "active", "retired"] | str]):
     root: Literal["unallocated", "active", "retired"] | str
-
-
-class RetryEnterpriseLoginRequest(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    retryToken: str
 
 
 class RetryWebhookDeliveryRequest(BaseModel):
@@ -3976,30 +3952,6 @@ class SsoSubscriptionRequiredProblem(BaseModel):
     status: Literal[412]
     title: Literal["SSO Subscription Required"]
     type: Literal["https://photon.codes/docs/problems/sso-subscription-required"]
-
-
-class StartEnterpriseLoginRequest(
-    RootModel[
-        OrganizationEnterpriseLoginRequest
-        | InvitationEnterpriseLoginRequest
-        | RetryEnterpriseLoginRequest
-    ]
-):
-    root: (
-        OrganizationEnterpriseLoginRequest
-        | InvitationEnterpriseLoginRequest
-        | RetryEnterpriseLoginRequest
-    )
-
-
-class StartEnterpriseLoginResponse(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    __annotations__ = {
-        "__pydantic_extra__": dict[str, Any],
-    }
-    url: str
 
 
 class SubscribeSsoConflictProblem(

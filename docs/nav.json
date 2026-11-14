@@ -55,7 +55,6 @@
             "api-client/sdk/auth/disable-organization-sso",
             "api-client/sdk/auth/refresh-organization-sso-connection",
             "api-client/sdk/auth/retry-organization-connection-sync",
-            "api-client/sdk/auth/start-enterprise-login",
             "api-client/sdk/auth/update-organization-sso-policy",
             {
               "group": "Device",
