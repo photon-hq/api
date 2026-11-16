@@ -65,6 +65,7 @@ call that is retried can take longer than one timeout.
 | Retried statuses | `retry.statuses` | Not configurable | Not configurable | Not configurable |
 | Backoff | `retry.baseDelayMs` (default `250`), `retry.maximumDelayMs` (default `2000`) | Not configurable | Not configurable | `WithRetryDelay(base, maximum)` (default 500 ms, 8 s) |
 | Turn retries off | `retry: false` | `max_attempts=1` | `.max_attempts(1)` | `WithMaxRetries(0)` |
+| Called before each retry | `retry.onRetry` | Not available | Not available | Not available |
 
 In TypeScript, Python, and Rust, attempts are limited to between 1 and 3; a
 larger value means 3. Go's `WithMaxRetries` counts retries after the first
@@ -180,6 +181,54 @@ func main() {
 }
 ```
 </CodeGroup>
+
+## Follow each retry
+
+In TypeScript, `retry.onRetry` is called once before each automatic retry,
+before the client waits. It receives the attempt about to be sent (`attempt`, 2
+for the first retry), `maxAttempts`, the wait before that attempt in
+milliseconds (`delayMs`), and why the previous attempt is retried: `status` and
+`response` for a retried status, or `error` for a network failure or timeout.
+The callback only observes. The client does not await it, it cannot change,
+delay, or cancel the retry, and the client ignores what it throws or rejects
+with. A request the client does not retry never calls it. If the call is
+cancelled through its `signal` during the wait, the attempt it reported is not
+sent.
+
+The error that ends the call has `attempts`, the number of attempts the client
+sent, counting the first: `ApiError` for an error status, and `TransportError`
+for a network failure or timeout.
+
+```typescript
+import { ApiError, Photon, TransportError } from "@photon-ai/api";
+
+const apiKey = process.env.PHOTON_API_KEY;
+const organizationId = process.env.PHOTON_ORGANIZATION_ID;
+if (!apiKey || !organizationId) {
+  throw new Error("Set PHOTON_API_KEY and PHOTON_ORGANIZATION_ID");
+}
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${apiKey}` },
+  retry: {
+    onRetry: ({ attempt, maxAttempts, delayMs, status, error }) => {
+      const reason = status === undefined ? String(error) : `HTTP ${status}`;
+      console.warn(`Retrying (${attempt} of ${maxAttempts}) in ${delayMs} ms after ${reason}`);
+    },
+  },
+});
+
+try {
+  await photon.organizations.projects.count({ path: { organizationId } });
+} catch (error) {
+  if (error instanceof ApiError || error instanceof TransportError) {
+    console.error(`Failed after ${error.attempts} attempts`);
+  }
+  throw error;
+}
+```
+
+The Python, Rust, and Go clients have no retry callback.
 
 ## Idempotency keys
 

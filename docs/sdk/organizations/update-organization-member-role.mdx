@@ -6,7 +6,7 @@ description: "Change an organization member's role across all projects: updateOr
 
 `PATCH /v1/organizations/{organizationId}/members/{memberAccountId}`
 
-
+Changes an active member's role to admin, member or viewer. Owners and Admins can call it with account credentials, but only the Owner can make someone an Admin or change an Admin's role, and nobody can change the Owner's role or their own here (409). Send the member's current membership version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header.
 
 <Tabs>
 <Tab title="TypeScript">

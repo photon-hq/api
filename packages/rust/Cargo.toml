@@ -1,6 +1,6 @@
 [package]
 name = "photonhq-api"
-version = "0.6.0"
+version = "0.7.0"
 description = "Spargen-generated Photon OpenAPI 3.1 client"
 edition.workspace = true
 license.workspace = true
@@ -25,5 +25,6 @@ reqwest.workspace = true
 secrecy.workspace = true
 serde.workspace = true
 serde_json.workspace = true
+standardwebhooks.workspace = true
 time.workspace = true
 tokio.workspace = true

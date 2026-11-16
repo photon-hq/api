@@ -10,6 +10,15 @@
 // The generated SDK reference (docs/sdk) is not read here: its signatures are
 // copied from the generated clients and its examples are the code samples
 // tools/openapi/check-code-samples.mjs compiles and runs.
+// An example that receives webhooks defines a handler instead of sending
+// requests itself: TypeScript `export const handleDelivery = async (request) =>`,
+// Python `def handle_delivery(body, headers)`, Rust `impl Receiver` with
+// `from_env()` and `handle(body, headers)`, Go `newReceiver()` returning an
+// `http.Handler` (its `main` is not run). The check hands it a `message.received`
+// delivery signed with PHOTON_WEBHOOK_SECRET, which it must accept with a 2xx,
+// and the same delivery with a changed body, which it must reject with 400.
+// For the valid delivery it must read the message and mark it read, with the
+// idempotency key `read-<webhook-id>`; for the tampered one it must send nothing.
 // Nothing reaches the API: TypeScript examples run with a fetch that sends
 // every request to the mock, Python examples with the client's base URL set
 // to it, Rust examples with `.base_url(...)` added before `.build()`, and Go
@@ -21,6 +30,7 @@
 // pyright from tools/python-codegen/requirements-dev.txt.
 import assert from "node:assert/strict";
 import { execFileSync, spawn } from "node:child_process";
+import { createHmac, randomBytes } from "node:crypto";
 import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { createServer } from "node:http";
 import { tmpdir } from "node:os";
@@ -97,6 +107,8 @@ export const ENVIRONMENT = {
   PHOTON_ACCESS_TOKEN: "docs_example_access_token",
   PHOTON_ORGANIZATION_ID: "org_docs_example",
   PHOTON_PROJECT_ID: "proj_docs_example",
+  // A fresh synthetic signing secret per run, for the webhook receiver examples.
+  PHOTON_WEBHOOK_SECRET: `whsec_${randomBytes(32).toString("base64")}`,
 };
 const REQUEST_ID = "req_docs_example";
 const TIMESTAMP = "2026-01-01T00:00:00.000Z";
@@ -120,6 +132,56 @@ function project(projectId, name, slug) {
 function problem(status, code, title, slug) {
   return { status, body: { type: `https://photon.codes/docs/problems/${slug}`, code, title, status, requestId: REQUEST_ID }, problem: true };
 }
+
+// The receiver examples' project, message and destination: contract-valid
+// bodies for getMessage, markMessageRead and createWebhookDestination.
+const WEBHOOK_PROJECT_ID = "pho_prj_00000000000000000000000001";
+const space = {
+  details: {}, id: "pho_spc_00000000000000000000000001", kind: "direct", metadata: {},
+  participantIds: ["pho_usr_00000000000000000000000001", "pho_usr_00000000000000000000000002"], platform: "sms", projectId: WEBHOOK_PROJECT_ID,
+};
+const user = (id, handle, kind) => ({ details: {}, handle, id, kind, metadata: {}, platform: "sms", projectId: WEBHOOK_PROJECT_ID });
+const RECEIVED_MESSAGE = {
+  id: "pho_msg_00000000000000000000000001", projectId: WEBHOOK_PROJECT_ID, platform: "sms", space,
+  sentBy: user("pho_usr_00000000000000000000000002", "+14155550124", "user"),
+  content: { format: "plain", text: "Is my order on its way?", type: "text" }, metadata: {},
+  createdAt: TIMESTAMP, updatedAt: TIMESTAMP, status: "received", timestamps: { receivedAt: TIMESTAMP },
+};
+const READ_MESSAGE = {
+  id: "pho_msg_00000000000000000000000002", projectId: WEBHOOK_PROJECT_ID, platform: "sms", space,
+  sentBy: user("pho_usr_00000000000000000000000001", "+14155550123", "agent"),
+  content: { type: "message.read" }, metadata: {}, parentMessageId: RECEIVED_MESSAGE.id,
+  createdAt: TIMESTAMP, updatedAt: TIMESTAMP, status: "dispatched", timestamps: { dispatchedAt: TIMESTAMP },
+};
+const EVENT_ID = "pho_evt_00000000000000000000000001";
+
+/**
+ * The deliveries a receiver example is handed: a `message.received` event
+ * signed with PHOTON_WEBHOOK_SECRET as Photon signs it, which it must accept,
+ * and the same delivery with a changed body, which it must reject.
+ */
+export function webhookDeliveries(now = Math.floor(Date.now() / 1000)) {
+  const event = {
+    id: EVENT_ID, type: "message.received", apiVersion: "2026-07-01", source: "sms.photon", timestamp: new Date(now * 1000).toISOString(),
+    data: { projectId: WEBHOOK_PROJECT_ID, object: RECEIVED_MESSAGE },
+  };
+  const body = JSON.stringify(event);
+  const key = Buffer.from(ENVIRONMENT.PHOTON_WEBHOOK_SECRET.slice("whsec_".length), "base64");
+  const signature = createHmac("sha256", key).update(`${EVENT_ID}.${now}.${body}`).digest("base64");
+  const headers = { "content-type": "application/json", "webhook-id": EVENT_ID, "webhook-timestamp": String(now), "webhook-signature": `v1,${signature}` };
+  return [
+    { body, headers, accept: true },
+    { body: body.replace("Is my order", "Was my order"), headers, accept: false },
+  ];
+}
+
+/** A receiver example, in any language: it defines a handler instead of sending requests itself. */
+const RECEIVER = /^(export const handleDelivery = |def handle_delivery\(|impl Receiver \{|func newReceiver\()/m;
+/** What a receiver sends for the two deliveries: the valid one's message read and marked read, once. */
+const RECEIVER_REQUESTS = [
+  `GET /v1/projects/${WEBHOOK_PROJECT_ID}/messages/${RECEIVED_MESSAGE.id}`,
+  `POST /v1/projects/${WEBHOOK_PROJECT_ID}/messages/${RECEIVED_MESSAGE.id}/read read-${EVENT_ID}`,
+];
 
 /** Answer one request: `{ status, body }`, or `{ unexpected }` for a request the mock does not serve. */
 export function answer({ method, url, headers, body }) {
@@ -162,11 +224,35 @@ export function answer({ method, url, headers, body }) {
       ? { status: 200, body: project(ENVIRONMENT.PHOTON_PROJECT_ID, "Support", "support") }
       : problem(404, "PROJECT_NOT_FOUND", "Project Not Found", "project-not-found");
   }
+  const destinations = /^\/v1\/projects\/([^/]+)\/webhooks\/destinations$/.exec(pathname);
+  if (method === "POST" && destinations && token !== ENVIRONMENT.PHOTON_ACCESS_TOKEN) {
+    if (!headers["idempotency-key"]) return problem(400, "IDEMPOTENCY_KEY_REQUIRED", "Idempotency Key Required", "idempotency-key-required");
+    const input = JSON.parse(body || "{}");
+    if (![input.name, input.url, input.apiVersion].every((value) => typeof value === "string") || input.enabledEvents === undefined) {
+      return { unexpected: "createWebhookDestination without name, url, apiVersion and enabledEvents" };
+    }
+    const destination = {
+      apiVersion: input.apiVersion, createdAt: TIMESTAMP, deletedAt: null, description: input.description ?? null,
+      destinationId: "pho_whd_00000000000000000000000001", enabledEvents: input.enabledEvents, name: input.name,
+      projectId: WEBHOOK_PROJECT_ID, status: "enabled", updatedAt: TIMESTAMP, url: input.url,
+    };
+    return { status: 201, body: { destination, signingSecret: ENVIRONMENT.PHOTON_WEBHOOK_SECRET } };
+  }
+  // The receiver examples read and mark the message their delivery names, in its project.
+  const message = /^\/v1\/projects\/([^/]+)\/messages\/([^/]+)(\/read)?$/.exec(pathname);
+  if (message && token !== ENVIRONMENT.PHOTON_ACCESS_TOKEN
+    && decodeURIComponent(message[1]) === WEBHOOK_PROJECT_ID && decodeURIComponent(message[2]) === RECEIVED_MESSAGE.id) {
+    if (method === "GET" && !message[3]) return { status: 200, body: RECEIVED_MESSAGE };
+    if (method === "POST" && message[3]) {
+      if (!headers["idempotency-key"]) return problem(400, "IDEMPOTENCY_KEY_REQUIRED", "Idempotency Key Required", "idempotency-key-required");
+      return { status: 202, body: READ_MESSAGE };
+    }
+  }
   return { unexpected: `${method} ${pathname}` };
 }
 
 async function startMock() {
-  const state = { requests: 0, unexpected: [] };
+  const state = { requests: 0, unexpected: [], served: [] };
   const server = createServer((request, response) => {
     const chunks = [];
     request.on("data", (chunk) => chunks.push(chunk));
@@ -176,6 +262,8 @@ async function startMock() {
       if (result.unexpected) {
         state.unexpected.push(result.unexpected);
         Object.assign(result, problem(418, "DOCS_CHECK", "Unexpected request", "docs-check"));
+      } else {
+        state.served.push(`${request.method} ${new URL(request.url, "http://mock").pathname} ${request.headers["idempotency-key"] ?? ""}`.trim());
       }
       const text = JSON.stringify(result.body);
       response.writeHead(result.status, {
@@ -209,17 +297,24 @@ function runAsync(command, args, options) {
 async function runExamples(examples, mock, commandFor) {
   const failures = [];
   for (const example of examples) {
-    const before = { requests: mock.state.requests, unexpected: mock.state.unexpected.length };
+    const before = { requests: mock.state.requests, unexpected: mock.state.unexpected.length, served: mock.state.served.length };
     const [command, args, options] = commandFor(example);
     const { status, signal } = await runAsync(command, args, {
       ...options,
-      env: { ...process.env, ...ENVIRONMENT, DOCS_CHECK_BASE_URL: mock.baseUrl, ...options?.env },
+      env: {
+        ...process.env, ...ENVIRONMENT, DOCS_CHECK_BASE_URL: mock.baseUrl,
+        DOCS_CHECK_DELIVERIES: JSON.stringify(webhookDeliveries()), ...options?.env,
+      },
     });
     const unexpected = mock.state.unexpected.slice(before.unexpected);
+    const served = mock.state.served.slice(before.served);
     if (signal === "SIGKILL") failures.push(`${example.location}: timed out after ${EXAMPLE_TIMEOUT_MS / 1000} s`);
     else if (status !== 0) failures.push(`${example.location}: exited with ${status ?? signal}`);
     else if (unexpected.length) failures.push(`${example.location}: unexpected requests: ${unexpected.join(", ")}`);
     else if (mock.state.requests === before.requests) failures.push(`${example.location}: sent no request`);
+    else if (RECEIVER.test(example.code) && served.join("\n") !== RECEIVER_REQUESTS.join("\n")) {
+      failures.push(`${example.location}: the receiver sent [${served.join(", ")}], not [${RECEIVER_REQUESTS.join(", ")}]`);
+    }
   }
   return failures;
 }
@@ -260,7 +355,22 @@ globalThis.fetch = async (input, init) => {
   return original(process.env.DOCS_CHECK_BASE_URL + url.pathname + url.search, { method: request.method, headers: request.headers, body, signal: request.signal });
 };
 `);
-  return runExamples(examples, mock, ({ name }) => [process.execPath, ["--no-warnings", "--import", "./mock-fetch.mjs", `examples/${name}.ts`], { cwd: work }]);
+  // A receiver example's handler is handed the check's deliveries.
+  writeFileSync(join(work, "deliver.mjs"), `
+import { pathToFileURL } from "node:url";
+const { handleDelivery } = await import(pathToFileURL(process.argv[2]).href);
+for (const { body, headers, accept } of JSON.parse(process.env.DOCS_CHECK_DELIVERIES)) {
+  const response = await handleDelivery(new Request("https://receiver.example/webhooks/photon", { method: "POST", headers, body }));
+  if (accept ? response.status < 200 || response.status > 299 : response.status !== 400) {
+    console.error((accept ? "A valid" : "A tampered") + " delivery was answered " + response.status);
+    process.exit(1);
+  }
+}
+`);
+  return runExamples(examples, mock, ({ name, code }) => {
+    const runner = RECEIVER.test(code) ? ["deliver.mjs"] : [];
+    return [process.execPath, ["--no-warnings", "--import", "./mock-fetch.mjs", ...runner, `examples/${name}.ts`], { cwd: work }];
+  });
 }
 
 async function checkPython(examples, work, mock) {
@@ -275,7 +385,7 @@ async function checkPython(examples, work, mock) {
   run(python, ["-m", "ruff", "format", "--check", "--config", config, "examples"], { cwd: work });
   // Every client the example creates talks to the mock.
   writeFileSync(join(work, "run.py"), `
-import os, runpy, sys
+import json, os, runpy, sys
 import photon_api
 
 for cls in (photon_api.Photon, photon_api.AsyncPhoton):
@@ -283,7 +393,14 @@ for cls in (photon_api.Photon, photon_api.AsyncPhoton):
         kwargs["base_url"] = os.environ["DOCS_CHECK_BASE_URL"]
         __original(self, *args, **kwargs)
     cls.__init__ = patched
-runpy.run_path(sys.argv[1], run_name="__main__")
+namespace = runpy.run_path(sys.argv[1], run_name="__main__")
+# A receiver example's handler is handed the check's deliveries.
+handle = namespace.get("handle_delivery")
+for delivery in json.loads(os.environ["DOCS_CHECK_DELIVERIES"]) if handle else []:
+    status = handle(delivery["body"].encode(), delivery["headers"])
+    if not (200 <= status < 300 if delivery["accept"] else status == 400):
+        kind = "valid" if delivery["accept"] else "tampered"
+        sys.exit(f"A {kind} delivery was answered {status}")
 `);
   return runExamples(examples, mock, ({ name }) => [python, ["run.py", `examples/${name}.py`], { cwd: work }]);
 }
@@ -304,6 +421,32 @@ export function redirectBuilders(code, location) {
   return result + code.slice(from);
 }
 
+// A Rust receiver example defines `impl Receiver` with `from_env()` and
+// `handle(body, headers)` and no `main`; this one hands it the check's deliveries.
+const RUST_RECEIVER_MAIN = `
+#[tokio::main]
+async fn main() {
+    let receiver = Receiver::from_env().expect("Receiver::from_env");
+    let deliveries: serde_json::Value =
+        serde_json::from_str(&std::env::var("DOCS_CHECK_DELIVERIES").unwrap()).unwrap();
+    for delivery in deliveries.as_array().unwrap() {
+        let mut headers = http::HeaderMap::new();
+        for (name, value) in delivery["headers"].as_object().unwrap() {
+            headers.insert(
+                http::HeaderName::from_bytes(name.as_bytes()).unwrap(),
+                http::HeaderValue::from_str(value.as_str().unwrap()).unwrap(),
+            );
+        }
+        let body = delivery["body"].as_str().unwrap().as_bytes();
+        let status = receiver.handle(body, &headers).await;
+        let accept = delivery["accept"].as_bool().unwrap();
+        let kind = if accept { "valid" } else { "tampered" };
+        let answered = if accept { (200..300).contains(&status) } else { status == 400 };
+        assert!(answered, "A {kind} delivery was answered {status}");
+    }
+}
+`;
+
 async function checkRust(examples, work, mock) {
   mkdirSync(join(work, "src/bin"), { recursive: true });
   mkdirSync(join(work, "fmt"));
@@ -311,7 +454,8 @@ async function checkRust(examples, work, mock) {
   run("rustfmt", ["--check", "--edition", "2024", ...examples.map(({ name }) => `fmt/${name}.rs`)], { cwd: work });
   for (const { name, location, code } of examples) {
     assert.doesNotMatch(code, /BlockingClient|Client::new\(|with_backend/, `${location}: build Rust clients with PhotonClientBuilder so the check can redirect them`);
-    const rewritten = redirectBuilders(code, location);
+    const receiver = RECEIVER.test(code) ? RUST_RECEIVER_MAIN : "";
+    const rewritten = redirectBuilders(code, location) + receiver;
     // Examples compile without warnings, such as unused imports.
     writeFileSync(join(work, "src/bin", `${name}.rs`), `#![deny(warnings)]\n${rewritten}`);
   }
@@ -324,6 +468,7 @@ publish = false
 
 [dependencies]
 photonhq-api = { path = ${JSON.stringify(join(root, "packages/rust"))} }
+http = "=${crateVersion("http")}"
 rand = "=${crateVersion("rand")}"
 serde_json = "=${crateVersion("serde_json")}"
 tokio = { version = "=${crateVersion("tokio")}", features = ["macros", "rt-multi-thread"] }
@@ -366,6 +511,47 @@ export function redirectClients(code, location) {
   return result + code.slice(from);
 }
 
+// A Go receiver example defines `newReceiver()`, which returns its
+// `http.Handler`; its own `main` is renamed, and this one hands the handler
+// the check's deliveries.
+const GO_RECEIVER_MAIN = `package main
+
+import (
+	"encoding/json"
+	"log"
+	"net/http"
+	"net/http/httptest"
+	"os"
+	"strings"
+)
+
+func main() {
+	handler, err := newReceiver()
+	if err != nil {
+		log.Fatal(err)
+	}
+	var deliveries []struct {
+		Body    string
+		Headers map[string]string
+		Accept  bool
+	}
+	if err := json.Unmarshal([]byte(os.Getenv("DOCS_CHECK_DELIVERIES")), &deliveries); err != nil {
+		log.Fatal(err)
+	}
+	for _, delivery := range deliveries {
+		request := httptest.NewRequest(http.MethodPost, "/webhooks/photon", strings.NewReader(delivery.Body))
+		for name, value := range delivery.Headers {
+			request.Header.Set(name, value)
+		}
+		recorder := httptest.NewRecorder()
+		handler.ServeHTTP(recorder, request)
+		if ok := recorder.Code >= 200 && recorder.Code < 300; ok != delivery.Accept || (!ok && recorder.Code != http.StatusBadRequest) {
+			log.Fatalf("A delivery (accept: %v) was answered %d", delivery.Accept, recorder.Code)
+		}
+	}
+}
+`;
+
 async function checkGo(examples, work, mock) {
   const module = /^module (\S+)$/m.exec(readFileSync(join(root, "packages/go/go.mod"), "utf8"))?.[1];
   assert.ok(module, "packages/go/go.mod has no module line");
@@ -373,14 +559,22 @@ async function checkGo(examples, work, mock) {
   mkdirSync(join(work, "fmt"));
   for (const { name, location, code } of examples) {
     mkdirSync(join(work, "examples", name));
-    writeFileSync(join(work, "examples", name, "main.go"), redirectClients(code, location));
+    const redirected = redirectClients(code, location);
+    if (RECEIVER.test(code)) {
+      writeFileSync(join(work, "examples", name, "main.go"), redirected.replace(/^func main\(\) \{$/m, "func exampleMain() {"));
+      writeFileSync(join(work, "examples", name, "docs_check_main.go"), GO_RECEIVER_MAIN);
+    } else {
+      writeFileSync(join(work, "examples", name, "main.go"), redirected);
+    }
     // Formatting is checked on the block as written, not the redirected copy.
     writeFileSync(join(work, "fmt", `${name}.go`), code);
   }
   const unformatted = execFileSync("gofmt", ["-l", "fmt"], { cwd: work, encoding: "utf8" }).trim();
   assert.equal(unformatted, "", `Go examples are not gofmt-formatted:\n${unformatted}`);
   writeFileSync(join(work, "go.mod"), `module photon-docs-examples\n\ngo 1.25\n\nrequire ${module} v0.0.0-00010101000000-000000000000\n\nreplace ${module} => ${join(root, "packages/go")}\n`);
-  run("go", ["mod", "tidy"], { cwd: work });
+  // Start from the client's go.sum so its dependencies are verified against the committed checksums.
+  copyFileSync(join(root, "packages/go/go.sum"), join(work, "go.sum"));
+  run("go", ["get", `${module}@v0.0.0-00010101000000-000000000000`], { cwd: work });
   for (const { name } of examples) run("go", ["build", `./examples/${name}`], { cwd: work });
   return runExamples(examples, mock, ({ name }) => ["go", ["run", `./examples/${name}`], { cwd: work }]);
 }

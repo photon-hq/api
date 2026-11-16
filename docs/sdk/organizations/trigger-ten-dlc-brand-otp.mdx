@@ -1,0 +1,153 @@
+---
+title: "Trigger sole-proprietor OTP"
+icon: arrow-up-right
+description: "Trigger sole-proprietor OTP: triggerTenDlcBrandOtp in the TypeScript, Python, Rust and Go clients."
+---
+
+`POST /v1/organizations/{organization_id}/10dlc/brands/{brandId}/otp`
+
+Requests delivery of a verification code for an organization-owned sole-proprietor brand. A 202 response acknowledges the delivery request and does not mean the brand has been verified. Inspect the OTP status and submit the received code through verifyTenDlcBrandOtp. Requests may be rate limited. Supply the required Idempotency-Key header. Supply organization_id for the organization that owns the registration.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.triggerTenDlcBrandOtp(input: TriggerTenDlcBrandOtpInput, options?: RequestOptions): Promise<TriggerTenDlcBrandOtpOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.trigger_ten_dlc_brand_otp(input: TriggerTenDlcBrandOtpInput) -> models.TriggerTenDlcBrandOtpResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.trigger_ten_dlc_brand_otp(idempotency_key: String, brand_id: String, organization_id: String).await -> Result<ResponseValue<types::TriggerTenDlcBrandOtpResponse>, Error<TriggerTenDlcBrandOtpError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.TriggerTenDlcBrandOtp(ctx context.Context, params *TriggerTenDlcBrandOtpParams, opts ...RequestOption) (*TriggerTenDlcBrandOtpResponse, error)
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.triggerTenDlcBrandOtp({
+  path: {
+    brandId: "brandId",
+    organization_id: "organization_id",
+  },
+  headers: {
+    idempotencyKey: "idempotencyKey",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import TriggerTenDlcBrandOtpInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.trigger_ten_dlc_brand_otp(
+    TriggerTenDlcBrandOtpInput.model_validate({
+        "path": {
+            "brandId": "brandId",
+            "organization_id": "organization_id",
+        },
+        "headers": {
+            "Idempotency-Key": "idempotencyKey",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .trigger_ten_dlc_brand_otp(
+        "idempotencyKey".to_owned(),
+        "brandId".to_owned(),
+        "organization_id".to_owned(),
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Organizations.TriggerTenDlcBrandOtp(ctx, &photonapi.TriggerTenDlcBrandOtpParams{
+	IdempotencyKey: "idempotencyKey",
+	BrandID: "brandId",
+	OrganizationID: "organization_id",
+})
+if err != nil {
+	return err
+}
+_ = result
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 202
+{
+  "data": {
+    "attemptsRemaining": 0,
+    "brandId": "string",
+    "expiresAt": "2026-01-01T00:00:00.000Z",
+    "phoneLast4": "string",
+    "retryAfterSeconds": 0,
+    "status": "not_requested"
+  }
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField header="Idempotency-Key" type={"string"} required>
+Identifies one logical mutation across retries.
+</ParamField>
+
+<ParamField path="brandId" type={"string"} required>
+
+</ParamField>
+
+<ParamField path="organization_id" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`202`** OTP delivery was accepted. TriggerTenDlcBrandOtpResponse
+
+Headers: `Location`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
+<ResponseField name="data" type={"TenDlcBrandOtp"} required>
+
+</ResponseField>
+

@@ -1,0 +1,500 @@
+---
+title: "Webhooks"
+description: "Verify webhook deliveries and act on the message an event names with the Photon API clients."
+---
+
+Photon sends your project's events to an HTTPS endpoint you control, as signed
+`POST` requests that follow [Standard Webhooks](https://www.standardwebhooks.com/).
+Each client verifies a delivery with one call. After that, the same client
+reads and answers the message the event names.
+
+This page covers the client side. [Webhooks](/message-delivery/webhook) covers
+delivery: retries, ordering, duplicate deliveries, and the dashboard.
+
+## Create a destination
+
+A destination is the URL Photon delivers to and the events it receives there.
+Create one with a project API key. The response holds the destination's signing
+secret, `whsec_...`. Photon returns it only in this response, in a repeat of
+the request with the same `Idempotency-Key`, and when you rotate it. Store it
+in your secret manager, for example as `PHOTON_WEBHOOK_SECRET`. It is not an
+API key: it only verifies deliveries.
+
+The Rust example uses the [`tokio`](https://crates.io/crates/tokio),
+[`serde_json`](https://crates.io/crates/serde_json), and
+[`rand`](https://crates.io/crates/rand) crates; add them with
+`cargo add tokio --features macros,rt-multi-thread` and `cargo add serde_json rand`.
+
+<CodeGroup>
+```typescript TypeScript
+import { randomUUID } from "node:crypto";
+import { Photon } from "@photon-ai/api";
+
+const apiKey = process.env.PHOTON_PROJECT_API_KEY;
+const projectId = process.env.PHOTON_PROJECT_ID;
+if (!apiKey || !projectId) {
+  throw new Error("Set PHOTON_PROJECT_API_KEY and PHOTON_PROJECT_ID");
+}
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${apiKey}` },
+});
+
+const created = await photon.projects.createWebhookDestination({
+  path: { projectId },
+  headers: { idempotencyKey: randomUUID() },
+  body: {
+    name: "Support inbox",
+    url: "https://example.com/webhooks/photon",
+    apiVersion: "2026-07-01",
+    enabledEvents: ["message.received"],
+  },
+});
+console.log(created.destination.destinationId);
+// created.signingSecret is the destination's whsec_ secret. Store it in your
+// secret manager now, for example as PHOTON_WEBHOOK_SECRET.
+```
+
+```python Python
+import os
+import uuid
+
+from photon_api import Photon
+from photon_api.rpc_generated import CreateWebhookDestinationInput
+
+api_key = os.environ["PHOTON_PROJECT_API_KEY"]
+project_id = os.environ["PHOTON_PROJECT_ID"]
+
+with Photon(headers={"Authorization": f"Bearer {api_key}"}) as photon:
+    created = photon.projects.create_webhook_destination(
+        CreateWebhookDestinationInput.model_validate(
+            {
+                "path": {"projectId": project_id},
+                "headers": {"Idempotency-Key": str(uuid.uuid4())},
+                "body": {
+                    "name": "Support inbox",
+                    "url": "https://example.com/webhooks/photon",
+                    "apiVersion": "2026-07-01",
+                    "enabledEvents": ["message.received"],
+                },
+            }
+        )
+    )
+    print(created.destination.destinationId)
+    # created.signingSecret is the destination's whsec_ secret. Store it in your
+    # secret manager now, for example as PHOTON_WEBHOOK_SECRET.
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString, types};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let api_key = std::env::var("PHOTON_PROJECT_API_KEY")?;
+    let project_id = std::env::var("PHOTON_PROJECT_ID")?;
+
+    let credential = Credential::Bearer(SecretString::from(api_key));
+    let client = PhotonClientBuilder::new()
+        .credential("projectApiKey", credential)
+        .build()?;
+
+    let body: types::CreateWebhookDestinationRequest = serde_json::from_value(serde_json::json!({
+        "name": "Support inbox",
+        "url": "https://example.com/webhooks/photon",
+        "apiVersion": "2026-07-01",
+        "enabledEvents": ["message.received"],
+    }))?;
+    let idempotency_key = format!("{:032x}", rand::random::<u128>());
+    let created = client
+        .create_webhook_destination(idempotency_key, project_id, &body)
+        .await
+        .map_err(|error| format!("{error:?}"))?
+        .into_inner();
+    println!("{}", created.destination.destination_id);
+    // created.signing_secret is the destination's whsec_ secret. Store it in
+    // your secret manager now, for example as PHOTON_WEBHOOK_SECRET.
+    Ok(())
+}
+```
+
+```go Go
+package main
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"log"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+func main() {
+	apiKey := os.Getenv("PHOTON_PROJECT_API_KEY")
+	projectID := os.Getenv("PHOTON_PROJECT_ID")
+	if apiKey == "" || projectID == "" {
+		log.Fatal("Set PHOTON_PROJECT_API_KEY and PHOTON_PROJECT_ID")
+	}
+
+	client := photonapi.NewClient(photonapi.WithAPIKey(apiKey))
+
+	var body photonapi.CreateWebhookDestinationRequest
+	if err := json.Unmarshal([]byte(`{
+		"name": "Support inbox",
+		"url": "https://example.com/webhooks/photon",
+		"apiVersion": "2026-07-01",
+		"enabledEvents": ["message.received"]
+	}`), &body); err != nil {
+		log.Fatal(err)
+	}
+	// IdempotencyKey is left empty, so the client generates one.
+	created, err := client.Projects.CreateWebhookDestination(context.Background(), &photonapi.CreateWebhookDestinationParams{
+		ProjectID: projectID,
+		Body:      body,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(created.Destination.DestinationID)
+	// created.SigningSecret is the destination's whsec_ secret. Store it in your
+	// secret manager now, for example as PHOTON_WEBHOOK_SECRET.
+}
+```
+</CodeGroup>
+
+## Receive a delivery
+
+A receiver verifies the request before it does anything else. When verification
+fails, it answers `400` and ignores the body. When it succeeds, the body is the
+event: here, a `message.received` event, whose `data` names the project and
+the message. The receiver reads the message with `getMessage`, marks it read
+with `markMessageRead`, and answers `204`.
+
+Each example is a handler you call from your web framework's route. The Go
+example is an `http.Handler`. The Rust example takes an `http::HeaderMap`, as
+axum and hyper provide, and uses the [`http`](https://crates.io/crates/http)
+and [`serde_json`](https://crates.io/crates/serde_json) crates. A secret that
+is not a `whsec_...` signing secret is the receiver's own misconfiguration, not
+a bad delivery: the Rust example checks it once when the receiver starts, and
+the others answer it with `500` rather than `400`.
+
+<CodeGroup>
+```typescript TypeScript
+import { Photon, verifyWebhook, WebhookVerificationError } from "@photon-ai/api";
+
+const apiKey = process.env.PHOTON_PROJECT_API_KEY;
+const secret = process.env.PHOTON_WEBHOOK_SECRET;
+if (!apiKey || !secret) {
+  throw new Error("Set PHOTON_PROJECT_API_KEY and PHOTON_WEBHOOK_SECRET");
+}
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${apiKey}` },
+});
+
+// Call this from your HTTP route with the incoming request, and send the
+// response it returns.
+export const handleDelivery = async (request: Request): Promise<Response> => {
+  // Verify the body exactly as it arrived, before anything parses it.
+  const body = await request.text();
+  try {
+    verifyWebhook(body, request.headers, { secret });
+  } catch (error) {
+    if (error instanceof WebhookVerificationError) {
+      return new Response(null, { status: 400 });
+    }
+    throw error;
+  }
+
+  // The fields this receiver reads: every event's id and type, and the message
+  // and project a message.received event names.
+  const event = JSON.parse(body) as {
+    id: string;
+    type: string;
+    data: { projectId: string; object: { id: string } };
+  };
+  if (event.type === "message.received") {
+    const path = { id: event.data.projectId, messageId: event.data.object.id };
+    const message = await photon.projects.getMessage({ path });
+    console.log(`Received a message on ${message?.platform}`);
+    await photon.projects.markMessageRead({
+      path,
+      // One key per event, so a retried delivery repeats this request.
+      headers: { "idempotency-key": `read-${event.id}` },
+    });
+  }
+  return new Response(null, { status: 204 });
+};
+```
+
+```python Python
+import json
+import os
+from collections.abc import Mapping
+
+from photon_api import Photon, WebhookVerificationError, verify_webhook
+from photon_api.rpc_generated import GetMessageInput, MarkMessageReadInput
+
+api_key = os.environ["PHOTON_PROJECT_API_KEY"]
+secret = os.environ["PHOTON_WEBHOOK_SECRET"]
+
+photon = Photon(headers={"Authorization": f"Bearer {api_key}"})
+
+
+def handle_delivery(body: bytes, headers: Mapping[str, str]) -> int:
+    """Call this from your HTTP route with the raw body and the headers, and
+    answer with the status it returns."""
+    # Verify the body exactly as it arrived, before anything parses it.
+    try:
+        verify_webhook(body, headers, secret=secret)
+    except WebhookVerificationError:
+        return 400
+
+    event = json.loads(body)
+    if event["type"] == "message.received":
+        path = {"id": event["data"]["projectId"], "messageId": event["data"]["object"]["id"]}
+        message = photon.projects.get_message(GetMessageInput.model_validate({"path": path}))
+        if message is not None:
+            print("Received a message on", message.model_dump(mode="json")["platform"])
+        photon.projects.mark_message_read(
+            MarkMessageReadInput.model_validate(
+                # One key per event, so a retried delivery repeats this request.
+                {"path": path, "headers": {"idempotency-key": f"read-{event['id']}"}}
+            )
+        )
+    return 204
+```
+
+```rust Rust
+use std::error::Error;
+
+use http::HeaderMap;
+use photon_ai_api::{
+    Client, Credential, GetMessageResponse, PhotonClientBuilder, SecretString, WebhookSecret,
+    verify_webhook,
+};
+
+struct Receiver {
+    client: Client,
+    secret: WebhookSecret,
+}
+
+impl Receiver {
+    fn from_env() -> Result<Self, Box<dyn Error>> {
+        let api_key = std::env::var("PHOTON_PROJECT_API_KEY")?;
+        // A secret that is not a whsec_ signing secret is this receiver's
+        // misconfiguration: it stops here, before any delivery arrives.
+        let secret = WebhookSecret::new(&std::env::var("PHOTON_WEBHOOK_SECRET")?)?;
+        let credential = Credential::Bearer(SecretString::from(api_key));
+        let client = PhotonClientBuilder::new()
+            .credential("projectApiKey", credential)
+            .build()?;
+        Ok(Self { client, secret })
+    }
+
+    /// Call this from your HTTP route with the raw body and the headers, and
+    /// answer with the status it returns.
+    async fn handle(&self, body: &[u8], headers: &HeaderMap) -> u16 {
+        // Verify the body exactly as it arrived, before anything parses it.
+        if verify_webhook(body, headers, &self.secret).is_err() {
+            return 400;
+        }
+        match self.process(body).await {
+            Ok(()) => 204,
+            Err(error) => {
+                eprintln!("{error}");
+                500
+            }
+        }
+    }
+
+    async fn process(&self, body: &[u8]) -> Result<(), Box<dyn Error>> {
+        let event: serde_json::Value = serde_json::from_slice(body)?;
+        if event["type"] != "message.received" {
+            return Ok(());
+        }
+        let event_id = event["id"].as_str().ok_or("no event id")?;
+        let project_id = event["data"]["projectId"].as_str().ok_or("no projectId")?;
+        let message_id = event["data"]["object"]["id"]
+            .as_str()
+            .ok_or("no message id")?;
+        let response = self
+            .client
+            .get_message(project_id.to_owned(), message_id.to_owned(), None)
+            .await
+            .map_err(|error| format!("{error:?}"))?
+            .into_inner();
+        if let GetMessageResponse::Status200(message) = response {
+            let message = serde_json::to_value(&message)?;
+            println!("Received a message on {}", message["platform"]);
+        }
+        // One key per event, so a retried delivery repeats this request.
+        self.client
+            .mark_message_read(
+                project_id.to_owned(),
+                message_id.to_owned(),
+                format!("read-{event_id}"),
+            )
+            .await
+            .map_err(|error| format!("{error:?}"))?;
+        Ok(())
+    }
+}
+```
+
+```go Go
+package main
+
+import (
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io"
+	"log"
+	"net/http"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+func main() {
+	receiver, err := newReceiver()
+	if err != nil {
+		log.Fatal(err)
+	}
+	http.Handle("POST /webhooks/photon", receiver)
+	log.Fatal(http.ListenAndServe(":8080", nil))
+}
+
+func newReceiver() (http.Handler, error) {
+	apiKey := os.Getenv("PHOTON_PROJECT_API_KEY")
+	secret := os.Getenv("PHOTON_WEBHOOK_SECRET")
+	if apiKey == "" || secret == "" {
+		return nil, errors.New("set PHOTON_PROJECT_API_KEY and PHOTON_WEBHOOK_SECRET")
+	}
+	client := photonapi.NewClient(photonapi.WithAPIKey(apiKey))
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Verify the body exactly as it arrived, before anything parses it.
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, "unreadable body", http.StatusBadRequest)
+			return
+		}
+		err = photonapi.VerifyWebhook(body, r.Header, secret)
+		var invalid *photonapi.WebhookVerificationError
+		if errors.As(err, &invalid) {
+			http.Error(w, "invalid signature", http.StatusBadRequest)
+			return
+		}
+		if err != nil {
+			// ErrInvalidWebhookSecret: this receiver's misconfiguration, not a bad delivery.
+			http.Error(w, "webhook secret misconfigured", http.StatusInternalServerError)
+			return
+		}
+
+		// The fields this receiver reads: every event's id and type, and the
+		// message and project a message.received event names.
+		var event struct {
+			ID   string `json:"id"`
+			Type string `json:"type"`
+			Data struct {
+				ProjectID string `json:"projectId"`
+				Object    struct {
+					ID string `json:"id"`
+				} `json:"object"`
+			} `json:"data"`
+		}
+		if err := json.Unmarshal(body, &event); err != nil {
+			http.Error(w, "invalid event", http.StatusBadRequest)
+			return
+		}
+		if event.Type == "message.received" {
+			message, err := client.Projects.GetMessage(r.Context(), &photonapi.GetMessageParams{
+				ID:        event.Data.ProjectID,
+				MessageID: event.Data.Object.ID,
+			})
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			fmt.Println("Received a message on", message.Platform())
+			_, err = client.Projects.MarkMessageRead(r.Context(), &photonapi.MarkMessageReadParams{
+				ID:        event.Data.ProjectID,
+				MessageID: event.Data.Object.ID,
+				// One key per event, so a retried delivery repeats this request.
+				IdempotencyKey: "read-" + event.ID,
+			})
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+		}
+		w.WriteHeader(http.StatusNoContent)
+	}), nil
+}
+```
+</CodeGroup>
+
+A few things the examples rely on:
+
+- **The raw body.** The signature covers the body byte for byte. Read it before
+  any JSON middleware parses it, and pass it unchanged. A body parsed and
+  serialized again does not verify.
+- **The event ID.** The event's `id` is the same on every retry of the event.
+  The examples derive the `markMessageRead` idempotency key from it, so a
+  retried delivery repeats the same request. Use it the same way to skip events
+  you already handled.
+- **The message's current state.** The event's `data.object` is the message as
+  it was when Photon sent the event. `getMessage` reads it as it is now, as the
+  client's typed `PlatformMessage`.
+
+## Verify a delivery
+
+| Language | Call | When the delivery does not verify |
+| --- | --- | --- |
+| TypeScript | `verifyWebhook(body, headers, { secret })`: `body` a `string` or `Uint8Array`, `headers` a `Headers` or a record such as Node's `IncomingHttpHeaders` | Throws `WebhookVerificationError`, a `PhotonError` |
+| Python | `verify_webhook(body, headers, secret=secret)`: `body` `bytes` or `str`, `headers` a `Mapping[str, str]` | Raises `WebhookVerificationError`, a `PhotonError` |
+| Rust | `verify_webhook(body, &headers, &secret)`: `body` a `&[u8]`, `headers` an `http::HeaderMap`, `secret` a `WebhookSecret` | Returns `Err(WebhookVerificationError)`: `InvalidSignature` or `TimestampOutOfRange` |
+| Go | `VerifyWebhook(body, r.Header, secret)`: `body` a `[]byte`, `r.Header` an `http.Header` | Returns a `*WebhookVerificationError` |
+
+A call that returns without an error has verified the delivery, and the body is
+the event. A secret that is not a `whsec_...` signing secret is a configuration
+error, not a bad delivery, and each client reports it apart: a `TypeError` in
+TypeScript, a `ValueError` in Python, `InvalidWebhookSecret` from
+`WebhookSecret::new` in Rust, and `ErrInvalidWebhookSecret` in Go.
+
+Each call takes one secret, the destination's own. A receiver for several
+destinations gives each one its own route and verifies with that destination's
+secret.
+
+### The signature
+
+Each delivery carries three headers:
+
+| Header | Value |
+| --- | --- |
+| `webhook-id` | The event's `id`. It does not change on retries. |
+| `webhook-timestamp` | When Photon sent this attempt, in Unix seconds. Photon updates it on each retry. |
+| `webhook-signature` | One or more space-separated `v1,<base64>` signatures. |
+
+A signature is the Base64 HMAC-SHA256 of `<webhook-id>.<webhook-timestamp>.<body>`,
+keyed with the Base64-decoded part of the secret after `whsec_`. A delivery
+verifies when one of its signatures matches and its timestamp is within five
+minutes of your server's clock, in the past or the future. Keep the clock
+synchronized.
+
+The clients verify with the official Standard Webhooks libraries:
+`standardwebhooks` on npm, PyPI, and crates.io, and
+`github.com/standard-webhooks/standard-webhooks/libraries` in Go. Any other
+Standard Webhooks library verifies the same deliveries.
+
+### Rotate the secret
+
+Rotating a destination's secret returns a new one. For an overlap period, Photon
+signs each delivery with both the new and the previous secret, so a receiver
+that knows either one verifies it. The rotation request's `overlapSeconds` sets
+that period, from 0 to 604800 seconds (seven days), and it is 86400 (one day)
+by default; the response's `previousSecretExpiresAt` says when it ends. Switch
+the receiver to the new secret before the previous one expires.

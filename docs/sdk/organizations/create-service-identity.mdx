@@ -6,7 +6,7 @@ description: "Create an organization Service Identity: createServiceIdentity in 
 
 `POST /v1/organizations/{organizationId}/service-identities`
 
-
+Creates an active Service Identity, a machine identity owned by the organization, with a name and a non-empty set of permissions from listServiceIdentityPermissions; it starts with no credentials. Owners and Admins can call it with account credentials and the required Idempotency-Key header.
 
 <Tabs>
 <Tab title="TypeScript">

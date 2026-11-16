@@ -6,7 +6,7 @@ description: "Resend an organization invitation: resendOrganizationInvitation in
 
 `POST /v1/organizations/{organizationId}/invitations/{invitationId}/resend`
 
-
+Emails a pending invitation again with the same link and restarts its 7-day expiry. Owners and Admins can call it with account credentials and the required Idempotency-Key header. An expired, revoked or accepted invitation returns 409, and a resend within 60 seconds of the last send, or past the organization's 30 sends an hour, returns 429.
 
 <Tabs>
 <Tab title="TypeScript">

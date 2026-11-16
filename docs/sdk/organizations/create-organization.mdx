@@ -6,7 +6,7 @@ description: "Create an organization: createOrganization in the TypeScript, Pyth
 
 `POST /v1/organizations`
 
-
+Creates an organization with the supplied name and makes the calling account its Owner; SSO and just-in-time provisioning start disabled. Billing is set up after the response, so the 201 body has no billingInitialization; read it from getOrganization or listOrganizations to follow the setup. Call it with account credentials acting as the account itself and supply the required Idempotency-Key header; an account that is closing gets 409.
 
 <Tabs>
 <Tab title="TypeScript">

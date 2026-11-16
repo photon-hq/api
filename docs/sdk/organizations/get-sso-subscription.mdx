@@ -6,7 +6,7 @@ description: "Read SSO subscription: getSsoSubscription in the TypeScript, Pytho
 
 `GET /v1/organizations/{organizationId}/sso/subscription`
 
-
+Returns the organization's SSO subscription: its state, the current monthly price and billing period, whether a payment method must be added first, and whether SSO can be set up (canConfigure). Only Owners and Admins can call it, with account credentials. Send its amount, currency and currentPeriodEnd as the quote when subscribing.
 
 <Tabs>
 <Tab title="TypeScript">

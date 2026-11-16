@@ -21,7 +21,7 @@ photon.account.update(input: UpdateAccountInput) -> models.Account
 </Tab>
 <Tab title="Rust">
 ```rust Rust
-client.update_account(idempotency_key: String, body: &types::UpdateAccountRequest).await -> Result<ResponseValue<types::Account>, Error<UpdateAccountError>>
+client.update_account(idempotency_key: String, params: Option<UpdateAccountParams>, body: &types::UpdateAccountRequest).await -> Result<ResponseValue<types::Account>, Error<UpdateAccountError>>
 ```
 </Tab>
 <Tab title="Go">
@@ -73,6 +73,7 @@ let client = PhotonClientBuilder::new()
 let result = client
     .update_account(
         "idempotencyKey".to_owned(),
+        None,
         &serde_json::from_value(serde_json::json!({}))?,
     )
     .await
@@ -113,8 +114,11 @@ _ = result
   "accountId": "string",
   "createdAt": null,
   "deletedAt": null,
-  "email": "user@example.com",
+  "email": "string",
   "firstName": null,
+  "impersonator": {
+    "email": "string"
+  },
   "lastName": null,
   "phoneNumber": null,
   "phoneVerifiedAt": null,
@@ -126,6 +130,10 @@ _ = result
 </ResponseExample>
 
 ## Parameters
+
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
 
 <ParamField header="Idempotency-Key" type={"string"} required>
 Identifies one logical mutation across retries.
@@ -147,6 +155,8 @@ Identifies one logical mutation across retries.
 
 **`200`** The updated account. Account
 
+Headers: `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
 <ResponseField name="accountId" type={"string"} required>
 
 </ResponseField>
@@ -159,12 +169,16 @@ Identifies one logical mutation across retries.
 
 </ResponseField>
 
-<ResponseField name="email" type={"string (email)"} required>
-
+<ResponseField name="email" type={"string"} required>
+Email address supplied by the identity provider.
 </ResponseField>
 
 <ResponseField name="firstName" type={"string | null"} required>
 
+</ResponseField>
+
+<ResponseField name="impersonator" type={"AccountImpersonator"}>
+Present only while a WorkOS dashboard admin is impersonating this account: the admin's email. Attribution only; grants nothing.
 </ResponseField>
 
 <ResponseField name="lastName" type={"string | null"} required>

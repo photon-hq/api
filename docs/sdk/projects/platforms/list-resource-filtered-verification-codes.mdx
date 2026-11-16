@@ -6,7 +6,7 @@ description: "List a line's filtered verification codes: listResourceFilteredVer
 
 `GET /v1/projects/{id}/platforms/resources/{resourceId}/filtered-otp`
 
-Lists the verification codes Photon kept from one dedicated line or number. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line or number (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a number receives both SMS and WhatsApp. Requires the platforms:read permission bound to the project resource in the path.
+Lists the verification codes Photon kept from one dedicated line. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a dedicated line receives both iMessage and WhatsApp. Requires the platforms:read permission bound to the project resource in the path.
 
 <Tabs>
 <Tab title="TypeScript">
@@ -105,7 +105,7 @@ _ = result
   "filteredVerificationCodes": [
     {
       "handle": "string",
-      "platform": "sms",
+      "platform": "imessage",
       "receivedAt": "2026-10-01T12:00:00.000Z",
       "resourceId": "string"
     }

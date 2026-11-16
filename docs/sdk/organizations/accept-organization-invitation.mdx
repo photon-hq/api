@@ -6,7 +6,7 @@ description: "Accept an invitation to all organization projects: acceptOrganizat
 
 `POST /v1/organizations/invitations/accept`
 
-
+Accepts an invitation by its token and adds the signed-in account to the organization with the invited role. An existing member keeps their role, except a Viewer who joined through SSO just-in-time provisioning and whose role has never been changed, who takes the invited role; a removed member can rejoin only with an invitation created after the removal, else 409. The account's verified email must match the invited address, the invitation must be pending and unexpired, and its inviter must still be an Owner or Admin; in an organization that requires SSO it returns 403, because the invitee joins by signing in through that SSO instead. Call it with account credentials acting as the account itself and supply the required Idempotency-Key header.
 
 <Tabs>
 <Tab title="TypeScript">

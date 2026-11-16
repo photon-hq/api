@@ -11,7 +11,7 @@
 // samples against packages/go through a replace directive.
 import assert from "node:assert/strict";
 import { execFileSync, spawn } from "node:child_process";
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { createServer } from "node:http";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
@@ -241,6 +241,9 @@ ${calls.join("\n")}
 `);
   run("go", ["mod", "init", "photon-code-samples"], { cwd: work, stdio: "ignore" });
   run("go", ["mod", "edit", "-require", `${module}@v0.0.0-00010101000000-000000000000`, "-replace", `${module}=${join(root, "packages/go")}`], { cwd: work });
+  // Start from the client's go.sum so its dependencies are verified against the committed checksums.
+  copyFileSync(join(root, "packages/go/go.sum"), join(work, "go.sum"));
+  run("go", ["get", `${module}@v0.0.0-00010101000000-000000000000`], { cwd: work });
   let received = 0;
   const server = createServer((request, response) => {
     received += 1;

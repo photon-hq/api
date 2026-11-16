@@ -6,7 +6,7 @@ description: "Update a Service Identity: updateServiceIdentity in the TypeScript
 
 `PATCH /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}`
 
-
+Changes a Service Identity's name, its permissions (the list replaces the current one) or its status. Disabling an identity stops its API keys and M2M tokens from authorizing requests without revoking them, and an identity managed by an app installation can't be changed (409). Owners and Admins can call it with account credentials; send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header.
 
 <Tabs>
 <Tab title="TypeScript">

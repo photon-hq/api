@@ -142,7 +142,7 @@ _ = result
 </ResponseField>
 
 <ResponseField name="detail" type={"object"} required>
-
+Per-type public detail. Only voip_line includes activationState: activating or active. Every voip_line includes it; without an owner-matched saved record it defaults to active. This includes imported, legacy and unallocated numbers. This is not provider-confirmed readiness; elapsed time alone never changes saved activation. A retired number retains its saved activation state.
 </ResponseField>
 
 <ResponseField name="projectId" type={"string"} required>

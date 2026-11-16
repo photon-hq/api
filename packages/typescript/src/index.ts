@@ -9,8 +9,15 @@ export {
 export type {
   HeaderProvider,
   HeaderValues,
+  RetryContext,
   RetryOptions,
 } from "./transport.js";
+export {
+  verifyWebhook,
+  WebhookVerificationError,
+  type VerifyWebhookOptions,
+  type WebhookHeaders,
+} from "./webhooks.js";
 export type {
   PhotonNamespaces,
   PhotonRawNamespaces,

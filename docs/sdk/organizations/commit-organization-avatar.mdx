@@ -6,7 +6,7 @@ description: "Commit an organization avatar: commitOrganizationAvatar in the Typ
 
 `POST /v1/organizations/{organizationId}/avatar/commit`
 
-
+Sets the organization's avatar to an image uploaded with createOrganizationAvatarUpload, after checking its size, type and contents, and discards the previous avatar; an invalid or expired upload is rejected. Owners and Admins can call it with account credentials. Send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header.
 
 <Tabs>
 <Tab title="TypeScript">

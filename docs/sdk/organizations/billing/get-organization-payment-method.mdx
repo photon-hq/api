@@ -6,7 +6,7 @@ description: "Get organization payment method: getOrganizationPaymentMethod in t
 
 `GET /v1/organizations/{organizationId}/billing/payment-method`
 
-Reports whether the selected organization has a card on file and returns its documented payment-method metadata. Reading this endpoint does not collect a new card or create a checkout session.
+Reports whether the selected organization has a card on file, its documented payment-method metadata, whether a purchase needs a card first (purchaseRefusal), and how it pays: by card, or by invoice on its contract's terms (agreement). Reading this endpoint does not collect a new card or create a checkout session.
 
 <Tabs>
 <Tab title="TypeScript">
@@ -99,8 +99,12 @@ _ = result
 <ResponseExample>
 ```json 200
 {
+  "agreement": {
+    "kind": "self_serve"
+  },
   "cardOnFile": true,
-  "paymentMethod": null
+  "paymentMethod": null,
+  "purchaseRefusal": null
 }
 ```
 
@@ -117,11 +121,19 @@ _ = result
 
 **`200`** Whether the organization has a captured card and its metadata. GetOrganizationPaymentMethodResponse
 
+<ResponseField name="agreement" type={"BillingAgreement"} required>
+How the organization pays: self_serve by card, each purchase paid when made; enterprise by invoice on its contract's terms, its purchases added to its next monthly invoice.
+</ResponseField>
+
 <ResponseField name="cardOnFile" type={"boolean"} required>
 True once a card is captured for the payer.
 </ResponseField>
 
 <ResponseField name="paymentMethod" type={"PaymentMethod | null"} required>
 Metadata for the default card, or null.
+</ResponseField>
+
+<ResponseField name="purchaseRefusal" type={"PurchaseRefusal | null"} required>
+Why the organization can't pay for a purchase now, or null when it can. payment_method_required: add a card first; an organization that pays by invoice never needs one. billing_not_ready: its billing is still being set up; try again shortly. Decide purchases on this, not on cardOnFile.
 </ResponseField>
 

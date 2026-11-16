@@ -6,7 +6,7 @@ description: "Revoke an organization invitation: revokeOrganizationInvitation in
 
 `POST /v1/organizations/{organizationId}/invitations/{invitationId}/revoke`
 
-
+Revokes an invitation so its link can no longer be previewed or accepted; no email is sent, and an accepted invitation can't be revoked (409). Owners and Admins can call it with account credentials and the required Idempotency-Key header. Revoking an invitation that is already revoked or expired succeeds.
 
 <Tabs>
 <Tab title="TypeScript">

@@ -7,6 +7,7 @@ import {
   TransportError,
 } from "./errors.js";
 import {
+  attemptsMade,
   createPhotonFetch,
   type HeaderProvider,
   type RetryOptions,
@@ -137,6 +138,7 @@ export class Photon {
           cause: error instanceof TransportError ? error.cause : error,
           operationId,
           requestId: error instanceof TransportError ? error.requestId : undefined,
+          attempts: error instanceof TransportError ? error.attempts : undefined,
         },
       );
     }
@@ -176,6 +178,7 @@ export class Photon {
       throw new ApiError(detail, {
         operationId,
         requestId,
+        attempts: attemptsMade(result.response),
         status,
         headers: result.response.headers,
         body: errorBody,
@@ -211,6 +214,7 @@ export class Photon {
           cause: error,
           operationId,
           requestId,
+          attempts: attemptsMade(result.response),
         });
       }
       try {

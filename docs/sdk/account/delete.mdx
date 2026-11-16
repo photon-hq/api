@@ -21,12 +21,12 @@ photon.account.delete(input: DeleteAccountInput | None = None) -> models.Account
 </Tab>
 <Tab title="Rust">
 ```rust Rust
-client.delete_account().await -> Result<ResponseValue<types::Account>, Error<DeleteAccountError>>
+client.delete_account(params: Option<DeleteAccountParams>).await -> Result<ResponseValue<types::Account>, Error<DeleteAccountError>>
 ```
 </Tab>
 <Tab title="Go">
 ```go Go
-client.Account.Delete(ctx context.Context, opts ...RequestOption) (*Account, error)
+client.Account.Delete(ctx context.Context, params *DeleteAccountParams, opts ...RequestOption) (*Account, error)
 ```
 </Tab>
 </Tabs>
@@ -58,7 +58,7 @@ let client = PhotonClientBuilder::new()
     .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
     .build()?;
 let result = client
-    .delete_account()
+    .delete_account(None)
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
@@ -74,7 +74,7 @@ import (
 
 ctx := context.Background()
 client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
-result, err := client.Account.Delete(ctx)
+result, err := client.Account.Delete(ctx, nil)
 if err != nil {
 	return err
 }
@@ -89,8 +89,11 @@ _ = result
   "accountId": "string",
   "createdAt": null,
   "deletedAt": null,
-  "email": "user@example.com",
+  "email": "string",
   "firstName": null,
+  "impersonator": {
+    "email": "string"
+  },
   "lastName": null,
   "phoneNumber": null,
   "phoneVerifiedAt": null,
@@ -101,9 +104,18 @@ _ = result
 
 </ResponseExample>
 
+## Parameters
+
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
+
 ## Returns
 
 **`200`** The deleted account tombstone. Account
+
+Headers: `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="accountId" type={"string"} required>
 
@@ -117,12 +129,16 @@ _ = result
 
 </ResponseField>
 
-<ResponseField name="email" type={"string (email)"} required>
-
+<ResponseField name="email" type={"string"} required>
+Email address supplied by the identity provider.
 </ResponseField>
 
 <ResponseField name="firstName" type={"string | null"} required>
 
+</ResponseField>
+
+<ResponseField name="impersonator" type={"AccountImpersonator"}>
+Present only while a WorkOS dashboard admin is impersonating this account: the admin's email. Attribution only; grants nothing.
 </ResponseField>
 
 <ResponseField name="lastName" type={"string | null"} required>

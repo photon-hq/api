@@ -56,13 +56,6 @@ photon.auth.retryOrganizationConnectionSync(input: RetryOrganizationConnectionSy
 ```
 `POST /v1/auth/organizations/{orgId}/connection-sync/retry`
 
-**[Start company sign-in](/api-client/sdk/auth/start-enterprise-login)**
-
-```typescript TypeScript
-photon.auth.startEnterpriseLogin(input: StartEnterpriseLoginInput, options?: RequestOptions): Promise<StartEnterpriseLoginOutput>
-```
-`POST /v1/auth/login/enrollment`
-
 **[Update organization SSO policy](/api-client/sdk/auth/update-organization-sso-policy)**
 
 ```typescript TypeScript
@@ -120,13 +113,6 @@ photon.auth.refresh_organization_sso_connection(input: RefreshOrganizationSsoCon
 photon.auth.retry_organization_connection_sync(input: RetryOrganizationConnectionSyncInput) -> models.OrganizationConnectionStatus
 ```
 `POST /v1/auth/organizations/{orgId}/connection-sync/retry`
-
-**[Start company sign-in](/api-client/sdk/auth/start-enterprise-login)**
-
-```python Python
-photon.auth.start_enterprise_login(input: StartEnterpriseLoginInput) -> models.StartEnterpriseLoginResponse
-```
-`POST /v1/auth/login/enrollment`
 
 **[Update organization SSO policy](/api-client/sdk/auth/update-organization-sso-policy)**
 
@@ -186,13 +172,6 @@ client.retry_organization_connection_sync(org_id: String).await -> Result<Respon
 ```
 `POST /v1/auth/organizations/{orgId}/connection-sync/retry`
 
-**[Start company sign-in](/api-client/sdk/auth/start-enterprise-login)**
-
-```rust Rust
-client.start_enterprise_login(body: &types::StartEnterpriseLoginRequest).await -> Result<ResponseValue<types::StartEnterpriseLoginResponse>, Error<StartEnterpriseLoginError>>
-```
-`POST /v1/auth/login/enrollment`
-
 **[Update organization SSO policy](/api-client/sdk/auth/update-organization-sso-policy)**
 
 ```rust Rust
@@ -250,13 +229,6 @@ client.Auth.RefreshOrganizationSsoConnection(ctx context.Context, params *Refres
 client.Auth.RetryOrganizationConnectionSync(ctx context.Context, params *RetryOrganizationConnectionSyncParams, opts ...RequestOption) (*OrganizationConnectionStatus, error)
 ```
 `POST /v1/auth/organizations/{orgId}/connection-sync/retry`
-
-**[Start company sign-in](/api-client/sdk/auth/start-enterprise-login)**
-
-```go Go
-client.Auth.StartEnterpriseLogin(ctx context.Context, params *StartEnterpriseLoginParams, opts ...RequestOption) (*StartEnterpriseLoginResponse, error)
-```
-`POST /v1/auth/login/enrollment`
 
 **[Update organization SSO policy](/api-client/sdk/auth/update-organization-sso-policy)**
 
@@ -362,15 +334,6 @@ Business permissions an OAuth application can be configured with. Client creatio
 
 
 <ResponseField name="url" type={"string"} required>
-
-</ResponseField>
-
-
-### StartEnterpriseLoginResponse
-
-
-
-<ResponseField name="url" type={"string (uri)"} required>
 
 </ResponseField>
 

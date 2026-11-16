@@ -6,7 +6,7 @@ description: "Count a line's filtered verification codes: countResourceFilteredV
 
 `GET /v1/projects/{id}/platforms/resources/{resourceId}/filtered-otp/count`
 
-Counts the verification codes Photon kept from one dedicated line or number. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a number receives both SMS and WhatsApp. Requires the platforms:read permission bound to the project resource in the path.
+Counts the verification codes Photon kept from one dedicated line. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a dedicated line receives both iMessage and WhatsApp. Requires the platforms:read permission bound to the project resource in the path.
 
 <Tabs>
 <Tab title="TypeScript">

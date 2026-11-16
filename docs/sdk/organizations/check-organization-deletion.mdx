@@ -6,7 +6,7 @@ description: "Check organization deletion prerequisites: checkOrganizationDeleti
 
 `GET /v1/organizations/{organizationId}/deletion-check`
 
-
+Reports whether the organization can be deleted now (canDelete), the blockers to clear first, such as active projects or unpaid invoices, and the version to send to closeOrganization. The answer is advisory, because deletion checks again. Only the Owner can call it, with account credentials; in an organization that requires SSO, sign in through SSO, because Account Service Keys are refused.
 
 <Tabs>
 <Tab title="TypeScript">

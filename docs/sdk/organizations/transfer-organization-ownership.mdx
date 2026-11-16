@@ -6,7 +6,7 @@ description: "Transfer organization ownership to an existing member: transferOrg
 
 `POST /v1/organizations/{organizationId}/transfer-ownership`
 
-
+Makes another active member the Owner and turns the current Owner into a Member. Only the Owner can call it, with account credentials and the required Idempotency-Key header. Send the organization's current version, not a membership version, as expectedVersion; a stale version or naming yourself returns 409.
 
 <Tabs>
 <Tab title="TypeScript">

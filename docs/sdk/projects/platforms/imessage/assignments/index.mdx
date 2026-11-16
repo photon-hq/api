@@ -175,6 +175,10 @@ client.Projects.Platforms.Imessage.Assignments.Release(ctx context.Context, para
 
 </ResponseField>
 
+<ResponseField name="optIn" type={"SharedLineAssignmentOptIn"} required>
+Whether the end user has texted the assigned line from their handle since this assignment was created. Until they have, sends to them on this line are refused; once they have, the project can message them while the assignment is unreleased. A released assignment keeps its opt-in, and a re-created assignment starts pending. This records only that Photon allows replies; it is not a consent record for SMS compliance.
+</ResponseField>
+
 <ResponseField name="platform" type={"SharedLineAssignmentPlatform"} required>
 
 </ResponseField>

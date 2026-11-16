@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { answer, collectExamples, ENVIRONMENT, extractBlocks, redirectBuilders, SKIP_MARKER } from "./check-docs-examples.mjs";
+import { Webhook } from "standardwebhooks";
+import { answer, collectExamples, ENVIRONMENT, extractBlocks, redirectBuilders, SKIP_MARKER, webhookDeliveries } from "./check-docs-examples.mjs";
 
 const page = `---
 title: "Example"
@@ -57,6 +58,27 @@ test("the mock API requires a known credential and serves only the guide's route
   assert.equal(answer({ method: "GET", url: "/v1/account", headers: accessToken }).status, 200);
   assert.ok(answer({ method: "GET", url: projects, headers: accessToken }).unexpected);
   assert.ok(answer({ method: "DELETE", url: projects, headers }).unexpected);
+});
+
+test("receiver examples get a delivery signed with the check's secret and a tampered copy, and the mock serves its message", () => {
+  const [valid, tampered] = webhookDeliveries();
+  const verifier = new Webhook(ENVIRONMENT.PHOTON_WEBHOOK_SECRET);
+  const event = verifier.verify(valid.body, valid.headers);
+  assert.equal(event.type, "message.received");
+  assert.ok(valid.accept && !tampered.accept);
+  assert.throws(() => verifier.verify(tampered.body, tampered.headers), /signature/);
+  const projectKey = { authorization: `Bearer ${ENVIRONMENT.PHOTON_PROJECT_API_KEY}` };
+  const message = `/v1/projects/${event.data.projectId}/messages/${event.data.object.id}`;
+  assert.equal(answer({ method: "GET", url: message, headers: projectKey }).status, 200);
+  assert.equal(answer({ method: "POST", url: `${message}/read`, headers: projectKey }).status, 400);
+  assert.equal(answer({ method: "POST", url: `${message}/read`, headers: { ...projectKey, "idempotency-key": "k" } }).status, 202);
+  assert.ok(answer({ method: "GET", url: `/v1/projects/${event.data.projectId}/messages/pho_msg_other`, headers: projectKey }).unexpected);
+  const destinations = `/v1/projects/${ENVIRONMENT.PHOTON_PROJECT_ID}/webhooks/destinations`;
+  const body = JSON.stringify({ name: "Inbox", url: "https://example.com/hook", apiVersion: "2026-07-01", enabledEvents: ["message.received"] });
+  assert.equal(answer({ method: "POST", url: destinations, headers: projectKey, body }).status, 400);
+  const created = answer({ method: "POST", url: destinations, headers: { ...projectKey, "idempotency-key": "k" }, body });
+  assert.equal(created.status, 201);
+  assert.equal(created.body.signingSecret, ENVIRONMENT.PHOTON_WEBHOOK_SECRET);
 });
 
 test("only PhotonClientBuilder chains are redirected to the mock", () => {

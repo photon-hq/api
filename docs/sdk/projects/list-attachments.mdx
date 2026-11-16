@@ -6,7 +6,7 @@ description: "List attachments: listAttachments in the TypeScript, Python, Rust 
 
 `GET /v1/projects/{id}/attachments`
 
-Lists the Project's Attachment metadata, with optional time filters.
+Lists the Project's Attachment metadata, with optional time filters. An Attachment can be absent until its upload finishes, which advances its updatedAt; follow changes with updatedSince.
 
 <Tabs>
 <Tab title="TypeScript">

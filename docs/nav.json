@@ -15,7 +15,8 @@
         "api-client/errors",
         "api-client/pagination",
         "api-client/raw-responses",
-        "api-client/retries-and-timeouts"
+        "api-client/retries-and-timeouts",
+        "api-client/webhooks"
       ]
     },
     {
@@ -55,7 +56,6 @@
             "api-client/sdk/auth/disable-organization-sso",
             "api-client/sdk/auth/refresh-organization-sso-connection",
             "api-client/sdk/auth/retry-organization-connection-sync",
-            "api-client/sdk/auth/start-enterprise-login",
             "api-client/sdk/auth/update-organization-sso-policy",
             {
               "group": "Device",
@@ -85,6 +85,7 @@
             "api-client/sdk/organizations/get-organization-oauth-client-secret",
             "api-client/sdk/organizations/get-service-identity",
             "api-client/sdk/organizations/get-sso-subscription",
+            "api-client/sdk/organizations/get-ten-dlc-brand-otp",
             "api-client/sdk/organizations/accept-organization-invitation",
             "api-client/sdk/organizations/cancel-sso-subscription",
             "api-client/sdk/organizations/commit-organization-avatar",
@@ -95,7 +96,6 @@
             "api-client/sdk/organizations/create-service-identity",
             "api-client/sdk/organizations/create-service-identity-api-key",
             "api-client/sdk/organizations/create-service-identity-client-secret",
-            "api-client/sdk/organizations/ensure-initial-organization",
             "api-client/sdk/organizations/leave-organization",
             "api-client/sdk/organizations/preview-organization-invitation",
             "api-client/sdk/organizations/resend-organization-invitation",
@@ -104,11 +104,13 @@
             "api-client/sdk/organizations/rotate-organization-oauth-client-secret",
             "api-client/sdk/organizations/subscribe-sso",
             "api-client/sdk/organizations/transfer-organization-ownership",
+            "api-client/sdk/organizations/trigger-ten-dlc-brand-otp",
             "api-client/sdk/organizations/setup-organization-oauth-client-secret",
             "api-client/sdk/organizations/update-organization",
             "api-client/sdk/organizations/update-organization-member-role",
             "api-client/sdk/organizations/update-organization-oauth-client",
             "api-client/sdk/organizations/update-service-identity",
+            "api-client/sdk/organizations/verify-ten-dlc-brand-otp",
             "api-client/sdk/organizations/close-organization",
             "api-client/sdk/organizations/delete-organization-oauth-client",
             "api-client/sdk/organizations/delete-organization-oauth-client-secret",

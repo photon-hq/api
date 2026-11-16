@@ -164,6 +164,24 @@ photon = Photon(
 )
 ```
 
+## Webhooks
+
+`verify_webhook` checks a webhook delivery's
+[Standard Webhooks](https://www.standardwebhooks.com/) signature with the
+destination's signing secret (`whsec_...`). Pass the body exactly as it arrived,
+before anything parses it. When it returns, the delivery verified and the body
+is the event. It raises `WebhookVerificationError` when the delivery does not
+verify: answer that with `400` and ignore the body.
+
+```python
+import json
+
+from photon_api import verify_webhook
+
+verify_webhook(body, headers, secret=webhook_secret)
+event = json.loads(body)
+```
+
 ## API reference
 
 The OpenAPI contract this client is generated from is
@@ -210,5 +228,5 @@ This repository is generated, so external pull requests are not accepted. See
 
 ## License
 
-MIT. See [LICENSE](https://github.com/photon-hq/api/blob/main/LICENSE) and
+Apache-2.0. See [LICENSE](https://github.com/photon-hq/api/blob/main/LICENSE) and
 [NOTICE](https://github.com/photon-hq/api/blob/main/NOTICE).

@@ -170,16 +170,23 @@ type AcceptedWhatsappMessage struct {
 }
 
 type Account struct {
-	AccountID       string     `json:"accountId"`
-	CreatedAt       *Timestamp `json:"createdAt"`
-	DeletedAt       *Timestamp `json:"deletedAt"`
-	Email           string     `json:"email"`
-	FirstName       *string    `json:"firstName"`
-	LastName        *string    `json:"lastName"`
-	PhoneNumber     *string    `json:"phoneNumber"`
-	PhoneVerifiedAt *Timestamp `json:"phoneVerifiedAt"`
-	PictureURL      string     `json:"pictureUrl"`
-	UpdatedAt       *Timestamp `json:"updatedAt"`
+	AccountID string     `json:"accountId"`
+	CreatedAt *Timestamp `json:"createdAt"`
+	DeletedAt *Timestamp `json:"deletedAt"`
+	// Email address supplied by the identity provider.
+	Email           string               `json:"email"`
+	FirstName       *string              `json:"firstName"`
+	Impersonator    *AccountImpersonator `json:"impersonator,omitempty"`
+	LastName        *string              `json:"lastName"`
+	PhoneNumber     *string              `json:"phoneNumber"`
+	PhoneVerifiedAt *Timestamp           `json:"phoneVerifiedAt"`
+	PictureURL      string               `json:"pictureUrl"`
+	UpdatedAt       *Timestamp           `json:"updatedAt"`
+}
+
+// Present only while a WorkOS dashboard admin is impersonating this account: the admin's email. Attribution only; grants nothing.
+type AccountImpersonator struct {
+	Email string `json:"email"`
 }
 
 type AccountServiceKey struct {
@@ -231,8 +238,10 @@ type ApiKey struct {
 type ApiKeyPermission string
 
 const (
+	ApiKeyPermissionCallsRead      ApiKeyPermission = "calls:read"
 	ApiKeyPermissionEventsRead     ApiKeyPermission = "events:read"
 	ApiKeyPermissionEventsWrite    ApiKeyPermission = "events:write"
+	ApiKeyPermissionMessagesRead   ApiKeyPermission = "messages:read"
 	ApiKeyPermissionPlatformsRead  ApiKeyPermission = "platforms:read"
 	ApiKeyPermissionPlatformsWrite ApiKeyPermission = "platforms:write"
 	ApiKeyPermissionProjectRead    ApiKeyPermission = "project:read"
@@ -328,6 +337,19 @@ type BatchUpdateVoiceLineProfileAssignmentsResponse struct {
 	Assignments []VoiceLineProfileAssignment `json:"assignments"`
 }
 
+// How the organization pays: self_serve by card, each purchase paid when made; enterprise by invoice on its contract's terms, its purchases added to its next monthly invoice.
+type BillingAgreement struct{ Union }
+
+// AsSelfServeBillingAgreement decodes the value as SelfServeBillingAgreement.
+func (u BillingAgreement) AsSelfServeBillingAgreement() (SelfServeBillingAgreement, error) {
+	return UnionAs[SelfServeBillingAgreement](u.Union)
+}
+
+// AsEnterpriseBillingAgreement decodes the value as EnterpriseBillingAgreement.
+func (u BillingAgreement) AsEnterpriseBillingAgreement() (EnterpriseBillingAgreement, error) {
+	return UnionAs[EnterpriseBillingAgreement](u.Union)
+}
+
 // What the change does beside what it bills, by the kind of change requested: fixed_charge for a fixed-charge change, plan_change for a plan change.
 type BillingChangeEffect struct{ Union }
 
@@ -383,7 +405,7 @@ type BillingOperationFailure struct {
 	UnsoldFixedCharges []BillingHeldFixedCharge       `json:"unsoldFixedCharges"`
 }
 
-// Stable provider-neutral failure category.
+// Stable provider-neutral failure category. billing_restricted: the payer is behind on payment and the change would gain or keep a paid plan; retry once the payer is back in good standing.
 type BillingOperationFailureCode string
 
 const (
@@ -391,26 +413,40 @@ const (
 	BillingOperationFailureCodePaymentFailed         BillingOperationFailureCode = "payment_failed"
 	BillingOperationFailureCodeNotProvisioned        BillingOperationFailureCode = "not_provisioned"
 	BillingOperationFailureCodeInvalidTarget         BillingOperationFailureCode = "invalid_target"
+	BillingOperationFailureCodePromotionCodeRejected BillingOperationFailureCode = "promotion_code_rejected"
+	BillingOperationFailureCodeBillingRestricted     BillingOperationFailureCode = "billing_restricted"
 	BillingOperationFailureCodeInternal              BillingOperationFailureCode = "internal"
 )
 
 type BillingOperationFailureDetail string
 
 const (
-	BillingOperationFailureDetailCancellationScheduled  BillingOperationFailureDetail = "cancellation_scheduled"
-	BillingOperationFailureDetailFeatureNotSoldByPlan   BillingOperationFailureDetail = "feature_not_sold_by_plan"
-	BillingOperationFailureDetailFeatureNotFound        BillingOperationFailureDetail = "feature_not_found"
-	BillingOperationFailureDetailInsufficientFunds      BillingOperationFailureDetail = "insufficient_funds"
-	BillingOperationFailureDetailPaymentDeclined        BillingOperationFailureDetail = "payment_declined"
-	BillingOperationFailureDetailPaymentMethodExpired   BillingOperationFailureDetail = "payment_method_expired"
-	BillingOperationFailureDetailPaymentMethodInvalid   BillingOperationFailureDetail = "payment_method_invalid"
-	BillingOperationFailureDetailPaymentTimeout         BillingOperationFailureDetail = "payment_timeout"
-	BillingOperationFailureDetailPlanActivationTimeout  BillingOperationFailureDetail = "plan_activation_timeout"
-	BillingOperationFailureDetailPlanNotFound           BillingOperationFailureDetail = "plan_not_found"
-	BillingOperationFailureDetailQuantityOutOfRange     BillingOperationFailureDetail = "quantity_out_of_range"
-	BillingOperationFailureDetailReconciliationRequired BillingOperationFailureDetail = "reconciliation_required"
-	BillingOperationFailureDetailReleaseRequired        BillingOperationFailureDetail = "release_required"
-	BillingOperationFailureDetailTargetRejected         BillingOperationFailureDetail = "target_rejected"
+	BillingOperationFailureDetailCancellationScheduled            BillingOperationFailureDetail = "cancellation_scheduled"
+	BillingOperationFailureDetailFeatureNotFound                  BillingOperationFailureDetail = "feature_not_found"
+	BillingOperationFailureDetailFeatureNotSoldByPlan             BillingOperationFailureDetail = "feature_not_sold_by_plan"
+	BillingOperationFailureDetailInsufficientFunds                BillingOperationFailureDetail = "insufficient_funds"
+	BillingOperationFailureDetailPaymentDeclined                  BillingOperationFailureDetail = "payment_declined"
+	BillingOperationFailureDetailPaymentMethodExpired             BillingOperationFailureDetail = "payment_method_expired"
+	BillingOperationFailureDetailPaymentMethodInvalid             BillingOperationFailureDetail = "payment_method_invalid"
+	BillingOperationFailureDetailPaymentTimeout                   BillingOperationFailureDetail = "payment_timeout"
+	BillingOperationFailureDetailPlanActivationTimeout            BillingOperationFailureDetail = "plan_activation_timeout"
+	BillingOperationFailureDetailPlanNotFound                     BillingOperationFailureDetail = "plan_not_found"
+	BillingOperationFailureDetailPromotionCodeAlreadyApplied      BillingOperationFailureDetail = "promotion_code_already_applied"
+	BillingOperationFailureDetailPromotionCodeAlreadyRedeemed     BillingOperationFailureDetail = "promotion_code_already_redeemed"
+	BillingOperationFailureDetailPromotionCodeChangeNotEligible   BillingOperationFailureDetail = "promotion_code_change_not_eligible"
+	BillingOperationFailureDetailPromotionCodeExhausted           BillingOperationFailureDetail = "promotion_code_exhausted"
+	BillingOperationFailureDetailPromotionCodeExpired             BillingOperationFailureDetail = "promotion_code_expired"
+	BillingOperationFailureDetailPromotionCodeInactive            BillingOperationFailureDetail = "promotion_code_inactive"
+	BillingOperationFailureDetailPromotionCodeLimitReached        BillingOperationFailureDetail = "promotion_code_limit_reached"
+	BillingOperationFailureDetailPromotionCodeNewCustomerOnly     BillingOperationFailureDetail = "promotion_code_new_customer_only"
+	BillingOperationFailureDetailPromotionCodeNotForOrganization  BillingOperationFailureDetail = "promotion_code_not_for_organization"
+	BillingOperationFailureDetailPromotionCodeNotFound            BillingOperationFailureDetail = "promotion_code_not_found"
+	BillingOperationFailureDetailPromotionCodePlanNotEligible     BillingOperationFailureDetail = "promotion_code_plan_not_eligible"
+	BillingOperationFailureDetailPromotionCodePurchaseNotEligible BillingOperationFailureDetail = "promotion_code_purchase_not_eligible"
+	BillingOperationFailureDetailQuantityOutOfRange               BillingOperationFailureDetail = "quantity_out_of_range"
+	BillingOperationFailureDetailReconciliationRequired           BillingOperationFailureDetail = "reconciliation_required"
+	BillingOperationFailureDetailReleaseRequired                  BillingOperationFailureDetail = "release_required"
+	BillingOperationFailureDetailTargetRejected                   BillingOperationFailureDetail = "target_rejected"
 )
 
 type BillingOperationKind string
@@ -541,11 +577,11 @@ type BillingPreviewCredit struct {
 	PeriodStart *string `json:"periodStart"`
 }
 
-// Billed later rather than with dueNow: one line per plan change addition, billed when it is added and priced as if added now. Before taxes; the balance left after dueNow applies to it first. nextCharge already includes it. No lines when nothing is billed later.
+// Billed later rather than with dueNow: one line per plan change addition, billed when it is added and priced as if added now; or, for an organization that pays by invoice, what a fixed-charge change adds to its next invoice. After coupons, before taxes; the balance left after dueNow applies to it first. nextCharge already includes it. No lines when nothing is billed later.
 type BillingPreviewDeferred struct {
 	Currency string               `json:"currency"`
 	Lines    []BillingPreviewLine `json:"lines"`
-	// Sum of the lines, in cents.
+	// Sum of the lines less their discounts, in cents.
 	TotalCents int64 `json:"totalCents"`
 }
 
@@ -553,9 +589,11 @@ type BillingPreviewFixedChargeChange struct {
 	// Category slug, e.g. analytics or messaging.
 	Category    string            `json:"category"`
 	FixedCharge FixedChargeChange `json:"fixedCharge"`
+	// A promotion code the customer entered, previewed as the purchase redeems it, on an increase only: dueNow and upcomingInvoices are discounted by it. Needs billing:manage. A refused code fails the preview with PROMOTION_CODE_REJECTED, its reason as a refused purchase's failure detail.
+	PromotionCode *string `json:"promotionCode,omitempty"`
 }
 
-// Charged when the change is made, priced as the change bills it. No lines when it charges nothing now.
+// An invoice priced by the billing engine as it would bill it: its lines, then what coupons, taxes and credits change, and what the payer is charged. No lines when it bills nothing.
 type BillingPreviewInvoice struct {
 	// Credit notes and prepaid credit applied, in cents.
 	CreditsCents int64  `json:"creditsCents"`
@@ -573,9 +611,11 @@ type BillingPreviewInvoice struct {
 type BillingPreviewLine struct {
 	AmountCents int64 `json:"amountCents"`
 	// The fixed-charge code for a fixed charge, the metric code for usage, and the plan code otherwise.
-	Code string                 `json:"code"`
-	Kind BillingPreviewLineKind `json:"kind"`
-	Name string                 `json:"name"`
+	Code string `json:"code"`
+	// What coupons take off amountCents, in cents.
+	DiscountCents int64                  `json:"discountCents"`
+	Kind          BillingPreviewLineKind `json:"kind"`
+	Name          string                 `json:"name"`
 	// ISO 8601.
 	PeriodEnd *string `json:"periodEnd"`
 	// ISO 8601.
@@ -612,6 +652,15 @@ type BillingPreviewPlanChange struct {
 	Category string `json:"category"`
 	// Plan to change to, as a purchase of it changes it.
 	PlanCode string `json:"planCode"`
+	// A promotion code the customer entered, previewed as the purchase redeems it: dueNow and upcomingInvoices are discounted by it. Needs billing:manage. A refused code fails the preview with PROMOTION_CODE_REJECTED, its reason as a refused purchase's failure detail.
+	PromotionCode *string `json:"promotionCode,omitempty"`
+}
+
+// An invoice a following period issues, priced as now: the plan's fee and its fixed charges at the units the change and any additions leave, after coupons, with taxes, before credits. Usage and a minimum commitment's true-up are left out.
+type BillingUpcomingInvoice struct {
+	// When the billing engine bills it: the start of that day in timeZone.
+	At      string                `json:"at"`
+	Invoice BillingPreviewInvoice `json:"invoice"`
 }
 
 type CancelSsoSubscriptionResponse struct {
@@ -623,6 +672,19 @@ type ChangePlanRequest struct {
 	Category string `json:"category"`
 	// Plan to subscribe to, e.g. analytics_pro.
 	PlanCode string `json:"planCode"`
+	// A promotion code the customer entered, matched ignoring case. It is redeemed with the change, which only an upgrade or a first plan can carry; a refused code fails the operation with code promotion_code_rejected and changes nothing. Coupons the project already has stay and stack.
+	PromotionCode *string `json:"promotionCode,omitempty"`
+}
+
+type ChargeRefusedProblem struct {
+	Code        string             `json:"code"`
+	Detail      *string            `json:"detail,omitempty"`
+	Instance    *string            `json:"instance,omitempty"`
+	Remediation ProblemRemediation `json:"remediation"`
+	RequestID   *string            `json:"requestId,omitempty"`
+	Status      float64            `json:"status"`
+	Title       string             `json:"title"`
+	Type        string             `json:"type"`
 }
 
 type CheckOrganizationDeletionResponse struct {
@@ -708,11 +770,6 @@ func (u Content) Kind() string { return u.Discriminator("type") }
 // AsTextContent decodes the value as TextContent.
 func (u Content) AsTextContent() (TextContent, error) { return UnionAs[TextContent](u.Union) }
 
-// AsTextUpdateContent decodes the value as TextUpdateContent.
-func (u Content) AsTextUpdateContent() (TextUpdateContent, error) {
-	return UnionAs[TextUpdateContent](u.Union)
-}
-
 // AsAttachmentContent decodes the value as AttachmentContent.
 func (u Content) AsAttachmentContent() (AttachmentContent, error) {
 	return UnionAs[AttachmentContent](u.Union)
@@ -746,6 +803,16 @@ func (u Content) AsSpaceTypingUpdateContent() (SpaceTypingUpdateContent, error) 
 	return UnionAs[SpaceTypingUpdateContent](u.Union)
 }
 
+// AsSpaceBackgroundUpdateContent decodes the value as SpaceBackgroundUpdateContent.
+func (u Content) AsSpaceBackgroundUpdateContent() (SpaceBackgroundUpdateContent, error) {
+	return UnionAs[SpaceBackgroundUpdateContent](u.Union)
+}
+
+// AsSpaceProfileShareContent decodes the value as SpaceProfileShareContent.
+func (u Content) AsSpaceProfileShareContent() (SpaceProfileShareContent, error) {
+	return UnionAs[SpaceProfileShareContent](u.Union)
+}
+
 // AsPollContent decodes the value as PollContent.
 func (u Content) AsPollContent() (PollContent, error) { return UnionAs[PollContent](u.Union) }
 
@@ -761,6 +828,11 @@ func (u Content) AsPollUpdateContent() (PollUpdateContent, error) {
 
 // AsGroupContent decodes the value as GroupContent.
 func (u Content) AsGroupContent() (GroupContent, error) { return UnionAs[GroupContent](u.Union) }
+
+// AsMessageUpdateContent decodes the value as MessageUpdateContent.
+func (u Content) AsMessageUpdateContent() (MessageUpdateContent, error) {
+	return UnionAs[MessageUpdateContent](u.Union)
+}
 
 type ContentMetadata struct {
 	Email *EmailMetadata `json:"email,omitempty"`
@@ -778,6 +850,29 @@ func (u CountMessagesResponse) AsMessageCount() (MessageCount, error) {
 func (u CountMessagesResponse) AsDailyMessageCount() (DailyMessageCount, error) {
 	return UnionAs[DailyMessageCount](u.Union)
 }
+
+type CouponAppliesTo struct {
+	FeeKinds []CouponFeeKind `json:"feeKinds"`
+	// This plan's fixed charges it targets, by fixedChargeCode.
+	FixedChargeCodes []string `json:"fixedChargeCodes"`
+}
+
+type CouponDuration string
+
+const (
+	CouponDurationOnce      CouponDuration = "once"
+	CouponDurationRepeating CouponDuration = "repeating"
+	CouponDurationForever   CouponDuration = "forever"
+)
+
+type CouponFeeKind string
+
+const (
+	CouponFeeKindBaseFee           CouponFeeKind = "base_fee"
+	CouponFeeKindFixedCharges      CouponFeeKind = "fixed_charges"
+	CouponFeeKindMinimumCommitment CouponFeeKind = "minimum_commitment"
+	CouponFeeKindUsage             CouponFeeKind = "usage"
+)
 
 type CreateAccountServiceKeyRequest struct {
 	ExpiresAt *Timestamp `json:"expiresAt,omitempty"`
@@ -1694,6 +1789,50 @@ type EmailDomainObservation struct {
 	ResourceID        string                 `json:"resourceId"`
 }
 
+type EmailDomainProviderRejectedProblem struct {
+	Code        string             `json:"code"`
+	Detail      *string            `json:"detail,omitempty"`
+	Instance    *string            `json:"instance,omitempty"`
+	Remediation ProblemRemediation `json:"remediation"`
+	RequestID   *string            `json:"requestId,omitempty"`
+	Status      float64            `json:"status"`
+	Title       string             `json:"title"`
+	Type        string             `json:"type"`
+}
+
+type EmailDomainReleaseFailedProblem struct {
+	Code        string             `json:"code"`
+	Detail      *string            `json:"detail,omitempty"`
+	Instance    *string            `json:"instance,omitempty"`
+	Remediation ProblemRemediation `json:"remediation"`
+	RequestID   *string            `json:"requestId,omitempty"`
+	Status      float64            `json:"status"`
+	Title       string             `json:"title"`
+	Type        string             `json:"type"`
+}
+
+type EmailDomainVerificationFailedProblem struct {
+	Code        string             `json:"code"`
+	Detail      *string            `json:"detail,omitempty"`
+	Instance    *string            `json:"instance,omitempty"`
+	Remediation ProblemRemediation `json:"remediation"`
+	RequestID   *string            `json:"requestId,omitempty"`
+	Status      float64            `json:"status"`
+	Title       string             `json:"title"`
+	Type        string             `json:"type"`
+}
+
+type EmailDomainVerificationTimedOutProblem struct {
+	Code        string             `json:"code"`
+	Detail      *string            `json:"detail,omitempty"`
+	Instance    *string            `json:"instance,omitempty"`
+	Remediation ProblemRemediation `json:"remediation"`
+	RequestID   *string            `json:"requestId,omitempty"`
+	Status      float64            `json:"status"`
+	Title       string             `json:"title"`
+	Type        string             `json:"type"`
+}
+
 type EmailGroupContent struct {
 	Metadata *ContentMetadata        `json:"metadata,omitempty"`
 	Parts    []EmailGroupContentPart `json:"parts"`
@@ -1708,11 +1847,6 @@ func (u EmailGroupContentPart) Kind() string { return u.Discriminator("type") }
 // AsTextContent decodes the value as TextContent.
 func (u EmailGroupContentPart) AsTextContent() (TextContent, error) {
 	return UnionAs[TextContent](u.Union)
-}
-
-// AsTextUpdateContent decodes the value as TextUpdateContent.
-func (u EmailGroupContentPart) AsTextUpdateContent() (TextUpdateContent, error) {
-	return UnionAs[TextUpdateContent](u.Union)
 }
 
 // AsAttachmentContent decodes the value as AttachmentContent.
@@ -1748,6 +1882,16 @@ func (u EmailGroupContentPart) AsSpaceParticipantsUpdateContent() (SpaceParticip
 // AsSpaceTypingUpdateContent decodes the value as SpaceTypingUpdateContent.
 func (u EmailGroupContentPart) AsSpaceTypingUpdateContent() (SpaceTypingUpdateContent, error) {
 	return UnionAs[SpaceTypingUpdateContent](u.Union)
+}
+
+// AsSpaceBackgroundUpdateContent decodes the value as SpaceBackgroundUpdateContent.
+func (u EmailGroupContentPart) AsSpaceBackgroundUpdateContent() (SpaceBackgroundUpdateContent, error) {
+	return UnionAs[SpaceBackgroundUpdateContent](u.Union)
+}
+
+// AsSpaceProfileShareContent decodes the value as SpaceProfileShareContent.
+func (u EmailGroupContentPart) AsSpaceProfileShareContent() (SpaceProfileShareContent, error) {
+	return UnionAs[SpaceProfileShareContent](u.Union)
 }
 
 // AsPollContent decodes the value as PollContent.
@@ -1813,11 +1957,6 @@ func (u EmailMessageContent) AsTextContent() (TextContent, error) {
 	return UnionAs[TextContent](u.Union)
 }
 
-// AsTextUpdateContent decodes the value as TextUpdateContent.
-func (u EmailMessageContent) AsTextUpdateContent() (TextUpdateContent, error) {
-	return UnionAs[TextUpdateContent](u.Union)
-}
-
 // AsAttachmentContent decodes the value as AttachmentContent.
 func (u EmailMessageContent) AsAttachmentContent() (AttachmentContent, error) {
 	return UnionAs[AttachmentContent](u.Union)
@@ -1853,6 +1992,16 @@ func (u EmailMessageContent) AsSpaceTypingUpdateContent() (SpaceTypingUpdateCont
 	return UnionAs[SpaceTypingUpdateContent](u.Union)
 }
 
+// AsSpaceBackgroundUpdateContent decodes the value as SpaceBackgroundUpdateContent.
+func (u EmailMessageContent) AsSpaceBackgroundUpdateContent() (SpaceBackgroundUpdateContent, error) {
+	return UnionAs[SpaceBackgroundUpdateContent](u.Union)
+}
+
+// AsSpaceProfileShareContent decodes the value as SpaceProfileShareContent.
+func (u EmailMessageContent) AsSpaceProfileShareContent() (SpaceProfileShareContent, error) {
+	return UnionAs[SpaceProfileShareContent](u.Union)
+}
+
 // AsPollContent decodes the value as PollContent.
 func (u EmailMessageContent) AsPollContent() (PollContent, error) {
 	return UnionAs[PollContent](u.Union)
@@ -1871,6 +2020,11 @@ func (u EmailMessageContent) AsPollUpdateContent() (PollUpdateContent, error) {
 // AsEmailGroupContent decodes the value as EmailGroupContent.
 func (u EmailMessageContent) AsEmailGroupContent() (EmailGroupContent, error) {
 	return UnionAs[EmailGroupContent](u.Union)
+}
+
+// AsMessageUpdateContent decodes the value as MessageUpdateContent.
+func (u EmailMessageContent) AsMessageUpdateContent() (MessageUpdateContent, error) {
+	return UnionAs[MessageUpdateContent](u.Union)
 }
 
 type EmailMetadata struct {
@@ -2079,6 +2233,17 @@ type EmailSpaceSnapshot struct {
 	ProjectID      ProjectId         `json:"projectId"`
 }
 
+type EmailTenantSetupTimedOutProblem struct {
+	Code        string             `json:"code"`
+	Detail      *string            `json:"detail,omitempty"`
+	Instance    *string            `json:"instance,omitempty"`
+	Remediation ProblemRemediation `json:"remediation"`
+	RequestID   *string            `json:"requestId,omitempty"`
+	Status      float64            `json:"status"`
+	Title       string             `json:"title"`
+	Type        string             `json:"type"`
+}
+
 type EmailUser struct {
 	// When Photon first persisted this resource.
 	CreatedAt Timestamp        `json:"createdAt"`
@@ -2108,8 +2273,45 @@ type EmailUserSnapshot struct {
 	ProjectID ProjectId        `json:"projectId"`
 }
 
-type EnsureInitialOrganizationResponse struct {
-	Organization *Organization `json:"organization"`
+type EnterpriseBillingAgreement struct {
+	Kind string `json:"kind"`
+	// Days from an invoice's issue to its due date: Net 30 is 30, and 0 is due on receipt.
+	PaymentTermDays     int64   `json:"paymentTermDays"`
+	PurchaseOrderNumber *string `json:"purchaseOrderNumber"`
+}
+
+type EnterprisePlanRequiredProblem struct {
+	Code        string             `json:"code"`
+	Detail      *string            `json:"detail,omitempty"`
+	Instance    *string            `json:"instance,omitempty"`
+	Remediation ProblemRemediation `json:"remediation"`
+	RequestID   *string            `json:"requestId,omitempty"`
+	Status      float64            `json:"status"`
+	Title       string             `json:"title"`
+	Type        string             `json:"type"`
+}
+
+type EntitlementRejectionReason string
+
+const (
+	EntitlementRejectionReasonBillingRestricted       EntitlementRejectionReason = "billing_restricted"
+	EntitlementRejectionReasonBusinessPlanRequired    EntitlementRejectionReason = "business_plan_required"
+	EntitlementRejectionReasonCardRequired            EntitlementRejectionReason = "card_required"
+	EntitlementRejectionReasonEmailRequired           EntitlementRejectionReason = "email_required"
+	EntitlementRejectionReasonPlanChangeScheduled     EntitlementRejectionReason = "plan_change_scheduled"
+	EntitlementRejectionReasonSubscriptionNotBillable EntitlementRejectionReason = "subscription_not_billable"
+)
+
+type EntitlementRequiredProblem struct {
+	Code        string                     `json:"code"`
+	Detail      *string                    `json:"detail,omitempty"`
+	EffectiveAt *Timestamp                 `json:"effectiveAt,omitempty"`
+	Instance    *string                    `json:"instance,omitempty"`
+	Reason      EntitlementRejectionReason `json:"reason"`
+	RequestID   *string                    `json:"requestId,omitempty"`
+	Status      float64                    `json:"status"`
+	Title       string                     `json:"title"`
+	Type        string                     `json:"type"`
 }
 
 type ExistingAppInstallationDelivery struct {
@@ -2308,7 +2510,6 @@ type FilteredVerificationCodePlatform string
 
 const (
 	FilteredVerificationCodePlatformImessage FilteredVerificationCodePlatform = "imessage"
-	FilteredVerificationCodePlatformSms      FilteredVerificationCodePlatform = "sms"
 	FilteredVerificationCodePlatformWhatsapp FilteredVerificationCodePlatform = "whatsapp"
 )
 
@@ -2419,6 +2620,7 @@ type GetOperationResponse struct {
 }
 
 type GetOrganizationBillingOverviewResponse struct {
+	CurrentPeriod *OrganizationBillingPeriod `json:"currentPeriod"`
 	// Bumps on every entitlement change for the organization.
 	EntitlementsVersion int64                     `json:"entitlementsVersion"`
 	Subscription        *OrganizationSubscription `json:"subscription"`
@@ -2460,9 +2662,11 @@ type GetOrganizationOauthClientSecretResponsePrevious struct {
 }
 
 type GetOrganizationPaymentMethodResponse struct {
+	Agreement BillingAgreement `json:"agreement"`
 	// True once a card is captured for the payer.
-	CardOnFile    bool           `json:"cardOnFile"`
-	PaymentMethod *PaymentMethod `json:"paymentMethod"`
+	CardOnFile      bool             `json:"cardOnFile"`
+	PaymentMethod   *PaymentMethod   `json:"paymentMethod"`
+	PurchaseRefusal *PurchaseRefusal `json:"purchaseRefusal"`
 }
 
 type GetOrganizationResponse struct {
@@ -2538,6 +2742,10 @@ const (
 	GetSsoSubscriptionResponseStateNeedsAttention      GetSsoSubscriptionResponseState = "needs_attention"
 )
 
+type GetTenDlcBrandOtpResponse struct {
+	Data TenDlcBrandOtp `json:"data"`
+}
+
 type GetWhatsappBusinessVerificationCodeResponse struct {
 	Code       string    `json:"code"`
 	ReceivedAt Timestamp `json:"receivedAt"`
@@ -2556,11 +2764,6 @@ func (u GroupContentPart) Kind() string { return u.Discriminator("type") }
 
 // AsTextContent decodes the value as TextContent.
 func (u GroupContentPart) AsTextContent() (TextContent, error) { return UnionAs[TextContent](u.Union) }
-
-// AsTextUpdateContent decodes the value as TextUpdateContent.
-func (u GroupContentPart) AsTextUpdateContent() (TextUpdateContent, error) {
-	return UnionAs[TextUpdateContent](u.Union)
-}
 
 // AsAttachmentContent decodes the value as AttachmentContent.
 func (u GroupContentPart) AsAttachmentContent() (AttachmentContent, error) {
@@ -2597,6 +2800,16 @@ func (u GroupContentPart) AsSpaceTypingUpdateContent() (SpaceTypingUpdateContent
 	return UnionAs[SpaceTypingUpdateContent](u.Union)
 }
 
+// AsSpaceBackgroundUpdateContent decodes the value as SpaceBackgroundUpdateContent.
+func (u GroupContentPart) AsSpaceBackgroundUpdateContent() (SpaceBackgroundUpdateContent, error) {
+	return UnionAs[SpaceBackgroundUpdateContent](u.Union)
+}
+
+// AsSpaceProfileShareContent decodes the value as SpaceProfileShareContent.
+func (u GroupContentPart) AsSpaceProfileShareContent() (SpaceProfileShareContent, error) {
+	return UnionAs[SpaceProfileShareContent](u.Union)
+}
+
 // AsPollContent decodes the value as PollContent.
 func (u GroupContentPart) AsPollContent() (PollContent, error) { return UnionAs[PollContent](u.Union) }
 
@@ -2631,6 +2844,11 @@ func (u ImessageGroupContentPart) AsAttachmentContent() (AttachmentContent, erro
 	return UnionAs[AttachmentContent](u.Union)
 }
 
+// AsVoiceContent decodes the value as VoiceContent.
+func (u ImessageGroupContentPart) AsVoiceContent() (VoiceContent, error) {
+	return UnionAs[VoiceContent](u.Union)
+}
+
 // AsMessageReadContent decodes the value as MessageReadContent.
 func (u ImessageGroupContentPart) AsMessageReadContent() (MessageReadContent, error) {
 	return UnionAs[MessageReadContent](u.Union)
@@ -2639,6 +2857,16 @@ func (u ImessageGroupContentPart) AsMessageReadContent() (MessageReadContent, er
 // AsSpaceTypingUpdateContent decodes the value as SpaceTypingUpdateContent.
 func (u ImessageGroupContentPart) AsSpaceTypingUpdateContent() (SpaceTypingUpdateContent, error) {
 	return UnionAs[SpaceTypingUpdateContent](u.Union)
+}
+
+// AsSpaceBackgroundUpdateContent decodes the value as SpaceBackgroundUpdateContent.
+func (u ImessageGroupContentPart) AsSpaceBackgroundUpdateContent() (SpaceBackgroundUpdateContent, error) {
+	return UnionAs[SpaceBackgroundUpdateContent](u.Union)
+}
+
+// AsSpaceProfileShareContent decodes the value as SpaceProfileShareContent.
+func (u ImessageGroupContentPart) AsSpaceProfileShareContent() (SpaceProfileShareContent, error) {
+	return UnionAs[SpaceProfileShareContent](u.Union)
 }
 
 type ImessageHandle string
@@ -2685,6 +2913,11 @@ func (u ImessageMessageContent) AsAttachmentContent() (AttachmentContent, error)
 	return UnionAs[AttachmentContent](u.Union)
 }
 
+// AsVoiceContent decodes the value as VoiceContent.
+func (u ImessageMessageContent) AsVoiceContent() (VoiceContent, error) {
+	return UnionAs[VoiceContent](u.Union)
+}
+
 // AsMessageReadContent decodes the value as MessageReadContent.
 func (u ImessageMessageContent) AsMessageReadContent() (MessageReadContent, error) {
 	return UnionAs[MessageReadContent](u.Union)
@@ -2693,6 +2926,16 @@ func (u ImessageMessageContent) AsMessageReadContent() (MessageReadContent, erro
 // AsSpaceTypingUpdateContent decodes the value as SpaceTypingUpdateContent.
 func (u ImessageMessageContent) AsSpaceTypingUpdateContent() (SpaceTypingUpdateContent, error) {
 	return UnionAs[SpaceTypingUpdateContent](u.Union)
+}
+
+// AsSpaceBackgroundUpdateContent decodes the value as SpaceBackgroundUpdateContent.
+func (u ImessageMessageContent) AsSpaceBackgroundUpdateContent() (SpaceBackgroundUpdateContent, error) {
+	return UnionAs[SpaceBackgroundUpdateContent](u.Union)
+}
+
+// AsSpaceProfileShareContent decodes the value as SpaceProfileShareContent.
+func (u ImessageMessageContent) AsSpaceProfileShareContent() (SpaceProfileShareContent, error) {
+	return UnionAs[SpaceProfileShareContent](u.Union)
 }
 
 // AsImessageGroupContent decodes the value as ImessageGroupContent.
@@ -2756,12 +2999,9 @@ type ImessageUserSnapshot struct {
 	ProjectID ProjectId           `json:"projectId"`
 }
 
-type InvitationEnterpriseLoginRequest struct {
-	InvitationToken string `json:"invitationToken"`
-	ReturnTo        string `json:"returnTo"`
-}
-
 type Invoice struct {
+	// What is left to pay, in cents, after partial payments and credit.
+	AmountDueCents int64 `json:"amountDueCents"`
 	// ISO currency code.
 	Currency string `json:"currency"`
 	// Invoice id.
@@ -2769,15 +3009,18 @@ type Invoice struct {
 	IssuedAt  *string     `json:"issuedAt"`
 	Kind      InvoiceKind `json:"kind"`
 	// Human invoice number.
-	Number string `json:"number"`
+	Number  string  `json:"number"`
+	PageURL *string `json:"pageUrl"`
 	// Its payment waits on the customer's authentication (3DS). Pay the invoice to complete it.
 	PaymentActionRequired bool    `json:"paymentActionRequired"`
 	PaymentDueAt          *string `json:"paymentDueAt"`
 	// Unpaid past its due date. Overdue invoices set the organization's dunning stage.
-	PaymentOverdue bool                 `json:"paymentOverdue"`
-	PaymentStatus  InvoicePaymentStatus `json:"paymentStatus"`
-	PdfURL         *string              `json:"pdfUrl"`
-	Status         InvoiceStatus        `json:"status"`
+	PaymentOverdue bool `json:"paymentOverdue"`
+	// An ACH debit is paying it and hasn't settled yet. It is not overdue meanwhile.
+	PaymentProcessing bool                 `json:"paymentProcessing"`
+	PaymentStatus     InvoicePaymentStatus `json:"paymentStatus"`
+	PdfURL            *string              `json:"pdfUrl"`
+	Status            InvoiceStatus        `json:"status"`
 	// Every billing subject on the invoice, deduplicated, including one it charged nothing. Empty when none is known.
 	Subjects []InvoiceSubject `json:"subjects"`
 	// Invoice total in cents.
@@ -3508,6 +3751,47 @@ type MessageTypeUnsupportedFailure struct {
 	Message string `json:"message"`
 }
 
+type MessageUpdateContent struct {
+	Content  MessageUpdateValue `json:"content"`
+	Metadata *ContentMetadata   `json:"metadata,omitempty"`
+	Type     string             `json:"type"`
+}
+
+type MessageUpdateGroupContent struct {
+	Metadata *ContentMetadata                `json:"metadata,omitempty"`
+	Parts    []MessageUpdateGroupContentPart `json:"parts"`
+	Type     string                          `json:"type"`
+}
+
+type MessageUpdateGroupContentPart struct{ Union }
+
+// AsTextContent decodes the value as TextContent.
+func (u MessageUpdateGroupContentPart) AsTextContent() (TextContent, error) {
+	return UnionAs[TextContent](u.Union)
+}
+
+// AsAttachmentContent decodes the value as AttachmentContent.
+func (u MessageUpdateGroupContentPart) AsAttachmentContent() (AttachmentContent, error) {
+	return UnionAs[AttachmentContent](u.Union)
+}
+
+// AsVoiceContent decodes the value as VoiceContent.
+func (u MessageUpdateGroupContentPart) AsVoiceContent() (VoiceContent, error) {
+	return UnionAs[VoiceContent](u.Union)
+}
+
+type MessageUpdateValue struct{ Union }
+
+// AsMessageUpdateGroupContentPart decodes the value as MessageUpdateGroupContentPart.
+func (u MessageUpdateValue) AsMessageUpdateGroupContentPart() (MessageUpdateGroupContentPart, error) {
+	return UnionAs[MessageUpdateGroupContentPart](u.Union)
+}
+
+// AsMessageUpdateGroupContent decodes the value as MessageUpdateGroupContent.
+func (u MessageUpdateValue) AsMessageUpdateGroupContent() (MessageUpdateGroupContent, error) {
+	return UnionAs[MessageUpdateGroupContent](u.Union)
+}
+
 type MessagingUnavailableFailure struct {
 	Code    string `json:"code"`
 	Message string `json:"message"`
@@ -3535,6 +3819,60 @@ type NumberCountry struct {
 	DisplayName string `json:"displayName"`
 }
 
+type NumberInventoryUnavailableProblem struct {
+	Code        string             `json:"code"`
+	Detail      *string            `json:"detail,omitempty"`
+	Instance    *string            `json:"instance,omitempty"`
+	Remediation ProblemRemediation `json:"remediation"`
+	RequestID   *string            `json:"requestId,omitempty"`
+	Status      float64            `json:"status"`
+	Title       string             `json:"title"`
+	Type        string             `json:"type"`
+}
+
+type NumberOrderFailedProblem struct {
+	Code      string  `json:"code"`
+	Detail    *string `json:"detail,omitempty"`
+	Instance  *string `json:"instance,omitempty"`
+	RequestID *string `json:"requestId,omitempty"`
+	Status    float64 `json:"status"`
+	Title     string  `json:"title"`
+	Type      string  `json:"type"`
+}
+
+type NumberOrderReconciliationRequiredProblem struct {
+	Code        string             `json:"code"`
+	Detail      *string            `json:"detail,omitempty"`
+	Instance    *string            `json:"instance,omitempty"`
+	Remediation ProblemRemediation `json:"remediation"`
+	RequestID   *string            `json:"requestId,omitempty"`
+	Status      float64            `json:"status"`
+	Title       string             `json:"title"`
+	Type        string             `json:"type"`
+}
+
+type NumberReleaseFailedProblem struct {
+	Code        string             `json:"code"`
+	Detail      *string            `json:"detail,omitempty"`
+	Instance    *string            `json:"instance,omitempty"`
+	Remediation ProblemRemediation `json:"remediation"`
+	RequestID   *string            `json:"requestId,omitempty"`
+	Status      float64            `json:"status"`
+	Title       string             `json:"title"`
+	Type        string             `json:"type"`
+}
+
+type NumberSearchFailedProblem struct {
+	Code        string             `json:"code"`
+	Detail      *string            `json:"detail,omitempty"`
+	Instance    *string            `json:"instance,omitempty"`
+	Remediation ProblemRemediation `json:"remediation"`
+	RequestID   *string            `json:"requestId,omitempty"`
+	Status      float64            `json:"status"`
+	Title       string             `json:"title"`
+	Type        string             `json:"type"`
+}
+
 type Operation struct {
 	Cancellable  bool             `json:"cancellable"`
 	CreatedAt    Timestamp        `json:"createdAt"`
@@ -3552,9 +3890,227 @@ type Operation struct {
 	UpdatedAt    Timestamp        `json:"updatedAt"`
 }
 
-type OperationError struct {
-	Code   string `json:"code"`
-	Detail string `json:"detail"`
+// Why the operation failed: the problem of its `code`, the same object the endpoint returns when it rejects a request, with the `status` that rejection would have had (the poll itself answers 200). Every code an operation can end with is a branch below, and the endpoint that starts the operation lists its codes. Branch on `code`, never on `status`, and keep a default: a code added after your client was generated arrives as a generic problem with `type: about:blank` and `status: 500`. That 500 means this document does not describe the code yet, not that the request failed on our side or that retrying will help.
+type OperationError struct{ Union }
+
+// AsChargeRefusedProblem decodes the value as ChargeRefusedProblem.
+func (u OperationError) AsChargeRefusedProblem() (ChargeRefusedProblem, error) {
+	return UnionAs[ChargeRefusedProblem](u.Union)
+}
+
+// AsEmailDomainProviderRejectedProblem decodes the value as EmailDomainProviderRejectedProblem.
+func (u OperationError) AsEmailDomainProviderRejectedProblem() (EmailDomainProviderRejectedProblem, error) {
+	return UnionAs[EmailDomainProviderRejectedProblem](u.Union)
+}
+
+// AsEmailDomainReleaseFailedProblem decodes the value as EmailDomainReleaseFailedProblem.
+func (u OperationError) AsEmailDomainReleaseFailedProblem() (EmailDomainReleaseFailedProblem, error) {
+	return UnionAs[EmailDomainReleaseFailedProblem](u.Union)
+}
+
+// AsEmailDomainVerificationFailedProblem decodes the value as EmailDomainVerificationFailedProblem.
+func (u OperationError) AsEmailDomainVerificationFailedProblem() (EmailDomainVerificationFailedProblem, error) {
+	return UnionAs[EmailDomainVerificationFailedProblem](u.Union)
+}
+
+// AsEmailDomainVerificationTimedOutProblem decodes the value as EmailDomainVerificationTimedOutProblem.
+func (u OperationError) AsEmailDomainVerificationTimedOutProblem() (EmailDomainVerificationTimedOutProblem, error) {
+	return UnionAs[EmailDomainVerificationTimedOutProblem](u.Union)
+}
+
+// AsEmailTenantSetupTimedOutProblem decodes the value as EmailTenantSetupTimedOutProblem.
+func (u OperationError) AsEmailTenantSetupTimedOutProblem() (EmailTenantSetupTimedOutProblem, error) {
+	return UnionAs[EmailTenantSetupTimedOutProblem](u.Union)
+}
+
+// AsEnterprisePlanRequiredProblem decodes the value as EnterprisePlanRequiredProblem.
+func (u OperationError) AsEnterprisePlanRequiredProblem() (EnterprisePlanRequiredProblem, error) {
+	return UnionAs[EnterprisePlanRequiredProblem](u.Union)
+}
+
+// AsEntitlementRequiredProblem decodes the value as EntitlementRequiredProblem.
+func (u OperationError) AsEntitlementRequiredProblem() (EntitlementRequiredProblem, error) {
+	return UnionAs[EntitlementRequiredProblem](u.Union)
+}
+
+// AsNumberInventoryUnavailableProblem decodes the value as NumberInventoryUnavailableProblem.
+func (u OperationError) AsNumberInventoryUnavailableProblem() (NumberInventoryUnavailableProblem, error) {
+	return UnionAs[NumberInventoryUnavailableProblem](u.Union)
+}
+
+// AsNumberOrderFailedProblem decodes the value as NumberOrderFailedProblem.
+func (u OperationError) AsNumberOrderFailedProblem() (NumberOrderFailedProblem, error) {
+	return UnionAs[NumberOrderFailedProblem](u.Union)
+}
+
+// AsNumberOrderReconciliationRequiredProblem decodes the value as NumberOrderReconciliationRequiredProblem.
+func (u OperationError) AsNumberOrderReconciliationRequiredProblem() (NumberOrderReconciliationRequiredProblem, error) {
+	return UnionAs[NumberOrderReconciliationRequiredProblem](u.Union)
+}
+
+// AsNumberReleaseFailedProblem decodes the value as NumberReleaseFailedProblem.
+func (u OperationError) AsNumberReleaseFailedProblem() (NumberReleaseFailedProblem, error) {
+	return UnionAs[NumberReleaseFailedProblem](u.Union)
+}
+
+// AsNumberSearchFailedProblem decodes the value as NumberSearchFailedProblem.
+func (u OperationError) AsNumberSearchFailedProblem() (NumberSearchFailedProblem, error) {
+	return UnionAs[NumberSearchFailedProblem](u.Union)
+}
+
+// AsResourceNotFoundProblem decodes the value as ResourceNotFoundProblem.
+func (u OperationError) AsResourceNotFoundProblem() (ResourceNotFoundProblem, error) {
+	return UnionAs[ResourceNotFoundProblem](u.Union)
+}
+
+// AsSmsCampaignProviderRejectedProblem decodes the value as SmsCampaignProviderRejectedProblem.
+func (u OperationError) AsSmsCampaignProviderRejectedProblem() (SmsCampaignProviderRejectedProblem, error) {
+	return UnionAs[SmsCampaignProviderRejectedProblem](u.Union)
+}
+
+// AsSmsCampaignReconciliationRequiredProblem decodes the value as SmsCampaignReconciliationRequiredProblem.
+func (u OperationError) AsSmsCampaignReconciliationRequiredProblem() (SmsCampaignReconciliationRequiredProblem, error) {
+	return UnionAs[SmsCampaignReconciliationRequiredProblem](u.Union)
+}
+
+// AsSmsCampaignRevokedProblem decodes the value as SmsCampaignRevokedProblem.
+func (u OperationError) AsSmsCampaignRevokedProblem() (SmsCampaignRevokedProblem, error) {
+	return UnionAs[SmsCampaignRevokedProblem](u.Union)
+}
+
+// AsTelegramConfigurationFailedProblem decodes the value as TelegramConfigurationFailedProblem.
+func (u OperationError) AsTelegramConfigurationFailedProblem() (TelegramConfigurationFailedProblem, error) {
+	return UnionAs[TelegramConfigurationFailedProblem](u.Union)
+}
+
+// AsTelegramReleaseFailedProblem decodes the value as TelegramReleaseFailedProblem.
+func (u OperationError) AsTelegramReleaseFailedProblem() (TelegramReleaseFailedProblem, error) {
+	return UnionAs[TelegramReleaseFailedProblem](u.Union)
+}
+
+// AsWhatsappAccountDisconnectFailedProblem decodes the value as WhatsappAccountDisconnectFailedProblem.
+func (u OperationError) AsWhatsappAccountDisconnectFailedProblem() (WhatsappAccountDisconnectFailedProblem, error) {
+	return UnionAs[WhatsappAccountDisconnectFailedProblem](u.Union)
+}
+
+// AsWhatsappAuthorizationRevokedProblem decodes the value as WhatsappAuthorizationRevokedProblem.
+func (u OperationError) AsWhatsappAuthorizationRevokedProblem() (WhatsappAuthorizationRevokedProblem, error) {
+	return UnionAs[WhatsappAuthorizationRevokedProblem](u.Union)
+}
+
+// AsWhatsappCodeExchangeFailedProblem decodes the value as WhatsappCodeExchangeFailedProblem.
+func (u OperationError) AsWhatsappCodeExchangeFailedProblem() (WhatsappCodeExchangeFailedProblem, error) {
+	return UnionAs[WhatsappCodeExchangeFailedProblem](u.Union)
+}
+
+// AsWhatsappCosmosLineNotSupportedProblem decodes the value as WhatsappCosmosLineNotSupportedProblem.
+func (u OperationError) AsWhatsappCosmosLineNotSupportedProblem() (WhatsappCosmosLineNotSupportedProblem, error) {
+	return UnionAs[WhatsappCosmosLineNotSupportedProblem](u.Union)
+}
+
+// AsWhatsappDisplayNameConflictProblem decodes the value as WhatsappDisplayNameConflictProblem.
+func (u OperationError) AsWhatsappDisplayNameConflictProblem() (WhatsappDisplayNameConflictProblem, error) {
+	return UnionAs[WhatsappDisplayNameConflictProblem](u.Union)
+}
+
+// AsWhatsappEmbeddedSignupPhoneLookupFailedProblem decodes the value as WhatsappEmbeddedSignupPhoneLookupFailedProblem.
+func (u OperationError) AsWhatsappEmbeddedSignupPhoneLookupFailedProblem() (WhatsappEmbeddedSignupPhoneLookupFailedProblem, error) {
+	return UnionAs[WhatsappEmbeddedSignupPhoneLookupFailedProblem](u.Union)
+}
+
+// AsWhatsappEmbeddedSignupPhoneNotFoundProblem decodes the value as WhatsappEmbeddedSignupPhoneNotFoundProblem.
+func (u OperationError) AsWhatsappEmbeddedSignupPhoneNotFoundProblem() (WhatsappEmbeddedSignupPhoneNotFoundProblem, error) {
+	return UnionAs[WhatsappEmbeddedSignupPhoneNotFoundProblem](u.Union)
+}
+
+// AsWhatsappEmbeddedSignupPhoneNotVerifiedProblem decodes the value as WhatsappEmbeddedSignupPhoneNotVerifiedProblem.
+func (u OperationError) AsWhatsappEmbeddedSignupPhoneNotVerifiedProblem() (WhatsappEmbeddedSignupPhoneNotVerifiedProblem, error) {
+	return UnionAs[WhatsappEmbeddedSignupPhoneNotVerifiedProblem](u.Union)
+}
+
+// AsWhatsappEmbeddedSignupWabaNotAuthorizedProblem decodes the value as WhatsappEmbeddedSignupWabaNotAuthorizedProblem.
+func (u OperationError) AsWhatsappEmbeddedSignupWabaNotAuthorizedProblem() (WhatsappEmbeddedSignupWabaNotAuthorizedProblem, error) {
+	return UnionAs[WhatsappEmbeddedSignupWabaNotAuthorizedProblem](u.Union)
+}
+
+// AsWhatsappNumberAddRefusedProblem decodes the value as WhatsappNumberAddRefusedProblem.
+func (u OperationError) AsWhatsappNumberAddRefusedProblem() (WhatsappNumberAddRefusedProblem, error) {
+	return UnionAs[WhatsappNumberAddRefusedProblem](u.Union)
+}
+
+// AsWhatsappNumberLookupFailedProblem decodes the value as WhatsappNumberLookupFailedProblem.
+func (u OperationError) AsWhatsappNumberLookupFailedProblem() (WhatsappNumberLookupFailedProblem, error) {
+	return UnionAs[WhatsappNumberLookupFailedProblem](u.Union)
+}
+
+// AsWhatsappProjectWabaAlreadyConnectedProblem decodes the value as WhatsappProjectWabaAlreadyConnectedProblem.
+func (u OperationError) AsWhatsappProjectWabaAlreadyConnectedProblem() (WhatsappProjectWabaAlreadyConnectedProblem, error) {
+	return UnionAs[WhatsappProjectWabaAlreadyConnectedProblem](u.Union)
+}
+
+// AsWhatsappRegistrationRefusedProblem decodes the value as WhatsappRegistrationRefusedProblem.
+func (u OperationError) AsWhatsappRegistrationRefusedProblem() (WhatsappRegistrationRefusedProblem, error) {
+	return UnionAs[WhatsappRegistrationRefusedProblem](u.Union)
+}
+
+// AsWhatsappSenderConnectedProblem decodes the value as WhatsappSenderConnectedProblem.
+func (u OperationError) AsWhatsappSenderConnectedProblem() (WhatsappSenderConnectedProblem, error) {
+	return UnionAs[WhatsappSenderConnectedProblem](u.Union)
+}
+
+// AsWhatsappSenderProvisioningProblem decodes the value as WhatsappSenderProvisioningProblem.
+func (u OperationError) AsWhatsappSenderProvisioningProblem() (WhatsappSenderProvisioningProblem, error) {
+	return UnionAs[WhatsappSenderProvisioningProblem](u.Union)
+}
+
+// AsWhatsappSenderReleaseFailedProblem decodes the value as WhatsappSenderReleaseFailedProblem.
+func (u OperationError) AsWhatsappSenderReleaseFailedProblem() (WhatsappSenderReleaseFailedProblem, error) {
+	return UnionAs[WhatsappSenderReleaseFailedProblem](u.Union)
+}
+
+// AsWhatsappSignupExpiredProblem decodes the value as WhatsappSignupExpiredProblem.
+func (u OperationError) AsWhatsappSignupExpiredProblem() (WhatsappSignupExpiredProblem, error) {
+	return UnionAs[WhatsappSignupExpiredProblem](u.Union)
+}
+
+// AsWhatsappSubscriptionRefusedProblem decodes the value as WhatsappSubscriptionRefusedProblem.
+func (u OperationError) AsWhatsappSubscriptionRefusedProblem() (WhatsappSubscriptionRefusedProblem, error) {
+	return UnionAs[WhatsappSubscriptionRefusedProblem](u.Union)
+}
+
+// AsWhatsappVerificationRefusedProblem decodes the value as WhatsappVerificationRefusedProblem.
+func (u OperationError) AsWhatsappVerificationRefusedProblem() (WhatsappVerificationRefusedProblem, error) {
+	return UnionAs[WhatsappVerificationRefusedProblem](u.Union)
+}
+
+// AsWhatsappVerificationRequestRefusedProblem decodes the value as WhatsappVerificationRequestRefusedProblem.
+func (u OperationError) AsWhatsappVerificationRequestRefusedProblem() (WhatsappVerificationRequestRefusedProblem, error) {
+	return UnionAs[WhatsappVerificationRequestRefusedProblem](u.Union)
+}
+
+// AsWhatsappVerificationTimedOutProblem decodes the value as WhatsappVerificationTimedOutProblem.
+func (u OperationError) AsWhatsappVerificationTimedOutProblem() (WhatsappVerificationTimedOutProblem, error) {
+	return UnionAs[WhatsappVerificationTimedOutProblem](u.Union)
+}
+
+// AsWhatsappVoipSourceNotEligibleProblem decodes the value as WhatsappVoipSourceNotEligibleProblem.
+func (u OperationError) AsWhatsappVoipSourceNotEligibleProblem() (WhatsappVoipSourceNotEligibleProblem, error) {
+	return UnionAs[WhatsappVoipSourceNotEligibleProblem](u.Union)
+}
+
+// AsWhatsappVoipSourceReleasingProblem decodes the value as WhatsappVoipSourceReleasingProblem.
+func (u OperationError) AsWhatsappVoipSourceReleasingProblem() (WhatsappVoipSourceReleasingProblem, error) {
+	return UnionAs[WhatsappVoipSourceReleasingProblem](u.Union)
+}
+
+// AsWhatsappWabaAlreadyConnectedProblem decodes the value as WhatsappWabaAlreadyConnectedProblem.
+func (u OperationError) AsWhatsappWabaAlreadyConnectedProblem() (WhatsappWabaAlreadyConnectedProblem, error) {
+	return UnionAs[WhatsappWabaAlreadyConnectedProblem](u.Union)
+}
+
+// AsProblemDetails decodes the value as ProblemDetails.
+func (u OperationError) AsProblemDetails() (ProblemDetails, error) {
+	return UnionAs[ProblemDetails](u.Union)
 }
 
 type OperationPage struct {
@@ -3609,6 +4165,22 @@ const (
 	OrganizationBillingInitializationUnknown       OrganizationBillingInitialization = "unknown"
 )
 
+type OrganizationBillingPeriod struct {
+	// ISO 4217 currency code.
+	Currency string `json:"currency"`
+	// What the period's invoice comes to if usage stops now and the units held are kept to the period's end: with tax, after discounts and credit.
+	EstimatedTotalCents int64 `json:"estimatedTotalCents"`
+	// Last moment of the billing period, ISO 8601. Its invoice is drafted on the billing day after.
+	PeriodEnd Timestamp `json:"periodEnd"`
+	// Start of the billing period, ISO 8601.
+	PeriodStart Timestamp `json:"periodStart"`
+	// Bank transfers received beyond every open invoice. They pay the next invoice once it is issued.
+	TransferBalanceCents int64 `json:"transferBalanceCents"`
+	// Metered usage so far this period, across the organization and every project, before tax.
+	UsageCents      int64  `json:"usageCents"`
+	UsageLimitCents *int64 `json:"usageLimitCents"`
+}
+
 type OrganizationConnectionStatus struct {
 	Membership     OrganizationConnectionStatusMembership   `json:"membership"`
 	Organization   OrganizationConnectionStatusOrganization `json:"organization"`
@@ -3639,12 +4211,6 @@ const (
 
 type OrganizationCreditSubject struct {
 	Type string `json:"type"`
-}
-
-type OrganizationEnterpriseLoginRequest struct {
-	InvitationToken *string `json:"invitationToken,omitempty"`
-	OrganizationID  string  `json:"organizationId"`
-	ReturnTo        string  `json:"returnTo"`
 }
 
 type OrganizationInvitationRole string
@@ -3788,6 +4354,8 @@ type OrganizationSubscriptionEntitlement struct {
 type OrganizationSubscriptionTerms struct {
 	// ISO 8601.
 	CancelsAt *string `json:"cancelsAt"`
+	// The coupons in effect, oldest redemption first. A project's are its own; the organization's also carry those applied to the organization.
+	Coupons []SubscriptionCoupon `json:"coupons"`
 	// ISO 8601.
 	CurrentPeriodEnd string `json:"currentPeriodEnd"`
 	// ISO 8601.
@@ -3834,6 +4402,12 @@ type PhoneCarrier struct {
 	Name              *string `json:"name,omitempty"`
 	NormalizedName    *string `json:"normalizedName,omitempty"`
 }
+
+type PhotonVersion string
+
+const (
+	PhotonVersionX20260701 PhotonVersion = "2026-07-01"
+)
 
 type PlanSource string
 
@@ -4006,6 +4580,8 @@ type PollVoteContent struct {
 
 type PreviewOrganizationChangeRequest struct {
 	FixedCharge FixedChargeChange `json:"fixedCharge"`
+	// A promotion code the customer entered, previewed as the purchase redeems it, on an increase only: dueNow and upcomingInvoices are discounted by it. Needs billing:manage. A refused code fails the preview with PROMOTION_CODE_REJECTED, its reason as a refused purchase's failure detail.
+	PromotionCode *string `json:"promotionCode,omitempty"`
 }
 
 type PreviewOrganizationChangeResponse struct {
@@ -4014,8 +4590,12 @@ type PreviewOrganizationChangeResponse struct {
 	DueLater          BillingPreviewDeferred `json:"dueLater"`
 	DueNow            BillingPreviewInvoice  `json:"dueNow"`
 	NextCharge        *BillingNextCharge     `json:"nextCharge"`
+	// ISO 8601.
+	NextInvoiceAt *string `json:"nextInvoiceAt"`
 	// The IANA time zone the payer is billed in, e.g. America/Los_Angeles. Billing periods start and end at its midnights, so read their calendar dates in it.
 	TimeZone string `json:"timeZone"`
+	// The invoices the subscription the change leaves issues in the following periods, assuming no later change: one, and another while a coupon with an end discounted the last, so the last listed is the price from then on. At most 24. For a change at the period end (a downgrade, or the held plan kept), the first is what the invoice due then bills for it.
+	UpcomingInvoices []BillingUpcomingInvoice `json:"upcomingInvoices"`
 }
 
 type PreviewOrganizationInvitationRequest struct {
@@ -4069,8 +4649,28 @@ type PreviewProjectChangeResponse struct {
 	DueLater          BillingPreviewDeferred `json:"dueLater"`
 	DueNow            BillingPreviewInvoice  `json:"dueNow"`
 	NextCharge        *BillingNextCharge     `json:"nextCharge"`
+	// ISO 8601.
+	NextInvoiceAt *string `json:"nextInvoiceAt"`
 	// The IANA time zone the payer is billed in, e.g. America/Los_Angeles. Billing periods start and end at its midnights, so read their calendar dates in it.
 	TimeZone string `json:"timeZone"`
+	// The invoices the subscription the change leaves issues in the following periods, assuming no later change: one, and another while a coupon with an end discounted the last, so the last listed is the price from then on. At most 24. For a change at the period end (a downgrade, or the held plan kept), the first is what the invoice due then bills for it.
+	UpcomingInvoices []BillingUpcomingInvoice `json:"upcomingInvoices"`
+}
+
+type ProblemDetails struct {
+	Code        string              `json:"code"`
+	Detail      *string             `json:"detail,omitempty"`
+	Instance    *string             `json:"instance,omitempty"`
+	Remediation *ProblemRemediation `json:"remediation,omitempty"`
+	RequestID   *string             `json:"requestId,omitempty"`
+	Status      int64               `json:"status"`
+	Title       string              `json:"title"`
+	Type        string              `json:"type"`
+}
+
+type ProblemRemediation struct {
+	Action        string  `json:"action"`
+	Documentation *string `json:"documentation,omitempty"`
 }
 
 type ProfilePictureContentType string
@@ -4224,9 +4824,28 @@ type ProjectSubscriptionEntitlement struct {
 	Value string `json:"value"`
 }
 
+type ProvisionImessageDedicatedLineRequest struct {
+	// A promotion code to apply to this line's charge. Billing takes a fixed amount off the charge. The code is checked and claimed when the request is accepted, even if the line has to wait for inventory: a code that can't be used answers 409 PROMOTION_CODE_REJECTED and starts nothing, and one accepted still applies if it later expires. A purchase that ends without a line gives the code back. Part of the request's identity: repeating the Idempotency-Key with a different code, or none, is refused.
+	PromotionCode *string `json:"promotionCode,omitempty"`
+}
+
+type ProvisionWhatsappDedicatedLineRequest struct {
+	// A promotion code to apply to this line's charge. Billing takes a fixed amount off the charge. The code is checked and claimed when the request is accepted, even if the line has to wait for inventory: a code that can't be used answers 409 PROMOTION_CODE_REJECTED and starts nothing, and one accepted still applies if it later expires. A purchase that ends without a line gives the code back. Part of the request's identity: repeating the Idempotency-Key with a different code, or none, is refused.
+	PromotionCode *string `json:"promotionCode,omitempty"`
+}
+
+type PurchaseRefusal string
+
+const (
+	PurchaseRefusalPaymentMethodRequired PurchaseRefusal = "payment_method_required"
+	PurchaseRefusalBillingNotReady       PurchaseRefusal = "billing_not_ready"
+)
+
 type PurchaseSmsNumberRequest struct {
 	AreaCode    *string `json:"areaCode,omitempty"`
 	CountryCode string  `json:"countryCode"`
+	// A promotion code to redeem with this number's charge. Billing takes a fixed amount off the charge. The charge follows delivery, so a code Billing refuses hands the number back, and the release operation carries the refusal. Part of the request's identity: repeating the Idempotency-Key with a different code, or none, is refused.
+	PromotionCode *string `json:"promotionCode,omitempty"`
 }
 
 type QueryMessageMetricsResponse struct {
@@ -4235,15 +4854,7 @@ type QueryMessageMetricsResponse struct {
 	Statistics MessageMetricsQueryStatistics `json:"statistics"`
 }
 
-type ReactionAction string
-
-const (
-	ReactionActionAdd    ReactionAction = "add"
-	ReactionActionRemove ReactionAction = "remove"
-)
-
 type ReactionContent struct {
-	Action   ReactionAction   `json:"action"`
 	Metadata *ContentMetadata `json:"metadata,omitempty"`
 	Reaction string           `json:"reaction"`
 	Type     string           `json:"type"`
@@ -4480,8 +5091,9 @@ type ResendOrganizationInvitationResponse struct {
 }
 
 type Resource struct {
-	Abilities  []string       `json:"abilities"`
-	CreatedAt  Timestamp      `json:"createdAt"`
+	Abilities []string  `json:"abilities"`
+	CreatedAt Timestamp `json:"createdAt"`
+	// Per-type public detail. Only voip_line includes activationState: activating or active. Every voip_line includes it; without an owner-matched saved record it defaults to active. This includes imported, legacy and unallocated numbers. This is not provider-confirmed readiness; elapsed time alone never changes saved activation. A retired number retains its saved activation state.
 	Detail     map[string]any `json:"detail"`
 	ProjectID  string         `json:"projectId"`
 	ResourceID string         `json:"resourceId"`
@@ -4499,6 +5111,16 @@ type ResourceMetadata struct {
 	Spam        *SpamClassification `json:"spam,omitempty"`
 }
 
+type ResourceNotFoundProblem struct {
+	Code      string  `json:"code"`
+	Detail    *string `json:"detail,omitempty"`
+	Instance  *string `json:"instance,omitempty"`
+	RequestID *string `json:"requestId,omitempty"`
+	Status    float64 `json:"status"`
+	Title     string  `json:"title"`
+	Type      string  `json:"type"`
+}
+
 type ResourcePage struct {
 	NextPageToken *string    `json:"nextPageToken,omitempty"`
 	Resources     []Resource `json:"resources"`
@@ -4511,10 +5133,6 @@ const (
 	ResourceStateActive      ResourceState = "active"
 	ResourceStateRetired     ResourceState = "retired"
 )
-
-type RetryEnterpriseLoginRequest struct {
-	RetryToken string `json:"retryToken"`
-}
 
 type RetryWebhookDeliveryRequest struct {
 	EventID              string `json:"eventId"`
@@ -4636,6 +5254,10 @@ type SelectableWebhookEventCatalog struct {
 	Successor         *string                           `json:"successor"`
 }
 
+type SelfServeBillingAgreement struct {
+	Kind string `json:"kind"`
+}
+
 // Text shown with the attachment. Accepted on: telegram.
 type SendAttachmentCaption struct {
 	Format string `json:"format"`
@@ -4660,11 +5282,6 @@ func (u SendContent) Kind() string { return u.Discriminator("type") }
 // AsSendTextContent decodes the value as SendTextContent.
 func (u SendContent) AsSendTextContent() (SendTextContent, error) {
 	return UnionAs[SendTextContent](u.Union)
-}
-
-// AsSendTextUpdateContent decodes the value as SendTextUpdateContent.
-func (u SendContent) AsSendTextUpdateContent() (SendTextUpdateContent, error) {
-	return UnionAs[SendTextUpdateContent](u.Union)
 }
 
 // AsSendAttachmentContent decodes the value as SendAttachmentContent.
@@ -4702,6 +5319,16 @@ func (u SendContent) AsSendSpaceTypingUpdateContent() (SendSpaceTypingUpdateCont
 	return UnionAs[SendSpaceTypingUpdateContent](u.Union)
 }
 
+// AsSendSpaceBackgroundUpdateContent decodes the value as SendSpaceBackgroundUpdateContent.
+func (u SendContent) AsSendSpaceBackgroundUpdateContent() (SendSpaceBackgroundUpdateContent, error) {
+	return UnionAs[SendSpaceBackgroundUpdateContent](u.Union)
+}
+
+// AsSendSpaceProfileShareContent decodes the value as SendSpaceProfileShareContent.
+func (u SendContent) AsSendSpaceProfileShareContent() (SendSpaceProfileShareContent, error) {
+	return UnionAs[SendSpaceProfileShareContent](u.Union)
+}
+
 // AsSendPollContent decodes the value as SendPollContent.
 func (u SendContent) AsSendPollContent() (SendPollContent, error) {
 	return UnionAs[SendPollContent](u.Union)
@@ -4722,6 +5349,11 @@ func (u SendContent) AsSendGroupContent() (SendGroupContent, error) {
 	return UnionAs[SendGroupContent](u.Union)
 }
 
+// AsSendMessageUpdateContent decodes the value as SendMessageUpdateContent.
+func (u SendContent) AsSendMessageUpdateContent() (SendMessageUpdateContent, error) {
+	return UnionAs[SendMessageUpdateContent](u.Union)
+}
+
 type SendContentPart struct{ Union }
 
 // Kind returns the "type" discriminator, or "" when absent.
@@ -4730,11 +5362,6 @@ func (u SendContentPart) Kind() string { return u.Discriminator("type") }
 // AsSendTextContent decodes the value as SendTextContent.
 func (u SendContentPart) AsSendTextContent() (SendTextContent, error) {
 	return UnionAs[SendTextContent](u.Union)
-}
-
-// AsSendTextUpdateContent decodes the value as SendTextUpdateContent.
-func (u SendContentPart) AsSendTextUpdateContent() (SendTextUpdateContent, error) {
-	return UnionAs[SendTextUpdateContent](u.Union)
 }
 
 // AsSendAttachmentContent decodes the value as SendAttachmentContent.
@@ -4770,6 +5397,16 @@ func (u SendContentPart) AsSendSpaceParticipantsUpdateContent() (SendSpacePartic
 // AsSendSpaceTypingUpdateContent decodes the value as SendSpaceTypingUpdateContent.
 func (u SendContentPart) AsSendSpaceTypingUpdateContent() (SendSpaceTypingUpdateContent, error) {
 	return UnionAs[SendSpaceTypingUpdateContent](u.Union)
+}
+
+// AsSendSpaceBackgroundUpdateContent decodes the value as SendSpaceBackgroundUpdateContent.
+func (u SendContentPart) AsSendSpaceBackgroundUpdateContent() (SendSpaceBackgroundUpdateContent, error) {
+	return UnionAs[SendSpaceBackgroundUpdateContent](u.Union)
+}
+
+// AsSendSpaceProfileShareContent decodes the value as SendSpaceProfileShareContent.
+func (u SendContentPart) AsSendSpaceProfileShareContent() (SendSpaceProfileShareContent, error) {
+	return UnionAs[SendSpaceProfileShareContent](u.Union)
 }
 
 // AsSendPollContent decodes the value as SendPollContent.
@@ -4824,6 +5461,45 @@ type SendMessageRequest struct {
 	Telegram        *SendTelegramOptions `json:"telegram,omitempty"`
 }
 
+type SendMessageUpdateContent struct {
+	Content SendMessageUpdateValue `json:"content"`
+	Type    string                 `json:"type"`
+}
+
+type SendMessageUpdateGroupContent struct {
+	Parts []SendMessageUpdateGroupContentPart `json:"parts"`
+	Type  string                              `json:"type"`
+}
+
+type SendMessageUpdateGroupContentPart struct{ Union }
+
+// AsSendTextContent decodes the value as SendTextContent.
+func (u SendMessageUpdateGroupContentPart) AsSendTextContent() (SendTextContent, error) {
+	return UnionAs[SendTextContent](u.Union)
+}
+
+// AsSendAttachmentContent decodes the value as SendAttachmentContent.
+func (u SendMessageUpdateGroupContentPart) AsSendAttachmentContent() (SendAttachmentContent, error) {
+	return UnionAs[SendAttachmentContent](u.Union)
+}
+
+// AsSendVoiceContent decodes the value as SendVoiceContent.
+func (u SendMessageUpdateGroupContentPart) AsSendVoiceContent() (SendVoiceContent, error) {
+	return UnionAs[SendVoiceContent](u.Union)
+}
+
+type SendMessageUpdateValue struct{ Union }
+
+// AsSendMessageUpdateGroupContentPart decodes the value as SendMessageUpdateGroupContentPart.
+func (u SendMessageUpdateValue) AsSendMessageUpdateGroupContentPart() (SendMessageUpdateGroupContentPart, error) {
+	return UnionAs[SendMessageUpdateGroupContentPart](u.Union)
+}
+
+// AsSendMessageUpdateGroupContent decodes the value as SendMessageUpdateGroupContent.
+func (u SendMessageUpdateValue) AsSendMessageUpdateGroupContent() (SendMessageUpdateGroupContent, error) {
+	return UnionAs[SendMessageUpdateGroupContent](u.Union)
+}
+
 type SendPollContent struct {
 	Options       []PollOption      `json:"options"`
 	Question      string            `json:"question"`
@@ -4844,15 +5520,23 @@ type SendPollVoteContent struct {
 }
 
 type SendReactionContent struct {
-	Action   ReactionAction `json:"action"`
-	Reaction string         `json:"reaction"`
-	Type     string         `json:"type"`
+	Reaction string `json:"reaction"`
+	Type     string `json:"type"`
+}
+
+type SendSpaceBackgroundUpdateContent struct {
+	Background SpaceBackground `json:"background"`
+	Type       string          `json:"type"`
 }
 
 type SendSpaceParticipantsUpdateContent struct {
 	Added   []UserSnapshotInput `json:"added"`
 	Removed []UserSnapshotInput `json:"removed"`
 	Type    string              `json:"type"`
+}
+
+type SendSpaceProfileShareContent struct {
+	Type string `json:"type"`
 }
 
 type SendSpaceTypingUpdateContent struct {
@@ -4863,16 +5547,11 @@ type SendSpaceTypingUpdateContent struct {
 
 type SendTelegramOptions struct {
 	// Whether standalone text is sent as a Telegram rich message. Defaults to true; false sends a regular message. Not accepted with attachments.
-	RichMessage *bool `json:"richMessage,omitempty"`
+	RichMessage *bool           `json:"richMessage,omitempty"`
+	SendAs      *TelegramSendAs `json:"sendAs,omitempty"`
 }
 
 type SendTextContent struct {
-	Format string `json:"format"`
-	Text   string `json:"text"`
-	Type   string `json:"type"`
-}
-
-type SendTextUpdateContent struct {
 	Format string `json:"format"`
 	Text   string `json:"text"`
 	Type   string `json:"type"`
@@ -5049,11 +5728,27 @@ type SharedLineAssignment struct {
 	FirstName           *string                      `json:"firstName,omitempty"`
 	Handle              string                       `json:"handle"`
 	LastName            *string                      `json:"lastName,omitempty"`
+	OptIn               SharedLineAssignmentOptIn    `json:"optIn"`
 	Platform            SharedLineAssignmentPlatform `json:"platform"`
 	ProjectID           string                       `json:"projectId"`
 	ReleasedAt          *Timestamp                   `json:"releasedAt,omitempty"`
 	UpdatedAt           Timestamp                    `json:"updatedAt"`
 }
+
+// Whether the end user has texted the assigned line from their handle since this assignment was created. Until they have, sends to them on this line are refused; once they have, the project can message them while the assignment is unreleased. A released assignment keeps its opt-in, and a re-created assignment starts pending. This records only that Photon allows replies; it is not a consent record for SMS compliance.
+type SharedLineAssignmentOptIn struct {
+	// When the end user sent that first text, as the platform reports it. Present exactly when state is received.
+	ReceivedAt *Timestamp                     `json:"receivedAt,omitempty"`
+	State      SharedLineAssignmentOptInState `json:"state"`
+}
+
+// pending until the end user texts the assigned line from their handle after the assignment was created, then received. Treat a value you do not recognize as not opted in.
+type SharedLineAssignmentOptInState string
+
+const (
+	SharedLineAssignmentOptInStatePending  SharedLineAssignmentOptInState = "pending"
+	SharedLineAssignmentOptInStateReceived SharedLineAssignmentOptInState = "received"
+)
 
 type SharedLineAssignmentPage struct {
 	Assignments   []SharedLineAssignment `json:"assignments"`
@@ -5129,6 +5824,37 @@ const (
 	SipTransportTls SipTransport = "tls"
 )
 
+type SmsCampaignProviderRejectedProblem struct {
+	Code        string             `json:"code"`
+	Detail      *string            `json:"detail,omitempty"`
+	Instance    *string            `json:"instance,omitempty"`
+	Remediation ProblemRemediation `json:"remediation"`
+	RequestID   *string            `json:"requestId,omitempty"`
+	Status      float64            `json:"status"`
+	Title       string             `json:"title"`
+	Type        string             `json:"type"`
+}
+
+type SmsCampaignReconciliationRequiredProblem struct {
+	Code      string  `json:"code"`
+	Detail    *string `json:"detail,omitempty"`
+	Instance  *string `json:"instance,omitempty"`
+	RequestID *string `json:"requestId,omitempty"`
+	Status    float64 `json:"status"`
+	Title     string  `json:"title"`
+	Type      string  `json:"type"`
+}
+
+type SmsCampaignRevokedProblem struct {
+	Code      string  `json:"code"`
+	Detail    *string `json:"detail,omitempty"`
+	Instance  *string `json:"instance,omitempty"`
+	RequestID *string `json:"requestId,omitempty"`
+	Status    float64 `json:"status"`
+	Title     string  `json:"title"`
+	Type      string  `json:"type"`
+}
+
 type SmsGroupContent struct {
 	Metadata *ContentMetadata      `json:"metadata,omitempty"`
 	Parts    []SmsGroupContentPart `json:"parts"`
@@ -5143,11 +5869,6 @@ func (u SmsGroupContentPart) Kind() string { return u.Discriminator("type") }
 // AsTextContent decodes the value as TextContent.
 func (u SmsGroupContentPart) AsTextContent() (TextContent, error) {
 	return UnionAs[TextContent](u.Union)
-}
-
-// AsTextUpdateContent decodes the value as TextUpdateContent.
-func (u SmsGroupContentPart) AsTextUpdateContent() (TextUpdateContent, error) {
-	return UnionAs[TextUpdateContent](u.Union)
 }
 
 // AsAttachmentContent decodes the value as AttachmentContent.
@@ -5183,6 +5904,16 @@ func (u SmsGroupContentPart) AsSpaceParticipantsUpdateContent() (SpaceParticipan
 // AsSpaceTypingUpdateContent decodes the value as SpaceTypingUpdateContent.
 func (u SmsGroupContentPart) AsSpaceTypingUpdateContent() (SpaceTypingUpdateContent, error) {
 	return UnionAs[SpaceTypingUpdateContent](u.Union)
+}
+
+// AsSpaceBackgroundUpdateContent decodes the value as SpaceBackgroundUpdateContent.
+func (u SmsGroupContentPart) AsSpaceBackgroundUpdateContent() (SpaceBackgroundUpdateContent, error) {
+	return UnionAs[SpaceBackgroundUpdateContent](u.Union)
+}
+
+// AsSpaceProfileShareContent decodes the value as SpaceProfileShareContent.
+func (u SmsGroupContentPart) AsSpaceProfileShareContent() (SpaceProfileShareContent, error) {
+	return UnionAs[SpaceProfileShareContent](u.Union)
 }
 
 // AsPollContent decodes the value as PollContent.
@@ -5248,11 +5979,6 @@ func (u SmsMessageContent) Kind() string { return u.Discriminator("type") }
 // AsTextContent decodes the value as TextContent.
 func (u SmsMessageContent) AsTextContent() (TextContent, error) { return UnionAs[TextContent](u.Union) }
 
-// AsTextUpdateContent decodes the value as TextUpdateContent.
-func (u SmsMessageContent) AsTextUpdateContent() (TextUpdateContent, error) {
-	return UnionAs[TextUpdateContent](u.Union)
-}
-
 // AsAttachmentContent decodes the value as AttachmentContent.
 func (u SmsMessageContent) AsAttachmentContent() (AttachmentContent, error) {
 	return UnionAs[AttachmentContent](u.Union)
@@ -5288,6 +6014,16 @@ func (u SmsMessageContent) AsSpaceTypingUpdateContent() (SpaceTypingUpdateConten
 	return UnionAs[SpaceTypingUpdateContent](u.Union)
 }
 
+// AsSpaceBackgroundUpdateContent decodes the value as SpaceBackgroundUpdateContent.
+func (u SmsMessageContent) AsSpaceBackgroundUpdateContent() (SpaceBackgroundUpdateContent, error) {
+	return UnionAs[SpaceBackgroundUpdateContent](u.Union)
+}
+
+// AsSpaceProfileShareContent decodes the value as SpaceProfileShareContent.
+func (u SmsMessageContent) AsSpaceProfileShareContent() (SpaceProfileShareContent, error) {
+	return UnionAs[SpaceProfileShareContent](u.Union)
+}
+
 // AsPollContent decodes the value as PollContent.
 func (u SmsMessageContent) AsPollContent() (PollContent, error) { return UnionAs[PollContent](u.Union) }
 
@@ -5304,6 +6040,11 @@ func (u SmsMessageContent) AsPollUpdateContent() (PollUpdateContent, error) {
 // AsSmsGroupContent decodes the value as SmsGroupContent.
 func (u SmsMessageContent) AsSmsGroupContent() (SmsGroupContent, error) {
 	return UnionAs[SmsGroupContent](u.Union)
+}
+
+// AsMessageUpdateContent decodes the value as MessageUpdateContent.
+func (u SmsMessageContent) AsMessageUpdateContent() (MessageUpdateContent, error) {
+	return UnionAs[MessageUpdateContent](u.Union)
 }
 
 type SmsSpace struct {
@@ -5402,6 +6143,75 @@ func (u Space) AsTelegramSpace() (TelegramSpace, error) { return UnionAs[Telegra
 // AsUnknownSpace decodes the value as UnknownSpace.
 func (u Space) AsUnknownSpace() (UnknownSpace, error) { return UnionAs[UnknownSpace](u.Union) }
 
+// The Space's background after the change.
+type SpaceBackground struct{ Union }
+
+// AsSpaceBackgroundImage decodes the value as SpaceBackgroundImage.
+func (u SpaceBackground) AsSpaceBackgroundImage() (SpaceBackgroundImage, error) {
+	return UnionAs[SpaceBackgroundImage](u.Union)
+}
+
+// AsSpaceBackgroundPreset decodes the value as SpaceBackgroundPreset.
+func (u SpaceBackground) AsSpaceBackgroundPreset() (SpaceBackgroundPreset, error) {
+	return UnionAs[SpaceBackgroundPreset](u.Union)
+}
+
+// AsSpaceBackgroundNone decodes the value as SpaceBackgroundNone.
+func (u SpaceBackground) AsSpaceBackgroundNone() (SpaceBackgroundNone, error) {
+	return UnionAs[SpaceBackgroundNone](u.Union)
+}
+
+type SpaceBackgroundImage struct {
+	// The uploaded image to use.
+	AttachmentID AttachmentId `json:"attachmentId"`
+	Type         string       `json:"type"`
+}
+
+type SpaceBackgroundNone struct {
+	Type string `json:"type"`
+}
+
+type SpaceBackgroundPreset struct {
+	Preset SpaceBackgroundPresetName `json:"preset"`
+	Type   string                    `json:"type"`
+}
+
+// A built-in chat background.
+type SpaceBackgroundPresetName string
+
+const (
+	SpaceBackgroundPresetNameSkyDusk         SpaceBackgroundPresetName = "skyDusk"
+	SpaceBackgroundPresetNameSkyHaze         SpaceBackgroundPresetName = "skyHaze"
+	SpaceBackgroundPresetNameSkySunset       SpaceBackgroundPresetName = "skySunset"
+	SpaceBackgroundPresetNameSkyClear        SpaceBackgroundPresetName = "skyClear"
+	SpaceBackgroundPresetNameSkySunrise      SpaceBackgroundPresetName = "skySunrise"
+	SpaceBackgroundPresetNameSkyDawn         SpaceBackgroundPresetName = "skyDawn"
+	SpaceBackgroundPresetNameWaterLight      SpaceBackgroundPresetName = "waterLight"
+	SpaceBackgroundPresetNameWaterDark       SpaceBackgroundPresetName = "waterDark"
+	SpaceBackgroundPresetNameAuroraGreen     SpaceBackgroundPresetName = "auroraGreen"
+	SpaceBackgroundPresetNameAuroraPurple    SpaceBackgroundPresetName = "auroraPurple"
+	SpaceBackgroundPresetNameAuroraPink      SpaceBackgroundPresetName = "auroraPink"
+	SpaceBackgroundPresetNameColorMango      SpaceBackgroundPresetName = "colorMango"
+	SpaceBackgroundPresetNameColorIce        SpaceBackgroundPresetName = "colorIce"
+	SpaceBackgroundPresetNameColorPlum       SpaceBackgroundPresetName = "colorPlum"
+	SpaceBackgroundPresetNameColorDeepSea    SpaceBackgroundPresetName = "colorDeepSea"
+	SpaceBackgroundPresetNameColorGreenApple SpaceBackgroundPresetName = "colorGreenApple"
+	SpaceBackgroundPresetNameColorCherry     SpaceBackgroundPresetName = "colorCherry"
+	SpaceBackgroundPresetNameColorBubblegum  SpaceBackgroundPresetName = "colorBubblegum"
+	SpaceBackgroundPresetNameColorTangerine  SpaceBackgroundPresetName = "colorTangerine"
+	SpaceBackgroundPresetNameColorMagenta    SpaceBackgroundPresetName = "colorMagenta"
+	SpaceBackgroundPresetNameColorLime       SpaceBackgroundPresetName = "colorLime"
+	SpaceBackgroundPresetNameColorSilver     SpaceBackgroundPresetName = "colorSilver"
+	SpaceBackgroundPresetNameColorCarbon     SpaceBackgroundPresetName = "colorCarbon"
+	SpaceBackgroundPresetNameColorStone      SpaceBackgroundPresetName = "colorStone"
+)
+
+type SpaceBackgroundUpdateContent struct {
+	Background SpaceBackground  `json:"background"`
+	Metadata   *ContentMetadata `json:"metadata,omitempty"`
+	Type       string           `json:"type"`
+}
+
 type SpaceCount struct {
 	Count int64 `json:"count"`
 }
@@ -5427,6 +6237,11 @@ type SpaceParticipantsUpdateContent struct {
 	Added    []UserSnapshot   `json:"added"`
 	Metadata *ContentMetadata `json:"metadata,omitempty"`
 	Removed  []UserSnapshot   `json:"removed"`
+	Type     string           `json:"type"`
+}
+
+type SpaceProfileShareContent struct {
+	Metadata *ContentMetadata `json:"metadata,omitempty"`
 	Type     string           `json:"type"`
 }
 
@@ -5489,27 +6304,6 @@ type SpamClassification struct {
 	Status       string     `json:"status"`
 }
 
-type StartEnterpriseLoginRequest struct{ Union }
-
-// AsOrganizationEnterpriseLoginRequest decodes the value as OrganizationEnterpriseLoginRequest.
-func (u StartEnterpriseLoginRequest) AsOrganizationEnterpriseLoginRequest() (OrganizationEnterpriseLoginRequest, error) {
-	return UnionAs[OrganizationEnterpriseLoginRequest](u.Union)
-}
-
-// AsInvitationEnterpriseLoginRequest decodes the value as InvitationEnterpriseLoginRequest.
-func (u StartEnterpriseLoginRequest) AsInvitationEnterpriseLoginRequest() (InvitationEnterpriseLoginRequest, error) {
-	return UnionAs[InvitationEnterpriseLoginRequest](u.Union)
-}
-
-// AsRetryEnterpriseLoginRequest decodes the value as RetryEnterpriseLoginRequest.
-func (u StartEnterpriseLoginRequest) AsRetryEnterpriseLoginRequest() (RetryEnterpriseLoginRequest, error) {
-	return UnionAs[RetryEnterpriseLoginRequest](u.Union)
-}
-
-type StartEnterpriseLoginResponse struct {
-	URL string `json:"url"`
-}
-
 type SubscribeSsoRequest struct {
 	ExpectedAmount           string    `json:"expectedAmount"`
 	ExpectedCurrency         string    `json:"expectedCurrency"`
@@ -5518,6 +6312,22 @@ type SubscribeSsoRequest struct {
 
 type SubscribeSsoResponse struct {
 	Accepted bool `json:"accepted"`
+}
+
+// A coupon discounting the subscription now, as a Stripe Discount.
+type SubscriptionCoupon struct {
+	AmountCents *int64           `json:"amountCents"`
+	AppliesTo   *CouponAppliesTo `json:"appliesTo"`
+	CouponCode  string           `json:"couponCode"`
+	Currency    *string          `json:"currency"`
+	Duration    CouponDuration   `json:"duration"`
+	// ISO 8601.
+	EndsAt *string `json:"endsAt"`
+	Name   string  `json:"name"`
+	// Applied to the paying organization rather than one project: it discounts every subscription the organization pays for, and a fixed amount is one allowance shared across them.
+	OrganizationWide bool    `json:"organizationWide"`
+	PromotionCode    *string `json:"promotionCode"`
+	Rate             *string `json:"rate"`
 }
 
 // State of one category's subscription: the payer's dunning stage while it holds one. Dunning is organization-level, so the stage applies to every category at once, and paying clears it. Entitlements are unaffected at every stage; viewing, paying and releasing resources stay available. Only categories that hold a subscription appear at all; a cancelled category is absent rather than listed as terminated.
@@ -5537,6 +6347,8 @@ type SubscriptionTerms struct {
 	CancelsAt *string `json:"cancelsAt"`
 	// Category slug, e.g. analytics or messaging.
 	Category string `json:"category"`
+	// The coupons in effect, oldest redemption first. A project's are its own; the organization's also carry those applied to the organization.
+	Coupons []SubscriptionCoupon `json:"coupons"`
 	// ISO 8601.
 	CurrentPeriodEnd string `json:"currentPeriodEnd"`
 	// ISO 8601.
@@ -5572,6 +6384,17 @@ type SupportedPlatformConstraint struct {
 	Platform Platform `json:"platform"`
 }
 
+type TelegramConfigurationFailedProblem struct {
+	Code        string             `json:"code"`
+	Detail      *string            `json:"detail,omitempty"`
+	Instance    *string            `json:"instance,omitempty"`
+	Remediation ProblemRemediation `json:"remediation"`
+	RequestID   *string            `json:"requestId,omitempty"`
+	Status      float64            `json:"status"`
+	Title       string             `json:"title"`
+	Type        string             `json:"type"`
+}
+
 type TelegramGroupContent struct {
 	Metadata *ContentMetadata           `json:"metadata,omitempty"`
 	Parts    []TelegramGroupContentPart `json:"parts"`
@@ -5596,6 +6419,16 @@ func (u TelegramGroupContentPart) AsAttachmentContent() (AttachmentContent, erro
 // AsVoiceContent decodes the value as VoiceContent.
 func (u TelegramGroupContentPart) AsVoiceContent() (VoiceContent, error) {
 	return UnionAs[VoiceContent](u.Union)
+}
+
+// AsMessageDeleteContent decodes the value as MessageDeleteContent.
+func (u TelegramGroupContentPart) AsMessageDeleteContent() (MessageDeleteContent, error) {
+	return UnionAs[MessageDeleteContent](u.Union)
+}
+
+// AsSpaceTypingUpdateContent decodes the value as SpaceTypingUpdateContent.
+func (u TelegramGroupContentPart) AsSpaceTypingUpdateContent() (SpaceTypingUpdateContent, error) {
+	return UnionAs[SpaceTypingUpdateContent](u.Union)
 }
 
 type TelegramMessage struct{ Union }
@@ -5645,10 +6478,43 @@ func (u TelegramMessageContent) AsVoiceContent() (VoiceContent, error) {
 	return UnionAs[VoiceContent](u.Union)
 }
 
+// AsMessageDeleteContent decodes the value as MessageDeleteContent.
+func (u TelegramMessageContent) AsMessageDeleteContent() (MessageDeleteContent, error) {
+	return UnionAs[MessageDeleteContent](u.Union)
+}
+
+// AsSpaceTypingUpdateContent decodes the value as SpaceTypingUpdateContent.
+func (u TelegramMessageContent) AsSpaceTypingUpdateContent() (SpaceTypingUpdateContent, error) {
+	return UnionAs[SpaceTypingUpdateContent](u.Union)
+}
+
 // AsTelegramGroupContent decodes the value as TelegramGroupContent.
 func (u TelegramMessageContent) AsTelegramGroupContent() (TelegramGroupContent, error) {
 	return UnionAs[TelegramGroupContent](u.Union)
 }
+
+// AsMessageUpdateContent decodes the value as MessageUpdateContent.
+func (u TelegramMessageContent) AsMessageUpdateContent() (MessageUpdateContent, error) {
+	return UnionAs[MessageUpdateContent](u.Union)
+}
+
+type TelegramReleaseFailedProblem struct {
+	Code        string             `json:"code"`
+	Detail      *string            `json:"detail,omitempty"`
+	Instance    *string            `json:"instance,omitempty"`
+	Remediation ProblemRemediation `json:"remediation"`
+	RequestID   *string            `json:"requestId,omitempty"`
+	Status      float64            `json:"status"`
+	Title       string             `json:"title"`
+	Type        string             `json:"type"`
+}
+
+// How a single attachment is shown. Omitted, Telegram shows its native form: a photo, an animated GIF, an inline video, or the music player for MP3 and M4A; any other file is a file card. "file" sends any attachment as a file card, unchanged. Accepted with attachment or group content.
+type TelegramSendAs string
+
+const (
+	TelegramSendAsFile TelegramSendAs = "file"
+)
 
 type TelegramSpace struct {
 	// When Photon first persisted this resource.
@@ -5704,6 +6570,27 @@ type TelegramUserSnapshot struct {
 	ProjectID ProjectId           `json:"projectId"`
 }
 
+type TenDlcBrandOtp struct {
+	AttemptsRemaining *int64               `json:"attemptsRemaining,omitempty"`
+	BrandID           string               `json:"brandId"`
+	ExpiresAt         *Timestamp           `json:"expiresAt,omitempty"`
+	PhoneLast4        string               `json:"phoneLast4"`
+	RetryAfterSeconds *int64               `json:"retryAfterSeconds,omitempty"`
+	Status            TenDlcBrandOtpStatus `json:"status"`
+}
+
+type TenDlcBrandOtpStatus string
+
+const (
+	TenDlcBrandOtpStatusNotRequested    TenDlcBrandOtpStatus = "not_requested"
+	TenDlcBrandOtpStatusDeliveryPending TenDlcBrandOtpStatus = "delivery_pending"
+	TenDlcBrandOtpStatusSent            TenDlcBrandOtpStatus = "sent"
+	TenDlcBrandOtpStatusVerified        TenDlcBrandOtpStatus = "verified"
+	TenDlcBrandOtpStatusExpired         TenDlcBrandOtpStatus = "expired"
+	TenDlcBrandOtpStatusFailed          TenDlcBrandOtpStatus = "failed"
+	TenDlcBrandOtpStatusLocked          TenDlcBrandOtpStatus = "locked"
+)
+
 type TerminalBillingOperation struct{ Union }
 
 // AsSucceededBillingOperation decodes the value as SucceededBillingOperation.
@@ -5717,13 +6604,6 @@ func (u TerminalBillingOperation) AsFailedBillingOperation() (FailedBillingOpera
 }
 
 type TextContent struct {
-	Format   string           `json:"format"`
-	Metadata *ContentMetadata `json:"metadata,omitempty"`
-	Text     string           `json:"text"`
-	Type     string           `json:"type"`
-}
-
-type TextUpdateContent struct {
 	Format   string           `json:"format"`
 	Metadata *ContentMetadata `json:"metadata,omitempty"`
 	Text     string           `json:"text"`
@@ -5746,6 +6626,10 @@ type TransferOrganizationOwnershipResponse struct {
 	NewOwner            OrganizationMembership `json:"newOwner"`
 	OrganizationVersion string                 `json:"organizationVersion"`
 	PreviousOwner       OrganizationMembership `json:"previousOwner"`
+}
+
+type TriggerTenDlcBrandOtpResponse struct {
+	Data TenDlcBrandOtp `json:"data"`
 }
 
 type UnavailableProjectSlug struct {
@@ -6180,6 +7064,14 @@ func (u UserSnapshotInput) AsTelegramUserSnapshot() (TelegramUserSnapshot, error
 	return UnionAs[TelegramUserSnapshot](u.Union)
 }
 
+type VerifyTenDlcBrandOtpRequest struct {
+	OtpPin string `json:"otpPin"`
+}
+
+type VerifyTenDlcBrandOtpResponse struct {
+	Data TenDlcBrandOtp `json:"data"`
+}
+
 type VoiceContent struct {
 	AttachmentID AttachmentId     `json:"attachmentId"`
 	Metadata     *ContentMetadata `json:"metadata,omitempty"`
@@ -6204,6 +7096,8 @@ type VoiceLineProfileAssignmentUpdate struct {
 type VoiceMetadata struct {
 	// Server-observed recording duration in milliseconds, when known.
 	DurationMs *int64 `json:"durationMs,omitempty"`
+	// Text the sender's platform transcribed from the recording, when it delivers one.
+	Transcript *string `json:"transcript,omitempty"`
 	// Server-provided normalized waveform samples for optional display.
 	Waveform []float64 `json:"waveform,omitempty"`
 }
@@ -6386,11 +7280,33 @@ type WebhookEventTypeName string
 
 type WebhookEventWildcard string
 
+type WhatsappAccountDisconnectFailedProblem struct {
+	Code        string             `json:"code"`
+	Detail      *string            `json:"detail,omitempty"`
+	Instance    *string            `json:"instance,omitempty"`
+	Remediation ProblemRemediation `json:"remediation"`
+	RequestID   *string            `json:"requestId,omitempty"`
+	Status      float64            `json:"status"`
+	Title       string             `json:"title"`
+	Type        string             `json:"type"`
+}
+
 type WhatsappAccountPhoneNumber struct {
 	DisplayName   *string                      `json:"displayName"`
 	Ownership     WhatsappPhoneNumberOwnership `json:"ownership"`
 	PhoneNumber   string                       `json:"phoneNumber"`
 	PhoneNumberID string                       `json:"phoneNumberId"`
+}
+
+type WhatsappAuthorizationRevokedProblem struct {
+	Code        string             `json:"code"`
+	Detail      *string            `json:"detail,omitempty"`
+	Instance    *string            `json:"instance,omitempty"`
+	Remediation ProblemRemediation `json:"remediation"`
+	RequestID   *string            `json:"requestId,omitempty"`
+	Status      float64            `json:"status"`
+	Title       string             `json:"title"`
+	Type        string             `json:"type"`
 }
 
 type WhatsappBusinessAccount struct {
@@ -6439,11 +7355,6 @@ func (u WhatsappBusinessGroupContentPart) AsTextContent() (TextContent, error) {
 	return UnionAs[TextContent](u.Union)
 }
 
-// AsTextUpdateContent decodes the value as TextUpdateContent.
-func (u WhatsappBusinessGroupContentPart) AsTextUpdateContent() (TextUpdateContent, error) {
-	return UnionAs[TextUpdateContent](u.Union)
-}
-
 // AsAttachmentContent decodes the value as AttachmentContent.
 func (u WhatsappBusinessGroupContentPart) AsAttachmentContent() (AttachmentContent, error) {
 	return UnionAs[AttachmentContent](u.Union)
@@ -6477,6 +7388,16 @@ func (u WhatsappBusinessGroupContentPart) AsSpaceParticipantsUpdateContent() (Sp
 // AsSpaceTypingUpdateContent decodes the value as SpaceTypingUpdateContent.
 func (u WhatsappBusinessGroupContentPart) AsSpaceTypingUpdateContent() (SpaceTypingUpdateContent, error) {
 	return UnionAs[SpaceTypingUpdateContent](u.Union)
+}
+
+// AsSpaceBackgroundUpdateContent decodes the value as SpaceBackgroundUpdateContent.
+func (u WhatsappBusinessGroupContentPart) AsSpaceBackgroundUpdateContent() (SpaceBackgroundUpdateContent, error) {
+	return UnionAs[SpaceBackgroundUpdateContent](u.Union)
+}
+
+// AsSpaceProfileShareContent decodes the value as SpaceProfileShareContent.
+func (u WhatsappBusinessGroupContentPart) AsSpaceProfileShareContent() (SpaceProfileShareContent, error) {
+	return UnionAs[SpaceProfileShareContent](u.Union)
 }
 
 // AsPollContent decodes the value as PollContent.
@@ -6531,11 +7452,6 @@ func (u WhatsappBusinessMessageContent) AsTextContent() (TextContent, error) {
 	return UnionAs[TextContent](u.Union)
 }
 
-// AsTextUpdateContent decodes the value as TextUpdateContent.
-func (u WhatsappBusinessMessageContent) AsTextUpdateContent() (TextUpdateContent, error) {
-	return UnionAs[TextUpdateContent](u.Union)
-}
-
 // AsAttachmentContent decodes the value as AttachmentContent.
 func (u WhatsappBusinessMessageContent) AsAttachmentContent() (AttachmentContent, error) {
 	return UnionAs[AttachmentContent](u.Union)
@@ -6571,6 +7487,16 @@ func (u WhatsappBusinessMessageContent) AsSpaceTypingUpdateContent() (SpaceTypin
 	return UnionAs[SpaceTypingUpdateContent](u.Union)
 }
 
+// AsSpaceBackgroundUpdateContent decodes the value as SpaceBackgroundUpdateContent.
+func (u WhatsappBusinessMessageContent) AsSpaceBackgroundUpdateContent() (SpaceBackgroundUpdateContent, error) {
+	return UnionAs[SpaceBackgroundUpdateContent](u.Union)
+}
+
+// AsSpaceProfileShareContent decodes the value as SpaceProfileShareContent.
+func (u WhatsappBusinessMessageContent) AsSpaceProfileShareContent() (SpaceProfileShareContent, error) {
+	return UnionAs[SpaceProfileShareContent](u.Union)
+}
+
 // AsPollContent decodes the value as PollContent.
 func (u WhatsappBusinessMessageContent) AsPollContent() (PollContent, error) {
 	return UnionAs[PollContent](u.Union)
@@ -6589,6 +7515,11 @@ func (u WhatsappBusinessMessageContent) AsPollUpdateContent() (PollUpdateContent
 // AsWhatsappBusinessGroupContent decodes the value as WhatsappBusinessGroupContent.
 func (u WhatsappBusinessMessageContent) AsWhatsappBusinessGroupContent() (WhatsappBusinessGroupContent, error) {
 	return UnionAs[WhatsappBusinessGroupContent](u.Union)
+}
+
+// AsMessageUpdateContent decodes the value as MessageUpdateContent.
+func (u WhatsappBusinessMessageContent) AsMessageUpdateContent() (MessageUpdateContent, error) {
+	return UnionAs[MessageUpdateContent](u.Union)
 }
 
 type WhatsappBusinessSpace struct {
@@ -6647,6 +7578,82 @@ type WhatsappBusinessUserSnapshot struct {
 	ProjectID ProjectId                   `json:"projectId"`
 }
 
+type WhatsappCodeExchangeFailedProblem struct {
+	Code        string             `json:"code"`
+	Detail      *string            `json:"detail,omitempty"`
+	Instance    *string            `json:"instance,omitempty"`
+	Remediation ProblemRemediation `json:"remediation"`
+	RequestID   *string            `json:"requestId,omitempty"`
+	Status      float64            `json:"status"`
+	Title       string             `json:"title"`
+	Type        string             `json:"type"`
+}
+
+type WhatsappCosmosLineNotSupportedProblem struct {
+	Code      string  `json:"code"`
+	Detail    *string `json:"detail,omitempty"`
+	Instance  *string `json:"instance,omitempty"`
+	RequestID *string `json:"requestId,omitempty"`
+	Status    float64 `json:"status"`
+	Title     string  `json:"title"`
+	Type      string  `json:"type"`
+}
+
+type WhatsappDisplayNameConflictProblem struct {
+	Code        string             `json:"code"`
+	Detail      *string            `json:"detail,omitempty"`
+	Instance    *string            `json:"instance,omitempty"`
+	Remediation ProblemRemediation `json:"remediation"`
+	RequestID   *string            `json:"requestId,omitempty"`
+	Status      float64            `json:"status"`
+	Title       string             `json:"title"`
+	Type        string             `json:"type"`
+}
+
+type WhatsappEmbeddedSignupPhoneLookupFailedProblem struct {
+	Code        string             `json:"code"`
+	Detail      *string            `json:"detail,omitempty"`
+	Instance    *string            `json:"instance,omitempty"`
+	Remediation ProblemRemediation `json:"remediation"`
+	RequestID   *string            `json:"requestId,omitempty"`
+	Status      float64            `json:"status"`
+	Title       string             `json:"title"`
+	Type        string             `json:"type"`
+}
+
+type WhatsappEmbeddedSignupPhoneNotFoundProblem struct {
+	Code        string             `json:"code"`
+	Detail      *string            `json:"detail,omitempty"`
+	Instance    *string            `json:"instance,omitempty"`
+	Remediation ProblemRemediation `json:"remediation"`
+	RequestID   *string            `json:"requestId,omitempty"`
+	Status      float64            `json:"status"`
+	Title       string             `json:"title"`
+	Type        string             `json:"type"`
+}
+
+type WhatsappEmbeddedSignupPhoneNotVerifiedProblem struct {
+	Code        string             `json:"code"`
+	Detail      *string            `json:"detail,omitempty"`
+	Instance    *string            `json:"instance,omitempty"`
+	Remediation ProblemRemediation `json:"remediation"`
+	RequestID   *string            `json:"requestId,omitempty"`
+	Status      float64            `json:"status"`
+	Title       string             `json:"title"`
+	Type        string             `json:"type"`
+}
+
+type WhatsappEmbeddedSignupWabaNotAuthorizedProblem struct {
+	Code        string             `json:"code"`
+	Detail      *string            `json:"detail,omitempty"`
+	Instance    *string            `json:"instance,omitempty"`
+	Remediation ProblemRemediation `json:"remediation"`
+	RequestID   *string            `json:"requestId,omitempty"`
+	Status      float64            `json:"status"`
+	Title       string             `json:"title"`
+	Type        string             `json:"type"`
+}
+
 type WhatsappGroupContent struct {
 	Metadata *ContentMetadata           `json:"metadata,omitempty"`
 	Parts    []WhatsappGroupContentPart `json:"parts"`
@@ -6661,11 +7668,6 @@ func (u WhatsappGroupContentPart) Kind() string { return u.Discriminator("type")
 // AsTextContent decodes the value as TextContent.
 func (u WhatsappGroupContentPart) AsTextContent() (TextContent, error) {
 	return UnionAs[TextContent](u.Union)
-}
-
-// AsTextUpdateContent decodes the value as TextUpdateContent.
-func (u WhatsappGroupContentPart) AsTextUpdateContent() (TextUpdateContent, error) {
-	return UnionAs[TextUpdateContent](u.Union)
 }
 
 // AsAttachmentContent decodes the value as AttachmentContent.
@@ -6701,6 +7703,16 @@ func (u WhatsappGroupContentPart) AsSpaceParticipantsUpdateContent() (SpaceParti
 // AsSpaceTypingUpdateContent decodes the value as SpaceTypingUpdateContent.
 func (u WhatsappGroupContentPart) AsSpaceTypingUpdateContent() (SpaceTypingUpdateContent, error) {
 	return UnionAs[SpaceTypingUpdateContent](u.Union)
+}
+
+// AsSpaceBackgroundUpdateContent decodes the value as SpaceBackgroundUpdateContent.
+func (u WhatsappGroupContentPart) AsSpaceBackgroundUpdateContent() (SpaceBackgroundUpdateContent, error) {
+	return UnionAs[SpaceBackgroundUpdateContent](u.Union)
+}
+
+// AsSpaceProfileShareContent decodes the value as SpaceProfileShareContent.
+func (u WhatsappGroupContentPart) AsSpaceProfileShareContent() (SpaceProfileShareContent, error) {
+	return UnionAs[SpaceProfileShareContent](u.Union)
 }
 
 // AsPollContent decodes the value as PollContent.
@@ -6755,11 +7767,6 @@ func (u WhatsappMessageContent) AsTextContent() (TextContent, error) {
 	return UnionAs[TextContent](u.Union)
 }
 
-// AsTextUpdateContent decodes the value as TextUpdateContent.
-func (u WhatsappMessageContent) AsTextUpdateContent() (TextUpdateContent, error) {
-	return UnionAs[TextUpdateContent](u.Union)
-}
-
 // AsAttachmentContent decodes the value as AttachmentContent.
 func (u WhatsappMessageContent) AsAttachmentContent() (AttachmentContent, error) {
 	return UnionAs[AttachmentContent](u.Union)
@@ -6795,6 +7802,16 @@ func (u WhatsappMessageContent) AsSpaceTypingUpdateContent() (SpaceTypingUpdateC
 	return UnionAs[SpaceTypingUpdateContent](u.Union)
 }
 
+// AsSpaceBackgroundUpdateContent decodes the value as SpaceBackgroundUpdateContent.
+func (u WhatsappMessageContent) AsSpaceBackgroundUpdateContent() (SpaceBackgroundUpdateContent, error) {
+	return UnionAs[SpaceBackgroundUpdateContent](u.Union)
+}
+
+// AsSpaceProfileShareContent decodes the value as SpaceProfileShareContent.
+func (u WhatsappMessageContent) AsSpaceProfileShareContent() (SpaceProfileShareContent, error) {
+	return UnionAs[SpaceProfileShareContent](u.Union)
+}
+
 // AsPollContent decodes the value as PollContent.
 func (u WhatsappMessageContent) AsPollContent() (PollContent, error) {
 	return UnionAs[PollContent](u.Union)
@@ -6813,6 +7830,32 @@ func (u WhatsappMessageContent) AsPollUpdateContent() (PollUpdateContent, error)
 // AsWhatsappGroupContent decodes the value as WhatsappGroupContent.
 func (u WhatsappMessageContent) AsWhatsappGroupContent() (WhatsappGroupContent, error) {
 	return UnionAs[WhatsappGroupContent](u.Union)
+}
+
+// AsMessageUpdateContent decodes the value as MessageUpdateContent.
+func (u WhatsappMessageContent) AsMessageUpdateContent() (MessageUpdateContent, error) {
+	return UnionAs[MessageUpdateContent](u.Union)
+}
+
+type WhatsappNumberAddRefusedProblem struct {
+	Code      string  `json:"code"`
+	Detail    *string `json:"detail,omitempty"`
+	Instance  *string `json:"instance,omitempty"`
+	RequestID *string `json:"requestId,omitempty"`
+	Status    float64 `json:"status"`
+	Title     string  `json:"title"`
+	Type      string  `json:"type"`
+}
+
+type WhatsappNumberLookupFailedProblem struct {
+	Code        string             `json:"code"`
+	Detail      *string            `json:"detail,omitempty"`
+	Instance    *string            `json:"instance,omitempty"`
+	Remediation ProblemRemediation `json:"remediation"`
+	RequestID   *string            `json:"requestId,omitempty"`
+	Status      float64            `json:"status"`
+	Title       string             `json:"title"`
+	Type        string             `json:"type"`
 }
 
 type WhatsappOutboundCapacity string
@@ -6836,6 +7879,27 @@ const (
 	WhatsappPhoneNumberOwnershipMeta   WhatsappPhoneNumberOwnership = "meta"
 )
 
+type WhatsappProjectWabaAlreadyConnectedProblem struct {
+	Code        string             `json:"code"`
+	Detail      *string            `json:"detail,omitempty"`
+	Instance    *string            `json:"instance,omitempty"`
+	Remediation ProblemRemediation `json:"remediation"`
+	RequestID   *string            `json:"requestId,omitempty"`
+	Status      float64            `json:"status"`
+	Title       string             `json:"title"`
+	Type        string             `json:"type"`
+}
+
+type WhatsappRegistrationRefusedProblem struct {
+	Code      string  `json:"code"`
+	Detail    *string `json:"detail,omitempty"`
+	Instance  *string `json:"instance,omitempty"`
+	RequestID *string `json:"requestId,omitempty"`
+	Status    float64 `json:"status"`
+	Title     string  `json:"title"`
+	Type      string  `json:"type"`
+}
+
 type WhatsappRestrictionStatus string
 
 const (
@@ -6853,6 +7917,48 @@ const (
 	WhatsappReviewStatusREJECTED WhatsappReviewStatus = "REJECTED"
 	WhatsappReviewStatusUNKNOWN  WhatsappReviewStatus = "UNKNOWN"
 )
+
+type WhatsappSenderConnectedProblem struct {
+	Code      string  `json:"code"`
+	Detail    *string `json:"detail,omitempty"`
+	Instance  *string `json:"instance,omitempty"`
+	RequestID *string `json:"requestId,omitempty"`
+	Status    float64 `json:"status"`
+	Title     string  `json:"title"`
+	Type      string  `json:"type"`
+}
+
+type WhatsappSenderProvisioningProblem struct {
+	Code      string  `json:"code"`
+	Detail    *string `json:"detail,omitempty"`
+	Instance  *string `json:"instance,omitempty"`
+	RequestID *string `json:"requestId,omitempty"`
+	Status    float64 `json:"status"`
+	Title     string  `json:"title"`
+	Type      string  `json:"type"`
+}
+
+type WhatsappSenderReleaseFailedProblem struct {
+	Code        string             `json:"code"`
+	Detail      *string            `json:"detail,omitempty"`
+	Instance    *string            `json:"instance,omitempty"`
+	Remediation ProblemRemediation `json:"remediation"`
+	RequestID   *string            `json:"requestId,omitempty"`
+	Status      float64            `json:"status"`
+	Title       string             `json:"title"`
+	Type        string             `json:"type"`
+}
+
+type WhatsappSignupExpiredProblem struct {
+	Code        string             `json:"code"`
+	Detail      *string            `json:"detail,omitempty"`
+	Instance    *string            `json:"instance,omitempty"`
+	Remediation ProblemRemediation `json:"remediation"`
+	RequestID   *string            `json:"requestId,omitempty"`
+	Status      float64            `json:"status"`
+	Title       string             `json:"title"`
+	Type        string             `json:"type"`
+}
 
 type WhatsappSpace struct {
 	// When Photon first persisted this resource.
@@ -6878,6 +7984,17 @@ type WhatsappSpaceSnapshot struct {
 	ParticipantIds []UserId             `json:"participantIds"`
 	Platform       string               `json:"platform"`
 	ProjectID      ProjectId            `json:"projectId"`
+}
+
+type WhatsappSubscriptionRefusedProblem struct {
+	Code        string             `json:"code"`
+	Detail      *string            `json:"detail,omitempty"`
+	Instance    *string            `json:"instance,omitempty"`
+	Remediation ProblemRemediation `json:"remediation"`
+	RequestID   *string            `json:"requestId,omitempty"`
+	Status      float64            `json:"status"`
+	Title       string             `json:"title"`
+	Type        string             `json:"type"`
 }
 
 type WhatsappUser struct {
@@ -6909,4 +8026,66 @@ type WhatsappUserSnapshot struct {
 	Metadata  ResourceMetadata    `json:"metadata"`
 	Platform  string              `json:"platform"`
 	ProjectID ProjectId           `json:"projectId"`
+}
+
+type WhatsappVerificationRefusedProblem struct {
+	Code      string  `json:"code"`
+	Detail    *string `json:"detail,omitempty"`
+	Instance  *string `json:"instance,omitempty"`
+	RequestID *string `json:"requestId,omitempty"`
+	Status    float64 `json:"status"`
+	Title     string  `json:"title"`
+	Type      string  `json:"type"`
+}
+
+type WhatsappVerificationRequestRefusedProblem struct {
+	Code      string  `json:"code"`
+	Detail    *string `json:"detail,omitempty"`
+	Instance  *string `json:"instance,omitempty"`
+	RequestID *string `json:"requestId,omitempty"`
+	Status    float64 `json:"status"`
+	Title     string  `json:"title"`
+	Type      string  `json:"type"`
+}
+
+type WhatsappVerificationTimedOutProblem struct {
+	Code        string             `json:"code"`
+	Detail      *string            `json:"detail,omitempty"`
+	Instance    *string            `json:"instance,omitempty"`
+	Remediation ProblemRemediation `json:"remediation"`
+	RequestID   *string            `json:"requestId,omitempty"`
+	Status      float64            `json:"status"`
+	Title       string             `json:"title"`
+	Type        string             `json:"type"`
+}
+
+type WhatsappVoipSourceNotEligibleProblem struct {
+	Code      string  `json:"code"`
+	Detail    *string `json:"detail,omitempty"`
+	Instance  *string `json:"instance,omitempty"`
+	RequestID *string `json:"requestId,omitempty"`
+	Status    float64 `json:"status"`
+	Title     string  `json:"title"`
+	Type      string  `json:"type"`
+}
+
+type WhatsappVoipSourceReleasingProblem struct {
+	Code      string  `json:"code"`
+	Detail    *string `json:"detail,omitempty"`
+	Instance  *string `json:"instance,omitempty"`
+	RequestID *string `json:"requestId,omitempty"`
+	Status    float64 `json:"status"`
+	Title     string  `json:"title"`
+	Type      string  `json:"type"`
+}
+
+type WhatsappWabaAlreadyConnectedProblem struct {
+	Code        string             `json:"code"`
+	Detail      *string            `json:"detail,omitempty"`
+	Instance    *string            `json:"instance,omitempty"`
+	Remediation ProblemRemediation `json:"remediation"`
+	RequestID   *string            `json:"requestId,omitempty"`
+	Status      float64            `json:"status"`
+	Title       string             `json:"title"`
+	Type        string             `json:"type"`
 }

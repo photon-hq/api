@@ -35,12 +35,24 @@ export type AcceptedMessageTimestampsZodInput = z.input<typeof zAcceptedMessageT
 
 export type AcceptedMessageTimestampsZodOutput = z.output<typeof zAcceptedMessageTimestamps>;
 
+/**
+ * Present only while a WorkOS dashboard admin is impersonating this account: the admin's email. Attribution only; grants nothing.
+ */
+export const zAccountImpersonator = /* @__PURE__ */ (() => z.looseObject({
+    email: z.string()
+}))();
+
+export type AccountImpersonatorZodInput = z.input<typeof zAccountImpersonator>;
+
+export type AccountImpersonatorZodOutput = z.output<typeof zAccountImpersonator>;
+
 export const zAccount = /* @__PURE__ */ (() => z.looseObject({
     accountId: z.string(),
     createdAt: z.string().nullable(),
     deletedAt: z.string().nullable(),
     email: z.string(),
     firstName: z.string().nullable(),
+    impersonator: zAccountImpersonator.optional(),
     lastName: z.string().nullable(),
     phoneNumber: z.string().nullable(),
     phoneVerifiedAt: z.string().nullable(),
@@ -119,8 +131,10 @@ export type ApiKeyZodInput = z.input<typeof zApiKey>;
 export type ApiKeyZodOutput = z.output<typeof zApiKey>;
 
 export const zApiKeyPermission = /* @__PURE__ */ (() => openEnum([
+    'calls:read',
     'events:read',
     'events:write',
+    'messages:read',
     'platforms:read',
     'platforms:write',
     'project:read',
@@ -255,13 +269,15 @@ export type BillingNextChargeZodInput = z.input<typeof zBillingNextCharge>;
 export type BillingNextChargeZodOutput = z.output<typeof zBillingNextCharge>;
 
 /**
- * Stable provider-neutral failure category.
+ * Stable provider-neutral failure category. billing_restricted: the payer is behind on payment and the change would gain or keep a paid plan; retry once the payer is back in good standing.
  */
 export const zBillingOperationFailureCode = /* @__PURE__ */ (() => openEnum([
     'payment_method_required',
     'payment_failed',
     'not_provisioned',
     'invalid_target',
+    'promotion_code_rejected',
+    'billing_restricted',
     'internal'
 ]))();
 
@@ -271,8 +287,8 @@ export type BillingOperationFailureCodeZodOutput = z.output<typeof zBillingOpera
 
 export const zBillingOperationFailureDetail = /* @__PURE__ */ (() => openEnum([
     'cancellation_scheduled',
-    'feature_not_sold_by_plan',
     'feature_not_found',
+    'feature_not_sold_by_plan',
     'insufficient_funds',
     'payment_declined',
     'payment_method_expired',
@@ -280,6 +296,18 @@ export const zBillingOperationFailureDetail = /* @__PURE__ */ (() => openEnum([
     'payment_timeout',
     'plan_activation_timeout',
     'plan_not_found',
+    'promotion_code_already_applied',
+    'promotion_code_already_redeemed',
+    'promotion_code_change_not_eligible',
+    'promotion_code_exhausted',
+    'promotion_code_expired',
+    'promotion_code_inactive',
+    'promotion_code_limit_reached',
+    'promotion_code_new_customer_only',
+    'promotion_code_not_for_organization',
+    'promotion_code_not_found',
+    'promotion_code_plan_not_eligible',
+    'promotion_code_purchase_not_eligible',
     'quantity_out_of_range',
     'reconciliation_required',
     'release_required',
@@ -422,6 +450,7 @@ export type BillingPreviewLineKindZodOutput = z.output<typeof zBillingPreviewLin
 export const zBillingPreviewLine = z.looseObject({
     amountCents: z.number().refine(Number.isInteger, { message: 'Expected an integer' }),
     code: z.string(),
+    discountCents: z.number().refine(Number.isInteger, { message: 'Expected an integer' }),
     kind: zBillingPreviewLineKind,
     name: z.string(),
     periodEnd: z.string().nullable(),
@@ -434,7 +463,7 @@ export type BillingPreviewLineZodInput = z.input<typeof zBillingPreviewLine>;
 export type BillingPreviewLineZodOutput = z.output<typeof zBillingPreviewLine>;
 
 /**
- * Billed later rather than with dueNow: one line per plan change addition, billed when it is added and priced as if added now. Before taxes; the balance left after dueNow applies to it first. nextCharge already includes it. No lines when nothing is billed later.
+ * Billed later rather than with dueNow: one line per plan change addition, billed when it is added and priced as if added now; or, for an organization that pays by invoice, what a fixed-charge change adds to its next invoice. After coupons, before taxes; the balance left after dueNow applies to it first. nextCharge already includes it. No lines when nothing is billed later.
  */
 export const zBillingPreviewDeferred = z.looseObject({
     currency: z.string(),
@@ -447,7 +476,7 @@ export type BillingPreviewDeferredZodInput = z.input<typeof zBillingPreviewDefer
 export type BillingPreviewDeferredZodOutput = z.output<typeof zBillingPreviewDeferred>;
 
 /**
- * Charged when the change is made, priced as the change bills it. No lines when it charges nothing now.
+ * An invoice priced by the billing engine as it would bill it: its lines, then what coupons, taxes and credits change, and what the payer is charged. No lines when it bills nothing.
  */
 export const zBillingPreviewInvoice = z.looseObject({
     creditsCents: z.number().refine(Number.isInteger, { message: 'Expected an integer' }),
@@ -487,6 +516,18 @@ export type BillingPlanChangeEffectZodInput = z.input<typeof zBillingPlanChangeE
 
 export type BillingPlanChangeEffectZodOutput = z.output<typeof zBillingPlanChangeEffect>;
 
+/**
+ * An invoice a following period issues, priced as now: the plan's fee and its fixed charges at the units the change and any additions leave, after coupons, with taxes, before credits. Usage and a minimum commitment's true-up are left out.
+ */
+export const zBillingUpcomingInvoice = /* @__PURE__ */ (() => z.looseObject({
+    at: z.string(),
+    invoice: zBillingPreviewInvoice
+}))();
+
+export type BillingUpcomingInvoiceZodInput = z.input<typeof zBillingUpcomingInvoice>;
+
+export type BillingUpcomingInvoiceZodOutput = z.output<typeof zBillingUpcomingInvoice>;
+
 export const zCancelSsoSubscriptionResponse = /* @__PURE__ */ (() => z.looseObject({
     accepted: z.boolean()
 }))();
@@ -497,7 +538,8 @@ export type CancelSsoSubscriptionResponseZodOutput = z.output<typeof zCancelSsoS
 
 export const zChangePlanRequest = /* @__PURE__ */ (() => z.looseObject({
     category: z.string(),
-    planCode: z.string()
+    planCode: z.string(),
+    promotionCode: z.string().optional()
 }))();
 
 export type ChangePlanRequestZodInput = z.input<typeof zChangePlanRequest>;
@@ -575,6 +617,7 @@ export const zContentIssueCode = /* @__PURE__ */ (() => openEnum([
     'metadata_server_owned',
     'markdown_html_forbidden',
     'voice_requires_audio',
+    'space_background_requires_image',
     'attachment_mime_type_mismatch',
     'attachment_size_mismatch'
 ]))();
@@ -593,6 +636,36 @@ export const zContentIssue = /* @__PURE__ */ (() => z.looseObject({
 export type ContentIssueZodInput = z.input<typeof zContentIssue>;
 
 export type ContentIssueZodOutput = z.output<typeof zContentIssue>;
+
+export const zCouponDuration = /* @__PURE__ */ (() => openEnum([
+    'once',
+    'repeating',
+    'forever'
+]))();
+
+export type CouponDurationZodInput = z.input<typeof zCouponDuration>;
+
+export type CouponDurationZodOutput = z.output<typeof zCouponDuration>;
+
+export const zCouponFeeKind = /* @__PURE__ */ (() => openEnum([
+    'base_fee',
+    'fixed_charges',
+    'minimum_commitment',
+    'usage'
+]))();
+
+export type CouponFeeKindZodInput = z.input<typeof zCouponFeeKind>;
+
+export type CouponFeeKindZodOutput = z.output<typeof zCouponFeeKind>;
+
+export const zCouponAppliesTo = /* @__PURE__ */ (() => z.looseObject({
+    feeKinds: z.array(zCouponFeeKind),
+    fixedChargeCodes: z.array(z.string())
+}))();
+
+export type CouponAppliesToZodInput = z.input<typeof zCouponAppliesTo>;
+
+export type CouponAppliesToZodOutput = z.output<typeof zCouponAppliesTo>;
 
 export const zCreateAccountServiceKeyRequest = /* @__PURE__ */ (() => z.looseObject({
     expiresAt: z.string().optional(),
@@ -1270,6 +1343,16 @@ export type EmailDomainObservationZodInput = z.input<typeof zEmailDomainObservat
 
 export type EmailDomainObservationZodOutput = z.output<typeof zEmailDomainObservation>;
 
+export const zEmailRecipientRole = /* @__PURE__ */ (() => openEnum([
+    'to',
+    'cc',
+    'bcc'
+]))();
+
+export type EmailRecipientRoleZodInput = z.input<typeof zEmailRecipientRole>;
+
+export type EmailRecipientRoleZodOutput = z.output<typeof zEmailRecipientRole>;
+
 export const zEmailRecommendationCategory = /* @__PURE__ */ (() => openEnum([
     'sending_restriction',
     'domain_health',
@@ -1468,6 +1551,16 @@ export type EmailRecommendationsZodInput = z.input<typeof zEmailRecommendations>
 
 export type EmailRecommendationsZodOutput = z.output<typeof zEmailRecommendations>;
 
+export const zEnterpriseBillingAgreement = z.looseObject({
+    kind: z.literal('enterprise'),
+    paymentTermDays: z.number().refine(Number.isInteger, { message: 'Expected an integer' }),
+    purchaseOrderNumber: z.string().nullable()
+});
+
+export type EnterpriseBillingAgreementZodInput = z.input<typeof zEnterpriseBillingAgreement>;
+
+export type EnterpriseBillingAgreementZodOutput = z.output<typeof zEnterpriseBillingAgreement>;
+
 export const zEntitlementRejectionReason = /* @__PURE__ */ (() => openEnum([
     'billing_restricted',
     'business_plan_required',
@@ -1558,11 +1651,7 @@ export type FilteredVerificationCodePageZodInput = z.input<typeof zFilteredVerif
 
 export type FilteredVerificationCodePageZodOutput = z.output<typeof zFilteredVerificationCodePage>;
 
-export const zFilteredVerificationCodePlatform = /* @__PURE__ */ (() => openEnum([
-    'imessage',
-    'sms',
-    'whatsapp'
-]))();
+export const zFilteredVerificationCodePlatform = /* @__PURE__ */ (() => openEnum(['imessage', 'whatsapp']))();
 
 export type FilteredVerificationCodePlatformZodInput = z.input<typeof zFilteredVerificationCodePlatform>;
 
@@ -1583,7 +1672,8 @@ export type FixedChargeAdditionZodOutput = z.output<typeof zFixedChargeAddition>
 export const zBillingPreviewPlanChange = /* @__PURE__ */ (() => z.looseObject({
     additions: z.array(zFixedChargeAddition).optional(),
     category: z.string(),
-    planCode: z.string()
+    planCode: z.string(),
+    promotionCode: z.string().optional()
 }))();
 
 export type BillingPreviewPlanChangeZodInput = z.input<typeof zBillingPreviewPlanChange>;
@@ -1604,7 +1694,8 @@ export type FixedChargeChangeZodOutput = z.output<typeof zFixedChargeChange>;
 
 export const zBillingPreviewFixedChargeChange = /* @__PURE__ */ (() => z.looseObject({
     category: z.string(),
-    fixedCharge: zFixedChargeChange
+    fixedCharge: zFixedChargeChange,
+    promotionCode: z.string().optional()
 }))();
 
 export type BillingPreviewFixedChargeChangeZodInput = z.input<typeof zBillingPreviewFixedChargeChange>;
@@ -1798,15 +1889,6 @@ export const zImessageSpaceDetails = /* @__PURE__ */ (() => z.looseObject({}))()
 export type ImessageSpaceDetailsZodInput = z.input<typeof zImessageSpaceDetails>;
 
 export type ImessageSpaceDetailsZodOutput = z.output<typeof zImessageSpaceDetails>;
-
-export const zInvitationEnterpriseLoginRequest = /* @__PURE__ */ (() => z.looseObject({
-    invitationToken: z.string(),
-    returnTo: z.string()
-}))();
-
-export type InvitationEnterpriseLoginRequestZodInput = z.input<typeof zInvitationEnterpriseLoginRequest>;
-
-export type InvitationEnterpriseLoginRequestZodOutput = z.output<typeof zInvitationEnterpriseLoginRequest>;
 
 /**
  * What produced the invoice.
@@ -2206,6 +2288,21 @@ export type BillingSuspendedProblemZodInput = z.input<typeof zBillingSuspendedPr
 
 export type BillingSuspendedProblemZodOutput = z.output<typeof zBillingSuspendedProblem>;
 
+export const zBrandNotFoundProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('BRAND_NOT_FOUND'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: absent().optional(),
+    requestId: z.string().optional(),
+    status: z.literal(404),
+    title: z.literal('Brand Not Found'),
+    type: z.literal('https://photon.codes/docs/problems/brand-not-found')
+}).catchall(zJsonValue))();
+
+export type BrandNotFoundProblemZodInput = z.input<typeof zBrandNotFoundProblem>;
+
+export type BrandNotFoundProblemZodOutput = z.output<typeof zBrandNotFoundProblem>;
+
 export const zClosureBlockedProblem = /* @__PURE__ */ (() => z.object({
     code: z.literal('CLOSURE_BLOCKED'),
     detail: z.string().optional(),
@@ -2322,6 +2419,21 @@ export type HttpErrorProblemZodInput = z.input<typeof zHttpErrorProblem>;
 
 export type HttpErrorProblemZodOutput = z.output<typeof zHttpErrorProblem>;
 
+export const zIdempotencyConflictProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('IDEMPOTENCY_CONFLICT'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: absent().optional(),
+    requestId: z.string().optional(),
+    status: z.literal(409),
+    title: z.literal('Idempotency Conflict'),
+    type: z.literal('https://photon.codes/docs/problems/idempotency-conflict')
+}).catchall(zJsonValue))();
+
+export type IdempotencyConflictProblemZodInput = z.input<typeof zIdempotencyConflictProblem>;
+
+export type IdempotencyConflictProblemZodOutput = z.output<typeof zIdempotencyConflictProblem>;
+
 export const zIdempotencyKeyInvalidProblem = /* @__PURE__ */ (() => z.object({
     code: z.literal('IDEMPOTENCY_KEY_INVALID'),
     detail: z.string().optional(),
@@ -2424,15 +2536,6 @@ export type DisconnectWhatsappBusinessAccountBadRequestProblemZodInput = z.input
 
 export type DisconnectWhatsappBusinessAccountBadRequestProblemZodOutput = z.output<typeof zDisconnectWhatsappBusinessAccountBadRequestProblem>;
 
-export const zEnsureInitialOrganizationBadRequestProblem: z.ZodType<PhotonWireTypes.EnsureInitialOrganizationBadRequestProblem, PhotonWireTypes.EnsureInitialOrganizationBadRequestProblem> = /* @__PURE__ */ (() => z.union([
-    zIdempotencyKeyRequiredProblem,
-    zIdempotencyKeyInvalidProblem
-]))();
-
-export type EnsureInitialOrganizationBadRequestProblemZodInput = z.input<typeof zEnsureInitialOrganizationBadRequestProblem>;
-
-export type EnsureInitialOrganizationBadRequestProblemZodOutput = z.output<typeof zEnsureInitialOrganizationBadRequestProblem>;
-
 export const zIdempotencyKeyReusedProblem = /* @__PURE__ */ (() => z.object({
     code: z.literal('IDEMPOTENCY_KEY_REUSED'),
     detail: z.string().optional(),
@@ -2532,6 +2635,22 @@ export type InternalErrorProblemZodInput = z.input<typeof zInternalErrorProblem>
 
 export type InternalErrorProblemZodOutput = z.output<typeof zInternalErrorProblem>;
 
+export const zInvalidApiVersionProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('INVALID_API_VERSION'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: absent().optional(),
+    requestId: z.string().optional(),
+    status: z.literal(400),
+    supportedVersions: z.array(z.string()),
+    title: z.literal('Invalid API Version'),
+    type: z.literal('https://photon.codes/docs/problems/invalid-api-version')
+}).catchall(zJsonValue))();
+
+export type InvalidApiVersionProblemZodInput = z.input<typeof zInvalidApiVersionProblem>;
+
+export type InvalidApiVersionProblemZodOutput = z.output<typeof zInvalidApiVersionProblem>;
+
 export const zInvalidArgumentProblem = /* @__PURE__ */ (() => z.object({
     code: z.literal('INVALID_ARGUMENT'),
     detail: z.string().optional(),
@@ -2590,7 +2709,9 @@ export type CloseOrganizationBadRequestProblemZodOutput = z.output<typeof zClose
 export const zCommitAccountProfilePictureBadRequestProblem: z.ZodType<PhotonWireTypes.CommitAccountProfilePictureBadRequestProblem, PhotonWireTypes.CommitAccountProfilePictureBadRequestProblem> = /* @__PURE__ */ (() => z.union([
     zInvalidArgumentProblem,
     zIdempotencyKeyInvalidProblem,
-    zIdempotencyKeyRequiredProblem
+    zIdempotencyKeyRequiredProblem,
+    zHttpErrorProblem,
+    zInvalidApiVersionProblem
 ]))();
 
 export type CommitAccountProfilePictureBadRequestProblemZodInput = z.input<typeof zCommitAccountProfilePictureBadRequestProblem>;
@@ -2617,10 +2738,22 @@ export type CommitOrganizationAvatarBadRequestProblemZodInput = z.input<typeof z
 
 export type CommitOrganizationAvatarBadRequestProblemZodOutput = z.output<typeof zCommitOrganizationAvatarBadRequestProblem>;
 
+export const zCreateAccountProfilePictureUploadBadRequestProblem: z.ZodType<PhotonWireTypes.CreateAccountProfilePictureUploadBadRequestProblem, PhotonWireTypes.CreateAccountProfilePictureUploadBadRequestProblem> = /* @__PURE__ */ (() => z.union([
+    zHttpErrorProblem,
+    zInvalidArgumentProblem,
+    zInvalidApiVersionProblem
+]))();
+
+export type CreateAccountProfilePictureUploadBadRequestProblemZodInput = z.input<typeof zCreateAccountProfilePictureUploadBadRequestProblem>;
+
+export type CreateAccountProfilePictureUploadBadRequestProblemZodOutput = z.output<typeof zCreateAccountProfilePictureUploadBadRequestProblem>;
+
 export const zCreateAccountServiceKeyBadRequestProblem: z.ZodType<PhotonWireTypes.CreateAccountServiceKeyBadRequestProblem, PhotonWireTypes.CreateAccountServiceKeyBadRequestProblem> = /* @__PURE__ */ (() => z.union([
     zInvalidArgumentProblem,
     zIdempotencyKeyInvalidProblem,
-    zIdempotencyKeyRequiredProblem
+    zIdempotencyKeyRequiredProblem,
+    zHttpErrorProblem,
+    zInvalidApiVersionProblem
 ]))();
 
 export type CreateAccountServiceKeyBadRequestProblemZodInput = z.input<typeof zCreateAccountServiceKeyBadRequestProblem>;
@@ -3278,6 +3411,15 @@ export type GetSpaceInternalServerErrorProblemZodInput = z.input<typeof zGetSpac
 
 export type GetSpaceInternalServerErrorProblemZodOutput = z.output<typeof zGetSpaceInternalServerErrorProblem>;
 
+export const zGetTenDlcBrandOtpInternalServerErrorProblem: z.ZodType<PhotonWireTypes.GetTenDlcBrandOtpInternalServerErrorProblem, PhotonWireTypes.GetTenDlcBrandOtpInternalServerErrorProblem> = /* @__PURE__ */ (() => z.union([
+    zInternalErrorProblem,
+    zInvalidAuthContextProblem
+]))();
+
+export type GetTenDlcBrandOtpInternalServerErrorProblemZodInput = z.input<typeof zGetTenDlcBrandOtpInternalServerErrorProblem>;
+
+export type GetTenDlcBrandOtpInternalServerErrorProblemZodOutput = z.output<typeof zGetTenDlcBrandOtpInternalServerErrorProblem>;
+
 export const zGetUserInternalServerErrorProblem: z.ZodType<PhotonWireTypes.GetUserInternalServerErrorProblem, PhotonWireTypes.GetUserInternalServerErrorProblem> = /* @__PURE__ */ (() => z.union([
     zInternalErrorProblem,
     zInvalidAuthContextProblem
@@ -3347,6 +3489,21 @@ export const zInvalidContentProblem = /* @__PURE__ */ (() => z.object({
 export type InvalidContentProblemZodInput = z.input<typeof zInvalidContentProblem>;
 
 export type InvalidContentProblemZodOutput = z.output<typeof zInvalidContentProblem>;
+
+export const zInvalidLifecycleStateProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('INVALID_LIFECYCLE_STATE'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: absent().optional(),
+    requestId: z.string().optional(),
+    status: z.literal(409),
+    title: z.literal('Invalid Lifecycle State'),
+    type: z.literal('https://photon.codes/docs/problems/invalid-lifecycle-state')
+}).catchall(zJsonValue))();
+
+export type InvalidLifecycleStateProblemZodInput = z.input<typeof zInvalidLifecycleStateProblem>;
+
+export type InvalidLifecycleStateProblemZodOutput = z.output<typeof zInvalidLifecycleStateProblem>;
 
 export const zInvalidPageTokenProblem = /* @__PURE__ */ (() => z.object({
     code: z.literal('INVALID_PAGE_TOKEN'),
@@ -4436,6 +4593,21 @@ export type ListNumberCountriesResponseZodInput = z.input<typeof zListNumberCoun
 
 export type ListNumberCountriesResponseZodOutput = z.output<typeof zListNumberCountriesResponse>;
 
+export const zNumberOrderFailedProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('NUMBER_ORDER_FAILED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: absent().optional(),
+    requestId: z.string().optional(),
+    status: z.literal(502),
+    title: z.literal('Number Order Failed'),
+    type: z.literal('https://photon.codes/docs/problems/number-order-failed')
+}).catchall(zJsonValue))();
+
+export type NumberOrderFailedProblemZodInput = z.input<typeof zNumberOrderFailedProblem>;
+
+export type NumberOrderFailedProblemZodOutput = z.output<typeof zNumberOrderFailedProblem>;
+
 export const zOauthClientCreationConflictProblem = /* @__PURE__ */ (() => z.object({
     code: z.literal('OAUTH_CLIENT_CREATION_CONFLICT'),
     detail: z.string().optional(),
@@ -4571,15 +4743,6 @@ export type OauthSecretRevocationConflictProblemZodInput = z.input<typeof zOauth
 
 export type OauthSecretRevocationConflictProblemZodOutput = z.output<typeof zOauthSecretRevocationConflictProblem>;
 
-export const zOperationError = /* @__PURE__ */ (() => z.looseObject({
-    code: z.string(),
-    detail: z.string()
-}))();
-
-export type OperationErrorZodInput = z.input<typeof zOperationError>;
-
-export type OperationErrorZodOutput = z.output<typeof zOperationError>;
-
 export const zOperationNotCancellableProblem = /* @__PURE__ */ (() => z.object({
     code: z.literal('OPERATION_NOT_CANCELLABLE'),
     detail: z.string().optional(),
@@ -4643,36 +4806,6 @@ export const zOperationType = /* @__PURE__ */ (() => openEnum([
 export type OperationTypeZodInput = z.input<typeof zOperationType>;
 
 export type OperationTypeZodOutput = z.output<typeof zOperationType>;
-
-export const zOperation = /* @__PURE__ */ (() => z.looseObject({
-    cancellable: z.boolean(),
-    createdAt: z.string(),
-    detail: z.looseObject({}).optional(),
-    endedAt: z.string().optional(),
-    error: zOperationError.optional(),
-    operationId: z.string(),
-    projectId: z.string(),
-    reason: zOperationReason.optional(),
-    resourceId: z.string().optional(),
-    resourceType: z.string(),
-    startedAt: z.string().optional(),
-    state: zOperationState,
-    type: zOperationType,
-    updatedAt: z.string()
-}))();
-
-export type OperationZodInput = z.input<typeof zOperation>;
-
-export type OperationZodOutput = z.output<typeof zOperation>;
-
-export const zOperationPage = /* @__PURE__ */ (() => z.looseObject({
-    nextPageToken: z.string().optional(),
-    operations: z.array(zOperation)
-}))();
-
-export type OperationPageZodInput = z.input<typeof zOperationPage>;
-
-export type OperationPageZodOutput = z.output<typeof zOperationPage>;
 
 export const zOperationUnavailableProblem = /* @__PURE__ */ (() => z.object({
     code: z.literal('OPERATION_UNAVAILABLE'),
@@ -4785,14 +4918,6 @@ export type OrganizationZodInput = z.input<typeof zOrganization>;
 
 export type OrganizationZodOutput = z.output<typeof zOrganization>;
 
-export const zEnsureInitialOrganizationResponse = /* @__PURE__ */ (() => z.looseObject({
-    organization: zOrganization.nullable()
-}))();
-
-export type EnsureInitialOrganizationResponseZodInput = z.input<typeof zEnsureInitialOrganizationResponse>;
-
-export type EnsureInitialOrganizationResponseZodOutput = z.output<typeof zEnsureInitialOrganizationResponse>;
-
 export const zListOrganizationsResponse = /* @__PURE__ */ (() => z.looseObject({
     acquisitionQuestionnaireExempt: z.boolean(),
     organizations: z.array(zOrganization),
@@ -4802,6 +4927,35 @@ export const zListOrganizationsResponse = /* @__PURE__ */ (() => z.looseObject({
 export type ListOrganizationsResponseZodInput = z.input<typeof zListOrganizationsResponse>;
 
 export type ListOrganizationsResponseZodOutput = z.output<typeof zListOrganizationsResponse>;
+
+export const zOrganizationBillingPeriod = z.looseObject({
+    currency: z.string(),
+    estimatedTotalCents: z.number().refine(Number.isInteger, { message: 'Expected an integer' }),
+    periodEnd: z.string(),
+    periodStart: z.string(),
+    transferBalanceCents: z.number().refine(Number.isInteger, { message: 'Expected an integer' }),
+    usageCents: z.number().refine(Number.isInteger, { message: 'Expected an integer' }),
+    usageLimitCents: z.number().refine(Number.isInteger, { message: 'Expected an integer' }).nullable()
+});
+
+export type OrganizationBillingPeriodZodInput = z.input<typeof zOrganizationBillingPeriod>;
+
+export type OrganizationBillingPeriodZodOutput = z.output<typeof zOrganizationBillingPeriod>;
+
+export const zOrganizationClosingProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('ORGANIZATION_CLOSING'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: absent().optional(),
+    requestId: z.string().optional(),
+    status: z.literal(409),
+    title: z.literal('Organization is closing'),
+    type: z.literal('https://photon.codes/docs/problems/organization-closing')
+}).catchall(zJsonValue))();
+
+export type OrganizationClosingProblemZodInput = z.input<typeof zOrganizationClosingProblem>;
+
+export type OrganizationClosingProblemZodOutput = z.output<typeof zOrganizationClosingProblem>;
 
 export const zOrganizationConnectionNotFoundProblem = /* @__PURE__ */ (() => z.object({
     code: z.literal('ORGANIZATION_CONNECTION_NOT_FOUND'),
@@ -4867,16 +5021,6 @@ export const zOrganizationCreditSubject = /* @__PURE__ */ (() => z.looseObject({
 export type OrganizationCreditSubjectZodInput = z.input<typeof zOrganizationCreditSubject>;
 
 export type OrganizationCreditSubjectZodOutput = z.output<typeof zOrganizationCreditSubject>;
-
-export const zOrganizationEnterpriseLoginRequest = /* @__PURE__ */ (() => z.looseObject({
-    invitationToken: z.string().optional(),
-    organizationId: z.string(),
-    returnTo: z.string()
-}))();
-
-export type OrganizationEnterpriseLoginRequestZodInput = z.input<typeof zOrganizationEnterpriseLoginRequest>;
-
-export type OrganizationEnterpriseLoginRequestZodOutput = z.output<typeof zOrganizationEnterpriseLoginRequest>;
 
 export const zOrganizationInvitationRole = /* @__PURE__ */ (() => openEnum(['member', 'viewer']))();
 
@@ -5702,6 +5846,51 @@ export type ListOrganizationMembersConflictProblemZodInput = z.input<typeof zLis
 
 export type ListOrganizationMembersConflictProblemZodOutput = z.output<typeof zListOrganizationMembersConflictProblem>;
 
+export const zOtpLockedProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('OTP_LOCKED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: absent().optional(),
+    requestId: z.string().optional(),
+    status: z.literal(409),
+    title: z.literal('OTP Locked'),
+    type: z.literal('https://photon.codes/docs/problems/otp-locked')
+}).catchall(zJsonValue))();
+
+export type OtpLockedProblemZodInput = z.input<typeof zOtpLockedProblem>;
+
+export type OtpLockedProblemZodOutput = z.output<typeof zOtpLockedProblem>;
+
+export const zOtpRateLimitedProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('OTP_RATE_LIMITED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: absent().optional(),
+    requestId: z.string().optional(),
+    status: z.literal(429),
+    title: z.literal('OTP Rate Limited'),
+    type: z.literal('https://photon.codes/docs/problems/otp-rate-limited')
+}).catchall(zJsonValue))();
+
+export type OtpRateLimitedProblemZodInput = z.input<typeof zOtpRateLimitedProblem>;
+
+export type OtpRateLimitedProblemZodOutput = z.output<typeof zOtpRateLimitedProblem>;
+
+export const zOtpVerificationRejectedProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('OTP_VERIFICATION_REJECTED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: absent().optional(),
+    requestId: z.string().optional(),
+    status: z.literal(422),
+    title: z.literal('OTP Verification Rejected'),
+    type: z.literal('https://photon.codes/docs/problems/otp-verification-rejected')
+}).catchall(zJsonValue))();
+
+export type OtpVerificationRejectedProblemZodInput = z.input<typeof zOtpVerificationRejectedProblem>;
+
+export type OtpVerificationRejectedProblemZodOutput = z.output<typeof zOtpVerificationRejectedProblem>;
+
 export const zPayloadTooLargeProblem = /* @__PURE__ */ (() => z.object({
     code: z.literal('PAYLOAD_TOO_LARGE'),
     detail: z.string().optional(),
@@ -5727,15 +5916,6 @@ export const zPaymentMethod = z.looseObject({
 export type PaymentMethodZodInput = z.input<typeof zPaymentMethod>;
 
 export type PaymentMethodZodOutput = z.output<typeof zPaymentMethod>;
-
-export const zGetOrganizationPaymentMethodResponse = z.looseObject({
-    cardOnFile: z.boolean(),
-    paymentMethod: zPaymentMethod.nullable()
-});
-
-export type GetOrganizationPaymentMethodResponseZodInput = z.input<typeof zGetOrganizationPaymentMethodResponse>;
-
-export type GetOrganizationPaymentMethodResponseZodOutput = z.output<typeof zGetOrganizationPaymentMethodResponse>;
 
 export const zPaymentMode = /* @__PURE__ */ (() => openEnum(['automatic', 'manual']))();
 
@@ -5769,6 +5949,27 @@ export const zPhoneCarrier = /* @__PURE__ */ (() => z.looseObject({
 export type PhoneCarrierZodInput = z.input<typeof zPhoneCarrier>;
 
 export type PhoneCarrierZodOutput = z.output<typeof zPhoneCarrier>;
+
+export const zPhoneNotSmsCapableProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('PHONE_NOT_SMS_CAPABLE'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: absent().optional(),
+    requestId: z.string().optional(),
+    status: z.literal(422),
+    title: z.literal('Phone Is Not SMS Capable'),
+    type: z.literal('https://photon.codes/docs/problems/phone-not-sms-capable')
+}).catchall(zJsonValue))();
+
+export type PhoneNotSmsCapableProblemZodInput = z.input<typeof zPhoneNotSmsCapableProblem>;
+
+export type PhoneNotSmsCapableProblemZodOutput = z.output<typeof zPhoneNotSmsCapableProblem>;
+
+export const zPhotonVersion = /* @__PURE__ */ (() => z.enum(['2026-07-01']))();
+
+export type PhotonVersionZodInput = z.input<typeof zPhotonVersion>;
+
+export type PhotonVersionZodOutput = z.output<typeof zPhotonVersion>;
 
 export const zPlanSource = /* @__PURE__ */ (() => openEnum(['catalog', 'override']))();
 
@@ -5829,7 +6030,8 @@ export type PreviewOrganizationChangeInternalServerErrorProblemZodInput = z.inpu
 export type PreviewOrganizationChangeInternalServerErrorProblemZodOutput = z.output<typeof zPreviewOrganizationChangeInternalServerErrorProblem>;
 
 export const zPreviewOrganizationChangeRequest = /* @__PURE__ */ (() => z.looseObject({
-    fixedCharge: zFixedChargeChange
+    fixedCharge: zFixedChargeChange,
+    promotionCode: z.string().optional()
 }))();
 
 export type PreviewOrganizationChangeRequestZodInput = z.input<typeof zPreviewOrganizationChangeRequest>;
@@ -5842,7 +6044,9 @@ export const zPreviewOrganizationChangeResponse = z.looseObject({
     dueLater: zBillingPreviewDeferred,
     dueNow: zBillingPreviewInvoice,
     nextCharge: zBillingNextCharge.nullable(),
-    timeZone: z.string()
+    nextInvoiceAt: z.string().nullable(),
+    timeZone: z.string(),
+    upcomingInvoices: z.array(zBillingUpcomingInvoice)
 });
 
 export type PreviewOrganizationChangeResponseZodInput = z.input<typeof zPreviewOrganizationChangeResponse>;
@@ -5932,12 +6136,203 @@ export const zPreviewProjectChangeResponse = z.looseObject({
     dueLater: zBillingPreviewDeferred,
     dueNow: zBillingPreviewInvoice,
     nextCharge: zBillingNextCharge.nullable(),
-    timeZone: z.string()
+    nextInvoiceAt: z.string().nullable(),
+    timeZone: z.string(),
+    upcomingInvoices: z.array(zBillingUpcomingInvoice)
 });
 
 export type PreviewProjectChangeResponseZodInput = z.input<typeof zPreviewProjectChangeResponse>;
 
 export type PreviewProjectChangeResponseZodOutput = z.output<typeof zPreviewProjectChangeResponse>;
+
+export const zProblemRemediation = /* @__PURE__ */ (() => z.looseObject({
+    action: z.string(),
+    documentation: z.string().optional()
+}))();
+
+export type ProblemRemediationZodInput = z.input<typeof zProblemRemediation>;
+
+export type ProblemRemediationZodOutput = z.output<typeof zProblemRemediation>;
+
+export const zChargeRefusedProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('CHARGE_REFUSED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: zProblemRemediation,
+    requestId: z.string().optional(),
+    status: z.literal(402),
+    title: z.literal('Charge Refused'),
+    type: z.literal('https://photon.codes/docs/problems/charge-refused')
+}).catchall(zJsonValue))();
+
+export type ChargeRefusedProblemZodInput = z.input<typeof zChargeRefusedProblem>;
+
+export type ChargeRefusedProblemZodOutput = z.output<typeof zChargeRefusedProblem>;
+
+export const zEmailDomainProviderRejectedProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('EMAIL_DOMAIN_PROVIDER_REJECTED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: zProblemRemediation,
+    requestId: z.string().optional(),
+    status: z.literal(422),
+    title: z.literal('Email Domain Provider Rejected'),
+    type: z.literal('https://photon.codes/docs/problems/email-domain-provider-rejected')
+}).catchall(zJsonValue))();
+
+export type EmailDomainProviderRejectedProblemZodInput = z.input<typeof zEmailDomainProviderRejectedProblem>;
+
+export type EmailDomainProviderRejectedProblemZodOutput = z.output<typeof zEmailDomainProviderRejectedProblem>;
+
+export const zEmailDomainReleaseFailedProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('EMAIL_DOMAIN_RELEASE_FAILED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: zProblemRemediation,
+    requestId: z.string().optional(),
+    status: z.literal(502),
+    title: z.literal('Email Domain Release Failed'),
+    type: z.literal('https://photon.codes/docs/problems/email-domain-release-failed')
+}).catchall(zJsonValue))();
+
+export type EmailDomainReleaseFailedProblemZodInput = z.input<typeof zEmailDomainReleaseFailedProblem>;
+
+export type EmailDomainReleaseFailedProblemZodOutput = z.output<typeof zEmailDomainReleaseFailedProblem>;
+
+export const zEmailDomainVerificationFailedProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('EMAIL_DOMAIN_VERIFICATION_FAILED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: zProblemRemediation,
+    requestId: z.string().optional(),
+    status: z.literal(502),
+    title: z.literal('Email Domain Verification Failed'),
+    type: z.literal('https://photon.codes/docs/problems/email-domain-verification-failed')
+}).catchall(zJsonValue))();
+
+export type EmailDomainVerificationFailedProblemZodInput = z.input<typeof zEmailDomainVerificationFailedProblem>;
+
+export type EmailDomainVerificationFailedProblemZodOutput = z.output<typeof zEmailDomainVerificationFailedProblem>;
+
+export const zEmailDomainVerificationTimedOutProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('EMAIL_DOMAIN_VERIFICATION_TIMED_OUT'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: zProblemRemediation,
+    requestId: z.string().optional(),
+    status: z.literal(504),
+    title: z.literal('Email Domain Verification Timed Out'),
+    type: z.literal('https://photon.codes/docs/problems/email-domain-verification-timed-out')
+}).catchall(zJsonValue))();
+
+export type EmailDomainVerificationTimedOutProblemZodInput = z.input<typeof zEmailDomainVerificationTimedOutProblem>;
+
+export type EmailDomainVerificationTimedOutProblemZodOutput = z.output<typeof zEmailDomainVerificationTimedOutProblem>;
+
+export const zEmailTenantSetupTimedOutProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('EMAIL_TENANT_SETUP_TIMED_OUT'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: zProblemRemediation,
+    requestId: z.string().optional(),
+    status: z.literal(504),
+    title: z.literal('Email Tenant Setup Timed Out'),
+    type: z.literal('https://photon.codes/docs/problems/email-tenant-setup-timed-out')
+}).catchall(zJsonValue))();
+
+export type EmailTenantSetupTimedOutProblemZodInput = z.input<typeof zEmailTenantSetupTimedOutProblem>;
+
+export type EmailTenantSetupTimedOutProblemZodOutput = z.output<typeof zEmailTenantSetupTimedOutProblem>;
+
+export const zEnterprisePlanRequiredProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('ENTERPRISE_PLAN_REQUIRED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: zProblemRemediation,
+    requestId: z.string().optional(),
+    status: z.literal(402),
+    title: z.literal('Enterprise Plan Required'),
+    type: z.literal('https://photon.codes/docs/problems/enterprise-plan-required')
+}).catchall(zJsonValue))();
+
+export type EnterprisePlanRequiredProblemZodInput = z.input<typeof zEnterprisePlanRequiredProblem>;
+
+export type EnterprisePlanRequiredProblemZodOutput = z.output<typeof zEnterprisePlanRequiredProblem>;
+
+export const zNumberInventoryUnavailableProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('NUMBER_INVENTORY_UNAVAILABLE'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: zProblemRemediation,
+    requestId: z.string().optional(),
+    status: z.literal(409),
+    title: z.literal('Number Inventory Unavailable'),
+    type: z.literal('https://photon.codes/docs/problems/number-inventory-unavailable')
+}).catchall(zJsonValue))();
+
+export type NumberInventoryUnavailableProblemZodInput = z.input<typeof zNumberInventoryUnavailableProblem>;
+
+export type NumberInventoryUnavailableProblemZodOutput = z.output<typeof zNumberInventoryUnavailableProblem>;
+
+export const zNumberOrderReconciliationRequiredProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('NUMBER_ORDER_RECONCILIATION_REQUIRED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: zProblemRemediation,
+    requestId: z.string().optional(),
+    status: z.literal(409),
+    title: z.literal('Number Order Reconciliation Required'),
+    type: z.literal('https://photon.codes/docs/problems/number-order-reconciliation-required')
+}).catchall(zJsonValue))();
+
+export type NumberOrderReconciliationRequiredProblemZodInput = z.input<typeof zNumberOrderReconciliationRequiredProblem>;
+
+export type NumberOrderReconciliationRequiredProblemZodOutput = z.output<typeof zNumberOrderReconciliationRequiredProblem>;
+
+export const zNumberReleaseFailedProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('NUMBER_RELEASE_FAILED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: zProblemRemediation,
+    requestId: z.string().optional(),
+    status: z.literal(502),
+    title: z.literal('Number Release Failed'),
+    type: z.literal('https://photon.codes/docs/problems/number-release-failed')
+}).catchall(zJsonValue))();
+
+export type NumberReleaseFailedProblemZodInput = z.input<typeof zNumberReleaseFailedProblem>;
+
+export type NumberReleaseFailedProblemZodOutput = z.output<typeof zNumberReleaseFailedProblem>;
+
+export const zNumberSearchFailedProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('NUMBER_SEARCH_FAILED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: zProblemRemediation,
+    requestId: z.string().optional(),
+    status: z.literal(502),
+    title: z.literal('Number Search Failed'),
+    type: z.literal('https://photon.codes/docs/problems/number-search-failed')
+}).catchall(zJsonValue))();
+
+export type NumberSearchFailedProblemZodInput = z.input<typeof zNumberSearchFailedProblem>;
+
+export type NumberSearchFailedProblemZodOutput = z.output<typeof zNumberSearchFailedProblem>;
+
+export const zProblemDetails = z.object({
+    code: z.string(),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: zProblemRemediation.optional(),
+    requestId: z.string().optional(),
+    status: z.number().refine(Number.isInteger, { message: 'Expected an integer' }),
+    title: z.string(),
+    type: z.string()
+}).catchall(zJsonValue);
+
+export type ProblemDetailsZodInput = z.input<typeof zProblemDetails>;
+
+export type ProblemDetailsZodOutput = z.output<typeof zProblemDetails>;
 
 export const zProfilePictureContentType = /* @__PURE__ */ (() => openEnum([
     'image/jpeg',
@@ -6007,16 +6402,6 @@ export const zProjectClosingProblem = /* @__PURE__ */ (() => z.object({
 export type ProjectClosingProblemZodInput = z.input<typeof zProjectClosingProblem>;
 
 export type ProjectClosingProblemZodOutput = z.output<typeof zProjectClosingProblem>;
-
-export const zConnectEmailDomainConflictProblem: z.ZodType<PhotonWireTypes.ConnectEmailDomainConflictProblem, PhotonWireTypes.ConnectEmailDomainConflictProblem> = /* @__PURE__ */ (() => z.union([
-    zProjectClosingProblem,
-    zEmailDomainAlreadyConnectedProblem,
-    zEmailDomainCapExceededProblem
-]))();
-
-export type ConnectEmailDomainConflictProblemZodInput = z.input<typeof zConnectEmailDomainConflictProblem>;
-
-export type ConnectEmailDomainConflictProblemZodOutput = z.output<typeof zConnectEmailDomainConflictProblem>;
 
 export const zProjectClosureDomain = /* @__PURE__ */ (() => openEnum([
     'projects',
@@ -6163,6 +6548,32 @@ export type ProjectIdZodInput = z.input<typeof zProjectId>;
 
 export type ProjectIdZodOutput = z.output<typeof zProjectId>;
 
+export const zProjectInitializingProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('PROJECT_INITIALIZING'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: zProblemRemediation,
+    requestId: z.string().optional(),
+    status: z.literal(409),
+    title: z.literal('Project Initializing'),
+    type: z.literal('https://photon.codes/docs/problems/project-initializing')
+}).catchall(zJsonValue))();
+
+export type ProjectInitializingProblemZodInput = z.input<typeof zProjectInitializingProblem>;
+
+export type ProjectInitializingProblemZodOutput = z.output<typeof zProjectInitializingProblem>;
+
+export const zConnectEmailDomainConflictProblem: z.ZodType<PhotonWireTypes.ConnectEmailDomainConflictProblem, PhotonWireTypes.ConnectEmailDomainConflictProblem> = /* @__PURE__ */ (() => z.union([
+    zProjectClosingProblem,
+    zProjectInitializingProblem,
+    zEmailDomainAlreadyConnectedProblem,
+    zEmailDomainCapExceededProblem
+]))();
+
+export type ConnectEmailDomainConflictProblemZodInput = z.input<typeof zConnectEmailDomainConflictProblem>;
+
+export type ConnectEmailDomainConflictProblemZodOutput = z.output<typeof zConnectEmailDomainConflictProblem>;
+
 export const zProjectInvoiceSubject = /* @__PURE__ */ (() => z.looseObject({
     projectId: z.string(),
     type: z.literal('project')
@@ -6199,14 +6610,17 @@ export type BillingPaymentActionZodInput = z.input<typeof zBillingPaymentAction>
 export type BillingPaymentActionZodOutput = z.output<typeof zBillingPaymentAction>;
 
 export const zInvoice = z.looseObject({
+    amountDueCents: z.number().refine(Number.isInteger, { message: 'Expected an integer' }),
     currency: z.string(),
     invoiceId: z.string(),
     issuedAt: z.string().nullable(),
     kind: zInvoiceKind,
     number: z.string(),
+    pageUrl: z.string().nullable(),
     paymentActionRequired: z.boolean(),
     paymentDueAt: z.string().nullable(),
     paymentOverdue: z.boolean(),
+    paymentProcessing: z.boolean(),
     paymentStatus: zInvoicePaymentStatus,
     pdfUrl: z.string().nullable(),
     status: zInvoiceStatus,
@@ -6275,6 +6689,40 @@ export type ProjectSubscriptionEntitlementZodInput = z.input<typeof zProjectSubs
 
 export type ProjectSubscriptionEntitlementZodOutput = z.output<typeof zProjectSubscriptionEntitlement>;
 
+export const zPromotionCodeRejectedProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('PROMOTION_CODE_REJECTED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    reason: z.string(),
+    remediation: zProblemRemediation,
+    requestId: z.string().optional(),
+    status: z.literal(409),
+    title: z.literal('Promotion Code Rejected'),
+    type: z.literal('https://photon.codes/docs/problems/promotion-code-rejected')
+}).catchall(zJsonValue))();
+
+export type PromotionCodeRejectedProblemZodInput = z.input<typeof zPromotionCodeRejectedProblem>;
+
+export type PromotionCodeRejectedProblemZodOutput = z.output<typeof zPromotionCodeRejectedProblem>;
+
+export const zPreviewOrganizationChangeConflictProblem: z.ZodType<PhotonWireTypes.PreviewOrganizationChangeConflictProblem, PhotonWireTypes.PreviewOrganizationChangeConflictProblem> = /* @__PURE__ */ (() => z.union([
+    zFailedPreconditionProblem,
+    zPromotionCodeRejectedProblem
+]))();
+
+export type PreviewOrganizationChangeConflictProblemZodInput = z.input<typeof zPreviewOrganizationChangeConflictProblem>;
+
+export type PreviewOrganizationChangeConflictProblemZodOutput = z.output<typeof zPreviewOrganizationChangeConflictProblem>;
+
+export const zPreviewProjectChangeConflictProblem: z.ZodType<PhotonWireTypes.PreviewProjectChangeConflictProblem, PhotonWireTypes.PreviewProjectChangeConflictProblem> = /* @__PURE__ */ (() => z.union([
+    zFailedPreconditionProblem,
+    zPromotionCodeRejectedProblem
+]))();
+
+export type PreviewProjectChangeConflictProblemZodInput = z.input<typeof zPreviewProjectChangeConflictProblem>;
+
+export type PreviewProjectChangeConflictProblemZodOutput = z.output<typeof zPreviewProjectChangeConflictProblem>;
+
 export const zProvisionImessageDedicatedLineBadRequestProblem: z.ZodType<PhotonWireTypes.ProvisionImessageDedicatedLineBadRequestProblem, PhotonWireTypes.ProvisionImessageDedicatedLineBadRequestProblem> = /* @__PURE__ */ (() => z.union([
     zIdempotencyKeyRequiredProblem,
     zIdempotencyKeyInvalidProblem
@@ -6283,6 +6731,16 @@ export const zProvisionImessageDedicatedLineBadRequestProblem: z.ZodType<PhotonW
 export type ProvisionImessageDedicatedLineBadRequestProblemZodInput = z.input<typeof zProvisionImessageDedicatedLineBadRequestProblem>;
 
 export type ProvisionImessageDedicatedLineBadRequestProblemZodOutput = z.output<typeof zProvisionImessageDedicatedLineBadRequestProblem>;
+
+export const zProvisionImessageDedicatedLineConflictProblem: z.ZodType<PhotonWireTypes.ProvisionImessageDedicatedLineConflictProblem, PhotonWireTypes.ProvisionImessageDedicatedLineConflictProblem> = /* @__PURE__ */ (() => z.union([
+    zPromotionCodeRejectedProblem,
+    zProjectClosingProblem,
+    zProjectInitializingProblem
+]))();
+
+export type ProvisionImessageDedicatedLineConflictProblemZodInput = z.input<typeof zProvisionImessageDedicatedLineConflictProblem>;
+
+export type ProvisionImessageDedicatedLineConflictProblemZodOutput = z.output<typeof zProvisionImessageDedicatedLineConflictProblem>;
 
 export const zProvisionImessageDedicatedLineInternalServerErrorProblem: z.ZodType<PhotonWireTypes.ProvisionImessageDedicatedLineInternalServerErrorProblem, PhotonWireTypes.ProvisionImessageDedicatedLineInternalServerErrorProblem> = /* @__PURE__ */ (() => z.union([
     zInternalErrorProblem,
@@ -6293,6 +6751,23 @@ export type ProvisionImessageDedicatedLineInternalServerErrorProblemZodInput = z
 
 export type ProvisionImessageDedicatedLineInternalServerErrorProblemZodOutput = z.output<typeof zProvisionImessageDedicatedLineInternalServerErrorProblem>;
 
+export const zProvisionImessageDedicatedLinePaymentRequiredProblem: z.ZodType<PhotonWireTypes.ProvisionImessageDedicatedLinePaymentRequiredProblem, PhotonWireTypes.ProvisionImessageDedicatedLinePaymentRequiredProblem> = /* @__PURE__ */ (() => z.union([
+    zEntitlementRequiredProblem,
+    zEnterprisePlanRequiredProblem
+]))();
+
+export type ProvisionImessageDedicatedLinePaymentRequiredProblemZodInput = z.input<typeof zProvisionImessageDedicatedLinePaymentRequiredProblem>;
+
+export type ProvisionImessageDedicatedLinePaymentRequiredProblemZodOutput = z.output<typeof zProvisionImessageDedicatedLinePaymentRequiredProblem>;
+
+export const zProvisionImessageDedicatedLineRequest = /* @__PURE__ */ (() => z.looseObject({
+    promotionCode: z.string().optional()
+}))();
+
+export type ProvisionImessageDedicatedLineRequestZodInput = z.input<typeof zProvisionImessageDedicatedLineRequest>;
+
+export type ProvisionImessageDedicatedLineRequestZodOutput = z.output<typeof zProvisionImessageDedicatedLineRequest>;
+
 export const zProvisionWhatsappDedicatedLineBadRequestProblem: z.ZodType<PhotonWireTypes.ProvisionWhatsappDedicatedLineBadRequestProblem, PhotonWireTypes.ProvisionWhatsappDedicatedLineBadRequestProblem> = /* @__PURE__ */ (() => z.union([
     zIdempotencyKeyRequiredProblem,
     zIdempotencyKeyInvalidProblem
@@ -6301,6 +6776,16 @@ export const zProvisionWhatsappDedicatedLineBadRequestProblem: z.ZodType<PhotonW
 export type ProvisionWhatsappDedicatedLineBadRequestProblemZodInput = z.input<typeof zProvisionWhatsappDedicatedLineBadRequestProblem>;
 
 export type ProvisionWhatsappDedicatedLineBadRequestProblemZodOutput = z.output<typeof zProvisionWhatsappDedicatedLineBadRequestProblem>;
+
+export const zProvisionWhatsappDedicatedLineConflictProblem: z.ZodType<PhotonWireTypes.ProvisionWhatsappDedicatedLineConflictProblem, PhotonWireTypes.ProvisionWhatsappDedicatedLineConflictProblem> = /* @__PURE__ */ (() => z.union([
+    zPromotionCodeRejectedProblem,
+    zProjectClosingProblem,
+    zProjectInitializingProblem
+]))();
+
+export type ProvisionWhatsappDedicatedLineConflictProblemZodInput = z.input<typeof zProvisionWhatsappDedicatedLineConflictProblem>;
+
+export type ProvisionWhatsappDedicatedLineConflictProblemZodOutput = z.output<typeof zProvisionWhatsappDedicatedLineConflictProblem>;
 
 export const zProvisionWhatsappDedicatedLineInternalServerErrorProblem: z.ZodType<PhotonWireTypes.ProvisionWhatsappDedicatedLineInternalServerErrorProblem, PhotonWireTypes.ProvisionWhatsappDedicatedLineInternalServerErrorProblem> = /* @__PURE__ */ (() => z.union([
     zInternalErrorProblem,
@@ -6311,6 +6796,29 @@ export type ProvisionWhatsappDedicatedLineInternalServerErrorProblemZodInput = z
 
 export type ProvisionWhatsappDedicatedLineInternalServerErrorProblemZodOutput = z.output<typeof zProvisionWhatsappDedicatedLineInternalServerErrorProblem>;
 
+export const zProvisionWhatsappDedicatedLinePaymentRequiredProblem: z.ZodType<PhotonWireTypes.ProvisionWhatsappDedicatedLinePaymentRequiredProblem, PhotonWireTypes.ProvisionWhatsappDedicatedLinePaymentRequiredProblem> = /* @__PURE__ */ (() => z.union([
+    zEntitlementRequiredProblem,
+    zEnterprisePlanRequiredProblem
+]))();
+
+export type ProvisionWhatsappDedicatedLinePaymentRequiredProblemZodInput = z.input<typeof zProvisionWhatsappDedicatedLinePaymentRequiredProblem>;
+
+export type ProvisionWhatsappDedicatedLinePaymentRequiredProblemZodOutput = z.output<typeof zProvisionWhatsappDedicatedLinePaymentRequiredProblem>;
+
+export const zProvisionWhatsappDedicatedLineRequest = /* @__PURE__ */ (() => z.looseObject({
+    promotionCode: z.string().optional()
+}))();
+
+export type ProvisionWhatsappDedicatedLineRequestZodInput = z.input<typeof zProvisionWhatsappDedicatedLineRequest>;
+
+export type ProvisionWhatsappDedicatedLineRequestZodOutput = z.output<typeof zProvisionWhatsappDedicatedLineRequest>;
+
+export const zPurchaseRefusal = /* @__PURE__ */ (() => openEnum(['payment_method_required', 'billing_not_ready']))();
+
+export type PurchaseRefusalZodInput = z.input<typeof zPurchaseRefusal>;
+
+export type PurchaseRefusalZodOutput = z.output<typeof zPurchaseRefusal>;
+
 export const zPurchaseSmsNumberBadRequestProblem: z.ZodType<PhotonWireTypes.PurchaseSmsNumberBadRequestProblem, PhotonWireTypes.PurchaseSmsNumberBadRequestProblem> = /* @__PURE__ */ (() => z.union([
     zIdempotencyKeyRequiredProblem,
     zIdempotencyKeyInvalidProblem
@@ -6319,6 +6827,15 @@ export const zPurchaseSmsNumberBadRequestProblem: z.ZodType<PhotonWireTypes.Purc
 export type PurchaseSmsNumberBadRequestProblemZodInput = z.input<typeof zPurchaseSmsNumberBadRequestProblem>;
 
 export type PurchaseSmsNumberBadRequestProblemZodOutput = z.output<typeof zPurchaseSmsNumberBadRequestProblem>;
+
+export const zPurchaseSmsNumberConflictProblem: z.ZodType<PhotonWireTypes.PurchaseSmsNumberConflictProblem, PhotonWireTypes.PurchaseSmsNumberConflictProblem> = /* @__PURE__ */ (() => z.union([
+    zProjectClosingProblem,
+    zProjectInitializingProblem
+]))();
+
+export type PurchaseSmsNumberConflictProblemZodInput = z.input<typeof zPurchaseSmsNumberConflictProblem>;
+
+export type PurchaseSmsNumberConflictProblemZodOutput = z.output<typeof zPurchaseSmsNumberConflictProblem>;
 
 export const zPurchaseSmsNumberInternalServerErrorProblem: z.ZodType<PhotonWireTypes.PurchaseSmsNumberInternalServerErrorProblem, PhotonWireTypes.PurchaseSmsNumberInternalServerErrorProblem> = /* @__PURE__ */ (() => z.union([
     zInternalErrorProblem,
@@ -6331,7 +6848,8 @@ export type PurchaseSmsNumberInternalServerErrorProblemZodOutput = z.output<type
 
 export const zPurchaseSmsNumberRequest = /* @__PURE__ */ (() => z.looseObject({
     areaCode: z.string().optional(),
-    countryCode: z.literal('US')
+    countryCode: z.literal('US'),
+    promotionCode: z.string().optional()
 }))();
 
 export type PurchaseSmsNumberRequestZodInput = z.input<typeof zPurchaseSmsNumberRequest>;
@@ -6392,12 +6910,6 @@ export const zRateLimitedProblem = /* @__PURE__ */ (() => z.object({
 export type RateLimitedProblemZodInput = z.input<typeof zRateLimitedProblem>;
 
 export type RateLimitedProblemZodOutput = z.output<typeof zRateLimitedProblem>;
-
-export const zReactionAction = /* @__PURE__ */ (() => openEnum(['add', 'remove']))();
-
-export type ReactionActionZodInput = z.input<typeof zReactionAction>;
-
-export type ReactionActionZodOutput = z.output<typeof zReactionAction>;
 
 export const zReceivedMessageTimestamps = /* @__PURE__ */ (() => z.looseObject({
     acceptedAt: absent().optional(),
@@ -6723,7 +7235,8 @@ export type ResendOrganizationInvitationResponseZodOutput = z.output<typeof zRes
 export const zResetAccountProfilePictureBadRequestProblem: z.ZodType<PhotonWireTypes.ResetAccountProfilePictureBadRequestProblem, PhotonWireTypes.ResetAccountProfilePictureBadRequestProblem> = /* @__PURE__ */ (() => z.union([
     zInvalidArgumentProblem,
     zIdempotencyKeyInvalidProblem,
-    zIdempotencyKeyRequiredProblem
+    zIdempotencyKeyRequiredProblem,
+    zInvalidApiVersionProblem
 ]))();
 
 export type ResetAccountProfilePictureBadRequestProblemZodInput = z.input<typeof zResetAccountProfilePictureBadRequestProblem>;
@@ -7343,17 +7856,6 @@ export type DownloadAttachmentForbiddenProblemZodInput = z.input<typeof zDownloa
 
 export type DownloadAttachmentForbiddenProblemZodOutput = z.output<typeof zDownloadAttachmentForbiddenProblem>;
 
-export const zEnsureInitialOrganizationForbiddenProblem: z.ZodType<PhotonWireTypes.EnsureInitialOrganizationForbiddenProblem, PhotonWireTypes.EnsureInitialOrganizationForbiddenProblem> = /* @__PURE__ */ (() => z.union([
-    zForbiddenProblem,
-    zInsufficientScopeProblem,
-    zOrganizationSsoRequiredProblem,
-    zResourceMismatchProblem
-]))();
-
-export type EnsureInitialOrganizationForbiddenProblemZodInput = z.input<typeof zEnsureInitialOrganizationForbiddenProblem>;
-
-export type EnsureInitialOrganizationForbiddenProblemZodOutput = z.output<typeof zEnsureInitialOrganizationForbiddenProblem>;
-
 export const zGetAccountForbiddenProblem: z.ZodType<PhotonWireTypes.GetAccountForbiddenProblem, PhotonWireTypes.GetAccountForbiddenProblem> = /* @__PURE__ */ (() => z.union([
     zForbiddenProblem,
     zInsufficientScopeProblem,
@@ -7672,6 +8174,17 @@ export const zGetSpaceForbiddenProblem: z.ZodType<PhotonWireTypes.GetSpaceForbid
 export type GetSpaceForbiddenProblemZodInput = z.input<typeof zGetSpaceForbiddenProblem>;
 
 export type GetSpaceForbiddenProblemZodOutput = z.output<typeof zGetSpaceForbiddenProblem>;
+
+export const zGetTenDlcBrandOtpForbiddenProblem: z.ZodType<PhotonWireTypes.GetTenDlcBrandOtpForbiddenProblem, PhotonWireTypes.GetTenDlcBrandOtpForbiddenProblem> = /* @__PURE__ */ (() => z.union([
+    zForbiddenProblem,
+    zInsufficientScopeProblem,
+    zOrganizationSsoRequiredProblem,
+    zResourceMismatchProblem
+]))();
+
+export type GetTenDlcBrandOtpForbiddenProblemZodInput = z.input<typeof zGetTenDlcBrandOtpForbiddenProblem>;
+
+export type GetTenDlcBrandOtpForbiddenProblemZodOutput = z.output<typeof zGetTenDlcBrandOtpForbiddenProblem>;
 
 export const zGetUserForbiddenProblem: z.ZodType<PhotonWireTypes.GetUserForbiddenProblem, PhotonWireTypes.GetUserForbiddenProblem> = /* @__PURE__ */ (() => z.union([
     zForbiddenProblem,
@@ -8402,15 +8915,6 @@ export type ResourceZodInput = z.input<typeof zResource>;
 
 export type ResourceZodOutput = z.output<typeof zResource>;
 
-export const zGetOperationResponse = /* @__PURE__ */ (() => z.looseObject({
-    operation: zOperation,
-    resource: zResource.optional()
-}))();
-
-export type GetOperationResponseZodInput = z.input<typeof zGetOperationResponse>;
-
-export type GetOperationResponseZodOutput = z.output<typeof zGetOperationResponse>;
-
 export const zResourcePage = /* @__PURE__ */ (() => z.looseObject({
     nextPageToken: z.string().optional(),
     resources: z.array(zResource)
@@ -8420,13 +8924,75 @@ export type ResourcePageZodInput = z.input<typeof zResourcePage>;
 
 export type ResourcePageZodOutput = z.output<typeof zResourcePage>;
 
-export const zRetryEnterpriseLoginRequest = /* @__PURE__ */ (() => z.looseObject({
-    retryToken: z.string()
-}))();
+export const zRetiredApiVersionProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('RETIRED_API_VERSION'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: absent().optional(),
+    requestId: z.string().optional(),
+    status: z.literal(410),
+    supportedVersions: z.array(z.string()),
+    title: z.literal('Retired API Version'),
+    type: z.literal('https://photon.codes/docs/problems/retired-api-version')
+}).catchall(zJsonValue))();
 
-export type RetryEnterpriseLoginRequestZodInput = z.input<typeof zRetryEnterpriseLoginRequest>;
+export type RetiredApiVersionProblemZodInput = z.input<typeof zRetiredApiVersionProblem>;
 
-export type RetryEnterpriseLoginRequestZodOutput = z.output<typeof zRetryEnterpriseLoginRequest>;
+export type RetiredApiVersionProblemZodOutput = z.output<typeof zRetiredApiVersionProblem>;
+
+export const zCommitAccountProfilePictureGoneProblem: z.ZodType<PhotonWireTypes.CommitAccountProfilePictureGoneProblem, PhotonWireTypes.CommitAccountProfilePictureGoneProblem> = /* @__PURE__ */ (() => z.union([
+    zAccountDeletedProblem,
+    zRetiredApiVersionProblem
+]))();
+
+export type CommitAccountProfilePictureGoneProblemZodInput = z.input<typeof zCommitAccountProfilePictureGoneProblem>;
+
+export type CommitAccountProfilePictureGoneProblemZodOutput = z.output<typeof zCommitAccountProfilePictureGoneProblem>;
+
+export const zCreateAccountProfilePictureUploadGoneProblem: z.ZodType<PhotonWireTypes.CreateAccountProfilePictureUploadGoneProblem, PhotonWireTypes.CreateAccountProfilePictureUploadGoneProblem> = /* @__PURE__ */ (() => z.union([
+    zAccountDeletedProblem,
+    zRetiredApiVersionProblem
+]))();
+
+export type CreateAccountProfilePictureUploadGoneProblemZodInput = z.input<typeof zCreateAccountProfilePictureUploadGoneProblem>;
+
+export type CreateAccountProfilePictureUploadGoneProblemZodOutput = z.output<typeof zCreateAccountProfilePictureUploadGoneProblem>;
+
+export const zCreateAccountServiceKeyGoneProblem: z.ZodType<PhotonWireTypes.CreateAccountServiceKeyGoneProblem, PhotonWireTypes.CreateAccountServiceKeyGoneProblem> = /* @__PURE__ */ (() => z.union([
+    zAccountDeletedProblem,
+    zRetiredApiVersionProblem
+]))();
+
+export type CreateAccountServiceKeyGoneProblemZodInput = z.input<typeof zCreateAccountServiceKeyGoneProblem>;
+
+export type CreateAccountServiceKeyGoneProblemZodOutput = z.output<typeof zCreateAccountServiceKeyGoneProblem>;
+
+export const zGetAccountGoneProblem: z.ZodType<PhotonWireTypes.GetAccountGoneProblem, PhotonWireTypes.GetAccountGoneProblem> = /* @__PURE__ */ (() => z.union([
+    zAccountDeletedProblem,
+    zRetiredApiVersionProblem
+]))();
+
+export type GetAccountGoneProblemZodInput = z.input<typeof zGetAccountGoneProblem>;
+
+export type GetAccountGoneProblemZodOutput = z.output<typeof zGetAccountGoneProblem>;
+
+export const zListAccountServiceKeysGoneProblem: z.ZodType<PhotonWireTypes.ListAccountServiceKeysGoneProblem, PhotonWireTypes.ListAccountServiceKeysGoneProblem> = /* @__PURE__ */ (() => z.union([
+    zAccountDeletedProblem,
+    zRetiredApiVersionProblem
+]))();
+
+export type ListAccountServiceKeysGoneProblemZodInput = z.input<typeof zListAccountServiceKeysGoneProblem>;
+
+export type ListAccountServiceKeysGoneProblemZodOutput = z.output<typeof zListAccountServiceKeysGoneProblem>;
+
+export const zResetAccountProfilePictureGoneProblem: z.ZodType<PhotonWireTypes.ResetAccountProfilePictureGoneProblem, PhotonWireTypes.ResetAccountProfilePictureGoneProblem> = /* @__PURE__ */ (() => z.union([
+    zAccountDeletedProblem,
+    zRetiredApiVersionProblem
+]))();
+
+export type ResetAccountProfilePictureGoneProblemZodInput = z.input<typeof zResetAccountProfilePictureGoneProblem>;
+
+export type ResetAccountProfilePictureGoneProblemZodOutput = z.output<typeof zResetAccountProfilePictureGoneProblem>;
 
 export const zRetryOrganizationConnectionSyncForbiddenProblem: z.ZodType<PhotonWireTypes.RetryOrganizationConnectionSyncForbiddenProblem, PhotonWireTypes.RetryOrganizationConnectionSyncForbiddenProblem> = /* @__PURE__ */ (() => z.union([
     zForbiddenProblem,
@@ -8488,7 +9054,8 @@ export type RetryWebhookDeliveryResponseZodOutput = z.output<typeof zRetryWebhoo
 export const zRevokeAccountServiceKeyBadRequestProblem: z.ZodType<PhotonWireTypes.RevokeAccountServiceKeyBadRequestProblem, PhotonWireTypes.RevokeAccountServiceKeyBadRequestProblem> = /* @__PURE__ */ (() => z.union([
     zInvalidArgumentProblem,
     zIdempotencyKeyInvalidProblem,
-    zIdempotencyKeyRequiredProblem
+    zIdempotencyKeyRequiredProblem,
+    zInvalidApiVersionProblem
 ]))();
 
 export type RevokeAccountServiceKeyBadRequestProblemZodInput = z.input<typeof zRevokeAccountServiceKeyBadRequestProblem>;
@@ -8505,6 +9072,15 @@ export const zRevokeAccountServiceKeyForbiddenProblem: z.ZodType<PhotonWireTypes
 export type RevokeAccountServiceKeyForbiddenProblemZodInput = z.input<typeof zRevokeAccountServiceKeyForbiddenProblem>;
 
 export type RevokeAccountServiceKeyForbiddenProblemZodOutput = z.output<typeof zRevokeAccountServiceKeyForbiddenProblem>;
+
+export const zRevokeAccountServiceKeyGoneProblem: z.ZodType<PhotonWireTypes.RevokeAccountServiceKeyGoneProblem, PhotonWireTypes.RevokeAccountServiceKeyGoneProblem> = /* @__PURE__ */ (() => z.union([
+    zAccountDeletedProblem,
+    zRetiredApiVersionProblem
+]))();
+
+export type RevokeAccountServiceKeyGoneProblemZodInput = z.input<typeof zRevokeAccountServiceKeyGoneProblem>;
+
+export type RevokeAccountServiceKeyGoneProblemZodOutput = z.output<typeof zRevokeAccountServiceKeyGoneProblem>;
 
 export const zRevokeAccountServiceKeyInternalServerErrorProblem: z.ZodType<PhotonWireTypes.RevokeAccountServiceKeyInternalServerErrorProblem, PhotonWireTypes.RevokeAccountServiceKeyInternalServerErrorProblem> = /* @__PURE__ */ (() => z.union([
     zInternalErrorProblem,
@@ -8816,6 +9392,37 @@ export type SelectableWebhookApiVersionStatusZodInput = z.input<typeof zSelectab
 
 export type SelectableWebhookApiVersionStatusZodOutput = z.output<typeof zSelectableWebhookApiVersionStatus>;
 
+export const zSelfServeBillingAgreement = /* @__PURE__ */ (() => z.looseObject({
+    kind: z.literal('self_serve')
+}))();
+
+export type SelfServeBillingAgreementZodInput = z.input<typeof zSelfServeBillingAgreement>;
+
+export type SelfServeBillingAgreementZodOutput = z.output<typeof zSelfServeBillingAgreement>;
+
+/**
+ * How the organization pays: self_serve by card, each purchase paid when made; enterprise by invoice on its contract's terms, its purchases added to its next monthly invoice.
+ */
+export const zBillingAgreement: z.ZodType<PhotonWireTypes.BillingAgreement, PhotonWireTypes.BillingAgreement> = /* @__PURE__ */ (() => z.union([
+    zSelfServeBillingAgreement,
+    zEnterpriseBillingAgreement
+]))();
+
+export type BillingAgreementZodInput = z.input<typeof zBillingAgreement>;
+
+export type BillingAgreementZodOutput = z.output<typeof zBillingAgreement>;
+
+export const zGetOrganizationPaymentMethodResponse = z.looseObject({
+    agreement: zBillingAgreement,
+    cardOnFile: z.boolean(),
+    paymentMethod: zPaymentMethod.nullable(),
+    purchaseRefusal: zPurchaseRefusal.nullable()
+});
+
+export type GetOrganizationPaymentMethodResponseZodInput = z.input<typeof zGetOrganizationPaymentMethodResponse>;
+
+export type GetOrganizationPaymentMethodResponseZodOutput = z.output<typeof zGetOrganizationPaymentMethodResponse>;
+
 /**
  * Text shown with the attachment. Accepted on: telegram.
  */
@@ -8926,7 +9533,7 @@ export type SendPollVoteContentZodInput = z.input<typeof zSendPollVoteContent>;
 export type SendPollVoteContentZodOutput = z.output<typeof zSendPollVoteContent>;
 
 export const zSendReactionContent = /* @__PURE__ */ (() => z.looseObject({
-    action: zReactionAction,
+    action: absent().optional(),
     reaction: z.string(),
     type: z.literal('reaction')
 }))();
@@ -8934,6 +9541,14 @@ export const zSendReactionContent = /* @__PURE__ */ (() => z.looseObject({
 export type SendReactionContentZodInput = z.input<typeof zSendReactionContent>;
 
 export type SendReactionContentZodOutput = z.output<typeof zSendReactionContent>;
+
+export const zSendSpaceProfileShareContent = /* @__PURE__ */ (() => z.looseObject({
+    type: z.literal('space.profile.share')
+}))();
+
+export type SendSpaceProfileShareContentZodInput = z.input<typeof zSendSpaceProfileShareContent>;
+
+export type SendSpaceProfileShareContentZodOutput = z.output<typeof zSendSpaceProfileShareContent>;
 
 export const zSendSpaceTypingUpdateContent = /* @__PURE__ */ (() => z.looseObject({
     type: z.literal('space.typing.update'),
@@ -8943,14 +9558,6 @@ export const zSendSpaceTypingUpdateContent = /* @__PURE__ */ (() => z.looseObjec
 export type SendSpaceTypingUpdateContentZodInput = z.input<typeof zSendSpaceTypingUpdateContent>;
 
 export type SendSpaceTypingUpdateContentZodOutput = z.output<typeof zSendSpaceTypingUpdateContent>;
-
-export const zSendTelegramOptions = /* @__PURE__ */ (() => z.looseObject({
-    richMessage: z.boolean().optional()
-}))();
-
-export type SendTelegramOptionsZodInput = z.input<typeof zSendTelegramOptions>;
-
-export type SendTelegramOptionsZodOutput = z.output<typeof zSendTelegramOptions>;
 
 export const zSendTextContent = /* @__PURE__ */ (() => z.looseObject({
     format: z.string(),
@@ -8962,16 +9569,6 @@ export type SendTextContentZodInput = z.input<typeof zSendTextContent>;
 
 export type SendTextContentZodOutput = z.output<typeof zSendTextContent>;
 
-export const zSendTextUpdateContent = /* @__PURE__ */ (() => z.looseObject({
-    format: z.string(),
-    text: z.string(),
-    type: z.literal('text.update')
-}))();
-
-export type SendTextUpdateContentZodInput = z.input<typeof zSendTextUpdateContent>;
-
-export type SendTextUpdateContentZodOutput = z.output<typeof zSendTextUpdateContent>;
-
 export const zSendVoiceContent = /* @__PURE__ */ (() => z.looseObject({
     attachmentId: zAttachmentId,
     type: z.literal('voice')
@@ -8980,6 +9577,43 @@ export const zSendVoiceContent = /* @__PURE__ */ (() => z.looseObject({
 export type SendVoiceContentZodInput = z.input<typeof zSendVoiceContent>;
 
 export type SendVoiceContentZodOutput = z.output<typeof zSendVoiceContent>;
+
+export const zSendMessageUpdateGroupContentPart: z.ZodType<PhotonWireTypes.SendMessageUpdateGroupContentPart, PhotonWireTypes.SendMessageUpdateGroupContentPart> = /* @__PURE__ */ (() => z.union([
+    zSendTextContent,
+    zSendAttachmentContent,
+    zSendVoiceContent
+]))();
+
+export type SendMessageUpdateGroupContentPartZodInput = z.input<typeof zSendMessageUpdateGroupContentPart>;
+
+export type SendMessageUpdateGroupContentPartZodOutput = z.output<typeof zSendMessageUpdateGroupContentPart>;
+
+export const zSendMessageUpdateGroupContent = /* @__PURE__ */ (() => z.looseObject({
+    parts: z.array(zSendMessageUpdateGroupContentPart),
+    type: z.literal('group')
+}))();
+
+export type SendMessageUpdateGroupContentZodInput = z.input<typeof zSendMessageUpdateGroupContent>;
+
+export type SendMessageUpdateGroupContentZodOutput = z.output<typeof zSendMessageUpdateGroupContent>;
+
+export const zSendMessageUpdateValue: z.ZodType<PhotonWireTypes.SendMessageUpdateValue, PhotonWireTypes.SendMessageUpdateValue> = /* @__PURE__ */ (() => z.union([
+    zSendMessageUpdateGroupContentPart,
+    zSendMessageUpdateGroupContent
+]))();
+
+export type SendMessageUpdateValueZodInput = z.input<typeof zSendMessageUpdateValue>;
+
+export type SendMessageUpdateValueZodOutput = z.output<typeof zSendMessageUpdateValue>;
+
+export const zSendMessageUpdateContent = /* @__PURE__ */ (() => z.looseObject({
+    content: zSendMessageUpdateValue,
+    type: z.literal('message.update')
+}))();
+
+export type SendMessageUpdateContentZodInput = z.input<typeof zSendMessageUpdateContent>;
+
+export type SendMessageUpdateContentZodOutput = z.output<typeof zSendMessageUpdateContent>;
 
 export const zSenderNotAuthorizedFailure = /* @__PURE__ */ (() => z.looseObject({
     acceptedAt: absent().optional(),
@@ -9171,6 +9805,21 @@ export const zServiceCredentialPreconditionFailedProblem = /* @__PURE__ */ (() =
 export type ServiceCredentialPreconditionFailedProblemZodInput = z.input<typeof zServiceCredentialPreconditionFailedProblem>;
 
 export type ServiceCredentialPreconditionFailedProblemZodOutput = z.output<typeof zServiceCredentialPreconditionFailedProblem>;
+
+export const zServiceFailureProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('SERVICE_FAILURE'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: absent().optional(),
+    requestId: z.string().optional(),
+    status: z.literal(502),
+    title: z.literal('Service Failure'),
+    type: z.literal('https://photon.codes/docs/problems/service-failure')
+}).catchall(zJsonValue))();
+
+export type ServiceFailureProblemZodInput = z.input<typeof zServiceFailureProblem>;
+
+export type ServiceFailureProblemZodOutput = z.output<typeof zServiceFailureProblem>;
 
 export const zServiceIdentityCredentialKind = /* @__PURE__ */ (() => openEnum(['api_key', 'client_secret']))();
 
@@ -9382,6 +10031,45 @@ export type ListServiceIdentityPermissionsConflictProblemZodInput = z.input<type
 
 export type ListServiceIdentityPermissionsConflictProblemZodOutput = z.output<typeof zListServiceIdentityPermissionsConflictProblem>;
 
+export const zServiceTimeoutProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('SERVICE_TIMEOUT'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: absent().optional(),
+    requestId: z.string().optional(),
+    status: z.literal(504),
+    title: z.literal('Service Timeout'),
+    type: z.literal('https://photon.codes/docs/problems/service-timeout')
+}).catchall(zJsonValue))();
+
+export type ServiceTimeoutProblemZodInput = z.input<typeof zServiceTimeoutProblem>;
+
+export type ServiceTimeoutProblemZodOutput = z.output<typeof zServiceTimeoutProblem>;
+
+export const zGetTenDlcBrandOtpGatewayTimeoutProblem: z.ZodType<PhotonWireTypes.GetTenDlcBrandOtpGatewayTimeoutProblem, PhotonWireTypes.GetTenDlcBrandOtpGatewayTimeoutProblem> = /* @__PURE__ */ (() => z.union([
+    zRequestTimeoutProblem,
+    zServiceTimeoutProblem
+]))();
+
+export type GetTenDlcBrandOtpGatewayTimeoutProblemZodInput = z.input<typeof zGetTenDlcBrandOtpGatewayTimeoutProblem>;
+
+export type GetTenDlcBrandOtpGatewayTimeoutProblemZodOutput = z.output<typeof zGetTenDlcBrandOtpGatewayTimeoutProblem>;
+
+export const zServiceUnavailableProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('SERVICE_UNAVAILABLE'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: absent().optional(),
+    requestId: z.string().optional(),
+    status: z.literal(503),
+    title: z.literal('Service Temporarily Unavailable'),
+    type: z.literal('https://photon.codes/docs/problems/service-unavailable')
+}).catchall(zJsonValue))();
+
+export type ServiceUnavailableProblemZodInput = z.input<typeof zServiceUnavailableProblem>;
+
+export type ServiceUnavailableProblemZodOutput = z.output<typeof zServiceUnavailableProblem>;
+
 export const zSetSpaceTypingContent = /* @__PURE__ */ (() => z.looseObject({
     type: z.literal('space.typing.update'),
     typing: z.boolean()
@@ -9475,6 +10163,27 @@ export type SetupOrganizationOauthClientSecretResponseZodInput = z.input<typeof 
 
 export type SetupOrganizationOauthClientSecretResponseZodOutput = z.output<typeof zSetupOrganizationOauthClientSecretResponse>;
 
+/**
+ * pending until the end user texts the assigned line from their handle after the assignment was created, then received. Treat a value you do not recognize as not opted in.
+ */
+export const zSharedLineAssignmentOptInState = /* @__PURE__ */ (() => openEnum(['pending', 'received']))();
+
+export type SharedLineAssignmentOptInStateZodInput = z.input<typeof zSharedLineAssignmentOptInState>;
+
+export type SharedLineAssignmentOptInStateZodOutput = z.output<typeof zSharedLineAssignmentOptInState>;
+
+/**
+ * Whether the end user has texted the assigned line from their handle since this assignment was created. Until they have, sends to them on this line are refused; once they have, the project can message them while the assignment is unreleased. A released assignment keeps its opt-in, and a re-created assignment starts pending. This records only that Photon allows replies; it is not a consent record for SMS compliance.
+ */
+export const zSharedLineAssignmentOptIn = /* @__PURE__ */ (() => z.looseObject({
+    receivedAt: z.string().optional(),
+    state: zSharedLineAssignmentOptInState
+}))();
+
+export type SharedLineAssignmentOptInZodInput = z.input<typeof zSharedLineAssignmentOptIn>;
+
+export type SharedLineAssignmentOptInZodOutput = z.output<typeof zSharedLineAssignmentOptIn>;
+
 export const zSharedLineAssignmentPlatform = /* @__PURE__ */ (() => openEnum(['imessage', 'whatsapp']))();
 
 export type SharedLineAssignmentPlatformZodInput = z.input<typeof zSharedLineAssignmentPlatform>;
@@ -9489,6 +10198,7 @@ export const zSharedLineAssignment = /* @__PURE__ */ (() => z.looseObject({
     firstName: z.string().optional(),
     handle: z.string(),
     lastName: z.string().optional(),
+    optIn: zSharedLineAssignmentOptIn,
     platform: zSharedLineAssignmentPlatform,
     projectId: z.string(),
     releasedAt: z.string().optional(),
@@ -9524,6 +10234,7 @@ export type SharedLineCapExceededProblemZodInput = z.input<typeof zSharedLineCap
 export type SharedLineCapExceededProblemZodOutput = z.output<typeof zSharedLineCapExceededProblem>;
 
 export const zCreateSharedLineAssignmentConflictProblem: z.ZodType<PhotonWireTypes.CreateSharedLineAssignmentConflictProblem, PhotonWireTypes.CreateSharedLineAssignmentConflictProblem> = /* @__PURE__ */ (() => z.union([
+    zProjectInitializingProblem,
     zProjectClosingProblem,
     zImessageModeDedicatedProblem,
     zSharedLineCapExceededProblem,
@@ -9916,6 +10627,21 @@ export type GetSmsLineCampaignAssignmentForbiddenProblemZodInput = z.input<typeo
 
 export type GetSmsLineCampaignAssignmentForbiddenProblemZodOutput = z.output<typeof zGetSmsLineCampaignAssignmentForbiddenProblem>;
 
+export const zSmsCampaignProviderRejectedProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('SMS_CAMPAIGN_PROVIDER_REJECTED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: zProblemRemediation,
+    requestId: z.string().optional(),
+    status: z.literal(422),
+    title: z.literal('Campaign assignment rejected'),
+    type: z.literal('https://photon.codes/docs/problems/sms-campaign-provider-rejected')
+}).catchall(zJsonValue))();
+
+export type SmsCampaignProviderRejectedProblemZodInput = z.input<typeof zSmsCampaignProviderRejectedProblem>;
+
+export type SmsCampaignProviderRejectedProblemZodOutput = z.output<typeof zSmsCampaignProviderRejectedProblem>;
+
 export const zSmsCampaignReconciliationRequiredProblem = /* @__PURE__ */ (() => z.object({
     code: z.literal('SMS_CAMPAIGN_RECONCILIATION_REQUIRED'),
     detail: z.string().optional(),
@@ -9930,6 +10656,21 @@ export const zSmsCampaignReconciliationRequiredProblem = /* @__PURE__ */ (() => 
 export type SmsCampaignReconciliationRequiredProblemZodInput = z.input<typeof zSmsCampaignReconciliationRequiredProblem>;
 
 export type SmsCampaignReconciliationRequiredProblemZodOutput = z.output<typeof zSmsCampaignReconciliationRequiredProblem>;
+
+export const zSmsCampaignRevokedProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('SMS_CAMPAIGN_REVOKED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: absent().optional(),
+    requestId: z.string().optional(),
+    status: z.literal(409),
+    title: z.literal('Campaign revoked'),
+    type: z.literal('https://photon.codes/docs/problems/sms-campaign-revoked')
+}).catchall(zJsonValue))();
+
+export type SmsCampaignRevokedProblemZodInput = z.input<typeof zSmsCampaignRevokedProblem>;
+
+export type SmsCampaignRevokedProblemZodOutput = z.output<typeof zSmsCampaignRevokedProblem>;
 
 export const zSmsCampaignVersionConflictProblem = /* @__PURE__ */ (() => z.object({
     code: z.literal('SMS_CAMPAIGN_VERSION_CONFLICT'),
@@ -10092,6 +10833,88 @@ export type SpaceAmbiguousProblemZodInput = z.input<typeof zSpaceAmbiguousProble
 
 export type SpaceAmbiguousProblemZodOutput = z.output<typeof zSpaceAmbiguousProblem>;
 
+export const zSpaceBackgroundImage = /* @__PURE__ */ (() => z.looseObject({
+    attachmentId: zAttachmentId,
+    type: z.literal('image')
+}))();
+
+export type SpaceBackgroundImageZodInput = z.input<typeof zSpaceBackgroundImage>;
+
+export type SpaceBackgroundImageZodOutput = z.output<typeof zSpaceBackgroundImage>;
+
+export const zSpaceBackgroundNone = /* @__PURE__ */ (() => z.looseObject({
+    type: z.literal('none')
+}))();
+
+export type SpaceBackgroundNoneZodInput = z.input<typeof zSpaceBackgroundNone>;
+
+export type SpaceBackgroundNoneZodOutput = z.output<typeof zSpaceBackgroundNone>;
+
+/**
+ * A built-in chat background.
+ */
+export const zSpaceBackgroundPresetName = /* @__PURE__ */ (() => openEnum([
+    'skyDusk',
+    'skyHaze',
+    'skySunset',
+    'skyClear',
+    'skySunrise',
+    'skyDawn',
+    'waterLight',
+    'waterDark',
+    'auroraGreen',
+    'auroraPurple',
+    'auroraPink',
+    'colorMango',
+    'colorIce',
+    'colorPlum',
+    'colorDeepSea',
+    'colorGreenApple',
+    'colorCherry',
+    'colorBubblegum',
+    'colorTangerine',
+    'colorMagenta',
+    'colorLime',
+    'colorSilver',
+    'colorCarbon',
+    'colorStone'
+]))();
+
+export type SpaceBackgroundPresetNameZodInput = z.input<typeof zSpaceBackgroundPresetName>;
+
+export type SpaceBackgroundPresetNameZodOutput = z.output<typeof zSpaceBackgroundPresetName>;
+
+export const zSpaceBackgroundPreset = /* @__PURE__ */ (() => z.looseObject({
+    preset: zSpaceBackgroundPresetName,
+    type: z.literal('preset')
+}))();
+
+export type SpaceBackgroundPresetZodInput = z.input<typeof zSpaceBackgroundPreset>;
+
+export type SpaceBackgroundPresetZodOutput = z.output<typeof zSpaceBackgroundPreset>;
+
+/**
+ * The Space's background after the change.
+ */
+export const zSpaceBackground: z.ZodType<PhotonWireTypes.SpaceBackground, PhotonWireTypes.SpaceBackground> = /* @__PURE__ */ (() => z.union([
+    zSpaceBackgroundImage,
+    zSpaceBackgroundPreset,
+    zSpaceBackgroundNone
+]))();
+
+export type SpaceBackgroundZodInput = z.input<typeof zSpaceBackground>;
+
+export type SpaceBackgroundZodOutput = z.output<typeof zSpaceBackground>;
+
+export const zSendSpaceBackgroundUpdateContent = /* @__PURE__ */ (() => z.looseObject({
+    background: zSpaceBackground,
+    type: z.literal('space.background.update')
+}))();
+
+export type SendSpaceBackgroundUpdateContentZodInput = z.input<typeof zSendSpaceBackgroundUpdateContent>;
+
+export type SendSpaceBackgroundUpdateContentZodOutput = z.output<typeof zSendSpaceBackgroundUpdateContent>;
+
 export const zSpaceCount = z.looseObject({
     count: z.number().refine(Number.isInteger, { message: 'Expected an integer' })
 });
@@ -10166,17 +10989,6 @@ export const zMarkMessageReadConflictProblem: z.ZodType<PhotonWireTypes.MarkMess
 export type MarkMessageReadConflictProblemZodInput = z.input<typeof zMarkMessageReadConflictProblem>;
 
 export type MarkMessageReadConflictProblemZodOutput = z.output<typeof zMarkMessageReadConflictProblem>;
-
-export const zSendMessageConflictProblem: z.ZodType<PhotonWireTypes.SendMessageConflictProblem, PhotonWireTypes.SendMessageConflictProblem> = /* @__PURE__ */ (() => z.union([
-    zAttachmentNotReadyProblem,
-    zSenderNotSendableProblem,
-    zSmsCampaignNotEligibleProblem,
-    zSpaceNotSendableProblem
-]))();
-
-export type SendMessageConflictProblemZodInput = z.input<typeof zSendMessageConflictProblem>;
-
-export type SendMessageConflictProblemZodOutput = z.output<typeof zSendMessageConflictProblem>;
 
 export const zSpaceOrderBy = /* @__PURE__ */ (() => openEnum([
     'created_at',
@@ -10281,24 +11093,6 @@ export type RefreshOrganizationSsoConnectionPreconditionFailedProblemZodInput = 
 
 export type RefreshOrganizationSsoConnectionPreconditionFailedProblemZodOutput = z.output<typeof zRefreshOrganizationSsoConnectionPreconditionFailedProblem>;
 
-export const zStartEnterpriseLoginRequest: z.ZodType<PhotonWireTypes.StartEnterpriseLoginRequest, PhotonWireTypes.StartEnterpriseLoginRequest> = /* @__PURE__ */ (() => z.union([
-    zOrganizationEnterpriseLoginRequest,
-    zInvitationEnterpriseLoginRequest,
-    zRetryEnterpriseLoginRequest
-]))();
-
-export type StartEnterpriseLoginRequestZodInput = z.input<typeof zStartEnterpriseLoginRequest>;
-
-export type StartEnterpriseLoginRequestZodOutput = z.output<typeof zStartEnterpriseLoginRequest>;
-
-export const zStartEnterpriseLoginResponse = /* @__PURE__ */ (() => z.looseObject({
-    url: z.string()
-}))();
-
-export type StartEnterpriseLoginResponseZodInput = z.input<typeof zStartEnterpriseLoginResponse>;
-
-export type StartEnterpriseLoginResponseZodOutput = z.output<typeof zStartEnterpriseLoginResponse>;
-
 export const zSubscribeSsoBadRequestProblem: z.ZodType<PhotonWireTypes.SubscribeSsoBadRequestProblem, PhotonWireTypes.SubscribeSsoBadRequestProblem> = /* @__PURE__ */ (() => z.union([
     zInvalidArgumentProblem,
     zIdempotencyKeyRequiredProblem,
@@ -10348,6 +11142,26 @@ export type SubscribeSsoResponseZodInput = z.input<typeof zSubscribeSsoResponse>
 export type SubscribeSsoResponseZodOutput = z.output<typeof zSubscribeSsoResponse>;
 
 /**
+ * A coupon discounting the subscription now, as a Stripe Discount.
+ */
+export const zSubscriptionCoupon = z.looseObject({
+    amountCents: z.number().refine(Number.isInteger, { message: 'Expected an integer' }).nullable(),
+    appliesTo: zCouponAppliesTo.nullable(),
+    couponCode: z.string(),
+    currency: z.string().nullable(),
+    duration: zCouponDuration,
+    endsAt: z.string().nullable(),
+    name: z.string(),
+    organizationWide: z.boolean(),
+    promotionCode: z.string().nullable(),
+    rate: z.string().nullable()
+});
+
+export type SubscriptionCouponZodInput = z.input<typeof zSubscriptionCoupon>;
+
+export type SubscriptionCouponZodOutput = z.output<typeof zSubscriptionCoupon>;
+
+/**
  * State of one category's subscription: the payer's dunning stage while it holds one. Dunning is organization-level, so the stage applies to every category at once, and paying clears it. Entitlements are unaffected at every stage; viewing, paying and releasing resources stay available. Only categories that hold a subscription appear at all; a cancelled category is absent rather than listed as terminated.
  */
 export const zSubscriptionStatus = /* @__PURE__ */ (() => openEnum([
@@ -10380,6 +11194,7 @@ export type OrganizationSubscriptionZodInput = z.input<typeof zOrganizationSubsc
 export type OrganizationSubscriptionZodOutput = z.output<typeof zOrganizationSubscription>;
 
 export const zGetOrganizationBillingOverviewResponse = z.looseObject({
+    currentPeriod: zOrganizationBillingPeriod.nullable(),
     entitlementsVersion: z.number().refine(Number.isInteger, { message: 'Expected an integer' }),
     subscription: zOrganizationSubscription.nullable()
 });
@@ -10496,6 +11311,76 @@ export type SupportedPlatformConstraintZodInput = z.input<typeof zSupportedPlatf
 
 export type SupportedPlatformConstraintZodOutput = z.output<typeof zSupportedPlatformConstraint>;
 
+export const zSuppressedEmailRecipient = z.looseObject({
+    address: z.string(),
+    index: z.number().refine(Number.isInteger, { message: 'Expected an integer' }),
+    role: zEmailRecipientRole
+});
+
+export type SuppressedEmailRecipientZodInput = z.input<typeof zSuppressedEmailRecipient>;
+
+export type SuppressedEmailRecipientZodOutput = z.output<typeof zSuppressedEmailRecipient>;
+
+export const zEmailAdmissionEndedProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('EMAIL_ADMISSION_ENDED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    reason: z.string(),
+    recipients: z.array(zSuppressedEmailRecipient).optional(),
+    remediation: absent().optional(),
+    requestId: z.string().optional(),
+    status: z.literal(409),
+    title: z.literal('Email Admission Ended'),
+    type: z.literal('https://photon.codes/docs/problems/email-admission-ended')
+}).catchall(zJsonValue))();
+
+export type EmailAdmissionEndedProblemZodInput = z.input<typeof zEmailAdmissionEndedProblem>;
+
+export type EmailAdmissionEndedProblemZodOutput = z.output<typeof zEmailAdmissionEndedProblem>;
+
+export const zEmailRecipientSuppressedProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('EMAIL_RECIPIENT_SUPPRESSED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    recipients: z.array(zSuppressedEmailRecipient),
+    remediation: absent().optional(),
+    requestId: z.string().optional(),
+    status: z.literal(422),
+    title: z.literal('Email Recipient Suppressed'),
+    type: z.literal('https://photon.codes/docs/problems/email-recipient-suppressed')
+}).catchall(zJsonValue))();
+
+export type EmailRecipientSuppressedProblemZodInput = z.input<typeof zEmailRecipientSuppressedProblem>;
+
+export type EmailRecipientSuppressedProblemZodOutput = z.output<typeof zEmailRecipientSuppressedProblem>;
+
+export const zSendMessageConflictProblem: z.ZodType<PhotonWireTypes.SendMessageConflictProblem, PhotonWireTypes.SendMessageConflictProblem> = /* @__PURE__ */ (() => z.union([
+    zAttachmentNotReadyProblem,
+    zSenderNotSendableProblem,
+    zSmsCampaignNotEligibleProblem,
+    zEmailAdmissionEndedProblem,
+    zSpaceNotSendableProblem
+]))();
+
+export type SendMessageConflictProblemZodInput = z.input<typeof zSendMessageConflictProblem>;
+
+export type SendMessageConflictProblemZodOutput = z.output<typeof zSendMessageConflictProblem>;
+
+export const zTelegramConfigurationFailedProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('TELEGRAM_CONFIGURATION_FAILED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: zProblemRemediation,
+    requestId: z.string().optional(),
+    status: z.literal(502),
+    title: z.literal('Telegram Configuration Failed'),
+    type: z.literal('https://photon.codes/docs/problems/telegram-configuration-failed')
+}).catchall(zJsonValue))();
+
+export type TelegramConfigurationFailedProblemZodInput = z.input<typeof zTelegramConfigurationFailedProblem>;
+
+export type TelegramConfigurationFailedProblemZodOutput = z.output<typeof zTelegramConfigurationFailedProblem>;
+
 export const zTelegramProjectDeletedProblem = /* @__PURE__ */ (() => z.object({
     code: z.literal('TELEGRAM_PROJECT_DELETED'),
     detail: z.string().optional(),
@@ -10538,6 +11423,39 @@ export type ConnectTelegramBotConflictProblemZodInput = z.input<typeof zConnectT
 
 export type ConnectTelegramBotConflictProblemZodOutput = z.output<typeof zConnectTelegramBotConflictProblem>;
 
+export const zTelegramReleaseFailedProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('TELEGRAM_RELEASE_FAILED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: zProblemRemediation,
+    requestId: z.string().optional(),
+    status: z.literal(502),
+    title: z.literal('Telegram Release Failed'),
+    type: z.literal('https://photon.codes/docs/problems/telegram-release-failed')
+}).catchall(zJsonValue))();
+
+export type TelegramReleaseFailedProblemZodInput = z.input<typeof zTelegramReleaseFailedProblem>;
+
+export type TelegramReleaseFailedProblemZodOutput = z.output<typeof zTelegramReleaseFailedProblem>;
+
+/**
+ * How a single attachment is shown. Omitted, Telegram shows its native form: a photo, an animated GIF, an inline video, or the music player for MP3 and M4A; any other file is a file card. "file" sends any attachment as a file card, unchanged. Accepted with attachment or group content.
+ */
+export const zTelegramSendAs = /* @__PURE__ */ (() => z.enum(['file']))();
+
+export type TelegramSendAsZodInput = z.input<typeof zTelegramSendAs>;
+
+export type TelegramSendAsZodOutput = z.output<typeof zTelegramSendAs>;
+
+export const zSendTelegramOptions = /* @__PURE__ */ (() => z.looseObject({
+    richMessage: z.boolean().optional(),
+    sendAs: zTelegramSendAs.optional()
+}))();
+
+export type SendTelegramOptionsZodInput = z.input<typeof zSendTelegramOptions>;
+
+export type SendTelegramOptionsZodOutput = z.output<typeof zSendTelegramOptions>;
+
 export const zTelegramSpaceDetails = /* @__PURE__ */ (() => z.looseObject({}))();
 
 export type TelegramSpaceDetailsZodInput = z.input<typeof zTelegramSpaceDetails>;
@@ -10551,6 +11469,41 @@ export const zTelegramUserDetails = /* @__PURE__ */ (() => z.looseObject({
 export type TelegramUserDetailsZodInput = z.input<typeof zTelegramUserDetails>;
 
 export type TelegramUserDetailsZodOutput = z.output<typeof zTelegramUserDetails>;
+
+export const zTenDlcBrandOtpStatus = /* @__PURE__ */ (() => openEnum([
+    'not_requested',
+    'delivery_pending',
+    'sent',
+    'verified',
+    'expired',
+    'failed',
+    'locked'
+]))();
+
+export type TenDlcBrandOtpStatusZodInput = z.input<typeof zTenDlcBrandOtpStatus>;
+
+export type TenDlcBrandOtpStatusZodOutput = z.output<typeof zTenDlcBrandOtpStatus>;
+
+export const zTenDlcBrandOtp = z.looseObject({
+    attemptsRemaining: z.number().refine(Number.isInteger, { message: 'Expected an integer' }).optional(),
+    brandId: z.string(),
+    expiresAt: z.string().optional(),
+    phoneLast4: z.string(),
+    retryAfterSeconds: z.number().refine(Number.isInteger, { message: 'Expected an integer' }).optional(),
+    status: zTenDlcBrandOtpStatus
+});
+
+export type TenDlcBrandOtpZodInput = z.input<typeof zTenDlcBrandOtp>;
+
+export type TenDlcBrandOtpZodOutput = z.output<typeof zTenDlcBrandOtp>;
+
+export const zGetTenDlcBrandOtpResponse = /* @__PURE__ */ (() => z.looseObject({
+    data: zTenDlcBrandOtp
+}))();
+
+export type GetTenDlcBrandOtpResponseZodInput = z.input<typeof zGetTenDlcBrandOtpResponse>;
+
+export type GetTenDlcBrandOtpResponseZodOutput = z.output<typeof zGetTenDlcBrandOtpResponse>;
 
 export const zTerminalBillingOperation: z.ZodType<PhotonWireTypes.TerminalBillingOperation, PhotonWireTypes.TerminalBillingOperation> = /* @__PURE__ */ (() => z.union([
     zSucceededBillingOperation,
@@ -10624,6 +11577,71 @@ export const zTransferOrganizationOwnershipResponse = /* @__PURE__ */ (() => z.l
 export type TransferOrganizationOwnershipResponseZodInput = z.input<typeof zTransferOrganizationOwnershipResponse>;
 
 export type TransferOrganizationOwnershipResponseZodOutput = z.output<typeof zTransferOrganizationOwnershipResponse>;
+
+export const zTriggerTenDlcBrandOtpBadRequestProblem: z.ZodType<PhotonWireTypes.TriggerTenDlcBrandOtpBadRequestProblem, PhotonWireTypes.TriggerTenDlcBrandOtpBadRequestProblem> = /* @__PURE__ */ (() => z.union([
+    zIdempotencyKeyRequiredProblem,
+    zIdempotencyKeyInvalidProblem
+]))();
+
+export type TriggerTenDlcBrandOtpBadRequestProblemZodInput = z.input<typeof zTriggerTenDlcBrandOtpBadRequestProblem>;
+
+export type TriggerTenDlcBrandOtpBadRequestProblemZodOutput = z.output<typeof zTriggerTenDlcBrandOtpBadRequestProblem>;
+
+export const zTriggerTenDlcBrandOtpConflictProblem: z.ZodType<PhotonWireTypes.TriggerTenDlcBrandOtpConflictProblem, PhotonWireTypes.TriggerTenDlcBrandOtpConflictProblem> = /* @__PURE__ */ (() => z.union([
+    zIdempotencyConflictProblem,
+    zInvalidLifecycleStateProblem,
+    zOrganizationClosingProblem
+]))();
+
+export type TriggerTenDlcBrandOtpConflictProblemZodInput = z.input<typeof zTriggerTenDlcBrandOtpConflictProblem>;
+
+export type TriggerTenDlcBrandOtpConflictProblemZodOutput = z.output<typeof zTriggerTenDlcBrandOtpConflictProblem>;
+
+export const zTriggerTenDlcBrandOtpForbiddenProblem: z.ZodType<PhotonWireTypes.TriggerTenDlcBrandOtpForbiddenProblem, PhotonWireTypes.TriggerTenDlcBrandOtpForbiddenProblem> = /* @__PURE__ */ (() => z.union([
+    zForbiddenProblem,
+    zInsufficientScopeProblem,
+    zOrganizationSsoRequiredProblem,
+    zResourceMismatchProblem
+]))();
+
+export type TriggerTenDlcBrandOtpForbiddenProblemZodInput = z.input<typeof zTriggerTenDlcBrandOtpForbiddenProblem>;
+
+export type TriggerTenDlcBrandOtpForbiddenProblemZodOutput = z.output<typeof zTriggerTenDlcBrandOtpForbiddenProblem>;
+
+export const zTriggerTenDlcBrandOtpGatewayTimeoutProblem: z.ZodType<PhotonWireTypes.TriggerTenDlcBrandOtpGatewayTimeoutProblem, PhotonWireTypes.TriggerTenDlcBrandOtpGatewayTimeoutProblem> = /* @__PURE__ */ (() => z.union([
+    zRequestTimeoutProblem,
+    zServiceTimeoutProblem
+]))();
+
+export type TriggerTenDlcBrandOtpGatewayTimeoutProblemZodInput = z.input<typeof zTriggerTenDlcBrandOtpGatewayTimeoutProblem>;
+
+export type TriggerTenDlcBrandOtpGatewayTimeoutProblemZodOutput = z.output<typeof zTriggerTenDlcBrandOtpGatewayTimeoutProblem>;
+
+export const zTriggerTenDlcBrandOtpInternalServerErrorProblem: z.ZodType<PhotonWireTypes.TriggerTenDlcBrandOtpInternalServerErrorProblem, PhotonWireTypes.TriggerTenDlcBrandOtpInternalServerErrorProblem> = /* @__PURE__ */ (() => z.union([
+    zInternalErrorProblem,
+    zInvalidAuthContextProblem
+]))();
+
+export type TriggerTenDlcBrandOtpInternalServerErrorProblemZodInput = z.input<typeof zTriggerTenDlcBrandOtpInternalServerErrorProblem>;
+
+export type TriggerTenDlcBrandOtpInternalServerErrorProblemZodOutput = z.output<typeof zTriggerTenDlcBrandOtpInternalServerErrorProblem>;
+
+export const zTriggerTenDlcBrandOtpResponse = /* @__PURE__ */ (() => z.looseObject({
+    data: zTenDlcBrandOtp
+}))();
+
+export type TriggerTenDlcBrandOtpResponseZodInput = z.input<typeof zTriggerTenDlcBrandOtpResponse>;
+
+export type TriggerTenDlcBrandOtpResponseZodOutput = z.output<typeof zTriggerTenDlcBrandOtpResponse>;
+
+export const zTriggerTenDlcBrandOtpTooManyRequestsProblem: z.ZodType<PhotonWireTypes.TriggerTenDlcBrandOtpTooManyRequestsProblem, PhotonWireTypes.TriggerTenDlcBrandOtpTooManyRequestsProblem> = /* @__PURE__ */ (() => z.union([
+    zRateLimitedProblem,
+    zOtpRateLimitedProblem
+]))();
+
+export type TriggerTenDlcBrandOtpTooManyRequestsProblemZodInput = z.input<typeof zTriggerTenDlcBrandOtpTooManyRequestsProblem>;
+
+export type TriggerTenDlcBrandOtpTooManyRequestsProblemZodOutput = z.output<typeof zTriggerTenDlcBrandOtpTooManyRequestsProblem>;
 
 export const zUnassignSmsLineCampaignBadRequestProblem: z.ZodType<PhotonWireTypes.UnassignSmsLineCampaignBadRequestProblem, PhotonWireTypes.UnassignSmsLineCampaignBadRequestProblem> = /* @__PURE__ */ (() => z.union([
     zSmsCampaignInvalidRequestProblem,
@@ -10745,11 +11763,27 @@ export type UnsupportedContentProblemZodInput = z.input<typeof zUnsupportedConte
 
 export type UnsupportedContentProblemZodOutput = z.output<typeof zUnsupportedContentProblem>;
 
+export const zUnsupportedEntityTypeProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('UNSUPPORTED_ENTITY_TYPE'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: absent().optional(),
+    requestId: z.string().optional(),
+    status: z.literal(422),
+    title: z.literal('Unsupported Entity Type'),
+    type: z.literal('https://photon.codes/docs/problems/unsupported-entity-type')
+}).catchall(zJsonValue))();
+
+export type UnsupportedEntityTypeProblemZodInput = z.input<typeof zUnsupportedEntityTypeProblem>;
+
+export type UnsupportedEntityTypeProblemZodOutput = z.output<typeof zUnsupportedEntityTypeProblem>;
+
 export const zUpdateAccountBadRequestProblem: z.ZodType<PhotonWireTypes.UpdateAccountBadRequestProblem, PhotonWireTypes.UpdateAccountBadRequestProblem> = /* @__PURE__ */ (() => z.union([
-    zHttpErrorProblem,
     zInvalidArgumentProblem,
     zIdempotencyKeyInvalidProblem,
-    zIdempotencyKeyRequiredProblem
+    zIdempotencyKeyRequiredProblem,
+    zHttpErrorProblem,
+    zInvalidApiVersionProblem
 ]))();
 
 export type UpdateAccountBadRequestProblemZodInput = z.input<typeof zUpdateAccountBadRequestProblem>;
@@ -10766,6 +11800,15 @@ export const zUpdateAccountForbiddenProblem: z.ZodType<PhotonWireTypes.UpdateAcc
 export type UpdateAccountForbiddenProblemZodInput = z.input<typeof zUpdateAccountForbiddenProblem>;
 
 export type UpdateAccountForbiddenProblemZodOutput = z.output<typeof zUpdateAccountForbiddenProblem>;
+
+export const zUpdateAccountGoneProblem: z.ZodType<PhotonWireTypes.UpdateAccountGoneProblem, PhotonWireTypes.UpdateAccountGoneProblem> = /* @__PURE__ */ (() => z.union([
+    zAccountDeletedProblem,
+    zRetiredApiVersionProblem
+]))();
+
+export type UpdateAccountGoneProblemZodInput = z.input<typeof zUpdateAccountGoneProblem>;
+
+export type UpdateAccountGoneProblemZodOutput = z.output<typeof zUpdateAccountGoneProblem>;
 
 export const zUpdateAccountInternalServerErrorProblem: z.ZodType<PhotonWireTypes.UpdateAccountInternalServerErrorProblem, PhotonWireTypes.UpdateAccountInternalServerErrorProblem> = /* @__PURE__ */ (() => z.union([
     zInternalErrorProblem,
@@ -11853,15 +12896,6 @@ export const zDownloadAttachmentGatewayTimeoutProblem: z.ZodType<PhotonWireTypes
 export type DownloadAttachmentGatewayTimeoutProblemZodInput = z.input<typeof zDownloadAttachmentGatewayTimeoutProblem>;
 
 export type DownloadAttachmentGatewayTimeoutProblemZodOutput = z.output<typeof zDownloadAttachmentGatewayTimeoutProblem>;
-
-export const zEnsureInitialOrganizationGatewayTimeoutProblem: z.ZodType<PhotonWireTypes.EnsureInitialOrganizationGatewayTimeoutProblem, PhotonWireTypes.EnsureInitialOrganizationGatewayTimeoutProblem> = /* @__PURE__ */ (() => z.union([
-    zUpstreamTimeoutProblem,
-    zRequestTimeoutProblem
-]))();
-
-export type EnsureInitialOrganizationGatewayTimeoutProblemZodInput = z.input<typeof zEnsureInitialOrganizationGatewayTimeoutProblem>;
-
-export type EnsureInitialOrganizationGatewayTimeoutProblemZodOutput = z.output<typeof zEnsureInitialOrganizationGatewayTimeoutProblem>;
 
 export const zGetAccountGatewayTimeoutProblem: z.ZodType<PhotonWireTypes.GetAccountGatewayTimeoutProblem, PhotonWireTypes.GetAccountGatewayTimeoutProblem> = /* @__PURE__ */ (() => z.union([
     zUpstreamTimeoutProblem,
@@ -13063,6 +14097,43 @@ export type CreateWhatsappVoipSenderServiceUnavailableProblemZodInput = z.input<
 
 export type CreateWhatsappVoipSenderServiceUnavailableProblemZodOutput = z.output<typeof zCreateWhatsappVoipSenderServiceUnavailableProblem>;
 
+export const zGetBillingOverviewServiceUnavailableProblem: z.ZodType<PhotonWireTypes.GetBillingOverviewServiceUnavailableProblem, PhotonWireTypes.GetBillingOverviewServiceUnavailableProblem> = /* @__PURE__ */ (() => z.union([
+    zBillingEntitlementsPendingProblem,
+    zUpstreamUnavailableProblem
+]))();
+
+export type GetBillingOverviewServiceUnavailableProblemZodInput = z.input<typeof zGetBillingOverviewServiceUnavailableProblem>;
+
+export type GetBillingOverviewServiceUnavailableProblemZodOutput = z.output<typeof zGetBillingOverviewServiceUnavailableProblem>;
+
+export const zGetEffectiveTermsServiceUnavailableProblem: z.ZodType<PhotonWireTypes.GetEffectiveTermsServiceUnavailableProblem, PhotonWireTypes.GetEffectiveTermsServiceUnavailableProblem> = /* @__PURE__ */ (() => z.union([
+    zBillingEntitlementsPendingProblem,
+    zUpstreamUnavailableProblem
+]))();
+
+export type GetEffectiveTermsServiceUnavailableProblemZodInput = z.input<typeof zGetEffectiveTermsServiceUnavailableProblem>;
+
+export type GetEffectiveTermsServiceUnavailableProblemZodOutput = z.output<typeof zGetEffectiveTermsServiceUnavailableProblem>;
+
+export const zGetOrganizationBillingOverviewServiceUnavailableProblem: z.ZodType<PhotonWireTypes.GetOrganizationBillingOverviewServiceUnavailableProblem, PhotonWireTypes.GetOrganizationBillingOverviewServiceUnavailableProblem> = /* @__PURE__ */ (() => z.union([
+    zBillingEntitlementsPendingProblem,
+    zUpstreamUnavailableProblem
+]))();
+
+export type GetOrganizationBillingOverviewServiceUnavailableProblemZodInput = z.input<typeof zGetOrganizationBillingOverviewServiceUnavailableProblem>;
+
+export type GetOrganizationBillingOverviewServiceUnavailableProblemZodOutput = z.output<typeof zGetOrganizationBillingOverviewServiceUnavailableProblem>;
+
+export const zGetOrganizationTermsServiceUnavailableProblem: z.ZodType<PhotonWireTypes.GetOrganizationTermsServiceUnavailableProblem, PhotonWireTypes.GetOrganizationTermsServiceUnavailableProblem> = /* @__PURE__ */ (() => z.union([
+    zBillingEntitlementsPendingProblem,
+    zBillingNotProvisionedProblem,
+    zUpstreamUnavailableProblem
+]))();
+
+export type GetOrganizationTermsServiceUnavailableProblemZodInput = z.input<typeof zGetOrganizationTermsServiceUnavailableProblem>;
+
+export type GetOrganizationTermsServiceUnavailableProblemZodOutput = z.output<typeof zGetOrganizationTermsServiceUnavailableProblem>;
+
 export const zGetProjectImessagePlatformServiceUnavailableProblem: z.ZodType<PhotonWireTypes.GetProjectImessagePlatformServiceUnavailableProblem, PhotonWireTypes.GetProjectImessagePlatformServiceUnavailableProblem> = /* @__PURE__ */ (() => z.union([
     zBillingEntitlementsPendingProblem,
     zBillingNotProvisionedProblem,
@@ -13091,6 +14162,15 @@ export const zGetSmsLineCampaignAssignmentServiceUnavailableProblem: z.ZodType<P
 export type GetSmsLineCampaignAssignmentServiceUnavailableProblemZodInput = z.input<typeof zGetSmsLineCampaignAssignmentServiceUnavailableProblem>;
 
 export type GetSmsLineCampaignAssignmentServiceUnavailableProblemZodOutput = z.output<typeof zGetSmsLineCampaignAssignmentServiceUnavailableProblem>;
+
+export const zGetTenDlcBrandOtpServiceUnavailableProblem: z.ZodType<PhotonWireTypes.GetTenDlcBrandOtpServiceUnavailableProblem, PhotonWireTypes.GetTenDlcBrandOtpServiceUnavailableProblem> = /* @__PURE__ */ (() => z.union([
+    zServiceUnavailableProblem,
+    zUpstreamUnavailableProblem
+]))();
+
+export type GetTenDlcBrandOtpServiceUnavailableProblemZodInput = z.input<typeof zGetTenDlcBrandOtpServiceUnavailableProblem>;
+
+export type GetTenDlcBrandOtpServiceUnavailableProblemZodOutput = z.output<typeof zGetTenDlcBrandOtpServiceUnavailableProblem>;
 
 export const zProvisionImessageDedicatedLineServiceUnavailableProblem: z.ZodType<PhotonWireTypes.ProvisionImessageDedicatedLineServiceUnavailableProblem, PhotonWireTypes.ProvisionImessageDedicatedLineServiceUnavailableProblem> = /* @__PURE__ */ (() => z.union([
     zBillingEntitlementsPendingProblem,
@@ -13121,6 +14201,15 @@ export const zPurchaseSmsNumberServiceUnavailableProblem: z.ZodType<PhotonWireTy
 export type PurchaseSmsNumberServiceUnavailableProblemZodInput = z.input<typeof zPurchaseSmsNumberServiceUnavailableProblem>;
 
 export type PurchaseSmsNumberServiceUnavailableProblemZodOutput = z.output<typeof zPurchaseSmsNumberServiceUnavailableProblem>;
+
+export const zTriggerTenDlcBrandOtpServiceUnavailableProblem: z.ZodType<PhotonWireTypes.TriggerTenDlcBrandOtpServiceUnavailableProblem, PhotonWireTypes.TriggerTenDlcBrandOtpServiceUnavailableProblem> = /* @__PURE__ */ (() => z.union([
+    zServiceUnavailableProblem,
+    zUpstreamUnavailableProblem
+]))();
+
+export type TriggerTenDlcBrandOtpServiceUnavailableProblemZodInput = z.input<typeof zTriggerTenDlcBrandOtpServiceUnavailableProblem>;
+
+export type TriggerTenDlcBrandOtpServiceUnavailableProblemZodOutput = z.output<typeof zTriggerTenDlcBrandOtpServiceUnavailableProblem>;
 
 export const zUnassignSmsLineCampaignServiceUnavailableProblem: z.ZodType<PhotonWireTypes.UnassignSmsLineCampaignServiceUnavailableProblem, PhotonWireTypes.UnassignSmsLineCampaignServiceUnavailableProblem> = /* @__PURE__ */ (() => z.union([
     zSmsCampaignContextUnavailableProblem,
@@ -13244,6 +14333,7 @@ export type ListBillingPlansResponseZodOutput = z.output<typeof zListBillingPlan
 
 export const zOrganizationSubscriptionTerms = /* @__PURE__ */ (() => z.looseObject({
     cancelsAt: z.string().nullable(),
+    coupons: z.array(zSubscriptionCoupon),
     currentPeriodEnd: z.string(),
     currentPeriodStart: z.string(),
     nextBillingAt: z.string(),
@@ -13272,6 +14362,7 @@ export type GetOrganizationTermsResponseZodOutput = z.output<typeof zGetOrganiza
 export const zSubscriptionTerms = /* @__PURE__ */ (() => z.looseObject({
     cancelsAt: z.string().nullable(),
     category: z.string(),
+    coupons: z.array(zSubscriptionCoupon),
     currentPeriodEnd: z.string(),
     currentPeriodStart: z.string(),
     nextBillingAt: z.string(),
@@ -14222,6 +15313,8 @@ export type RotateWebhookSigningSecretUnprocessableEntityProblemZodInput = z.inp
 export type RotateWebhookSigningSecretUnprocessableEntityProblemZodOutput = z.output<typeof zRotateWebhookSigningSecretUnprocessableEntityProblem>;
 
 export const zSendMessageUnprocessableEntityProblem: z.ZodType<PhotonWireTypes.SendMessageUnprocessableEntityProblem, PhotonWireTypes.SendMessageUnprocessableEntityProblem> = /* @__PURE__ */ (() => z.union([
+    zEmailRecipientSuppressedProblem,
+    zOperationUnavailableProblem,
     zSharedLineGroupUnsupportedProblem,
     zValidationFailedProblem,
     zInvalidContentProblem,
@@ -14260,6 +15353,17 @@ export const zTransferOrganizationOwnershipUnprocessableEntityProblem: z.ZodType
 export type TransferOrganizationOwnershipUnprocessableEntityProblemZodInput = z.input<typeof zTransferOrganizationOwnershipUnprocessableEntityProblem>;
 
 export type TransferOrganizationOwnershipUnprocessableEntityProblemZodOutput = z.output<typeof zTransferOrganizationOwnershipUnprocessableEntityProblem>;
+
+export const zTriggerTenDlcBrandOtpUnprocessableEntityProblem: z.ZodType<PhotonWireTypes.TriggerTenDlcBrandOtpUnprocessableEntityProblem, PhotonWireTypes.TriggerTenDlcBrandOtpUnprocessableEntityProblem> = /* @__PURE__ */ (() => z.union([
+    zValidationFailedProblem,
+    zIdempotencyKeyReusedProblem,
+    zUnsupportedEntityTypeProblem,
+    zPhoneNotSmsCapableProblem
+]))();
+
+export type TriggerTenDlcBrandOtpUnprocessableEntityProblemZodInput = z.input<typeof zTriggerTenDlcBrandOtpUnprocessableEntityProblem>;
+
+export type TriggerTenDlcBrandOtpUnprocessableEntityProblemZodOutput = z.output<typeof zTriggerTenDlcBrandOtpUnprocessableEntityProblem>;
 
 export const zUpdateAccountUnprocessableEntityProblem: z.ZodType<PhotonWireTypes.UpdateAccountUnprocessableEntityProblem, PhotonWireTypes.UpdateAccountUnprocessableEntityProblem> = /* @__PURE__ */ (() => z.union([
     zIdempotencyKeyReusedProblem,
@@ -14333,6 +15437,101 @@ export type UpdateWebhookDestinationUnprocessableEntityProblemZodInput = z.input
 
 export type UpdateWebhookDestinationUnprocessableEntityProblemZodOutput = z.output<typeof zUpdateWebhookDestinationUnprocessableEntityProblem>;
 
+export const zVerifyTenDlcBrandOtpBadRequestProblem: z.ZodType<PhotonWireTypes.VerifyTenDlcBrandOtpBadRequestProblem, PhotonWireTypes.VerifyTenDlcBrandOtpBadRequestProblem> = /* @__PURE__ */ (() => z.union([
+    zIdempotencyKeyRequiredProblem,
+    zIdempotencyKeyInvalidProblem
+]))();
+
+export type VerifyTenDlcBrandOtpBadRequestProblemZodInput = z.input<typeof zVerifyTenDlcBrandOtpBadRequestProblem>;
+
+export type VerifyTenDlcBrandOtpBadRequestProblemZodOutput = z.output<typeof zVerifyTenDlcBrandOtpBadRequestProblem>;
+
+export const zVerifyTenDlcBrandOtpConflictProblem: z.ZodType<PhotonWireTypes.VerifyTenDlcBrandOtpConflictProblem, PhotonWireTypes.VerifyTenDlcBrandOtpConflictProblem> = /* @__PURE__ */ (() => z.union([
+    zIdempotencyConflictProblem,
+    zInvalidLifecycleStateProblem,
+    zOrganizationClosingProblem,
+    zOtpLockedProblem
+]))();
+
+export type VerifyTenDlcBrandOtpConflictProblemZodInput = z.input<typeof zVerifyTenDlcBrandOtpConflictProblem>;
+
+export type VerifyTenDlcBrandOtpConflictProblemZodOutput = z.output<typeof zVerifyTenDlcBrandOtpConflictProblem>;
+
+export const zVerifyTenDlcBrandOtpForbiddenProblem: z.ZodType<PhotonWireTypes.VerifyTenDlcBrandOtpForbiddenProblem, PhotonWireTypes.VerifyTenDlcBrandOtpForbiddenProblem> = /* @__PURE__ */ (() => z.union([
+    zForbiddenProblem,
+    zInsufficientScopeProblem,
+    zOrganizationSsoRequiredProblem,
+    zResourceMismatchProblem
+]))();
+
+export type VerifyTenDlcBrandOtpForbiddenProblemZodInput = z.input<typeof zVerifyTenDlcBrandOtpForbiddenProblem>;
+
+export type VerifyTenDlcBrandOtpForbiddenProblemZodOutput = z.output<typeof zVerifyTenDlcBrandOtpForbiddenProblem>;
+
+export const zVerifyTenDlcBrandOtpGatewayTimeoutProblem: z.ZodType<PhotonWireTypes.VerifyTenDlcBrandOtpGatewayTimeoutProblem, PhotonWireTypes.VerifyTenDlcBrandOtpGatewayTimeoutProblem> = /* @__PURE__ */ (() => z.union([
+    zRequestTimeoutProblem,
+    zServiceTimeoutProblem
+]))();
+
+export type VerifyTenDlcBrandOtpGatewayTimeoutProblemZodInput = z.input<typeof zVerifyTenDlcBrandOtpGatewayTimeoutProblem>;
+
+export type VerifyTenDlcBrandOtpGatewayTimeoutProblemZodOutput = z.output<typeof zVerifyTenDlcBrandOtpGatewayTimeoutProblem>;
+
+export const zVerifyTenDlcBrandOtpInternalServerErrorProblem: z.ZodType<PhotonWireTypes.VerifyTenDlcBrandOtpInternalServerErrorProblem, PhotonWireTypes.VerifyTenDlcBrandOtpInternalServerErrorProblem> = /* @__PURE__ */ (() => z.union([
+    zInternalErrorProblem,
+    zInvalidAuthContextProblem
+]))();
+
+export type VerifyTenDlcBrandOtpInternalServerErrorProblemZodInput = z.input<typeof zVerifyTenDlcBrandOtpInternalServerErrorProblem>;
+
+export type VerifyTenDlcBrandOtpInternalServerErrorProblemZodOutput = z.output<typeof zVerifyTenDlcBrandOtpInternalServerErrorProblem>;
+
+export const zVerifyTenDlcBrandOtpRequest = /* @__PURE__ */ (() => z.looseObject({
+    otpPin: z.string()
+}))();
+
+export type VerifyTenDlcBrandOtpRequestZodInput = z.input<typeof zVerifyTenDlcBrandOtpRequest>;
+
+export type VerifyTenDlcBrandOtpRequestZodOutput = z.output<typeof zVerifyTenDlcBrandOtpRequest>;
+
+export const zVerifyTenDlcBrandOtpResponse = /* @__PURE__ */ (() => z.looseObject({
+    data: zTenDlcBrandOtp
+}))();
+
+export type VerifyTenDlcBrandOtpResponseZodInput = z.input<typeof zVerifyTenDlcBrandOtpResponse>;
+
+export type VerifyTenDlcBrandOtpResponseZodOutput = z.output<typeof zVerifyTenDlcBrandOtpResponse>;
+
+export const zVerifyTenDlcBrandOtpServiceUnavailableProblem: z.ZodType<PhotonWireTypes.VerifyTenDlcBrandOtpServiceUnavailableProblem, PhotonWireTypes.VerifyTenDlcBrandOtpServiceUnavailableProblem> = /* @__PURE__ */ (() => z.union([
+    zServiceUnavailableProblem,
+    zUpstreamUnavailableProblem
+]))();
+
+export type VerifyTenDlcBrandOtpServiceUnavailableProblemZodInput = z.input<typeof zVerifyTenDlcBrandOtpServiceUnavailableProblem>;
+
+export type VerifyTenDlcBrandOtpServiceUnavailableProblemZodOutput = z.output<typeof zVerifyTenDlcBrandOtpServiceUnavailableProblem>;
+
+export const zVerifyTenDlcBrandOtpTooManyRequestsProblem: z.ZodType<PhotonWireTypes.VerifyTenDlcBrandOtpTooManyRequestsProblem, PhotonWireTypes.VerifyTenDlcBrandOtpTooManyRequestsProblem> = /* @__PURE__ */ (() => z.union([
+    zRateLimitedProblem,
+    zOtpRateLimitedProblem
+]))();
+
+export type VerifyTenDlcBrandOtpTooManyRequestsProblemZodInput = z.input<typeof zVerifyTenDlcBrandOtpTooManyRequestsProblem>;
+
+export type VerifyTenDlcBrandOtpTooManyRequestsProblemZodOutput = z.output<typeof zVerifyTenDlcBrandOtpTooManyRequestsProblem>;
+
+export const zVerifyTenDlcBrandOtpUnprocessableEntityProblem: z.ZodType<PhotonWireTypes.VerifyTenDlcBrandOtpUnprocessableEntityProblem, PhotonWireTypes.VerifyTenDlcBrandOtpUnprocessableEntityProblem> = /* @__PURE__ */ (() => z.union([
+    zValidationFailedProblem,
+    zIdempotencyKeyReusedProblem,
+    zUnsupportedEntityTypeProblem,
+    zPhoneNotSmsCapableProblem,
+    zOtpVerificationRejectedProblem
+]))();
+
+export type VerifyTenDlcBrandOtpUnprocessableEntityProblemZodInput = z.input<typeof zVerifyTenDlcBrandOtpUnprocessableEntityProblem>;
+
+export type VerifyTenDlcBrandOtpUnprocessableEntityProblemZodOutput = z.output<typeof zVerifyTenDlcBrandOtpUnprocessableEntityProblem>;
+
 export const zVoiceDefaultProfileAssignmentForbiddenProblem = /* @__PURE__ */ (() => z.object({
     code: z.literal('VOICE_DEFAULT_PROFILE_ASSIGNMENT_FORBIDDEN'),
     detail: z.string().optional(),
@@ -14386,6 +15585,21 @@ export const zCreateDefaultVoiceProfileConflictProblem: z.ZodType<PhotonWireType
 export type CreateDefaultVoiceProfileConflictProblemZodInput = z.input<typeof zCreateDefaultVoiceProfileConflictProblem>;
 
 export type CreateDefaultVoiceProfileConflictProblemZodOutput = z.output<typeof zCreateDefaultVoiceProfileConflictProblem>;
+
+export const zVoiceDefaultProfileMetadataForbiddenProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('VOICE_DEFAULT_PROFILE_METADATA_FORBIDDEN'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: zProblemRemediation,
+    requestId: z.string().optional(),
+    status: z.literal(409),
+    title: z.literal('Voice Default Profile Metadata Forbidden'),
+    type: z.literal('https://photon.codes/docs/problems/voice-default-profile-metadata-forbidden')
+}).catchall(zJsonValue))();
+
+export type VoiceDefaultProfileMetadataForbiddenProblemZodInput = z.input<typeof zVoiceDefaultProfileMetadataForbiddenProblem>;
+
+export type VoiceDefaultProfileMetadataForbiddenProblemZodOutput = z.output<typeof zVoiceDefaultProfileMetadataForbiddenProblem>;
 
 export const zVoiceDefaultProfileRequiredProblem = /* @__PURE__ */ (() => z.object({
     code: z.literal('VOICE_DEFAULT_PROFILE_REQUIRED'),
@@ -14452,6 +15666,7 @@ export type BatchUpdateVoiceLineProfileAssignmentsRequestZodOutput = z.output<ty
 
 export const zVoiceMetadata = z.looseObject({
     durationMs: z.number().refine(Number.isInteger, { message: 'Expected an integer' }).optional(),
+    transcript: z.string().optional(),
     waveform: z.array(z.number()).optional()
 });
 
@@ -14533,7 +15748,7 @@ export type PollVoteContentZodInput = z.input<typeof zPollVoteContent>;
 export type PollVoteContentZodOutput = z.output<typeof zPollVoteContent>;
 
 export const zReactionContent = z.looseObject({
-    action: zReactionAction,
+    action: absent().optional(),
     metadata: zContentMetadata.optional(),
     reaction: z.string(),
     type: z.literal('reaction')
@@ -14542,6 +15757,25 @@ export const zReactionContent = z.looseObject({
 export type ReactionContentZodInput = z.input<typeof zReactionContent>;
 
 export type ReactionContentZodOutput = z.output<typeof zReactionContent>;
+
+export const zSpaceBackgroundUpdateContent = z.looseObject({
+    background: zSpaceBackground,
+    metadata: zContentMetadata.optional(),
+    type: z.literal('space.background.update')
+});
+
+export type SpaceBackgroundUpdateContentZodInput = z.input<typeof zSpaceBackgroundUpdateContent>;
+
+export type SpaceBackgroundUpdateContentZodOutput = z.output<typeof zSpaceBackgroundUpdateContent>;
+
+export const zSpaceProfileShareContent = z.looseObject({
+    metadata: zContentMetadata.optional(),
+    type: z.literal('space.profile.share')
+});
+
+export type SpaceProfileShareContentZodInput = z.input<typeof zSpaceProfileShareContent>;
+
+export type SpaceProfileShareContentZodOutput = z.output<typeof zSpaceProfileShareContent>;
 
 export const zSpaceTypingUpdateContent = z.looseObject({
     metadata: zContentMetadata.optional(),
@@ -14564,50 +15798,6 @@ export type TextContentZodInput = z.input<typeof zTextContent>;
 
 export type TextContentZodOutput = z.output<typeof zTextContent>;
 
-export const zImessageGroupContentPart: z.ZodType<PhotonWireTypes.ImessageGroupContentPart, PhotonWireTypes.ImessageGroupContentPart> = /* @__PURE__ */ (() => z.union([
-    zTextContent,
-    zAttachmentContent,
-    zMessageReadContent,
-    zSpaceTypingUpdateContent
-]))();
-
-export type ImessageGroupContentPartZodInput = z.input<typeof zImessageGroupContentPart>;
-
-export type ImessageGroupContentPartZodOutput = z.output<typeof zImessageGroupContentPart>;
-
-export const zImessageGroupContent = z.looseObject({
-    metadata: zContentMetadata.optional(),
-    parts: z.array(zImessageGroupContentPart),
-    type: z.literal('group')
-});
-
-export type ImessageGroupContentZodInput = z.input<typeof zImessageGroupContent>;
-
-export type ImessageGroupContentZodOutput = z.output<typeof zImessageGroupContent>;
-
-export const zImessageMessageContent: z.ZodType<PhotonWireTypes.ImessageMessageContent, PhotonWireTypes.ImessageMessageContent> = /* @__PURE__ */ (() => z.union([
-    zTextContent,
-    zAttachmentContent,
-    zMessageReadContent,
-    zSpaceTypingUpdateContent,
-    zImessageGroupContent
-]))();
-
-export type ImessageMessageContentZodInput = z.input<typeof zImessageMessageContent>;
-
-export type ImessageMessageContentZodOutput = z.output<typeof zImessageMessageContent>;
-
-export const zTextUpdateContent = z.looseObject({
-    format: z.string(),
-    metadata: zContentMetadata.optional(),
-    text: z.string(),
-    type: z.literal('text.update')
-});
-
-export type TextUpdateContentZodInput = z.input<typeof zTextUpdateContent>;
-
-export type TextUpdateContentZodOutput = z.output<typeof zTextUpdateContent>;
-
 export const zUnknownContent = z.looseObject({
     metadata: zContentMetadata.optional(),
     type: z.string()
@@ -14627,10 +15817,90 @@ export type VoiceContentZodInput = z.input<typeof zVoiceContent>;
 
 export type VoiceContentZodOutput = z.output<typeof zVoiceContent>;
 
-export const zTelegramGroupContentPart: z.ZodType<PhotonWireTypes.TelegramGroupContentPart, PhotonWireTypes.TelegramGroupContentPart> = /* @__PURE__ */ (() => z.union([
+export const zImessageGroupContentPart: z.ZodType<PhotonWireTypes.ImessageGroupContentPart, PhotonWireTypes.ImessageGroupContentPart> = /* @__PURE__ */ (() => z.union([
+    zTextContent,
+    zAttachmentContent,
+    zVoiceContent,
+    zMessageReadContent,
+    zSpaceTypingUpdateContent,
+    zSpaceBackgroundUpdateContent,
+    zSpaceProfileShareContent
+]))();
+
+export type ImessageGroupContentPartZodInput = z.input<typeof zImessageGroupContentPart>;
+
+export type ImessageGroupContentPartZodOutput = z.output<typeof zImessageGroupContentPart>;
+
+export const zImessageGroupContent = z.looseObject({
+    metadata: zContentMetadata.optional(),
+    parts: z.array(zImessageGroupContentPart),
+    type: z.literal('group')
+});
+
+export type ImessageGroupContentZodInput = z.input<typeof zImessageGroupContent>;
+
+export type ImessageGroupContentZodOutput = z.output<typeof zImessageGroupContent>;
+
+export const zImessageMessageContent: z.ZodType<PhotonWireTypes.ImessageMessageContent, PhotonWireTypes.ImessageMessageContent> = /* @__PURE__ */ (() => z.union([
+    zTextContent,
+    zAttachmentContent,
+    zVoiceContent,
+    zMessageReadContent,
+    zSpaceTypingUpdateContent,
+    zSpaceBackgroundUpdateContent,
+    zSpaceProfileShareContent,
+    zImessageGroupContent
+]))();
+
+export type ImessageMessageContentZodInput = z.input<typeof zImessageMessageContent>;
+
+export type ImessageMessageContentZodOutput = z.output<typeof zImessageMessageContent>;
+
+export const zMessageUpdateGroupContentPart: z.ZodType<PhotonWireTypes.MessageUpdateGroupContentPart, PhotonWireTypes.MessageUpdateGroupContentPart> = /* @__PURE__ */ (() => z.union([
     zTextContent,
     zAttachmentContent,
     zVoiceContent
+]))();
+
+export type MessageUpdateGroupContentPartZodInput = z.input<typeof zMessageUpdateGroupContentPart>;
+
+export type MessageUpdateGroupContentPartZodOutput = z.output<typeof zMessageUpdateGroupContentPart>;
+
+export const zMessageUpdateGroupContent = z.looseObject({
+    metadata: zContentMetadata.optional(),
+    parts: z.array(zMessageUpdateGroupContentPart),
+    type: z.literal('group')
+});
+
+export type MessageUpdateGroupContentZodInput = z.input<typeof zMessageUpdateGroupContent>;
+
+export type MessageUpdateGroupContentZodOutput = z.output<typeof zMessageUpdateGroupContent>;
+
+export const zMessageUpdateValue: z.ZodType<PhotonWireTypes.MessageUpdateValue, PhotonWireTypes.MessageUpdateValue> = /* @__PURE__ */ (() => z.union([
+    zMessageUpdateGroupContentPart,
+    zMessageUpdateGroupContent
+]))();
+
+export type MessageUpdateValueZodInput = z.input<typeof zMessageUpdateValue>;
+
+export type MessageUpdateValueZodOutput = z.output<typeof zMessageUpdateValue>;
+
+export const zMessageUpdateContent = z.looseObject({
+    content: zMessageUpdateValue,
+    metadata: zContentMetadata.optional(),
+    type: z.literal('message.update')
+});
+
+export type MessageUpdateContentZodInput = z.input<typeof zMessageUpdateContent>;
+
+export type MessageUpdateContentZodOutput = z.output<typeof zMessageUpdateContent>;
+
+export const zTelegramGroupContentPart: z.ZodType<PhotonWireTypes.TelegramGroupContentPart, PhotonWireTypes.TelegramGroupContentPart> = /* @__PURE__ */ (() => z.union([
+    zTextContent,
+    zAttachmentContent,
+    zVoiceContent,
+    zMessageDeleteContent,
+    zSpaceTypingUpdateContent
 ]))();
 
 export type TelegramGroupContentPartZodInput = z.input<typeof zTelegramGroupContentPart>;
@@ -14651,7 +15921,10 @@ export const zTelegramMessageContent: z.ZodType<PhotonWireTypes.TelegramMessageC
     zTextContent,
     zAttachmentContent,
     zVoiceContent,
-    zTelegramGroupContent
+    zMessageDeleteContent,
+    zSpaceTypingUpdateContent,
+    zTelegramGroupContent,
+    zMessageUpdateContent
 ]))();
 
 export type TelegramMessageContentZodInput = z.input<typeof zTelegramMessageContent>;
@@ -14909,6 +16182,7 @@ export type BatchUpdateVoiceLineProfileAssignmentsConflictProblemZodOutput = z.o
 
 export const zConfigureVoiceProfileOutboundConflictProblem: z.ZodType<PhotonWireTypes.ConfigureVoiceProfileOutboundConflictProblem, PhotonWireTypes.ConfigureVoiceProfileOutboundConflictProblem> = /* @__PURE__ */ (() => z.union([
     zProjectClosingProblem,
+    zProjectInitializingProblem,
     zVoiceProfileVersionConflictProblem,
     zVoiceOutboundOperationPendingProblem,
     zVoiceOutboundConfiguredProblem
@@ -14982,7 +16256,8 @@ export const zUpdateVoiceProfileConflictProblem: z.ZodType<PhotonWireTypes.Updat
     zProjectClosingProblem,
     zVoiceProfileDirectionConfiguredProblem,
     zVoiceProfileVersionConflictProblem,
-    zVoiceOutboundOperationPendingProblem
+    zVoiceOutboundOperationPendingProblem,
+    zVoiceDefaultProfileMetadataForbiddenProblem
 ]))();
 
 export type UpdateVoiceProfileConflictProblemZodInput = z.input<typeof zUpdateVoiceProfileConflictProblem>;
@@ -15348,6 +16623,21 @@ export type WebhookDestinationPageZodInput = z.input<typeof zWebhookDestinationP
 
 export type WebhookDestinationPageZodOutput = z.output<typeof zWebhookDestinationPage>;
 
+export const zWhatsappAccountDisconnectFailedProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('WHATSAPP_ACCOUNT_DISCONNECT_FAILED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: zProblemRemediation,
+    requestId: z.string().optional(),
+    status: z.literal(502),
+    title: z.literal('WhatsApp Account Disconnect Failed'),
+    type: z.literal('https://photon.codes/docs/problems/whatsapp-account-disconnect-failed')
+}).catchall(zJsonValue))();
+
+export type WhatsappAccountDisconnectFailedProblemZodInput = z.input<typeof zWhatsappAccountDisconnectFailedProblem>;
+
+export type WhatsappAccountDisconnectFailedProblemZodOutput = z.output<typeof zWhatsappAccountDisconnectFailedProblem>;
+
 export const zWhatsappAccountDisconnectingProblem = /* @__PURE__ */ (() => z.object({
     code: z.literal('WHATSAPP_ACCOUNT_DISCONNECTING'),
     detail: z.string().optional(),
@@ -15386,6 +16676,21 @@ export const zDisconnectWhatsappBusinessAccountConflictProblem: z.ZodType<Photon
 export type DisconnectWhatsappBusinessAccountConflictProblemZodInput = z.input<typeof zDisconnectWhatsappBusinessAccountConflictProblem>;
 
 export type DisconnectWhatsappBusinessAccountConflictProblemZodOutput = z.output<typeof zDisconnectWhatsappBusinessAccountConflictProblem>;
+
+export const zWhatsappAuthorizationRevokedProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('WHATSAPP_AUTHORIZATION_REVOKED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: zProblemRemediation,
+    requestId: z.string().optional(),
+    status: z.literal(403),
+    title: z.literal('WhatsApp Authorization Revoked'),
+    type: z.literal('https://photon.codes/docs/problems/whatsapp-authorization-revoked')
+}).catchall(zJsonValue))();
+
+export type WhatsappAuthorizationRevokedProblemZodInput = z.input<typeof zWhatsappAuthorizationRevokedProblem>;
+
+export type WhatsappAuthorizationRevokedProblemZodOutput = z.output<typeof zWhatsappAuthorizationRevokedProblem>;
 
 export const zWhatsappBusinessAccountAlert = /* @__PURE__ */ (() => z.looseObject({
     description: z.string(),
@@ -15481,6 +16786,51 @@ export type WhatsappBusinessUserSnapshotZodInput = z.input<typeof zWhatsappBusin
 
 export type WhatsappBusinessUserSnapshotZodOutput = z.output<typeof zWhatsappBusinessUserSnapshot>;
 
+export const zWhatsappCodeExchangeFailedProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('WHATSAPP_CODE_EXCHANGE_FAILED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: zProblemRemediation,
+    requestId: z.string().optional(),
+    status: z.literal(422),
+    title: z.literal('WhatsApp Code Exchange Failed'),
+    type: z.literal('https://photon.codes/docs/problems/whatsapp-code-exchange-failed')
+}).catchall(zJsonValue))();
+
+export type WhatsappCodeExchangeFailedProblemZodInput = z.input<typeof zWhatsappCodeExchangeFailedProblem>;
+
+export type WhatsappCodeExchangeFailedProblemZodOutput = z.output<typeof zWhatsappCodeExchangeFailedProblem>;
+
+export const zWhatsappCosmosLineNotSupportedProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('WHATSAPP_COSMOS_LINE_NOT_SUPPORTED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: absent().optional(),
+    requestId: z.string().optional(),
+    status: z.literal(422),
+    title: z.literal('WhatsApp Cosmos Line Not Supported'),
+    type: z.literal('https://photon.codes/docs/problems/whatsapp-cosmos-line-not-supported')
+}).catchall(zJsonValue))();
+
+export type WhatsappCosmosLineNotSupportedProblemZodInput = z.input<typeof zWhatsappCosmosLineNotSupportedProblem>;
+
+export type WhatsappCosmosLineNotSupportedProblemZodOutput = z.output<typeof zWhatsappCosmosLineNotSupportedProblem>;
+
+export const zWhatsappDisplayNameConflictProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('WHATSAPP_DISPLAY_NAME_CONFLICT'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: zProblemRemediation,
+    requestId: z.string().optional(),
+    status: z.literal(409),
+    title: z.literal('WhatsApp Display Name Conflict'),
+    type: z.literal('https://photon.codes/docs/problems/whatsapp-display-name-conflict')
+}).catchall(zJsonValue))();
+
+export type WhatsappDisplayNameConflictProblemZodInput = z.input<typeof zWhatsappDisplayNameConflictProblem>;
+
+export type WhatsappDisplayNameConflictProblemZodOutput = z.output<typeof zWhatsappDisplayNameConflictProblem>;
+
 export const zWhatsappDisplayNameUnavailableProblem = /* @__PURE__ */ (() => z.object({
     code: z.literal('WHATSAPP_DISPLAY_NAME_UNAVAILABLE'),
     detail: z.string().optional(),
@@ -15506,6 +16856,66 @@ export type CreateWhatsappVoipSenderUnprocessableEntityProblemZodInput = z.input
 
 export type CreateWhatsappVoipSenderUnprocessableEntityProblemZodOutput = z.output<typeof zCreateWhatsappVoipSenderUnprocessableEntityProblem>;
 
+export const zWhatsappEmbeddedSignupPhoneLookupFailedProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('WHATSAPP_EMBEDDED_SIGNUP_PHONE_LOOKUP_FAILED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: zProblemRemediation,
+    requestId: z.string().optional(),
+    status: z.literal(502),
+    title: z.literal('WhatsApp Embedded Signup Phone Lookup Failed'),
+    type: z.literal('https://photon.codes/docs/problems/whatsapp-embedded-signup-phone-lookup-failed')
+}).catchall(zJsonValue))();
+
+export type WhatsappEmbeddedSignupPhoneLookupFailedProblemZodInput = z.input<typeof zWhatsappEmbeddedSignupPhoneLookupFailedProblem>;
+
+export type WhatsappEmbeddedSignupPhoneLookupFailedProblemZodOutput = z.output<typeof zWhatsappEmbeddedSignupPhoneLookupFailedProblem>;
+
+export const zWhatsappEmbeddedSignupPhoneNotFoundProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('WHATSAPP_EMBEDDED_SIGNUP_PHONE_NOT_FOUND'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: zProblemRemediation,
+    requestId: z.string().optional(),
+    status: z.literal(404),
+    title: z.literal('WhatsApp Embedded Signup Phone Not Found'),
+    type: z.literal('https://photon.codes/docs/problems/whatsapp-embedded-signup-phone-not-found')
+}).catchall(zJsonValue))();
+
+export type WhatsappEmbeddedSignupPhoneNotFoundProblemZodInput = z.input<typeof zWhatsappEmbeddedSignupPhoneNotFoundProblem>;
+
+export type WhatsappEmbeddedSignupPhoneNotFoundProblemZodOutput = z.output<typeof zWhatsappEmbeddedSignupPhoneNotFoundProblem>;
+
+export const zWhatsappEmbeddedSignupPhoneNotVerifiedProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('WHATSAPP_EMBEDDED_SIGNUP_PHONE_NOT_VERIFIED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: zProblemRemediation,
+    requestId: z.string().optional(),
+    status: z.literal(409),
+    title: z.literal('WhatsApp Embedded Signup Phone Not Verified'),
+    type: z.literal('https://photon.codes/docs/problems/whatsapp-embedded-signup-phone-not-verified')
+}).catchall(zJsonValue))();
+
+export type WhatsappEmbeddedSignupPhoneNotVerifiedProblemZodInput = z.input<typeof zWhatsappEmbeddedSignupPhoneNotVerifiedProblem>;
+
+export type WhatsappEmbeddedSignupPhoneNotVerifiedProblemZodOutput = z.output<typeof zWhatsappEmbeddedSignupPhoneNotVerifiedProblem>;
+
+export const zWhatsappEmbeddedSignupWabaNotAuthorizedProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('WHATSAPP_EMBEDDED_SIGNUP_WABA_NOT_AUTHORIZED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: zProblemRemediation,
+    requestId: z.string().optional(),
+    status: z.literal(403),
+    title: z.literal('WhatsApp Embedded Signup WABA Not Authorized'),
+    type: z.literal('https://photon.codes/docs/problems/whatsapp-embedded-signup-waba-not-authorized')
+}).catchall(zJsonValue))();
+
+export type WhatsappEmbeddedSignupWabaNotAuthorizedProblemZodInput = z.input<typeof zWhatsappEmbeddedSignupWabaNotAuthorizedProblem>;
+
+export type WhatsappEmbeddedSignupWabaNotAuthorizedProblemZodOutput = z.output<typeof zWhatsappEmbeddedSignupWabaNotAuthorizedProblem>;
+
 export const zWhatsappModeDedicatedProblem = /* @__PURE__ */ (() => z.object({
     code: z.literal('WHATSAPP_MODE_DEDICATED'),
     detail: z.string().optional(),
@@ -15522,6 +16932,7 @@ export type WhatsappModeDedicatedProblemZodInput = z.input<typeof zWhatsappModeD
 export type WhatsappModeDedicatedProblemZodOutput = z.output<typeof zWhatsappModeDedicatedProblem>;
 
 export const zCreateWhatsappSharedLineAssignmentConflictProblem: z.ZodType<PhotonWireTypes.CreateWhatsappSharedLineAssignmentConflictProblem, PhotonWireTypes.CreateWhatsappSharedLineAssignmentConflictProblem> = /* @__PURE__ */ (() => z.union([
+    zProjectInitializingProblem,
     zProjectClosingProblem,
     zWhatsappModeDedicatedProblem,
     zSharedLineCapExceededProblem,
@@ -15531,6 +16942,36 @@ export const zCreateWhatsappSharedLineAssignmentConflictProblem: z.ZodType<Photo
 export type CreateWhatsappSharedLineAssignmentConflictProblemZodInput = z.input<typeof zCreateWhatsappSharedLineAssignmentConflictProblem>;
 
 export type CreateWhatsappSharedLineAssignmentConflictProblemZodOutput = z.output<typeof zCreateWhatsappSharedLineAssignmentConflictProblem>;
+
+export const zWhatsappNumberAddRefusedProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('WHATSAPP_NUMBER_ADD_REFUSED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: absent().optional(),
+    requestId: z.string().optional(),
+    status: z.literal(422),
+    title: z.literal('WhatsApp Number Add Refused'),
+    type: z.literal('https://photon.codes/docs/problems/whatsapp-number-add-refused')
+}).catchall(zJsonValue))();
+
+export type WhatsappNumberAddRefusedProblemZodInput = z.input<typeof zWhatsappNumberAddRefusedProblem>;
+
+export type WhatsappNumberAddRefusedProblemZodOutput = z.output<typeof zWhatsappNumberAddRefusedProblem>;
+
+export const zWhatsappNumberLookupFailedProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('WHATSAPP_NUMBER_LOOKUP_FAILED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: zProblemRemediation,
+    requestId: z.string().optional(),
+    status: z.literal(502),
+    title: z.literal('WhatsApp Number Lookup Failed'),
+    type: z.literal('https://photon.codes/docs/problems/whatsapp-number-lookup-failed')
+}).catchall(zJsonValue))();
+
+export type WhatsappNumberLookupFailedProblemZodInput = z.input<typeof zWhatsappNumberLookupFailedProblem>;
+
+export type WhatsappNumberLookupFailedProblemZodOutput = z.output<typeof zWhatsappNumberLookupFailedProblem>;
 
 export const zWhatsappOutboundCapacity = /* @__PURE__ */ (() => openEnum([
     '50',
@@ -15573,6 +17014,36 @@ export const zListWhatsappAccountPhoneNumbersResponse = /* @__PURE__ */ (() => z
 export type ListWhatsappAccountPhoneNumbersResponseZodInput = z.input<typeof zListWhatsappAccountPhoneNumbersResponse>;
 
 export type ListWhatsappAccountPhoneNumbersResponseZodOutput = z.output<typeof zListWhatsappAccountPhoneNumbersResponse>;
+
+export const zWhatsappProjectWabaAlreadyConnectedProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('WHATSAPP_PROJECT_WABA_ALREADY_CONNECTED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: zProblemRemediation,
+    requestId: z.string().optional(),
+    status: z.literal(409),
+    title: z.literal('WhatsApp Project WABA Already Connected'),
+    type: z.literal('https://photon.codes/docs/problems/whatsapp-project-waba-already-connected')
+}).catchall(zJsonValue))();
+
+export type WhatsappProjectWabaAlreadyConnectedProblemZodInput = z.input<typeof zWhatsappProjectWabaAlreadyConnectedProblem>;
+
+export type WhatsappProjectWabaAlreadyConnectedProblemZodOutput = z.output<typeof zWhatsappProjectWabaAlreadyConnectedProblem>;
+
+export const zWhatsappRegistrationRefusedProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('WHATSAPP_REGISTRATION_REFUSED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: absent().optional(),
+    requestId: z.string().optional(),
+    status: z.literal(422),
+    title: z.literal('WhatsApp Registration Refused'),
+    type: z.literal('https://photon.codes/docs/problems/whatsapp-registration-refused')
+}).catchall(zJsonValue))();
+
+export type WhatsappRegistrationRefusedProblemZodInput = z.input<typeof zWhatsappRegistrationRefusedProblem>;
+
+export type WhatsappRegistrationRefusedProblemZodOutput = z.output<typeof zWhatsappRegistrationRefusedProblem>;
 
 export const zWhatsappRestrictionStatus = /* @__PURE__ */ (() => openEnum([
     'FLAGGED',
@@ -15663,6 +17134,36 @@ export type ReleaseResourceConflictProblemZodInput = z.input<typeof zReleaseReso
 
 export type ReleaseResourceConflictProblemZodOutput = z.output<typeof zReleaseResourceConflictProblem>;
 
+export const zWhatsappSenderReleaseFailedProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('WHATSAPP_SENDER_RELEASE_FAILED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: zProblemRemediation,
+    requestId: z.string().optional(),
+    status: z.literal(502),
+    title: z.literal('WhatsApp Sender Release Failed'),
+    type: z.literal('https://photon.codes/docs/problems/whatsapp-sender-release-failed')
+}).catchall(zJsonValue))();
+
+export type WhatsappSenderReleaseFailedProblemZodInput = z.input<typeof zWhatsappSenderReleaseFailedProblem>;
+
+export type WhatsappSenderReleaseFailedProblemZodOutput = z.output<typeof zWhatsappSenderReleaseFailedProblem>;
+
+export const zWhatsappSignupExpiredProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('WHATSAPP_SIGNUP_EXPIRED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: zProblemRemediation,
+    requestId: z.string().optional(),
+    status: z.literal(410),
+    title: z.literal('WhatsApp Signup Expired'),
+    type: z.literal('https://photon.codes/docs/problems/whatsapp-signup-expired')
+}).catchall(zJsonValue))();
+
+export type WhatsappSignupExpiredProblemZodInput = z.input<typeof zWhatsappSignupExpiredProblem>;
+
+export type WhatsappSignupExpiredProblemZodOutput = z.output<typeof zWhatsappSignupExpiredProblem>;
+
 export const zWhatsappSpaceDetails = /* @__PURE__ */ (() => z.looseObject({}))();
 
 export type WhatsappSpaceDetailsZodInput = z.input<typeof zWhatsappSpaceDetails>;
@@ -15745,6 +17246,21 @@ export const zSpaceSnapshot: z.ZodType<PhotonWireTypes.SpaceSnapshot, PhotonWire
 export type SpaceSnapshotZodInput = z.input<typeof zSpaceSnapshot>;
 
 export type SpaceSnapshotZodOutput = z.output<typeof zSpaceSnapshot>;
+
+export const zWhatsappSubscriptionRefusedProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('WHATSAPP_SUBSCRIPTION_REFUSED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: zProblemRemediation,
+    requestId: z.string().optional(),
+    status: z.literal(502),
+    title: z.literal('WhatsApp Subscription Refused'),
+    type: z.literal('https://photon.codes/docs/problems/whatsapp-subscription-refused')
+}).catchall(zJsonValue))();
+
+export type WhatsappSubscriptionRefusedProblemZodInput = z.input<typeof zWhatsappSubscriptionRefusedProblem>;
+
+export type WhatsappSubscriptionRefusedProblemZodOutput = z.output<typeof zWhatsappSubscriptionRefusedProblem>;
 
 export const zWhatsappUserDetails = /* @__PURE__ */ (() => z.looseObject({
     managedBy: zManagerId.optional(),
@@ -16099,7 +17615,6 @@ export type SpaceParticipantsUpdateContentZodOutput = z.output<typeof zSpacePart
 
 export const zEmailGroupContentPart: z.ZodType<PhotonWireTypes.EmailGroupContentPart, PhotonWireTypes.EmailGroupContentPart> = /* @__PURE__ */ (() => z.union([
     zTextContent,
-    zTextUpdateContent,
     zAttachmentContent,
     zVoiceContent,
     zReactionContent,
@@ -16107,6 +17622,8 @@ export const zEmailGroupContentPart: z.ZodType<PhotonWireTypes.EmailGroupContent
     zMessageReadContent,
     zSpaceParticipantsUpdateContent,
     zSpaceTypingUpdateContent,
+    zSpaceBackgroundUpdateContent,
+    zSpaceProfileShareContent,
     zPollContent,
     zPollVoteContent,
     zPollUpdateContent
@@ -16128,7 +17645,6 @@ export type EmailGroupContentZodOutput = z.output<typeof zEmailGroupContent>;
 
 export const zEmailMessageContent: z.ZodType<PhotonWireTypes.EmailMessageContent, PhotonWireTypes.EmailMessageContent> = /* @__PURE__ */ (() => z.union([
     zTextContent,
-    zTextUpdateContent,
     zAttachmentContent,
     zVoiceContent,
     zReactionContent,
@@ -16136,10 +17652,13 @@ export const zEmailMessageContent: z.ZodType<PhotonWireTypes.EmailMessageContent
     zMessageReadContent,
     zSpaceParticipantsUpdateContent,
     zSpaceTypingUpdateContent,
+    zSpaceBackgroundUpdateContent,
+    zSpaceProfileShareContent,
     zPollContent,
     zPollVoteContent,
     zPollUpdateContent,
-    zEmailGroupContent
+    zEmailGroupContent,
+    zMessageUpdateContent
 ]))();
 
 export type EmailMessageContentZodInput = z.input<typeof zEmailMessageContent>;
@@ -16244,7 +17763,6 @@ export type FailedEmailMessageZodOutput = z.output<typeof zFailedEmailMessage>;
 
 export const zGroupContentPart: z.ZodType<PhotonWireTypes.GroupContentPart, PhotonWireTypes.GroupContentPart> = /* @__PURE__ */ (() => z.union([
     zTextContent,
-    zTextUpdateContent,
     zAttachmentContent,
     zVoiceContent,
     zReactionContent,
@@ -16252,6 +17770,8 @@ export const zGroupContentPart: z.ZodType<PhotonWireTypes.GroupContentPart, Phot
     zMessageReadContent,
     zSpaceParticipantsUpdateContent,
     zSpaceTypingUpdateContent,
+    zSpaceBackgroundUpdateContent,
+    zSpaceProfileShareContent,
     zPollContent,
     zPollVoteContent,
     zPollUpdateContent
@@ -16273,7 +17793,6 @@ export type GroupContentZodOutput = z.output<typeof zGroupContent>;
 
 export const zContent: z.ZodType<PhotonWireTypes.Content, PhotonWireTypes.Content> = /* @__PURE__ */ (() => z.union([
     zTextContent,
-    zTextUpdateContent,
     zAttachmentContent,
     zVoiceContent,
     zReactionContent,
@@ -16281,10 +17800,13 @@ export const zContent: z.ZodType<PhotonWireTypes.Content, PhotonWireTypes.Conten
     zMessageReadContent,
     zSpaceParticipantsUpdateContent,
     zSpaceTypingUpdateContent,
+    zSpaceBackgroundUpdateContent,
+    zSpaceProfileShareContent,
     zPollContent,
     zPollVoteContent,
     zPollUpdateContent,
-    zGroupContent
+    zGroupContent,
+    zMessageUpdateContent
 ]))();
 
 export type ContentZodInput = z.input<typeof zContent>;
@@ -16449,7 +17971,6 @@ export type ReceivedUnknownMessageZodOutput = z.output<typeof zReceivedUnknownMe
 
 export const zSmsGroupContentPart: z.ZodType<PhotonWireTypes.SmsGroupContentPart, PhotonWireTypes.SmsGroupContentPart> = /* @__PURE__ */ (() => z.union([
     zTextContent,
-    zTextUpdateContent,
     zAttachmentContent,
     zVoiceContent,
     zReactionContent,
@@ -16457,6 +17978,8 @@ export const zSmsGroupContentPart: z.ZodType<PhotonWireTypes.SmsGroupContentPart
     zMessageReadContent,
     zSpaceParticipantsUpdateContent,
     zSpaceTypingUpdateContent,
+    zSpaceBackgroundUpdateContent,
+    zSpaceProfileShareContent,
     zPollContent,
     zPollVoteContent,
     zPollUpdateContent
@@ -16478,7 +18001,6 @@ export type SmsGroupContentZodOutput = z.output<typeof zSmsGroupContent>;
 
 export const zSmsMessageContent: z.ZodType<PhotonWireTypes.SmsMessageContent, PhotonWireTypes.SmsMessageContent> = /* @__PURE__ */ (() => z.union([
     zTextContent,
-    zTextUpdateContent,
     zAttachmentContent,
     zVoiceContent,
     zReactionContent,
@@ -16486,10 +18008,13 @@ export const zSmsMessageContent: z.ZodType<PhotonWireTypes.SmsMessageContent, Ph
     zMessageReadContent,
     zSpaceParticipantsUpdateContent,
     zSpaceTypingUpdateContent,
+    zSpaceBackgroundUpdateContent,
+    zSpaceProfileShareContent,
     zPollContent,
     zPollVoteContent,
     zPollUpdateContent,
-    zSmsGroupContent
+    zSmsGroupContent,
+    zMessageUpdateContent
 ]))();
 
 export type SmsMessageContentZodInput = z.input<typeof zSmsMessageContent>;
@@ -16678,7 +18203,6 @@ export type SendSpaceParticipantsUpdateContentZodOutput = z.output<typeof zSendS
 
 export const zSendContentPart: z.ZodType<PhotonWireTypes.SendContentPart, PhotonWireTypes.SendContentPart> = /* @__PURE__ */ (() => z.union([
     zSendTextContent,
-    zSendTextUpdateContent,
     zSendAttachmentContent,
     zSendVoiceContent,
     zSendReactionContent,
@@ -16686,6 +18210,8 @@ export const zSendContentPart: z.ZodType<PhotonWireTypes.SendContentPart, Photon
     zSendMessageReadContent,
     zSendSpaceParticipantsUpdateContent,
     zSendSpaceTypingUpdateContent,
+    zSendSpaceBackgroundUpdateContent,
+    zSendSpaceProfileShareContent,
     zSendPollContent,
     zSendPollVoteContent,
     zSendPollUpdateContent
@@ -16706,7 +18232,6 @@ export type SendGroupContentZodOutput = z.output<typeof zSendGroupContent>;
 
 export const zSendContent: z.ZodType<PhotonWireTypes.SendContent, PhotonWireTypes.SendContent> = /* @__PURE__ */ (() => z.union([
     zSendTextContent,
-    zSendTextUpdateContent,
     zSendAttachmentContent,
     zSendVoiceContent,
     zSendReactionContent,
@@ -16714,10 +18239,13 @@ export const zSendContent: z.ZodType<PhotonWireTypes.SendContent, PhotonWireType
     zSendMessageReadContent,
     zSendSpaceParticipantsUpdateContent,
     zSendSpaceTypingUpdateContent,
+    zSendSpaceBackgroundUpdateContent,
+    zSendSpaceProfileShareContent,
     zSendPollContent,
     zSendPollVoteContent,
     zSendPollUpdateContent,
-    zSendGroupContent
+    zSendGroupContent,
+    zSendMessageUpdateContent
 ]))();
 
 export type SendContentZodInput = z.input<typeof zSendContent>;
@@ -16739,7 +18267,6 @@ export type SendMessageRequestZodOutput = z.output<typeof zSendMessageRequest>;
 
 export const zWhatsappBusinessGroupContentPart: z.ZodType<PhotonWireTypes.WhatsappBusinessGroupContentPart, PhotonWireTypes.WhatsappBusinessGroupContentPart> = /* @__PURE__ */ (() => z.union([
     zTextContent,
-    zTextUpdateContent,
     zAttachmentContent,
     zVoiceContent,
     zReactionContent,
@@ -16747,6 +18274,8 @@ export const zWhatsappBusinessGroupContentPart: z.ZodType<PhotonWireTypes.Whatsa
     zMessageReadContent,
     zSpaceParticipantsUpdateContent,
     zSpaceTypingUpdateContent,
+    zSpaceBackgroundUpdateContent,
+    zSpaceProfileShareContent,
     zPollContent,
     zPollVoteContent,
     zPollUpdateContent
@@ -16768,7 +18297,6 @@ export type WhatsappBusinessGroupContentZodOutput = z.output<typeof zWhatsappBus
 
 export const zWhatsappBusinessMessageContent: z.ZodType<PhotonWireTypes.WhatsappBusinessMessageContent, PhotonWireTypes.WhatsappBusinessMessageContent> = /* @__PURE__ */ (() => z.union([
     zTextContent,
-    zTextUpdateContent,
     zAttachmentContent,
     zVoiceContent,
     zReactionContent,
@@ -16776,10 +18304,13 @@ export const zWhatsappBusinessMessageContent: z.ZodType<PhotonWireTypes.Whatsapp
     zMessageReadContent,
     zSpaceParticipantsUpdateContent,
     zSpaceTypingUpdateContent,
+    zSpaceBackgroundUpdateContent,
+    zSpaceProfileShareContent,
     zPollContent,
     zPollVoteContent,
     zPollUpdateContent,
-    zWhatsappBusinessGroupContent
+    zWhatsappBusinessGroupContent,
+    zMessageUpdateContent
 ]))();
 
 export type WhatsappBusinessMessageContentZodInput = z.input<typeof zWhatsappBusinessMessageContent>;
@@ -16920,7 +18451,6 @@ export type WhatsappBusinessMessageZodOutput = z.output<typeof zWhatsappBusiness
 
 export const zWhatsappGroupContentPart: z.ZodType<PhotonWireTypes.WhatsappGroupContentPart, PhotonWireTypes.WhatsappGroupContentPart> = /* @__PURE__ */ (() => z.union([
     zTextContent,
-    zTextUpdateContent,
     zAttachmentContent,
     zVoiceContent,
     zReactionContent,
@@ -16928,6 +18458,8 @@ export const zWhatsappGroupContentPart: z.ZodType<PhotonWireTypes.WhatsappGroupC
     zMessageReadContent,
     zSpaceParticipantsUpdateContent,
     zSpaceTypingUpdateContent,
+    zSpaceBackgroundUpdateContent,
+    zSpaceProfileShareContent,
     zPollContent,
     zPollVoteContent,
     zPollUpdateContent
@@ -16949,7 +18481,6 @@ export type WhatsappGroupContentZodOutput = z.output<typeof zWhatsappGroupConten
 
 export const zWhatsappMessageContent: z.ZodType<PhotonWireTypes.WhatsappMessageContent, PhotonWireTypes.WhatsappMessageContent> = /* @__PURE__ */ (() => z.union([
     zTextContent,
-    zTextUpdateContent,
     zAttachmentContent,
     zVoiceContent,
     zReactionContent,
@@ -16957,10 +18488,13 @@ export const zWhatsappMessageContent: z.ZodType<PhotonWireTypes.WhatsappMessageC
     zMessageReadContent,
     zSpaceParticipantsUpdateContent,
     zSpaceTypingUpdateContent,
+    zSpaceBackgroundUpdateContent,
+    zSpaceProfileShareContent,
     zPollContent,
     zPollVoteContent,
     zPollUpdateContent,
-    zWhatsappGroupContent
+    zWhatsappGroupContent,
+    zMessageUpdateContent
 ]))();
 
 export type WhatsappMessageContentZodInput = z.input<typeof zWhatsappMessageContent>;
@@ -17170,6 +18704,51 @@ export type GetWhatsappBusinessVerificationCodeNotFoundProblemZodInput = z.input
 
 export type GetWhatsappBusinessVerificationCodeNotFoundProblemZodOutput = z.output<typeof zGetWhatsappBusinessVerificationCodeNotFoundProblem>;
 
+export const zWhatsappVerificationRefusedProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('WHATSAPP_VERIFICATION_REFUSED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: absent().optional(),
+    requestId: z.string().optional(),
+    status: z.literal(422),
+    title: z.literal('WhatsApp Verification Refused'),
+    type: z.literal('https://photon.codes/docs/problems/whatsapp-verification-refused')
+}).catchall(zJsonValue))();
+
+export type WhatsappVerificationRefusedProblemZodInput = z.input<typeof zWhatsappVerificationRefusedProblem>;
+
+export type WhatsappVerificationRefusedProblemZodOutput = z.output<typeof zWhatsappVerificationRefusedProblem>;
+
+export const zWhatsappVerificationRequestRefusedProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('WHATSAPP_VERIFICATION_REQUEST_REFUSED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: absent().optional(),
+    requestId: z.string().optional(),
+    status: z.literal(422),
+    title: z.literal('WhatsApp Verification Request Refused'),
+    type: z.literal('https://photon.codes/docs/problems/whatsapp-verification-request-refused')
+}).catchall(zJsonValue))();
+
+export type WhatsappVerificationRequestRefusedProblemZodInput = z.input<typeof zWhatsappVerificationRequestRefusedProblem>;
+
+export type WhatsappVerificationRequestRefusedProblemZodOutput = z.output<typeof zWhatsappVerificationRequestRefusedProblem>;
+
+export const zWhatsappVerificationTimedOutProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('WHATSAPP_VERIFICATION_TIMED_OUT'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: zProblemRemediation,
+    requestId: z.string().optional(),
+    status: z.literal(504),
+    title: z.literal('WhatsApp Verification Timed Out'),
+    type: z.literal('https://photon.codes/docs/problems/whatsapp-verification-timed-out')
+}).catchall(zJsonValue))();
+
+export type WhatsappVerificationTimedOutProblemZodInput = z.input<typeof zWhatsappVerificationTimedOutProblem>;
+
+export type WhatsappVerificationTimedOutProblemZodOutput = z.output<typeof zWhatsappVerificationTimedOutProblem>;
+
 export const zWhatsappVerificationWindowExpiredProblem = /* @__PURE__ */ (() => z.object({
     code: z.literal('WHATSAPP_VERIFICATION_WINDOW_EXPIRED'),
     detail: z.string().optional(),
@@ -17193,6 +18772,21 @@ export const zGetWhatsappBusinessVerificationCodeUnprocessableEntityProblem: z.Z
 export type GetWhatsappBusinessVerificationCodeUnprocessableEntityProblemZodInput = z.input<typeof zGetWhatsappBusinessVerificationCodeUnprocessableEntityProblem>;
 
 export type GetWhatsappBusinessVerificationCodeUnprocessableEntityProblemZodOutput = z.output<typeof zGetWhatsappBusinessVerificationCodeUnprocessableEntityProblem>;
+
+export const zWhatsappVoipSourceActivatingProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('WHATSAPP_VOIP_SOURCE_ACTIVATING'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: zProblemRemediation,
+    requestId: z.string().optional(),
+    status: z.literal(409),
+    title: z.literal('WhatsApp VoIP Source Activating'),
+    type: z.literal('https://photon.codes/docs/problems/whatsapp-voip-source-activating')
+}).catchall(zJsonValue))();
+
+export type WhatsappVoipSourceActivatingProblemZodInput = z.input<typeof zWhatsappVoipSourceActivatingProblem>;
+
+export type WhatsappVoipSourceActivatingProblemZodOutput = z.output<typeof zWhatsappVoipSourceActivatingProblem>;
 
 export const zWhatsappVoipSourceNotEligibleProblem = /* @__PURE__ */ (() => z.object({
     code: z.literal('WHATSAPP_VOIP_SOURCE_NOT_ELIGIBLE'),
@@ -17226,8 +18820,10 @@ export type WhatsappVoipSourceReleasingProblemZodOutput = z.output<typeof zWhats
 
 export const zCreateWhatsappVoipSenderConflictProblem: z.ZodType<PhotonWireTypes.CreateWhatsappVoipSenderConflictProblem, PhotonWireTypes.CreateWhatsappVoipSenderConflictProblem> = /* @__PURE__ */ (() => z.union([
     zProjectClosingProblem,
+    zProjectInitializingProblem,
     zWhatsappAccountDisconnectingProblem,
     zWhatsappAccountProvisioningProblem,
+    zWhatsappVoipSourceActivatingProblem,
     zWhatsappSenderConnectedProblem,
     zWhatsappSenderProvisioningProblem,
     zWhatsappVoipSourceReleasingProblem
@@ -17236,6 +18832,114 @@ export const zCreateWhatsappVoipSenderConflictProblem: z.ZodType<PhotonWireTypes
 export type CreateWhatsappVoipSenderConflictProblemZodInput = z.input<typeof zCreateWhatsappVoipSenderConflictProblem>;
 
 export type CreateWhatsappVoipSenderConflictProblemZodOutput = z.output<typeof zCreateWhatsappVoipSenderConflictProblem>;
+
+export const zWhatsappWabaAlreadyConnectedProblem = /* @__PURE__ */ (() => z.object({
+    code: z.literal('WHATSAPP_WABA_ALREADY_CONNECTED'),
+    detail: z.string().optional(),
+    instance: z.string().optional(),
+    remediation: zProblemRemediation,
+    requestId: z.string().optional(),
+    status: z.literal(409),
+    title: z.literal('WhatsApp WABA Already Connected'),
+    type: z.literal('https://photon.codes/docs/problems/whatsapp-waba-already-connected')
+}).catchall(zJsonValue))();
+
+export type WhatsappWabaAlreadyConnectedProblemZodInput = z.input<typeof zWhatsappWabaAlreadyConnectedProblem>;
+
+export type WhatsappWabaAlreadyConnectedProblemZodOutput = z.output<typeof zWhatsappWabaAlreadyConnectedProblem>;
+
+/**
+ * Why the operation failed: the problem of its `code`, the same object the endpoint returns when it rejects a request, with the `status` that rejection would have had (the poll itself answers 200). Every code an operation can end with is a branch below, and the endpoint that starts the operation lists its codes. Branch on `code`, never on `status`, and keep a default: a code added after your client was generated arrives as a generic problem with `type: about:blank` and `status: 500`. That 500 means this document does not describe the code yet, not that the request failed on our side or that retrying will help.
+ */
+export const zOperationError: z.ZodType<PhotonWireTypes.OperationError, PhotonWireTypes.OperationError> = /* @__PURE__ */ (() => z.union([
+    zChargeRefusedProblem,
+    zEmailDomainProviderRejectedProblem,
+    zEmailDomainReleaseFailedProblem,
+    zEmailDomainVerificationFailedProblem,
+    zEmailDomainVerificationTimedOutProblem,
+    zEmailTenantSetupTimedOutProblem,
+    zEnterprisePlanRequiredProblem,
+    zEntitlementRequiredProblem,
+    zNumberInventoryUnavailableProblem,
+    zNumberOrderFailedProblem,
+    zNumberOrderReconciliationRequiredProblem,
+    zNumberReleaseFailedProblem,
+    zNumberSearchFailedProblem,
+    zResourceNotFoundProblem,
+    zSmsCampaignProviderRejectedProblem,
+    zSmsCampaignReconciliationRequiredProblem,
+    zSmsCampaignRevokedProblem,
+    zTelegramConfigurationFailedProblem,
+    zTelegramReleaseFailedProblem,
+    zWhatsappAccountDisconnectFailedProblem,
+    zWhatsappAuthorizationRevokedProblem,
+    zWhatsappCodeExchangeFailedProblem,
+    zWhatsappCosmosLineNotSupportedProblem,
+    zWhatsappDisplayNameConflictProblem,
+    zWhatsappEmbeddedSignupPhoneLookupFailedProblem,
+    zWhatsappEmbeddedSignupPhoneNotFoundProblem,
+    zWhatsappEmbeddedSignupPhoneNotVerifiedProblem,
+    zWhatsappEmbeddedSignupWabaNotAuthorizedProblem,
+    zWhatsappNumberAddRefusedProblem,
+    zWhatsappNumberLookupFailedProblem,
+    zWhatsappProjectWabaAlreadyConnectedProblem,
+    zWhatsappRegistrationRefusedProblem,
+    zWhatsappSenderConnectedProblem,
+    zWhatsappSenderProvisioningProblem,
+    zWhatsappSenderReleaseFailedProblem,
+    zWhatsappSignupExpiredProblem,
+    zWhatsappSubscriptionRefusedProblem,
+    zWhatsappVerificationRefusedProblem,
+    zWhatsappVerificationRequestRefusedProblem,
+    zWhatsappVerificationTimedOutProblem,
+    zWhatsappVoipSourceNotEligibleProblem,
+    zWhatsappVoipSourceReleasingProblem,
+    zWhatsappWabaAlreadyConnectedProblem,
+    zProblemDetails
+]))();
+
+export type OperationErrorZodInput = z.input<typeof zOperationError>;
+
+export type OperationErrorZodOutput = z.output<typeof zOperationError>;
+
+export const zOperation = /* @__PURE__ */ (() => z.looseObject({
+    cancellable: z.boolean(),
+    createdAt: z.string(),
+    detail: z.looseObject({}).optional(),
+    endedAt: z.string().optional(),
+    error: zOperationError.optional(),
+    operationId: z.string(),
+    projectId: z.string(),
+    reason: zOperationReason.optional(),
+    resourceId: z.string().optional(),
+    resourceType: z.string(),
+    startedAt: z.string().optional(),
+    state: zOperationState,
+    type: zOperationType,
+    updatedAt: z.string()
+}))();
+
+export type OperationZodInput = z.input<typeof zOperation>;
+
+export type OperationZodOutput = z.output<typeof zOperation>;
+
+export const zGetOperationResponse = /* @__PURE__ */ (() => z.looseObject({
+    operation: zOperation,
+    resource: zResource.optional()
+}))();
+
+export type GetOperationResponseZodInput = z.input<typeof zGetOperationResponse>;
+
+export type GetOperationResponseZodOutput = z.output<typeof zGetOperationResponse>;
+
+export const zOperationPage = /* @__PURE__ */ (() => z.looseObject({
+    nextPageToken: z.string().optional(),
+    operations: z.array(zOperation)
+}))();
+
+export type OperationPageZodInput = z.input<typeof zOperationPage>;
+
+export type OperationPageZodOutput = z.output<typeof zOperationPage>;
 
 export const zWhatsappWabaNotConnectedProblem = /* @__PURE__ */ (() => z.object({
     code: z.literal('WHATSAPP_WABA_NOT_CONNECTED'),
@@ -17261,12 +18965,20 @@ export type CreateWhatsappVoipSenderNotFoundProblemZodInput = z.input<typeof zCr
 
 export type CreateWhatsappVoipSenderNotFoundProblemZodOutput = z.output<typeof zCreateWhatsappVoipSenderNotFoundProblem>;
 
+export const zDeleteAccountHeaders = /* @__PURE__ */ (() => z.looseObject({
+    'Photon-Version': zPhotonVersion.optional()
+}))();
+
 /**
  * The deleted account tombstone.
  */
 export const zDeleteAccountResult = zAccount;
 
 export type deleteAccountResultZodOutput = z.output<typeof zDeleteAccountResult>;
+
+export const zGetAccountHeaders = /* @__PURE__ */ (() => z.looseObject({
+    'Photon-Version': zPhotonVersion.optional()
+}))();
 
 /**
  * The authenticated account.
@@ -17278,6 +18990,7 @@ export type getAccountResultZodOutput = z.output<typeof zGetAccountResult>;
 export const zUpdateAccountBody = zUpdateAccountRequest;
 
 export const zUpdateAccountHeaders = /* @__PURE__ */ (() => z.looseObject({
+    'Photon-Version': zPhotonVersion.optional(),
     'Idempotency-Key': z.string()
 }))();
 
@@ -17314,6 +19027,7 @@ export const zRevokeAuthorizedApplicationResult = /* @__PURE__ */ (() => z.void(
 export type revokeAuthorizedApplicationResultZodOutput = z.output<typeof zRevokeAuthorizedApplicationResult>;
 
 export const zResetAccountProfilePictureHeaders = /* @__PURE__ */ (() => z.looseObject({
+    'Photon-Version': zPhotonVersion.optional(),
     'Idempotency-Key': z.string()
 }))();
 
@@ -17327,6 +19041,7 @@ export type resetAccountProfilePictureResultZodOutput = z.output<typeof zResetAc
 export const zCommitAccountProfilePictureBody = zCommitAccountProfilePictureRequest;
 
 export const zCommitAccountProfilePictureHeaders = /* @__PURE__ */ (() => z.looseObject({
+    'Photon-Version': zPhotonVersion.optional(),
     'Idempotency-Key': z.string()
 }))();
 
@@ -17339,12 +19054,20 @@ export type commitAccountProfilePictureResultZodOutput = z.output<typeof zCommit
 
 export const zCreateAccountProfilePictureUploadBody = zProfilePictureUploadRequest;
 
+export const zCreateAccountProfilePictureUploadHeaders = /* @__PURE__ */ (() => z.looseObject({
+    'Photon-Version': zPhotonVersion.optional()
+}))();
+
 /**
  * A short-lived, Account-bound presigned S3 POST.
  */
 export const zCreateAccountProfilePictureUploadResult = zProfilePictureUpload;
 
 export type createAccountProfilePictureUploadResultZodOutput = z.output<typeof zCreateAccountProfilePictureUploadResult>;
+
+export const zListAccountServiceKeysHeaders = /* @__PURE__ */ (() => z.looseObject({
+    'Photon-Version': zPhotonVersion.optional()
+}))();
 
 /**
  * Unrevoked Account Service Key metadata, including expired keys, newest first.
@@ -17356,6 +19079,7 @@ export type listAccountServiceKeysResultZodOutput = z.output<typeof zListAccount
 export const zCreateAccountServiceKeyBody = zCreateAccountServiceKeyRequest;
 
 export const zCreateAccountServiceKeyHeaders = /* @__PURE__ */ (() => z.looseObject({
+    'Photon-Version': zPhotonVersion.optional(),
     'Idempotency-Key': z.string()
 }))();
 
@@ -17367,6 +19091,7 @@ export const zCreateAccountServiceKeyResult = zCreateAccountServiceKeyResponse;
 export type createAccountServiceKeyResultZodOutput = z.output<typeof zCreateAccountServiceKeyResult>;
 
 export const zRevokeAccountServiceKeyHeaders = /* @__PURE__ */ (() => z.looseObject({
+    'Photon-Version': zPhotonVersion.optional(),
     'Idempotency-Key': z.string()
 }))();
 
@@ -17399,15 +19124,6 @@ export const zDeviceTokenBody = zDeviceTokenRequest;
 export const zDeviceTokenResult = zDeviceTokenResponse;
 
 export type deviceTokenResultZodOutput = z.output<typeof zDeviceTokenResult>;
-
-export const zStartEnterpriseLoginBody = zStartEnterpriseLoginRequest;
-
-/**
- * Company SSO URL when the target has a ready connection, otherwise the ordinary Account login URL. The response never says which, and access is decided only after authentication.
- */
-export const zStartEnterpriseLoginResult = zStartEnterpriseLoginResponse;
-
-export type startEnterpriseLoginResultZodOutput = z.output<typeof zStartEnterpriseLoginResult>;
 
 /**
  * The configurable OAuth business permissions.
@@ -17547,17 +19263,6 @@ export type createOrganizationResultZodOutput = z.output<typeof zCreateOrganizat
 export const zGetCurrentOrganizationResult = zGetCurrentOrganizationResponse;
 
 export type getCurrentOrganizationResultZodOutput = z.output<typeof zGetCurrentOrganizationResult>;
-
-export const zEnsureInitialOrganizationHeaders = /* @__PURE__ */ (() => z.looseObject({
-    'Idempotency-Key': z.string()
-}))();
-
-/**
- * Creates the caller's first owned organization, once per account. Never recreated after it is deleted or transferred.
- */
-export const zEnsureInitialOrganizationResult = zEnsureInitialOrganizationResponse;
-
-export type ensureInitialOrganizationResultZodOutput = z.output<typeof zEnsureInitialOrganizationResult>;
 
 export const zAcceptOrganizationInvitationBody = zAcceptOrganizationInvitationRequest;
 
@@ -18363,6 +20068,52 @@ export const zTransferOrganizationOwnershipResult = zTransferOrganizationOwnersh
 
 export type transferOrganizationOwnershipResultZodOutput = z.output<typeof zTransferOrganizationOwnershipResult>;
 
+export const zGetTenDlcBrandOtpPath = /* @__PURE__ */ (() => z.looseObject({
+    brandId: z.string(),
+    organization_id: z.string()
+}))();
+
+/**
+ * The redacted OTP status.
+ */
+export const zGetTenDlcBrandOtpResult = zGetTenDlcBrandOtpResponse;
+
+export type getTenDlcBrandOtpResultZodOutput = z.output<typeof zGetTenDlcBrandOtpResult>;
+
+export const zTriggerTenDlcBrandOtpHeaders = /* @__PURE__ */ (() => z.looseObject({
+    'Idempotency-Key': z.string()
+}))();
+
+export const zTriggerTenDlcBrandOtpPath = /* @__PURE__ */ (() => z.looseObject({
+    brandId: z.string(),
+    organization_id: z.string()
+}))();
+
+/**
+ * OTP delivery was accepted.
+ */
+export const zTriggerTenDlcBrandOtpResult = zTriggerTenDlcBrandOtpResponse;
+
+export type triggerTenDlcBrandOtpResultZodOutput = z.output<typeof zTriggerTenDlcBrandOtpResult>;
+
+export const zVerifyTenDlcBrandOtpBody = zVerifyTenDlcBrandOtpRequest;
+
+export const zVerifyTenDlcBrandOtpHeaders = /* @__PURE__ */ (() => z.looseObject({
+    'Idempotency-Key': z.string()
+}))();
+
+export const zVerifyTenDlcBrandOtpPath = /* @__PURE__ */ (() => z.looseObject({
+    brandId: z.string(),
+    organization_id: z.string()
+}))();
+
+/**
+ * The updated redacted OTP status.
+ */
+export const zVerifyTenDlcBrandOtpResult = zVerifyTenDlcBrandOtpResponse;
+
+export type verifyTenDlcBrandOtpResultZodOutput = z.output<typeof zVerifyTenDlcBrandOtpResult>;
+
 export const zListAttachmentsPath = /* @__PURE__ */ (() => z.looseObject({
     id: z.string()
 }))();
@@ -18708,6 +20459,8 @@ export const zGetSharedLineAssignmentPath = /* @__PURE__ */ (() => z.looseObject
 export const zGetSharedLineAssignmentResult = zSharedLineAssignment;
 
 export type getSharedLineAssignmentResultZodOutput = z.output<typeof zGetSharedLineAssignmentResult>;
+
+export const zProvisionImessageDedicatedLineBody = zProvisionImessageDedicatedLineRequest;
 
 export const zProvisionImessageDedicatedLineHeaders = /* @__PURE__ */ (() => z.looseObject({
     'Idempotency-Key': z.string()
@@ -19384,6 +21137,8 @@ export const zGetWhatsappSharedLineAssignmentPath = /* @__PURE__ */ (() => z.loo
 export const zGetWhatsappSharedLineAssignmentResult = zSharedLineAssignment;
 
 export type getWhatsappSharedLineAssignmentResultZodOutput = z.output<typeof zGetWhatsappSharedLineAssignmentResult>;
+
+export const zProvisionWhatsappDedicatedLineBody = zProvisionWhatsappDedicatedLineRequest;
 
 export const zProvisionWhatsappDedicatedLineHeaders = /* @__PURE__ */ (() => z.looseObject({
     'Idempotency-Key': z.string()

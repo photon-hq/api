@@ -6,7 +6,7 @@ description: "Change plan: changePlan in the TypeScript, Python, Rust and Go cli
 
 `POST /v1/organizations/{organizationId}/billing/projects/{projectId}/purchase`
 
-Purchases or changes the selected project's plan for the supplied category and planCode. A 202 response means the change is pending: poll the returned operation URL and honor Retry-After until it succeeds or fails. A 200 response means the idempotency key resolved to an operation that is already terminal; inspect that result rather than assuming success from the status code alone. Supply the required Idempotency-Key header. Supply both organizationId and projectId to select the project within its organization.
+Purchases or changes the selected project's plan for the supplied category and planCode, redeeming promotionCode when given. A 202 response means the change is pending: poll the returned operation URL and honor Retry-After until it succeeds or fails. A 200 response means the idempotency key resolved to an operation that is already terminal; inspect that result rather than assuming success from the status code alone. Supply the required Idempotency-Key header. Supply both organizationId and projectId to select the project within its organization.
 
 <Tabs>
 <Tab title="TypeScript">
@@ -187,6 +187,10 @@ Category slug, e.g. analytics or messaging.
 
 <ParamField body="planCode" type={"string"} required>
 Plan to subscribe to, e.g. analytics_pro.
+</ParamField>
+
+<ParamField body="promotionCode" type={"string"}>
+A promotion code the customer entered, matched ignoring case. It is redeemed with the change, which only an upgrade or a first plan can carry; a refused code fails the operation with code promotion_code_rejected and changes nothing. Coupons the project already has stay and stack.
 </ParamField>
 
 

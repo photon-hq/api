@@ -6,7 +6,7 @@ description: "Remove an organization avatar: removeOrganizationAvatar in the Typ
 
 `DELETE /v1/organizations/{organizationId}/avatar`
 
-
+Removes the organization's custom avatar, so avatarUrl becomes null, and returns the organization with its new version. Owners and Admins can call it with account credentials. Send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header.
 
 <Tabs>
 <Tab title="TypeScript">

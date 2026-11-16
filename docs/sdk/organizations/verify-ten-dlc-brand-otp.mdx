@@ -1,0 +1,175 @@
+---
+title: "Verify sole-proprietor OTP"
+icon: pencil
+description: "Verify sole-proprietor OTP: verifyTenDlcBrandOtp in the TypeScript, Python, Rust and Go clients."
+---
+
+`PUT /v1/organizations/{organization_id}/10dlc/brands/{brandId}/otp`
+
+Submits otpPin for the selected organization-owned sole-proprietor brand and returns its updated, redacted verification state. A rejected code, a locked verification flow, or rate limiting is reported as an error; read the current OTP status before deciding whether to request another code. Supply the required Idempotency-Key header. Supply organization_id for the organization that owns the registration.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.verifyTenDlcBrandOtp(input: VerifyTenDlcBrandOtpInput, options?: RequestOptions): Promise<VerifyTenDlcBrandOtpOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.verify_ten_dlc_brand_otp(input: VerifyTenDlcBrandOtpInput) -> models.VerifyTenDlcBrandOtpResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.verify_ten_dlc_brand_otp(idempotency_key: String, brand_id: String, organization_id: String, body: &types::VerifyTenDlcBrandOtpRequest).await -> Result<ResponseValue<types::VerifyTenDlcBrandOtpResponse>, Error<VerifyTenDlcBrandOtpError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.VerifyTenDlcBrandOtp(ctx context.Context, params *VerifyTenDlcBrandOtpParams, opts ...RequestOption) (*VerifyTenDlcBrandOtpResponse, error)
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.verifyTenDlcBrandOtp({
+  path: {
+    brandId: "brandId",
+    organization_id: "organization_id",
+  },
+  headers: {
+    idempotencyKey: "idempotencyKey",
+  },
+  body: {
+    otpPin: "otpPin",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import VerifyTenDlcBrandOtpInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.verify_ten_dlc_brand_otp(
+    VerifyTenDlcBrandOtpInput.model_validate({
+        "path": {
+            "brandId": "brandId",
+            "organization_id": "organization_id",
+        },
+        "headers": {
+            "Idempotency-Key": "idempotencyKey",
+        },
+        "body": {
+            "otpPin": "otpPin",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .verify_ten_dlc_brand_otp(
+        "idempotencyKey".to_owned(),
+        "brandId".to_owned(),
+        "organization_id".to_owned(),
+        &serde_json::from_value(serde_json::json!({
+            "otpPin": "otpPin",
+        }))?,
+    )
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"encoding/json"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+var body photonapi.VerifyTenDlcBrandOtpRequest
+if err := json.Unmarshal([]byte(`{
+	"otpPin": "otpPin"
+}`), &body); err != nil {
+	return err
+}
+result, err := client.Organizations.VerifyTenDlcBrandOtp(ctx, &photonapi.VerifyTenDlcBrandOtpParams{
+	IdempotencyKey: "idempotencyKey",
+	BrandID: "brandId",
+	OrganizationID: "organization_id",
+	Body: body,
+})
+if err != nil {
+	return err
+}
+_ = result
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "data": {
+    "attemptsRemaining": 0,
+    "brandId": "string",
+    "expiresAt": "2026-01-01T00:00:00.000Z",
+    "phoneLast4": "string",
+    "retryAfterSeconds": 0,
+    "status": "not_requested"
+  }
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField header="Idempotency-Key" type={"string"} required>
+Identifies one logical mutation across retries.
+</ParamField>
+
+<ParamField path="brandId" type={"string"} required>
+
+</ParamField>
+
+<ParamField path="organization_id" type={"string"} required>
+
+</ParamField>
+
+
+## Body
+
+<ParamField body="otpPin" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The updated redacted OTP status. VerifyTenDlcBrandOtpResponse
+
+<ResponseField name="data" type={"TenDlcBrandOtp"} required>
+
+</ResponseField>
+

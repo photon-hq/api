@@ -6,7 +6,7 @@ description: "Delete organization: closeOrganization in the TypeScript, Python, 
 
 `DELETE /v1/organizations/{organizationId}`
 
-
+Deletes the organization: it leaves normal access when the call returns 204, and Photon then releases its app installations, registrations and billing subscriptions in the background. It cannot be undone and needs no active projects, nothing owed, and the expectedVersion from checkOrganizationDeletion; a blocked or stale request returns 409. Only the Owner can call it, with account credentials (in an organization that requires SSO, a session signed in through SSO) and the required Idempotency-Key header.
 
 <Tabs>
 <Tab title="TypeScript">

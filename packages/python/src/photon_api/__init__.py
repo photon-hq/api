@@ -6,6 +6,7 @@ from .errors import (
     TransportError,
 )
 from .transport import RawResponse
+from .webhooks import WebhookVerificationError, verify_webhook
 
 __all__ = [
     "ApiError",
@@ -15,4 +16,6 @@ __all__ = [
     "RawResponse",
     "ResponseValidationError",
     "TransportError",
+    "WebhookVerificationError",
+    "verify_webhook",
 ]
