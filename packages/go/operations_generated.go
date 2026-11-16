@@ -136,12 +136,6 @@ type DeleteOrganizationOauthClientSecretParams struct {
 	ClientID string
 }
 
-// EnsureInitialOrganizationParams holds the parameters of EnsureInitialOrganization.
-type EnsureInitialOrganizationParams struct {
-	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
-	IdempotencyKey string
-}
-
 // GetOrganizationParams holds the parameters of GetOrganization.
 type GetOrganizationParams struct {
 	// OrganizationID is the path parameter organizationId.
@@ -175,6 +169,14 @@ type GetServiceIdentityParams struct {
 // GetSsoSubscriptionParams holds the parameters of GetSsoSubscription.
 type GetSsoSubscriptionParams struct {
 	// OrganizationID is the path parameter organizationId.
+	OrganizationID string
+}
+
+// GetTenDlcBrandOtpParams holds the parameters of GetTenDlcBrandOtp.
+type GetTenDlcBrandOtpParams struct {
+	// BrandID is the path parameter brandId.
+	BrandID string
+	// OrganizationID is the path parameter organization_id.
 	OrganizationID string
 }
 
@@ -360,6 +362,16 @@ type TransferOrganizationOwnershipParams struct {
 	Body TransferOrganizationOwnershipRequest
 }
 
+// TriggerTenDlcBrandOtpParams holds the parameters of TriggerTenDlcBrandOtp.
+type TriggerTenDlcBrandOtpParams struct {
+	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
+	IdempotencyKey string
+	// BrandID is the path parameter brandId.
+	BrandID string
+	// OrganizationID is the path parameter organization_id.
+	OrganizationID string
+}
+
 // UpdateOrganizationParams holds the parameters of UpdateOrganization.
 type UpdateOrganizationParams struct {
 	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
@@ -404,6 +416,18 @@ type UpdateServiceIdentityParams struct {
 	ServiceIdentityID string
 	// Body is the request body.
 	Body UpdateServiceIdentityRequest
+}
+
+// VerifyTenDlcBrandOtpParams holds the parameters of VerifyTenDlcBrandOtp.
+type VerifyTenDlcBrandOtpParams struct {
+	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
+	IdempotencyKey string
+	// BrandID is the path parameter brandId.
+	BrandID string
+	// OrganizationID is the path parameter organization_id.
+	OrganizationID string
+	// Body is the request body.
+	Body VerifyTenDlcBrandOtpRequest
 }
 
 // ChangePlanResponse is the body of ChangePlan: one schema per success status.
@@ -1494,6 +1518,8 @@ type ProvisionImessageDedicatedLineParams struct {
 	IdempotencyKey string
 	// ID is the path parameter id.
 	ID string
+	// Body is the request body.
+	Body ProvisionImessageDedicatedLineRequest
 }
 
 // ProvisionWhatsappDedicatedLineParams holds the parameters of ProvisionWhatsappDedicatedLine.
@@ -1502,6 +1528,8 @@ type ProvisionWhatsappDedicatedLineParams struct {
 	IdempotencyKey string
 	// ID is the path parameter id.
 	ID string
+	// Body is the request body.
+	Body ProvisionWhatsappDedicatedLineRequest
 }
 
 // PurchaseSmsNumberParams holds the parameters of PurchaseSmsNumber.
@@ -1736,6 +1764,8 @@ type ListProjectSubscriptionsParams struct {
 
 // CommitAccountProfilePictureParams holds the parameters of CommitProfilePicture.
 type CommitAccountProfilePictureParams struct {
+	// PhotonVersion is the header parameter Photon-Version.
+	PhotonVersion *PhotonVersion
 	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
 	IdempotencyKey string
 	// Body is the request body.
@@ -1744,16 +1774,38 @@ type CommitAccountProfilePictureParams struct {
 
 // CreateAccountProfilePictureUploadParams holds the parameters of CreateProfilePictureUpload.
 type CreateAccountProfilePictureUploadParams struct {
+	// PhotonVersion is the header parameter Photon-Version.
+	PhotonVersion *PhotonVersion
 	// Body is the request body.
 	Body ProfilePictureUploadRequest
 }
 
 // CreateAccountServiceKeyParams holds the parameters of CreateAccountServiceKey.
 type CreateAccountServiceKeyParams struct {
+	// PhotonVersion is the header parameter Photon-Version.
+	PhotonVersion *PhotonVersion
 	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
 	IdempotencyKey string
 	// Body is the request body.
 	Body CreateAccountServiceKeyRequest
+}
+
+// DeleteAccountParams holds the parameters of Delete.
+type DeleteAccountParams struct {
+	// PhotonVersion is the header parameter Photon-Version.
+	PhotonVersion *PhotonVersion
+}
+
+// GetAccountParams holds the parameters of Get.
+type GetAccountParams struct {
+	// PhotonVersion is the header parameter Photon-Version.
+	PhotonVersion *PhotonVersion
+}
+
+// ListAccountServiceKeysParams holds the parameters of ListAccountServiceKeys.
+type ListAccountServiceKeysParams struct {
+	// PhotonVersion is the header parameter Photon-Version.
+	PhotonVersion *PhotonVersion
 }
 
 // ListAuthorizedApplicationsParams holds the parameters of ListAuthorizedApplications.
@@ -1770,12 +1822,16 @@ type ListAuthorizedApplicationsParams struct {
 
 // ResetAccountProfilePictureParams holds the parameters of ResetProfilePicture.
 type ResetAccountProfilePictureParams struct {
+	// PhotonVersion is the header parameter Photon-Version.
+	PhotonVersion *PhotonVersion
 	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
 	IdempotencyKey string
 }
 
 // RevokeAccountServiceKeyParams holds the parameters of RevokeAccountServiceKey.
 type RevokeAccountServiceKeyParams struct {
+	// PhotonVersion is the header parameter Photon-Version.
+	PhotonVersion *PhotonVersion
 	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
 	IdempotencyKey string
 	// ServiceKeyID is the path parameter serviceKeyId.
@@ -1790,6 +1846,8 @@ type RevokeAuthorizedApplicationParams struct {
 
 // UpdateAccountParams holds the parameters of Update.
 type UpdateAccountParams struct {
+	// PhotonVersion is the header parameter Photon-Version.
+	PhotonVersion *PhotonVersion
 	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
 	IdempotencyKey string
 	// Body is the request body.
@@ -1850,12 +1908,6 @@ type RetryOrganizationConnectionSyncParams struct {
 	OrgID string
 }
 
-// StartEnterpriseLoginParams holds the parameters of StartEnterpriseLogin.
-type StartEnterpriseLoginParams struct {
-	// Body is the request body.
-	Body StartEnterpriseLoginRequest
-}
-
 // UpdateOrganizationSsoPolicyParams holds the parameters of UpdateOrganizationSsoPolicy.
 type UpdateOrganizationSsoPolicyParams struct {
 	// OrgID is the path parameter orgId.
@@ -1905,6 +1957,8 @@ func newOrganizationsService(c *core) *OrganizationsService {
 }
 
 // Accept an invitation to all organization projects
+//
+// Accepts an invitation by its token and adds the signed-in account to the organization with the invited role. An existing member keeps their role, except a Viewer who joined through SSO just-in-time provisioning and whose role has never been changed, who takes the invited role; a removed member can rejoin only with an invitation created after the removal, else 409. The account's verified email must match the invited address, the invitation must be pending and unexpired, and its inviter must still be an Owner or Admin; in an organization that requires SSO it returns 403, because the invitee joins by signing in through that SSO instead. Call it with account credentials acting as the account itself and supply the required Idempotency-Key header.
 func (s *OrganizationsService) AcceptOrganizationInvitation(ctx context.Context, params *AcceptOrganizationInvitationParams, opts ...RequestOption) (*AcceptOrganizationInvitationResponse, error) {
 	if params == nil {
 		params = &AcceptOrganizationInvitationParams{}
@@ -1921,6 +1975,8 @@ func (s *OrganizationsService) AcceptOrganizationInvitation(ctx context.Context,
 }
 
 // Cancel the SSO subscription
+//
+// Cancels the organization's SSO subscription at once, but only after SSO has been turned off: while SSO is still required it returns 409. The unused days become organization credit, and SSO setup closes. Only Owners and Admins can call it, with account credentials and the required Idempotency-Key header.
 func (s *OrganizationsService) CancelSsoSubscription(ctx context.Context, params *CancelSsoSubscriptionParams, opts ...RequestOption) (*CancelSsoSubscriptionResponse, error) {
 	if params == nil {
 		params = &CancelSsoSubscriptionParams{}
@@ -1937,6 +1993,8 @@ func (s *OrganizationsService) CancelSsoSubscription(ctx context.Context, params
 }
 
 // Check organization deletion prerequisites
+//
+// Reports whether the organization can be deleted now (canDelete), the blockers to clear first, such as active projects or unpaid invoices, and the version to send to closeOrganization. The answer is advisory, because deletion checks again. Only the Owner can call it, with account credentials; in an organization that requires SSO, sign in through SSO, because Account Service Keys are refused.
 func (s *OrganizationsService) CheckOrganizationDeletion(ctx context.Context, params *CheckOrganizationDeletionParams, opts ...RequestOption) (*CheckOrganizationDeletionResponse, error) {
 	if params == nil {
 		params = &CheckOrganizationDeletionParams{}
@@ -1952,6 +2010,8 @@ func (s *OrganizationsService) CheckOrganizationDeletion(ctx context.Context, pa
 }
 
 // Delete organization
+//
+// Deletes the organization: it leaves normal access when the call returns 204, and Photon then releases its app installations, registrations and billing subscriptions in the background. It cannot be undone and needs no active projects, nothing owed, and the expectedVersion from checkOrganizationDeletion; a blocked or stale request returns 409. Only the Owner can call it, with account credentials (in an organization that requires SSO, a session signed in through SSO) and the required Idempotency-Key header.
 func (s *OrganizationsService) CloseOrganization(ctx context.Context, params *CloseOrganizationParams, opts ...RequestOption) error {
 	if params == nil {
 		params = &CloseOrganizationParams{}
@@ -1965,6 +2025,8 @@ func (s *OrganizationsService) CloseOrganization(ctx context.Context, params *Cl
 }
 
 // Commit an organization avatar
+//
+// Sets the organization's avatar to an image uploaded with createOrganizationAvatarUpload, after checking its size, type and contents, and discards the previous avatar; an invalid or expired upload is rejected. Owners and Admins can call it with account credentials. Send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header.
 func (s *OrganizationsService) CommitOrganizationAvatar(ctx context.Context, params *CommitOrganizationAvatarParams, opts ...RequestOption) (*CommitOrganizationAvatarResponse, error) {
 	if params == nil {
 		params = &CommitOrganizationAvatarParams{}
@@ -1982,6 +2044,8 @@ func (s *OrganizationsService) CommitOrganizationAvatar(ctx context.Context, par
 }
 
 // Create an organization
+//
+// Creates an organization with the supplied name and makes the calling account its Owner; SSO and just-in-time provisioning start disabled. Billing is set up after the response, so the 201 body has no billingInitialization; read it from getOrganization or listOrganizations to follow the setup. Call it with account credentials acting as the account itself and supply the required Idempotency-Key header; an account that is closing gets 409.
 func (s *OrganizationsService) CreateOrganization(ctx context.Context, params *CreateOrganizationParams, opts ...RequestOption) (*CreateOrganizationResponse, error) {
 	if params == nil {
 		params = &CreateOrganizationParams{}
@@ -2015,6 +2079,8 @@ func (s *OrganizationsService) CreateOrganizationAvatarUpload(ctx context.Contex
 }
 
 // Invite a Member or Viewer to all organization projects
+//
+// Invites an email address to the organization as a Member or Viewer and emails it a link that stays valid for 7 days; the Admin and Owner roles can't be invited. Owners and Admins can call it with account credentials and the required Idempotency-Key header. Inviting an address that has a pending invitation for the same role resends it and a different role returns 409, while sending too often (twice within a minute, more than 30 an hour or 100 pending per organization) returns 429.
 func (s *OrganizationsService) CreateOrganizationInvitation(ctx context.Context, params *CreateOrganizationInvitationParams, opts ...RequestOption) (*CreateOrganizationInvitationResponse, error) {
 	if params == nil {
 		params = &CreateOrganizationInvitationParams{}
@@ -2051,6 +2117,8 @@ func (s *OrganizationsService) CreateOrganizationOauthClient(ctx context.Context
 }
 
 // Create an organization Service Identity
+//
+// Creates an active Service Identity, a machine identity owned by the organization, with a name and a non-empty set of permissions from listServiceIdentityPermissions; it starts with no credentials. Owners and Admins can call it with account credentials and the required Idempotency-Key header.
 func (s *OrganizationsService) CreateServiceIdentity(ctx context.Context, params *CreateServiceIdentityParams, opts ...RequestOption) (*CreateServiceIdentityResponse, error) {
 	if params == nil {
 		params = &CreateServiceIdentityParams{}
@@ -2068,6 +2136,8 @@ func (s *OrganizationsService) CreateServiceIdentity(ctx context.Context, params
 }
 
 // Create a one-time Service Identity API key
+//
+// Creates an API key for an active Service Identity that no app installation manages; the key acts with the identity's current permissions. Only a response with status created returns the key's value, so store it securely; retry with the same Idempotency-Key, which must be a UUID: a retry returns the key's status without the value, and status recovery_required means the value was not delivered and can't be retrieved. Owners and Admins can call it with account credentials, and expectedIdentityVersion must match the identity's current version, else 409; an identity managed by an app installation also returns 409.
 func (s *OrganizationsService) CreateServiceIdentityApiKey(ctx context.Context, params *CreateServiceIdentityApiKeyParams, opts ...RequestOption) (*CreateServiceIdentityApiKeyResponse, error) {
 	if params == nil {
 		params = &CreateServiceIdentityApiKeyParams{}
@@ -2086,6 +2156,8 @@ func (s *OrganizationsService) CreateServiceIdentityApiKey(ctx context.Context, 
 }
 
 // Create a one-time Service Identity M2M client secret
+//
+// Creates a client secret for the machine-to-machine (M2M) application of an active Service Identity that no app installation manages, setting the application up first if needed, and returns the secret with its clientId once; exchange them for M2M access tokens, and never send the secret to other operations. Retry with the same Idempotency-Key, which must be a UUID: a retry returns the status without the secret, and a response with stage application (status recovery_required or cleanup_required) means the application could not be set up and no secret exists. Owners and Admins can call it with account credentials, and expectedIdentityVersion must match the identity's current version, else 409; an identity managed by an app installation also returns 409.
 func (s *OrganizationsService) CreateServiceIdentityClientSecret(ctx context.Context, params *CreateServiceIdentityClientSecretParams, opts ...RequestOption) (*CreateServiceIdentityClientSecretResponse, error) {
 	if params == nil {
 		params = &CreateServiceIdentityClientSecretParams{}
@@ -2133,21 +2205,6 @@ func (s *OrganizationsService) DeleteOrganizationOauthClientSecret(ctx context.C
 	return s.c.do(ctx, spec, nil, opts)
 }
 
-// Ensure the initial organization
-func (s *OrganizationsService) EnsureInitialOrganization(ctx context.Context, params *EnsureInitialOrganizationParams, opts ...RequestOption) (*EnsureInitialOrganizationResponse, error) {
-	if params == nil {
-		params = &EnsureInitialOrganizationParams{}
-	}
-	spec := newSpec("ensureInitialOrganization", "POST", "/v1/organizations/initial")
-	spec.idempotent = true
-	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
-	var out EnsureInitialOrganizationResponse
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
 // Read the credential's organization
 //
 // Reads the organization the credential is bound to: the organization an OAuth grant was consented for, or a Service Identity's own organization. Use it to discover which organization an integration acts for, and pass its organizationId to organization-scoped operations.
@@ -2162,6 +2219,8 @@ func (s *OrganizationsService) GetCurrentOrganization(ctx context.Context, opts 
 }
 
 // Read organization name and avatar
+//
+// Returns the organization's name, avatar URL, version and billing setup progress. Any member can read it with account credentials, and a Service Identity granted organization:read or an OAuth grant with the organization:read scope can read the organization it is bound to. Send version as expectedVersion when renaming the organization or changing its avatar.
 func (s *OrganizationsService) GetOrganization(ctx context.Context, params *GetOrganizationParams, opts ...RequestOption) (*GetOrganizationResponse, error) {
 	if params == nil {
 		params = &GetOrganizationParams{}
@@ -2177,6 +2236,8 @@ func (s *OrganizationsService) GetOrganization(ctx context.Context, params *GetO
 }
 
 // Read an organization OAuth client
+//
+// Returns one third-party OAuth application the organization owns, without its secret. Any member can call it with account credentials. The ETag response header is the value updateOrganizationOauthClient needs in If-Match.
 func (s *OrganizationsService) GetOrganizationOauthClient(ctx context.Context, params *GetOrganizationOauthClientParams, opts ...RequestOption) (*GetOrganizationOauthClientResponse, error) {
 	if params == nil {
 		params = &GetOrganizationOauthClientParams{}
@@ -2193,6 +2254,8 @@ func (s *OrganizationsService) GetOrganizationOauthClient(ctx context.Context, p
 }
 
 // Read an organization OAuth client's secret
+//
+// Returns metadata about an OAuth application's secret: the current secret and, after a rotation, the previous one while it still works, with each one's hint, creation and last-use times; the previous one's validUntil is when it stops working, or null when it lasts until the next rotation or revocation. The secret value is never returned. Only Owners and Admins can call it, with account credentials.
 func (s *OrganizationsService) GetOrganizationOauthClientSecret(ctx context.Context, params *GetOrganizationOauthClientSecretParams, opts ...RequestOption) (*GetOrganizationOauthClientSecretResponse, error) {
 	if params == nil {
 		params = &GetOrganizationOauthClientSecretParams{}
@@ -2209,6 +2272,8 @@ func (s *OrganizationsService) GetOrganizationOauthClientSecret(ctx context.Cont
 }
 
 // Read a Service Identity
+//
+// Returns one Service Identity with its permissions, status and version. Any member can call it with account credentials. Send version as expectedVersion to updateServiceIdentity, or as expectedIdentityVersion when creating a credential.
 func (s *OrganizationsService) GetServiceIdentity(ctx context.Context, params *GetServiceIdentityParams, opts ...RequestOption) (*GetServiceIdentityResponse, error) {
 	if params == nil {
 		params = &GetServiceIdentityParams{}
@@ -2225,6 +2290,8 @@ func (s *OrganizationsService) GetServiceIdentity(ctx context.Context, params *G
 }
 
 // Read SSO subscription
+//
+// Returns the organization's SSO subscription: its state, the current monthly price and billing period, whether a payment method must be added first, and whether SSO can be set up (canConfigure). Only Owners and Admins can call it, with account credentials. Send its amount, currency and currentPeriodEnd as the quote when subscribing.
 func (s *OrganizationsService) GetSsoSubscription(ctx context.Context, params *GetSsoSubscriptionParams, opts ...RequestOption) (*GetSsoSubscriptionResponse, error) {
 	if params == nil {
 		params = &GetSsoSubscriptionParams{}
@@ -2239,7 +2306,27 @@ func (s *OrganizationsService) GetSsoSubscription(ctx context.Context, params *G
 	return &out, nil
 }
 
+// Get sole-proprietor OTP status
+//
+// Returns the redacted one-time-password verification state for an organization-owned brand. OTP verification applies only to sole-proprietor brands. Reading this endpoint does not request another code or verify a supplied code; use the trigger and verification operations for those actions. Supply organization_id for the organization that owns the registration.
+func (s *OrganizationsService) GetTenDlcBrandOtp(ctx context.Context, params *GetTenDlcBrandOtpParams, opts ...RequestOption) (*GetTenDlcBrandOtpResponse, error) {
+	if params == nil {
+		params = &GetTenDlcBrandOtpParams{}
+	}
+	spec := newSpec("getTenDlcBrandOtp", "GET", "/v1/organizations/{organization_id}/10dlc/brands/{brandId}/otp")
+	spec.safe = true
+	spec.setPath("brandId", params.BrandID)
+	spec.setPath("organization_id", params.OrganizationID)
+	var out GetTenDlcBrandOtpResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
 // Leave an organization; Owners must transfer or close first
+//
+// Removes the authenticated account's own membership. Nothing is revoked: the account's sessions, OAuth grants and Account Service Keys stop being accepted for the organization and its projects shortly after the call, and project API keys and Service Identity credentials it created keep working until they are revoked. Any member except the Owner can call it, with account credentials or an OAuth grant for this organization with the organization:read scope; the Owner gets 409 and must transfer ownership or delete the organization first. Send the caller's own membership version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header.
 func (s *OrganizationsService) LeaveOrganization(ctx context.Context, params *LeaveOrganizationParams, opts ...RequestOption) (*LeaveOrganizationResponse, error) {
 	if params == nil {
 		params = &LeaveOrganizationParams{}
@@ -2257,6 +2344,8 @@ func (s *OrganizationsService) LeaveOrganization(ctx context.Context, params *Le
 }
 
 // List pending organization invitations
+//
+// Lists the organization's pending, unexpired invitations, newest first, in one unpaginated response; accepted, revoked and expired invitations are left out, and invitation links are never returned. Owners and Admins can call it with account credentials.
 func (s *OrganizationsService) ListOrganizationInvitations(ctx context.Context, params *ListOrganizationInvitationsParams, opts ...RequestOption) (*ListOrganizationInvitationsResponse, error) {
 	if params == nil {
 		params = &ListOrganizationInvitationsParams{}
@@ -2272,6 +2361,8 @@ func (s *OrganizationsService) ListOrganizationInvitations(ctx context.Context, 
 }
 
 // List current organization members
+//
+// Lists the organization's active members, ordered by account ID, with each member's role, membership version and account profile (name, email and picture); a member whose account is missing or deleted has a null profile. Any member can call it with account credentials, or with an OAuth grant for this organization that has the organization:read scope. The list is not paginated.
 func (s *OrganizationsService) ListOrganizationMembers(ctx context.Context, params *ListOrganizationMembersParams, opts ...RequestOption) (*ListOrganizationMembersResponse, error) {
 	if params == nil {
 		params = &ListOrganizationMembersParams{}
@@ -2287,6 +2378,8 @@ func (s *OrganizationsService) ListOrganizationMembers(ctx context.Context, para
 }
 
 // List organization OAuth clients
+//
+// Lists the third-party OAuth applications the organization owns, with their metadata but never their secrets, in one unpaginated response. Any member can call it with account credentials.
 func (s *OrganizationsService) ListOrganizationOauthClients(ctx context.Context, params *ListOrganizationOauthClientsParams, opts ...RequestOption) (*ListOrganizationOauthClientsResponse, error) {
 	if params == nil {
 		params = &ListOrganizationOauthClientsParams{}
@@ -2302,6 +2395,8 @@ func (s *OrganizationsService) ListOrganizationOauthClients(ctx context.Context,
 }
 
 // List organizations
+//
+// Lists the active organizations the authenticated account belongs to, oldest first, in one unpaginated response; ownedOrganizationIds marks the ones it owns. Call it with account credentials acting as the account itself; OAuth grants and Service Identities are refused.
 func (s *OrganizationsService) ListOrganizations(ctx context.Context, opts ...RequestOption) (*ListOrganizationsResponse, error) {
 	spec := newSpec("listOrganizations", "GET", "/v1/organizations")
 	spec.safe = true
@@ -2313,6 +2408,8 @@ func (s *OrganizationsService) ListOrganizations(ctx context.Context, opts ...Re
 }
 
 // List organization Service Identities
+//
+// Lists every Service Identity in the organization, oldest first, including disabled ones and those managed by app installations, in one unpaginated response. Any member can call it with account credentials. It returns identity metadata only, never credentials.
 func (s *OrganizationsService) ListServiceIdentities(ctx context.Context, params *ListServiceIdentitiesParams, opts ...RequestOption) (*ListServiceIdentitiesResponse, error) {
 	if params == nil {
 		params = &ListServiceIdentitiesParams{}
@@ -2328,6 +2425,8 @@ func (s *OrganizationsService) ListServiceIdentities(ctx context.Context, params
 }
 
 // List Service Identity credential metadata
+//
+// Lists metadata for every API key and client secret of a Service Identity, oldest first, including pending and revoked ones, in one unpaginated response; it never returns secret values. Only Owners and Admins can call it, with account credentials.
 func (s *OrganizationsService) ListServiceIdentityCredentials(ctx context.Context, params *ListServiceIdentityCredentialsParams, opts ...RequestOption) (*ListServiceIdentityCredentialsResponse, error) {
 	if params == nil {
 		params = &ListServiceIdentityCredentialsParams{}
@@ -2361,6 +2460,8 @@ func (s *OrganizationsService) ListServiceIdentityPermissions(ctx context.Contex
 }
 
 // Preview an organization invitation after sign-in
+//
+// Returns what an invitation offers to the signed-in account that holds its token: the organization, role, expiry, member count and inviter with masked email addresses, whether the account's verified email matches the invitation, and whether SSO is required to accept it. Call it with account credentials acting as the account itself; it changes nothing. An unknown token returns 404, and an expired or revoked invitation, or one accepted by another account, returns 409.
 func (s *OrganizationsService) PreviewOrganizationInvitation(ctx context.Context, params *PreviewOrganizationInvitationParams, opts ...RequestOption) (*PreviewOrganizationInvitationResponse, error) {
 	if params == nil {
 		params = &PreviewOrganizationInvitationParams{}
@@ -2375,6 +2476,8 @@ func (s *OrganizationsService) PreviewOrganizationInvitation(ctx context.Context
 }
 
 // Remove an organization avatar
+//
+// Removes the organization's custom avatar, so avatarUrl becomes null, and returns the organization with its new version. Owners and Admins can call it with account credentials. Send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header.
 func (s *OrganizationsService) RemoveOrganizationAvatar(ctx context.Context, params *RemoveOrganizationAvatarParams, opts ...RequestOption) (*RemoveOrganizationAvatarResponse, error) {
 	if params == nil {
 		params = &RemoveOrganizationAvatarParams{}
@@ -2391,7 +2494,9 @@ func (s *OrganizationsService) RemoveOrganizationAvatar(ctx context.Context, par
 	return &out, nil
 }
 
-// Remove an organization member's access to all projects
+// Remove a member from the organization
+//
+// Removes an active member from the organization. Nothing is revoked: their sessions, OAuth grants and Account Service Keys stop being accepted for the organization and its projects shortly after the call, and project API keys and Service Identity credentials they created or hold keep working until an Owner or Admin revokes them. Owners and Admins can call it with account credentials, but only the Owner can remove an Admin, and neither the Owner nor the caller can be removed here (409; leave with leaveOrganization). Send the member's current membership version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header.
 func (s *OrganizationsService) RemoveOrganizationMember(ctx context.Context, params *RemoveOrganizationMemberParams, opts ...RequestOption) (*RemoveOrganizationMemberResponse, error) {
 	if params == nil {
 		params = &RemoveOrganizationMemberParams{}
@@ -2410,6 +2515,8 @@ func (s *OrganizationsService) RemoveOrganizationMember(ctx context.Context, par
 }
 
 // Resend an organization invitation
+//
+// Emails a pending invitation again with the same link and restarts its 7-day expiry. Owners and Admins can call it with account credentials and the required Idempotency-Key header. An expired, revoked or accepted invitation returns 409, and a resend within 60 seconds of the last send, or past the organization's 30 sends an hour, returns 429.
 func (s *OrganizationsService) ResendOrganizationInvitation(ctx context.Context, params *ResendOrganizationInvitationParams, opts ...RequestOption) (*ResendOrganizationInvitationResponse, error) {
 	if params == nil {
 		params = &ResendOrganizationInvitationParams{}
@@ -2427,6 +2534,8 @@ func (s *OrganizationsService) ResendOrganizationInvitation(ctx context.Context,
 }
 
 // Revoke an organization invitation
+//
+// Revokes an invitation so its link can no longer be previewed or accepted; no email is sent, and an accepted invitation can't be revoked (409). Owners and Admins can call it with account credentials and the required Idempotency-Key header. Revoking an invitation that is already revoked or expired succeeds.
 func (s *OrganizationsService) RevokeOrganizationInvitation(ctx context.Context, params *RevokeOrganizationInvitationParams, opts ...RequestOption) (*RevokeOrganizationInvitationResponse, error) {
 	if params == nil {
 		params = &RevokeOrganizationInvitationParams{}
@@ -2444,6 +2553,8 @@ func (s *OrganizationsService) RevokeOrganizationInvitation(ctx context.Context,
 }
 
 // Request Service Identity credential revocation
+//
+// Revokes an API key or client secret of a Service Identity; this can't be undone. An API key stops working shortly after the call, while a client secret gets revocationRequestedAt and stays active until Photon confirms its deletion, and M2M access tokens already issued with it keep working until they expire; repeating the call returns the current state. Owners and Admins can call it with account credentials; send the credential's current version as expectedVersion, because a stale version returns 409, and the required Idempotency-Key header.
 func (s *OrganizationsService) RevokeServiceIdentityCredential(ctx context.Context, params *RevokeServiceIdentityCredentialParams, opts ...RequestOption) (*RevokeServiceIdentityCredentialResponse, error) {
 	if params == nil {
 		params = &RevokeServiceIdentityCredentialParams{}
@@ -2502,6 +2613,8 @@ func (s *OrganizationsService) SetupOrganizationOauthClientSecret(ctx context.Co
 }
 
 // Subscribe to organization SSO
+//
+// Starts the organization's SSO subscription, billed monthly in advance and prorated. Send the current quote from getSsoSubscription as expectedAmount, expectedCurrency and expectedCurrentPeriodEnd, because a changed price returns 409; the 202 means the request was accepted, and the charge and its outcome then show in the subscription's state. Only Owners and Admins can call it, with account credentials and the required Idempotency-Key header.
 func (s *OrganizationsService) SubscribeSso(ctx context.Context, params *SubscribeSsoParams, opts ...RequestOption) (*SubscribeSsoResponse, error) {
 	if params == nil {
 		params = &SubscribeSsoParams{}
@@ -2519,6 +2632,8 @@ func (s *OrganizationsService) SubscribeSso(ctx context.Context, params *Subscri
 }
 
 // Transfer organization ownership to an existing member
+//
+// Makes another active member the Owner and turns the current Owner into a Member. Only the Owner can call it, with account credentials and the required Idempotency-Key header. Send the organization's current version, not a membership version, as expectedVersion; a stale version or naming yourself returns 409.
 func (s *OrganizationsService) TransferOrganizationOwnership(ctx context.Context, params *TransferOrganizationOwnershipParams, opts ...RequestOption) (*TransferOrganizationOwnershipResponse, error) {
 	if params == nil {
 		params = &TransferOrganizationOwnershipParams{}
@@ -2535,7 +2650,28 @@ func (s *OrganizationsService) TransferOrganizationOwnership(ctx context.Context
 	return &out, nil
 }
 
+// Trigger sole-proprietor OTP
+//
+// Requests delivery of a verification code for an organization-owned sole-proprietor brand. A 202 response acknowledges the delivery request and does not mean the brand has been verified. Inspect the OTP status and submit the received code through verifyTenDlcBrandOtp. Requests may be rate limited. Supply the required Idempotency-Key header. Supply organization_id for the organization that owns the registration.
+func (s *OrganizationsService) TriggerTenDlcBrandOtp(ctx context.Context, params *TriggerTenDlcBrandOtpParams, opts ...RequestOption) (*TriggerTenDlcBrandOtpResponse, error) {
+	if params == nil {
+		params = &TriggerTenDlcBrandOtpParams{}
+	}
+	spec := newSpec("triggerTenDlcBrandOtp", "POST", "/v1/organizations/{organization_id}/10dlc/brands/{brandId}/otp")
+	spec.idempotent = true
+	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
+	spec.setPath("brandId", params.BrandID)
+	spec.setPath("organization_id", params.OrganizationID)
+	var out TriggerTenDlcBrandOtpResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
 // Change organization name
+//
+// Renames the organization and returns it with its new version. Owners and Admins can call it with account credentials. Send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header.
 func (s *OrganizationsService) UpdateOrganization(ctx context.Context, params *UpdateOrganizationParams, opts ...RequestOption) (*UpdateOrganizationResponse, error) {
 	if params == nil {
 		params = &UpdateOrganizationParams{}
@@ -2553,6 +2689,8 @@ func (s *OrganizationsService) UpdateOrganization(ctx context.Context, params *U
 }
 
 // Change an organization member's role across all projects
+//
+// Changes an active member's role to admin, member or viewer. Owners and Admins can call it with account credentials, but only the Owner can make someone an Admin or change an Admin's role, and nobody can change the Owner's role or their own here (409). Send the member's current membership version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header.
 func (s *OrganizationsService) UpdateOrganizationMemberRole(ctx context.Context, params *UpdateOrganizationMemberRoleParams, opts ...RequestOption) (*UpdateOrganizationMemberRoleResponse, error) {
 	if params == nil {
 		params = &UpdateOrganizationMemberRoleParams{}
@@ -2590,6 +2728,8 @@ func (s *OrganizationsService) UpdateOrganizationOauthClient(ctx context.Context
 }
 
 // Update a Service Identity
+//
+// Changes a Service Identity's name, its permissions (the list replaces the current one) or its status. Disabling an identity stops its API keys and M2M tokens from authorizing requests without revoking them, and an identity managed by an app installation can't be changed (409). Owners and Admins can call it with account credentials; send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header.
 func (s *OrganizationsService) UpdateServiceIdentity(ctx context.Context, params *UpdateServiceIdentityParams, opts ...RequestOption) (*UpdateServiceIdentityResponse, error) {
 	if params == nil {
 		params = &UpdateServiceIdentityParams{}
@@ -2601,6 +2741,26 @@ func (s *OrganizationsService) UpdateServiceIdentity(ctx context.Context, params
 	spec.setPath("serviceIdentityId", params.ServiceIdentityID)
 	spec.setJSON(params.Body)
 	var out UpdateServiceIdentityResponse
+	if err := s.c.do(ctx, spec, &out, opts); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Verify sole-proprietor OTP
+//
+// Submits otpPin for the selected organization-owned sole-proprietor brand and returns its updated, redacted verification state. A rejected code, a locked verification flow, or rate limiting is reported as an error; read the current OTP status before deciding whether to request another code. Supply the required Idempotency-Key header. Supply organization_id for the organization that owns the registration.
+func (s *OrganizationsService) VerifyTenDlcBrandOtp(ctx context.Context, params *VerifyTenDlcBrandOtpParams, opts ...RequestOption) (*VerifyTenDlcBrandOtpResponse, error) {
+	if params == nil {
+		params = &VerifyTenDlcBrandOtpParams{}
+	}
+	spec := newSpec("verifyTenDlcBrandOtp", "PUT", "/v1/organizations/{organization_id}/10dlc/brands/{brandId}/otp")
+	spec.idempotent = true
+	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
+	spec.setPath("brandId", params.BrandID)
+	spec.setPath("organization_id", params.OrganizationID)
+	spec.setJSON(params.Body)
+	var out VerifyTenDlcBrandOtpResponse
 	if err := s.c.do(ctx, spec, &out, opts); err != nil {
 		return nil, err
 	}
@@ -2619,7 +2779,7 @@ func newOrganizationsBillingService(c *core) *OrganizationsBillingService {
 
 // Change plan
 //
-// Purchases or changes the selected project's plan for the supplied category and planCode. A 202 response means the change is pending: poll the returned operation URL and honor Retry-After until it succeeds or fails. A 200 response means the idempotency key resolved to an operation that is already terminal; inspect that result rather than assuming success from the status code alone. Supply the required Idempotency-Key header. Supply both organizationId and projectId to select the project within its organization.
+// Purchases or changes the selected project's plan for the supplied category and planCode, redeeming promotionCode when given. A 202 response means the change is pending: poll the returned operation URL and honor Retry-After until it succeeds or fails. A 200 response means the idempotency key resolved to an operation that is already terminal; inspect that result rather than assuming success from the status code alone. Supply the required Idempotency-Key header. Supply both organizationId and projectId to select the project within its organization.
 func (s *OrganizationsBillingService) ChangePlan(ctx context.Context, params *ChangePlanParams, opts ...RequestOption) (*ChangePlanResponse, error) {
 	if params == nil {
 		params = &ChangePlanParams{}
@@ -2708,7 +2868,7 @@ func (s *OrganizationsBillingService) GetOrganizationCredit(ctx context.Context,
 
 // Get organization payment method
 //
-// Reports whether the selected organization has a card on file and returns its documented payment-method metadata. Reading this endpoint does not collect a new card or create a checkout session.
+// Reports whether the selected organization has a card on file, its documented payment-method metadata, whether a purchase needs a card first (purchaseRefusal), and how it pays: by card, or by invoice on its contract's terms (agreement). Reading this endpoint does not collect a new card or create a checkout session.
 func (s *OrganizationsBillingService) GetOrganizationPaymentMethod(ctx context.Context, params *GetOrganizationPaymentMethodParams, opts ...RequestOption) (*GetOrganizationPaymentMethodResponse, error) {
 	if params == nil {
 		params = &GetOrganizationPaymentMethodParams{}
@@ -2780,7 +2940,7 @@ func (s *OrganizationsBillingService) ListInvoices(ctx context.Context, params *
 
 // Preview an organization billing change
 //
-// Previews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing.
+// Previews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives.
 func (s *OrganizationsBillingService) PreviewOrganizationChange(ctx context.Context, params *PreviewOrganizationChangeParams, opts ...RequestOption) (*PreviewOrganizationChangeResponse, error) {
 	if params == nil {
 		params = &PreviewOrganizationChangeParams{}
@@ -2797,7 +2957,7 @@ func (s *OrganizationsBillingService) PreviewOrganizationChange(ctx context.Cont
 
 // Preview a project billing change
 //
-// Previews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. Supply both organizationId and projectId; the organization must pay for the project.
+// Previews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; a downgrade, or choosing the held plan again, bills nothing now; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives. Supply both organizationId and projectId; the organization must pay for the project.
 func (s *OrganizationsBillingService) PreviewProjectChange(ctx context.Context, params *PreviewProjectChangeParams, opts ...RequestOption) (*PreviewProjectChangeResponse, error) {
 	if params == nil {
 		params = &PreviewProjectChangeParams{}
@@ -3151,7 +3311,7 @@ func (s *ProjectsService) DownloadAttachment(ctx context.Context, params *Downlo
 
 // Get attachment
 //
-// Returns an Attachment's metadata. Use the content endpoint to download its bytes.
+// Returns an Attachment's metadata. Use the content endpoint to download its bytes. If its metadata is unavailable after ten seconds, returns ATTACHMENT_NOT_READY with Retry-After: 5.
 func (s *ProjectsService) GetAttachment(ctx context.Context, params *GetAttachmentParams, opts ...RequestOption) (*Attachment, error) {
 	if params == nil {
 		params = &GetAttachmentParams{}
@@ -3320,7 +3480,7 @@ func (s *ProjectsService) GetWebhookEventSchema(ctx context.Context, params *Get
 
 // List attachments
 //
-// Lists the Project's Attachment metadata, with optional time filters.
+// Lists the Project's Attachment metadata, with optional time filters. An Attachment can be absent until its upload finishes, which advances its updatedAt; follow changes with updatedSince.
 func (s *ProjectsService) ListAttachments(ctx context.Context, params *ListAttachmentsParams, opts ...RequestOption) (*AttachmentPage, error) {
 	if params == nil {
 		params = &ListAttachmentsParams{}
@@ -3756,7 +3916,7 @@ func newProjectsPlatformsService(c *core) *ProjectsPlatformsService {
 
 // Assign or replace SMS line campaign
 //
-// Attach a ready campaign from this project’s organization to its line. Requires platforms:write for the project; human and machine actors retain their authenticated identity. Requires a permanent Idempotency-Key and the current assignment version. Provider provisioning runs asynchronously.
+// Attach a ready campaign from this project’s organization to its line. Requires platforms:write for the project; human and machine actors retain their authenticated identity. Requires a permanent Idempotency-Key and the current assignment version. Provider provisioning runs asynchronously. If the operation fails, its `error` is the problem of one of these codes: `SMS_CAMPAIGN_PROVIDER_REJECTED`, `SMS_CAMPAIGN_RECONCILIATION_REQUIRED`, `SMS_CAMPAIGN_REVOKED`.
 func (s *ProjectsPlatformsService) AssignSmsLineCampaign(ctx context.Context, params *AssignSmsLineCampaignParams, opts ...RequestOption) (*Operation, error) {
 	if params == nil {
 		params = &AssignSmsLineCampaignParams{}
@@ -3848,7 +4008,7 @@ func (s *ProjectsPlatformsService) ConfigureVoiceProfileOutbound(ctx context.Con
 
 // Connect email domain
 //
-// Reserves a normalized DNS domain and starts its durable email-provider setup. The accepted provision consumes one email-domain entitlement slot until it fails, is cancelled, or becomes a live resource; the plan's email.max_email_domains value sets the project limit. The customer resource does not exist until provider identity and DNS setup reach READY; poll the returned operation for progress. A domain may have only one unfinished provision or live resource globally. Email domains have no additional per-domain charge. The Idempotency-Key is required and permanent: replaying the same key and canonical domain returns the original operation forever. Requires the platforms:write permission bound to the project resource in the path.
+// Reserves a normalized DNS domain and starts its durable email-provider setup. The accepted provision consumes one email-domain entitlement slot until it fails, is cancelled, or becomes a live resource; the plan's email.max_email_domains value sets the project limit. The customer resource does not exist until provider identity and DNS setup reach READY; poll the returned operation for progress. A domain may have only one unfinished provision or live resource globally. Email domains have no additional per-domain charge. The Idempotency-Key is required and permanent: replaying the same key and canonical domain returns the original operation forever. Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `EMAIL_DOMAIN_PROVIDER_REJECTED`, `EMAIL_DOMAIN_VERIFICATION_FAILED`, `EMAIL_DOMAIN_VERIFICATION_TIMED_OUT`, `EMAIL_TENANT_SETUP_TIMED_OUT`.
 func (s *ProjectsPlatformsService) ConnectEmailDomain(ctx context.Context, params *ConnectEmailDomainParams, opts ...RequestOption) (*Operation, error) {
 	if params == nil {
 		params = &ConnectEmailDomainParams{}
@@ -3867,7 +4027,7 @@ func (s *ProjectsPlatformsService) ConnectEmailDomain(ctx context.Context, param
 
 // Connect Telegram bot
 //
-// Starts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to create a new bot, whose name and username are chosen in Telegram, or to connect an existing managed bot, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged.
+// Starts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to create a new bot, whose name and username are chosen in Telegram, or to connect an existing managed bot, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged. If the operation fails, its `error` is the problem of one of these codes: `TELEGRAM_CONFIGURATION_FAILED`.
 func (s *ProjectsPlatformsService) ConnectTelegramBot(ctx context.Context, params *ConnectTelegramBotParams, opts ...RequestOption) (*Operation, error) {
 	if params == nil {
 		params = &ConnectTelegramBotParams{}
@@ -3886,7 +4046,7 @@ func (s *ProjectsPlatformsService) ConnectTelegramBot(ctx context.Context, param
 
 // Count filtered verification codes
 //
-// Counts the verification codes Photon kept from this project's dedicated lines and numbers, optionally for one `platform`. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Requires the platforms:read permission bound to the project resource in the path.
+// Counts the verification codes Photon kept from this project's dedicated lines, optionally for one `platform`. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Requires the platforms:read permission bound to the project resource in the path.
 func (s *ProjectsPlatformsService) CountFilteredVerificationCodes(ctx context.Context, params *CountFilteredVerificationCodesParams, opts ...RequestOption) (*FilteredVerificationCodeCount, error) {
 	if params == nil {
 		params = &CountFilteredVerificationCodesParams{}
@@ -3906,7 +4066,7 @@ func (s *ProjectsPlatformsService) CountFilteredVerificationCodes(ctx context.Co
 
 // Count a line's filtered verification codes
 //
-// Counts the verification codes Photon kept from one dedicated line or number. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a number receives both SMS and WhatsApp. Requires the platforms:read permission bound to the project resource in the path.
+// Counts the verification codes Photon kept from one dedicated line. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a dedicated line receives both iMessage and WhatsApp. Requires the platforms:read permission bound to the project resource in the path.
 func (s *ProjectsPlatformsService) CountResourceFilteredVerificationCodes(ctx context.Context, params *CountResourceFilteredVerificationCodesParams, opts ...RequestOption) (*FilteredVerificationCodeCount, error) {
 	if params == nil {
 		params = &CountResourceFilteredVerificationCodesParams{}
@@ -3980,7 +4140,7 @@ func (s *ProjectsPlatformsService) CreateWhatsappSharedLineAssignment(ctx contex
 
 // Create WhatsApp VoIP sender
 //
-// Registers an active, SMS-capable Photon VoIP line on this project's connected WhatsApp Business Account. The account is resolved server-side; callers never select a WABA. The platform creates or reuses the Meta number, requests and consumes the SMS ownership code internally, verifies it, and registers the sender. displayName is optional; when omitted the project agent profile name is snapshotted before acceptance. The VoIP line remains a separate resource and never receives the whatsapp_business ability.
+// Registers an active, SMS-capable Photon VoIP line on this project's connected WhatsApp Business Account. The account is resolved server-side; callers never select a WABA. The platform creates or reuses the Meta number, requests and consumes the SMS ownership code internally, verifies it, and registers the sender. displayName is optional; when omitted the project agent profile name is snapshotted before acceptance. The VoIP line remains a separate resource and never receives the whatsapp_business ability. If the operation fails, its `error` is the problem of one of these codes: `WHATSAPP_AUTHORIZATION_REVOKED`, `WHATSAPP_DISPLAY_NAME_CONFLICT`, `WHATSAPP_NUMBER_ADD_REFUSED`, `WHATSAPP_NUMBER_LOOKUP_FAILED`, `WHATSAPP_REGISTRATION_REFUSED`, `WHATSAPP_VERIFICATION_REFUSED`, `WHATSAPP_VERIFICATION_REQUEST_REFUSED`, `WHATSAPP_VERIFICATION_TIMED_OUT`.
 func (s *ProjectsPlatformsService) CreateWhatsappVoipSender(ctx context.Context, params *CreateWhatsappVoipSenderParams, opts ...RequestOption) (*Operation, error) {
 	if params == nil {
 		params = &CreateWhatsappVoipSenderParams{}
@@ -4050,7 +4210,7 @@ func (s *ProjectsPlatformsService) DeleteVoiceProfileOutbound(ctx context.Contex
 
 // Disconnect WhatsApp Business account
 //
-// Disconnects every attached WhatsApp sender, then unsubscribes our app and removes the project's business account connection. Photon VoIP lines and the numbers in Meta remain. Requires Idempotency-Key. Poll the returned operation; provider refusals appear as operation failures and retain the account for retry with a new key. New signups are blocked while disconnecting, and existing provisions must finish before this request can be accepted.
+// Disconnects every attached WhatsApp sender, then unsubscribes our app and removes the project's business account connection. Photon VoIP lines and the numbers in Meta remain. Requires Idempotency-Key. Poll the returned operation. Meta's answers do not fail it: each sender is released as `DELETE /platforms/resources/:resourceId` does, and our app's unsubscribe is a best effort, tried up to three times, a second or two apart, only while the failure is temporary. New signups are blocked while disconnecting, and existing provisions must finish before this request can be accepted. If the operation fails, its `error` is the problem of one of these codes: `WHATSAPP_ACCOUNT_DISCONNECT_FAILED`.
 func (s *ProjectsPlatformsService) DisconnectWhatsappBusinessAccount(ctx context.Context, params *DisconnectWhatsappBusinessAccountParams, opts ...RequestOption) (*Operation, error) {
 	if params == nil {
 		params = &DisconnectWhatsappBusinessAccountParams{}
@@ -4317,7 +4477,7 @@ func (s *ProjectsPlatformsService) ListEmailRecommendations(ctx context.Context,
 
 // List filtered verification codes
 //
-// Lists the verification codes Photon kept from this project's dedicated lines and numbers. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line or number (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Filter by `platform`; to read one line, use its own filtered-otp path. Requires the platforms:read permission bound to the project resource in the path.
+// Lists the verification codes Photon kept from this project's dedicated lines. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Filter by `platform`; to read one line, use its own filtered-otp path. Requires the platforms:read permission bound to the project resource in the path.
 func (s *ProjectsPlatformsService) ListFilteredVerificationCodes(ctx context.Context, params *ListFilteredVerificationCodesParams, opts ...RequestOption) (*FilteredVerificationCodePage, error) {
 	if params == nil {
 		params = &ListFilteredVerificationCodesParams{}
@@ -4414,7 +4574,7 @@ func (s *ProjectsPlatformsService) ListProjectPlatforms(ctx context.Context, par
 
 // List a line's filtered verification codes
 //
-// Lists the verification codes Photon kept from one dedicated line or number. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line or number (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a number receives both SMS and WhatsApp. Requires the platforms:read permission bound to the project resource in the path.
+// Lists the verification codes Photon kept from one dedicated line. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a dedicated line receives both iMessage and WhatsApp. Requires the platforms:read permission bound to the project resource in the path.
 func (s *ProjectsPlatformsService) ListResourceFilteredVerificationCodes(ctx context.Context, params *ListResourceFilteredVerificationCodesParams, opts ...RequestOption) (*FilteredVerificationCodePage, error) {
 	if params == nil {
 		params = &ListResourceFilteredVerificationCodesParams{}
@@ -4437,7 +4597,7 @@ func (s *ProjectsPlatformsService) ListResourceFilteredVerificationCodes(ctx con
 
 // List resources
 //
-// Lists the project's resources, oldest first, including retired ones unless `state` filters them out. Filter by `type`, by enabled `ability` and by comma-separated `state`. `detail` is a per-type public view. Requires the platforms:read permission bound to the project resource in the path.
+// Lists the project's resources, oldest first, including retired ones unless `state` filters them out. Filter by `type`, by enabled `ability` and by comma-separated `state`. Lifecycle states are unallocated, active and retired; active means owned and non-retired, not provider-confirmed readiness. Every VoIP resource includes detail.activationState: activating or active, defaulting to active without owner-matched saved state. state=active includes numbers still activating. Requires the platforms:read permission bound to the project resource in the path.
 func (s *ProjectsPlatformsService) ListResources(ctx context.Context, params *ListResourcesParams, opts ...RequestOption) (*ResourcePage, error) {
 	if params == nil {
 		params = &ListResourcesParams{}
@@ -4516,7 +4676,7 @@ func (s *ProjectsPlatformsService) ListWhatsappSharedLineAssignments(ctx context
 
 // Provision dedicated iMessage line
 //
-// Claims one dedicated iMessage line for the project and enables iMessage on it. Always answers 202 with an operation: dedicated lines are allocated from available capacity, and unavailable capacity causes a wait rather than a failure — this can legitimately stay `running` for hours, which is exactly why the response is a handle to poll rather than a number. The project's messaging subscription must grant the dedicated iMessage lines entitlement (`imessage_dedicated_lines.can_purchase`), and that is checked before capacity is reserved. The line's own charge starts when a line is claimed; the subscription that grants the entitlement bills on its own terms, which cancelling a request does not change. Waiting requests are served first come, first served. One that is still waiting is cancelled with a `reason` if the project is deleted (`project_deleted`) or its plan stops selling dedicated lines (`entitlement_lost`); while the payer is restricted for overdue payment it keeps waiting. If you no longer want to wait, POST to the operation's cancel endpoint, which charges nothing for the line. The Idempotency-Key is required and permanent: repeating it returns the same operation forever. A further line always needs a NEW key, including while others are still waiting. Requires the platforms:write permission bound to the project resource in the path.
+// Claims one dedicated iMessage line for the project and enables iMessage on it. Always answers 202 with an operation: dedicated lines are allocated from available capacity, and unavailable capacity causes a wait rather than a failure — this can legitimately stay `running` for hours, which is exactly why the response is a handle to poll rather than a number. The project's messaging subscription must grant the dedicated iMessage lines entitlement (`imessage_dedicated_lines.can_purchase`), and that is checked before capacity is reserved. The line's own charge starts when a line is claimed; the subscription that grants the entitlement bills on its own terms, which cancelling a request does not change. Waiting requests are served first come, first served. One that is still waiting is cancelled with a `reason` if the project is deleted (`project_deleted`) or its plan stops selling dedicated lines (`entitlement_lost`); while the payer is restricted for overdue payment it keeps waiting. If you no longer want to wait, POST to the operation's cancel endpoint, which charges nothing for the line. The Idempotency-Key is required and permanent: repeating it returns the same operation forever. A further line always needs a NEW key, including while others are still waiting. An optional promotionCode is checked and claimed here, before the request waits for a line: a code that can't be used answers 409 PROMOTION_CODE_REJECTED and starts nothing. Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `CHARGE_REFUSED`, `ENTERPRISE_PLAN_REQUIRED`.
 func (s *ProjectsPlatformsService) ProvisionImessageDedicatedLine(ctx context.Context, params *ProvisionImessageDedicatedLineParams, opts ...RequestOption) (*Operation, error) {
 	if params == nil {
 		params = &ProvisionImessageDedicatedLineParams{}
@@ -4525,6 +4685,7 @@ func (s *ProjectsPlatformsService) ProvisionImessageDedicatedLine(ctx context.Co
 	spec.idempotent = true
 	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
 	spec.setPath("id", params.ID)
+	spec.setJSON(params.Body)
 	var out Operation
 	if err := s.c.do(ctx, spec, &out, opts); err != nil {
 		return nil, err
@@ -4534,7 +4695,7 @@ func (s *ProjectsPlatformsService) ProvisionImessageDedicatedLine(ctx context.Co
 
 // Provision dedicated WhatsApp line
 //
-// Provisions one dedicated WhatsApp line with WhatsApp and shared Voice enabled. It attaches to an eligible iMessage line the project already owns when possible so both products keep the same number; otherwise it claims healthy, available WhatsApp-capable dedicated-line inventory. Always answers 202, because waiting when no inventory is available is not a failure. The product opens its own charge period after the abilities are enabled; Voice has no separate charge. Waiting requests are served first come, first served, and are cancelled with a `reason` exactly as for a dedicated iMessage line. Cancel the returned operation to stop waiting. The Idempotency-Key is required and permanent.
+// Provisions one dedicated WhatsApp line with WhatsApp and shared Voice enabled. It attaches to an eligible iMessage line the project already owns when possible so both products keep the same number; otherwise it claims healthy, available WhatsApp-capable dedicated-line inventory. Always answers 202, because waiting when no inventory is available is not a failure. The product opens its own charge period after the abilities are enabled; Voice has no separate charge. Waiting requests are served first come, first served, and are cancelled with a `reason` exactly as for a dedicated iMessage line. Cancel the returned operation to stop waiting. An optional promotionCode is checked and claimed here, before the request waits for a line: a code that can't be used answers 409 PROMOTION_CODE_REJECTED and starts nothing. The Idempotency-Key is required and permanent. If the operation fails, its `error` is the problem of one of these codes: `CHARGE_REFUSED`, `ENTERPRISE_PLAN_REQUIRED`.
 func (s *ProjectsPlatformsService) ProvisionWhatsappDedicatedLine(ctx context.Context, params *ProvisionWhatsappDedicatedLineParams, opts ...RequestOption) (*Operation, error) {
 	if params == nil {
 		params = &ProvisionWhatsappDedicatedLineParams{}
@@ -4543,6 +4704,7 @@ func (s *ProjectsPlatformsService) ProvisionWhatsappDedicatedLine(ctx context.Co
 	spec.idempotent = true
 	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
 	spec.setPath("id", params.ID)
+	spec.setJSON(params.Body)
 	var out Operation
 	if err := s.c.do(ctx, spec, &out, opts); err != nil {
 		return nil, err
@@ -4552,7 +4714,7 @@ func (s *ProjectsPlatformsService) ProvisionWhatsappDedicatedLine(ctx context.Co
 
 // Purchase SMS number
 //
-// Buys one US local number from the provider and records it as a resource with SMS enabled. Requires countryCode (US) and accepts an optional three-digit geographic areaCode. The server selects an exact matching number. Empty inventory keeps the operation running until a number is available or the caller cancels before ordering begins. Always answers 202 with an operation: the work runs behind the response, and the Location points at the operation to poll. New area-specific requests must appear in current provider coverage; discover it with GET /sms/numbers/area-codes?countryCode=US. Coverage and subscription checks run before operation creation. Billing follows delivery. Replays return the original operation without checking current coverage. The Idempotency-Key is required and permanent: repeating it returns the same operation forever, never a second number. A further number always needs a NEW key, including while others are still running. Requires the platforms:write permission bound to the project resource in the path.
+// Buys one US local number from the provider and records it as a resource with SMS enabled. Requires countryCode (US) and accepts an optional three-digit geographic areaCode. The server selects an exact matching number. While inventory is empty the operation keeps searching, and the caller can cancel it until ordering begins; a search still empty one minute after the operation was created fails it with `NUMBER_INVENTORY_UNAVAILABLE`. Always answers 202 with an operation: the work runs behind the response, and the Location points at the operation to poll. New area-specific requests must appear in current provider coverage; discover it with GET /sms/numbers/area-codes?countryCode=US. Coverage and subscription checks run before operation creation. Billing follows delivery. Replays return the original operation without checking current coverage. The Idempotency-Key is required and permanent: repeating it returns the same operation forever, never a second number. A further number always needs a NEW key, including while others are still running. An optional promotionCode is redeemed with the number's charge, which follows delivery: a code billing refuses hands the number back, and its release operation carries the refusal (`reason` `charge_refused`, with `detail.chargeRefusal` `{ code: "promotion_code_rejected", detail: <why> }`). Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `ENTITLEMENT_REQUIRED`, `NUMBER_INVENTORY_UNAVAILABLE`, `NUMBER_ORDER_FAILED`, `NUMBER_ORDER_RECONCILIATION_REQUIRED`, `NUMBER_SEARCH_FAILED`.
 func (s *ProjectsPlatformsService) PurchaseSmsNumber(ctx context.Context, params *PurchaseSmsNumberParams, opts ...RequestOption) (*Operation, error) {
 	if params == nil {
 		params = &PurchaseSmsNumberParams{}
@@ -4571,7 +4733,7 @@ func (s *ProjectsPlatformsService) PurchaseSmsNumber(ctx context.Context, params
 
 // Release dedicated iMessage line
 //
-// Removes only iMessage from one dedicated line. Shared Voice is removed only when WhatsApp is absent; if WhatsApp remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open iMessage charge period identifies this product tenure.
+// Removes only iMessage from one dedicated line. Shared Voice is removed only when WhatsApp is absent; if WhatsApp remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open iMessage charge period identifies this product tenure. If the operation fails, its `error` is the problem of one of these codes: `RESOURCE_NOT_FOUND`.
 func (s *ProjectsPlatformsService) ReleaseImessageDedicatedLine(ctx context.Context, params *ReleaseImessageDedicatedLineParams, opts ...RequestOption) (*Operation, error) {
 	if params == nil {
 		params = &ReleaseImessageDedicatedLineParams{}
@@ -4588,7 +4750,7 @@ func (s *ProjectsPlatformsService) ReleaseImessageDedicatedLine(ctx context.Cont
 
 // Release resource
 //
-// Gives one resource back, whatever it is. What that means is the resource's own business: an SMS number goes back to the provider and is retired, a dedicated iMessage line goes back to the shared pool and stays in existence for someone else to claim. Either way the provider is contacted first where there is one, then a single transaction disables every ability, ends the project's hold and closes the charge period — so a provider that refuses leaves the resource exactly as it was, still owned and still billed. Usually finishes inside this request and answers 200; if the provider is slow it answers 202 and the Location points at the operation to poll. The decrement runs behind the answer either way, so the resource is gone when you are told it is. Takes no Idempotency-Key — releasing the same resource twice is the same request. Releasing one that is already gone answers 404. Requires the platforms:write permission bound to the project resource in the path.
+// Gives one resource back, whatever it is. What that means is the resource's own business: an SMS number goes back to the provider and is retired, a dedicated iMessage line goes back to the shared pool and stays in existence for someone else to claim. Either way the provider is contacted first where there is one, then a single transaction disables every ability, ends the project's hold and closes the charge period — so a provider that refuses leaves the resource exactly as it was, still owned and still billed. A WhatsApp Business sender is the exception: Meta never holds its release. A number on a Photon VoIP line is deregistered as a best effort, tried up to three times, a second or two apart, only while the failure is temporary; a number the customer brought is not sent to Meta at all; the sender is retired either way, and the number stays in the customer's WhatsApp Business Account. Usually finishes inside this request and answers 200; if the provider is slow it answers 202 and the Location points at the operation to poll. The decrement runs behind the answer either way, so the resource is gone when you are told it is. Takes no Idempotency-Key — releasing the same resource twice is the same request. Releasing one that is already gone answers 404. Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `EMAIL_DOMAIN_RELEASE_FAILED`, `NUMBER_RELEASE_FAILED`, `RESOURCE_NOT_FOUND`, `TELEGRAM_RELEASE_FAILED`, `WHATSAPP_SENDER_RELEASE_FAILED`.
 func (s *ProjectsPlatformsService) ReleaseResource(ctx context.Context, params *ReleaseResourceParams, opts ...RequestOption) (*Operation, error) {
 	if params == nil {
 		params = &ReleaseResourceParams{}
@@ -4605,7 +4767,7 @@ func (s *ProjectsPlatformsService) ReleaseResource(ctx context.Context, params *
 
 // Release dedicated WhatsApp line
 //
-// Removes only WhatsApp from one dedicated line. Shared Voice is removed only when iMessage is absent; if iMessage remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open WhatsApp charge period identifies this product tenure.
+// Removes only WhatsApp from one dedicated line. Shared Voice is removed only when iMessage is absent; if iMessage remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open WhatsApp charge period identifies this product tenure. If the operation fails, its `error` is the problem of one of these codes: `RESOURCE_NOT_FOUND`.
 func (s *ProjectsPlatformsService) ReleaseWhatsappDedicatedLine(ctx context.Context, params *ReleaseWhatsappDedicatedLineParams, opts ...RequestOption) (*Operation, error) {
 	if params == nil {
 		params = &ReleaseWhatsappDedicatedLineParams{}
@@ -4677,7 +4839,7 @@ func (s *ProjectsPlatformsService) RotateVoiceProfileOutboundCredential(ctx cont
 
 // Unassign SMS line campaign
 //
-// Any project writer, including a scoped API key, may detach the campaign. The number and campaign remain owned. Requires a permanent Idempotency-Key and expectedVersion. Local eligibility is blocked immediately; provider detachment runs asynchronously.
+// Any project writer, including a scoped API key, may detach the campaign. The number and campaign remain owned. Requires a permanent Idempotency-Key and expectedVersion. Local eligibility is blocked immediately; provider detachment runs asynchronously. If the operation fails, its `error` is the problem of one of these codes: `SMS_CAMPAIGN_PROVIDER_REJECTED`, `SMS_CAMPAIGN_RECONCILIATION_REQUIRED`, `SMS_CAMPAIGN_REVOKED`.
 func (s *ProjectsPlatformsService) UnassignSmsLineCampaign(ctx context.Context, params *UnassignSmsLineCampaignParams, opts ...RequestOption) (*Operation, error) {
 	if params == nil {
 		params = &UnassignSmsLineCampaignParams{}
@@ -4728,7 +4890,7 @@ func (s *ProjectsPlatformsService) UpdateDefaultVoiceProfile(ctx context.Context
 
 // Update Voice profile
 //
-// Patches an additional profile's name, protocol, or mediaEncryption when expectedVersion matches. Omitted fields are preserved. Directional configuration is managed through the profile's inbound and outbound endpoints. Requires platforms:write bound to the path project.
+// Patches an additional profile's name, protocol, or mediaEncryption when expectedVersion matches. Omitted fields are preserved. The default profile's metadata changes only through PATCH /v1/projects/{id}/platforms/voice/profiles/default, so a name, protocol, or mediaEncryption patch addressed to its profileId is refused with 409. Directional configuration is managed through the profile's inbound and outbound endpoints. Requires platforms:write bound to the path project.
 func (s *ProjectsPlatformsService) UpdateVoiceProfile(ctx context.Context, params *UpdateVoiceProfileParams, opts ...RequestOption) (*VoiceProfile, error) {
 	if params == nil {
 		params = &UpdateVoiceProfileParams{}
@@ -5074,6 +5236,7 @@ func (s *AccountService) CommitProfilePicture(ctx context.Context, params *Commi
 	}
 	spec := newSpec("commitAccountProfilePicture", "PUT", "/v1/account/profile-picture")
 	spec.idempotent = true
+	spec.setHeader("Photon-Version", params.PhotonVersion)
 	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
 	spec.setJSON(params.Body)
 	var out Account
@@ -5091,6 +5254,7 @@ func (s *AccountService) CreateProfilePictureUpload(ctx context.Context, params 
 		params = &CreateAccountProfilePictureUploadParams{}
 	}
 	spec := newSpec("createAccountProfilePictureUpload", "POST", "/v1/account/profile-picture/uploads")
+	spec.setHeader("Photon-Version", params.PhotonVersion)
 	spec.setJSON(params.Body)
 	var out ProfilePictureUpload
 	if err := s.c.do(ctx, spec, &out, opts); err != nil {
@@ -5108,6 +5272,7 @@ func (s *AccountService) CreateAccountServiceKey(ctx context.Context, params *Cr
 	}
 	spec := newSpec("createAccountServiceKey", "POST", "/v1/account/service-keys")
 	spec.idempotent = true
+	spec.setHeader("Photon-Version", params.PhotonVersion)
 	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
 	spec.setJSON(params.Body)
 	var out CreateAccountServiceKeyResponse
@@ -5120,8 +5285,12 @@ func (s *AccountService) CreateAccountServiceKey(ctx context.Context, params *Cr
 // Delete account
 //
 // Deletes the authenticated account and returns its account tombstone. The operation is rejected while the account still owns organizations; transfer or close those organizations before retrying. This endpoint acts on the caller's account and does not accept another account's identifier.
-func (s *AccountService) Delete(ctx context.Context, opts ...RequestOption) (*Account, error) {
+func (s *AccountService) Delete(ctx context.Context, params *DeleteAccountParams, opts ...RequestOption) (*Account, error) {
+	if params == nil {
+		params = &DeleteAccountParams{}
+	}
 	spec := newSpec("deleteAccount", "DELETE", "/v1/account")
+	spec.setHeader("Photon-Version", params.PhotonVersion)
 	var out Account
 	if err := s.c.do(ctx, spec, &out, opts); err != nil {
 		return nil, err
@@ -5132,9 +5301,13 @@ func (s *AccountService) Delete(ctx context.Context, opts ...RequestOption) (*Ac
 // Get account
 //
 // Returns the profile of the authenticated account. The account is selected from the credential rather than a request parameter. A missing or deleted account is reported as an error instead of an empty profile.
-func (s *AccountService) Get(ctx context.Context, opts ...RequestOption) (*Account, error) {
+func (s *AccountService) Get(ctx context.Context, params *GetAccountParams, opts ...RequestOption) (*Account, error) {
+	if params == nil {
+		params = &GetAccountParams{}
+	}
 	spec := newSpec("getAccount", "GET", "/v1/account")
 	spec.safe = true
+	spec.setHeader("Photon-Version", params.PhotonVersion)
 	var out Account
 	if err := s.c.do(ctx, spec, &out, opts); err != nil {
 		return nil, err
@@ -5145,9 +5318,13 @@ func (s *AccountService) Get(ctx context.Context, opts ...RequestOption) (*Accou
 // List Account Service Keys
 //
 // Returns metadata for the authenticated account's unrevoked service keys, including expired keys, ordered newest first. Secret values are not returned; a key's credential is disclosed only when that key is created.
-func (s *AccountService) ListAccountServiceKeys(ctx context.Context, opts ...RequestOption) (*ListAccountServiceKeysResponse, error) {
+func (s *AccountService) ListAccountServiceKeys(ctx context.Context, params *ListAccountServiceKeysParams, opts ...RequestOption) (*ListAccountServiceKeysResponse, error) {
+	if params == nil {
+		params = &ListAccountServiceKeysParams{}
+	}
 	spec := newSpec("listAccountServiceKeys", "GET", "/v1/account/service-keys")
 	spec.safe = true
+	spec.setHeader("Photon-Version", params.PhotonVersion)
 	var out ListAccountServiceKeysResponse
 	if err := s.c.do(ctx, spec, &out, opts); err != nil {
 		return nil, err
@@ -5184,6 +5361,7 @@ func (s *AccountService) ResetProfilePicture(ctx context.Context, params *ResetA
 	}
 	spec := newSpec("resetAccountProfilePicture", "DELETE", "/v1/account/profile-picture")
 	spec.idempotent = true
+	spec.setHeader("Photon-Version", params.PhotonVersion)
 	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
 	var out Account
 	if err := s.c.do(ctx, spec, &out, opts); err != nil {
@@ -5201,6 +5379,7 @@ func (s *AccountService) RevokeAccountServiceKey(ctx context.Context, params *Re
 	}
 	spec := newSpec("revokeAccountServiceKey", "DELETE", "/v1/account/service-keys/{serviceKeyId}")
 	spec.idempotent = true
+	spec.setHeader("Photon-Version", params.PhotonVersion)
 	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
 	spec.setPath("serviceKeyId", params.ServiceKeyID)
 	var out RevokeAccountServiceKeyResponse
@@ -5231,6 +5410,7 @@ func (s *AccountService) Update(ctx context.Context, params *UpdateAccountParams
 	}
 	spec := newSpec("updateAccount", "PATCH", "/v1/account")
 	spec.idempotent = true
+	spec.setHeader("Photon-Version", params.PhotonVersion)
 	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
 	spec.setJSON(params.Body)
 	var out Account
@@ -5403,22 +5583,6 @@ func (s *AuthService) RetryOrganizationConnectionSync(ctx context.Context, param
 	spec := newSpec("retryOrganizationConnectionSync", "POST", "/v1/auth/organizations/{orgId}/connection-sync/retry")
 	spec.setPath("orgId", params.OrgID)
 	var out OrganizationConnectionStatus
-	if err := s.c.do(ctx, spec, &out, opts); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// Start company sign-in
-//
-// Returns a sign-in URL without requiring an existing account: the company SSO connection when the target has a ready connection, otherwise ordinary account login. Supply one documented enrollment variant: organizationId with returnTo (optionally invitationToken), invitationToken with returnTo, or retryToken. Open the returned URL to continue authentication; receiving a URL does not complete sign-in. This is a browser flow: the request must come from an allowed Origin, and the retryToken variant also needs the retry cookie set by the failed sign-in, so send it with credentials.
-func (s *AuthService) StartEnterpriseLogin(ctx context.Context, params *StartEnterpriseLoginParams, opts ...RequestOption) (*StartEnterpriseLoginResponse, error) {
-	if params == nil {
-		params = &StartEnterpriseLoginParams{}
-	}
-	spec := newSpec("startEnterpriseLogin", "POST", "/v1/auth/login/enrollment")
-	spec.setJSON(params.Body)
-	var out StartEnterpriseLoginResponse
 	if err := s.c.do(ctx, spec, &out, opts); err != nil {
 		return nil, err
 	}

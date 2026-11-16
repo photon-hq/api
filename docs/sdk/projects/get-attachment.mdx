@@ -6,7 +6,7 @@ description: "Get attachment: getAttachment in the TypeScript, Python, Rust and 
 
 `GET /v1/projects/{id}/attachments/{attachmentId}`
 
-Returns an Attachment's metadata. Use the content endpoint to download its bytes.
+Returns an Attachment's metadata. Use the content endpoint to download its bytes. If its metadata is unavailable after ten seconds, returns ATTACHMENT_NOT_READY with Retry-After: 5.
 
 <Tabs>
 <Tab title="TypeScript">

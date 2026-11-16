@@ -108,8 +108,13 @@ _ = result
     "detail": {},
     "endedAt": "2026-01-01T00:00:00.000Z",
     "error": {
-      "code": "string",
-      "detail": "string"
+      "code": "CHARGE_REFUSED",
+      "remediation": {
+        "action": "Check the payment method in Billing, then request the purchase again."
+      },
+      "status": 402,
+      "title": "Charge Refused",
+      "type": "https://photon.codes/docs/problems/charge-refused"
     },
     "operationId": "string",
     "projectId": "string",

@@ -1,5 +1,58 @@
 # Changelog
 
+## 0.7.0 (2026-11-16)
+
+
+### ⚠ BREAKING CHANGES
+
+* **operations:** Operation.error is now a union of problem types, so `detail` is optional: TypeScript reads `code` as before and treats `detail` as optional, Python reads it through `op.error.root`, Rust matches the `OperationError` enum with a default arm, and Go reads `op.Error.Discriminator("code")` or an `As…()` method.
+* **messages:** `text.update` is removed; to edit a message, send `message.update` that wraps the new content, with `parentMessageId` set to the message you edit.
+* **messages:** `ReactionAction` and the `action` field are removed; send and read a reaction without `action`, and to take a reaction back send `message.delete` with `parentMessageId` set to the reaction message.
+* **messages:** `excludeContentTypes` no longer accepts `text.update`; it now accepts `message.update`, `space.background.update` and `space.profile.share`.
+* **platforms:** `provisionImessageDedicatedLine` and `provisionWhatsappDedicatedLine` take a request body; pass `{}` when you have no `promotionCode` (TypeScript, Python and Rust require it, Go sends `{}` for a zero body).
+* **platforms:** `sms` is removed from `FilteredVerificationCodePlatform`; stop passing it to the list and count operations for filtered verification codes (the Rust `Sms` variant and the Go constant are removed).
+* **organizations:** `ensureInitialOrganization` is removed because an account's first organization now exists from sign-up; delete the call and list the account's organizations to find it.
+* **billing:** `BillingPreviewDeferred.totalCents` is now the sum of the lines less their discounts, so with a promotion code it no longer equals the sum of the lines' `amountCents`; use `totalCents`, or sum `amountCents - discountCents`.
+* **account:** the nine account operations accept the optional `Photon-Version` header, which adds a parameters argument to the Rust and Go methods that did not have one: in Rust `get_account`, `delete_account`, `update_account`, `reset_account_profile_picture`, `commit_account_profile_picture`, `create_account_profile_picture_upload`, `list_account_service_keys`, `create_account_service_key` and `revoke_account_service_key` take `params: Option<…Params>` (pass `None`; it comes after the Idempotency-Key and path arguments and before the body), and in Go `Account.Get`, `Account.Delete` and `Account.ListAccountServiceKeys` take a `params` pointer (pass `nil`). TypeScript and Python are unchanged, because the header is optional there.
+* **release:** startEnterpriseLogin is removed from the public SDKs. It is routed only on the dashboard origin and answers 404 on the API host, so no working integration calls it.
+
+### Features
+
+* **account:** return the impersonator on the account while a Photon administrator is impersonating it
+* **account:** select the API contract date with the Photon-Version header on account operations
+* **api-keys:** add the calls:read and messages:read permissions
+* **billing:** apply promotion codes to purchases, plan changes, previews, SMS numbers and dedicated lines
+* **billing:** return the bank-transfer balance, invoice amounts due and payment state, and the organization's payment agreement
+* **billing:** return the current billing period, upcoming invoices, the next invoice date and coupons in billing responses
+* **errors:** add typed problems for operation failures and request errors, one per error code, so you can branch on the error type
+* **messages:** add message.update, space.background.update and space.profile.share content; keep a default branch when you match content types exhaustively
+* **messages:** send a Telegram attachment as a file card with sendAs, and return the voice transcript on voice attachments
+* **organizations:** verify a 10DLC brand with a one-time code
+* **platforms:** return optIn on shared line assignments
+* **typescript:** call onRetry before each automatic retry (ENG-5444)
+* **typescript:** report attempts on PhotonError
+* verify webhook deliveries in every client and document receiving them (ENG-3978)
+
+
+### Bug Fixes
+
+* **billing:** subtract discounts in BillingPreviewDeferred.totalCents
+* **go:** build the Go code samples and guide examples with the client's go.sum (ENG-3978)
+* **messages:** change the values excludeContentTypes accepts
+* **messages:** remove action from reactions
+* **messages:** replace text.update with message.update
+* **operations:** type Operation.error as a union of problems
+* **organizations:** remove ensureInitialOrganization
+* **platforms:** remove sms from the verification-code platform filter
+* **platforms:** require a body to provision a dedicated line
+* **python:** type webhook event objects as the full Message union
+* **release:** exclude the remaining Dashboard-only operations from the public API (ENG-4219)
+
+
+### Documentation
+
+* **license:** license the packages under Apache-2.0 instead of MIT
+
 ## 0.6.0 (2026-10-23)
 
 

@@ -179,6 +179,7 @@ class CloseOrganizationInput(BaseModel):
 class CommitAccountProfilePictureHeader(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
+    photon_version: models.PhotonVersion | MISSING = Field(default=MISSING, alias="Photon-Version")
     idempotency_key: str = Field(alias="Idempotency-Key")
 
 
@@ -454,15 +455,23 @@ class CountUsersInput(BaseModel):
     query: CountUsersQuery | None = None
 
 
+class CreateAccountProfilePictureUploadHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    photon_version: models.PhotonVersion | MISSING = Field(default=MISSING, alias="Photon-Version")
+
+
 class CreateAccountProfilePictureUploadInput(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
     body: models.ProfilePictureUploadRequest
+    headers: CreateAccountProfilePictureUploadHeader | None = None
 
 
 class CreateAccountServiceKeyHeader(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
+    photon_version: models.PhotonVersion | MISSING = Field(default=MISSING, alias="Photon-Version")
     idempotency_key: str = Field(alias="Idempotency-Key")
 
 
@@ -831,8 +840,16 @@ class CreateWhatsappVoipSenderInput(BaseModel):
     headers: CreateWhatsappVoipSenderHeader
 
 
+class DeleteAccountHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    photon_version: models.PhotonVersion | MISSING = Field(default=MISSING, alias="Photon-Version")
+
+
 class DeleteAccountInput(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    headers: DeleteAccountHeader | None = None
 
 
 class DeleteOrganizationOauthClientPath(BaseModel):
@@ -1016,20 +1033,16 @@ class DownloadAttachmentInput(BaseModel):
     path: DownloadAttachmentPath
 
 
-class EnsureInitialOrganizationHeader(BaseModel):
+class GetAccountHeader(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
-    idempotency_key: str = Field(alias="Idempotency-Key")
-
-
-class EnsureInitialOrganizationInput(BaseModel):
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    headers: EnsureInitialOrganizationHeader
+    photon_version: models.PhotonVersion | MISSING = Field(default=MISSING, alias="Photon-Version")
 
 
 class GetAccountInput(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    headers: GetAccountHeader | None = None
 
 
 class GetAgentProfilePath(BaseModel):
@@ -1464,6 +1477,19 @@ class GetSsoSubscriptionInput(BaseModel):
     path: GetSsoSubscriptionPath
 
 
+class GetTenDlcBrandOtpPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    brand_id: str = Field(alias="brandId")
+    organization_id: str = Field(alias="organization_id")
+
+
+class GetTenDlcBrandOtpInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: GetTenDlcBrandOtpPath
+
+
 class GetUserPath(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
@@ -1608,8 +1634,16 @@ class LeaveOrganizationInput(BaseModel):
     headers: LeaveOrganizationHeader
 
 
+class ListAccountServiceKeysHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    photon_version: models.PhotonVersion | MISSING = Field(default=MISSING, alias="Photon-Version")
+
+
 class ListAccountServiceKeysInput(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    headers: ListAccountServiceKeysHeader | None = None
 
 
 class ListAttachmentsPath(BaseModel):
@@ -2308,6 +2342,7 @@ class ProvisionImessageDedicatedLineHeader(BaseModel):
 class ProvisionImessageDedicatedLineInput(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
+    body: models.ProvisionImessageDedicatedLineRequest
     path: ProvisionImessageDedicatedLinePath
     headers: ProvisionImessageDedicatedLineHeader
 
@@ -2327,6 +2362,7 @@ class ProvisionWhatsappDedicatedLineHeader(BaseModel):
 class ProvisionWhatsappDedicatedLineInput(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
+    body: models.ProvisionWhatsappDedicatedLineRequest
     path: ProvisionWhatsappDedicatedLinePath
     headers: ProvisionWhatsappDedicatedLineHeader
 
@@ -2532,6 +2568,7 @@ class ResendOrganizationInvitationInput(BaseModel):
 class ResetAccountProfilePictureHeader(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
+    photon_version: models.PhotonVersion | MISSING = Field(default=MISSING, alias="Photon-Version")
     idempotency_key: str = Field(alias="Idempotency-Key")
 
 
@@ -2602,6 +2639,7 @@ class RevokeAccountServiceKeyPath(BaseModel):
 class RevokeAccountServiceKeyHeader(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
+    photon_version: models.PhotonVersion | MISSING = Field(default=MISSING, alias="Photon-Version")
     idempotency_key: str = Field(alias="Idempotency-Key")
 
 
@@ -2803,12 +2841,6 @@ class SetupOrganizationOauthClientSecretInput(BaseModel):
     headers: SetupOrganizationOauthClientSecretHeader
 
 
-class StartEnterpriseLoginInput(BaseModel):
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    body: models.StartEnterpriseLoginRequest
-
-
 class SubscribeSsoPath(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
@@ -2847,6 +2879,26 @@ class TransferOrganizationOwnershipInput(BaseModel):
     body: models.TransferOrganizationOwnershipRequest
     path: TransferOrganizationOwnershipPath
     headers: TransferOrganizationOwnershipHeader
+
+
+class TriggerTenDlcBrandOtpPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    brand_id: str = Field(alias="brandId")
+    organization_id: str = Field(alias="organization_id")
+
+
+class TriggerTenDlcBrandOtpHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    idempotency_key: str = Field(alias="Idempotency-Key")
+
+
+class TriggerTenDlcBrandOtpInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    path: TriggerTenDlcBrandOtpPath
+    headers: TriggerTenDlcBrandOtpHeader
 
 
 class UnassignSmsLineCampaignPath(BaseModel):
@@ -2899,6 +2951,7 @@ class UnassignVoiceLineProfileInput(BaseModel):
 class UpdateAccountHeader(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
+    photon_version: models.PhotonVersion | MISSING = Field(default=MISSING, alias="Photon-Version")
     idempotency_key: str = Field(alias="Idempotency-Key")
 
 
@@ -3162,6 +3215,27 @@ class UploadAttachmentInput(BaseModel):
     body: models.RootModel[bytes]
     path: UploadAttachmentPath
     headers: UploadAttachmentHeader
+
+
+class VerifyTenDlcBrandOtpPath(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    brand_id: str = Field(alias="brandId")
+    organization_id: str = Field(alias="organization_id")
+
+
+class VerifyTenDlcBrandOtpHeader(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    idempotency_key: str = Field(alias="Idempotency-Key")
+
+
+class VerifyTenDlcBrandOtpInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    body: models.VerifyTenDlcBrandOtpRequest
+    path: VerifyTenDlcBrandOtpPath
+    headers: VerifyTenDlcBrandOtpHeader
 
 
 _OP_ACCEPT_ORGANIZATION_INVITATION = OperationSpec(
@@ -4070,21 +4144,6 @@ _OP_DOWNLOAD_ATTACHMENT = OperationSpec(
     },
 )
 
-_OP_ENSURE_INITIAL_ORGANIZATION = OperationSpec(
-    operation_id="ensureInitialOrganization",
-    method="POST",
-    path="/v1/organizations/initial",
-    safe=False,
-    idempotency_key_required=True,
-    accept_media_types=(
-        "application/json",
-        "application/problem+json",
-    ),
-    success_responses={
-        "200": TypeAdapter(models.EnsureInitialOrganizationResponse),
-    },
-)
-
 _OP_GET_ACCOUNT = OperationSpec(
     operation_id="getAccount",
     method="GET",
@@ -4579,6 +4638,21 @@ _OP_GET_SSO_SUBSCRIPTION = OperationSpec(
     ),
     success_responses={
         "200": TypeAdapter(models.GetSsoSubscriptionResponse),
+    },
+)
+
+_OP_GET_TEN_DLC_BRAND_OTP = OperationSpec(
+    operation_id="getTenDlcBrandOtp",
+    method="GET",
+    path="/v1/organizations/{organization_id}/10dlc/brands/{brandId}/otp",
+    safe=True,
+    idempotency_key_required=False,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.GetTenDlcBrandOtpResponse),
     },
 )
 
@@ -5332,6 +5406,7 @@ _OP_PROVISION_IMESSAGE_DEDICATED_LINE = OperationSpec(
     path="/v1/projects/{id}/platforms/imessage/dedicated",
     safe=False,
     idempotency_key_required=True,
+    request_media_type="application/json",
     accept_media_types=(
         "application/json",
         "application/problem+json",
@@ -5347,6 +5422,7 @@ _OP_PROVISION_WHATSAPP_DEDICATED_LINE = OperationSpec(
     path="/v1/projects/{id}/platforms/whatsapp/dedicated",
     safe=False,
     idempotency_key_required=True,
+    request_media_type="application/json",
     accept_media_types=(
         "application/json",
         "application/problem+json",
@@ -5791,22 +5867,6 @@ _OP_SETUP_ORGANIZATION_OAUTH_CLIENT_SECRET = OperationSpec(
     },
 )
 
-_OP_START_ENTERPRISE_LOGIN = OperationSpec(
-    operation_id="startEnterpriseLogin",
-    method="POST",
-    path="/v1/auth/login/enrollment",
-    safe=False,
-    idempotency_key_required=False,
-    request_media_type="application/json",
-    accept_media_types=(
-        "application/json",
-        "application/problem+json",
-    ),
-    success_responses={
-        "200": TypeAdapter(models.StartEnterpriseLoginResponse),
-    },
-)
-
 _OP_SUBSCRIBE_SSO = OperationSpec(
     operation_id="subscribeSso",
     method="POST",
@@ -5836,6 +5896,21 @@ _OP_TRANSFER_ORGANIZATION_OWNERSHIP = OperationSpec(
     ),
     success_responses={
         "200": TypeAdapter(models.TransferOrganizationOwnershipResponse),
+    },
+)
+
+_OP_TRIGGER_TEN_DLC_BRAND_OTP = OperationSpec(
+    operation_id="triggerTenDlcBrandOtp",
+    method="POST",
+    path="/v1/organizations/{organization_id}/10dlc/brands/{brandId}/otp",
+    safe=False,
+    idempotency_key_required=True,
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "202": TypeAdapter(models.TriggerTenDlcBrandOtpResponse),
     },
 )
 
@@ -6108,6 +6183,22 @@ _OP_UPLOAD_ATTACHMENT = OperationSpec(
     },
 )
 
+_OP_VERIFY_TEN_DLC_BRAND_OTP = OperationSpec(
+    operation_id="verifyTenDlcBrandOtp",
+    method="PUT",
+    path="/v1/organizations/{organization_id}/10dlc/brands/{brandId}/otp",
+    safe=False,
+    idempotency_key_required=True,
+    request_media_type="application/json",
+    accept_media_types=(
+        "application/json",
+        "application/problem+json",
+    ),
+    success_responses={
+        "200": TypeAdapter(models.VerifyTenDlcBrandOtpResponse),
+    },
+)
+
 
 class SyncRawOrganizationsBillingResource:
     def __init__(self, transport: SyncTransport) -> None:
@@ -6116,7 +6207,7 @@ class SyncRawOrganizationsBillingResource:
     def change_plan(
         self, input: ChangePlanInput
     ) -> RawResponse[models.TerminalBillingOperation | models.PendingBillingOperation]:
-        "Change plan\n\nPurchases or changes the selected project's plan for the supplied category and planCode. A 202 response means the change is pending: poll the returned operation URL and honor Retry-After until it succeeds or fails. A 200 response means the idempotency key resolved to an operation that is already terminal; inspect that result rather than assuming success from the status code alone. Supply the required Idempotency-Key header. Supply both organizationId and projectId to select the project within its organization."
+        "Change plan\n\nPurchases or changes the selected project's plan for the supplied category and planCode, redeeming promotionCode when given. A 202 response means the change is pending: poll the returned operation URL and honor Retry-After until it succeeds or fails. A 200 response means the idempotency key resolved to an operation that is already terminal; inspect that result rather than assuming success from the status code alone. Supply the required Idempotency-Key header. Supply both organizationId and projectId to select the project within its organization."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_CHANGE_PLAN, payload)
 
@@ -6151,7 +6242,7 @@ class SyncRawOrganizationsBillingResource:
     def get_organization_payment_method(
         self, input: GetOrganizationPaymentMethodInput
     ) -> RawResponse[models.GetOrganizationPaymentMethodResponse]:
-        "Get organization payment method\n\nReports whether the selected organization has a card on file and returns its documented payment-method metadata. Reading this endpoint does not collect a new card or create a checkout session."
+        "Get organization payment method\n\nReports whether the selected organization has a card on file, its documented payment-method metadata, whether a purchase needs a card first (purchaseRefusal), and how it pays: by card, or by invoice on its contract's terms (agreement). Reading this endpoint does not collect a new card or create a checkout session."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_GET_ORGANIZATION_PAYMENT_METHOD, payload)
 
@@ -6177,14 +6268,14 @@ class SyncRawOrganizationsBillingResource:
     def preview_organization_change(
         self, input: PreviewOrganizationChangeInput
     ) -> RawResponse[models.PreviewOrganizationChangeResponse]:
-        "Preview an organization billing change\n\nPreviews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing."
+        "Preview an organization billing change\n\nPreviews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_PREVIEW_ORGANIZATION_CHANGE, payload)
 
     def preview_project_change(
         self, input: PreviewProjectChangeInput
     ) -> RawResponse[models.PreviewProjectChangeResponse]:
-        "Preview a project billing change\n\nPreviews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. Supply both organizationId and projectId; the organization must pay for the project."
+        "Preview a project billing change\n\nPreviews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; a downgrade, or choosing the held plan again, bills nothing now; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives. Supply both organizationId and projectId; the organization must pay for the project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_PREVIEW_PROJECT_CHANGE, payload)
 
@@ -6232,40 +6323,40 @@ class SyncRawOrganizationsResource:
     def accept_organization_invitation(
         self, input: AcceptOrganizationInvitationInput
     ) -> RawResponse[models.AcceptOrganizationInvitationResponse]:
-        "Accept an invitation to all organization projects"
+        "Accept an invitation to all organization projects\n\nAccepts an invitation by its token and adds the signed-in account to the organization with the invited role. An existing member keeps their role, except a Viewer who joined through SSO just-in-time provisioning and whose role has never been changed, who takes the invited role; a removed member can rejoin only with an invitation created after the removal, else 409. The account's verified email must match the invited address, the invitation must be pending and unexpired, and its inviter must still be an Owner or Admin; in an organization that requires SSO it returns 403, because the invitee joins by signing in through that SSO instead. Call it with account credentials acting as the account itself and supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_ACCEPT_ORGANIZATION_INVITATION, payload)
 
     def cancel_sso_subscription(
         self, input: CancelSsoSubscriptionInput
     ) -> RawResponse[models.CancelSsoSubscriptionResponse]:
-        "Cancel the SSO subscription"
+        "Cancel the SSO subscription\n\nCancels the organization's SSO subscription at once, but only after SSO has been turned off: while SSO is still required it returns 409. The unused days become organization credit, and SSO setup closes. Only Owners and Admins can call it, with account credentials and the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_CANCEL_SSO_SUBSCRIPTION, payload)
 
     def check_organization_deletion(
         self, input: CheckOrganizationDeletionInput
     ) -> RawResponse[models.CheckOrganizationDeletionResponse]:
-        "Check organization deletion prerequisites"
+        "Check organization deletion prerequisites\n\nReports whether the organization can be deleted now (canDelete), the blockers to clear first, such as active projects or unpaid invoices, and the version to send to closeOrganization. The answer is advisory, because deletion checks again. Only the Owner can call it, with account credentials; in an organization that requires SSO, sign in through SSO, because Account Service Keys are refused."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_CHECK_ORGANIZATION_DELETION, payload)
 
     def close_organization(self, input: CloseOrganizationInput) -> RawResponse[None]:
-        "Delete organization"
+        "Delete organization\n\nDeletes the organization: it leaves normal access when the call returns 204, and Photon then releases its app installations, registrations and billing subscriptions in the background. It cannot be undone and needs no active projects, nothing owed, and the expectedVersion from checkOrganizationDeletion; a blocked or stale request returns 409. Only the Owner can call it, with account credentials (in an organization that requires SSO, a session signed in through SSO) and the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_CLOSE_ORGANIZATION, payload)
 
     def commit_organization_avatar(
         self, input: CommitOrganizationAvatarInput
     ) -> RawResponse[models.CommitOrganizationAvatarResponse]:
-        "Commit an organization avatar"
+        "Commit an organization avatar\n\nSets the organization's avatar to an image uploaded with createOrganizationAvatarUpload, after checking its size, type and contents, and discards the previous avatar; an invalid or expired upload is rejected. Owners and Admins can call it with account credentials. Send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_COMMIT_ORGANIZATION_AVATAR, payload)
 
     def create_organization(
         self, input: CreateOrganizationInput
     ) -> RawResponse[models.CreateOrganizationResponse]:
-        "Create an organization"
+        "Create an organization\n\nCreates an organization with the supplied name and makes the calling account its Owner; SSO and just-in-time provisioning start disabled. Billing is set up after the response, so the 201 body has no billingInitialization; read it from getOrganization or listOrganizations to follow the setup. Call it with account credentials acting as the account itself and supply the required Idempotency-Key header; an account that is closing gets 409."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_CREATE_ORGANIZATION, payload)
 
@@ -6279,7 +6370,7 @@ class SyncRawOrganizationsResource:
     def create_organization_invitation(
         self, input: CreateOrganizationInvitationInput
     ) -> RawResponse[models.CreateOrganizationInvitationResponse]:
-        "Invite a Member or Viewer to all organization projects"
+        "Invite a Member or Viewer to all organization projects\n\nInvites an email address to the organization as a Member or Viewer and emails it a link that stays valid for 7 days; the Admin and Owner roles can't be invited. Owners and Admins can call it with account credentials and the required Idempotency-Key header. Inviting an address that has a pending invitation for the same role resends it and a different role returns 409, while sending too often (twice within a minute, more than 30 an hour or 100 pending per organization) returns 429."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_CREATE_ORGANIZATION_INVITATION, payload)
 
@@ -6293,21 +6384,21 @@ class SyncRawOrganizationsResource:
     def create_service_identity(
         self, input: CreateServiceIdentityInput
     ) -> RawResponse[models.CreateServiceIdentityResponse]:
-        "Create an organization Service Identity"
+        "Create an organization Service Identity\n\nCreates an active Service Identity, a machine identity owned by the organization, with a name and a non-empty set of permissions from listServiceIdentityPermissions; it starts with no credentials. Owners and Admins can call it with account credentials and the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_CREATE_SERVICE_IDENTITY, payload)
 
     def create_service_identity_api_key(
         self, input: CreateServiceIdentityApiKeyInput
     ) -> RawResponse[models.CreateServiceIdentityApiKeyResponse]:
-        "Create a one-time Service Identity API key"
+        "Create a one-time Service Identity API key\n\nCreates an API key for an active Service Identity that no app installation manages; the key acts with the identity's current permissions. Only a response with status created returns the key's value, so store it securely; retry with the same Idempotency-Key, which must be a UUID: a retry returns the key's status without the value, and status recovery_required means the value was not delivered and can't be retrieved. Owners and Admins can call it with account credentials, and expectedIdentityVersion must match the identity's current version, else 409; an identity managed by an app installation also returns 409."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_CREATE_SERVICE_IDENTITY_API_KEY, payload)
 
     def create_service_identity_client_secret(
         self, input: CreateServiceIdentityClientSecretInput
     ) -> RawResponse[models.CreateServiceIdentityClientSecretResponse]:
-        "Create a one-time Service Identity M2M client secret"
+        "Create a one-time Service Identity M2M client secret\n\nCreates a client secret for the machine-to-machine (M2M) application of an active Service Identity that no app installation manages, setting the application up first if needed, and returns the secret with its clientId once; exchange them for M2M access tokens, and never send the secret to other operations. Retry with the same Idempotency-Key, which must be a UUID: a retry returns the status without the secret, and a response with stage application (status recovery_required or cleanup_required) means the application could not be set up and no secret exists. Owners and Admins can call it with account credentials, and expectedIdentityVersion must match the identity's current version, else 409; an identity managed by an app installation also returns 409."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_CREATE_SERVICE_IDENTITY_CLIENT_SECRET, payload)
 
@@ -6325,13 +6416,6 @@ class SyncRawOrganizationsResource:
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_DELETE_ORGANIZATION_OAUTH_CLIENT_SECRET, payload)
 
-    def ensure_initial_organization(
-        self, input: EnsureInitialOrganizationInput
-    ) -> RawResponse[models.EnsureInitialOrganizationResponse]:
-        "Ensure the initial organization"
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_ENSURE_INITIAL_ORGANIZATION, payload)
-
     def get_current_organization(
         self, input: GetCurrentOrganizationInput | None = None
     ) -> RawResponse[models.GetCurrentOrganizationResponse]:
@@ -6344,70 +6428,77 @@ class SyncRawOrganizationsResource:
     def get_organization(
         self, input: GetOrganizationInput
     ) -> RawResponse[models.GetOrganizationResponse]:
-        "Read organization name and avatar"
+        "Read organization name and avatar\n\nReturns the organization's name, avatar URL, version and billing setup progress. Any member can read it with account credentials, and a Service Identity granted organization:read or an OAuth grant with the organization:read scope can read the organization it is bound to. Send version as expectedVersion when renaming the organization or changing its avatar."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_GET_ORGANIZATION, payload)
 
     def get_organization_oauth_client(
         self, input: GetOrganizationOauthClientInput
     ) -> RawResponse[models.GetOrganizationOauthClientResponse]:
-        "Read an organization OAuth client"
+        "Read an organization OAuth client\n\nReturns one third-party OAuth application the organization owns, without its secret. Any member can call it with account credentials. The ETag response header is the value updateOrganizationOauthClient needs in If-Match."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_GET_ORGANIZATION_OAUTH_CLIENT, payload)
 
     def get_organization_oauth_client_secret(
         self, input: GetOrganizationOauthClientSecretInput
     ) -> RawResponse[models.GetOrganizationOauthClientSecretResponse]:
-        "Read an organization OAuth client's secret"
+        "Read an organization OAuth client's secret\n\nReturns metadata about an OAuth application's secret: the current secret and, after a rotation, the previous one while it still works, with each one's hint, creation and last-use times; the previous one's validUntil is when it stops working, or null when it lasts until the next rotation or revocation. The secret value is never returned. Only Owners and Admins can call it, with account credentials."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_GET_ORGANIZATION_OAUTH_CLIENT_SECRET, payload)
 
     def get_service_identity(
         self, input: GetServiceIdentityInput
     ) -> RawResponse[models.GetServiceIdentityResponse]:
-        "Read a Service Identity"
+        "Read a Service Identity\n\nReturns one Service Identity with its permissions, status and version. Any member can call it with account credentials. Send version as expectedVersion to updateServiceIdentity, or as expectedIdentityVersion when creating a credential."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_GET_SERVICE_IDENTITY, payload)
 
     def get_sso_subscription(
         self, input: GetSsoSubscriptionInput
     ) -> RawResponse[models.GetSsoSubscriptionResponse]:
-        "Read SSO subscription"
+        "Read SSO subscription\n\nReturns the organization's SSO subscription: its state, the current monthly price and billing period, whether a payment method must be added first, and whether SSO can be set up (canConfigure). Only Owners and Admins can call it, with account credentials. Send its amount, currency and currentPeriodEnd as the quote when subscribing."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_GET_SSO_SUBSCRIPTION, payload)
+
+    def get_ten_dlc_brand_otp(
+        self, input: GetTenDlcBrandOtpInput
+    ) -> RawResponse[models.GetTenDlcBrandOtpResponse]:
+        "Get sole-proprietor OTP status\n\nReturns the redacted one-time-password verification state for an organization-owned brand. OTP verification applies only to sole-proprietor brands. Reading this endpoint does not request another code or verify a supplied code; use the trigger and verification operations for those actions. Supply organization_id for the organization that owns the registration."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_GET_TEN_DLC_BRAND_OTP, payload)
 
     def leave_organization(
         self, input: LeaveOrganizationInput
     ) -> RawResponse[models.LeaveOrganizationResponse]:
-        "Leave an organization; Owners must transfer or close first"
+        "Leave an organization; Owners must transfer or close first\n\nRemoves the authenticated account's own membership. Nothing is revoked: the account's sessions, OAuth grants and Account Service Keys stop being accepted for the organization and its projects shortly after the call, and project API keys and Service Identity credentials it created keep working until they are revoked. Any member except the Owner can call it, with account credentials or an OAuth grant for this organization with the organization:read scope; the Owner gets 409 and must transfer ownership or delete the organization first. Send the caller's own membership version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_LEAVE_ORGANIZATION, payload)
 
     def list_organization_invitations(
         self, input: ListOrganizationInvitationsInput
     ) -> RawResponse[models.ListOrganizationInvitationsResponse]:
-        "List pending organization invitations"
+        "List pending organization invitations\n\nLists the organization's pending, unexpired invitations, newest first, in one unpaginated response; accepted, revoked and expired invitations are left out, and invitation links are never returned. Owners and Admins can call it with account credentials."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_LIST_ORGANIZATION_INVITATIONS, payload)
 
     def list_organization_members(
         self, input: ListOrganizationMembersInput
     ) -> RawResponse[models.ListOrganizationMembersResponse]:
-        "List current organization members"
+        "List current organization members\n\nLists the organization's active members, ordered by account ID, with each member's role, membership version and account profile (name, email and picture); a member whose account is missing or deleted has a null profile. Any member can call it with account credentials, or with an OAuth grant for this organization that has the organization:read scope. The list is not paginated."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_LIST_ORGANIZATION_MEMBERS, payload)
 
     def list_organization_oauth_clients(
         self, input: ListOrganizationOauthClientsInput
     ) -> RawResponse[models.ListOrganizationOauthClientsResponse]:
-        "List organization OAuth clients"
+        "List organization OAuth clients\n\nLists the third-party OAuth applications the organization owns, with their metadata but never their secrets, in one unpaginated response. Any member can call it with account credentials."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_LIST_ORGANIZATION_OAUTH_CLIENTS, payload)
 
     def list_organizations(
         self, input: ListOrganizationsInput | None = None
     ) -> RawResponse[models.ListOrganizationsResponse]:
-        "List organizations"
+        "List organizations\n\nLists the active organizations the authenticated account belongs to, oldest first, in one unpaginated response; ownedOrganizationIds marks the ones it owns. Call it with account credentials acting as the account itself; OAuth grants and Service Identities are refused."
         payload = (input or ListOrganizationsInput()).model_dump(
             mode="json", by_alias=True, exclude_unset=True
         )
@@ -6416,14 +6507,14 @@ class SyncRawOrganizationsResource:
     def list_service_identities(
         self, input: ListServiceIdentitiesInput
     ) -> RawResponse[models.ListServiceIdentitiesResponse]:
-        "List organization Service Identities"
+        "List organization Service Identities\n\nLists every Service Identity in the organization, oldest first, including disabled ones and those managed by app installations, in one unpaginated response. Any member can call it with account credentials. It returns identity metadata only, never credentials."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_LIST_SERVICE_IDENTITIES, payload)
 
     def list_service_identity_credentials(
         self, input: ListServiceIdentityCredentialsInput
     ) -> RawResponse[models.ListServiceIdentityCredentialsResponse]:
-        "List Service Identity credential metadata"
+        "List Service Identity credential metadata\n\nLists metadata for every API key and client secret of a Service Identity, oldest first, including pending and revoked ones, in one unpaginated response; it never returns secret values. Only Owners and Admins can call it, with account credentials."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_LIST_SERVICE_IDENTITY_CREDENTIALS, payload)
 
@@ -6437,42 +6528,42 @@ class SyncRawOrganizationsResource:
     def preview_organization_invitation(
         self, input: PreviewOrganizationInvitationInput
     ) -> RawResponse[models.PreviewOrganizationInvitationResponse]:
-        "Preview an organization invitation after sign-in"
+        "Preview an organization invitation after sign-in\n\nReturns what an invitation offers to the signed-in account that holds its token: the organization, role, expiry, member count and inviter with masked email addresses, whether the account's verified email matches the invitation, and whether SSO is required to accept it. Call it with account credentials acting as the account itself; it changes nothing. An unknown token returns 404, and an expired or revoked invitation, or one accepted by another account, returns 409."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_PREVIEW_ORGANIZATION_INVITATION, payload)
 
     def remove_organization_avatar(
         self, input: RemoveOrganizationAvatarInput
     ) -> RawResponse[models.RemoveOrganizationAvatarResponse]:
-        "Remove an organization avatar"
+        "Remove an organization avatar\n\nRemoves the organization's custom avatar, so avatarUrl becomes null, and returns the organization with its new version. Owners and Admins can call it with account credentials. Send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_REMOVE_ORGANIZATION_AVATAR, payload)
 
     def remove_organization_member(
         self, input: RemoveOrganizationMemberInput
     ) -> RawResponse[models.RemoveOrganizationMemberResponse]:
-        "Remove an organization member's access to all projects"
+        "Remove a member from the organization\n\nRemoves an active member from the organization. Nothing is revoked: their sessions, OAuth grants and Account Service Keys stop being accepted for the organization and its projects shortly after the call, and project API keys and Service Identity credentials they created or hold keep working until an Owner or Admin revokes them. Owners and Admins can call it with account credentials, but only the Owner can remove an Admin, and neither the Owner nor the caller can be removed here (409; leave with leaveOrganization). Send the member's current membership version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_REMOVE_ORGANIZATION_MEMBER, payload)
 
     def resend_organization_invitation(
         self, input: ResendOrganizationInvitationInput
     ) -> RawResponse[models.ResendOrganizationInvitationResponse]:
-        "Resend an organization invitation"
+        "Resend an organization invitation\n\nEmails a pending invitation again with the same link and restarts its 7-day expiry. Owners and Admins can call it with account credentials and the required Idempotency-Key header. An expired, revoked or accepted invitation returns 409, and a resend within 60 seconds of the last send, or past the organization's 30 sends an hour, returns 429."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_RESEND_ORGANIZATION_INVITATION, payload)
 
     def revoke_organization_invitation(
         self, input: RevokeOrganizationInvitationInput
     ) -> RawResponse[models.RevokeOrganizationInvitationResponse]:
-        "Revoke an organization invitation"
+        "Revoke an organization invitation\n\nRevokes an invitation so its link can no longer be previewed or accepted; no email is sent, and an accepted invitation can't be revoked (409). Owners and Admins can call it with account credentials and the required Idempotency-Key header. Revoking an invitation that is already revoked or expired succeeds."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_REVOKE_ORGANIZATION_INVITATION, payload)
 
     def revoke_service_identity_credential(
         self, input: RevokeServiceIdentityCredentialInput
     ) -> RawResponse[models.RevokeServiceIdentityCredentialResponse]:
-        "Request Service Identity credential revocation"
+        "Request Service Identity credential revocation\n\nRevokes an API key or client secret of a Service Identity; this can't be undone. An API key stops working shortly after the call, while a client secret gets revocationRequestedAt and stays active until Photon confirms its deletion, and M2M access tokens already issued with it keep working until they expire; repeating the call returns the current state. Owners and Admins can call it with account credentials; send the credential's current version as expectedVersion, because a stale version returns 409, and the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_REVOKE_SERVICE_IDENTITY_CREDENTIAL, payload)
 
@@ -6494,28 +6585,35 @@ class SyncRawOrganizationsResource:
         return self._transport.request(_OP_SETUP_ORGANIZATION_OAUTH_CLIENT_SECRET, payload)
 
     def subscribe_sso(self, input: SubscribeSsoInput) -> RawResponse[models.SubscribeSsoResponse]:
-        "Subscribe to organization SSO"
+        "Subscribe to organization SSO\n\nStarts the organization's SSO subscription, billed monthly in advance and prorated. Send the current quote from getSsoSubscription as expectedAmount, expectedCurrency and expectedCurrentPeriodEnd, because a changed price returns 409; the 202 means the request was accepted, and the charge and its outcome then show in the subscription's state. Only Owners and Admins can call it, with account credentials and the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_SUBSCRIBE_SSO, payload)
 
     def transfer_organization_ownership(
         self, input: TransferOrganizationOwnershipInput
     ) -> RawResponse[models.TransferOrganizationOwnershipResponse]:
-        "Transfer organization ownership to an existing member"
+        "Transfer organization ownership to an existing member\n\nMakes another active member the Owner and turns the current Owner into a Member. Only the Owner can call it, with account credentials and the required Idempotency-Key header. Send the organization's current version, not a membership version, as expectedVersion; a stale version or naming yourself returns 409."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_TRANSFER_ORGANIZATION_OWNERSHIP, payload)
+
+    def trigger_ten_dlc_brand_otp(
+        self, input: TriggerTenDlcBrandOtpInput
+    ) -> RawResponse[models.TriggerTenDlcBrandOtpResponse]:
+        "Trigger sole-proprietor OTP\n\nRequests delivery of a verification code for an organization-owned sole-proprietor brand. A 202 response acknowledges the delivery request and does not mean the brand has been verified. Inspect the OTP status and submit the received code through verifyTenDlcBrandOtp. Requests may be rate limited. Supply the required Idempotency-Key header. Supply organization_id for the organization that owns the registration."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_TRIGGER_TEN_DLC_BRAND_OTP, payload)
 
     def update_organization(
         self, input: UpdateOrganizationInput
     ) -> RawResponse[models.UpdateOrganizationResponse]:
-        "Change organization name"
+        "Change organization name\n\nRenames the organization and returns it with its new version. Owners and Admins can call it with account credentials. Send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_UPDATE_ORGANIZATION, payload)
 
     def update_organization_member_role(
         self, input: UpdateOrganizationMemberRoleInput
     ) -> RawResponse[models.UpdateOrganizationMemberRoleResponse]:
-        "Change an organization member's role across all projects"
+        "Change an organization member's role across all projects\n\nChanges an active member's role to admin, member or viewer. Owners and Admins can call it with account credentials, but only the Owner can make someone an Admin or change an Admin's role, and nobody can change the Owner's role or their own here (409). Send the member's current membership version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_UPDATE_ORGANIZATION_MEMBER_ROLE, payload)
 
@@ -6529,9 +6627,16 @@ class SyncRawOrganizationsResource:
     def update_service_identity(
         self, input: UpdateServiceIdentityInput
     ) -> RawResponse[models.UpdateServiceIdentityResponse]:
-        "Update a Service Identity"
+        "Update a Service Identity\n\nChanges a Service Identity's name, its permissions (the list replaces the current one) or its status. Disabling an identity stops its API keys and M2M tokens from authorizing requests without revoking them, and an identity managed by an app installation can't be changed (409). Owners and Admins can call it with account credentials; send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_UPDATE_SERVICE_IDENTITY, payload)
+
+    def verify_ten_dlc_brand_otp(
+        self, input: VerifyTenDlcBrandOtpInput
+    ) -> RawResponse[models.VerifyTenDlcBrandOtpResponse]:
+        "Verify sole-proprietor OTP\n\nSubmits otpPin for the selected organization-owned sole-proprietor brand and returns its updated, redacted verification state. A rejected code, a locked verification flow, or rate limiting is reported as an error; read the current OTP status before deciding whether to request another code. Supply the required Idempotency-Key header. Supply organization_id for the organization that owns the registration."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return self._transport.request(_OP_VERIFY_TEN_DLC_BRAND_OTP, payload)
 
 
 class SyncRawProjectsPlatformsImessageAssignmentsResource:
@@ -6579,7 +6684,7 @@ class SyncRawProjectsPlatformsResource:
     def assign_sms_line_campaign(
         self, input: AssignSmsLineCampaignInput
     ) -> RawResponse[models.Operation]:
-        "Assign or replace SMS line campaign\n\nAttach a ready campaign from this project’s organization to its line. Requires platforms:write for the project; human and machine actors retain their authenticated identity. Requires a permanent Idempotency-Key and the current assignment version. Provider provisioning runs asynchronously."
+        "Assign or replace SMS line campaign\n\nAttach a ready campaign from this project’s organization to its line. Requires platforms:write for the project; human and machine actors retain their authenticated identity. Requires a permanent Idempotency-Key and the current assignment version. Provider provisioning runs asynchronously. If the operation fails, its `error` is the problem of one of these codes: `SMS_CAMPAIGN_PROVIDER_REJECTED`, `SMS_CAMPAIGN_RECONCILIATION_REQUIRED`, `SMS_CAMPAIGN_REVOKED`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_ASSIGN_SMS_LINE_CAMPAIGN, payload)
 
@@ -6610,26 +6715,26 @@ class SyncRawProjectsPlatformsResource:
         return self._transport.request(_OP_CONFIGURE_VOICE_PROFILE_OUTBOUND, payload)
 
     def connect_email_domain(self, input: ConnectEmailDomainInput) -> RawResponse[models.Operation]:
-        "Connect email domain\n\nReserves a normalized DNS domain and starts its durable email-provider setup. The accepted provision consumes one email-domain entitlement slot until it fails, is cancelled, or becomes a live resource; the plan's email.max_email_domains value sets the project limit. The customer resource does not exist until provider identity and DNS setup reach READY; poll the returned operation for progress. A domain may have only one unfinished provision or live resource globally. Email domains have no additional per-domain charge. The Idempotency-Key is required and permanent: replaying the same key and canonical domain returns the original operation forever. Requires the platforms:write permission bound to the project resource in the path."
+        "Connect email domain\n\nReserves a normalized DNS domain and starts its durable email-provider setup. The accepted provision consumes one email-domain entitlement slot until it fails, is cancelled, or becomes a live resource; the plan's email.max_email_domains value sets the project limit. The customer resource does not exist until provider identity and DNS setup reach READY; poll the returned operation for progress. A domain may have only one unfinished provision or live resource globally. Email domains have no additional per-domain charge. The Idempotency-Key is required and permanent: replaying the same key and canonical domain returns the original operation forever. Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `EMAIL_DOMAIN_PROVIDER_REJECTED`, `EMAIL_DOMAIN_VERIFICATION_FAILED`, `EMAIL_DOMAIN_VERIFICATION_TIMED_OUT`, `EMAIL_TENANT_SETUP_TIMED_OUT`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_CONNECT_EMAIL_DOMAIN, payload)
 
     def connect_telegram_bot(self, input: ConnectTelegramBotInput) -> RawResponse[models.Operation]:
-        "Connect Telegram bot\n\nStarts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to create a new bot, whose name and username are chosen in Telegram, or to connect an existing managed bot, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged."
+        "Connect Telegram bot\n\nStarts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to create a new bot, whose name and username are chosen in Telegram, or to connect an existing managed bot, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged. If the operation fails, its `error` is the problem of one of these codes: `TELEGRAM_CONFIGURATION_FAILED`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_CONNECT_TELEGRAM_BOT, payload)
 
     def count_filtered_verification_codes(
         self, input: CountFilteredVerificationCodesInput
     ) -> RawResponse[models.FilteredVerificationCodeCount]:
-        "Count filtered verification codes\n\nCounts the verification codes Photon kept from this project's dedicated lines and numbers, optionally for one `platform`. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Requires the platforms:read permission bound to the project resource in the path."
+        "Count filtered verification codes\n\nCounts the verification codes Photon kept from this project's dedicated lines, optionally for one `platform`. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_COUNT_FILTERED_VERIFICATION_CODES, payload)
 
     def count_resource_filtered_verification_codes(
         self, input: CountResourceFilteredVerificationCodesInput
     ) -> RawResponse[models.FilteredVerificationCodeCount]:
-        "Count a line's filtered verification codes\n\nCounts the verification codes Photon kept from one dedicated line or number. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a number receives both SMS and WhatsApp. Requires the platforms:read permission bound to the project resource in the path."
+        "Count a line's filtered verification codes\n\nCounts the verification codes Photon kept from one dedicated line. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a dedicated line receives both iMessage and WhatsApp. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_COUNT_RESOURCE_FILTERED_VERIFICATION_CODES, payload)
 
@@ -6657,7 +6762,7 @@ class SyncRawProjectsPlatformsResource:
     def create_whatsapp_voip_sender(
         self, input: CreateWhatsappVoipSenderInput
     ) -> RawResponse[models.Operation]:
-        "Create WhatsApp VoIP sender\n\nRegisters an active, SMS-capable Photon VoIP line on this project's connected WhatsApp Business Account. The account is resolved server-side; callers never select a WABA. The platform creates or reuses the Meta number, requests and consumes the SMS ownership code internally, verifies it, and registers the sender. displayName is optional; when omitted the project agent profile name is snapshotted before acceptance. The VoIP line remains a separate resource and never receives the whatsapp_business ability."
+        "Create WhatsApp VoIP sender\n\nRegisters an active, SMS-capable Photon VoIP line on this project's connected WhatsApp Business Account. The account is resolved server-side; callers never select a WABA. The platform creates or reuses the Meta number, requests and consumes the SMS ownership code internally, verifies it, and registers the sender. displayName is optional; when omitted the project agent profile name is snapshotted before acceptance. The VoIP line remains a separate resource and never receives the whatsapp_business ability. If the operation fails, its `error` is the problem of one of these codes: `WHATSAPP_AUTHORIZATION_REVOKED`, `WHATSAPP_DISPLAY_NAME_CONFLICT`, `WHATSAPP_NUMBER_ADD_REFUSED`, `WHATSAPP_NUMBER_LOOKUP_FAILED`, `WHATSAPP_REGISTRATION_REFUSED`, `WHATSAPP_VERIFICATION_REFUSED`, `WHATSAPP_VERIFICATION_REQUEST_REFUSED`, `WHATSAPP_VERIFICATION_TIMED_OUT`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_CREATE_WHATSAPP_VOIP_SENDER, payload)
 
@@ -6683,7 +6788,7 @@ class SyncRawProjectsPlatformsResource:
     def disconnect_whatsapp_business_account(
         self, input: DisconnectWhatsappBusinessAccountInput
     ) -> RawResponse[models.Operation]:
-        "Disconnect WhatsApp Business account\n\nDisconnects every attached WhatsApp sender, then unsubscribes our app and removes the project's business account connection. Photon VoIP lines and the numbers in Meta remain. Requires Idempotency-Key. Poll the returned operation; provider refusals appear as operation failures and retain the account for retry with a new key. New signups are blocked while disconnecting, and existing provisions must finish before this request can be accepted."
+        "Disconnect WhatsApp Business account\n\nDisconnects every attached WhatsApp sender, then unsubscribes our app and removes the project's business account connection. Photon VoIP lines and the numbers in Meta remain. Requires Idempotency-Key. Poll the returned operation. Meta's answers do not fail it: each sender is released as `DELETE /platforms/resources/:resourceId` does, and our app's unsubscribe is a best effort, tried up to three times, a second or two apart, only while the failure is temporary. New signups are blocked while disconnecting, and existing provisions must finish before this request can be accepted. If the operation fails, its `error` is the problem of one of these codes: `WHATSAPP_ACCOUNT_DISCONNECT_FAILED`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_DISCONNECT_WHATSAPP_BUSINESS_ACCOUNT, payload)
 
@@ -6782,7 +6887,7 @@ class SyncRawProjectsPlatformsResource:
     def list_filtered_verification_codes(
         self, input: ListFilteredVerificationCodesInput
     ) -> RawResponse[models.FilteredVerificationCodePage]:
-        "List filtered verification codes\n\nLists the verification codes Photon kept from this project's dedicated lines and numbers. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line or number (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Filter by `platform`; to read one line, use its own filtered-otp path. Requires the platforms:read permission bound to the project resource in the path."
+        "List filtered verification codes\n\nLists the verification codes Photon kept from this project's dedicated lines. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Filter by `platform`; to read one line, use its own filtered-otp path. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_LIST_FILTERED_VERIFICATION_CODES, payload)
 
@@ -6815,12 +6920,12 @@ class SyncRawProjectsPlatformsResource:
     def list_resource_filtered_verification_codes(
         self, input: ListResourceFilteredVerificationCodesInput
     ) -> RawResponse[models.FilteredVerificationCodePage]:
-        "List a line's filtered verification codes\n\nLists the verification codes Photon kept from one dedicated line or number. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line or number (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a number receives both SMS and WhatsApp. Requires the platforms:read permission bound to the project resource in the path."
+        "List a line's filtered verification codes\n\nLists the verification codes Photon kept from one dedicated line. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a dedicated line receives both iMessage and WhatsApp. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_LIST_RESOURCE_FILTERED_VERIFICATION_CODES, payload)
 
     def list_resources(self, input: ListResourcesInput) -> RawResponse[models.ResourcePage]:
-        "List resources\n\nLists the project's resources, oldest first, including retired ones unless `state` filters them out. Filter by `type`, by enabled `ability` and by comma-separated `state`. `detail` is a per-type public view. Requires the platforms:read permission bound to the project resource in the path."
+        "List resources\n\nLists the project's resources, oldest first, including retired ones unless `state` filters them out. Filter by `type`, by enabled `ability` and by comma-separated `state`. Lifecycle states are unallocated, active and retired; active means owned and non-retired, not provider-confirmed readiness. Every VoIP resource includes detail.activationState: activating or active, defaulting to active without owner-matched saved state. state=active includes numbers still activating. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_LIST_RESOURCES, payload)
 
@@ -6848,38 +6953,38 @@ class SyncRawProjectsPlatformsResource:
     def provision_imessage_dedicated_line(
         self, input: ProvisionImessageDedicatedLineInput
     ) -> RawResponse[models.Operation]:
-        "Provision dedicated iMessage line\n\nClaims one dedicated iMessage line for the project and enables iMessage on it. Always answers 202 with an operation: dedicated lines are allocated from available capacity, and unavailable capacity causes a wait rather than a failure — this can legitimately stay `running` for hours, which is exactly why the response is a handle to poll rather than a number. The project's messaging subscription must grant the dedicated iMessage lines entitlement (`imessage_dedicated_lines.can_purchase`), and that is checked before capacity is reserved. The line's own charge starts when a line is claimed; the subscription that grants the entitlement bills on its own terms, which cancelling a request does not change. Waiting requests are served first come, first served. One that is still waiting is cancelled with a `reason` if the project is deleted (`project_deleted`) or its plan stops selling dedicated lines (`entitlement_lost`); while the payer is restricted for overdue payment it keeps waiting. If you no longer want to wait, POST to the operation's cancel endpoint, which charges nothing for the line. The Idempotency-Key is required and permanent: repeating it returns the same operation forever. A further line always needs a NEW key, including while others are still waiting. Requires the platforms:write permission bound to the project resource in the path."
+        "Provision dedicated iMessage line\n\nClaims one dedicated iMessage line for the project and enables iMessage on it. Always answers 202 with an operation: dedicated lines are allocated from available capacity, and unavailable capacity causes a wait rather than a failure — this can legitimately stay `running` for hours, which is exactly why the response is a handle to poll rather than a number. The project's messaging subscription must grant the dedicated iMessage lines entitlement (`imessage_dedicated_lines.can_purchase`), and that is checked before capacity is reserved. The line's own charge starts when a line is claimed; the subscription that grants the entitlement bills on its own terms, which cancelling a request does not change. Waiting requests are served first come, first served. One that is still waiting is cancelled with a `reason` if the project is deleted (`project_deleted`) or its plan stops selling dedicated lines (`entitlement_lost`); while the payer is restricted for overdue payment it keeps waiting. If you no longer want to wait, POST to the operation's cancel endpoint, which charges nothing for the line. The Idempotency-Key is required and permanent: repeating it returns the same operation forever. A further line always needs a NEW key, including while others are still waiting. An optional promotionCode is checked and claimed here, before the request waits for a line: a code that can't be used answers 409 PROMOTION_CODE_REJECTED and starts nothing. Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `CHARGE_REFUSED`, `ENTERPRISE_PLAN_REQUIRED`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_PROVISION_IMESSAGE_DEDICATED_LINE, payload)
 
     def provision_whatsapp_dedicated_line(
         self, input: ProvisionWhatsappDedicatedLineInput
     ) -> RawResponse[models.Operation]:
-        "Provision dedicated WhatsApp line\n\nProvisions one dedicated WhatsApp line with WhatsApp and shared Voice enabled. It attaches to an eligible iMessage line the project already owns when possible so both products keep the same number; otherwise it claims healthy, available WhatsApp-capable dedicated-line inventory. Always answers 202, because waiting when no inventory is available is not a failure. The product opens its own charge period after the abilities are enabled; Voice has no separate charge. Waiting requests are served first come, first served, and are cancelled with a `reason` exactly as for a dedicated iMessage line. Cancel the returned operation to stop waiting. The Idempotency-Key is required and permanent."
+        "Provision dedicated WhatsApp line\n\nProvisions one dedicated WhatsApp line with WhatsApp and shared Voice enabled. It attaches to an eligible iMessage line the project already owns when possible so both products keep the same number; otherwise it claims healthy, available WhatsApp-capable dedicated-line inventory. Always answers 202, because waiting when no inventory is available is not a failure. The product opens its own charge period after the abilities are enabled; Voice has no separate charge. Waiting requests are served first come, first served, and are cancelled with a `reason` exactly as for a dedicated iMessage line. Cancel the returned operation to stop waiting. An optional promotionCode is checked and claimed here, before the request waits for a line: a code that can't be used answers 409 PROMOTION_CODE_REJECTED and starts nothing. The Idempotency-Key is required and permanent. If the operation fails, its `error` is the problem of one of these codes: `CHARGE_REFUSED`, `ENTERPRISE_PLAN_REQUIRED`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_PROVISION_WHATSAPP_DEDICATED_LINE, payload)
 
     def purchase_sms_number(self, input: PurchaseSmsNumberInput) -> RawResponse[models.Operation]:
-        "Purchase SMS number\n\nBuys one US local number from the provider and records it as a resource with SMS enabled. Requires countryCode (US) and accepts an optional three-digit geographic areaCode. The server selects an exact matching number. Empty inventory keeps the operation running until a number is available or the caller cancels before ordering begins. Always answers 202 with an operation: the work runs behind the response, and the Location points at the operation to poll. New area-specific requests must appear in current provider coverage; discover it with GET /sms/numbers/area-codes?countryCode=US. Coverage and subscription checks run before operation creation. Billing follows delivery. Replays return the original operation without checking current coverage. The Idempotency-Key is required and permanent: repeating it returns the same operation forever, never a second number. A further number always needs a NEW key, including while others are still running. Requires the platforms:write permission bound to the project resource in the path."
+        'Purchase SMS number\n\nBuys one US local number from the provider and records it as a resource with SMS enabled. Requires countryCode (US) and accepts an optional three-digit geographic areaCode. The server selects an exact matching number. While inventory is empty the operation keeps searching, and the caller can cancel it until ordering begins; a search still empty one minute after the operation was created fails it with `NUMBER_INVENTORY_UNAVAILABLE`. Always answers 202 with an operation: the work runs behind the response, and the Location points at the operation to poll. New area-specific requests must appear in current provider coverage; discover it with GET /sms/numbers/area-codes?countryCode=US. Coverage and subscription checks run before operation creation. Billing follows delivery. Replays return the original operation without checking current coverage. The Idempotency-Key is required and permanent: repeating it returns the same operation forever, never a second number. A further number always needs a NEW key, including while others are still running. An optional promotionCode is redeemed with the number\'s charge, which follows delivery: a code billing refuses hands the number back, and its release operation carries the refusal (`reason` `charge_refused`, with `detail.chargeRefusal` `{ code: "promotion_code_rejected", detail: <why> }`). Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `ENTITLEMENT_REQUIRED`, `NUMBER_INVENTORY_UNAVAILABLE`, `NUMBER_ORDER_FAILED`, `NUMBER_ORDER_RECONCILIATION_REQUIRED`, `NUMBER_SEARCH_FAILED`.'
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_PURCHASE_SMS_NUMBER, payload)
 
     def release_imessage_dedicated_line(
         self, input: ReleaseImessageDedicatedLineInput
     ) -> RawResponse[models.Operation]:
-        "Release dedicated iMessage line\n\nRemoves only iMessage from one dedicated line. Shared Voice is removed only when WhatsApp is absent; if WhatsApp remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open iMessage charge period identifies this product tenure."
+        "Release dedicated iMessage line\n\nRemoves only iMessage from one dedicated line. Shared Voice is removed only when WhatsApp is absent; if WhatsApp remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open iMessage charge period identifies this product tenure. If the operation fails, its `error` is the problem of one of these codes: `RESOURCE_NOT_FOUND`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_RELEASE_IMESSAGE_DEDICATED_LINE, payload)
 
     def release_resource(self, input: ReleaseResourceInput) -> RawResponse[models.Operation]:
-        "Release resource\n\nGives one resource back, whatever it is. What that means is the resource's own business: an SMS number goes back to the provider and is retired, a dedicated iMessage line goes back to the shared pool and stays in existence for someone else to claim. Either way the provider is contacted first where there is one, then a single transaction disables every ability, ends the project's hold and closes the charge period — so a provider that refuses leaves the resource exactly as it was, still owned and still billed. Usually finishes inside this request and answers 200; if the provider is slow it answers 202 and the Location points at the operation to poll. The decrement runs behind the answer either way, so the resource is gone when you are told it is. Takes no Idempotency-Key — releasing the same resource twice is the same request. Releasing one that is already gone answers 404. Requires the platforms:write permission bound to the project resource in the path."
+        "Release resource\n\nGives one resource back, whatever it is. What that means is the resource's own business: an SMS number goes back to the provider and is retired, a dedicated iMessage line goes back to the shared pool and stays in existence for someone else to claim. Either way the provider is contacted first where there is one, then a single transaction disables every ability, ends the project's hold and closes the charge period — so a provider that refuses leaves the resource exactly as it was, still owned and still billed. A WhatsApp Business sender is the exception: Meta never holds its release. A number on a Photon VoIP line is deregistered as a best effort, tried up to three times, a second or two apart, only while the failure is temporary; a number the customer brought is not sent to Meta at all; the sender is retired either way, and the number stays in the customer's WhatsApp Business Account. Usually finishes inside this request and answers 200; if the provider is slow it answers 202 and the Location points at the operation to poll. The decrement runs behind the answer either way, so the resource is gone when you are told it is. Takes no Idempotency-Key — releasing the same resource twice is the same request. Releasing one that is already gone answers 404. Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `EMAIL_DOMAIN_RELEASE_FAILED`, `NUMBER_RELEASE_FAILED`, `RESOURCE_NOT_FOUND`, `TELEGRAM_RELEASE_FAILED`, `WHATSAPP_SENDER_RELEASE_FAILED`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_RELEASE_RESOURCE, payload)
 
     def release_whatsapp_dedicated_line(
         self, input: ReleaseWhatsappDedicatedLineInput
     ) -> RawResponse[models.Operation]:
-        "Release dedicated WhatsApp line\n\nRemoves only WhatsApp from one dedicated line. Shared Voice is removed only when iMessage is absent; if iMessage remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open WhatsApp charge period identifies this product tenure."
+        "Release dedicated WhatsApp line\n\nRemoves only WhatsApp from one dedicated line. Shared Voice is removed only when iMessage is absent; if iMessage remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open WhatsApp charge period identifies this product tenure. If the operation fails, its `error` is the problem of one of these codes: `RESOURCE_NOT_FOUND`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_RELEASE_WHATSAPP_DEDICATED_LINE, payload)
 
@@ -6907,7 +7012,7 @@ class SyncRawProjectsPlatformsResource:
     def unassign_sms_line_campaign(
         self, input: UnassignSmsLineCampaignInput
     ) -> RawResponse[models.Operation]:
-        "Unassign SMS line campaign\n\nAny project writer, including a scoped API key, may detach the campaign. The number and campaign remain owned. Requires a permanent Idempotency-Key and expectedVersion. Local eligibility is blocked immediately; provider detachment runs asynchronously."
+        "Unassign SMS line campaign\n\nAny project writer, including a scoped API key, may detach the campaign. The number and campaign remain owned. Requires a permanent Idempotency-Key and expectedVersion. Local eligibility is blocked immediately; provider detachment runs asynchronously. If the operation fails, its `error` is the problem of one of these codes: `SMS_CAMPAIGN_PROVIDER_REJECTED`, `SMS_CAMPAIGN_RECONCILIATION_REQUIRED`, `SMS_CAMPAIGN_REVOKED`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_UNASSIGN_SMS_LINE_CAMPAIGN, payload)
 
@@ -6928,7 +7033,7 @@ class SyncRawProjectsPlatformsResource:
     def update_voice_profile(
         self, input: UpdateVoiceProfileInput
     ) -> RawResponse[models.VoiceProfile]:
-        "Update Voice profile\n\nPatches an additional profile's name, protocol, or mediaEncryption when expectedVersion matches. Omitted fields are preserved. Directional configuration is managed through the profile's inbound and outbound endpoints. Requires platforms:write bound to the path project."
+        "Update Voice profile\n\nPatches an additional profile's name, protocol, or mediaEncryption when expectedVersion matches. Omitted fields are preserved. The default profile's metadata changes only through PATCH /v1/projects/{id}/platforms/voice/profiles/default, so a name, protocol, or mediaEncryption patch addressed to its profileId is refused with 409. Directional configuration is managed through the profile's inbound and outbound endpoints. Requires platforms:write bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_UPDATE_VOICE_PROFILE, payload)
 
@@ -7087,7 +7192,7 @@ class SyncRawProjectsResource:
         return self._transport.request(_OP_GET_PROJECT, payload)
 
     def get_attachment(self, input: GetAttachmentInput) -> RawResponse[models.Attachment]:
-        "Get attachment\n\nReturns an Attachment's metadata. Use the content endpoint to download its bytes."
+        "Get attachment\n\nReturns an Attachment's metadata. Use the content endpoint to download its bytes. If its metadata is unavailable after ten seconds, returns ATTACHMENT_NOT_READY with Retry-After: 5."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_GET_ATTACHMENT, payload)
 
@@ -7135,7 +7240,7 @@ class SyncRawProjectsResource:
         return self._transport.request(_OP_GET_WEBHOOK_EVENT_SCHEMA, payload)
 
     def list_attachments(self, input: ListAttachmentsInput) -> RawResponse[models.AttachmentPage]:
-        "List attachments\n\nLists the Project's Attachment metadata, with optional time filters."
+        "List attachments\n\nLists the Project's Attachment metadata, with optional time filters. An Attachment can be absent until its upload finishes, which advances its updatedAt; follow changes with updatedSince."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_LIST_ATTACHMENTS, payload)
 
@@ -7440,13 +7545,6 @@ class SyncRawAuthResource:
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_RETRY_ORGANIZATION_CONNECTION_SYNC, payload)
 
-    def start_enterprise_login(
-        self, input: StartEnterpriseLoginInput
-    ) -> RawResponse[models.StartEnterpriseLoginResponse]:
-        "Start company sign-in\n\nReturns a sign-in URL without requiring an existing account: the company SSO connection when the target has a ready connection, otherwise ordinary account login. Supply one documented enrollment variant: organizationId with returnTo (optionally invitationToken), invitationToken with returnTo, or retryToken. Open the returned URL to continue authentication; receiving a URL does not complete sign-in. This is a browser flow: the request must come from an allowed Origin, and the retryToken variant also needs the retry cookie set by the failed sign-in, so send it with credentials."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_START_ENTERPRISE_LOGIN, payload)
-
     def update_organization_sso_policy(
         self, input: UpdateOrganizationSsoPolicyInput
     ) -> RawResponse[models.OrganizationSsoConfiguration]:
@@ -7462,7 +7560,7 @@ class SyncOrganizationsBillingResource:
     def change_plan(
         self, input: ChangePlanInput
     ) -> models.TerminalBillingOperation | models.PendingBillingOperation:
-        "Change plan\n\nPurchases or changes the selected project's plan for the supplied category and planCode. A 202 response means the change is pending: poll the returned operation URL and honor Retry-After until it succeeds or fails. A 200 response means the idempotency key resolved to an operation that is already terminal; inspect that result rather than assuming success from the status code alone. Supply the required Idempotency-Key header. Supply both organizationId and projectId to select the project within its organization."
+        "Change plan\n\nPurchases or changes the selected project's plan for the supplied category and planCode, redeeming promotionCode when given. A 202 response means the change is pending: poll the returned operation URL and honor Retry-After until it succeeds or fails. A 200 response means the idempotency key resolved to an operation that is already terminal; inspect that result rather than assuming success from the status code alone. Supply the required Idempotency-Key header. Supply both organizationId and projectId to select the project within its organization."
         return (self._raw_resource.change_plan(input)).data
 
     def create_organization_payment_method_checkout(
@@ -7492,7 +7590,7 @@ class SyncOrganizationsBillingResource:
     def get_organization_payment_method(
         self, input: GetOrganizationPaymentMethodInput
     ) -> models.GetOrganizationPaymentMethodResponse:
-        "Get organization payment method\n\nReports whether the selected organization has a card on file and returns its documented payment-method metadata. Reading this endpoint does not collect a new card or create a checkout session."
+        "Get organization payment method\n\nReports whether the selected organization has a card on file, its documented payment-method metadata, whether a purchase needs a card first (purchaseRefusal), and how it pays: by card, or by invoice on its contract's terms (agreement). Reading this endpoint does not collect a new card or create a checkout session."
         return (self._raw_resource.get_organization_payment_method(input)).data
 
     def get_organization_terms(
@@ -7514,13 +7612,13 @@ class SyncOrganizationsBillingResource:
     def preview_organization_change(
         self, input: PreviewOrganizationChangeInput
     ) -> models.PreviewOrganizationChangeResponse:
-        "Preview an organization billing change\n\nPreviews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing."
+        "Preview an organization billing change\n\nPreviews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives."
         return (self._raw_resource.preview_organization_change(input)).data
 
     def preview_project_change(
         self, input: PreviewProjectChangeInput
     ) -> models.PreviewProjectChangeResponse:
-        "Preview a project billing change\n\nPreviews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. Supply both organizationId and projectId; the organization must pay for the project."
+        "Preview a project billing change\n\nPreviews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; a downgrade, or choosing the held plan again, bills nothing now; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives. Supply both organizationId and projectId; the organization must pay for the project."
         return (self._raw_resource.preview_project_change(input)).data
 
 
@@ -7562,35 +7660,35 @@ class SyncOrganizationsResource:
     def accept_organization_invitation(
         self, input: AcceptOrganizationInvitationInput
     ) -> models.AcceptOrganizationInvitationResponse:
-        "Accept an invitation to all organization projects"
+        "Accept an invitation to all organization projects\n\nAccepts an invitation by its token and adds the signed-in account to the organization with the invited role. An existing member keeps their role, except a Viewer who joined through SSO just-in-time provisioning and whose role has never been changed, who takes the invited role; a removed member can rejoin only with an invitation created after the removal, else 409. The account's verified email must match the invited address, the invitation must be pending and unexpired, and its inviter must still be an Owner or Admin; in an organization that requires SSO it returns 403, because the invitee joins by signing in through that SSO instead. Call it with account credentials acting as the account itself and supply the required Idempotency-Key header."
         return (self._raw_resource.accept_organization_invitation(input)).data
 
     def cancel_sso_subscription(
         self, input: CancelSsoSubscriptionInput
     ) -> models.CancelSsoSubscriptionResponse:
-        "Cancel the SSO subscription"
+        "Cancel the SSO subscription\n\nCancels the organization's SSO subscription at once, but only after SSO has been turned off: while SSO is still required it returns 409. The unused days become organization credit, and SSO setup closes. Only Owners and Admins can call it, with account credentials and the required Idempotency-Key header."
         return (self._raw_resource.cancel_sso_subscription(input)).data
 
     def check_organization_deletion(
         self, input: CheckOrganizationDeletionInput
     ) -> models.CheckOrganizationDeletionResponse:
-        "Check organization deletion prerequisites"
+        "Check organization deletion prerequisites\n\nReports whether the organization can be deleted now (canDelete), the blockers to clear first, such as active projects or unpaid invoices, and the version to send to closeOrganization. The answer is advisory, because deletion checks again. Only the Owner can call it, with account credentials; in an organization that requires SSO, sign in through SSO, because Account Service Keys are refused."
         return (self._raw_resource.check_organization_deletion(input)).data
 
     def close_organization(self, input: CloseOrganizationInput) -> None:
-        "Delete organization"
+        "Delete organization\n\nDeletes the organization: it leaves normal access when the call returns 204, and Photon then releases its app installations, registrations and billing subscriptions in the background. It cannot be undone and needs no active projects, nothing owed, and the expectedVersion from checkOrganizationDeletion; a blocked or stale request returns 409. Only the Owner can call it, with account credentials (in an organization that requires SSO, a session signed in through SSO) and the required Idempotency-Key header."
         return (self._raw_resource.close_organization(input)).data
 
     def commit_organization_avatar(
         self, input: CommitOrganizationAvatarInput
     ) -> models.CommitOrganizationAvatarResponse:
-        "Commit an organization avatar"
+        "Commit an organization avatar\n\nSets the organization's avatar to an image uploaded with createOrganizationAvatarUpload, after checking its size, type and contents, and discards the previous avatar; an invalid or expired upload is rejected. Owners and Admins can call it with account credentials. Send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         return (self._raw_resource.commit_organization_avatar(input)).data
 
     def create_organization(
         self, input: CreateOrganizationInput
     ) -> models.CreateOrganizationResponse:
-        "Create an organization"
+        "Create an organization\n\nCreates an organization with the supplied name and makes the calling account its Owner; SSO and just-in-time provisioning start disabled. Billing is set up after the response, so the 201 body has no billingInitialization; read it from getOrganization or listOrganizations to follow the setup. Call it with account credentials acting as the account itself and supply the required Idempotency-Key header; an account that is closing gets 409."
         return (self._raw_resource.create_organization(input)).data
 
     def create_organization_avatar_upload(
@@ -7602,7 +7700,7 @@ class SyncOrganizationsResource:
     def create_organization_invitation(
         self, input: CreateOrganizationInvitationInput
     ) -> models.CreateOrganizationInvitationResponse:
-        "Invite a Member or Viewer to all organization projects"
+        "Invite a Member or Viewer to all organization projects\n\nInvites an email address to the organization as a Member or Viewer and emails it a link that stays valid for 7 days; the Admin and Owner roles can't be invited. Owners and Admins can call it with account credentials and the required Idempotency-Key header. Inviting an address that has a pending invitation for the same role resends it and a different role returns 409, while sending too often (twice within a minute, more than 30 an hour or 100 pending per organization) returns 429."
         return (self._raw_resource.create_organization_invitation(input)).data
 
     def create_organization_oauth_client(
@@ -7614,19 +7712,19 @@ class SyncOrganizationsResource:
     def create_service_identity(
         self, input: CreateServiceIdentityInput
     ) -> models.CreateServiceIdentityResponse:
-        "Create an organization Service Identity"
+        "Create an organization Service Identity\n\nCreates an active Service Identity, a machine identity owned by the organization, with a name and a non-empty set of permissions from listServiceIdentityPermissions; it starts with no credentials. Owners and Admins can call it with account credentials and the required Idempotency-Key header."
         return (self._raw_resource.create_service_identity(input)).data
 
     def create_service_identity_api_key(
         self, input: CreateServiceIdentityApiKeyInput
     ) -> models.CreateServiceIdentityApiKeyResponse:
-        "Create a one-time Service Identity API key"
+        "Create a one-time Service Identity API key\n\nCreates an API key for an active Service Identity that no app installation manages; the key acts with the identity's current permissions. Only a response with status created returns the key's value, so store it securely; retry with the same Idempotency-Key, which must be a UUID: a retry returns the key's status without the value, and status recovery_required means the value was not delivered and can't be retrieved. Owners and Admins can call it with account credentials, and expectedIdentityVersion must match the identity's current version, else 409; an identity managed by an app installation also returns 409."
         return (self._raw_resource.create_service_identity_api_key(input)).data
 
     def create_service_identity_client_secret(
         self, input: CreateServiceIdentityClientSecretInput
     ) -> models.CreateServiceIdentityClientSecretResponse:
-        "Create a one-time Service Identity M2M client secret"
+        "Create a one-time Service Identity M2M client secret\n\nCreates a client secret for the machine-to-machine (M2M) application of an active Service Identity that no app installation manages, setting the application up first if needed, and returns the secret with its clientId once; exchange them for M2M access tokens, and never send the secret to other operations. Retry with the same Idempotency-Key, which must be a UUID: a retry returns the status without the secret, and a response with stage application (status recovery_required or cleanup_required) means the application could not be set up and no secret exists. Owners and Admins can call it with account credentials, and expectedIdentityVersion must match the identity's current version, else 409; an identity managed by an app installation also returns 409."
         return (self._raw_resource.create_service_identity_client_secret(input)).data
 
     def delete_organization_oauth_client(
@@ -7641,12 +7739,6 @@ class SyncOrganizationsResource:
         "Revoke an organization OAuth client's secret\n\nStops every secret of the app now, including one still in its grace period."
         return (self._raw_resource.delete_organization_oauth_client_secret(input)).data
 
-    def ensure_initial_organization(
-        self, input: EnsureInitialOrganizationInput
-    ) -> models.EnsureInitialOrganizationResponse:
-        "Ensure the initial organization"
-        return (self._raw_resource.ensure_initial_organization(input)).data
-
     def get_current_organization(
         self, input: GetCurrentOrganizationInput | None = None
     ) -> models.GetCurrentOrganizationResponse:
@@ -7654,71 +7746,77 @@ class SyncOrganizationsResource:
         return (self._raw_resource.get_current_organization(input)).data
 
     def get_organization(self, input: GetOrganizationInput) -> models.GetOrganizationResponse:
-        "Read organization name and avatar"
+        "Read organization name and avatar\n\nReturns the organization's name, avatar URL, version and billing setup progress. Any member can read it with account credentials, and a Service Identity granted organization:read or an OAuth grant with the organization:read scope can read the organization it is bound to. Send version as expectedVersion when renaming the organization or changing its avatar."
         return (self._raw_resource.get_organization(input)).data
 
     def get_organization_oauth_client(
         self, input: GetOrganizationOauthClientInput
     ) -> models.GetOrganizationOauthClientResponse:
-        "Read an organization OAuth client"
+        "Read an organization OAuth client\n\nReturns one third-party OAuth application the organization owns, without its secret. Any member can call it with account credentials. The ETag response header is the value updateOrganizationOauthClient needs in If-Match."
         return (self._raw_resource.get_organization_oauth_client(input)).data
 
     def get_organization_oauth_client_secret(
         self, input: GetOrganizationOauthClientSecretInput
     ) -> models.GetOrganizationOauthClientSecretResponse:
-        "Read an organization OAuth client's secret"
+        "Read an organization OAuth client's secret\n\nReturns metadata about an OAuth application's secret: the current secret and, after a rotation, the previous one while it still works, with each one's hint, creation and last-use times; the previous one's validUntil is when it stops working, or null when it lasts until the next rotation or revocation. The secret value is never returned. Only Owners and Admins can call it, with account credentials."
         return (self._raw_resource.get_organization_oauth_client_secret(input)).data
 
     def get_service_identity(
         self, input: GetServiceIdentityInput
     ) -> models.GetServiceIdentityResponse:
-        "Read a Service Identity"
+        "Read a Service Identity\n\nReturns one Service Identity with its permissions, status and version. Any member can call it with account credentials. Send version as expectedVersion to updateServiceIdentity, or as expectedIdentityVersion when creating a credential."
         return (self._raw_resource.get_service_identity(input)).data
 
     def get_sso_subscription(
         self, input: GetSsoSubscriptionInput
     ) -> models.GetSsoSubscriptionResponse:
-        "Read SSO subscription"
+        "Read SSO subscription\n\nReturns the organization's SSO subscription: its state, the current monthly price and billing period, whether a payment method must be added first, and whether SSO can be set up (canConfigure). Only Owners and Admins can call it, with account credentials. Send its amount, currency and currentPeriodEnd as the quote when subscribing."
         return (self._raw_resource.get_sso_subscription(input)).data
 
+    def get_ten_dlc_brand_otp(
+        self, input: GetTenDlcBrandOtpInput
+    ) -> models.GetTenDlcBrandOtpResponse:
+        "Get sole-proprietor OTP status\n\nReturns the redacted one-time-password verification state for an organization-owned brand. OTP verification applies only to sole-proprietor brands. Reading this endpoint does not request another code or verify a supplied code; use the trigger and verification operations for those actions. Supply organization_id for the organization that owns the registration."
+        return (self._raw_resource.get_ten_dlc_brand_otp(input)).data
+
     def leave_organization(self, input: LeaveOrganizationInput) -> models.LeaveOrganizationResponse:
-        "Leave an organization; Owners must transfer or close first"
+        "Leave an organization; Owners must transfer or close first\n\nRemoves the authenticated account's own membership. Nothing is revoked: the account's sessions, OAuth grants and Account Service Keys stop being accepted for the organization and its projects shortly after the call, and project API keys and Service Identity credentials it created keep working until they are revoked. Any member except the Owner can call it, with account credentials or an OAuth grant for this organization with the organization:read scope; the Owner gets 409 and must transfer ownership or delete the organization first. Send the caller's own membership version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         return (self._raw_resource.leave_organization(input)).data
 
     def list_organization_invitations(
         self, input: ListOrganizationInvitationsInput
     ) -> models.ListOrganizationInvitationsResponse:
-        "List pending organization invitations"
+        "List pending organization invitations\n\nLists the organization's pending, unexpired invitations, newest first, in one unpaginated response; accepted, revoked and expired invitations are left out, and invitation links are never returned. Owners and Admins can call it with account credentials."
         return (self._raw_resource.list_organization_invitations(input)).data
 
     def list_organization_members(
         self, input: ListOrganizationMembersInput
     ) -> models.ListOrganizationMembersResponse:
-        "List current organization members"
+        "List current organization members\n\nLists the organization's active members, ordered by account ID, with each member's role, membership version and account profile (name, email and picture); a member whose account is missing or deleted has a null profile. Any member can call it with account credentials, or with an OAuth grant for this organization that has the organization:read scope. The list is not paginated."
         return (self._raw_resource.list_organization_members(input)).data
 
     def list_organization_oauth_clients(
         self, input: ListOrganizationOauthClientsInput
     ) -> models.ListOrganizationOauthClientsResponse:
-        "List organization OAuth clients"
+        "List organization OAuth clients\n\nLists the third-party OAuth applications the organization owns, with their metadata but never their secrets, in one unpaginated response. Any member can call it with account credentials."
         return (self._raw_resource.list_organization_oauth_clients(input)).data
 
     def list_organizations(
         self, input: ListOrganizationsInput | None = None
     ) -> models.ListOrganizationsResponse:
-        "List organizations"
+        "List organizations\n\nLists the active organizations the authenticated account belongs to, oldest first, in one unpaginated response; ownedOrganizationIds marks the ones it owns. Call it with account credentials acting as the account itself; OAuth grants and Service Identities are refused."
         return (self._raw_resource.list_organizations(input)).data
 
     def list_service_identities(
         self, input: ListServiceIdentitiesInput
     ) -> models.ListServiceIdentitiesResponse:
-        "List organization Service Identities"
+        "List organization Service Identities\n\nLists every Service Identity in the organization, oldest first, including disabled ones and those managed by app installations, in one unpaginated response. Any member can call it with account credentials. It returns identity metadata only, never credentials."
         return (self._raw_resource.list_service_identities(input)).data
 
     def list_service_identity_credentials(
         self, input: ListServiceIdentityCredentialsInput
     ) -> models.ListServiceIdentityCredentialsResponse:
-        "List Service Identity credential metadata"
+        "List Service Identity credential metadata\n\nLists metadata for every API key and client secret of a Service Identity, oldest first, including pending and revoked ones, in one unpaginated response; it never returns secret values. Only Owners and Admins can call it, with account credentials."
         return (self._raw_resource.list_service_identity_credentials(input)).data
 
     def list_service_identity_permissions(
@@ -7730,37 +7828,37 @@ class SyncOrganizationsResource:
     def preview_organization_invitation(
         self, input: PreviewOrganizationInvitationInput
     ) -> models.PreviewOrganizationInvitationResponse:
-        "Preview an organization invitation after sign-in"
+        "Preview an organization invitation after sign-in\n\nReturns what an invitation offers to the signed-in account that holds its token: the organization, role, expiry, member count and inviter with masked email addresses, whether the account's verified email matches the invitation, and whether SSO is required to accept it. Call it with account credentials acting as the account itself; it changes nothing. An unknown token returns 404, and an expired or revoked invitation, or one accepted by another account, returns 409."
         return (self._raw_resource.preview_organization_invitation(input)).data
 
     def remove_organization_avatar(
         self, input: RemoveOrganizationAvatarInput
     ) -> models.RemoveOrganizationAvatarResponse:
-        "Remove an organization avatar"
+        "Remove an organization avatar\n\nRemoves the organization's custom avatar, so avatarUrl becomes null, and returns the organization with its new version. Owners and Admins can call it with account credentials. Send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         return (self._raw_resource.remove_organization_avatar(input)).data
 
     def remove_organization_member(
         self, input: RemoveOrganizationMemberInput
     ) -> models.RemoveOrganizationMemberResponse:
-        "Remove an organization member's access to all projects"
+        "Remove a member from the organization\n\nRemoves an active member from the organization. Nothing is revoked: their sessions, OAuth grants and Account Service Keys stop being accepted for the organization and its projects shortly after the call, and project API keys and Service Identity credentials they created or hold keep working until an Owner or Admin revokes them. Owners and Admins can call it with account credentials, but only the Owner can remove an Admin, and neither the Owner nor the caller can be removed here (409; leave with leaveOrganization). Send the member's current membership version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         return (self._raw_resource.remove_organization_member(input)).data
 
     def resend_organization_invitation(
         self, input: ResendOrganizationInvitationInput
     ) -> models.ResendOrganizationInvitationResponse:
-        "Resend an organization invitation"
+        "Resend an organization invitation\n\nEmails a pending invitation again with the same link and restarts its 7-day expiry. Owners and Admins can call it with account credentials and the required Idempotency-Key header. An expired, revoked or accepted invitation returns 409, and a resend within 60 seconds of the last send, or past the organization's 30 sends an hour, returns 429."
         return (self._raw_resource.resend_organization_invitation(input)).data
 
     def revoke_organization_invitation(
         self, input: RevokeOrganizationInvitationInput
     ) -> models.RevokeOrganizationInvitationResponse:
-        "Revoke an organization invitation"
+        "Revoke an organization invitation\n\nRevokes an invitation so its link can no longer be previewed or accepted; no email is sent, and an accepted invitation can't be revoked (409). Owners and Admins can call it with account credentials and the required Idempotency-Key header. Revoking an invitation that is already revoked or expired succeeds."
         return (self._raw_resource.revoke_organization_invitation(input)).data
 
     def revoke_service_identity_credential(
         self, input: RevokeServiceIdentityCredentialInput
     ) -> models.RevokeServiceIdentityCredentialResponse:
-        "Request Service Identity credential revocation"
+        "Request Service Identity credential revocation\n\nRevokes an API key or client secret of a Service Identity; this can't be undone. An API key stops working shortly after the call, while a client secret gets revocationRequestedAt and stays active until Photon confirms its deletion, and M2M access tokens already issued with it keep working until they expire; repeating the call returns the current state. Owners and Admins can call it with account credentials; send the credential's current version as expectedVersion, because a stale version returns 409, and the required Idempotency-Key header."
         return (self._raw_resource.revoke_service_identity_credential(input)).data
 
     def rotate_organization_oauth_client_secret(
@@ -7779,25 +7877,31 @@ class SyncOrganizationsResource:
         return (self._raw_resource.setup_organization_oauth_client_secret(input)).data
 
     def subscribe_sso(self, input: SubscribeSsoInput) -> models.SubscribeSsoResponse:
-        "Subscribe to organization SSO"
+        "Subscribe to organization SSO\n\nStarts the organization's SSO subscription, billed monthly in advance and prorated. Send the current quote from getSsoSubscription as expectedAmount, expectedCurrency and expectedCurrentPeriodEnd, because a changed price returns 409; the 202 means the request was accepted, and the charge and its outcome then show in the subscription's state. Only Owners and Admins can call it, with account credentials and the required Idempotency-Key header."
         return (self._raw_resource.subscribe_sso(input)).data
 
     def transfer_organization_ownership(
         self, input: TransferOrganizationOwnershipInput
     ) -> models.TransferOrganizationOwnershipResponse:
-        "Transfer organization ownership to an existing member"
+        "Transfer organization ownership to an existing member\n\nMakes another active member the Owner and turns the current Owner into a Member. Only the Owner can call it, with account credentials and the required Idempotency-Key header. Send the organization's current version, not a membership version, as expectedVersion; a stale version or naming yourself returns 409."
         return (self._raw_resource.transfer_organization_ownership(input)).data
+
+    def trigger_ten_dlc_brand_otp(
+        self, input: TriggerTenDlcBrandOtpInput
+    ) -> models.TriggerTenDlcBrandOtpResponse:
+        "Trigger sole-proprietor OTP\n\nRequests delivery of a verification code for an organization-owned sole-proprietor brand. A 202 response acknowledges the delivery request and does not mean the brand has been verified. Inspect the OTP status and submit the received code through verifyTenDlcBrandOtp. Requests may be rate limited. Supply the required Idempotency-Key header. Supply organization_id for the organization that owns the registration."
+        return (self._raw_resource.trigger_ten_dlc_brand_otp(input)).data
 
     def update_organization(
         self, input: UpdateOrganizationInput
     ) -> models.UpdateOrganizationResponse:
-        "Change organization name"
+        "Change organization name\n\nRenames the organization and returns it with its new version. Owners and Admins can call it with account credentials. Send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         return (self._raw_resource.update_organization(input)).data
 
     def update_organization_member_role(
         self, input: UpdateOrganizationMemberRoleInput
     ) -> models.UpdateOrganizationMemberRoleResponse:
-        "Change an organization member's role across all projects"
+        "Change an organization member's role across all projects\n\nChanges an active member's role to admin, member or viewer. Owners and Admins can call it with account credentials, but only the Owner can make someone an Admin or change an Admin's role, and nobody can change the Owner's role or their own here (409). Send the member's current membership version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         return (self._raw_resource.update_organization_member_role(input)).data
 
     def update_organization_oauth_client(
@@ -7809,8 +7913,14 @@ class SyncOrganizationsResource:
     def update_service_identity(
         self, input: UpdateServiceIdentityInput
     ) -> models.UpdateServiceIdentityResponse:
-        "Update a Service Identity"
+        "Update a Service Identity\n\nChanges a Service Identity's name, its permissions (the list replaces the current one) or its status. Disabling an identity stops its API keys and M2M tokens from authorizing requests without revoking them, and an identity managed by an app installation can't be changed (409). Owners and Admins can call it with account credentials; send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         return (self._raw_resource.update_service_identity(input)).data
+
+    def verify_ten_dlc_brand_otp(
+        self, input: VerifyTenDlcBrandOtpInput
+    ) -> models.VerifyTenDlcBrandOtpResponse:
+        "Verify sole-proprietor OTP\n\nSubmits otpPin for the selected organization-owned sole-proprietor brand and returns its updated, redacted verification state. A rejected code, a locked verification flow, or rate limiting is reported as an error; read the current OTP status before deciding whether to request another code. Supply the required Idempotency-Key header. Supply organization_id for the organization that owns the registration."
+        return (self._raw_resource.verify_ten_dlc_brand_otp(input)).data
 
 
 class SyncProjectsPlatformsImessageAssignmentsResource:
@@ -7846,7 +7956,7 @@ class SyncProjectsPlatformsResource:
         self.imessage = SyncProjectsPlatformsImessageResource(transport)
 
     def assign_sms_line_campaign(self, input: AssignSmsLineCampaignInput) -> models.Operation:
-        "Assign or replace SMS line campaign\n\nAttach a ready campaign from this project’s organization to its line. Requires platforms:write for the project; human and machine actors retain their authenticated identity. Requires a permanent Idempotency-Key and the current assignment version. Provider provisioning runs asynchronously."
+        "Assign or replace SMS line campaign\n\nAttach a ready campaign from this project’s organization to its line. Requires platforms:write for the project; human and machine actors retain their authenticated identity. Requires a permanent Idempotency-Key and the current assignment version. Provider provisioning runs asynchronously. If the operation fails, its `error` is the problem of one of these codes: `SMS_CAMPAIGN_PROVIDER_REJECTED`, `SMS_CAMPAIGN_RECONCILIATION_REQUIRED`, `SMS_CAMPAIGN_REVOKED`."
         return (self._raw_resource.assign_sms_line_campaign(input)).data
 
     def assign_voice_line_profile(
@@ -7872,23 +7982,23 @@ class SyncProjectsPlatformsResource:
         return (self._raw_resource.configure_voice_profile_outbound(input)).data
 
     def connect_email_domain(self, input: ConnectEmailDomainInput) -> models.Operation:
-        "Connect email domain\n\nReserves a normalized DNS domain and starts its durable email-provider setup. The accepted provision consumes one email-domain entitlement slot until it fails, is cancelled, or becomes a live resource; the plan's email.max_email_domains value sets the project limit. The customer resource does not exist until provider identity and DNS setup reach READY; poll the returned operation for progress. A domain may have only one unfinished provision or live resource globally. Email domains have no additional per-domain charge. The Idempotency-Key is required and permanent: replaying the same key and canonical domain returns the original operation forever. Requires the platforms:write permission bound to the project resource in the path."
+        "Connect email domain\n\nReserves a normalized DNS domain and starts its durable email-provider setup. The accepted provision consumes one email-domain entitlement slot until it fails, is cancelled, or becomes a live resource; the plan's email.max_email_domains value sets the project limit. The customer resource does not exist until provider identity and DNS setup reach READY; poll the returned operation for progress. A domain may have only one unfinished provision or live resource globally. Email domains have no additional per-domain charge. The Idempotency-Key is required and permanent: replaying the same key and canonical domain returns the original operation forever. Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `EMAIL_DOMAIN_PROVIDER_REJECTED`, `EMAIL_DOMAIN_VERIFICATION_FAILED`, `EMAIL_DOMAIN_VERIFICATION_TIMED_OUT`, `EMAIL_TENANT_SETUP_TIMED_OUT`."
         return (self._raw_resource.connect_email_domain(input)).data
 
     def connect_telegram_bot(self, input: ConnectTelegramBotInput) -> models.Operation:
-        "Connect Telegram bot\n\nStarts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to create a new bot, whose name and username are chosen in Telegram, or to connect an existing managed bot, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged."
+        "Connect Telegram bot\n\nStarts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to create a new bot, whose name and username are chosen in Telegram, or to connect an existing managed bot, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged. If the operation fails, its `error` is the problem of one of these codes: `TELEGRAM_CONFIGURATION_FAILED`."
         return (self._raw_resource.connect_telegram_bot(input)).data
 
     def count_filtered_verification_codes(
         self, input: CountFilteredVerificationCodesInput
     ) -> models.FilteredVerificationCodeCount:
-        "Count filtered verification codes\n\nCounts the verification codes Photon kept from this project's dedicated lines and numbers, optionally for one `platform`. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Requires the platforms:read permission bound to the project resource in the path."
+        "Count filtered verification codes\n\nCounts the verification codes Photon kept from this project's dedicated lines, optionally for one `platform`. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Requires the platforms:read permission bound to the project resource in the path."
         return (self._raw_resource.count_filtered_verification_codes(input)).data
 
     def count_resource_filtered_verification_codes(
         self, input: CountResourceFilteredVerificationCodesInput
     ) -> models.FilteredVerificationCodeCount:
-        "Count a line's filtered verification codes\n\nCounts the verification codes Photon kept from one dedicated line or number. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a number receives both SMS and WhatsApp. Requires the platforms:read permission bound to the project resource in the path."
+        "Count a line's filtered verification codes\n\nCounts the verification codes Photon kept from one dedicated line. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a dedicated line receives both iMessage and WhatsApp. Requires the platforms:read permission bound to the project resource in the path."
         return (self._raw_resource.count_resource_filtered_verification_codes(input)).data
 
     def create_default_voice_profile(
@@ -7908,7 +8018,7 @@ class SyncProjectsPlatformsResource:
         return (self._raw_resource.create_whatsapp_shared_line_assignment(input)).data
 
     def create_whatsapp_voip_sender(self, input: CreateWhatsappVoipSenderInput) -> models.Operation:
-        "Create WhatsApp VoIP sender\n\nRegisters an active, SMS-capable Photon VoIP line on this project's connected WhatsApp Business Account. The account is resolved server-side; callers never select a WABA. The platform creates or reuses the Meta number, requests and consumes the SMS ownership code internally, verifies it, and registers the sender. displayName is optional; when omitted the project agent profile name is snapshotted before acceptance. The VoIP line remains a separate resource and never receives the whatsapp_business ability."
+        "Create WhatsApp VoIP sender\n\nRegisters an active, SMS-capable Photon VoIP line on this project's connected WhatsApp Business Account. The account is resolved server-side; callers never select a WABA. The platform creates or reuses the Meta number, requests and consumes the SMS ownership code internally, verifies it, and registers the sender. displayName is optional; when omitted the project agent profile name is snapshotted before acceptance. The VoIP line remains a separate resource and never receives the whatsapp_business ability. If the operation fails, its `error` is the problem of one of these codes: `WHATSAPP_AUTHORIZATION_REVOKED`, `WHATSAPP_DISPLAY_NAME_CONFLICT`, `WHATSAPP_NUMBER_ADD_REFUSED`, `WHATSAPP_NUMBER_LOOKUP_FAILED`, `WHATSAPP_REGISTRATION_REFUSED`, `WHATSAPP_VERIFICATION_REFUSED`, `WHATSAPP_VERIFICATION_REQUEST_REFUSED`, `WHATSAPP_VERIFICATION_TIMED_OUT`."
         return (self._raw_resource.create_whatsapp_voip_sender(input)).data
 
     def delete_voice_profile(self, input: DeleteVoiceProfileInput) -> None:
@@ -7930,7 +8040,7 @@ class SyncProjectsPlatformsResource:
     def disconnect_whatsapp_business_account(
         self, input: DisconnectWhatsappBusinessAccountInput
     ) -> models.Operation:
-        "Disconnect WhatsApp Business account\n\nDisconnects every attached WhatsApp sender, then unsubscribes our app and removes the project's business account connection. Photon VoIP lines and the numbers in Meta remain. Requires Idempotency-Key. Poll the returned operation; provider refusals appear as operation failures and retain the account for retry with a new key. New signups are blocked while disconnecting, and existing provisions must finish before this request can be accepted."
+        "Disconnect WhatsApp Business account\n\nDisconnects every attached WhatsApp sender, then unsubscribes our app and removes the project's business account connection. Photon VoIP lines and the numbers in Meta remain. Requires Idempotency-Key. Poll the returned operation. Meta's answers do not fail it: each sender is released as `DELETE /platforms/resources/:resourceId` does, and our app's unsubscribe is a best effort, tried up to three times, a second or two apart, only while the failure is temporary. New signups are blocked while disconnecting, and existing provisions must finish before this request can be accepted. If the operation fails, its `error` is the problem of one of these codes: `WHATSAPP_ACCOUNT_DISCONNECT_FAILED`."
         return (self._raw_resource.disconnect_whatsapp_business_account(input)).data
 
     def get_default_voice_profile(self, input: GetDefaultVoiceProfileInput) -> models.VoiceProfile:
@@ -8012,7 +8122,7 @@ class SyncProjectsPlatformsResource:
     def list_filtered_verification_codes(
         self, input: ListFilteredVerificationCodesInput
     ) -> models.FilteredVerificationCodePage:
-        "List filtered verification codes\n\nLists the verification codes Photon kept from this project's dedicated lines and numbers. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line or number (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Filter by `platform`; to read one line, use its own filtered-otp path. Requires the platforms:read permission bound to the project resource in the path."
+        "List filtered verification codes\n\nLists the verification codes Photon kept from this project's dedicated lines. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Filter by `platform`; to read one line, use its own filtered-otp path. Requires the platforms:read permission bound to the project resource in the path."
         return (self._raw_resource.list_filtered_verification_codes(input)).data
 
     def list_number_area_codes(
@@ -8040,11 +8150,11 @@ class SyncProjectsPlatformsResource:
     def list_resource_filtered_verification_codes(
         self, input: ListResourceFilteredVerificationCodesInput
     ) -> models.FilteredVerificationCodePage:
-        "List a line's filtered verification codes\n\nLists the verification codes Photon kept from one dedicated line or number. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line or number (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a number receives both SMS and WhatsApp. Requires the platforms:read permission bound to the project resource in the path."
+        "List a line's filtered verification codes\n\nLists the verification codes Photon kept from one dedicated line. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a dedicated line receives both iMessage and WhatsApp. Requires the platforms:read permission bound to the project resource in the path."
         return (self._raw_resource.list_resource_filtered_verification_codes(input)).data
 
     def list_resources(self, input: ListResourcesInput) -> models.ResourcePage:
-        "List resources\n\nLists the project's resources, oldest first, including retired ones unless `state` filters them out. Filter by `type`, by enabled `ability` and by comma-separated `state`. `detail` is a per-type public view. Requires the platforms:read permission bound to the project resource in the path."
+        "List resources\n\nLists the project's resources, oldest first, including retired ones unless `state` filters them out. Filter by `type`, by enabled `ability` and by comma-separated `state`. Lifecycle states are unallocated, active and retired; active means owned and non-retired, not provider-confirmed readiness. Every VoIP resource includes detail.activationState: activating or active, defaulting to active without owner-matched saved state. state=active includes numbers still activating. Requires the platforms:read permission bound to the project resource in the path."
         return (self._raw_resource.list_resources(input)).data
 
     def list_voice_profiles(self, input: ListVoiceProfilesInput) -> models.VoiceProfilePage:
@@ -8066,33 +8176,33 @@ class SyncProjectsPlatformsResource:
     def provision_imessage_dedicated_line(
         self, input: ProvisionImessageDedicatedLineInput
     ) -> models.Operation:
-        "Provision dedicated iMessage line\n\nClaims one dedicated iMessage line for the project and enables iMessage on it. Always answers 202 with an operation: dedicated lines are allocated from available capacity, and unavailable capacity causes a wait rather than a failure — this can legitimately stay `running` for hours, which is exactly why the response is a handle to poll rather than a number. The project's messaging subscription must grant the dedicated iMessage lines entitlement (`imessage_dedicated_lines.can_purchase`), and that is checked before capacity is reserved. The line's own charge starts when a line is claimed; the subscription that grants the entitlement bills on its own terms, which cancelling a request does not change. Waiting requests are served first come, first served. One that is still waiting is cancelled with a `reason` if the project is deleted (`project_deleted`) or its plan stops selling dedicated lines (`entitlement_lost`); while the payer is restricted for overdue payment it keeps waiting. If you no longer want to wait, POST to the operation's cancel endpoint, which charges nothing for the line. The Idempotency-Key is required and permanent: repeating it returns the same operation forever. A further line always needs a NEW key, including while others are still waiting. Requires the platforms:write permission bound to the project resource in the path."
+        "Provision dedicated iMessage line\n\nClaims one dedicated iMessage line for the project and enables iMessage on it. Always answers 202 with an operation: dedicated lines are allocated from available capacity, and unavailable capacity causes a wait rather than a failure — this can legitimately stay `running` for hours, which is exactly why the response is a handle to poll rather than a number. The project's messaging subscription must grant the dedicated iMessage lines entitlement (`imessage_dedicated_lines.can_purchase`), and that is checked before capacity is reserved. The line's own charge starts when a line is claimed; the subscription that grants the entitlement bills on its own terms, which cancelling a request does not change. Waiting requests are served first come, first served. One that is still waiting is cancelled with a `reason` if the project is deleted (`project_deleted`) or its plan stops selling dedicated lines (`entitlement_lost`); while the payer is restricted for overdue payment it keeps waiting. If you no longer want to wait, POST to the operation's cancel endpoint, which charges nothing for the line. The Idempotency-Key is required and permanent: repeating it returns the same operation forever. A further line always needs a NEW key, including while others are still waiting. An optional promotionCode is checked and claimed here, before the request waits for a line: a code that can't be used answers 409 PROMOTION_CODE_REJECTED and starts nothing. Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `CHARGE_REFUSED`, `ENTERPRISE_PLAN_REQUIRED`."
         return (self._raw_resource.provision_imessage_dedicated_line(input)).data
 
     def provision_whatsapp_dedicated_line(
         self, input: ProvisionWhatsappDedicatedLineInput
     ) -> models.Operation:
-        "Provision dedicated WhatsApp line\n\nProvisions one dedicated WhatsApp line with WhatsApp and shared Voice enabled. It attaches to an eligible iMessage line the project already owns when possible so both products keep the same number; otherwise it claims healthy, available WhatsApp-capable dedicated-line inventory. Always answers 202, because waiting when no inventory is available is not a failure. The product opens its own charge period after the abilities are enabled; Voice has no separate charge. Waiting requests are served first come, first served, and are cancelled with a `reason` exactly as for a dedicated iMessage line. Cancel the returned operation to stop waiting. The Idempotency-Key is required and permanent."
+        "Provision dedicated WhatsApp line\n\nProvisions one dedicated WhatsApp line with WhatsApp and shared Voice enabled. It attaches to an eligible iMessage line the project already owns when possible so both products keep the same number; otherwise it claims healthy, available WhatsApp-capable dedicated-line inventory. Always answers 202, because waiting when no inventory is available is not a failure. The product opens its own charge period after the abilities are enabled; Voice has no separate charge. Waiting requests are served first come, first served, and are cancelled with a `reason` exactly as for a dedicated iMessage line. Cancel the returned operation to stop waiting. An optional promotionCode is checked and claimed here, before the request waits for a line: a code that can't be used answers 409 PROMOTION_CODE_REJECTED and starts nothing. The Idempotency-Key is required and permanent. If the operation fails, its `error` is the problem of one of these codes: `CHARGE_REFUSED`, `ENTERPRISE_PLAN_REQUIRED`."
         return (self._raw_resource.provision_whatsapp_dedicated_line(input)).data
 
     def purchase_sms_number(self, input: PurchaseSmsNumberInput) -> models.Operation:
-        "Purchase SMS number\n\nBuys one US local number from the provider and records it as a resource with SMS enabled. Requires countryCode (US) and accepts an optional three-digit geographic areaCode. The server selects an exact matching number. Empty inventory keeps the operation running until a number is available or the caller cancels before ordering begins. Always answers 202 with an operation: the work runs behind the response, and the Location points at the operation to poll. New area-specific requests must appear in current provider coverage; discover it with GET /sms/numbers/area-codes?countryCode=US. Coverage and subscription checks run before operation creation. Billing follows delivery. Replays return the original operation without checking current coverage. The Idempotency-Key is required and permanent: repeating it returns the same operation forever, never a second number. A further number always needs a NEW key, including while others are still running. Requires the platforms:write permission bound to the project resource in the path."
+        'Purchase SMS number\n\nBuys one US local number from the provider and records it as a resource with SMS enabled. Requires countryCode (US) and accepts an optional three-digit geographic areaCode. The server selects an exact matching number. While inventory is empty the operation keeps searching, and the caller can cancel it until ordering begins; a search still empty one minute after the operation was created fails it with `NUMBER_INVENTORY_UNAVAILABLE`. Always answers 202 with an operation: the work runs behind the response, and the Location points at the operation to poll. New area-specific requests must appear in current provider coverage; discover it with GET /sms/numbers/area-codes?countryCode=US. Coverage and subscription checks run before operation creation. Billing follows delivery. Replays return the original operation without checking current coverage. The Idempotency-Key is required and permanent: repeating it returns the same operation forever, never a second number. A further number always needs a NEW key, including while others are still running. An optional promotionCode is redeemed with the number\'s charge, which follows delivery: a code billing refuses hands the number back, and its release operation carries the refusal (`reason` `charge_refused`, with `detail.chargeRefusal` `{ code: "promotion_code_rejected", detail: <why> }`). Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `ENTITLEMENT_REQUIRED`, `NUMBER_INVENTORY_UNAVAILABLE`, `NUMBER_ORDER_FAILED`, `NUMBER_ORDER_RECONCILIATION_REQUIRED`, `NUMBER_SEARCH_FAILED`.'
         return (self._raw_resource.purchase_sms_number(input)).data
 
     def release_imessage_dedicated_line(
         self, input: ReleaseImessageDedicatedLineInput
     ) -> models.Operation:
-        "Release dedicated iMessage line\n\nRemoves only iMessage from one dedicated line. Shared Voice is removed only when WhatsApp is absent; if WhatsApp remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open iMessage charge period identifies this product tenure."
+        "Release dedicated iMessage line\n\nRemoves only iMessage from one dedicated line. Shared Voice is removed only when WhatsApp is absent; if WhatsApp remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open iMessage charge period identifies this product tenure. If the operation fails, its `error` is the problem of one of these codes: `RESOURCE_NOT_FOUND`."
         return (self._raw_resource.release_imessage_dedicated_line(input)).data
 
     def release_resource(self, input: ReleaseResourceInput) -> models.Operation:
-        "Release resource\n\nGives one resource back, whatever it is. What that means is the resource's own business: an SMS number goes back to the provider and is retired, a dedicated iMessage line goes back to the shared pool and stays in existence for someone else to claim. Either way the provider is contacted first where there is one, then a single transaction disables every ability, ends the project's hold and closes the charge period — so a provider that refuses leaves the resource exactly as it was, still owned and still billed. Usually finishes inside this request and answers 200; if the provider is slow it answers 202 and the Location points at the operation to poll. The decrement runs behind the answer either way, so the resource is gone when you are told it is. Takes no Idempotency-Key — releasing the same resource twice is the same request. Releasing one that is already gone answers 404. Requires the platforms:write permission bound to the project resource in the path."
+        "Release resource\n\nGives one resource back, whatever it is. What that means is the resource's own business: an SMS number goes back to the provider and is retired, a dedicated iMessage line goes back to the shared pool and stays in existence for someone else to claim. Either way the provider is contacted first where there is one, then a single transaction disables every ability, ends the project's hold and closes the charge period — so a provider that refuses leaves the resource exactly as it was, still owned and still billed. A WhatsApp Business sender is the exception: Meta never holds its release. A number on a Photon VoIP line is deregistered as a best effort, tried up to three times, a second or two apart, only while the failure is temporary; a number the customer brought is not sent to Meta at all; the sender is retired either way, and the number stays in the customer's WhatsApp Business Account. Usually finishes inside this request and answers 200; if the provider is slow it answers 202 and the Location points at the operation to poll. The decrement runs behind the answer either way, so the resource is gone when you are told it is. Takes no Idempotency-Key — releasing the same resource twice is the same request. Releasing one that is already gone answers 404. Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `EMAIL_DOMAIN_RELEASE_FAILED`, `NUMBER_RELEASE_FAILED`, `RESOURCE_NOT_FOUND`, `TELEGRAM_RELEASE_FAILED`, `WHATSAPP_SENDER_RELEASE_FAILED`."
         return (self._raw_resource.release_resource(input)).data
 
     def release_whatsapp_dedicated_line(
         self, input: ReleaseWhatsappDedicatedLineInput
     ) -> models.Operation:
-        "Release dedicated WhatsApp line\n\nRemoves only WhatsApp from one dedicated line. Shared Voice is removed only when iMessage is absent; if iMessage remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open WhatsApp charge period identifies this product tenure."
+        "Release dedicated WhatsApp line\n\nRemoves only WhatsApp from one dedicated line. Shared Voice is removed only when iMessage is absent; if iMessage remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open WhatsApp charge period identifies this product tenure. If the operation fails, its `error` is the problem of one of these codes: `RESOURCE_NOT_FOUND`."
         return (self._raw_resource.release_whatsapp_dedicated_line(input)).data
 
     def release_whatsapp_shared_line_assignment(
@@ -8114,7 +8224,7 @@ class SyncProjectsPlatformsResource:
         return (self._raw_resource.rotate_voice_profile_outbound_credential(input)).data
 
     def unassign_sms_line_campaign(self, input: UnassignSmsLineCampaignInput) -> models.Operation:
-        "Unassign SMS line campaign\n\nAny project writer, including a scoped API key, may detach the campaign. The number and campaign remain owned. Requires a permanent Idempotency-Key and expectedVersion. Local eligibility is blocked immediately; provider detachment runs asynchronously."
+        "Unassign SMS line campaign\n\nAny project writer, including a scoped API key, may detach the campaign. The number and campaign remain owned. Requires a permanent Idempotency-Key and expectedVersion. Local eligibility is blocked immediately; provider detachment runs asynchronously. If the operation fails, its `error` is the problem of one of these codes: `SMS_CAMPAIGN_PROVIDER_REJECTED`, `SMS_CAMPAIGN_RECONCILIATION_REQUIRED`, `SMS_CAMPAIGN_REVOKED`."
         return (self._raw_resource.unassign_sms_line_campaign(input)).data
 
     def unassign_voice_line_profile(self, input: UnassignVoiceLineProfileInput) -> None:
@@ -8128,7 +8238,7 @@ class SyncProjectsPlatformsResource:
         return (self._raw_resource.update_default_voice_profile(input)).data
 
     def update_voice_profile(self, input: UpdateVoiceProfileInput) -> models.VoiceProfile:
-        "Update Voice profile\n\nPatches an additional profile's name, protocol, or mediaEncryption when expectedVersion matches. Omitted fields are preserved. Directional configuration is managed through the profile's inbound and outbound endpoints. Requires platforms:write bound to the path project."
+        "Update Voice profile\n\nPatches an additional profile's name, protocol, or mediaEncryption when expectedVersion matches. Omitted fields are preserved. The default profile's metadata changes only through PATCH /v1/projects/{id}/platforms/voice/profiles/default, so a name, protocol, or mediaEncryption patch addressed to its profileId is refused with 409. Directional configuration is managed through the profile's inbound and outbound endpoints. Requires platforms:write bound to the path project."
         return (self._raw_resource.update_voice_profile(input)).data
 
     def update_voice_profile_inbound(
@@ -8252,7 +8362,7 @@ class SyncProjectsResource:
         return (self._raw_resource.get(input)).data
 
     def get_attachment(self, input: GetAttachmentInput) -> models.Attachment:
-        "Get attachment\n\nReturns an Attachment's metadata. Use the content endpoint to download its bytes."
+        "Get attachment\n\nReturns an Attachment's metadata. Use the content endpoint to download its bytes. If its metadata is unavailable after ten seconds, returns ATTACHMENT_NOT_READY with Retry-After: 5."
         return (self._raw_resource.get_attachment(input)).data
 
     def get_message(self, input: GetMessageInput) -> models.PlatformMessage | None:
@@ -8292,7 +8402,7 @@ class SyncProjectsResource:
         return (self._raw_resource.get_webhook_event_schema(input)).data
 
     def list_attachments(self, input: ListAttachmentsInput) -> models.AttachmentPage:
-        "List attachments\n\nLists the Project's Attachment metadata, with optional time filters."
+        "List attachments\n\nLists the Project's Attachment metadata, with optional time filters. An Attachment can be absent until its upload finishes, which advances its updatedAt; follow changes with updatedSince."
         return (self._raw_resource.list_attachments(input)).data
 
     def list_messages(self, input: ListMessagesInput) -> models.MessagePage:
@@ -8532,12 +8642,6 @@ class SyncAuthResource:
         "Retry organization connection sync\n\nReconciles existing local intent. Takes no body and cannot change membership, roles or authentication policy."
         return (self._raw_resource.retry_organization_connection_sync(input)).data
 
-    def start_enterprise_login(
-        self, input: StartEnterpriseLoginInput
-    ) -> models.StartEnterpriseLoginResponse:
-        "Start company sign-in\n\nReturns a sign-in URL without requiring an existing account: the company SSO connection when the target has a ready connection, otherwise ordinary account login. Supply one documented enrollment variant: organizationId with returnTo (optionally invitationToken), invitationToken with returnTo, or retryToken. Open the returned URL to continue authentication; receiving a URL does not complete sign-in. This is a browser flow: the request must come from an allowed Origin, and the retryToken variant also needs the retry cookie set by the failed sign-in, so send it with credentials."
-        return (self._raw_resource.start_enterprise_login(input)).data
-
     def update_organization_sso_policy(
         self, input: UpdateOrganizationSsoPolicyInput
     ) -> models.OrganizationSsoConfiguration:
@@ -8552,7 +8656,7 @@ class AsyncRawOrganizationsBillingResource:
     async def change_plan(
         self, input: ChangePlanInput
     ) -> RawResponse[models.TerminalBillingOperation | models.PendingBillingOperation]:
-        "Change plan\n\nPurchases or changes the selected project's plan for the supplied category and planCode. A 202 response means the change is pending: poll the returned operation URL and honor Retry-After until it succeeds or fails. A 200 response means the idempotency key resolved to an operation that is already terminal; inspect that result rather than assuming success from the status code alone. Supply the required Idempotency-Key header. Supply both organizationId and projectId to select the project within its organization."
+        "Change plan\n\nPurchases or changes the selected project's plan for the supplied category and planCode, redeeming promotionCode when given. A 202 response means the change is pending: poll the returned operation URL and honor Retry-After until it succeeds or fails. A 200 response means the idempotency key resolved to an operation that is already terminal; inspect that result rather than assuming success from the status code alone. Supply the required Idempotency-Key header. Supply both organizationId and projectId to select the project within its organization."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_CHANGE_PLAN, payload)
 
@@ -8589,7 +8693,7 @@ class AsyncRawOrganizationsBillingResource:
     async def get_organization_payment_method(
         self, input: GetOrganizationPaymentMethodInput
     ) -> RawResponse[models.GetOrganizationPaymentMethodResponse]:
-        "Get organization payment method\n\nReports whether the selected organization has a card on file and returns its documented payment-method metadata. Reading this endpoint does not collect a new card or create a checkout session."
+        "Get organization payment method\n\nReports whether the selected organization has a card on file, its documented payment-method metadata, whether a purchase needs a card first (purchaseRefusal), and how it pays: by card, or by invoice on its contract's terms (agreement). Reading this endpoint does not collect a new card or create a checkout session."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_GET_ORGANIZATION_PAYMENT_METHOD, payload)
 
@@ -8617,14 +8721,14 @@ class AsyncRawOrganizationsBillingResource:
     async def preview_organization_change(
         self, input: PreviewOrganizationChangeInput
     ) -> RawResponse[models.PreviewOrganizationChangeResponse]:
-        "Preview an organization billing change\n\nPreviews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing."
+        "Preview an organization billing change\n\nPreviews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_PREVIEW_ORGANIZATION_CHANGE, payload)
 
     async def preview_project_change(
         self, input: PreviewProjectChangeInput
     ) -> RawResponse[models.PreviewProjectChangeResponse]:
-        "Preview a project billing change\n\nPreviews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. Supply both organizationId and projectId; the organization must pay for the project."
+        "Preview a project billing change\n\nPreviews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; a downgrade, or choosing the held plan again, bills nothing now; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives. Supply both organizationId and projectId; the organization must pay for the project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_PREVIEW_PROJECT_CHANGE, payload)
 
@@ -8672,40 +8776,40 @@ class AsyncRawOrganizationsResource:
     async def accept_organization_invitation(
         self, input: AcceptOrganizationInvitationInput
     ) -> RawResponse[models.AcceptOrganizationInvitationResponse]:
-        "Accept an invitation to all organization projects"
+        "Accept an invitation to all organization projects\n\nAccepts an invitation by its token and adds the signed-in account to the organization with the invited role. An existing member keeps their role, except a Viewer who joined through SSO just-in-time provisioning and whose role has never been changed, who takes the invited role; a removed member can rejoin only with an invitation created after the removal, else 409. The account's verified email must match the invited address, the invitation must be pending and unexpired, and its inviter must still be an Owner or Admin; in an organization that requires SSO it returns 403, because the invitee joins by signing in through that SSO instead. Call it with account credentials acting as the account itself and supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_ACCEPT_ORGANIZATION_INVITATION, payload)
 
     async def cancel_sso_subscription(
         self, input: CancelSsoSubscriptionInput
     ) -> RawResponse[models.CancelSsoSubscriptionResponse]:
-        "Cancel the SSO subscription"
+        "Cancel the SSO subscription\n\nCancels the organization's SSO subscription at once, but only after SSO has been turned off: while SSO is still required it returns 409. The unused days become organization credit, and SSO setup closes. Only Owners and Admins can call it, with account credentials and the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_CANCEL_SSO_SUBSCRIPTION, payload)
 
     async def check_organization_deletion(
         self, input: CheckOrganizationDeletionInput
     ) -> RawResponse[models.CheckOrganizationDeletionResponse]:
-        "Check organization deletion prerequisites"
+        "Check organization deletion prerequisites\n\nReports whether the organization can be deleted now (canDelete), the blockers to clear first, such as active projects or unpaid invoices, and the version to send to closeOrganization. The answer is advisory, because deletion checks again. Only the Owner can call it, with account credentials; in an organization that requires SSO, sign in through SSO, because Account Service Keys are refused."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_CHECK_ORGANIZATION_DELETION, payload)
 
     async def close_organization(self, input: CloseOrganizationInput) -> RawResponse[None]:
-        "Delete organization"
+        "Delete organization\n\nDeletes the organization: it leaves normal access when the call returns 204, and Photon then releases its app installations, registrations and billing subscriptions in the background. It cannot be undone and needs no active projects, nothing owed, and the expectedVersion from checkOrganizationDeletion; a blocked or stale request returns 409. Only the Owner can call it, with account credentials (in an organization that requires SSO, a session signed in through SSO) and the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_CLOSE_ORGANIZATION, payload)
 
     async def commit_organization_avatar(
         self, input: CommitOrganizationAvatarInput
     ) -> RawResponse[models.CommitOrganizationAvatarResponse]:
-        "Commit an organization avatar"
+        "Commit an organization avatar\n\nSets the organization's avatar to an image uploaded with createOrganizationAvatarUpload, after checking its size, type and contents, and discards the previous avatar; an invalid or expired upload is rejected. Owners and Admins can call it with account credentials. Send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_COMMIT_ORGANIZATION_AVATAR, payload)
 
     async def create_organization(
         self, input: CreateOrganizationInput
     ) -> RawResponse[models.CreateOrganizationResponse]:
-        "Create an organization"
+        "Create an organization\n\nCreates an organization with the supplied name and makes the calling account its Owner; SSO and just-in-time provisioning start disabled. Billing is set up after the response, so the 201 body has no billingInitialization; read it from getOrganization or listOrganizations to follow the setup. Call it with account credentials acting as the account itself and supply the required Idempotency-Key header; an account that is closing gets 409."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_CREATE_ORGANIZATION, payload)
 
@@ -8719,7 +8823,7 @@ class AsyncRawOrganizationsResource:
     async def create_organization_invitation(
         self, input: CreateOrganizationInvitationInput
     ) -> RawResponse[models.CreateOrganizationInvitationResponse]:
-        "Invite a Member or Viewer to all organization projects"
+        "Invite a Member or Viewer to all organization projects\n\nInvites an email address to the organization as a Member or Viewer and emails it a link that stays valid for 7 days; the Admin and Owner roles can't be invited. Owners and Admins can call it with account credentials and the required Idempotency-Key header. Inviting an address that has a pending invitation for the same role resends it and a different role returns 409, while sending too often (twice within a minute, more than 30 an hour or 100 pending per organization) returns 429."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_CREATE_ORGANIZATION_INVITATION, payload)
 
@@ -8733,21 +8837,21 @@ class AsyncRawOrganizationsResource:
     async def create_service_identity(
         self, input: CreateServiceIdentityInput
     ) -> RawResponse[models.CreateServiceIdentityResponse]:
-        "Create an organization Service Identity"
+        "Create an organization Service Identity\n\nCreates an active Service Identity, a machine identity owned by the organization, with a name and a non-empty set of permissions from listServiceIdentityPermissions; it starts with no credentials. Owners and Admins can call it with account credentials and the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_CREATE_SERVICE_IDENTITY, payload)
 
     async def create_service_identity_api_key(
         self, input: CreateServiceIdentityApiKeyInput
     ) -> RawResponse[models.CreateServiceIdentityApiKeyResponse]:
-        "Create a one-time Service Identity API key"
+        "Create a one-time Service Identity API key\n\nCreates an API key for an active Service Identity that no app installation manages; the key acts with the identity's current permissions. Only a response with status created returns the key's value, so store it securely; retry with the same Idempotency-Key, which must be a UUID: a retry returns the key's status without the value, and status recovery_required means the value was not delivered and can't be retrieved. Owners and Admins can call it with account credentials, and expectedIdentityVersion must match the identity's current version, else 409; an identity managed by an app installation also returns 409."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_CREATE_SERVICE_IDENTITY_API_KEY, payload)
 
     async def create_service_identity_client_secret(
         self, input: CreateServiceIdentityClientSecretInput
     ) -> RawResponse[models.CreateServiceIdentityClientSecretResponse]:
-        "Create a one-time Service Identity M2M client secret"
+        "Create a one-time Service Identity M2M client secret\n\nCreates a client secret for the machine-to-machine (M2M) application of an active Service Identity that no app installation manages, setting the application up first if needed, and returns the secret with its clientId once; exchange them for M2M access tokens, and never send the secret to other operations. Retry with the same Idempotency-Key, which must be a UUID: a retry returns the status without the secret, and a response with stage application (status recovery_required or cleanup_required) means the application could not be set up and no secret exists. Owners and Admins can call it with account credentials, and expectedIdentityVersion must match the identity's current version, else 409; an identity managed by an app installation also returns 409."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_CREATE_SERVICE_IDENTITY_CLIENT_SECRET, payload)
 
@@ -8765,13 +8869,6 @@ class AsyncRawOrganizationsResource:
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_DELETE_ORGANIZATION_OAUTH_CLIENT_SECRET, payload)
 
-    async def ensure_initial_organization(
-        self, input: EnsureInitialOrganizationInput
-    ) -> RawResponse[models.EnsureInitialOrganizationResponse]:
-        "Ensure the initial organization"
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_ENSURE_INITIAL_ORGANIZATION, payload)
-
     async def get_current_organization(
         self, input: GetCurrentOrganizationInput | None = None
     ) -> RawResponse[models.GetCurrentOrganizationResponse]:
@@ -8784,70 +8881,77 @@ class AsyncRawOrganizationsResource:
     async def get_organization(
         self, input: GetOrganizationInput
     ) -> RawResponse[models.GetOrganizationResponse]:
-        "Read organization name and avatar"
+        "Read organization name and avatar\n\nReturns the organization's name, avatar URL, version and billing setup progress. Any member can read it with account credentials, and a Service Identity granted organization:read or an OAuth grant with the organization:read scope can read the organization it is bound to. Send version as expectedVersion when renaming the organization or changing its avatar."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_GET_ORGANIZATION, payload)
 
     async def get_organization_oauth_client(
         self, input: GetOrganizationOauthClientInput
     ) -> RawResponse[models.GetOrganizationOauthClientResponse]:
-        "Read an organization OAuth client"
+        "Read an organization OAuth client\n\nReturns one third-party OAuth application the organization owns, without its secret. Any member can call it with account credentials. The ETag response header is the value updateOrganizationOauthClient needs in If-Match."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_GET_ORGANIZATION_OAUTH_CLIENT, payload)
 
     async def get_organization_oauth_client_secret(
         self, input: GetOrganizationOauthClientSecretInput
     ) -> RawResponse[models.GetOrganizationOauthClientSecretResponse]:
-        "Read an organization OAuth client's secret"
+        "Read an organization OAuth client's secret\n\nReturns metadata about an OAuth application's secret: the current secret and, after a rotation, the previous one while it still works, with each one's hint, creation and last-use times; the previous one's validUntil is when it stops working, or null when it lasts until the next rotation or revocation. The secret value is never returned. Only Owners and Admins can call it, with account credentials."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_GET_ORGANIZATION_OAUTH_CLIENT_SECRET, payload)
 
     async def get_service_identity(
         self, input: GetServiceIdentityInput
     ) -> RawResponse[models.GetServiceIdentityResponse]:
-        "Read a Service Identity"
+        "Read a Service Identity\n\nReturns one Service Identity with its permissions, status and version. Any member can call it with account credentials. Send version as expectedVersion to updateServiceIdentity, or as expectedIdentityVersion when creating a credential."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_GET_SERVICE_IDENTITY, payload)
 
     async def get_sso_subscription(
         self, input: GetSsoSubscriptionInput
     ) -> RawResponse[models.GetSsoSubscriptionResponse]:
-        "Read SSO subscription"
+        "Read SSO subscription\n\nReturns the organization's SSO subscription: its state, the current monthly price and billing period, whether a payment method must be added first, and whether SSO can be set up (canConfigure). Only Owners and Admins can call it, with account credentials. Send its amount, currency and currentPeriodEnd as the quote when subscribing."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_GET_SSO_SUBSCRIPTION, payload)
+
+    async def get_ten_dlc_brand_otp(
+        self, input: GetTenDlcBrandOtpInput
+    ) -> RawResponse[models.GetTenDlcBrandOtpResponse]:
+        "Get sole-proprietor OTP status\n\nReturns the redacted one-time-password verification state for an organization-owned brand. OTP verification applies only to sole-proprietor brands. Reading this endpoint does not request another code or verify a supplied code; use the trigger and verification operations for those actions. Supply organization_id for the organization that owns the registration."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_GET_TEN_DLC_BRAND_OTP, payload)
 
     async def leave_organization(
         self, input: LeaveOrganizationInput
     ) -> RawResponse[models.LeaveOrganizationResponse]:
-        "Leave an organization; Owners must transfer or close first"
+        "Leave an organization; Owners must transfer or close first\n\nRemoves the authenticated account's own membership. Nothing is revoked: the account's sessions, OAuth grants and Account Service Keys stop being accepted for the organization and its projects shortly after the call, and project API keys and Service Identity credentials it created keep working until they are revoked. Any member except the Owner can call it, with account credentials or an OAuth grant for this organization with the organization:read scope; the Owner gets 409 and must transfer ownership or delete the organization first. Send the caller's own membership version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_LEAVE_ORGANIZATION, payload)
 
     async def list_organization_invitations(
         self, input: ListOrganizationInvitationsInput
     ) -> RawResponse[models.ListOrganizationInvitationsResponse]:
-        "List pending organization invitations"
+        "List pending organization invitations\n\nLists the organization's pending, unexpired invitations, newest first, in one unpaginated response; accepted, revoked and expired invitations are left out, and invitation links are never returned. Owners and Admins can call it with account credentials."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_LIST_ORGANIZATION_INVITATIONS, payload)
 
     async def list_organization_members(
         self, input: ListOrganizationMembersInput
     ) -> RawResponse[models.ListOrganizationMembersResponse]:
-        "List current organization members"
+        "List current organization members\n\nLists the organization's active members, ordered by account ID, with each member's role, membership version and account profile (name, email and picture); a member whose account is missing or deleted has a null profile. Any member can call it with account credentials, or with an OAuth grant for this organization that has the organization:read scope. The list is not paginated."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_LIST_ORGANIZATION_MEMBERS, payload)
 
     async def list_organization_oauth_clients(
         self, input: ListOrganizationOauthClientsInput
     ) -> RawResponse[models.ListOrganizationOauthClientsResponse]:
-        "List organization OAuth clients"
+        "List organization OAuth clients\n\nLists the third-party OAuth applications the organization owns, with their metadata but never their secrets, in one unpaginated response. Any member can call it with account credentials."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_LIST_ORGANIZATION_OAUTH_CLIENTS, payload)
 
     async def list_organizations(
         self, input: ListOrganizationsInput | None = None
     ) -> RawResponse[models.ListOrganizationsResponse]:
-        "List organizations"
+        "List organizations\n\nLists the active organizations the authenticated account belongs to, oldest first, in one unpaginated response; ownedOrganizationIds marks the ones it owns. Call it with account credentials acting as the account itself; OAuth grants and Service Identities are refused."
         payload = (input or ListOrganizationsInput()).model_dump(
             mode="json", by_alias=True, exclude_unset=True
         )
@@ -8856,14 +8960,14 @@ class AsyncRawOrganizationsResource:
     async def list_service_identities(
         self, input: ListServiceIdentitiesInput
     ) -> RawResponse[models.ListServiceIdentitiesResponse]:
-        "List organization Service Identities"
+        "List organization Service Identities\n\nLists every Service Identity in the organization, oldest first, including disabled ones and those managed by app installations, in one unpaginated response. Any member can call it with account credentials. It returns identity metadata only, never credentials."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_LIST_SERVICE_IDENTITIES, payload)
 
     async def list_service_identity_credentials(
         self, input: ListServiceIdentityCredentialsInput
     ) -> RawResponse[models.ListServiceIdentityCredentialsResponse]:
-        "List Service Identity credential metadata"
+        "List Service Identity credential metadata\n\nLists metadata for every API key and client secret of a Service Identity, oldest first, including pending and revoked ones, in one unpaginated response; it never returns secret values. Only Owners and Admins can call it, with account credentials."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_LIST_SERVICE_IDENTITY_CREDENTIALS, payload)
 
@@ -8877,42 +8981,42 @@ class AsyncRawOrganizationsResource:
     async def preview_organization_invitation(
         self, input: PreviewOrganizationInvitationInput
     ) -> RawResponse[models.PreviewOrganizationInvitationResponse]:
-        "Preview an organization invitation after sign-in"
+        "Preview an organization invitation after sign-in\n\nReturns what an invitation offers to the signed-in account that holds its token: the organization, role, expiry, member count and inviter with masked email addresses, whether the account's verified email matches the invitation, and whether SSO is required to accept it. Call it with account credentials acting as the account itself; it changes nothing. An unknown token returns 404, and an expired or revoked invitation, or one accepted by another account, returns 409."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_PREVIEW_ORGANIZATION_INVITATION, payload)
 
     async def remove_organization_avatar(
         self, input: RemoveOrganizationAvatarInput
     ) -> RawResponse[models.RemoveOrganizationAvatarResponse]:
-        "Remove an organization avatar"
+        "Remove an organization avatar\n\nRemoves the organization's custom avatar, so avatarUrl becomes null, and returns the organization with its new version. Owners and Admins can call it with account credentials. Send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_REMOVE_ORGANIZATION_AVATAR, payload)
 
     async def remove_organization_member(
         self, input: RemoveOrganizationMemberInput
     ) -> RawResponse[models.RemoveOrganizationMemberResponse]:
-        "Remove an organization member's access to all projects"
+        "Remove a member from the organization\n\nRemoves an active member from the organization. Nothing is revoked: their sessions, OAuth grants and Account Service Keys stop being accepted for the organization and its projects shortly after the call, and project API keys and Service Identity credentials they created or hold keep working until an Owner or Admin revokes them. Owners and Admins can call it with account credentials, but only the Owner can remove an Admin, and neither the Owner nor the caller can be removed here (409; leave with leaveOrganization). Send the member's current membership version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_REMOVE_ORGANIZATION_MEMBER, payload)
 
     async def resend_organization_invitation(
         self, input: ResendOrganizationInvitationInput
     ) -> RawResponse[models.ResendOrganizationInvitationResponse]:
-        "Resend an organization invitation"
+        "Resend an organization invitation\n\nEmails a pending invitation again with the same link and restarts its 7-day expiry. Owners and Admins can call it with account credentials and the required Idempotency-Key header. An expired, revoked or accepted invitation returns 409, and a resend within 60 seconds of the last send, or past the organization's 30 sends an hour, returns 429."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_RESEND_ORGANIZATION_INVITATION, payload)
 
     async def revoke_organization_invitation(
         self, input: RevokeOrganizationInvitationInput
     ) -> RawResponse[models.RevokeOrganizationInvitationResponse]:
-        "Revoke an organization invitation"
+        "Revoke an organization invitation\n\nRevokes an invitation so its link can no longer be previewed or accepted; no email is sent, and an accepted invitation can't be revoked (409). Owners and Admins can call it with account credentials and the required Idempotency-Key header. Revoking an invitation that is already revoked or expired succeeds."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_REVOKE_ORGANIZATION_INVITATION, payload)
 
     async def revoke_service_identity_credential(
         self, input: RevokeServiceIdentityCredentialInput
     ) -> RawResponse[models.RevokeServiceIdentityCredentialResponse]:
-        "Request Service Identity credential revocation"
+        "Request Service Identity credential revocation\n\nRevokes an API key or client secret of a Service Identity; this can't be undone. An API key stops working shortly after the call, while a client secret gets revocationRequestedAt and stays active until Photon confirms its deletion, and M2M access tokens already issued with it keep working until they expire; repeating the call returns the current state. Owners and Admins can call it with account credentials; send the credential's current version as expectedVersion, because a stale version returns 409, and the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_REVOKE_SERVICE_IDENTITY_CREDENTIAL, payload)
 
@@ -8936,28 +9040,35 @@ class AsyncRawOrganizationsResource:
     async def subscribe_sso(
         self, input: SubscribeSsoInput
     ) -> RawResponse[models.SubscribeSsoResponse]:
-        "Subscribe to organization SSO"
+        "Subscribe to organization SSO\n\nStarts the organization's SSO subscription, billed monthly in advance and prorated. Send the current quote from getSsoSubscription as expectedAmount, expectedCurrency and expectedCurrentPeriodEnd, because a changed price returns 409; the 202 means the request was accepted, and the charge and its outcome then show in the subscription's state. Only Owners and Admins can call it, with account credentials and the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_SUBSCRIBE_SSO, payload)
 
     async def transfer_organization_ownership(
         self, input: TransferOrganizationOwnershipInput
     ) -> RawResponse[models.TransferOrganizationOwnershipResponse]:
-        "Transfer organization ownership to an existing member"
+        "Transfer organization ownership to an existing member\n\nMakes another active member the Owner and turns the current Owner into a Member. Only the Owner can call it, with account credentials and the required Idempotency-Key header. Send the organization's current version, not a membership version, as expectedVersion; a stale version or naming yourself returns 409."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_TRANSFER_ORGANIZATION_OWNERSHIP, payload)
+
+    async def trigger_ten_dlc_brand_otp(
+        self, input: TriggerTenDlcBrandOtpInput
+    ) -> RawResponse[models.TriggerTenDlcBrandOtpResponse]:
+        "Trigger sole-proprietor OTP\n\nRequests delivery of a verification code for an organization-owned sole-proprietor brand. A 202 response acknowledges the delivery request and does not mean the brand has been verified. Inspect the OTP status and submit the received code through verifyTenDlcBrandOtp. Requests may be rate limited. Supply the required Idempotency-Key header. Supply organization_id for the organization that owns the registration."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_TRIGGER_TEN_DLC_BRAND_OTP, payload)
 
     async def update_organization(
         self, input: UpdateOrganizationInput
     ) -> RawResponse[models.UpdateOrganizationResponse]:
-        "Change organization name"
+        "Change organization name\n\nRenames the organization and returns it with its new version. Owners and Admins can call it with account credentials. Send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_UPDATE_ORGANIZATION, payload)
 
     async def update_organization_member_role(
         self, input: UpdateOrganizationMemberRoleInput
     ) -> RawResponse[models.UpdateOrganizationMemberRoleResponse]:
-        "Change an organization member's role across all projects"
+        "Change an organization member's role across all projects\n\nChanges an active member's role to admin, member or viewer. Owners and Admins can call it with account credentials, but only the Owner can make someone an Admin or change an Admin's role, and nobody can change the Owner's role or their own here (409). Send the member's current membership version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_UPDATE_ORGANIZATION_MEMBER_ROLE, payload)
 
@@ -8971,9 +9082,16 @@ class AsyncRawOrganizationsResource:
     async def update_service_identity(
         self, input: UpdateServiceIdentityInput
     ) -> RawResponse[models.UpdateServiceIdentityResponse]:
-        "Update a Service Identity"
+        "Update a Service Identity\n\nChanges a Service Identity's name, its permissions (the list replaces the current one) or its status. Disabling an identity stops its API keys and M2M tokens from authorizing requests without revoking them, and an identity managed by an app installation can't be changed (409). Owners and Admins can call it with account credentials; send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_UPDATE_SERVICE_IDENTITY, payload)
+
+    async def verify_ten_dlc_brand_otp(
+        self, input: VerifyTenDlcBrandOtpInput
+    ) -> RawResponse[models.VerifyTenDlcBrandOtpResponse]:
+        "Verify sole-proprietor OTP\n\nSubmits otpPin for the selected organization-owned sole-proprietor brand and returns its updated, redacted verification state. A rejected code, a locked verification flow, or rate limiting is reported as an error; read the current OTP status before deciding whether to request another code. Supply the required Idempotency-Key header. Supply organization_id for the organization that owns the registration."
+        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
+        return await self._transport.request(_OP_VERIFY_TEN_DLC_BRAND_OTP, payload)
 
 
 class AsyncRawProjectsPlatformsImessageAssignmentsResource:
@@ -9023,7 +9141,7 @@ class AsyncRawProjectsPlatformsResource:
     async def assign_sms_line_campaign(
         self, input: AssignSmsLineCampaignInput
     ) -> RawResponse[models.Operation]:
-        "Assign or replace SMS line campaign\n\nAttach a ready campaign from this project’s organization to its line. Requires platforms:write for the project; human and machine actors retain their authenticated identity. Requires a permanent Idempotency-Key and the current assignment version. Provider provisioning runs asynchronously."
+        "Assign or replace SMS line campaign\n\nAttach a ready campaign from this project’s organization to its line. Requires platforms:write for the project; human and machine actors retain their authenticated identity. Requires a permanent Idempotency-Key and the current assignment version. Provider provisioning runs asynchronously. If the operation fails, its `error` is the problem of one of these codes: `SMS_CAMPAIGN_PROVIDER_REJECTED`, `SMS_CAMPAIGN_RECONCILIATION_REQUIRED`, `SMS_CAMPAIGN_REVOKED`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_ASSIGN_SMS_LINE_CAMPAIGN, payload)
 
@@ -9058,28 +9176,28 @@ class AsyncRawProjectsPlatformsResource:
     async def connect_email_domain(
         self, input: ConnectEmailDomainInput
     ) -> RawResponse[models.Operation]:
-        "Connect email domain\n\nReserves a normalized DNS domain and starts its durable email-provider setup. The accepted provision consumes one email-domain entitlement slot until it fails, is cancelled, or becomes a live resource; the plan's email.max_email_domains value sets the project limit. The customer resource does not exist until provider identity and DNS setup reach READY; poll the returned operation for progress. A domain may have only one unfinished provision or live resource globally. Email domains have no additional per-domain charge. The Idempotency-Key is required and permanent: replaying the same key and canonical domain returns the original operation forever. Requires the platforms:write permission bound to the project resource in the path."
+        "Connect email domain\n\nReserves a normalized DNS domain and starts its durable email-provider setup. The accepted provision consumes one email-domain entitlement slot until it fails, is cancelled, or becomes a live resource; the plan's email.max_email_domains value sets the project limit. The customer resource does not exist until provider identity and DNS setup reach READY; poll the returned operation for progress. A domain may have only one unfinished provision or live resource globally. Email domains have no additional per-domain charge. The Idempotency-Key is required and permanent: replaying the same key and canonical domain returns the original operation forever. Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `EMAIL_DOMAIN_PROVIDER_REJECTED`, `EMAIL_DOMAIN_VERIFICATION_FAILED`, `EMAIL_DOMAIN_VERIFICATION_TIMED_OUT`, `EMAIL_TENANT_SETUP_TIMED_OUT`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_CONNECT_EMAIL_DOMAIN, payload)
 
     async def connect_telegram_bot(
         self, input: ConnectTelegramBotInput
     ) -> RawResponse[models.Operation]:
-        "Connect Telegram bot\n\nStarts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to create a new bot, whose name and username are chosen in Telegram, or to connect an existing managed bot, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged."
+        "Connect Telegram bot\n\nStarts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to create a new bot, whose name and username are chosen in Telegram, or to connect an existing managed bot, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged. If the operation fails, its `error` is the problem of one of these codes: `TELEGRAM_CONFIGURATION_FAILED`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_CONNECT_TELEGRAM_BOT, payload)
 
     async def count_filtered_verification_codes(
         self, input: CountFilteredVerificationCodesInput
     ) -> RawResponse[models.FilteredVerificationCodeCount]:
-        "Count filtered verification codes\n\nCounts the verification codes Photon kept from this project's dedicated lines and numbers, optionally for one `platform`. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Requires the platforms:read permission bound to the project resource in the path."
+        "Count filtered verification codes\n\nCounts the verification codes Photon kept from this project's dedicated lines, optionally for one `platform`. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_COUNT_FILTERED_VERIFICATION_CODES, payload)
 
     async def count_resource_filtered_verification_codes(
         self, input: CountResourceFilteredVerificationCodesInput
     ) -> RawResponse[models.FilteredVerificationCodeCount]:
-        "Count a line's filtered verification codes\n\nCounts the verification codes Photon kept from one dedicated line or number. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a number receives both SMS and WhatsApp. Requires the platforms:read permission bound to the project resource in the path."
+        "Count a line's filtered verification codes\n\nCounts the verification codes Photon kept from one dedicated line. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a dedicated line receives both iMessage and WhatsApp. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(
             _OP_COUNT_RESOURCE_FILTERED_VERIFICATION_CODES, payload
@@ -9109,7 +9227,7 @@ class AsyncRawProjectsPlatformsResource:
     async def create_whatsapp_voip_sender(
         self, input: CreateWhatsappVoipSenderInput
     ) -> RawResponse[models.Operation]:
-        "Create WhatsApp VoIP sender\n\nRegisters an active, SMS-capable Photon VoIP line on this project's connected WhatsApp Business Account. The account is resolved server-side; callers never select a WABA. The platform creates or reuses the Meta number, requests and consumes the SMS ownership code internally, verifies it, and registers the sender. displayName is optional; when omitted the project agent profile name is snapshotted before acceptance. The VoIP line remains a separate resource and never receives the whatsapp_business ability."
+        "Create WhatsApp VoIP sender\n\nRegisters an active, SMS-capable Photon VoIP line on this project's connected WhatsApp Business Account. The account is resolved server-side; callers never select a WABA. The platform creates or reuses the Meta number, requests and consumes the SMS ownership code internally, verifies it, and registers the sender. displayName is optional; when omitted the project agent profile name is snapshotted before acceptance. The VoIP line remains a separate resource and never receives the whatsapp_business ability. If the operation fails, its `error` is the problem of one of these codes: `WHATSAPP_AUTHORIZATION_REVOKED`, `WHATSAPP_DISPLAY_NAME_CONFLICT`, `WHATSAPP_NUMBER_ADD_REFUSED`, `WHATSAPP_NUMBER_LOOKUP_FAILED`, `WHATSAPP_REGISTRATION_REFUSED`, `WHATSAPP_VERIFICATION_REFUSED`, `WHATSAPP_VERIFICATION_REQUEST_REFUSED`, `WHATSAPP_VERIFICATION_TIMED_OUT`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_CREATE_WHATSAPP_VOIP_SENDER, payload)
 
@@ -9135,7 +9253,7 @@ class AsyncRawProjectsPlatformsResource:
     async def disconnect_whatsapp_business_account(
         self, input: DisconnectWhatsappBusinessAccountInput
     ) -> RawResponse[models.Operation]:
-        "Disconnect WhatsApp Business account\n\nDisconnects every attached WhatsApp sender, then unsubscribes our app and removes the project's business account connection. Photon VoIP lines and the numbers in Meta remain. Requires Idempotency-Key. Poll the returned operation; provider refusals appear as operation failures and retain the account for retry with a new key. New signups are blocked while disconnecting, and existing provisions must finish before this request can be accepted."
+        "Disconnect WhatsApp Business account\n\nDisconnects every attached WhatsApp sender, then unsubscribes our app and removes the project's business account connection. Photon VoIP lines and the numbers in Meta remain. Requires Idempotency-Key. Poll the returned operation. Meta's answers do not fail it: each sender is released as `DELETE /platforms/resources/:resourceId` does, and our app's unsubscribe is a best effort, tried up to three times, a second or two apart, only while the failure is temporary. New signups are blocked while disconnecting, and existing provisions must finish before this request can be accepted. If the operation fails, its `error` is the problem of one of these codes: `WHATSAPP_ACCOUNT_DISCONNECT_FAILED`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_DISCONNECT_WHATSAPP_BUSINESS_ACCOUNT, payload)
 
@@ -9238,7 +9356,7 @@ class AsyncRawProjectsPlatformsResource:
     async def list_filtered_verification_codes(
         self, input: ListFilteredVerificationCodesInput
     ) -> RawResponse[models.FilteredVerificationCodePage]:
-        "List filtered verification codes\n\nLists the verification codes Photon kept from this project's dedicated lines and numbers. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line or number (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Filter by `platform`; to read one line, use its own filtered-otp path. Requires the platforms:read permission bound to the project resource in the path."
+        "List filtered verification codes\n\nLists the verification codes Photon kept from this project's dedicated lines. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Filter by `platform`; to read one line, use its own filtered-otp path. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_LIST_FILTERED_VERIFICATION_CODES, payload)
 
@@ -9273,12 +9391,12 @@ class AsyncRawProjectsPlatformsResource:
     async def list_resource_filtered_verification_codes(
         self, input: ListResourceFilteredVerificationCodesInput
     ) -> RawResponse[models.FilteredVerificationCodePage]:
-        "List a line's filtered verification codes\n\nLists the verification codes Photon kept from one dedicated line or number. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line or number (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a number receives both SMS and WhatsApp. Requires the platforms:read permission bound to the project resource in the path."
+        "List a line's filtered verification codes\n\nLists the verification codes Photon kept from one dedicated line. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a dedicated line receives both iMessage and WhatsApp. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_LIST_RESOURCE_FILTERED_VERIFICATION_CODES, payload)
 
     async def list_resources(self, input: ListResourcesInput) -> RawResponse[models.ResourcePage]:
-        "List resources\n\nLists the project's resources, oldest first, including retired ones unless `state` filters them out. Filter by `type`, by enabled `ability` and by comma-separated `state`. `detail` is a per-type public view. Requires the platforms:read permission bound to the project resource in the path."
+        "List resources\n\nLists the project's resources, oldest first, including retired ones unless `state` filters them out. Filter by `type`, by enabled `ability` and by comma-separated `state`. Lifecycle states are unallocated, active and retired; active means owned and non-retired, not provider-confirmed readiness. Every VoIP resource includes detail.activationState: activating or active, defaulting to active without owner-matched saved state. state=active includes numbers still activating. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_LIST_RESOURCES, payload)
 
@@ -9306,40 +9424,40 @@ class AsyncRawProjectsPlatformsResource:
     async def provision_imessage_dedicated_line(
         self, input: ProvisionImessageDedicatedLineInput
     ) -> RawResponse[models.Operation]:
-        "Provision dedicated iMessage line\n\nClaims one dedicated iMessage line for the project and enables iMessage on it. Always answers 202 with an operation: dedicated lines are allocated from available capacity, and unavailable capacity causes a wait rather than a failure — this can legitimately stay `running` for hours, which is exactly why the response is a handle to poll rather than a number. The project's messaging subscription must grant the dedicated iMessage lines entitlement (`imessage_dedicated_lines.can_purchase`), and that is checked before capacity is reserved. The line's own charge starts when a line is claimed; the subscription that grants the entitlement bills on its own terms, which cancelling a request does not change. Waiting requests are served first come, first served. One that is still waiting is cancelled with a `reason` if the project is deleted (`project_deleted`) or its plan stops selling dedicated lines (`entitlement_lost`); while the payer is restricted for overdue payment it keeps waiting. If you no longer want to wait, POST to the operation's cancel endpoint, which charges nothing for the line. The Idempotency-Key is required and permanent: repeating it returns the same operation forever. A further line always needs a NEW key, including while others are still waiting. Requires the platforms:write permission bound to the project resource in the path."
+        "Provision dedicated iMessage line\n\nClaims one dedicated iMessage line for the project and enables iMessage on it. Always answers 202 with an operation: dedicated lines are allocated from available capacity, and unavailable capacity causes a wait rather than a failure — this can legitimately stay `running` for hours, which is exactly why the response is a handle to poll rather than a number. The project's messaging subscription must grant the dedicated iMessage lines entitlement (`imessage_dedicated_lines.can_purchase`), and that is checked before capacity is reserved. The line's own charge starts when a line is claimed; the subscription that grants the entitlement bills on its own terms, which cancelling a request does not change. Waiting requests are served first come, first served. One that is still waiting is cancelled with a `reason` if the project is deleted (`project_deleted`) or its plan stops selling dedicated lines (`entitlement_lost`); while the payer is restricted for overdue payment it keeps waiting. If you no longer want to wait, POST to the operation's cancel endpoint, which charges nothing for the line. The Idempotency-Key is required and permanent: repeating it returns the same operation forever. A further line always needs a NEW key, including while others are still waiting. An optional promotionCode is checked and claimed here, before the request waits for a line: a code that can't be used answers 409 PROMOTION_CODE_REJECTED and starts nothing. Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `CHARGE_REFUSED`, `ENTERPRISE_PLAN_REQUIRED`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_PROVISION_IMESSAGE_DEDICATED_LINE, payload)
 
     async def provision_whatsapp_dedicated_line(
         self, input: ProvisionWhatsappDedicatedLineInput
     ) -> RawResponse[models.Operation]:
-        "Provision dedicated WhatsApp line\n\nProvisions one dedicated WhatsApp line with WhatsApp and shared Voice enabled. It attaches to an eligible iMessage line the project already owns when possible so both products keep the same number; otherwise it claims healthy, available WhatsApp-capable dedicated-line inventory. Always answers 202, because waiting when no inventory is available is not a failure. The product opens its own charge period after the abilities are enabled; Voice has no separate charge. Waiting requests are served first come, first served, and are cancelled with a `reason` exactly as for a dedicated iMessage line. Cancel the returned operation to stop waiting. The Idempotency-Key is required and permanent."
+        "Provision dedicated WhatsApp line\n\nProvisions one dedicated WhatsApp line with WhatsApp and shared Voice enabled. It attaches to an eligible iMessage line the project already owns when possible so both products keep the same number; otherwise it claims healthy, available WhatsApp-capable dedicated-line inventory. Always answers 202, because waiting when no inventory is available is not a failure. The product opens its own charge period after the abilities are enabled; Voice has no separate charge. Waiting requests are served first come, first served, and are cancelled with a `reason` exactly as for a dedicated iMessage line. Cancel the returned operation to stop waiting. An optional promotionCode is checked and claimed here, before the request waits for a line: a code that can't be used answers 409 PROMOTION_CODE_REJECTED and starts nothing. The Idempotency-Key is required and permanent. If the operation fails, its `error` is the problem of one of these codes: `CHARGE_REFUSED`, `ENTERPRISE_PLAN_REQUIRED`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_PROVISION_WHATSAPP_DEDICATED_LINE, payload)
 
     async def purchase_sms_number(
         self, input: PurchaseSmsNumberInput
     ) -> RawResponse[models.Operation]:
-        "Purchase SMS number\n\nBuys one US local number from the provider and records it as a resource with SMS enabled. Requires countryCode (US) and accepts an optional three-digit geographic areaCode. The server selects an exact matching number. Empty inventory keeps the operation running until a number is available or the caller cancels before ordering begins. Always answers 202 with an operation: the work runs behind the response, and the Location points at the operation to poll. New area-specific requests must appear in current provider coverage; discover it with GET /sms/numbers/area-codes?countryCode=US. Coverage and subscription checks run before operation creation. Billing follows delivery. Replays return the original operation without checking current coverage. The Idempotency-Key is required and permanent: repeating it returns the same operation forever, never a second number. A further number always needs a NEW key, including while others are still running. Requires the platforms:write permission bound to the project resource in the path."
+        'Purchase SMS number\n\nBuys one US local number from the provider and records it as a resource with SMS enabled. Requires countryCode (US) and accepts an optional three-digit geographic areaCode. The server selects an exact matching number. While inventory is empty the operation keeps searching, and the caller can cancel it until ordering begins; a search still empty one minute after the operation was created fails it with `NUMBER_INVENTORY_UNAVAILABLE`. Always answers 202 with an operation: the work runs behind the response, and the Location points at the operation to poll. New area-specific requests must appear in current provider coverage; discover it with GET /sms/numbers/area-codes?countryCode=US. Coverage and subscription checks run before operation creation. Billing follows delivery. Replays return the original operation without checking current coverage. The Idempotency-Key is required and permanent: repeating it returns the same operation forever, never a second number. A further number always needs a NEW key, including while others are still running. An optional promotionCode is redeemed with the number\'s charge, which follows delivery: a code billing refuses hands the number back, and its release operation carries the refusal (`reason` `charge_refused`, with `detail.chargeRefusal` `{ code: "promotion_code_rejected", detail: <why> }`). Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `ENTITLEMENT_REQUIRED`, `NUMBER_INVENTORY_UNAVAILABLE`, `NUMBER_ORDER_FAILED`, `NUMBER_ORDER_RECONCILIATION_REQUIRED`, `NUMBER_SEARCH_FAILED`.'
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_PURCHASE_SMS_NUMBER, payload)
 
     async def release_imessage_dedicated_line(
         self, input: ReleaseImessageDedicatedLineInput
     ) -> RawResponse[models.Operation]:
-        "Release dedicated iMessage line\n\nRemoves only iMessage from one dedicated line. Shared Voice is removed only when WhatsApp is absent; if WhatsApp remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open iMessage charge period identifies this product tenure."
+        "Release dedicated iMessage line\n\nRemoves only iMessage from one dedicated line. Shared Voice is removed only when WhatsApp is absent; if WhatsApp remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open iMessage charge period identifies this product tenure. If the operation fails, its `error` is the problem of one of these codes: `RESOURCE_NOT_FOUND`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_RELEASE_IMESSAGE_DEDICATED_LINE, payload)
 
     async def release_resource(self, input: ReleaseResourceInput) -> RawResponse[models.Operation]:
-        "Release resource\n\nGives one resource back, whatever it is. What that means is the resource's own business: an SMS number goes back to the provider and is retired, a dedicated iMessage line goes back to the shared pool and stays in existence for someone else to claim. Either way the provider is contacted first where there is one, then a single transaction disables every ability, ends the project's hold and closes the charge period — so a provider that refuses leaves the resource exactly as it was, still owned and still billed. Usually finishes inside this request and answers 200; if the provider is slow it answers 202 and the Location points at the operation to poll. The decrement runs behind the answer either way, so the resource is gone when you are told it is. Takes no Idempotency-Key — releasing the same resource twice is the same request. Releasing one that is already gone answers 404. Requires the platforms:write permission bound to the project resource in the path."
+        "Release resource\n\nGives one resource back, whatever it is. What that means is the resource's own business: an SMS number goes back to the provider and is retired, a dedicated iMessage line goes back to the shared pool and stays in existence for someone else to claim. Either way the provider is contacted first where there is one, then a single transaction disables every ability, ends the project's hold and closes the charge period — so a provider that refuses leaves the resource exactly as it was, still owned and still billed. A WhatsApp Business sender is the exception: Meta never holds its release. A number on a Photon VoIP line is deregistered as a best effort, tried up to three times, a second or two apart, only while the failure is temporary; a number the customer brought is not sent to Meta at all; the sender is retired either way, and the number stays in the customer's WhatsApp Business Account. Usually finishes inside this request and answers 200; if the provider is slow it answers 202 and the Location points at the operation to poll. The decrement runs behind the answer either way, so the resource is gone when you are told it is. Takes no Idempotency-Key — releasing the same resource twice is the same request. Releasing one that is already gone answers 404. Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `EMAIL_DOMAIN_RELEASE_FAILED`, `NUMBER_RELEASE_FAILED`, `RESOURCE_NOT_FOUND`, `TELEGRAM_RELEASE_FAILED`, `WHATSAPP_SENDER_RELEASE_FAILED`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_RELEASE_RESOURCE, payload)
 
     async def release_whatsapp_dedicated_line(
         self, input: ReleaseWhatsappDedicatedLineInput
     ) -> RawResponse[models.Operation]:
-        "Release dedicated WhatsApp line\n\nRemoves only WhatsApp from one dedicated line. Shared Voice is removed only when iMessage is absent; if iMessage remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open WhatsApp charge period identifies this product tenure."
+        "Release dedicated WhatsApp line\n\nRemoves only WhatsApp from one dedicated line. Shared Voice is removed only when iMessage is absent; if iMessage remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open WhatsApp charge period identifies this product tenure. If the operation fails, its `error` is the problem of one of these codes: `RESOURCE_NOT_FOUND`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_RELEASE_WHATSAPP_DEDICATED_LINE, payload)
 
@@ -9367,7 +9485,7 @@ class AsyncRawProjectsPlatformsResource:
     async def unassign_sms_line_campaign(
         self, input: UnassignSmsLineCampaignInput
     ) -> RawResponse[models.Operation]:
-        "Unassign SMS line campaign\n\nAny project writer, including a scoped API key, may detach the campaign. The number and campaign remain owned. Requires a permanent Idempotency-Key and expectedVersion. Local eligibility is blocked immediately; provider detachment runs asynchronously."
+        "Unassign SMS line campaign\n\nAny project writer, including a scoped API key, may detach the campaign. The number and campaign remain owned. Requires a permanent Idempotency-Key and expectedVersion. Local eligibility is blocked immediately; provider detachment runs asynchronously. If the operation fails, its `error` is the problem of one of these codes: `SMS_CAMPAIGN_PROVIDER_REJECTED`, `SMS_CAMPAIGN_RECONCILIATION_REQUIRED`, `SMS_CAMPAIGN_REVOKED`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_UNASSIGN_SMS_LINE_CAMPAIGN, payload)
 
@@ -9388,7 +9506,7 @@ class AsyncRawProjectsPlatformsResource:
     async def update_voice_profile(
         self, input: UpdateVoiceProfileInput
     ) -> RawResponse[models.VoiceProfile]:
-        "Update Voice profile\n\nPatches an additional profile's name, protocol, or mediaEncryption when expectedVersion matches. Omitted fields are preserved. Directional configuration is managed through the profile's inbound and outbound endpoints. Requires platforms:write bound to the path project."
+        "Update Voice profile\n\nPatches an additional profile's name, protocol, or mediaEncryption when expectedVersion matches. Omitted fields are preserved. The default profile's metadata changes only through PATCH /v1/projects/{id}/platforms/voice/profiles/default, so a name, protocol, or mediaEncryption patch addressed to its profileId is refused with 409. Directional configuration is managed through the profile's inbound and outbound endpoints. Requires platforms:write bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_UPDATE_VOICE_PROFILE, payload)
 
@@ -9553,7 +9671,7 @@ class AsyncRawProjectsResource:
         return await self._transport.request(_OP_GET_PROJECT, payload)
 
     async def get_attachment(self, input: GetAttachmentInput) -> RawResponse[models.Attachment]:
-        "Get attachment\n\nReturns an Attachment's metadata. Use the content endpoint to download its bytes."
+        "Get attachment\n\nReturns an Attachment's metadata. Use the content endpoint to download its bytes. If its metadata is unavailable after ten seconds, returns ATTACHMENT_NOT_READY with Retry-After: 5."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_GET_ATTACHMENT, payload)
 
@@ -9605,7 +9723,7 @@ class AsyncRawProjectsResource:
     async def list_attachments(
         self, input: ListAttachmentsInput
     ) -> RawResponse[models.AttachmentPage]:
-        "List attachments\n\nLists the Project's Attachment metadata, with optional time filters."
+        "List attachments\n\nLists the Project's Attachment metadata, with optional time filters. An Attachment can be absent until its upload finishes, which advances its updatedAt; follow changes with updatedSince."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_LIST_ATTACHMENTS, payload)
 
@@ -9912,13 +10030,6 @@ class AsyncRawAuthResource:
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_RETRY_ORGANIZATION_CONNECTION_SYNC, payload)
 
-    async def start_enterprise_login(
-        self, input: StartEnterpriseLoginInput
-    ) -> RawResponse[models.StartEnterpriseLoginResponse]:
-        "Start company sign-in\n\nReturns a sign-in URL without requiring an existing account: the company SSO connection when the target has a ready connection, otherwise ordinary account login. Supply one documented enrollment variant: organizationId with returnTo (optionally invitationToken), invitationToken with returnTo, or retryToken. Open the returned URL to continue authentication; receiving a URL does not complete sign-in. This is a browser flow: the request must come from an allowed Origin, and the retryToken variant also needs the retry cookie set by the failed sign-in, so send it with credentials."
-        payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_START_ENTERPRISE_LOGIN, payload)
-
     async def update_organization_sso_policy(
         self, input: UpdateOrganizationSsoPolicyInput
     ) -> RawResponse[models.OrganizationSsoConfiguration]:
@@ -9934,7 +10045,7 @@ class AsyncOrganizationsBillingResource:
     async def change_plan(
         self, input: ChangePlanInput
     ) -> models.TerminalBillingOperation | models.PendingBillingOperation:
-        "Change plan\n\nPurchases or changes the selected project's plan for the supplied category and planCode. A 202 response means the change is pending: poll the returned operation URL and honor Retry-After until it succeeds or fails. A 200 response means the idempotency key resolved to an operation that is already terminal; inspect that result rather than assuming success from the status code alone. Supply the required Idempotency-Key header. Supply both organizationId and projectId to select the project within its organization."
+        "Change plan\n\nPurchases or changes the selected project's plan for the supplied category and planCode, redeeming promotionCode when given. A 202 response means the change is pending: poll the returned operation URL and honor Retry-After until it succeeds or fails. A 200 response means the idempotency key resolved to an operation that is already terminal; inspect that result rather than assuming success from the status code alone. Supply the required Idempotency-Key header. Supply both organizationId and projectId to select the project within its organization."
         return (await self._raw_resource.change_plan(input)).data
 
     async def create_organization_payment_method_checkout(
@@ -9964,7 +10075,7 @@ class AsyncOrganizationsBillingResource:
     async def get_organization_payment_method(
         self, input: GetOrganizationPaymentMethodInput
     ) -> models.GetOrganizationPaymentMethodResponse:
-        "Get organization payment method\n\nReports whether the selected organization has a card on file and returns its documented payment-method metadata. Reading this endpoint does not collect a new card or create a checkout session."
+        "Get organization payment method\n\nReports whether the selected organization has a card on file, its documented payment-method metadata, whether a purchase needs a card first (purchaseRefusal), and how it pays: by card, or by invoice on its contract's terms (agreement). Reading this endpoint does not collect a new card or create a checkout session."
         return (await self._raw_resource.get_organization_payment_method(input)).data
 
     async def get_organization_terms(
@@ -9986,13 +10097,13 @@ class AsyncOrganizationsBillingResource:
     async def preview_organization_change(
         self, input: PreviewOrganizationChangeInput
     ) -> models.PreviewOrganizationChangeResponse:
-        "Preview an organization billing change\n\nPreviews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing."
+        "Preview an organization billing change\n\nPreviews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives."
         return (await self._raw_resource.preview_organization_change(input)).data
 
     async def preview_project_change(
         self, input: PreviewProjectChangeInput
     ) -> models.PreviewProjectChangeResponse:
-        "Preview a project billing change\n\nPreviews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. Supply both organizationId and projectId; the organization must pay for the project."
+        "Preview a project billing change\n\nPreviews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; a downgrade, or choosing the held plan again, bills nothing now; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives. Supply both organizationId and projectId; the organization must pay for the project."
         return (await self._raw_resource.preview_project_change(input)).data
 
 
@@ -10034,35 +10145,35 @@ class AsyncOrganizationsResource:
     async def accept_organization_invitation(
         self, input: AcceptOrganizationInvitationInput
     ) -> models.AcceptOrganizationInvitationResponse:
-        "Accept an invitation to all organization projects"
+        "Accept an invitation to all organization projects\n\nAccepts an invitation by its token and adds the signed-in account to the organization with the invited role. An existing member keeps their role, except a Viewer who joined through SSO just-in-time provisioning and whose role has never been changed, who takes the invited role; a removed member can rejoin only with an invitation created after the removal, else 409. The account's verified email must match the invited address, the invitation must be pending and unexpired, and its inviter must still be an Owner or Admin; in an organization that requires SSO it returns 403, because the invitee joins by signing in through that SSO instead. Call it with account credentials acting as the account itself and supply the required Idempotency-Key header."
         return (await self._raw_resource.accept_organization_invitation(input)).data
 
     async def cancel_sso_subscription(
         self, input: CancelSsoSubscriptionInput
     ) -> models.CancelSsoSubscriptionResponse:
-        "Cancel the SSO subscription"
+        "Cancel the SSO subscription\n\nCancels the organization's SSO subscription at once, but only after SSO has been turned off: while SSO is still required it returns 409. The unused days become organization credit, and SSO setup closes. Only Owners and Admins can call it, with account credentials and the required Idempotency-Key header."
         return (await self._raw_resource.cancel_sso_subscription(input)).data
 
     async def check_organization_deletion(
         self, input: CheckOrganizationDeletionInput
     ) -> models.CheckOrganizationDeletionResponse:
-        "Check organization deletion prerequisites"
+        "Check organization deletion prerequisites\n\nReports whether the organization can be deleted now (canDelete), the blockers to clear first, such as active projects or unpaid invoices, and the version to send to closeOrganization. The answer is advisory, because deletion checks again. Only the Owner can call it, with account credentials; in an organization that requires SSO, sign in through SSO, because Account Service Keys are refused."
         return (await self._raw_resource.check_organization_deletion(input)).data
 
     async def close_organization(self, input: CloseOrganizationInput) -> None:
-        "Delete organization"
+        "Delete organization\n\nDeletes the organization: it leaves normal access when the call returns 204, and Photon then releases its app installations, registrations and billing subscriptions in the background. It cannot be undone and needs no active projects, nothing owed, and the expectedVersion from checkOrganizationDeletion; a blocked or stale request returns 409. Only the Owner can call it, with account credentials (in an organization that requires SSO, a session signed in through SSO) and the required Idempotency-Key header."
         return (await self._raw_resource.close_organization(input)).data
 
     async def commit_organization_avatar(
         self, input: CommitOrganizationAvatarInput
     ) -> models.CommitOrganizationAvatarResponse:
-        "Commit an organization avatar"
+        "Commit an organization avatar\n\nSets the organization's avatar to an image uploaded with createOrganizationAvatarUpload, after checking its size, type and contents, and discards the previous avatar; an invalid or expired upload is rejected. Owners and Admins can call it with account credentials. Send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         return (await self._raw_resource.commit_organization_avatar(input)).data
 
     async def create_organization(
         self, input: CreateOrganizationInput
     ) -> models.CreateOrganizationResponse:
-        "Create an organization"
+        "Create an organization\n\nCreates an organization with the supplied name and makes the calling account its Owner; SSO and just-in-time provisioning start disabled. Billing is set up after the response, so the 201 body has no billingInitialization; read it from getOrganization or listOrganizations to follow the setup. Call it with account credentials acting as the account itself and supply the required Idempotency-Key header; an account that is closing gets 409."
         return (await self._raw_resource.create_organization(input)).data
 
     async def create_organization_avatar_upload(
@@ -10074,7 +10185,7 @@ class AsyncOrganizationsResource:
     async def create_organization_invitation(
         self, input: CreateOrganizationInvitationInput
     ) -> models.CreateOrganizationInvitationResponse:
-        "Invite a Member or Viewer to all organization projects"
+        "Invite a Member or Viewer to all organization projects\n\nInvites an email address to the organization as a Member or Viewer and emails it a link that stays valid for 7 days; the Admin and Owner roles can't be invited. Owners and Admins can call it with account credentials and the required Idempotency-Key header. Inviting an address that has a pending invitation for the same role resends it and a different role returns 409, while sending too often (twice within a minute, more than 30 an hour or 100 pending per organization) returns 429."
         return (await self._raw_resource.create_organization_invitation(input)).data
 
     async def create_organization_oauth_client(
@@ -10086,19 +10197,19 @@ class AsyncOrganizationsResource:
     async def create_service_identity(
         self, input: CreateServiceIdentityInput
     ) -> models.CreateServiceIdentityResponse:
-        "Create an organization Service Identity"
+        "Create an organization Service Identity\n\nCreates an active Service Identity, a machine identity owned by the organization, with a name and a non-empty set of permissions from listServiceIdentityPermissions; it starts with no credentials. Owners and Admins can call it with account credentials and the required Idempotency-Key header."
         return (await self._raw_resource.create_service_identity(input)).data
 
     async def create_service_identity_api_key(
         self, input: CreateServiceIdentityApiKeyInput
     ) -> models.CreateServiceIdentityApiKeyResponse:
-        "Create a one-time Service Identity API key"
+        "Create a one-time Service Identity API key\n\nCreates an API key for an active Service Identity that no app installation manages; the key acts with the identity's current permissions. Only a response with status created returns the key's value, so store it securely; retry with the same Idempotency-Key, which must be a UUID: a retry returns the key's status without the value, and status recovery_required means the value was not delivered and can't be retrieved. Owners and Admins can call it with account credentials, and expectedIdentityVersion must match the identity's current version, else 409; an identity managed by an app installation also returns 409."
         return (await self._raw_resource.create_service_identity_api_key(input)).data
 
     async def create_service_identity_client_secret(
         self, input: CreateServiceIdentityClientSecretInput
     ) -> models.CreateServiceIdentityClientSecretResponse:
-        "Create a one-time Service Identity M2M client secret"
+        "Create a one-time Service Identity M2M client secret\n\nCreates a client secret for the machine-to-machine (M2M) application of an active Service Identity that no app installation manages, setting the application up first if needed, and returns the secret with its clientId once; exchange them for M2M access tokens, and never send the secret to other operations. Retry with the same Idempotency-Key, which must be a UUID: a retry returns the status without the secret, and a response with stage application (status recovery_required or cleanup_required) means the application could not be set up and no secret exists. Owners and Admins can call it with account credentials, and expectedIdentityVersion must match the identity's current version, else 409; an identity managed by an app installation also returns 409."
         return (await self._raw_resource.create_service_identity_client_secret(input)).data
 
     async def delete_organization_oauth_client(
@@ -10113,12 +10224,6 @@ class AsyncOrganizationsResource:
         "Revoke an organization OAuth client's secret\n\nStops every secret of the app now, including one still in its grace period."
         return (await self._raw_resource.delete_organization_oauth_client_secret(input)).data
 
-    async def ensure_initial_organization(
-        self, input: EnsureInitialOrganizationInput
-    ) -> models.EnsureInitialOrganizationResponse:
-        "Ensure the initial organization"
-        return (await self._raw_resource.ensure_initial_organization(input)).data
-
     async def get_current_organization(
         self, input: GetCurrentOrganizationInput | None = None
     ) -> models.GetCurrentOrganizationResponse:
@@ -10126,73 +10231,79 @@ class AsyncOrganizationsResource:
         return (await self._raw_resource.get_current_organization(input)).data
 
     async def get_organization(self, input: GetOrganizationInput) -> models.GetOrganizationResponse:
-        "Read organization name and avatar"
+        "Read organization name and avatar\n\nReturns the organization's name, avatar URL, version and billing setup progress. Any member can read it with account credentials, and a Service Identity granted organization:read or an OAuth grant with the organization:read scope can read the organization it is bound to. Send version as expectedVersion when renaming the organization or changing its avatar."
         return (await self._raw_resource.get_organization(input)).data
 
     async def get_organization_oauth_client(
         self, input: GetOrganizationOauthClientInput
     ) -> models.GetOrganizationOauthClientResponse:
-        "Read an organization OAuth client"
+        "Read an organization OAuth client\n\nReturns one third-party OAuth application the organization owns, without its secret. Any member can call it with account credentials. The ETag response header is the value updateOrganizationOauthClient needs in If-Match."
         return (await self._raw_resource.get_organization_oauth_client(input)).data
 
     async def get_organization_oauth_client_secret(
         self, input: GetOrganizationOauthClientSecretInput
     ) -> models.GetOrganizationOauthClientSecretResponse:
-        "Read an organization OAuth client's secret"
+        "Read an organization OAuth client's secret\n\nReturns metadata about an OAuth application's secret: the current secret and, after a rotation, the previous one while it still works, with each one's hint, creation and last-use times; the previous one's validUntil is when it stops working, or null when it lasts until the next rotation or revocation. The secret value is never returned. Only Owners and Admins can call it, with account credentials."
         return (await self._raw_resource.get_organization_oauth_client_secret(input)).data
 
     async def get_service_identity(
         self, input: GetServiceIdentityInput
     ) -> models.GetServiceIdentityResponse:
-        "Read a Service Identity"
+        "Read a Service Identity\n\nReturns one Service Identity with its permissions, status and version. Any member can call it with account credentials. Send version as expectedVersion to updateServiceIdentity, or as expectedIdentityVersion when creating a credential."
         return (await self._raw_resource.get_service_identity(input)).data
 
     async def get_sso_subscription(
         self, input: GetSsoSubscriptionInput
     ) -> models.GetSsoSubscriptionResponse:
-        "Read SSO subscription"
+        "Read SSO subscription\n\nReturns the organization's SSO subscription: its state, the current monthly price and billing period, whether a payment method must be added first, and whether SSO can be set up (canConfigure). Only Owners and Admins can call it, with account credentials. Send its amount, currency and currentPeriodEnd as the quote when subscribing."
         return (await self._raw_resource.get_sso_subscription(input)).data
+
+    async def get_ten_dlc_brand_otp(
+        self, input: GetTenDlcBrandOtpInput
+    ) -> models.GetTenDlcBrandOtpResponse:
+        "Get sole-proprietor OTP status\n\nReturns the redacted one-time-password verification state for an organization-owned brand. OTP verification applies only to sole-proprietor brands. Reading this endpoint does not request another code or verify a supplied code; use the trigger and verification operations for those actions. Supply organization_id for the organization that owns the registration."
+        return (await self._raw_resource.get_ten_dlc_brand_otp(input)).data
 
     async def leave_organization(
         self, input: LeaveOrganizationInput
     ) -> models.LeaveOrganizationResponse:
-        "Leave an organization; Owners must transfer or close first"
+        "Leave an organization; Owners must transfer or close first\n\nRemoves the authenticated account's own membership. Nothing is revoked: the account's sessions, OAuth grants and Account Service Keys stop being accepted for the organization and its projects shortly after the call, and project API keys and Service Identity credentials it created keep working until they are revoked. Any member except the Owner can call it, with account credentials or an OAuth grant for this organization with the organization:read scope; the Owner gets 409 and must transfer ownership or delete the organization first. Send the caller's own membership version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         return (await self._raw_resource.leave_organization(input)).data
 
     async def list_organization_invitations(
         self, input: ListOrganizationInvitationsInput
     ) -> models.ListOrganizationInvitationsResponse:
-        "List pending organization invitations"
+        "List pending organization invitations\n\nLists the organization's pending, unexpired invitations, newest first, in one unpaginated response; accepted, revoked and expired invitations are left out, and invitation links are never returned. Owners and Admins can call it with account credentials."
         return (await self._raw_resource.list_organization_invitations(input)).data
 
     async def list_organization_members(
         self, input: ListOrganizationMembersInput
     ) -> models.ListOrganizationMembersResponse:
-        "List current organization members"
+        "List current organization members\n\nLists the organization's active members, ordered by account ID, with each member's role, membership version and account profile (name, email and picture); a member whose account is missing or deleted has a null profile. Any member can call it with account credentials, or with an OAuth grant for this organization that has the organization:read scope. The list is not paginated."
         return (await self._raw_resource.list_organization_members(input)).data
 
     async def list_organization_oauth_clients(
         self, input: ListOrganizationOauthClientsInput
     ) -> models.ListOrganizationOauthClientsResponse:
-        "List organization OAuth clients"
+        "List organization OAuth clients\n\nLists the third-party OAuth applications the organization owns, with their metadata but never their secrets, in one unpaginated response. Any member can call it with account credentials."
         return (await self._raw_resource.list_organization_oauth_clients(input)).data
 
     async def list_organizations(
         self, input: ListOrganizationsInput | None = None
     ) -> models.ListOrganizationsResponse:
-        "List organizations"
+        "List organizations\n\nLists the active organizations the authenticated account belongs to, oldest first, in one unpaginated response; ownedOrganizationIds marks the ones it owns. Call it with account credentials acting as the account itself; OAuth grants and Service Identities are refused."
         return (await self._raw_resource.list_organizations(input)).data
 
     async def list_service_identities(
         self, input: ListServiceIdentitiesInput
     ) -> models.ListServiceIdentitiesResponse:
-        "List organization Service Identities"
+        "List organization Service Identities\n\nLists every Service Identity in the organization, oldest first, including disabled ones and those managed by app installations, in one unpaginated response. Any member can call it with account credentials. It returns identity metadata only, never credentials."
         return (await self._raw_resource.list_service_identities(input)).data
 
     async def list_service_identity_credentials(
         self, input: ListServiceIdentityCredentialsInput
     ) -> models.ListServiceIdentityCredentialsResponse:
-        "List Service Identity credential metadata"
+        "List Service Identity credential metadata\n\nLists metadata for every API key and client secret of a Service Identity, oldest first, including pending and revoked ones, in one unpaginated response; it never returns secret values. Only Owners and Admins can call it, with account credentials."
         return (await self._raw_resource.list_service_identity_credentials(input)).data
 
     async def list_service_identity_permissions(
@@ -10204,37 +10315,37 @@ class AsyncOrganizationsResource:
     async def preview_organization_invitation(
         self, input: PreviewOrganizationInvitationInput
     ) -> models.PreviewOrganizationInvitationResponse:
-        "Preview an organization invitation after sign-in"
+        "Preview an organization invitation after sign-in\n\nReturns what an invitation offers to the signed-in account that holds its token: the organization, role, expiry, member count and inviter with masked email addresses, whether the account's verified email matches the invitation, and whether SSO is required to accept it. Call it with account credentials acting as the account itself; it changes nothing. An unknown token returns 404, and an expired or revoked invitation, or one accepted by another account, returns 409."
         return (await self._raw_resource.preview_organization_invitation(input)).data
 
     async def remove_organization_avatar(
         self, input: RemoveOrganizationAvatarInput
     ) -> models.RemoveOrganizationAvatarResponse:
-        "Remove an organization avatar"
+        "Remove an organization avatar\n\nRemoves the organization's custom avatar, so avatarUrl becomes null, and returns the organization with its new version. Owners and Admins can call it with account credentials. Send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         return (await self._raw_resource.remove_organization_avatar(input)).data
 
     async def remove_organization_member(
         self, input: RemoveOrganizationMemberInput
     ) -> models.RemoveOrganizationMemberResponse:
-        "Remove an organization member's access to all projects"
+        "Remove a member from the organization\n\nRemoves an active member from the organization. Nothing is revoked: their sessions, OAuth grants and Account Service Keys stop being accepted for the organization and its projects shortly after the call, and project API keys and Service Identity credentials they created or hold keep working until an Owner or Admin revokes them. Owners and Admins can call it with account credentials, but only the Owner can remove an Admin, and neither the Owner nor the caller can be removed here (409; leave with leaveOrganization). Send the member's current membership version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         return (await self._raw_resource.remove_organization_member(input)).data
 
     async def resend_organization_invitation(
         self, input: ResendOrganizationInvitationInput
     ) -> models.ResendOrganizationInvitationResponse:
-        "Resend an organization invitation"
+        "Resend an organization invitation\n\nEmails a pending invitation again with the same link and restarts its 7-day expiry. Owners and Admins can call it with account credentials and the required Idempotency-Key header. An expired, revoked or accepted invitation returns 409, and a resend within 60 seconds of the last send, or past the organization's 30 sends an hour, returns 429."
         return (await self._raw_resource.resend_organization_invitation(input)).data
 
     async def revoke_organization_invitation(
         self, input: RevokeOrganizationInvitationInput
     ) -> models.RevokeOrganizationInvitationResponse:
-        "Revoke an organization invitation"
+        "Revoke an organization invitation\n\nRevokes an invitation so its link can no longer be previewed or accepted; no email is sent, and an accepted invitation can't be revoked (409). Owners and Admins can call it with account credentials and the required Idempotency-Key header. Revoking an invitation that is already revoked or expired succeeds."
         return (await self._raw_resource.revoke_organization_invitation(input)).data
 
     async def revoke_service_identity_credential(
         self, input: RevokeServiceIdentityCredentialInput
     ) -> models.RevokeServiceIdentityCredentialResponse:
-        "Request Service Identity credential revocation"
+        "Request Service Identity credential revocation\n\nRevokes an API key or client secret of a Service Identity; this can't be undone. An API key stops working shortly after the call, while a client secret gets revocationRequestedAt and stays active until Photon confirms its deletion, and M2M access tokens already issued with it keep working until they expire; repeating the call returns the current state. Owners and Admins can call it with account credentials; send the credential's current version as expectedVersion, because a stale version returns 409, and the required Idempotency-Key header."
         return (await self._raw_resource.revoke_service_identity_credential(input)).data
 
     async def rotate_organization_oauth_client_secret(
@@ -10253,25 +10364,31 @@ class AsyncOrganizationsResource:
         return (await self._raw_resource.setup_organization_oauth_client_secret(input)).data
 
     async def subscribe_sso(self, input: SubscribeSsoInput) -> models.SubscribeSsoResponse:
-        "Subscribe to organization SSO"
+        "Subscribe to organization SSO\n\nStarts the organization's SSO subscription, billed monthly in advance and prorated. Send the current quote from getSsoSubscription as expectedAmount, expectedCurrency and expectedCurrentPeriodEnd, because a changed price returns 409; the 202 means the request was accepted, and the charge and its outcome then show in the subscription's state. Only Owners and Admins can call it, with account credentials and the required Idempotency-Key header."
         return (await self._raw_resource.subscribe_sso(input)).data
 
     async def transfer_organization_ownership(
         self, input: TransferOrganizationOwnershipInput
     ) -> models.TransferOrganizationOwnershipResponse:
-        "Transfer organization ownership to an existing member"
+        "Transfer organization ownership to an existing member\n\nMakes another active member the Owner and turns the current Owner into a Member. Only the Owner can call it, with account credentials and the required Idempotency-Key header. Send the organization's current version, not a membership version, as expectedVersion; a stale version or naming yourself returns 409."
         return (await self._raw_resource.transfer_organization_ownership(input)).data
+
+    async def trigger_ten_dlc_brand_otp(
+        self, input: TriggerTenDlcBrandOtpInput
+    ) -> models.TriggerTenDlcBrandOtpResponse:
+        "Trigger sole-proprietor OTP\n\nRequests delivery of a verification code for an organization-owned sole-proprietor brand. A 202 response acknowledges the delivery request and does not mean the brand has been verified. Inspect the OTP status and submit the received code through verifyTenDlcBrandOtp. Requests may be rate limited. Supply the required Idempotency-Key header. Supply organization_id for the organization that owns the registration."
+        return (await self._raw_resource.trigger_ten_dlc_brand_otp(input)).data
 
     async def update_organization(
         self, input: UpdateOrganizationInput
     ) -> models.UpdateOrganizationResponse:
-        "Change organization name"
+        "Change organization name\n\nRenames the organization and returns it with its new version. Owners and Admins can call it with account credentials. Send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         return (await self._raw_resource.update_organization(input)).data
 
     async def update_organization_member_role(
         self, input: UpdateOrganizationMemberRoleInput
     ) -> models.UpdateOrganizationMemberRoleResponse:
-        "Change an organization member's role across all projects"
+        "Change an organization member's role across all projects\n\nChanges an active member's role to admin, member or viewer. Owners and Admins can call it with account credentials, but only the Owner can make someone an Admin or change an Admin's role, and nobody can change the Owner's role or their own here (409). Send the member's current membership version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         return (await self._raw_resource.update_organization_member_role(input)).data
 
     async def update_organization_oauth_client(
@@ -10283,8 +10400,14 @@ class AsyncOrganizationsResource:
     async def update_service_identity(
         self, input: UpdateServiceIdentityInput
     ) -> models.UpdateServiceIdentityResponse:
-        "Update a Service Identity"
+        "Update a Service Identity\n\nChanges a Service Identity's name, its permissions (the list replaces the current one) or its status. Disabling an identity stops its API keys and M2M tokens from authorizing requests without revoking them, and an identity managed by an app installation can't be changed (409). Owners and Admins can call it with account credentials; send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         return (await self._raw_resource.update_service_identity(input)).data
+
+    async def verify_ten_dlc_brand_otp(
+        self, input: VerifyTenDlcBrandOtpInput
+    ) -> models.VerifyTenDlcBrandOtpResponse:
+        "Verify sole-proprietor OTP\n\nSubmits otpPin for the selected organization-owned sole-proprietor brand and returns its updated, redacted verification state. A rejected code, a locked verification flow, or rate limiting is reported as an error; read the current OTP status before deciding whether to request another code. Supply the required Idempotency-Key header. Supply organization_id for the organization that owns the registration."
+        return (await self._raw_resource.verify_ten_dlc_brand_otp(input)).data
 
 
 class AsyncProjectsPlatformsImessageAssignmentsResource:
@@ -10320,7 +10443,7 @@ class AsyncProjectsPlatformsResource:
         self.imessage = AsyncProjectsPlatformsImessageResource(transport)
 
     async def assign_sms_line_campaign(self, input: AssignSmsLineCampaignInput) -> models.Operation:
-        "Assign or replace SMS line campaign\n\nAttach a ready campaign from this project’s organization to its line. Requires platforms:write for the project; human and machine actors retain their authenticated identity. Requires a permanent Idempotency-Key and the current assignment version. Provider provisioning runs asynchronously."
+        "Assign or replace SMS line campaign\n\nAttach a ready campaign from this project’s organization to its line. Requires platforms:write for the project; human and machine actors retain their authenticated identity. Requires a permanent Idempotency-Key and the current assignment version. Provider provisioning runs asynchronously. If the operation fails, its `error` is the problem of one of these codes: `SMS_CAMPAIGN_PROVIDER_REJECTED`, `SMS_CAMPAIGN_RECONCILIATION_REQUIRED`, `SMS_CAMPAIGN_REVOKED`."
         return (await self._raw_resource.assign_sms_line_campaign(input)).data
 
     async def assign_voice_line_profile(
@@ -10346,23 +10469,23 @@ class AsyncProjectsPlatformsResource:
         return (await self._raw_resource.configure_voice_profile_outbound(input)).data
 
     async def connect_email_domain(self, input: ConnectEmailDomainInput) -> models.Operation:
-        "Connect email domain\n\nReserves a normalized DNS domain and starts its durable email-provider setup. The accepted provision consumes one email-domain entitlement slot until it fails, is cancelled, or becomes a live resource; the plan's email.max_email_domains value sets the project limit. The customer resource does not exist until provider identity and DNS setup reach READY; poll the returned operation for progress. A domain may have only one unfinished provision or live resource globally. Email domains have no additional per-domain charge. The Idempotency-Key is required and permanent: replaying the same key and canonical domain returns the original operation forever. Requires the platforms:write permission bound to the project resource in the path."
+        "Connect email domain\n\nReserves a normalized DNS domain and starts its durable email-provider setup. The accepted provision consumes one email-domain entitlement slot until it fails, is cancelled, or becomes a live resource; the plan's email.max_email_domains value sets the project limit. The customer resource does not exist until provider identity and DNS setup reach READY; poll the returned operation for progress. A domain may have only one unfinished provision or live resource globally. Email domains have no additional per-domain charge. The Idempotency-Key is required and permanent: replaying the same key and canonical domain returns the original operation forever. Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `EMAIL_DOMAIN_PROVIDER_REJECTED`, `EMAIL_DOMAIN_VERIFICATION_FAILED`, `EMAIL_DOMAIN_VERIFICATION_TIMED_OUT`, `EMAIL_TENANT_SETUP_TIMED_OUT`."
         return (await self._raw_resource.connect_email_domain(input)).data
 
     async def connect_telegram_bot(self, input: ConnectTelegramBotInput) -> models.Operation:
-        "Connect Telegram bot\n\nStarts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to create a new bot, whose name and username are chosen in Telegram, or to connect an existing managed bot, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged."
+        "Connect Telegram bot\n\nStarts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to create a new bot, whose name and username are chosen in Telegram, or to connect an existing managed bot, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged. If the operation fails, its `error` is the problem of one of these codes: `TELEGRAM_CONFIGURATION_FAILED`."
         return (await self._raw_resource.connect_telegram_bot(input)).data
 
     async def count_filtered_verification_codes(
         self, input: CountFilteredVerificationCodesInput
     ) -> models.FilteredVerificationCodeCount:
-        "Count filtered verification codes\n\nCounts the verification codes Photon kept from this project's dedicated lines and numbers, optionally for one `platform`. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Requires the platforms:read permission bound to the project resource in the path."
+        "Count filtered verification codes\n\nCounts the verification codes Photon kept from this project's dedicated lines, optionally for one `platform`. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Requires the platforms:read permission bound to the project resource in the path."
         return (await self._raw_resource.count_filtered_verification_codes(input)).data
 
     async def count_resource_filtered_verification_codes(
         self, input: CountResourceFilteredVerificationCodesInput
     ) -> models.FilteredVerificationCodeCount:
-        "Count a line's filtered verification codes\n\nCounts the verification codes Photon kept from one dedicated line or number. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a number receives both SMS and WhatsApp. Requires the platforms:read permission bound to the project resource in the path."
+        "Count a line's filtered verification codes\n\nCounts the verification codes Photon kept from one dedicated line. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a dedicated line receives both iMessage and WhatsApp. Requires the platforms:read permission bound to the project resource in the path."
         return (await self._raw_resource.count_resource_filtered_verification_codes(input)).data
 
     async def create_default_voice_profile(
@@ -10384,7 +10507,7 @@ class AsyncProjectsPlatformsResource:
     async def create_whatsapp_voip_sender(
         self, input: CreateWhatsappVoipSenderInput
     ) -> models.Operation:
-        "Create WhatsApp VoIP sender\n\nRegisters an active, SMS-capable Photon VoIP line on this project's connected WhatsApp Business Account. The account is resolved server-side; callers never select a WABA. The platform creates or reuses the Meta number, requests and consumes the SMS ownership code internally, verifies it, and registers the sender. displayName is optional; when omitted the project agent profile name is snapshotted before acceptance. The VoIP line remains a separate resource and never receives the whatsapp_business ability."
+        "Create WhatsApp VoIP sender\n\nRegisters an active, SMS-capable Photon VoIP line on this project's connected WhatsApp Business Account. The account is resolved server-side; callers never select a WABA. The platform creates or reuses the Meta number, requests and consumes the SMS ownership code internally, verifies it, and registers the sender. displayName is optional; when omitted the project agent profile name is snapshotted before acceptance. The VoIP line remains a separate resource and never receives the whatsapp_business ability. If the operation fails, its `error` is the problem of one of these codes: `WHATSAPP_AUTHORIZATION_REVOKED`, `WHATSAPP_DISPLAY_NAME_CONFLICT`, `WHATSAPP_NUMBER_ADD_REFUSED`, `WHATSAPP_NUMBER_LOOKUP_FAILED`, `WHATSAPP_REGISTRATION_REFUSED`, `WHATSAPP_VERIFICATION_REFUSED`, `WHATSAPP_VERIFICATION_REQUEST_REFUSED`, `WHATSAPP_VERIFICATION_TIMED_OUT`."
         return (await self._raw_resource.create_whatsapp_voip_sender(input)).data
 
     async def delete_voice_profile(self, input: DeleteVoiceProfileInput) -> None:
@@ -10406,7 +10529,7 @@ class AsyncProjectsPlatformsResource:
     async def disconnect_whatsapp_business_account(
         self, input: DisconnectWhatsappBusinessAccountInput
     ) -> models.Operation:
-        "Disconnect WhatsApp Business account\n\nDisconnects every attached WhatsApp sender, then unsubscribes our app and removes the project's business account connection. Photon VoIP lines and the numbers in Meta remain. Requires Idempotency-Key. Poll the returned operation; provider refusals appear as operation failures and retain the account for retry with a new key. New signups are blocked while disconnecting, and existing provisions must finish before this request can be accepted."
+        "Disconnect WhatsApp Business account\n\nDisconnects every attached WhatsApp sender, then unsubscribes our app and removes the project's business account connection. Photon VoIP lines and the numbers in Meta remain. Requires Idempotency-Key. Poll the returned operation. Meta's answers do not fail it: each sender is released as `DELETE /platforms/resources/:resourceId` does, and our app's unsubscribe is a best effort, tried up to three times, a second or two apart, only while the failure is temporary. New signups are blocked while disconnecting, and existing provisions must finish before this request can be accepted. If the operation fails, its `error` is the problem of one of these codes: `WHATSAPP_ACCOUNT_DISCONNECT_FAILED`."
         return (await self._raw_resource.disconnect_whatsapp_business_account(input)).data
 
     async def get_default_voice_profile(
@@ -10490,7 +10613,7 @@ class AsyncProjectsPlatformsResource:
     async def list_filtered_verification_codes(
         self, input: ListFilteredVerificationCodesInput
     ) -> models.FilteredVerificationCodePage:
-        "List filtered verification codes\n\nLists the verification codes Photon kept from this project's dedicated lines and numbers. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line or number (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Filter by `platform`; to read one line, use its own filtered-otp path. Requires the platforms:read permission bound to the project resource in the path."
+        "List filtered verification codes\n\nLists the verification codes Photon kept from this project's dedicated lines. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Filter by `platform`; to read one line, use its own filtered-otp path. Requires the platforms:read permission bound to the project resource in the path."
         return (await self._raw_resource.list_filtered_verification_codes(input)).data
 
     async def list_number_area_codes(
@@ -10518,11 +10641,11 @@ class AsyncProjectsPlatformsResource:
     async def list_resource_filtered_verification_codes(
         self, input: ListResourceFilteredVerificationCodesInput
     ) -> models.FilteredVerificationCodePage:
-        "List a line's filtered verification codes\n\nLists the verification codes Photon kept from one dedicated line or number. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line or number (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a number receives both SMS and WhatsApp. Requires the platforms:read permission bound to the project resource in the path."
+        "List a line's filtered verification codes\n\nLists the verification codes Photon kept from one dedicated line. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a dedicated line receives both iMessage and WhatsApp. Requires the platforms:read permission bound to the project resource in the path."
         return (await self._raw_resource.list_resource_filtered_verification_codes(input)).data
 
     async def list_resources(self, input: ListResourcesInput) -> models.ResourcePage:
-        "List resources\n\nLists the project's resources, oldest first, including retired ones unless `state` filters them out. Filter by `type`, by enabled `ability` and by comma-separated `state`. `detail` is a per-type public view. Requires the platforms:read permission bound to the project resource in the path."
+        "List resources\n\nLists the project's resources, oldest first, including retired ones unless `state` filters them out. Filter by `type`, by enabled `ability` and by comma-separated `state`. Lifecycle states are unallocated, active and retired; active means owned and non-retired, not provider-confirmed readiness. Every VoIP resource includes detail.activationState: activating or active, defaulting to active without owner-matched saved state. state=active includes numbers still activating. Requires the platforms:read permission bound to the project resource in the path."
         return (await self._raw_resource.list_resources(input)).data
 
     async def list_voice_profiles(self, input: ListVoiceProfilesInput) -> models.VoiceProfilePage:
@@ -10544,33 +10667,33 @@ class AsyncProjectsPlatformsResource:
     async def provision_imessage_dedicated_line(
         self, input: ProvisionImessageDedicatedLineInput
     ) -> models.Operation:
-        "Provision dedicated iMessage line\n\nClaims one dedicated iMessage line for the project and enables iMessage on it. Always answers 202 with an operation: dedicated lines are allocated from available capacity, and unavailable capacity causes a wait rather than a failure — this can legitimately stay `running` for hours, which is exactly why the response is a handle to poll rather than a number. The project's messaging subscription must grant the dedicated iMessage lines entitlement (`imessage_dedicated_lines.can_purchase`), and that is checked before capacity is reserved. The line's own charge starts when a line is claimed; the subscription that grants the entitlement bills on its own terms, which cancelling a request does not change. Waiting requests are served first come, first served. One that is still waiting is cancelled with a `reason` if the project is deleted (`project_deleted`) or its plan stops selling dedicated lines (`entitlement_lost`); while the payer is restricted for overdue payment it keeps waiting. If you no longer want to wait, POST to the operation's cancel endpoint, which charges nothing for the line. The Idempotency-Key is required and permanent: repeating it returns the same operation forever. A further line always needs a NEW key, including while others are still waiting. Requires the platforms:write permission bound to the project resource in the path."
+        "Provision dedicated iMessage line\n\nClaims one dedicated iMessage line for the project and enables iMessage on it. Always answers 202 with an operation: dedicated lines are allocated from available capacity, and unavailable capacity causes a wait rather than a failure — this can legitimately stay `running` for hours, which is exactly why the response is a handle to poll rather than a number. The project's messaging subscription must grant the dedicated iMessage lines entitlement (`imessage_dedicated_lines.can_purchase`), and that is checked before capacity is reserved. The line's own charge starts when a line is claimed; the subscription that grants the entitlement bills on its own terms, which cancelling a request does not change. Waiting requests are served first come, first served. One that is still waiting is cancelled with a `reason` if the project is deleted (`project_deleted`) or its plan stops selling dedicated lines (`entitlement_lost`); while the payer is restricted for overdue payment it keeps waiting. If you no longer want to wait, POST to the operation's cancel endpoint, which charges nothing for the line. The Idempotency-Key is required and permanent: repeating it returns the same operation forever. A further line always needs a NEW key, including while others are still waiting. An optional promotionCode is checked and claimed here, before the request waits for a line: a code that can't be used answers 409 PROMOTION_CODE_REJECTED and starts nothing. Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `CHARGE_REFUSED`, `ENTERPRISE_PLAN_REQUIRED`."
         return (await self._raw_resource.provision_imessage_dedicated_line(input)).data
 
     async def provision_whatsapp_dedicated_line(
         self, input: ProvisionWhatsappDedicatedLineInput
     ) -> models.Operation:
-        "Provision dedicated WhatsApp line\n\nProvisions one dedicated WhatsApp line with WhatsApp and shared Voice enabled. It attaches to an eligible iMessage line the project already owns when possible so both products keep the same number; otherwise it claims healthy, available WhatsApp-capable dedicated-line inventory. Always answers 202, because waiting when no inventory is available is not a failure. The product opens its own charge period after the abilities are enabled; Voice has no separate charge. Waiting requests are served first come, first served, and are cancelled with a `reason` exactly as for a dedicated iMessage line. Cancel the returned operation to stop waiting. The Idempotency-Key is required and permanent."
+        "Provision dedicated WhatsApp line\n\nProvisions one dedicated WhatsApp line with WhatsApp and shared Voice enabled. It attaches to an eligible iMessage line the project already owns when possible so both products keep the same number; otherwise it claims healthy, available WhatsApp-capable dedicated-line inventory. Always answers 202, because waiting when no inventory is available is not a failure. The product opens its own charge period after the abilities are enabled; Voice has no separate charge. Waiting requests are served first come, first served, and are cancelled with a `reason` exactly as for a dedicated iMessage line. Cancel the returned operation to stop waiting. An optional promotionCode is checked and claimed here, before the request waits for a line: a code that can't be used answers 409 PROMOTION_CODE_REJECTED and starts nothing. The Idempotency-Key is required and permanent. If the operation fails, its `error` is the problem of one of these codes: `CHARGE_REFUSED`, `ENTERPRISE_PLAN_REQUIRED`."
         return (await self._raw_resource.provision_whatsapp_dedicated_line(input)).data
 
     async def purchase_sms_number(self, input: PurchaseSmsNumberInput) -> models.Operation:
-        "Purchase SMS number\n\nBuys one US local number from the provider and records it as a resource with SMS enabled. Requires countryCode (US) and accepts an optional three-digit geographic areaCode. The server selects an exact matching number. Empty inventory keeps the operation running until a number is available or the caller cancels before ordering begins. Always answers 202 with an operation: the work runs behind the response, and the Location points at the operation to poll. New area-specific requests must appear in current provider coverage; discover it with GET /sms/numbers/area-codes?countryCode=US. Coverage and subscription checks run before operation creation. Billing follows delivery. Replays return the original operation without checking current coverage. The Idempotency-Key is required and permanent: repeating it returns the same operation forever, never a second number. A further number always needs a NEW key, including while others are still running. Requires the platforms:write permission bound to the project resource in the path."
+        'Purchase SMS number\n\nBuys one US local number from the provider and records it as a resource with SMS enabled. Requires countryCode (US) and accepts an optional three-digit geographic areaCode. The server selects an exact matching number. While inventory is empty the operation keeps searching, and the caller can cancel it until ordering begins; a search still empty one minute after the operation was created fails it with `NUMBER_INVENTORY_UNAVAILABLE`. Always answers 202 with an operation: the work runs behind the response, and the Location points at the operation to poll. New area-specific requests must appear in current provider coverage; discover it with GET /sms/numbers/area-codes?countryCode=US. Coverage and subscription checks run before operation creation. Billing follows delivery. Replays return the original operation without checking current coverage. The Idempotency-Key is required and permanent: repeating it returns the same operation forever, never a second number. A further number always needs a NEW key, including while others are still running. An optional promotionCode is redeemed with the number\'s charge, which follows delivery: a code billing refuses hands the number back, and its release operation carries the refusal (`reason` `charge_refused`, with `detail.chargeRefusal` `{ code: "promotion_code_rejected", detail: <why> }`). Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `ENTITLEMENT_REQUIRED`, `NUMBER_INVENTORY_UNAVAILABLE`, `NUMBER_ORDER_FAILED`, `NUMBER_ORDER_RECONCILIATION_REQUIRED`, `NUMBER_SEARCH_FAILED`.'
         return (await self._raw_resource.purchase_sms_number(input)).data
 
     async def release_imessage_dedicated_line(
         self, input: ReleaseImessageDedicatedLineInput
     ) -> models.Operation:
-        "Release dedicated iMessage line\n\nRemoves only iMessage from one dedicated line. Shared Voice is removed only when WhatsApp is absent; if WhatsApp remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open iMessage charge period identifies this product tenure."
+        "Release dedicated iMessage line\n\nRemoves only iMessage from one dedicated line. Shared Voice is removed only when WhatsApp is absent; if WhatsApp remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open iMessage charge period identifies this product tenure. If the operation fails, its `error` is the problem of one of these codes: `RESOURCE_NOT_FOUND`."
         return (await self._raw_resource.release_imessage_dedicated_line(input)).data
 
     async def release_resource(self, input: ReleaseResourceInput) -> models.Operation:
-        "Release resource\n\nGives one resource back, whatever it is. What that means is the resource's own business: an SMS number goes back to the provider and is retired, a dedicated iMessage line goes back to the shared pool and stays in existence for someone else to claim. Either way the provider is contacted first where there is one, then a single transaction disables every ability, ends the project's hold and closes the charge period — so a provider that refuses leaves the resource exactly as it was, still owned and still billed. Usually finishes inside this request and answers 200; if the provider is slow it answers 202 and the Location points at the operation to poll. The decrement runs behind the answer either way, so the resource is gone when you are told it is. Takes no Idempotency-Key — releasing the same resource twice is the same request. Releasing one that is already gone answers 404. Requires the platforms:write permission bound to the project resource in the path."
+        "Release resource\n\nGives one resource back, whatever it is. What that means is the resource's own business: an SMS number goes back to the provider and is retired, a dedicated iMessage line goes back to the shared pool and stays in existence for someone else to claim. Either way the provider is contacted first where there is one, then a single transaction disables every ability, ends the project's hold and closes the charge period — so a provider that refuses leaves the resource exactly as it was, still owned and still billed. A WhatsApp Business sender is the exception: Meta never holds its release. A number on a Photon VoIP line is deregistered as a best effort, tried up to three times, a second or two apart, only while the failure is temporary; a number the customer brought is not sent to Meta at all; the sender is retired either way, and the number stays in the customer's WhatsApp Business Account. Usually finishes inside this request and answers 200; if the provider is slow it answers 202 and the Location points at the operation to poll. The decrement runs behind the answer either way, so the resource is gone when you are told it is. Takes no Idempotency-Key — releasing the same resource twice is the same request. Releasing one that is already gone answers 404. Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `EMAIL_DOMAIN_RELEASE_FAILED`, `NUMBER_RELEASE_FAILED`, `RESOURCE_NOT_FOUND`, `TELEGRAM_RELEASE_FAILED`, `WHATSAPP_SENDER_RELEASE_FAILED`."
         return (await self._raw_resource.release_resource(input)).data
 
     async def release_whatsapp_dedicated_line(
         self, input: ReleaseWhatsappDedicatedLineInput
     ) -> models.Operation:
-        "Release dedicated WhatsApp line\n\nRemoves only WhatsApp from one dedicated line. Shared Voice is removed only when iMessage is absent; if iMessage remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open WhatsApp charge period identifies this product tenure."
+        "Release dedicated WhatsApp line\n\nRemoves only WhatsApp from one dedicated line. Shared Voice is removed only when iMessage is absent; if iMessage remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open WhatsApp charge period identifies this product tenure. If the operation fails, its `error` is the problem of one of these codes: `RESOURCE_NOT_FOUND`."
         return (await self._raw_resource.release_whatsapp_dedicated_line(input)).data
 
     async def release_whatsapp_shared_line_assignment(
@@ -10594,7 +10717,7 @@ class AsyncProjectsPlatformsResource:
     async def unassign_sms_line_campaign(
         self, input: UnassignSmsLineCampaignInput
     ) -> models.Operation:
-        "Unassign SMS line campaign\n\nAny project writer, including a scoped API key, may detach the campaign. The number and campaign remain owned. Requires a permanent Idempotency-Key and expectedVersion. Local eligibility is blocked immediately; provider detachment runs asynchronously."
+        "Unassign SMS line campaign\n\nAny project writer, including a scoped API key, may detach the campaign. The number and campaign remain owned. Requires a permanent Idempotency-Key and expectedVersion. Local eligibility is blocked immediately; provider detachment runs asynchronously. If the operation fails, its `error` is the problem of one of these codes: `SMS_CAMPAIGN_PROVIDER_REJECTED`, `SMS_CAMPAIGN_RECONCILIATION_REQUIRED`, `SMS_CAMPAIGN_REVOKED`."
         return (await self._raw_resource.unassign_sms_line_campaign(input)).data
 
     async def unassign_voice_line_profile(self, input: UnassignVoiceLineProfileInput) -> None:
@@ -10608,7 +10731,7 @@ class AsyncProjectsPlatformsResource:
         return (await self._raw_resource.update_default_voice_profile(input)).data
 
     async def update_voice_profile(self, input: UpdateVoiceProfileInput) -> models.VoiceProfile:
-        "Update Voice profile\n\nPatches an additional profile's name, protocol, or mediaEncryption when expectedVersion matches. Omitted fields are preserved. Directional configuration is managed through the profile's inbound and outbound endpoints. Requires platforms:write bound to the path project."
+        "Update Voice profile\n\nPatches an additional profile's name, protocol, or mediaEncryption when expectedVersion matches. Omitted fields are preserved. The default profile's metadata changes only through PATCH /v1/projects/{id}/platforms/voice/profiles/default, so a name, protocol, or mediaEncryption patch addressed to its profileId is refused with 409. Directional configuration is managed through the profile's inbound and outbound endpoints. Requires platforms:write bound to the path project."
         return (await self._raw_resource.update_voice_profile(input)).data
 
     async def update_voice_profile_inbound(
@@ -10736,7 +10859,7 @@ class AsyncProjectsResource:
         return (await self._raw_resource.get(input)).data
 
     async def get_attachment(self, input: GetAttachmentInput) -> models.Attachment:
-        "Get attachment\n\nReturns an Attachment's metadata. Use the content endpoint to download its bytes."
+        "Get attachment\n\nReturns an Attachment's metadata. Use the content endpoint to download its bytes. If its metadata is unavailable after ten seconds, returns ATTACHMENT_NOT_READY with Retry-After: 5."
         return (await self._raw_resource.get_attachment(input)).data
 
     async def get_message(self, input: GetMessageInput) -> models.PlatformMessage | None:
@@ -10776,7 +10899,7 @@ class AsyncProjectsResource:
         return (await self._raw_resource.get_webhook_event_schema(input)).data
 
     async def list_attachments(self, input: ListAttachmentsInput) -> models.AttachmentPage:
-        "List attachments\n\nLists the Project's Attachment metadata, with optional time filters."
+        "List attachments\n\nLists the Project's Attachment metadata, with optional time filters. An Attachment can be absent until its upload finishes, which advances its updatedAt; follow changes with updatedSince."
         return (await self._raw_resource.list_attachments(input)).data
 
     async def list_messages(self, input: ListMessagesInput) -> models.MessagePage:
@@ -11019,12 +11142,6 @@ class AsyncAuthResource:
     ) -> models.OrganizationConnectionStatus:
         "Retry organization connection sync\n\nReconciles existing local intent. Takes no body and cannot change membership, roles or authentication policy."
         return (await self._raw_resource.retry_organization_connection_sync(input)).data
-
-    async def start_enterprise_login(
-        self, input: StartEnterpriseLoginInput
-    ) -> models.StartEnterpriseLoginResponse:
-        "Start company sign-in\n\nReturns a sign-in URL without requiring an existing account: the company SSO connection when the target has a ready connection, otherwise ordinary account login. Supply one documented enrollment variant: organizationId with returnTo (optionally invitationToken), invitationToken with returnTo, or retryToken. Open the returned URL to continue authentication; receiving a URL does not complete sign-in. This is a browser flow: the request must come from an allowed Origin, and the retryToken variant also needs the retry cookie set by the failed sign-in, so send it with credentials."
-        return (await self._raw_resource.start_enterprise_login(input)).data
 
     async def update_organization_sso_policy(
         self, input: UpdateOrganizationSsoPolicyInput

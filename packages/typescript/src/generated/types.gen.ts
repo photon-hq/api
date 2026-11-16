@@ -228,14 +228,17 @@ export type Account = {
     accountId: string;
     createdAt: string | null;
     deletedAt: string | null;
+    /**
+     * Email address supplied by the identity provider.
+     */
     email: string;
     firstName: string | null;
+    impersonator?: AccountImpersonator;
     lastName: string | null;
     phoneNumber: string | null;
     phoneVerifiedAt: string | null;
     pictureUrl: string;
     updatedAt: string | null;
-    [key: string]: unknown;
 };
 
 export type AccountClosingProblem = {
@@ -260,6 +263,13 @@ export type AccountDeletedProblem = {
     title: 'Account Deleted';
     type: 'https://photon.codes/docs/problems/account-deleted';
     [key: string]: JsonValue | 'ACCOUNT_DELETED' | string | never | 410 | 'Account Deleted' | 'https://photon.codes/docs/problems/account-deleted' | undefined;
+};
+
+/**
+ * Present only while a WorkOS dashboard admin is impersonating this account: the admin's email. Attribution only; grants nothing.
+ */
+export type AccountImpersonator = {
+    email: string;
 };
 
 export type AccountNotFoundProblem = {
@@ -376,7 +386,7 @@ export type ApiKeyNotFoundProblem = {
     [key: string]: JsonValue | 'API_KEY_NOT_FOUND' | string | never | 404 | 'API Key Not Found' | 'https://photon.codes/docs/problems/api-key-not-found' | undefined;
 };
 
-export type ApiKeyPermission = 'events:read' | 'events:write' | 'platforms:read' | 'platforms:write' | 'project:read' | 'project:write' | (string & {});
+export type ApiKeyPermission = 'calls:read' | 'events:read' | 'events:write' | 'messages:read' | 'platforms:read' | 'platforms:write' | 'project:read' | 'project:write' | (string & {});
 
 export type ApiKeyRevokedProblem = {
     code: 'API_KEY_REVOKED';
@@ -691,6 +701,11 @@ export type BatchUpdateVoiceLineProfileAssignmentsResponse = {
 };
 
 /**
+ * How the organization pays: self_serve by card, each purchase paid when made; enterprise by invoice on its contract's terms, its purchases added to its next monthly invoice.
+ */
+export type BillingAgreement = SelfServeBillingAgreement | EnterpriseBillingAgreement;
+
+/**
  * What the change does beside what it bills, by the kind of change requested: fixed_charge for a fixed-charge change, plan_change for a plan change.
  */
 export type BillingChangeEffect = BillingFixedChargeEffect | BillingPlanChangeEffect;
@@ -751,11 +766,11 @@ export type BillingOperationFailure = {
 };
 
 /**
- * Stable provider-neutral failure category.
+ * Stable provider-neutral failure category. billing_restricted: the payer is behind on payment and the change would gain or keep a paid plan; retry once the payer is back in good standing.
  */
-export type BillingOperationFailureCode = 'payment_method_required' | 'payment_failed' | 'not_provisioned' | 'invalid_target' | 'internal' | (string & {});
+export type BillingOperationFailureCode = 'payment_method_required' | 'payment_failed' | 'not_provisioned' | 'invalid_target' | 'promotion_code_rejected' | 'billing_restricted' | 'internal' | (string & {});
 
-export type BillingOperationFailureDetail = 'cancellation_scheduled' | 'feature_not_sold_by_plan' | 'feature_not_found' | 'insufficient_funds' | 'payment_declined' | 'payment_method_expired' | 'payment_method_invalid' | 'payment_timeout' | 'plan_activation_timeout' | 'plan_not_found' | 'quantity_out_of_range' | 'reconciliation_required' | 'release_required' | 'target_rejected' | (string & {});
+export type BillingOperationFailureDetail = 'cancellation_scheduled' | 'feature_not_found' | 'feature_not_sold_by_plan' | 'insufficient_funds' | 'payment_declined' | 'payment_method_expired' | 'payment_method_invalid' | 'payment_timeout' | 'plan_activation_timeout' | 'plan_not_found' | 'promotion_code_already_applied' | 'promotion_code_already_redeemed' | 'promotion_code_change_not_eligible' | 'promotion_code_exhausted' | 'promotion_code_expired' | 'promotion_code_inactive' | 'promotion_code_limit_reached' | 'promotion_code_new_customer_only' | 'promotion_code_not_for_organization' | 'promotion_code_not_found' | 'promotion_code_plan_not_eligible' | 'promotion_code_purchase_not_eligible' | 'quantity_out_of_range' | 'reconciliation_required' | 'release_required' | 'target_rejected' | (string & {});
 
 export type BillingOperationKind = 'change_plan' | 'adjust_fixed_charge_quantity' | (string & {});
 
@@ -927,13 +942,13 @@ export type BillingPreviewCredit = {
 };
 
 /**
- * Billed later rather than with dueNow: one line per plan change addition, billed when it is added and priced as if added now. Before taxes; the balance left after dueNow applies to it first. nextCharge already includes it. No lines when nothing is billed later.
+ * Billed later rather than with dueNow: one line per plan change addition, billed when it is added and priced as if added now; or, for an organization that pays by invoice, what a fixed-charge change adds to its next invoice. After coupons, before taxes; the balance left after dueNow applies to it first. nextCharge already includes it. No lines when nothing is billed later.
  */
 export type BillingPreviewDeferred = {
     currency: string;
     lines: Array<BillingPreviewLine>;
     /**
-     * Sum of the lines, in cents.
+     * Sum of the lines less their discounts, in cents.
      */
     totalCents: number;
 };
@@ -944,10 +959,14 @@ export type BillingPreviewFixedChargeChange = {
      */
     category: string;
     fixedCharge: FixedChargeChange;
+    /**
+     * A promotion code the customer entered, previewed as the purchase redeems it, on an increase only: dueNow and upcomingInvoices are discounted by it. Needs billing:manage. A refused code fails the preview with PROMOTION_CODE_REJECTED, its reason as a refused purchase's failure detail.
+     */
+    promotionCode?: string;
 };
 
 /**
- * Charged when the change is made, priced as the change bills it. No lines when it charges nothing now.
+ * An invoice priced by the billing engine as it would bill it: its lines, then what coupons, taxes and credits change, and what the payer is charged. No lines when it bills nothing.
  */
 export type BillingPreviewInvoice = {
     /**
@@ -977,6 +996,10 @@ export type BillingPreviewLine = {
      * The fixed-charge code for a fixed charge, the metric code for usage, and the plan code otherwise.
      */
     code: string;
+    /**
+     * What coupons take off amountCents, in cents.
+     */
+    discountCents: number;
     kind: BillingPreviewLineKind;
     name: string;
     periodEnd: string | null;
@@ -1024,6 +1047,10 @@ export type BillingPreviewPlanChange = {
      * Plan to change to, as a purchase of it changes it.
      */
     planCode: string;
+    /**
+     * A promotion code the customer entered, previewed as the purchase redeems it: dueNow and upcomingInvoices are discounted by it. Needs billing:manage. A refused code fails the preview with PROMOTION_CODE_REJECTED, its reason as a refused purchase's failure detail.
+     */
+    promotionCode?: string;
 };
 
 export type BillingSuspendedProblem = {
@@ -1036,6 +1063,29 @@ export type BillingSuspendedProblem = {
     title: 'Billing Suspended';
     type: 'https://photon.codes/docs/problems/billing-suspended';
     [key: string]: JsonValue | 'BILLING_SUSPENDED' | string | never | 402 | 'Billing Suspended' | 'https://photon.codes/docs/problems/billing-suspended' | undefined;
+};
+
+/**
+ * An invoice a following period issues, priced as now: the plan's fee and its fixed charges at the units the change and any additions leave, after coupons, with taxes, before credits. Usage and a minimum commitment's true-up are left out.
+ */
+export type BillingUpcomingInvoice = {
+    /**
+     * When the billing engine bills it: the start of that day in timeZone.
+     */
+    at: string;
+    invoice: BillingPreviewInvoice;
+};
+
+export type BrandNotFoundProblem = {
+    code: 'BRAND_NOT_FOUND';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 404;
+    title: 'Brand Not Found';
+    type: 'https://photon.codes/docs/problems/brand-not-found';
+    [key: string]: JsonValue | 'BRAND_NOT_FOUND' | string | never | 404 | 'Brand Not Found' | 'https://photon.codes/docs/problems/brand-not-found' | undefined;
 };
 
 export type CancelOperationForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
@@ -1077,11 +1127,27 @@ export type ChangePlanRequest = {
      * Plan to subscribe to, e.g. analytics_pro.
      */
     planCode: string;
+    /**
+     * A promotion code the customer entered, matched ignoring case. It is redeemed with the change, which only an upgrade or a first plan can carry; a refused code fails the operation with code promotion_code_rejected and changes nothing. Coupons the project already has stay and stack.
+     */
+    promotionCode?: string;
 };
 
 export type ChangePlanServiceUnavailableProblem = IdempotencyUnavailableProblem | UpstreamUnavailableProblem;
 
 export type ChangePlanUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
+
+export type ChargeRefusedProblem = {
+    code: 'CHARGE_REFUSED';
+    detail?: string;
+    instance?: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    status: 402;
+    title: 'Charge Refused';
+    type: 'https://photon.codes/docs/problems/charge-refused';
+    [key: string]: JsonValue | 'CHARGE_REFUSED' | string | ProblemRemediation | 402 | 'Charge Refused' | 'https://photon.codes/docs/problems/charge-refused' | undefined;
+};
 
 export type CheckOrganizationDeletionConflictProblem = OrganizationAuthPolicyChangedProblem | OrganizationUnavailableProblem;
 
@@ -1135,11 +1201,13 @@ export type ClosureBlockedProblem = {
     [key: string]: JsonValue | 'CLOSURE_BLOCKED' | string | never | 409 | 'Organization Closure Blocked' | 'https://photon.codes/docs/problems/organization-closure-blocked' | undefined;
 };
 
-export type CommitAccountProfilePictureBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyInvalidProblem | IdempotencyKeyRequiredProblem;
+export type CommitAccountProfilePictureBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyInvalidProblem | IdempotencyKeyRequiredProblem | HttpErrorProblem | InvalidApiVersionProblem;
 
 export type CommitAccountProfilePictureForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type CommitAccountProfilePictureGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type CommitAccountProfilePictureGoneProblem = AccountDeletedProblem | RetiredApiVersionProblem;
 
 export type CommitAccountProfilePictureInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
@@ -1188,7 +1256,7 @@ export type CommitOrganizationAvatarUnprocessableEntityProblem = ValidationFaile
 
 export type ConfigureVoiceProfileOutboundBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
 
-export type ConfigureVoiceProfileOutboundConflictProblem = ProjectClosingProblem | VoiceProfileVersionConflictProblem | VoiceOutboundOperationPendingProblem | VoiceOutboundConfiguredProblem;
+export type ConfigureVoiceProfileOutboundConflictProblem = ProjectClosingProblem | ProjectInitializingProblem | VoiceProfileVersionConflictProblem | VoiceOutboundOperationPendingProblem | VoiceOutboundConfiguredProblem;
 
 export type ConfigureVoiceProfileOutboundForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -1222,7 +1290,7 @@ export type ConfirmedRecipient = {
 
 export type ConnectEmailDomainBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
 
-export type ConnectEmailDomainConflictProblem = ProjectClosingProblem | EmailDomainAlreadyConnectedProblem | EmailDomainCapExceededProblem;
+export type ConnectEmailDomainConflictProblem = ProjectClosingProblem | ProjectInitializingProblem | EmailDomainAlreadyConnectedProblem | EmailDomainCapExceededProblem;
 
 export type ConnectEmailDomainForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -1252,7 +1320,7 @@ export type ConnectTelegramBotRequest = Record<string, unknown>;
 
 export type ConnectTelegramBotUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
-export type Content = TextContent | TextUpdateContent | AttachmentContent | VoiceContent | ReactionContent | MessageDeleteContent | MessageReadContent | SpaceParticipantsUpdateContent | SpaceTypingUpdateContent | PollContent | PollVoteContent | PollUpdateContent | GroupContent;
+export type Content = TextContent | AttachmentContent | VoiceContent | ReactionContent | MessageDeleteContent | MessageReadContent | SpaceParticipantsUpdateContent | SpaceTypingUpdateContent | SpaceBackgroundUpdateContent | SpaceProfileShareContent | PollContent | PollVoteContent | PollUpdateContent | GroupContent | MessageUpdateContent;
 
 export type ContentIssue = {
     code: ContentIssueCode;
@@ -1261,7 +1329,7 @@ export type ContentIssue = {
     path: string;
 };
 
-export type ContentIssueCode = 'metadata_server_owned' | 'markdown_html_forbidden' | 'voice_requires_audio' | 'attachment_mime_type_mismatch' | 'attachment_size_mismatch' | (string & {});
+export type ContentIssueCode = 'metadata_server_owned' | 'markdown_html_forbidden' | 'voice_requires_audio' | 'space_background_requires_image' | 'attachment_mime_type_mismatch' | 'attachment_size_mismatch' | (string & {});
 
 export type ContentMetadata = {
     email?: EmailMetadata;
@@ -1307,17 +1375,35 @@ export type CountUsersGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTi
 
 export type CountUsersInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
+export type CouponAppliesTo = {
+    feeKinds: Array<CouponFeeKind>;
+    /**
+     * This plan's fixed charges it targets, by fixedChargeCode.
+     */
+    fixedChargeCodes: Array<string>;
+};
+
+export type CouponDuration = 'once' | 'repeating' | 'forever' | (string & {});
+
+export type CouponFeeKind = 'base_fee' | 'fixed_charges' | 'minimum_commitment' | 'usage' | (string & {});
+
+export type CreateAccountProfilePictureUploadBadRequestProblem = HttpErrorProblem | InvalidArgumentProblem | InvalidApiVersionProblem;
+
 export type CreateAccountProfilePictureUploadForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type CreateAccountProfilePictureUploadGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
 
+export type CreateAccountProfilePictureUploadGoneProblem = AccountDeletedProblem | RetiredApiVersionProblem;
+
 export type CreateAccountProfilePictureUploadInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
-export type CreateAccountServiceKeyBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyInvalidProblem | IdempotencyKeyRequiredProblem;
+export type CreateAccountServiceKeyBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyInvalidProblem | IdempotencyKeyRequiredProblem | HttpErrorProblem | InvalidApiVersionProblem;
 
 export type CreateAccountServiceKeyForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type CreateAccountServiceKeyGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type CreateAccountServiceKeyGoneProblem = AccountDeletedProblem | RetiredApiVersionProblem;
 
 export type CreateAccountServiceKeyInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
@@ -1682,7 +1768,7 @@ export type CreateServiceIdentityUnprocessableEntityProblem = ValidationFailedPr
 
 export type CreateSharedLineAssignmentBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
 
-export type CreateSharedLineAssignmentConflictProblem = ProjectClosingProblem | ImessageModeDedicatedProblem | SharedLineCapExceededProblem | AssignmentExistsProblem;
+export type CreateSharedLineAssignmentConflictProblem = ProjectInitializingProblem | ProjectClosingProblem | ImessageModeDedicatedProblem | SharedLineCapExceededProblem | AssignmentExistsProblem;
 
 export type CreateSharedLineAssignmentForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -1745,7 +1831,7 @@ export type CreateWebhookDestinationUnprocessableEntityProblem = ValidationFaile
 
 export type CreateWhatsappSharedLineAssignmentBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
 
-export type CreateWhatsappSharedLineAssignmentConflictProblem = ProjectClosingProblem | WhatsappModeDedicatedProblem | SharedLineCapExceededProblem | AssignmentExistsProblem;
+export type CreateWhatsappSharedLineAssignmentConflictProblem = ProjectInitializingProblem | ProjectClosingProblem | WhatsappModeDedicatedProblem | SharedLineCapExceededProblem | AssignmentExistsProblem;
 
 export type CreateWhatsappSharedLineAssignmentForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -1766,7 +1852,7 @@ export type CreateWhatsappSharedLineAssignmentUnprocessableEntityProblem = Valid
 
 export type CreateWhatsappVoipSenderBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
 
-export type CreateWhatsappVoipSenderConflictProblem = ProjectClosingProblem | WhatsappAccountDisconnectingProblem | WhatsappAccountProvisioningProblem | WhatsappSenderConnectedProblem | WhatsappSenderProvisioningProblem | WhatsappVoipSourceReleasingProblem;
+export type CreateWhatsappVoipSenderConflictProblem = ProjectClosingProblem | ProjectInitializingProblem | WhatsappAccountDisconnectingProblem | WhatsappAccountProvisioningProblem | WhatsappVoipSourceActivatingProblem | WhatsappSenderConnectedProblem | WhatsappSenderProvisioningProblem | WhatsappVoipSourceReleasingProblem;
 
 export type CreateWhatsappVoipSenderForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -2574,6 +2660,20 @@ export type EmailAddressing = {
     to?: Array<EmailMailbox>;
 };
 
+export type EmailAdmissionEndedProblem = {
+    code: 'EMAIL_ADMISSION_ENDED';
+    detail?: string;
+    instance?: string;
+    reason: string;
+    recipients?: Array<SuppressedEmailRecipient>;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'Email Admission Ended';
+    type: 'https://photon.codes/docs/problems/email-admission-ended';
+    [key: string]: JsonValue | 'EMAIL_ADMISSION_ENDED' | string | Array<SuppressedEmailRecipient> | never | 409 | 'Email Admission Ended' | 'https://photon.codes/docs/problems/email-admission-ended' | undefined;
+};
+
 export type EmailContentDisposition = 'inline' | 'attachment' | (string & {});
 
 export type EmailDeliveryMetrics = {
@@ -2653,13 +2753,61 @@ export type EmailDomainObservation = {
     resourceId: string;
 };
 
+export type EmailDomainProviderRejectedProblem = {
+    code: 'EMAIL_DOMAIN_PROVIDER_REJECTED';
+    detail?: string;
+    instance?: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    status: 422;
+    title: 'Email Domain Provider Rejected';
+    type: 'https://photon.codes/docs/problems/email-domain-provider-rejected';
+    [key: string]: JsonValue | 'EMAIL_DOMAIN_PROVIDER_REJECTED' | string | ProblemRemediation | 422 | 'Email Domain Provider Rejected' | 'https://photon.codes/docs/problems/email-domain-provider-rejected' | undefined;
+};
+
+export type EmailDomainReleaseFailedProblem = {
+    code: 'EMAIL_DOMAIN_RELEASE_FAILED';
+    detail?: string;
+    instance?: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    status: 502;
+    title: 'Email Domain Release Failed';
+    type: 'https://photon.codes/docs/problems/email-domain-release-failed';
+    [key: string]: JsonValue | 'EMAIL_DOMAIN_RELEASE_FAILED' | string | ProblemRemediation | 502 | 'Email Domain Release Failed' | 'https://photon.codes/docs/problems/email-domain-release-failed' | undefined;
+};
+
+export type EmailDomainVerificationFailedProblem = {
+    code: 'EMAIL_DOMAIN_VERIFICATION_FAILED';
+    detail?: string;
+    instance?: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    status: 502;
+    title: 'Email Domain Verification Failed';
+    type: 'https://photon.codes/docs/problems/email-domain-verification-failed';
+    [key: string]: JsonValue | 'EMAIL_DOMAIN_VERIFICATION_FAILED' | string | ProblemRemediation | 502 | 'Email Domain Verification Failed' | 'https://photon.codes/docs/problems/email-domain-verification-failed' | undefined;
+};
+
+export type EmailDomainVerificationTimedOutProblem = {
+    code: 'EMAIL_DOMAIN_VERIFICATION_TIMED_OUT';
+    detail?: string;
+    instance?: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    status: 504;
+    title: 'Email Domain Verification Timed Out';
+    type: 'https://photon.codes/docs/problems/email-domain-verification-timed-out';
+    [key: string]: JsonValue | 'EMAIL_DOMAIN_VERIFICATION_TIMED_OUT' | string | ProblemRemediation | 504 | 'Email Domain Verification Timed Out' | 'https://photon.codes/docs/problems/email-domain-verification-timed-out' | undefined;
+};
+
 export type EmailGroupContent = {
     metadata?: ContentMetadata;
     parts: Array<EmailGroupContentPart>;
     type: 'group';
 };
 
-export type EmailGroupContentPart = TextContent | TextUpdateContent | AttachmentContent | VoiceContent | ReactionContent | MessageDeleteContent | MessageReadContent | SpaceParticipantsUpdateContent | SpaceTypingUpdateContent | PollContent | PollVoteContent | PollUpdateContent;
+export type EmailGroupContentPart = TextContent | AttachmentContent | VoiceContent | ReactionContent | MessageDeleteContent | MessageReadContent | SpaceParticipantsUpdateContent | SpaceTypingUpdateContent | SpaceBackgroundUpdateContent | SpaceProfileShareContent | PollContent | PollVoteContent | PollUpdateContent;
 
 export type EmailMailbox = {
     address: EmailMailboxAddress;
@@ -2680,7 +2828,7 @@ export type EmailMailboxAddress = string;
 
 export type EmailMessage = ReceivedEmailMessage | DispatchedEmailMessage | AcceptedEmailMessage | DeliveredEmailMessage | FailedEmailMessage;
 
-export type EmailMessageContent = TextContent | TextUpdateContent | AttachmentContent | VoiceContent | ReactionContent | MessageDeleteContent | MessageReadContent | SpaceParticipantsUpdateContent | SpaceTypingUpdateContent | PollContent | PollVoteContent | PollUpdateContent | EmailGroupContent;
+export type EmailMessageContent = TextContent | AttachmentContent | VoiceContent | ReactionContent | MessageDeleteContent | MessageReadContent | SpaceParticipantsUpdateContent | SpaceTypingUpdateContent | SpaceBackgroundUpdateContent | SpaceProfileShareContent | PollContent | PollVoteContent | PollUpdateContent | EmailGroupContent | MessageUpdateContent;
 
 export type EmailMetadata = {
     contentDisposition?: EmailContentDisposition;
@@ -2708,6 +2856,21 @@ export type EmailOrganizationSendingPolicy = {
     recipientsPerMinute: number;
     reviewStatus: EmailSendingPolicyReviewStatus;
     updatedAt: string;
+};
+
+export type EmailRecipientRole = 'to' | 'cc' | 'bcc' | (string & {});
+
+export type EmailRecipientSuppressedProblem = {
+    code: 'EMAIL_RECIPIENT_SUPPRESSED';
+    detail?: string;
+    instance?: string;
+    recipients: Array<SuppressedEmailRecipient>;
+    remediation?: never;
+    requestId?: string;
+    status: 422;
+    title: 'Email Recipient Suppressed';
+    type: 'https://photon.codes/docs/problems/email-recipient-suppressed';
+    [key: string]: JsonValue | 'EMAIL_RECIPIENT_SUPPRESSED' | string | Array<SuppressedEmailRecipient> | never | 422 | 'Email Recipient Suppressed' | 'https://photon.codes/docs/problems/email-recipient-suppressed' | undefined;
 };
 
 export type EmailRecommendation = {
@@ -2841,6 +3004,18 @@ export type EmailSpaceSnapshot = {
     updatedAt?: never;
 };
 
+export type EmailTenantSetupTimedOutProblem = {
+    code: 'EMAIL_TENANT_SETUP_TIMED_OUT';
+    detail?: string;
+    instance?: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    status: 504;
+    title: 'Email Tenant Setup Timed Out';
+    type: 'https://photon.codes/docs/problems/email-tenant-setup-timed-out';
+    [key: string]: JsonValue | 'EMAIL_TENANT_SETUP_TIMED_OUT' | string | ProblemRemediation | 504 | 'Email Tenant Setup Timed Out' | 'https://photon.codes/docs/problems/email-tenant-setup-timed-out' | undefined;
+};
+
 export type EmailUser = {
     /**
      * When Photon first persisted this resource.
@@ -2876,17 +3051,28 @@ export type EmailUserSnapshot = {
     updatedAt?: never;
 };
 
-export type EnsureInitialOrganizationBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
-
-export type EnsureInitialOrganizationForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
-
-export type EnsureInitialOrganizationGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
-
-export type EnsureInitialOrganizationResponse = {
+export type EnterpriseBillingAgreement = {
+    kind: 'enterprise';
     /**
-     * The initial organization this request created; null when the account already had one.
+     * Days from an invoice's issue to its due date: Net 30 is 30, and 0 is due on receipt.
      */
-    organization: Organization | null;
+    paymentTermDays: number;
+    /**
+     * Printed on every invoice; null when the contract sets none.
+     */
+    purchaseOrderNumber: string | null;
+};
+
+export type EnterprisePlanRequiredProblem = {
+    code: 'ENTERPRISE_PLAN_REQUIRED';
+    detail?: string;
+    instance?: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    status: 402;
+    title: 'Enterprise Plan Required';
+    type: 'https://photon.codes/docs/problems/enterprise-plan-required';
+    [key: string]: JsonValue | 'ENTERPRISE_PLAN_REQUIRED' | string | ProblemRemediation | 402 | 'Enterprise Plan Required' | 'https://photon.codes/docs/problems/enterprise-plan-required' | undefined;
 };
 
 export type EntitlementRejectionReason = 'billing_restricted' | 'business_plan_required' | 'card_required' | 'email_required' | 'plan_change_scheduled' | 'subscription_not_billable' | (string & {});
@@ -3155,7 +3341,7 @@ export type FilteredVerificationCodePage = {
     nextPageToken?: string;
 };
 
-export type FilteredVerificationCodePlatform = 'imessage' | 'sms' | 'whatsapp' | (string & {});
+export type FilteredVerificationCodePlatform = 'imessage' | 'whatsapp' | (string & {});
 
 export type FixedCharge = {
     chargeModel: FixedChargeModel;
@@ -3240,6 +3426,8 @@ export type GetAccountForbiddenProblem = ForbiddenProblem | InsufficientScopePro
 
 export type GetAccountGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
 
+export type GetAccountGoneProblem = AccountDeletedProblem | RetiredApiVersionProblem;
+
 export type GetAccountInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
 export type GetAgentProfileForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
@@ -3279,6 +3467,8 @@ export type GetBillingOverviewResponse = {
     usage: Array<MeteredUsage>;
 };
 
+export type GetBillingOverviewServiceUnavailableProblem = BillingEntitlementsPendingProblem | UpstreamUnavailableProblem;
+
 export type GetCurrentOrganizationConflictProblem = OrganizationAuthPolicyChangedProblem | OrganizationUnavailableProblem | OrganizationVersionConflictProblem;
 
 export type GetCurrentOrganizationForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
@@ -3317,6 +3507,8 @@ export type GetEffectiveTermsResponse = {
      */
     timeZone: string;
 };
+
+export type GetEffectiveTermsServiceUnavailableProblem = BillingEntitlementsPendingProblem | UpstreamUnavailableProblem;
 
 export type GetEmailDeliveryMetricsForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -3377,6 +3569,10 @@ export type GetOrganizationBillingOverviewInternalServerErrorProblem = InternalE
 
 export type GetOrganizationBillingOverviewResponse = {
     /**
+     * Charges so far this billing period, for an organization that pays by invoice; null for one that pays by card, or while its projects are still being moved to its billing day.
+     */
+    currentPeriod: OrganizationBillingPeriod | null;
+    /**
      * Bumps on every entitlement change for the organization.
      */
     entitlementsVersion: number;
@@ -3385,6 +3581,8 @@ export type GetOrganizationBillingOverviewResponse = {
      */
     subscription: OrganizationSubscription | null;
 };
+
+export type GetOrganizationBillingOverviewServiceUnavailableProblem = BillingEntitlementsPendingProblem | UpstreamUnavailableProblem;
 
 export type GetOrganizationConflictProblem = OrganizationAuthPolicyChangedProblem | OrganizationUnavailableProblem | OrganizationVersionConflictProblem;
 
@@ -3462,6 +3660,7 @@ export type GetOrganizationPaymentMethodGatewayTimeoutProblem = RequestTimeoutPr
 export type GetOrganizationPaymentMethodInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
 export type GetOrganizationPaymentMethodResponse = {
+    agreement: BillingAgreement;
     /**
      * True once a card is captured for the payer.
      */
@@ -3470,6 +3669,10 @@ export type GetOrganizationPaymentMethodResponse = {
      * Metadata for the default card, or null.
      */
     paymentMethod: PaymentMethod | null;
+    /**
+     * Why the organization can't pay for a purchase now, or null when it can. payment_method_required: add a card first; an organization that pays by invoice never needs one. billing_not_ready: its billing is still being set up; try again shortly. Decide purchases on this, not on cardOnFile.
+     */
+    purchaseRefusal: PurchaseRefusal | null;
 };
 
 export type GetOrganizationResponse = {
@@ -3508,6 +3711,8 @@ export type GetOrganizationTermsResponse = {
      */
     timeZone: string;
 };
+
+export type GetOrganizationTermsServiceUnavailableProblem = BillingEntitlementsPendingProblem | BillingNotProvisionedProblem | UpstreamUnavailableProblem;
 
 export type GetProjectClosureStatusForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -3626,6 +3831,18 @@ export type GetSsoSubscriptionResponse = {
 
 export type GetSsoSubscriptionResponseState = 'not_subscribed' | 'subscribing' | 'subscribed' | 'cancellation_pending' | 'cancel_scheduled' | 'cancelled' | 'needs_attention' | (string & {});
 
+export type GetTenDlcBrandOtpForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type GetTenDlcBrandOtpGatewayTimeoutProblem = RequestTimeoutProblem | ServiceTimeoutProblem;
+
+export type GetTenDlcBrandOtpInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type GetTenDlcBrandOtpResponse = {
+    data: TenDlcBrandOtp;
+};
+
+export type GetTenDlcBrandOtpServiceUnavailableProblem = ServiceUnavailableProblem | UpstreamUnavailableProblem;
+
 export type GetUserForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type GetUserGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
@@ -3687,7 +3904,7 @@ export type GroupContent = {
     type: 'group';
 };
 
-export type GroupContentPart = TextContent | TextUpdateContent | AttachmentContent | VoiceContent | ReactionContent | MessageDeleteContent | MessageReadContent | SpaceParticipantsUpdateContent | SpaceTypingUpdateContent | PollContent | PollVoteContent | PollUpdateContent;
+export type GroupContentPart = TextContent | AttachmentContent | VoiceContent | ReactionContent | MessageDeleteContent | MessageReadContent | SpaceParticipantsUpdateContent | SpaceTypingUpdateContent | SpaceBackgroundUpdateContent | SpaceProfileShareContent | PollContent | PollVoteContent | PollUpdateContent;
 
 export type HttpErrorProblem = {
     code: 'HTTP_ERROR';
@@ -3699,6 +3916,18 @@ export type HttpErrorProblem = {
     title: 'Request Failed';
     type: 'https://photon.codes/docs/problems/http-error';
     [key: string]: JsonValue | 'HTTP_ERROR' | string | never | 400 | 'Request Failed' | 'https://photon.codes/docs/problems/http-error' | undefined;
+};
+
+export type IdempotencyConflictProblem = {
+    code: 'IDEMPOTENCY_CONFLICT';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'Idempotency Conflict';
+    type: 'https://photon.codes/docs/problems/idempotency-conflict';
+    [key: string]: JsonValue | 'IDEMPOTENCY_CONFLICT' | string | never | 409 | 'Idempotency Conflict' | 'https://photon.codes/docs/problems/idempotency-conflict' | undefined;
 };
 
 export type IdempotencyKeyInvalidProblem = {
@@ -3769,13 +3998,13 @@ export type ImessageGroupContent = {
     type: 'group';
 };
 
-export type ImessageGroupContentPart = TextContent | AttachmentContent | MessageReadContent | SpaceTypingUpdateContent;
+export type ImessageGroupContentPart = TextContent | AttachmentContent | VoiceContent | MessageReadContent | SpaceTypingUpdateContent | SpaceBackgroundUpdateContent | SpaceProfileShareContent;
 
 export type ImessageHandle = string;
 
 export type ImessageMessage = ReceivedImessageMessage | DispatchedImessageMessage | AcceptedImessageMessage | DeliveredImessageMessage | FailedImessageMessage;
 
-export type ImessageMessageContent = TextContent | AttachmentContent | MessageReadContent | SpaceTypingUpdateContent | ImessageGroupContent;
+export type ImessageMessageContent = TextContent | AttachmentContent | VoiceContent | MessageReadContent | SpaceTypingUpdateContent | SpaceBackgroundUpdateContent | SpaceProfileShareContent | ImessageGroupContent;
 
 export type ImessageModeDedicatedProblem = {
     code: 'IMESSAGE_MODE_DEDICATED';
@@ -3881,6 +4110,19 @@ export type InternalErrorProblem = {
     [key: string]: JsonValue | 'INTERNAL_ERROR' | string | never | 500 | 'Internal Server Error' | 'https://photon.codes/docs/problems/internal-error' | undefined;
 };
 
+export type InvalidApiVersionProblem = {
+    code: 'INVALID_API_VERSION';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 400;
+    supportedVersions: Array<string>;
+    title: 'Invalid API Version';
+    type: 'https://photon.codes/docs/problems/invalid-api-version';
+    [key: string]: JsonValue | 'INVALID_API_VERSION' | string | never | 400 | Array<string> | 'Invalid API Version' | 'https://photon.codes/docs/problems/invalid-api-version' | undefined;
+};
+
 export type InvalidArgumentProblem = {
     code: 'INVALID_ARGUMENT';
     detail?: string;
@@ -3930,6 +4172,18 @@ export type InvalidContentProblem = {
     [key: string]: JsonValue | 'INVALID_CONTENT' | string | Array<ContentIssue> | never | 422 | 'Invalid Content' | 'https://photon.codes/docs/problems/invalid-content' | undefined;
 };
 
+export type InvalidLifecycleStateProblem = {
+    code: 'INVALID_LIFECYCLE_STATE';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'Invalid Lifecycle State';
+    type: 'https://photon.codes/docs/problems/invalid-lifecycle-state';
+    [key: string]: JsonValue | 'INVALID_LIFECYCLE_STATE' | string | never | 409 | 'Invalid Lifecycle State' | 'https://photon.codes/docs/problems/invalid-lifecycle-state' | undefined;
+};
+
 export type InvalidPageTokenProblem = {
     code: 'INVALID_PAGE_TOKEN';
     detail?: string;
@@ -3976,11 +4230,6 @@ export type InvitationEmailMismatchProblem = {
     title: 'Invitation Email Mismatch';
     type: 'https://photon.codes/docs/problems/invitation-email-mismatch';
     [key: string]: JsonValue | 'INVITATION_EMAIL_MISMATCH' | string | never | 403 | 'Invitation Email Mismatch' | 'https://photon.codes/docs/problems/invitation-email-mismatch' | undefined;
-};
-
-export type InvitationEnterpriseLoginRequest = {
-    invitationToken: string;
-    returnTo: string;
 };
 
 export type InvitationExpiredProblem = {
@@ -4069,6 +4318,10 @@ export type InvitationTerminalProblem = {
 
 export type Invoice = {
     /**
+     * What is left to pay, in cents, after partial payments and credit.
+     */
+    amountDueCents: number;
+    /**
      * ISO currency code.
      */
     currency: string;
@@ -4086,6 +4339,10 @@ export type Invoice = {
      */
     number: string;
     /**
+     * The invoice's page, which opens without signing in, to view and pay it. Only for an organization paying by invoice, from when the invoice is finalized.
+     */
+    pageUrl: string | null;
+    /**
      * Its payment waits on the customer's authentication (3DS). Pay the invoice to complete it.
      */
     paymentActionRequired: boolean;
@@ -4097,9 +4354,13 @@ export type Invoice = {
      * Unpaid past its due date. Overdue invoices set the organization's dunning stage.
      */
     paymentOverdue: boolean;
+    /**
+     * An ACH debit is paying it and hasn't settled yet. It is not overdue meanwhile.
+     */
+    paymentProcessing: boolean;
     paymentStatus: InvoicePaymentStatus;
     /**
-     * Downloadable PDF link.
+     * The invoice's PDF, once generated. Download it with the credentials that listed it.
      */
     pdfUrl: string | null;
     status: InvoiceStatus;
@@ -4164,6 +4425,8 @@ export type LeaveOrganizationUnprocessableEntityProblem = ValidationFailedProble
 export type ListAccountServiceKeysForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type ListAccountServiceKeysGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type ListAccountServiceKeysGoneProblem = AccountDeletedProblem | RetiredApiVersionProblem;
 
 export type ListAccountServiceKeysInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
@@ -4880,6 +5143,22 @@ export type MessageTypeUnsupportedFailure = {
     message: string;
 };
 
+export type MessageUpdateContent = {
+    content: MessageUpdateValue;
+    metadata?: ContentMetadata;
+    type: 'message.update';
+};
+
+export type MessageUpdateGroupContent = {
+    metadata?: ContentMetadata;
+    parts: Array<MessageUpdateGroupContentPart>;
+    type: 'group';
+};
+
+export type MessageUpdateGroupContentPart = TextContent | AttachmentContent | VoiceContent;
+
+export type MessageUpdateValue = MessageUpdateGroupContentPart | MessageUpdateGroupContent;
+
 export type MessagingUnavailableFailure = {
     acceptedAt?: never;
     code: 'messaging_unavailable';
@@ -4935,6 +5214,66 @@ export type NumberCountry = {
     callingCode: string;
     countryCode: string;
     displayName: string;
+};
+
+export type NumberInventoryUnavailableProblem = {
+    code: 'NUMBER_INVENTORY_UNAVAILABLE';
+    detail?: string;
+    instance?: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    status: 409;
+    title: 'Number Inventory Unavailable';
+    type: 'https://photon.codes/docs/problems/number-inventory-unavailable';
+    [key: string]: JsonValue | 'NUMBER_INVENTORY_UNAVAILABLE' | string | ProblemRemediation | 409 | 'Number Inventory Unavailable' | 'https://photon.codes/docs/problems/number-inventory-unavailable' | undefined;
+};
+
+export type NumberOrderFailedProblem = {
+    code: 'NUMBER_ORDER_FAILED';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 502;
+    title: 'Number Order Failed';
+    type: 'https://photon.codes/docs/problems/number-order-failed';
+    [key: string]: JsonValue | 'NUMBER_ORDER_FAILED' | string | never | 502 | 'Number Order Failed' | 'https://photon.codes/docs/problems/number-order-failed' | undefined;
+};
+
+export type NumberOrderReconciliationRequiredProblem = {
+    code: 'NUMBER_ORDER_RECONCILIATION_REQUIRED';
+    detail?: string;
+    instance?: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    status: 409;
+    title: 'Number Order Reconciliation Required';
+    type: 'https://photon.codes/docs/problems/number-order-reconciliation-required';
+    [key: string]: JsonValue | 'NUMBER_ORDER_RECONCILIATION_REQUIRED' | string | ProblemRemediation | 409 | 'Number Order Reconciliation Required' | 'https://photon.codes/docs/problems/number-order-reconciliation-required' | undefined;
+};
+
+export type NumberReleaseFailedProblem = {
+    code: 'NUMBER_RELEASE_FAILED';
+    detail?: string;
+    instance?: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    status: 502;
+    title: 'Number Release Failed';
+    type: 'https://photon.codes/docs/problems/number-release-failed';
+    [key: string]: JsonValue | 'NUMBER_RELEASE_FAILED' | string | ProblemRemediation | 502 | 'Number Release Failed' | 'https://photon.codes/docs/problems/number-release-failed' | undefined;
+};
+
+export type NumberSearchFailedProblem = {
+    code: 'NUMBER_SEARCH_FAILED';
+    detail?: string;
+    instance?: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    status: 502;
+    title: 'Number Search Failed';
+    type: 'https://photon.codes/docs/problems/number-search-failed';
+    [key: string]: JsonValue | 'NUMBER_SEARCH_FAILED' | string | ProblemRemediation | 502 | 'Number Search Failed' | 'https://photon.codes/docs/problems/number-search-failed' | undefined;
 };
 
 export type OauthClientCreationConflictProblem = {
@@ -5064,10 +5403,10 @@ export type Operation = {
     updatedAt: string;
 };
 
-export type OperationError = {
-    code: string;
-    detail: string;
-};
+/**
+ * Why the operation failed: the problem of its `code`, the same object the endpoint returns when it rejects a request, with the `status` that rejection would have had (the poll itself answers 200). Every code an operation can end with is a branch below, and the endpoint that starts the operation lists its codes. Branch on `code`, never on `status`, and keep a default: a code added after your client was generated arrives as a generic problem with `type: about:blank` and `status: 500`. That 500 means this document does not describe the code yet, not that the request failed on our side or that retrying will help.
+ */
+export type OperationError = ChargeRefusedProblem | EmailDomainProviderRejectedProblem | EmailDomainReleaseFailedProblem | EmailDomainVerificationFailedProblem | EmailDomainVerificationTimedOutProblem | EmailTenantSetupTimedOutProblem | EnterprisePlanRequiredProblem | EntitlementRequiredProblem | NumberInventoryUnavailableProblem | NumberOrderFailedProblem | NumberOrderReconciliationRequiredProblem | NumberReleaseFailedProblem | NumberSearchFailedProblem | ResourceNotFoundProblem | SmsCampaignProviderRejectedProblem | SmsCampaignReconciliationRequiredProblem | SmsCampaignRevokedProblem | TelegramConfigurationFailedProblem | TelegramReleaseFailedProblem | WhatsappAccountDisconnectFailedProblem | WhatsappAuthorizationRevokedProblem | WhatsappCodeExchangeFailedProblem | WhatsappCosmosLineNotSupportedProblem | WhatsappDisplayNameConflictProblem | WhatsappEmbeddedSignupPhoneLookupFailedProblem | WhatsappEmbeddedSignupPhoneNotFoundProblem | WhatsappEmbeddedSignupPhoneNotVerifiedProblem | WhatsappEmbeddedSignupWabaNotAuthorizedProblem | WhatsappNumberAddRefusedProblem | WhatsappNumberLookupFailedProblem | WhatsappProjectWabaAlreadyConnectedProblem | WhatsappRegistrationRefusedProblem | WhatsappSenderConnectedProblem | WhatsappSenderProvisioningProblem | WhatsappSenderReleaseFailedProblem | WhatsappSignupExpiredProblem | WhatsappSubscriptionRefusedProblem | WhatsappVerificationRefusedProblem | WhatsappVerificationRequestRefusedProblem | WhatsappVerificationTimedOutProblem | WhatsappVoipSourceNotEligibleProblem | WhatsappVoipSourceReleasingProblem | WhatsappWabaAlreadyConnectedProblem | ProblemDetails;
 
 export type OperationNotCancellableProblem = {
     code: 'OPERATION_NOT_CANCELLABLE';
@@ -5140,6 +5479,49 @@ export type OrganizationAuthPolicyChangedProblem = {
 
 export type OrganizationBillingInitialization = 'pending' | 'retry_required' | 'completed' | 'unknown' | (string & {});
 
+export type OrganizationBillingPeriod = {
+    /**
+     * ISO 4217 currency code.
+     */
+    currency: string;
+    /**
+     * What the period's invoice comes to if usage stops now and the units held are kept to the period's end: with tax, after discounts and credit.
+     */
+    estimatedTotalCents: number;
+    /**
+     * Last moment of the billing period, ISO 8601. Its invoice is drafted on the billing day after.
+     */
+    periodEnd: string;
+    /**
+     * Start of the billing period, ISO 8601.
+     */
+    periodStart: string;
+    /**
+     * Bank transfers received beyond every open invoice. They pay the next invoice once it is issued.
+     */
+    transferBalanceCents: number;
+    /**
+     * Metered usage so far this period, across the organization and every project, before tax.
+     */
+    usageCents: number;
+    /**
+     * The contract's soft usage limit, compared with usageCents. Nothing is blocked at it; null when the contract sets none.
+     */
+    usageLimitCents: number | null;
+};
+
+export type OrganizationClosingProblem = {
+    code: 'ORGANIZATION_CLOSING';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'Organization is closing';
+    type: 'https://photon.codes/docs/problems/organization-closing';
+    [key: string]: JsonValue | 'ORGANIZATION_CLOSING' | string | never | 409 | 'Organization is closing' | 'https://photon.codes/docs/problems/organization-closing' | undefined;
+};
+
 export type OrganizationConnectionNotFoundProblem = {
     code: 'ORGANIZATION_CONNECTION_NOT_FOUND';
     detail?: string;
@@ -5177,12 +5559,6 @@ export type OrganizationConnectionSyncStatus = 'pending' | 'syncing' | 'ready' |
 
 export type OrganizationCreditSubject = {
     type: 'organization';
-};
-
-export type OrganizationEnterpriseLoginRequest = {
-    invitationToken?: string;
-    organizationId: string;
-    returnTo: string;
 };
 
 export type OrganizationInvitationRole = 'member' | 'viewer' | (string & {});
@@ -5446,6 +5822,10 @@ export type OrganizationSubscriptionTerms = {
      */
     cancelsAt: string | null;
     /**
+     * The coupons in effect, oldest redemption first. A project's are its own; the organization's also carry those applied to the organization.
+     */
+    coupons: Array<SubscriptionCoupon>;
+    /**
      * ISO 8601.
      */
     currentPeriodEnd: string;
@@ -5512,6 +5892,42 @@ export type OrganizationVersionConflictProblem = {
     title: 'Organization Version Conflict';
     type: 'https://photon.codes/docs/problems/organization-version-conflict';
     [key: string]: JsonValue | 'ORGANIZATION_VERSION_CONFLICT' | string | never | 409 | 'Organization Version Conflict' | 'https://photon.codes/docs/problems/organization-version-conflict' | undefined;
+};
+
+export type OtpLockedProblem = {
+    code: 'OTP_LOCKED';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'OTP Locked';
+    type: 'https://photon.codes/docs/problems/otp-locked';
+    [key: string]: JsonValue | 'OTP_LOCKED' | string | never | 409 | 'OTP Locked' | 'https://photon.codes/docs/problems/otp-locked' | undefined;
+};
+
+export type OtpRateLimitedProblem = {
+    code: 'OTP_RATE_LIMITED';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 429;
+    title: 'OTP Rate Limited';
+    type: 'https://photon.codes/docs/problems/otp-rate-limited';
+    [key: string]: JsonValue | 'OTP_RATE_LIMITED' | string | never | 429 | 'OTP Rate Limited' | 'https://photon.codes/docs/problems/otp-rate-limited' | undefined;
+};
+
+export type OtpVerificationRejectedProblem = {
+    code: 'OTP_VERIFICATION_REJECTED';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 422;
+    title: 'OTP Verification Rejected';
+    type: 'https://photon.codes/docs/problems/otp-verification-rejected';
+    [key: string]: JsonValue | 'OTP_VERIFICATION_REJECTED' | string | never | 422 | 'OTP Verification Rejected' | 'https://photon.codes/docs/problems/otp-verification-rejected' | undefined;
 };
 
 export type PayloadTooLargeProblem = {
@@ -5587,6 +6003,20 @@ export type PhoneCarrier = {
     normalizedName?: string;
 };
 
+export type PhoneNotSmsCapableProblem = {
+    code: 'PHONE_NOT_SMS_CAPABLE';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 422;
+    title: 'Phone Is Not SMS Capable';
+    type: 'https://photon.codes/docs/problems/phone-not-sms-capable';
+    [key: string]: JsonValue | 'PHONE_NOT_SMS_CAPABLE' | string | never | 422 | 'Phone Is Not SMS Capable' | 'https://photon.codes/docs/problems/phone-not-sms-capable' | undefined;
+};
+
+export type PhotonVersion = '2026-07-01';
+
 export type PlanSource = 'catalog' | 'override' | (string & {});
 
 export type Platform = 'sms' | 'email' | 'whatsapp' | 'whatsapp_business' | 'imessage' | 'telegram' | (string & {});
@@ -5628,6 +6058,8 @@ export type PollVoteContent = {
     type: 'poll.vote';
 };
 
+export type PreviewOrganizationChangeConflictProblem = FailedPreconditionProblem | PromotionCodeRejectedProblem;
+
 export type PreviewOrganizationChangeForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type PreviewOrganizationChangeGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
@@ -5636,6 +6068,10 @@ export type PreviewOrganizationChangeInternalServerErrorProblem = InternalErrorP
 
 export type PreviewOrganizationChangeRequest = {
     fixedCharge: FixedChargeChange;
+    /**
+     * A promotion code the customer entered, previewed as the purchase redeems it, on an increase only: dueNow and upcomingInvoices are discounted by it. Needs billing:manage. A refused code fails the preview with PROMOTION_CODE_REJECTED, its reason as a refused purchase's failure detail.
+     */
+    promotionCode?: string;
 };
 
 export type PreviewOrganizationChangeResponse = {
@@ -5647,13 +6083,21 @@ export type PreviewOrganizationChangeResponse = {
     dueLater: BillingPreviewDeferred;
     dueNow: BillingPreviewInvoice;
     /**
-     * What is charged in advance at the next period start for what is held after the change. Usage and a minimum commitment are billed after the period. Null when nothing is, or the subscription ends first.
+     * What is charged next for all that is held after the change: the first of upcomingInvoices, at its time and total, after coupons, with taxes, before credits. For a downgrade, the target plan's first charge at the period end. Usage and a minimum commitment are billed after the period. Null when nothing is charged, or the subscription ends first.
      */
     nextCharge: BillingNextCharge | null;
+    /**
+     * For an organization that pays by invoice: when its next monthly invoice is drafted, which bills the change instead of dueNow. A fixed-charge change's units go on it, in dueLater; an upgrade's new plan and dueLater too, while dueNow is the replaced plan's invoice, issued at once and due on the organization's terms. Null when dueNow is charged with the change.
+     */
+    nextInvoiceAt: string | null;
     /**
      * The IANA time zone the payer is billed in, e.g. America/Los_Angeles. Billing periods start and end at its midnights, so read their calendar dates in it.
      */
     timeZone: string;
+    /**
+     * The invoices the subscription the change leaves issues in the following periods, assuming no later change: one, and another while a coupon with an end discounted the last, so the last listed is the price from then on. At most 24. For a change at the period end (a downgrade, or the held plan kept), the first is what the invoice due then bills for it.
+     */
+    upcomingInvoices: Array<BillingUpcomingInvoice>;
 };
 
 export type PreviewOrganizationInvitationConflictProblem = AccountClosingProblem | InvitationExpiredProblem | InvitationRevokedProblem | InvitationRoleConflictProblem | InvitationTerminalProblem | InvitationPredatesRemovalProblem | OrganizationUnavailableProblem | OrganizationAuthPolicyChangedProblem;
@@ -5690,6 +6134,8 @@ export type PreviewOrganizationInvitationResponseInviter = {
 
 export type PreviewOrganizationInvitationResponseStatus = 'pending' | 'accepted' | (string & {});
 
+export type PreviewProjectChangeConflictProblem = FailedPreconditionProblem | PromotionCodeRejectedProblem;
+
 export type PreviewProjectChangeForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type PreviewProjectChangeGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
@@ -5707,13 +6153,38 @@ export type PreviewProjectChangeResponse = {
     dueLater: BillingPreviewDeferred;
     dueNow: BillingPreviewInvoice;
     /**
-     * What is charged in advance at the next period start for what is held after the change. Usage and a minimum commitment are billed after the period. Null when nothing is, or the subscription ends first.
+     * What is charged next for all that is held after the change: the first of upcomingInvoices, at its time and total, after coupons, with taxes, before credits. For a downgrade, the target plan's first charge at the period end. Usage and a minimum commitment are billed after the period. Null when nothing is charged, or the subscription ends first.
      */
     nextCharge: BillingNextCharge | null;
+    /**
+     * For an organization that pays by invoice: when its next monthly invoice is drafted, which bills the change instead of dueNow. A fixed-charge change's units go on it, in dueLater; an upgrade's new plan and dueLater too, while dueNow is the replaced plan's invoice, issued at once and due on the organization's terms. Null when dueNow is charged with the change.
+     */
+    nextInvoiceAt: string | null;
     /**
      * The IANA time zone the payer is billed in, e.g. America/Los_Angeles. Billing periods start and end at its midnights, so read their calendar dates in it.
      */
     timeZone: string;
+    /**
+     * The invoices the subscription the change leaves issues in the following periods, assuming no later change: one, and another while a coupon with an end discounted the last, so the last listed is the price from then on. At most 24. For a change at the period end (a downgrade, or the held plan kept), the first is what the invoice due then bills for it.
+     */
+    upcomingInvoices: Array<BillingUpcomingInvoice>;
+};
+
+export type ProblemDetails = {
+    code: string;
+    detail?: string;
+    instance?: string;
+    remediation?: ProblemRemediation;
+    requestId?: string;
+    status: number;
+    title: string;
+    type: string;
+    [key: string]: JsonValue | string | ProblemRemediation | number | undefined;
+};
+
+export type ProblemRemediation = {
+    action: string;
+    documentation?: string;
 };
 
 export type ProfilePictureContentType = 'image/jpeg' | 'image/png' | 'image/webp' | (string & {});
@@ -5833,6 +6304,18 @@ export type ProjectHeldPlan = {
 
 export type ProjectId = string;
 
+export type ProjectInitializingProblem = {
+    code: 'PROJECT_INITIALIZING';
+    detail?: string;
+    instance?: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    status: 409;
+    title: 'Project Initializing';
+    type: 'https://photon.codes/docs/problems/project-initializing';
+    [key: string]: JsonValue | 'PROJECT_INITIALIZING' | string | ProblemRemediation | 409 | 'Project Initializing' | 'https://photon.codes/docs/problems/project-initializing' | undefined;
+};
+
 export type ProjectInvoiceSubject = {
     projectId: string;
     type: 'project';
@@ -5917,7 +6400,22 @@ export type ProjectSubscriptionEntitlement = {
     value: string;
 };
 
+export type PromotionCodeRejectedProblem = {
+    code: 'PROMOTION_CODE_REJECTED';
+    detail?: string;
+    instance?: string;
+    reason: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    status: 409;
+    title: 'Promotion Code Rejected';
+    type: 'https://photon.codes/docs/problems/promotion-code-rejected';
+    [key: string]: JsonValue | 'PROMOTION_CODE_REJECTED' | string | ProblemRemediation | 409 | 'Promotion Code Rejected' | 'https://photon.codes/docs/problems/promotion-code-rejected' | undefined;
+};
+
 export type ProvisionImessageDedicatedLineBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+
+export type ProvisionImessageDedicatedLineConflictProblem = PromotionCodeRejectedProblem | ProjectClosingProblem | ProjectInitializingProblem;
 
 export type ProvisionImessageDedicatedLineForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -5925,11 +6423,22 @@ export type ProvisionImessageDedicatedLineGatewayTimeoutProblem = RequestTimeout
 
 export type ProvisionImessageDedicatedLineInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
+export type ProvisionImessageDedicatedLinePaymentRequiredProblem = EntitlementRequiredProblem | EnterprisePlanRequiredProblem;
+
+export type ProvisionImessageDedicatedLineRequest = {
+    /**
+     * A promotion code to apply to this line's charge. Billing takes a fixed amount off the charge. The code is checked and claimed when the request is accepted, even if the line has to wait for inventory: a code that can't be used answers 409 PROMOTION_CODE_REJECTED and starts nothing, and one accepted still applies if it later expires. A purchase that ends without a line gives the code back. Part of the request's identity: repeating the Idempotency-Key with a different code, or none, is refused.
+     */
+    promotionCode?: string;
+};
+
 export type ProvisionImessageDedicatedLineServiceUnavailableProblem = BillingEntitlementsPendingProblem | BillingNotProvisionedProblem | UpstreamUnavailableProblem;
 
 export type ProvisionImessageDedicatedLineUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
 export type ProvisionWhatsappDedicatedLineBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+
+export type ProvisionWhatsappDedicatedLineConflictProblem = PromotionCodeRejectedProblem | ProjectClosingProblem | ProjectInitializingProblem;
 
 export type ProvisionWhatsappDedicatedLineForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -5937,11 +6446,24 @@ export type ProvisionWhatsappDedicatedLineGatewayTimeoutProblem = RequestTimeout
 
 export type ProvisionWhatsappDedicatedLineInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
+export type ProvisionWhatsappDedicatedLinePaymentRequiredProblem = EntitlementRequiredProblem | EnterprisePlanRequiredProblem;
+
+export type ProvisionWhatsappDedicatedLineRequest = {
+    /**
+     * A promotion code to apply to this line's charge. Billing takes a fixed amount off the charge. The code is checked and claimed when the request is accepted, even if the line has to wait for inventory: a code that can't be used answers 409 PROMOTION_CODE_REJECTED and starts nothing, and one accepted still applies if it later expires. A purchase that ends without a line gives the code back. Part of the request's identity: repeating the Idempotency-Key with a different code, or none, is refused.
+     */
+    promotionCode?: string;
+};
+
 export type ProvisionWhatsappDedicatedLineServiceUnavailableProblem = BillingEntitlementsPendingProblem | BillingNotProvisionedProblem | UpstreamUnavailableProblem;
 
 export type ProvisionWhatsappDedicatedLineUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
+export type PurchaseRefusal = 'payment_method_required' | 'billing_not_ready' | (string & {});
+
 export type PurchaseSmsNumberBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+
+export type PurchaseSmsNumberConflictProblem = ProjectClosingProblem | ProjectInitializingProblem;
 
 export type PurchaseSmsNumberForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -5952,6 +6474,10 @@ export type PurchaseSmsNumberInternalServerErrorProblem = InternalErrorProblem |
 export type PurchaseSmsNumberRequest = {
     areaCode?: string;
     countryCode: 'US';
+    /**
+     * A promotion code to redeem with this number's charge. Billing takes a fixed amount off the charge. The charge follows delivery, so a code Billing refuses hands the number back, and the release operation carries the refusal. Part of the request's identity: repeating the Idempotency-Key with a different code, or none, is refused.
+     */
+    promotionCode?: string;
 };
 
 export type PurchaseSmsNumberServiceUnavailableProblem = BillingEntitlementsPendingProblem | BillingNotProvisionedProblem | UpstreamUnavailableProblem;
@@ -6006,10 +6532,8 @@ export type RateLimitedProblem = {
     [key: string]: JsonValue | 'RATE_LIMITED' | string | never | 429 | 'Too Many Requests' | 'https://photon.codes/docs/problems/rate-limited' | undefined;
 };
 
-export type ReactionAction = 'add' | 'remove' | (string & {});
-
 export type ReactionContent = {
-    action: ReactionAction;
+    action?: never;
     metadata?: ContentMetadata;
     reaction: string;
     type: 'reaction';
@@ -6397,11 +6921,13 @@ export type ResendOrganizationInvitationResponse = {
 
 export type ResendOrganizationInvitationUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
-export type ResetAccountProfilePictureBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyInvalidProblem | IdempotencyKeyRequiredProblem;
+export type ResetAccountProfilePictureBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyInvalidProblem | IdempotencyKeyRequiredProblem | InvalidApiVersionProblem;
 
 export type ResetAccountProfilePictureForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type ResetAccountProfilePictureGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type ResetAccountProfilePictureGoneProblem = AccountDeletedProblem | RetiredApiVersionProblem;
 
 export type ResetAccountProfilePictureInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
@@ -6418,6 +6944,9 @@ export type ResetAgentProfileAvatarUnprocessableEntityProblem = ValidationFailed
 export type Resource = {
     abilities: Array<string>;
     createdAt: string;
+    /**
+     * Per-type public detail. Only voip_line includes activationState: activating or active. Every voip_line includes it; without an owner-matched saved record it defaults to active. This includes imported, legacy and unallocated numbers. This is not provider-confirmed readiness; elapsed time alone never changes saved activation. A retired number retains its saved activation state.
+     */
     detail: {
         [key: string]: unknown;
     };
@@ -6469,8 +6998,17 @@ export type ResourcePage = {
 
 export type ResourceState = 'unallocated' | 'active' | 'retired' | (string & {});
 
-export type RetryEnterpriseLoginRequest = {
-    retryToken: string;
+export type RetiredApiVersionProblem = {
+    code: 'RETIRED_API_VERSION';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 410;
+    supportedVersions: Array<string>;
+    title: 'Retired API Version';
+    type: 'https://photon.codes/docs/problems/retired-api-version';
+    [key: string]: JsonValue | 'RETIRED_API_VERSION' | string | never | 410 | Array<string> | 'Retired API Version' | 'https://photon.codes/docs/problems/retired-api-version' | undefined;
 };
 
 export type RetryOrganizationConnectionSyncForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem;
@@ -6493,11 +7031,13 @@ export type RetryWebhookDeliveryResponse = {
     status: 'accepted';
 };
 
-export type RevokeAccountServiceKeyBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyInvalidProblem | IdempotencyKeyRequiredProblem;
+export type RevokeAccountServiceKeyBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyInvalidProblem | IdempotencyKeyRequiredProblem | InvalidApiVersionProblem;
 
 export type RevokeAccountServiceKeyForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type RevokeAccountServiceKeyGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type RevokeAccountServiceKeyGoneProblem = AccountDeletedProblem | RetiredApiVersionProblem;
 
 export type RevokeAccountServiceKeyInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
@@ -6671,6 +7211,10 @@ export type SelectableWebhookEventCatalog = {
     successor: string | null;
 };
 
+export type SelfServeBillingAgreement = {
+    kind: 'self_serve';
+};
+
 /**
  * Text shown with the attachment. Accepted on: telegram.
  */
@@ -6689,9 +7233,9 @@ export type SendAttachmentMetadata = {
     caption?: SendAttachmentCaption;
 };
 
-export type SendContent = SendTextContent | SendTextUpdateContent | SendAttachmentContent | SendVoiceContent | SendReactionContent | SendMessageDeleteContent | SendMessageReadContent | SendSpaceParticipantsUpdateContent | SendSpaceTypingUpdateContent | SendPollContent | SendPollVoteContent | SendPollUpdateContent | SendGroupContent;
+export type SendContent = SendTextContent | SendAttachmentContent | SendVoiceContent | SendReactionContent | SendMessageDeleteContent | SendMessageReadContent | SendSpaceParticipantsUpdateContent | SendSpaceTypingUpdateContent | SendSpaceBackgroundUpdateContent | SendSpaceProfileShareContent | SendPollContent | SendPollVoteContent | SendPollUpdateContent | SendGroupContent | SendMessageUpdateContent;
 
-export type SendContentPart = SendTextContent | SendTextUpdateContent | SendAttachmentContent | SendVoiceContent | SendReactionContent | SendMessageDeleteContent | SendMessageReadContent | SendSpaceParticipantsUpdateContent | SendSpaceTypingUpdateContent | SendPollContent | SendPollVoteContent | SendPollUpdateContent;
+export type SendContentPart = SendTextContent | SendAttachmentContent | SendVoiceContent | SendReactionContent | SendMessageDeleteContent | SendMessageReadContent | SendSpaceParticipantsUpdateContent | SendSpaceTypingUpdateContent | SendSpaceBackgroundUpdateContent | SendSpaceProfileShareContent | SendPollContent | SendPollVoteContent | SendPollUpdateContent;
 
 export type SendEmailMailbox = {
     address: string;
@@ -6711,7 +7255,7 @@ export type SendGroupContent = {
     type: 'group';
 };
 
-export type SendMessageConflictProblem = AttachmentNotReadyProblem | SenderNotSendableProblem | SmsCampaignNotEligibleProblem | SpaceNotSendableProblem;
+export type SendMessageConflictProblem = AttachmentNotReadyProblem | SenderNotSendableProblem | SmsCampaignNotEligibleProblem | EmailAdmissionEndedProblem | SpaceNotSendableProblem;
 
 export type SendMessageDeleteContent = {
     reason?: string;
@@ -6740,7 +7284,21 @@ export type SendMessageRequest = {
     telegram?: SendTelegramOptions;
 };
 
-export type SendMessageUnprocessableEntityProblem = SharedLineGroupUnsupportedProblem | ValidationFailedProblem | InvalidContentProblem | UnsupportedContentProblem | MessageTooLongProblem | IdempotencyKeyReusedProblem;
+export type SendMessageUnprocessableEntityProblem = EmailRecipientSuppressedProblem | OperationUnavailableProblem | SharedLineGroupUnsupportedProblem | ValidationFailedProblem | InvalidContentProblem | UnsupportedContentProblem | MessageTooLongProblem | IdempotencyKeyReusedProblem;
+
+export type SendMessageUpdateContent = {
+    content: SendMessageUpdateValue;
+    type: 'message.update';
+};
+
+export type SendMessageUpdateGroupContent = {
+    parts: Array<SendMessageUpdateGroupContentPart>;
+    type: 'group';
+};
+
+export type SendMessageUpdateGroupContentPart = SendTextContent | SendAttachmentContent | SendVoiceContent;
+
+export type SendMessageUpdateValue = SendMessageUpdateGroupContentPart | SendMessageUpdateGroupContent;
 
 export type SendPollContent = {
     options: Array<PollOption>;
@@ -6762,15 +7320,24 @@ export type SendPollVoteContent = {
 };
 
 export type SendReactionContent = {
-    action: ReactionAction;
+    action?: never;
     reaction: string;
     type: 'reaction';
+};
+
+export type SendSpaceBackgroundUpdateContent = {
+    background: SpaceBackground;
+    type: 'space.background.update';
 };
 
 export type SendSpaceParticipantsUpdateContent = {
     added: Array<UserSnapshotInput>;
     removed: Array<UserSnapshotInput>;
     type: 'space.participants.update';
+};
+
+export type SendSpaceProfileShareContent = {
+    type: 'space.profile.share';
 };
 
 export type SendSpaceTypingUpdateContent = {
@@ -6786,18 +7353,13 @@ export type SendTelegramOptions = {
      * Whether standalone text is sent as a Telegram rich message. Defaults to true; false sends a regular message. Not accepted with attachments.
      */
     richMessage?: boolean;
+    sendAs?: TelegramSendAs;
 };
 
 export type SendTextContent = {
     format: string;
     text: string;
     type: 'text';
-};
-
-export type SendTextUpdateContent = {
-    format: string;
-    text: string;
-    type: 'text.update';
 };
 
 export type SendVoiceContent = {
@@ -6898,6 +7460,18 @@ export type ServiceCredentialPreconditionFailedProblem = {
     [key: string]: JsonValue | 'SERVICE_CREDENTIAL_PRECONDITION_FAILED' | string | never | 412 | 'Service Credential Precondition Failed' | 'https://photon.codes/docs/problems/service-credential-precondition-failed' | undefined;
 };
 
+export type ServiceFailureProblem = {
+    code: 'SERVICE_FAILURE';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 502;
+    title: 'Service Failure';
+    type: 'https://photon.codes/docs/problems/service-failure';
+    [key: string]: JsonValue | 'SERVICE_FAILURE' | string | never | 502 | 'Service Failure' | 'https://photon.codes/docs/problems/service-failure' | undefined;
+};
+
 export type ServiceIdentityCredentialKind = 'api_key' | 'client_secret' | (string & {});
 
 export type ServiceIdentityCredentialStatus = 'active' | 'revoked' | (string & {});
@@ -6926,6 +7500,30 @@ export type ServiceIdentityVersionConflictProblem = {
     title: 'Service Identity Version Conflict';
     type: 'https://photon.codes/docs/problems/service-identity-version-conflict';
     [key: string]: JsonValue | 'SERVICE_IDENTITY_VERSION_CONFLICT' | string | never | 409 | 'Service Identity Version Conflict' | 'https://photon.codes/docs/problems/service-identity-version-conflict' | undefined;
+};
+
+export type ServiceTimeoutProblem = {
+    code: 'SERVICE_TIMEOUT';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 504;
+    title: 'Service Timeout';
+    type: 'https://photon.codes/docs/problems/service-timeout';
+    [key: string]: JsonValue | 'SERVICE_TIMEOUT' | string | never | 504 | 'Service Timeout' | 'https://photon.codes/docs/problems/service-timeout' | undefined;
+};
+
+export type ServiceUnavailableProblem = {
+    code: 'SERVICE_UNAVAILABLE';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 503;
+    title: 'Service Temporarily Unavailable';
+    type: 'https://photon.codes/docs/problems/service-unavailable';
+    [key: string]: JsonValue | 'SERVICE_UNAVAILABLE' | string | never | 503 | 'Service Temporarily Unavailable' | 'https://photon.codes/docs/problems/service-unavailable' | undefined;
 };
 
 export type SetSpaceTypingConstraint = {
@@ -6983,11 +7581,28 @@ export type SharedLineAssignment = {
     firstName?: string;
     handle: string;
     lastName?: string;
+    optIn: SharedLineAssignmentOptIn;
     platform: SharedLineAssignmentPlatform;
     projectId: string;
     releasedAt?: string;
     updatedAt: string;
 };
+
+/**
+ * Whether the end user has texted the assigned line from their handle since this assignment was created. Until they have, sends to them on this line are refused; once they have, the project can message them while the assignment is unreleased. A released assignment keeps its opt-in, and a re-created assignment starts pending. This records only that Photon allows replies; it is not a consent record for SMS compliance.
+ */
+export type SharedLineAssignmentOptIn = {
+    /**
+     * When the end user sent that first text, as the platform reports it. Present exactly when state is received.
+     */
+    receivedAt?: string;
+    state: SharedLineAssignmentOptInState;
+};
+
+/**
+ * pending until the end user texts the assigned line from their handle after the assignment was created, then received. Treat a value you do not recognize as not opted in.
+ */
+export type SharedLineAssignmentOptInState = 'pending' | 'received' | (string & {});
 
 export type SharedLineAssignmentPage = {
     assignments: Array<SharedLineAssignment>;
@@ -7218,6 +7833,18 @@ export type SmsCampaignOrganizationMismatchProblem = {
     [key: string]: JsonValue | 'SMS_CAMPAIGN_ORGANIZATION_MISMATCH' | string | never | 403 | 'Campaign belongs to another organization' | 'https://photon.codes/docs/problems/sms-campaign-organization-mismatch' | undefined;
 };
 
+export type SmsCampaignProviderRejectedProblem = {
+    code: 'SMS_CAMPAIGN_PROVIDER_REJECTED';
+    detail?: string;
+    instance?: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    status: 422;
+    title: 'Campaign assignment rejected';
+    type: 'https://photon.codes/docs/problems/sms-campaign-provider-rejected';
+    [key: string]: JsonValue | 'SMS_CAMPAIGN_PROVIDER_REJECTED' | string | ProblemRemediation | 422 | 'Campaign assignment rejected' | 'https://photon.codes/docs/problems/sms-campaign-provider-rejected' | undefined;
+};
+
 export type SmsCampaignReconciliationRequiredProblem = {
     code: 'SMS_CAMPAIGN_RECONCILIATION_REQUIRED';
     detail?: string;
@@ -7228,6 +7855,18 @@ export type SmsCampaignReconciliationRequiredProblem = {
     title: 'Campaign reconciliation required';
     type: 'https://photon.codes/docs/problems/sms-campaign-reconciliation-required';
     [key: string]: JsonValue | 'SMS_CAMPAIGN_RECONCILIATION_REQUIRED' | string | never | 409 | 'Campaign reconciliation required' | 'https://photon.codes/docs/problems/sms-campaign-reconciliation-required' | undefined;
+};
+
+export type SmsCampaignRevokedProblem = {
+    code: 'SMS_CAMPAIGN_REVOKED';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 409;
+    title: 'Campaign revoked';
+    type: 'https://photon.codes/docs/problems/sms-campaign-revoked';
+    [key: string]: JsonValue | 'SMS_CAMPAIGN_REVOKED' | string | never | 409 | 'Campaign revoked' | 'https://photon.codes/docs/problems/sms-campaign-revoked' | undefined;
 };
 
 export type SmsCampaignVersionConflictProblem = {
@@ -7248,7 +7887,7 @@ export type SmsGroupContent = {
     type: 'group';
 };
 
-export type SmsGroupContentPart = TextContent | TextUpdateContent | AttachmentContent | VoiceContent | ReactionContent | MessageDeleteContent | MessageReadContent | SpaceParticipantsUpdateContent | SpaceTypingUpdateContent | PollContent | PollVoteContent | PollUpdateContent;
+export type SmsGroupContentPart = TextContent | AttachmentContent | VoiceContent | ReactionContent | MessageDeleteContent | MessageReadContent | SpaceParticipantsUpdateContent | SpaceTypingUpdateContent | SpaceBackgroundUpdateContent | SpaceProfileShareContent | PollContent | PollVoteContent | PollUpdateContent;
 
 export type SmsLineCampaign = {
     id: string;
@@ -7284,7 +7923,7 @@ export type SmsLineUnsupportedProblem = {
 
 export type SmsMessage = ReceivedSmsMessage | DispatchedSmsMessage | AcceptedSmsMessage | DeliveredSmsMessage | FailedSmsMessage;
 
-export type SmsMessageContent = TextContent | TextUpdateContent | AttachmentContent | VoiceContent | ReactionContent | MessageDeleteContent | MessageReadContent | SpaceParticipantsUpdateContent | SpaceTypingUpdateContent | PollContent | PollVoteContent | PollUpdateContent | SmsGroupContent;
+export type SmsMessageContent = TextContent | AttachmentContent | VoiceContent | ReactionContent | MessageDeleteContent | MessageReadContent | SpaceParticipantsUpdateContent | SpaceTypingUpdateContent | SpaceBackgroundUpdateContent | SpaceProfileShareContent | PollContent | PollVoteContent | PollUpdateContent | SmsGroupContent | MessageUpdateContent;
 
 export type SmsSpace = {
     /**
@@ -7375,6 +8014,39 @@ export type SpaceAmbiguousProblem = {
     [key: string]: JsonValue | 'SPACE_AMBIGUOUS' | string | never | 409 | 'Multiple Matching Spaces' | 'https://photon.codes/docs/problems/space-ambiguous' | undefined;
 };
 
+/**
+ * The Space's background after the change.
+ */
+export type SpaceBackground = SpaceBackgroundImage | SpaceBackgroundPreset | SpaceBackgroundNone;
+
+export type SpaceBackgroundImage = {
+    /**
+     * The uploaded image to use.
+     */
+    attachmentId: AttachmentId;
+    type: 'image';
+};
+
+export type SpaceBackgroundNone = {
+    type: 'none';
+};
+
+export type SpaceBackgroundPreset = {
+    preset: SpaceBackgroundPresetName;
+    type: 'preset';
+};
+
+/**
+ * A built-in chat background.
+ */
+export type SpaceBackgroundPresetName = 'skyDusk' | 'skyHaze' | 'skySunset' | 'skyClear' | 'skySunrise' | 'skyDawn' | 'waterLight' | 'waterDark' | 'auroraGreen' | 'auroraPurple' | 'auroraPink' | 'colorMango' | 'colorIce' | 'colorPlum' | 'colorDeepSea' | 'colorGreenApple' | 'colorCherry' | 'colorBubblegum' | 'colorTangerine' | 'colorMagenta' | 'colorLime' | 'colorSilver' | 'colorCarbon' | 'colorStone' | (string & {});
+
+export type SpaceBackgroundUpdateContent = {
+    background: SpaceBackground;
+    metadata?: ContentMetadata;
+    type: 'space.background.update';
+};
+
 export type SpaceCount = {
     count: number;
 };
@@ -7425,6 +8097,11 @@ export type SpaceParticipantsUpdateContent = {
     type: 'space.participants.update';
 };
 
+export type SpaceProfileShareContent = {
+    metadata?: ContentMetadata;
+    type: 'space.profile.share';
+};
+
 export type SpaceRequiresOwnedAgentProblem = {
     code: 'SPACE_REQUIRES_OWNED_AGENT';
     detail?: string;
@@ -7472,13 +8149,6 @@ export type SsoSubscriptionRequiredProblem = {
     [key: string]: JsonValue | 'SSO_SUBSCRIPTION_REQUIRED' | string | never | 412 | 'SSO Subscription Required' | 'https://photon.codes/docs/problems/sso-subscription-required' | undefined;
 };
 
-export type StartEnterpriseLoginRequest = OrganizationEnterpriseLoginRequest | InvitationEnterpriseLoginRequest | RetryEnterpriseLoginRequest;
-
-export type StartEnterpriseLoginResponse = {
-    url: string;
-    [key: string]: unknown;
-};
-
 export type SubscribeSsoBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
 
 export type SubscribeSsoConflictProblem = OrganizationAuthPolicyChangedProblem | OrganizationUnavailableProblem | OrganizationVersionConflictProblem;
@@ -7500,6 +8170,43 @@ export type SubscribeSsoResponse = {
 export type SubscribeSsoUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
 /**
+ * A coupon discounting the subscription now, as a Stripe Discount.
+ */
+export type SubscriptionCoupon = {
+    /**
+     * Amount off in cents of currency: each period when repeating or forever, once when once. Null for a percentage.
+     */
+    amountCents: number | null;
+    /**
+     * The fees it discounts: those of any listed kind or fixed charge. Null when it discounts every fee in its scope.
+     */
+    appliesTo: CouponAppliesTo | null;
+    couponCode: string;
+    /**
+     * Set with amountCents.
+     */
+    currency: string | null;
+    duration: CouponDuration;
+    /**
+     * When it stops discounting, exclusive, ISO 8601: the last discounted day is the day before, in timeZone. Null for once and forever.
+     */
+    endsAt: string | null;
+    name: string;
+    /**
+     * Applied to the paying organization rather than one project: it discounts every subscription the organization pays for, and a fixed amount is one allowance shared across them.
+     */
+    organizationWide: boolean;
+    /**
+     * The promotion code it was redeemed with, or null when operations applied it.
+     */
+    promotionCode: string | null;
+    /**
+     * Percentage off as a decimal, e.g. "50" for half off. Null for an amount.
+     */
+    rate: string | null;
+};
+
+/**
  * State of one category's subscription: the payer's dunning stage while it holds one. Dunning is organization-level, so the stage applies to every category at once, and paying clears it. Entitlements are unaffected at every stage; viewing, paying and releasing resources stay available. Only categories that hold a subscription appear at all; a cancelled category is absent rather than listed as terminated.
  */
 export type SubscriptionStatus = 'active' | 'past_due' | 'restricted' | 'suspended' | 'terminated' | (string & {});
@@ -7516,6 +8223,10 @@ export type SubscriptionTerms = {
      * Category slug, e.g. analytics or messaging.
      */
     category: string;
+    /**
+     * The coupons in effect, oldest redemption first. A project's are its own; the organization's also carry those applied to the organization.
+     */
+    coupons: Array<SubscriptionCoupon>;
     /**
      * ISO 8601.
      */
@@ -7565,17 +8276,35 @@ export type SupportedPlatformConstraint = {
     [key: string]: unknown;
 };
 
+export type SuppressedEmailRecipient = {
+    address: string;
+    index: number;
+    role: EmailRecipientRole;
+};
+
+export type TelegramConfigurationFailedProblem = {
+    code: 'TELEGRAM_CONFIGURATION_FAILED';
+    detail?: string;
+    instance?: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    status: 502;
+    title: 'Telegram Configuration Failed';
+    type: 'https://photon.codes/docs/problems/telegram-configuration-failed';
+    [key: string]: JsonValue | 'TELEGRAM_CONFIGURATION_FAILED' | string | ProblemRemediation | 502 | 'Telegram Configuration Failed' | 'https://photon.codes/docs/problems/telegram-configuration-failed' | undefined;
+};
+
 export type TelegramGroupContent = {
     metadata?: ContentMetadata;
     parts: Array<TelegramGroupContentPart>;
     type: 'group';
 };
 
-export type TelegramGroupContentPart = TextContent | AttachmentContent | VoiceContent;
+export type TelegramGroupContentPart = TextContent | AttachmentContent | VoiceContent | MessageDeleteContent | SpaceTypingUpdateContent;
 
 export type TelegramMessage = ReceivedTelegramMessage | DispatchedTelegramMessage | AcceptedTelegramMessage | DeliveredTelegramMessage | FailedTelegramMessage;
 
-export type TelegramMessageContent = TextContent | AttachmentContent | VoiceContent | TelegramGroupContent;
+export type TelegramMessageContent = TextContent | AttachmentContent | VoiceContent | MessageDeleteContent | SpaceTypingUpdateContent | TelegramGroupContent | MessageUpdateContent;
 
 export type TelegramProjectDeletedProblem = {
     code: 'TELEGRAM_PROJECT_DELETED';
@@ -7602,6 +8331,23 @@ export type TelegramProvisionInProgressProblem = {
     type: 'https://photon.codes/docs/problems/telegram-provision-in-progress';
     [key: string]: JsonValue | 'TELEGRAM_PROVISION_IN_PROGRESS' | string | never | 409 | 'Telegram Provision In Progress' | 'https://photon.codes/docs/problems/telegram-provision-in-progress' | undefined;
 };
+
+export type TelegramReleaseFailedProblem = {
+    code: 'TELEGRAM_RELEASE_FAILED';
+    detail?: string;
+    instance?: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    status: 502;
+    title: 'Telegram Release Failed';
+    type: 'https://photon.codes/docs/problems/telegram-release-failed';
+    [key: string]: JsonValue | 'TELEGRAM_RELEASE_FAILED' | string | ProblemRemediation | 502 | 'Telegram Release Failed' | 'https://photon.codes/docs/problems/telegram-release-failed' | undefined;
+};
+
+/**
+ * How a single attachment is shown. Omitted, Telegram shows its native form: a photo, an animated GIF, an inline video, or the music player for MP3 and M4A; any other file is a file card. "file" sends any attachment as a file card, unchanged. Accepted with attachment or group content.
+ */
+export type TelegramSendAs = 'file';
 
 export type TelegramSpace = {
     /**
@@ -7669,6 +8415,17 @@ export type TelegramUserSnapshot = {
     updatedAt?: never;
 };
 
+export type TenDlcBrandOtp = {
+    attemptsRemaining?: number;
+    brandId: string;
+    expiresAt?: string;
+    phoneLast4: string;
+    retryAfterSeconds?: number;
+    status: TenDlcBrandOtpStatus;
+};
+
+export type TenDlcBrandOtpStatus = 'not_requested' | 'delivery_pending' | 'sent' | 'verified' | 'expired' | 'failed' | 'locked' | (string & {});
+
 export type TerminalBillingOperation = SucceededBillingOperation | FailedBillingOperation;
 
 export type TextContent = {
@@ -7676,13 +8433,6 @@ export type TextContent = {
     metadata?: ContentMetadata;
     text: string;
     type: 'text';
-};
-
-export type TextUpdateContent = {
-    format: string;
-    metadata?: ContentMetadata;
-    text: string;
-    type: 'text.update';
 };
 
 export type TimestampOrderBy = 'created_at' | 'updated_at' | (string & {});
@@ -7707,6 +8457,26 @@ export type TransferOrganizationOwnershipResponse = {
 };
 
 export type TransferOrganizationOwnershipUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
+
+export type TriggerTenDlcBrandOtpBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+
+export type TriggerTenDlcBrandOtpConflictProblem = IdempotencyConflictProblem | InvalidLifecycleStateProblem | OrganizationClosingProblem;
+
+export type TriggerTenDlcBrandOtpForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type TriggerTenDlcBrandOtpGatewayTimeoutProblem = RequestTimeoutProblem | ServiceTimeoutProblem;
+
+export type TriggerTenDlcBrandOtpInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type TriggerTenDlcBrandOtpResponse = {
+    data: TenDlcBrandOtp;
+};
+
+export type TriggerTenDlcBrandOtpServiceUnavailableProblem = ServiceUnavailableProblem | UpstreamUnavailableProblem;
+
+export type TriggerTenDlcBrandOtpTooManyRequestsProblem = RateLimitedProblem | OtpRateLimitedProblem;
+
+export type TriggerTenDlcBrandOtpUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem | UnsupportedEntityTypeProblem | PhoneNotSmsCapableProblem;
 
 export type UnassignSmsLineCampaignBadRequestProblem = SmsCampaignInvalidRequestProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
 
@@ -7822,11 +8592,25 @@ export type UnsupportedContentProblem = {
     [key: string]: JsonValue | 'UNSUPPORTED_CONTENT' | string | never | 422 | 'Unsupported Content' | 'https://photon.codes/docs/problems/unsupported-content' | undefined;
 };
 
-export type UpdateAccountBadRequestProblem = HttpErrorProblem | InvalidArgumentProblem | IdempotencyKeyInvalidProblem | IdempotencyKeyRequiredProblem;
+export type UnsupportedEntityTypeProblem = {
+    code: 'UNSUPPORTED_ENTITY_TYPE';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 422;
+    title: 'Unsupported Entity Type';
+    type: 'https://photon.codes/docs/problems/unsupported-entity-type';
+    [key: string]: JsonValue | 'UNSUPPORTED_ENTITY_TYPE' | string | never | 422 | 'Unsupported Entity Type' | 'https://photon.codes/docs/problems/unsupported-entity-type' | undefined;
+};
+
+export type UpdateAccountBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyInvalidProblem | IdempotencyKeyRequiredProblem | HttpErrorProblem | InvalidApiVersionProblem;
 
 export type UpdateAccountForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type UpdateAccountGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type UpdateAccountGoneProblem = AccountDeletedProblem | RetiredApiVersionProblem;
 
 export type UpdateAccountInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
@@ -8012,7 +8796,7 @@ export type UpdateServiceIdentityResponse = {
 
 export type UpdateServiceIdentityUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
-export type UpdateVoiceProfileConflictProblem = ProjectClosingProblem | VoiceProfileDirectionConfiguredProblem | VoiceProfileVersionConflictProblem | VoiceOutboundOperationPendingProblem;
+export type UpdateVoiceProfileConflictProblem = ProjectClosingProblem | VoiceProfileDirectionConfiguredProblem | VoiceProfileVersionConflictProblem | VoiceOutboundOperationPendingProblem | VoiceDefaultProfileMetadataForbiddenProblem;
 
 export type UpdateVoiceProfileForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -8249,6 +9033,30 @@ export type ValidationIssue = {
 
 export type ValidationLocation = 'body' | 'cookie' | 'form' | 'header' | 'json' | 'param' | 'query' | (string & {});
 
+export type VerifyTenDlcBrandOtpBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+
+export type VerifyTenDlcBrandOtpConflictProblem = IdempotencyConflictProblem | InvalidLifecycleStateProblem | OrganizationClosingProblem | OtpLockedProblem;
+
+export type VerifyTenDlcBrandOtpForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type VerifyTenDlcBrandOtpGatewayTimeoutProblem = RequestTimeoutProblem | ServiceTimeoutProblem;
+
+export type VerifyTenDlcBrandOtpInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type VerifyTenDlcBrandOtpRequest = {
+    otpPin: string;
+};
+
+export type VerifyTenDlcBrandOtpResponse = {
+    data: TenDlcBrandOtp;
+};
+
+export type VerifyTenDlcBrandOtpServiceUnavailableProblem = ServiceUnavailableProblem | UpstreamUnavailableProblem;
+
+export type VerifyTenDlcBrandOtpTooManyRequestsProblem = RateLimitedProblem | OtpRateLimitedProblem;
+
+export type VerifyTenDlcBrandOtpUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem | UnsupportedEntityTypeProblem | PhoneNotSmsCapableProblem | OtpVerificationRejectedProblem;
+
 export type VoiceContent = {
     attachmentId: AttachmentId;
     metadata?: ContentMetadata;
@@ -8291,6 +9099,18 @@ export type VoiceDefaultProfileExistsProblem = {
     [key: string]: JsonValue | 'VOICE_DEFAULT_PROFILE_EXISTS' | string | never | 409 | 'Voice Default Profile Exists' | 'https://photon.codes/docs/problems/voice-default-profile-exists' | undefined;
 };
 
+export type VoiceDefaultProfileMetadataForbiddenProblem = {
+    code: 'VOICE_DEFAULT_PROFILE_METADATA_FORBIDDEN';
+    detail?: string;
+    instance?: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    status: 409;
+    title: 'Voice Default Profile Metadata Forbidden';
+    type: 'https://photon.codes/docs/problems/voice-default-profile-metadata-forbidden';
+    [key: string]: JsonValue | 'VOICE_DEFAULT_PROFILE_METADATA_FORBIDDEN' | string | ProblemRemediation | 409 | 'Voice Default Profile Metadata Forbidden' | 'https://photon.codes/docs/problems/voice-default-profile-metadata-forbidden' | undefined;
+};
+
 export type VoiceDefaultProfileRequiredProblem = {
     code: 'VOICE_DEFAULT_PROFILE_REQUIRED';
     detail?: string;
@@ -8323,6 +9143,10 @@ export type VoiceMetadata = {
      * Server-observed recording duration in milliseconds, when known.
      */
     durationMs?: number;
+    /**
+     * Text the sender's platform transcribed from the recording, when it delivers one.
+     */
+    transcript?: string;
     /**
      * Server-provided normalized waveform samples for optional display.
      */
@@ -8589,6 +9413,18 @@ export type WebhookEventTypeName = string;
 
 export type WebhookEventWildcard = '*';
 
+export type WhatsappAccountDisconnectFailedProblem = {
+    code: 'WHATSAPP_ACCOUNT_DISCONNECT_FAILED';
+    detail?: string;
+    instance?: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    status: 502;
+    title: 'WhatsApp Account Disconnect Failed';
+    type: 'https://photon.codes/docs/problems/whatsapp-account-disconnect-failed';
+    [key: string]: JsonValue | 'WHATSAPP_ACCOUNT_DISCONNECT_FAILED' | string | ProblemRemediation | 502 | 'WhatsApp Account Disconnect Failed' | 'https://photon.codes/docs/problems/whatsapp-account-disconnect-failed' | undefined;
+};
+
 export type WhatsappAccountDisconnectingProblem = {
     code: 'WHATSAPP_ACCOUNT_DISCONNECTING';
     detail?: string;
@@ -8618,6 +9454,18 @@ export type WhatsappAccountProvisioningProblem = {
     title: 'WhatsApp Business Account Has Provisioning Numbers';
     type: 'https://photon.codes/docs/problems/whatsapp-account-provisioning';
     [key: string]: JsonValue | 'WHATSAPP_ACCOUNT_PROVISIONING' | string | never | 409 | 'WhatsApp Business Account Has Provisioning Numbers' | 'https://photon.codes/docs/problems/whatsapp-account-provisioning' | undefined;
+};
+
+export type WhatsappAuthorizationRevokedProblem = {
+    code: 'WHATSAPP_AUTHORIZATION_REVOKED';
+    detail?: string;
+    instance?: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    status: 403;
+    title: 'WhatsApp Authorization Revoked';
+    type: 'https://photon.codes/docs/problems/whatsapp-authorization-revoked';
+    [key: string]: JsonValue | 'WHATSAPP_AUTHORIZATION_REVOKED' | string | ProblemRemediation | 403 | 'WhatsApp Authorization Revoked' | 'https://photon.codes/docs/problems/whatsapp-authorization-revoked' | undefined;
 };
 
 export type WhatsappBusinessAccount = {
@@ -8656,11 +9504,11 @@ export type WhatsappBusinessGroupContent = {
     type: 'group';
 };
 
-export type WhatsappBusinessGroupContentPart = TextContent | TextUpdateContent | AttachmentContent | VoiceContent | ReactionContent | MessageDeleteContent | MessageReadContent | SpaceParticipantsUpdateContent | SpaceTypingUpdateContent | PollContent | PollVoteContent | PollUpdateContent;
+export type WhatsappBusinessGroupContentPart = TextContent | AttachmentContent | VoiceContent | ReactionContent | MessageDeleteContent | MessageReadContent | SpaceParticipantsUpdateContent | SpaceTypingUpdateContent | SpaceBackgroundUpdateContent | SpaceProfileShareContent | PollContent | PollVoteContent | PollUpdateContent;
 
 export type WhatsappBusinessMessage = ReceivedWhatsappBusinessMessage | DispatchedWhatsappBusinessMessage | AcceptedWhatsappBusinessMessage | DeliveredWhatsappBusinessMessage | FailedWhatsappBusinessMessage;
 
-export type WhatsappBusinessMessageContent = TextContent | TextUpdateContent | AttachmentContent | VoiceContent | ReactionContent | MessageDeleteContent | MessageReadContent | SpaceParticipantsUpdateContent | SpaceTypingUpdateContent | PollContent | PollVoteContent | PollUpdateContent | WhatsappBusinessGroupContent;
+export type WhatsappBusinessMessageContent = TextContent | AttachmentContent | VoiceContent | ReactionContent | MessageDeleteContent | MessageReadContent | SpaceParticipantsUpdateContent | SpaceTypingUpdateContent | SpaceBackgroundUpdateContent | SpaceProfileShareContent | PollContent | PollVoteContent | PollUpdateContent | WhatsappBusinessGroupContent | MessageUpdateContent;
 
 export type WhatsappBusinessSpace = {
     /**
@@ -8730,6 +9578,42 @@ export type WhatsappBusinessUserSnapshot = {
     updatedAt?: never;
 };
 
+export type WhatsappCodeExchangeFailedProblem = {
+    code: 'WHATSAPP_CODE_EXCHANGE_FAILED';
+    detail?: string;
+    instance?: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    status: 422;
+    title: 'WhatsApp Code Exchange Failed';
+    type: 'https://photon.codes/docs/problems/whatsapp-code-exchange-failed';
+    [key: string]: JsonValue | 'WHATSAPP_CODE_EXCHANGE_FAILED' | string | ProblemRemediation | 422 | 'WhatsApp Code Exchange Failed' | 'https://photon.codes/docs/problems/whatsapp-code-exchange-failed' | undefined;
+};
+
+export type WhatsappCosmosLineNotSupportedProblem = {
+    code: 'WHATSAPP_COSMOS_LINE_NOT_SUPPORTED';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 422;
+    title: 'WhatsApp Cosmos Line Not Supported';
+    type: 'https://photon.codes/docs/problems/whatsapp-cosmos-line-not-supported';
+    [key: string]: JsonValue | 'WHATSAPP_COSMOS_LINE_NOT_SUPPORTED' | string | never | 422 | 'WhatsApp Cosmos Line Not Supported' | 'https://photon.codes/docs/problems/whatsapp-cosmos-line-not-supported' | undefined;
+};
+
+export type WhatsappDisplayNameConflictProblem = {
+    code: 'WHATSAPP_DISPLAY_NAME_CONFLICT';
+    detail?: string;
+    instance?: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    status: 409;
+    title: 'WhatsApp Display Name Conflict';
+    type: 'https://photon.codes/docs/problems/whatsapp-display-name-conflict';
+    [key: string]: JsonValue | 'WHATSAPP_DISPLAY_NAME_CONFLICT' | string | ProblemRemediation | 409 | 'WhatsApp Display Name Conflict' | 'https://photon.codes/docs/problems/whatsapp-display-name-conflict' | undefined;
+};
+
 export type WhatsappDisplayNameUnavailableProblem = {
     code: 'WHATSAPP_DISPLAY_NAME_UNAVAILABLE';
     detail?: string;
@@ -8742,17 +9626,65 @@ export type WhatsappDisplayNameUnavailableProblem = {
     [key: string]: JsonValue | 'WHATSAPP_DISPLAY_NAME_UNAVAILABLE' | string | never | 422 | 'WhatsApp Display Name Unavailable' | 'https://photon.codes/docs/problems/whatsapp-display-name-unavailable' | undefined;
 };
 
+export type WhatsappEmbeddedSignupPhoneLookupFailedProblem = {
+    code: 'WHATSAPP_EMBEDDED_SIGNUP_PHONE_LOOKUP_FAILED';
+    detail?: string;
+    instance?: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    status: 502;
+    title: 'WhatsApp Embedded Signup Phone Lookup Failed';
+    type: 'https://photon.codes/docs/problems/whatsapp-embedded-signup-phone-lookup-failed';
+    [key: string]: JsonValue | 'WHATSAPP_EMBEDDED_SIGNUP_PHONE_LOOKUP_FAILED' | string | ProblemRemediation | 502 | 'WhatsApp Embedded Signup Phone Lookup Failed' | 'https://photon.codes/docs/problems/whatsapp-embedded-signup-phone-lookup-failed' | undefined;
+};
+
+export type WhatsappEmbeddedSignupPhoneNotFoundProblem = {
+    code: 'WHATSAPP_EMBEDDED_SIGNUP_PHONE_NOT_FOUND';
+    detail?: string;
+    instance?: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    status: 404;
+    title: 'WhatsApp Embedded Signup Phone Not Found';
+    type: 'https://photon.codes/docs/problems/whatsapp-embedded-signup-phone-not-found';
+    [key: string]: JsonValue | 'WHATSAPP_EMBEDDED_SIGNUP_PHONE_NOT_FOUND' | string | ProblemRemediation | 404 | 'WhatsApp Embedded Signup Phone Not Found' | 'https://photon.codes/docs/problems/whatsapp-embedded-signup-phone-not-found' | undefined;
+};
+
+export type WhatsappEmbeddedSignupPhoneNotVerifiedProblem = {
+    code: 'WHATSAPP_EMBEDDED_SIGNUP_PHONE_NOT_VERIFIED';
+    detail?: string;
+    instance?: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    status: 409;
+    title: 'WhatsApp Embedded Signup Phone Not Verified';
+    type: 'https://photon.codes/docs/problems/whatsapp-embedded-signup-phone-not-verified';
+    [key: string]: JsonValue | 'WHATSAPP_EMBEDDED_SIGNUP_PHONE_NOT_VERIFIED' | string | ProblemRemediation | 409 | 'WhatsApp Embedded Signup Phone Not Verified' | 'https://photon.codes/docs/problems/whatsapp-embedded-signup-phone-not-verified' | undefined;
+};
+
+export type WhatsappEmbeddedSignupWabaNotAuthorizedProblem = {
+    code: 'WHATSAPP_EMBEDDED_SIGNUP_WABA_NOT_AUTHORIZED';
+    detail?: string;
+    instance?: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    status: 403;
+    title: 'WhatsApp Embedded Signup WABA Not Authorized';
+    type: 'https://photon.codes/docs/problems/whatsapp-embedded-signup-waba-not-authorized';
+    [key: string]: JsonValue | 'WHATSAPP_EMBEDDED_SIGNUP_WABA_NOT_AUTHORIZED' | string | ProblemRemediation | 403 | 'WhatsApp Embedded Signup WABA Not Authorized' | 'https://photon.codes/docs/problems/whatsapp-embedded-signup-waba-not-authorized' | undefined;
+};
+
 export type WhatsappGroupContent = {
     metadata?: ContentMetadata;
     parts: Array<WhatsappGroupContentPart>;
     type: 'group';
 };
 
-export type WhatsappGroupContentPart = TextContent | TextUpdateContent | AttachmentContent | VoiceContent | ReactionContent | MessageDeleteContent | MessageReadContent | SpaceParticipantsUpdateContent | SpaceTypingUpdateContent | PollContent | PollVoteContent | PollUpdateContent;
+export type WhatsappGroupContentPart = TextContent | AttachmentContent | VoiceContent | ReactionContent | MessageDeleteContent | MessageReadContent | SpaceParticipantsUpdateContent | SpaceTypingUpdateContent | SpaceBackgroundUpdateContent | SpaceProfileShareContent | PollContent | PollVoteContent | PollUpdateContent;
 
 export type WhatsappMessage = ReceivedWhatsappMessage | DispatchedWhatsappMessage | AcceptedWhatsappMessage | DeliveredWhatsappMessage | FailedWhatsappMessage;
 
-export type WhatsappMessageContent = TextContent | TextUpdateContent | AttachmentContent | VoiceContent | ReactionContent | MessageDeleteContent | MessageReadContent | SpaceParticipantsUpdateContent | SpaceTypingUpdateContent | PollContent | PollVoteContent | PollUpdateContent | WhatsappGroupContent;
+export type WhatsappMessageContent = TextContent | AttachmentContent | VoiceContent | ReactionContent | MessageDeleteContent | MessageReadContent | SpaceParticipantsUpdateContent | SpaceTypingUpdateContent | SpaceBackgroundUpdateContent | SpaceProfileShareContent | PollContent | PollVoteContent | PollUpdateContent | WhatsappGroupContent | MessageUpdateContent;
 
 export type WhatsappModeDedicatedProblem = {
     code: 'WHATSAPP_MODE_DEDICATED';
@@ -8766,9 +9698,57 @@ export type WhatsappModeDedicatedProblem = {
     [key: string]: JsonValue | 'WHATSAPP_MODE_DEDICATED' | string | never | 409 | 'WhatsApp Mode Is Dedicated' | 'https://photon.codes/docs/problems/whatsapp-mode-dedicated' | undefined;
 };
 
+export type WhatsappNumberAddRefusedProblem = {
+    code: 'WHATSAPP_NUMBER_ADD_REFUSED';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 422;
+    title: 'WhatsApp Number Add Refused';
+    type: 'https://photon.codes/docs/problems/whatsapp-number-add-refused';
+    [key: string]: JsonValue | 'WHATSAPP_NUMBER_ADD_REFUSED' | string | never | 422 | 'WhatsApp Number Add Refused' | 'https://photon.codes/docs/problems/whatsapp-number-add-refused' | undefined;
+};
+
+export type WhatsappNumberLookupFailedProblem = {
+    code: 'WHATSAPP_NUMBER_LOOKUP_FAILED';
+    detail?: string;
+    instance?: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    status: 502;
+    title: 'WhatsApp Number Lookup Failed';
+    type: 'https://photon.codes/docs/problems/whatsapp-number-lookup-failed';
+    [key: string]: JsonValue | 'WHATSAPP_NUMBER_LOOKUP_FAILED' | string | ProblemRemediation | 502 | 'WhatsApp Number Lookup Failed' | 'https://photon.codes/docs/problems/whatsapp-number-lookup-failed' | undefined;
+};
+
 export type WhatsappOutboundCapacity = '50' | '250' | '1000' | '2000' | '10000' | '100000' | 'UNLIMITED' | 'UNTIERED' | 'UNKNOWN' | (string & {});
 
 export type WhatsappPhoneNumberOwnership = 'photon' | 'meta' | (string & {});
+
+export type WhatsappProjectWabaAlreadyConnectedProblem = {
+    code: 'WHATSAPP_PROJECT_WABA_ALREADY_CONNECTED';
+    detail?: string;
+    instance?: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    status: 409;
+    title: 'WhatsApp Project WABA Already Connected';
+    type: 'https://photon.codes/docs/problems/whatsapp-project-waba-already-connected';
+    [key: string]: JsonValue | 'WHATSAPP_PROJECT_WABA_ALREADY_CONNECTED' | string | ProblemRemediation | 409 | 'WhatsApp Project WABA Already Connected' | 'https://photon.codes/docs/problems/whatsapp-project-waba-already-connected' | undefined;
+};
+
+export type WhatsappRegistrationRefusedProblem = {
+    code: 'WHATSAPP_REGISTRATION_REFUSED';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 422;
+    title: 'WhatsApp Registration Refused';
+    type: 'https://photon.codes/docs/problems/whatsapp-registration-refused';
+    [key: string]: JsonValue | 'WHATSAPP_REGISTRATION_REFUSED' | string | never | 422 | 'WhatsApp Registration Refused' | 'https://photon.codes/docs/problems/whatsapp-registration-refused' | undefined;
+};
 
 export type WhatsappRestrictionStatus = 'FLAGGED' | 'DISABLED' | 'REINSTATED' | 'UNKNOWN' | (string & {});
 
@@ -8796,6 +9776,30 @@ export type WhatsappSenderProvisioningProblem = {
     title: 'WhatsApp Sender Provisioning';
     type: 'https://photon.codes/docs/problems/whatsapp-sender-provisioning';
     [key: string]: JsonValue | 'WHATSAPP_SENDER_PROVISIONING' | string | never | 409 | 'WhatsApp Sender Provisioning' | 'https://photon.codes/docs/problems/whatsapp-sender-provisioning' | undefined;
+};
+
+export type WhatsappSenderReleaseFailedProblem = {
+    code: 'WHATSAPP_SENDER_RELEASE_FAILED';
+    detail?: string;
+    instance?: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    status: 502;
+    title: 'WhatsApp Sender Release Failed';
+    type: 'https://photon.codes/docs/problems/whatsapp-sender-release-failed';
+    [key: string]: JsonValue | 'WHATSAPP_SENDER_RELEASE_FAILED' | string | ProblemRemediation | 502 | 'WhatsApp Sender Release Failed' | 'https://photon.codes/docs/problems/whatsapp-sender-release-failed' | undefined;
+};
+
+export type WhatsappSignupExpiredProblem = {
+    code: 'WHATSAPP_SIGNUP_EXPIRED';
+    detail?: string;
+    instance?: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    status: 410;
+    title: 'WhatsApp Signup Expired';
+    type: 'https://photon.codes/docs/problems/whatsapp-signup-expired';
+    [key: string]: JsonValue | 'WHATSAPP_SIGNUP_EXPIRED' | string | ProblemRemediation | 410 | 'WhatsApp Signup Expired' | 'https://photon.codes/docs/problems/whatsapp-signup-expired' | undefined;
 };
 
 export type WhatsappSpace = {
@@ -8828,6 +9832,18 @@ export type WhatsappSpaceSnapshot = {
     platform: 'whatsapp';
     projectId: ProjectId;
     updatedAt?: never;
+};
+
+export type WhatsappSubscriptionRefusedProblem = {
+    code: 'WHATSAPP_SUBSCRIPTION_REFUSED';
+    detail?: string;
+    instance?: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    status: 502;
+    title: 'WhatsApp Subscription Refused';
+    type: 'https://photon.codes/docs/problems/whatsapp-subscription-refused';
+    [key: string]: JsonValue | 'WHATSAPP_SUBSCRIPTION_REFUSED' | string | ProblemRemediation | 502 | 'WhatsApp Subscription Refused' | 'https://photon.codes/docs/problems/whatsapp-subscription-refused' | undefined;
 };
 
 export type WhatsappUser = {
@@ -8879,6 +9895,42 @@ export type WhatsappVerificationCodeNotFoundProblem = {
     [key: string]: JsonValue | 'WHATSAPP_VERIFICATION_CODE_NOT_FOUND' | string | never | 404 | 'WhatsApp Verification Code Not Found' | 'https://photon.codes/docs/problems/whatsapp-verification-code-not-found' | undefined;
 };
 
+export type WhatsappVerificationRefusedProblem = {
+    code: 'WHATSAPP_VERIFICATION_REFUSED';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 422;
+    title: 'WhatsApp Verification Refused';
+    type: 'https://photon.codes/docs/problems/whatsapp-verification-refused';
+    [key: string]: JsonValue | 'WHATSAPP_VERIFICATION_REFUSED' | string | never | 422 | 'WhatsApp Verification Refused' | 'https://photon.codes/docs/problems/whatsapp-verification-refused' | undefined;
+};
+
+export type WhatsappVerificationRequestRefusedProblem = {
+    code: 'WHATSAPP_VERIFICATION_REQUEST_REFUSED';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 422;
+    title: 'WhatsApp Verification Request Refused';
+    type: 'https://photon.codes/docs/problems/whatsapp-verification-request-refused';
+    [key: string]: JsonValue | 'WHATSAPP_VERIFICATION_REQUEST_REFUSED' | string | never | 422 | 'WhatsApp Verification Request Refused' | 'https://photon.codes/docs/problems/whatsapp-verification-request-refused' | undefined;
+};
+
+export type WhatsappVerificationTimedOutProblem = {
+    code: 'WHATSAPP_VERIFICATION_TIMED_OUT';
+    detail?: string;
+    instance?: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    status: 504;
+    title: 'WhatsApp Verification Timed Out';
+    type: 'https://photon.codes/docs/problems/whatsapp-verification-timed-out';
+    [key: string]: JsonValue | 'WHATSAPP_VERIFICATION_TIMED_OUT' | string | ProblemRemediation | 504 | 'WhatsApp Verification Timed Out' | 'https://photon.codes/docs/problems/whatsapp-verification-timed-out' | undefined;
+};
+
 export type WhatsappVerificationWindowExpiredProblem = {
     code: 'WHATSAPP_VERIFICATION_WINDOW_EXPIRED';
     detail?: string;
@@ -8889,6 +9941,18 @@ export type WhatsappVerificationWindowExpiredProblem = {
     title: 'WhatsApp Verification Window Expired';
     type: 'https://photon.codes/docs/problems/whatsapp-verification-window-expired';
     [key: string]: JsonValue | 'WHATSAPP_VERIFICATION_WINDOW_EXPIRED' | string | never | 422 | 'WhatsApp Verification Window Expired' | 'https://photon.codes/docs/problems/whatsapp-verification-window-expired' | undefined;
+};
+
+export type WhatsappVoipSourceActivatingProblem = {
+    code: 'WHATSAPP_VOIP_SOURCE_ACTIVATING';
+    detail?: string;
+    instance?: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    status: 409;
+    title: 'WhatsApp VoIP Source Activating';
+    type: 'https://photon.codes/docs/problems/whatsapp-voip-source-activating';
+    [key: string]: JsonValue | 'WHATSAPP_VOIP_SOURCE_ACTIVATING' | string | ProblemRemediation | 409 | 'WhatsApp VoIP Source Activating' | 'https://photon.codes/docs/problems/whatsapp-voip-source-activating' | undefined;
 };
 
 export type WhatsappVoipSourceNotEligibleProblem = {
@@ -8915,6 +9979,18 @@ export type WhatsappVoipSourceReleasingProblem = {
     [key: string]: JsonValue | 'WHATSAPP_VOIP_SOURCE_RELEASING' | string | never | 409 | 'WhatsApp VoIP Source Releasing' | 'https://photon.codes/docs/problems/whatsapp-voip-source-releasing' | undefined;
 };
 
+export type WhatsappWabaAlreadyConnectedProblem = {
+    code: 'WHATSAPP_WABA_ALREADY_CONNECTED';
+    detail?: string;
+    instance?: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    status: 409;
+    title: 'WhatsApp WABA Already Connected';
+    type: 'https://photon.codes/docs/problems/whatsapp-waba-already-connected';
+    [key: string]: JsonValue | 'WHATSAPP_WABA_ALREADY_CONNECTED' | string | ProblemRemediation | 409 | 'WhatsApp WABA Already Connected' | 'https://photon.codes/docs/problems/whatsapp-waba-already-connected' | undefined;
+};
+
 export type WhatsappWabaNotConnectedProblem = {
     code: 'WHATSAPP_WABA_NOT_CONNECTED';
     detail?: string;
@@ -8929,12 +10005,22 @@ export type WhatsappWabaNotConnectedProblem = {
 
 export type DeleteAccountData = {
     body?: never;
+    headers?: {
+        /**
+         * Selects the API contract date. Without it, the request is served as 2026-07-01.
+         */
+        'Photon-Version'?: PhotonVersion;
+    };
     path?: never;
     query?: never;
     url: '/v1/account';
 };
 
 export type DeleteAccountErrors = {
+    /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -8953,6 +10039,10 @@ export type DeleteAccountErrors = {
      * ACCOUNT_OWNS_ORGANIZATIONS: Account Owns Organizations
      */
     409: AccountOwnsOrganizationsProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * INVALID_AUTH_CONTEXT: Invalid Authentication Context
      *
@@ -8986,12 +10076,22 @@ export type DeleteAccountResult = DeleteAccountResponses[keyof DeleteAccountResp
 
 export type GetAccountData = {
     body?: never;
+    headers?: {
+        /**
+         * Selects the API contract date. Without it, the request is served as 2026-07-01.
+         */
+        'Photon-Version'?: PhotonVersion;
+    };
     path?: never;
     query?: never;
     url: '/v1/account';
 };
 
 export type GetAccountErrors = {
+    /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -9007,9 +10107,9 @@ export type GetAccountErrors = {
      */
     404: AccountNotFoundProblem;
     /**
-     * ACCOUNT_DELETED: Account Deleted
+     * ACCOUNT_DELETED: Account Deleted; RETIRED_API_VERSION: Retired API Version
      */
-    410: AccountDeletedProblem;
+    410: GetAccountGoneProblem;
     /**
      * INVALID_AUTH_CONTEXT: Invalid Authentication Context
      *
@@ -9045,6 +10145,10 @@ export type UpdateAccountData = {
     body: UpdateAccountRequest;
     headers: {
         /**
+         * Selects the API contract date. Without it, the request is served as 2026-07-01.
+         */
+        'Photon-Version'?: PhotonVersion;
+        /**
          * Identifies one logical mutation across retries.
          */
         'Idempotency-Key': string;
@@ -9056,7 +10160,7 @@ export type UpdateAccountData = {
 
 export type UpdateAccountErrors = {
     /**
-     * HTTP_ERROR: Request Failed; INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required
+     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; HTTP_ERROR: Request Failed; INVALID_API_VERSION: Invalid API Version
      */
     400: UpdateAccountBadRequestProblem;
     /**
@@ -9074,9 +10178,9 @@ export type UpdateAccountErrors = {
      */
     404: AccountNotFoundProblem;
     /**
-     * ACCOUNT_DELETED: Account Deleted
+     * ACCOUNT_DELETED: Account Deleted; RETIRED_API_VERSION: Retired API Version
      */
-    410: AccountDeletedProblem;
+    410: UpdateAccountGoneProblem;
     /**
      * PAYLOAD_TOO_LARGE: Payload Too Large
      */
@@ -9248,6 +10352,10 @@ export type ResetAccountProfilePictureData = {
     body?: never;
     headers: {
         /**
+         * Selects the API contract date. Without it, the request is served as 2026-07-01.
+         */
+        'Photon-Version'?: PhotonVersion;
+        /**
          * Identifies one logical mutation across retries.
          */
         'Idempotency-Key': string;
@@ -9259,7 +10367,7 @@ export type ResetAccountProfilePictureData = {
 
 export type ResetAccountProfilePictureErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required
+     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; INVALID_API_VERSION: Invalid API Version
      */
     400: ResetAccountProfilePictureBadRequestProblem;
     /**
@@ -9277,9 +10385,9 @@ export type ResetAccountProfilePictureErrors = {
      */
     404: AccountNotFoundProblem;
     /**
-     * ACCOUNT_DELETED: Account Deleted
+     * ACCOUNT_DELETED: Account Deleted; RETIRED_API_VERSION: Retired API Version
      */
-    410: AccountDeletedProblem;
+    410: ResetAccountProfilePictureGoneProblem;
     /**
      * PAYLOAD_TOO_LARGE: Payload Too Large
      */
@@ -9323,6 +10431,10 @@ export type CommitAccountProfilePictureData = {
     body: CommitAccountProfilePictureRequest;
     headers: {
         /**
+         * Selects the API contract date. Without it, the request is served as 2026-07-01.
+         */
+        'Photon-Version'?: PhotonVersion;
+        /**
          * Identifies one logical mutation across retries.
          */
         'Idempotency-Key': string;
@@ -9334,7 +10446,7 @@ export type CommitAccountProfilePictureData = {
 
 export type CommitAccountProfilePictureErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required
+     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; HTTP_ERROR: Request Failed; INVALID_API_VERSION: Invalid API Version
      */
     400: CommitAccountProfilePictureBadRequestProblem;
     /**
@@ -9352,9 +10464,9 @@ export type CommitAccountProfilePictureErrors = {
      */
     404: AccountNotFoundProblem;
     /**
-     * ACCOUNT_DELETED: Account Deleted
+     * ACCOUNT_DELETED: Account Deleted; RETIRED_API_VERSION: Retired API Version
      */
-    410: AccountDeletedProblem;
+    410: CommitAccountProfilePictureGoneProblem;
     /**
      * PAYLOAD_TOO_LARGE: Payload Too Large
      */
@@ -9396,6 +10508,12 @@ export type CommitAccountProfilePictureResult = CommitAccountProfilePictureRespo
 
 export type CreateAccountProfilePictureUploadData = {
     body: ProfilePictureUploadRequest;
+    headers?: {
+        /**
+         * Selects the API contract date. Without it, the request is served as 2026-07-01.
+         */
+        'Photon-Version'?: PhotonVersion;
+    };
     path?: never;
     query?: never;
     url: '/v1/account/profile-picture/uploads';
@@ -9403,9 +10521,9 @@ export type CreateAccountProfilePictureUploadData = {
 
 export type CreateAccountProfilePictureUploadErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument
+     * HTTP_ERROR: Request Failed; INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
-    400: InvalidArgumentProblem;
+    400: CreateAccountProfilePictureUploadBadRequestProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -9421,9 +10539,9 @@ export type CreateAccountProfilePictureUploadErrors = {
      */
     404: AccountNotFoundProblem;
     /**
-     * ACCOUNT_DELETED: Account Deleted
+     * ACCOUNT_DELETED: Account Deleted; RETIRED_API_VERSION: Retired API Version
      */
-    410: AccountDeletedProblem;
+    410: CreateAccountProfilePictureUploadGoneProblem;
     /**
      * PAYLOAD_TOO_LARGE: Payload Too Large
      */
@@ -9465,12 +10583,22 @@ export type CreateAccountProfilePictureUploadResult = CreateAccountProfilePictur
 
 export type ListAccountServiceKeysData = {
     body?: never;
+    headers?: {
+        /**
+         * Selects the API contract date. Without it, the request is served as 2026-07-01.
+         */
+        'Photon-Version'?: PhotonVersion;
+    };
     path?: never;
     query?: never;
     url: '/v1/account/service-keys';
 };
 
 export type ListAccountServiceKeysErrors = {
+    /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -9486,9 +10614,9 @@ export type ListAccountServiceKeysErrors = {
      */
     404: AccountNotFoundProblem;
     /**
-     * ACCOUNT_DELETED: Account Deleted
+     * ACCOUNT_DELETED: Account Deleted; RETIRED_API_VERSION: Retired API Version
      */
-    410: AccountDeletedProblem;
+    410: ListAccountServiceKeysGoneProblem;
     /**
      * INVALID_AUTH_CONTEXT: Invalid Authentication Context
      *
@@ -9524,6 +10652,10 @@ export type CreateAccountServiceKeyData = {
     body: CreateAccountServiceKeyRequest;
     headers: {
         /**
+         * Selects the API contract date. Without it, the request is served as 2026-07-01.
+         */
+        'Photon-Version'?: PhotonVersion;
+        /**
          * Identifies one logical mutation across retries.
          */
         'Idempotency-Key': string;
@@ -9535,7 +10667,7 @@ export type CreateAccountServiceKeyData = {
 
 export type CreateAccountServiceKeyErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required
+     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; HTTP_ERROR: Request Failed; INVALID_API_VERSION: Invalid API Version
      */
     400: CreateAccountServiceKeyBadRequestProblem;
     /**
@@ -9557,9 +10689,9 @@ export type CreateAccountServiceKeyErrors = {
      */
     409: AccountServiceKeyLimitReachedProblem;
     /**
-     * ACCOUNT_DELETED: Account Deleted
+     * ACCOUNT_DELETED: Account Deleted; RETIRED_API_VERSION: Retired API Version
      */
-    410: AccountDeletedProblem;
+    410: CreateAccountServiceKeyGoneProblem;
     /**
      * PAYLOAD_TOO_LARGE: Payload Too Large
      */
@@ -9603,6 +10735,10 @@ export type RevokeAccountServiceKeyData = {
     body?: never;
     headers: {
         /**
+         * Selects the API contract date. Without it, the request is served as 2026-07-01.
+         */
+        'Photon-Version'?: PhotonVersion;
+        /**
          * Identifies one logical mutation across retries.
          */
         'Idempotency-Key': string;
@@ -9616,7 +10752,7 @@ export type RevokeAccountServiceKeyData = {
 
 export type RevokeAccountServiceKeyErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required
+     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; INVALID_API_VERSION: Invalid API Version
      */
     400: RevokeAccountServiceKeyBadRequestProblem;
     /**
@@ -9634,9 +10770,9 @@ export type RevokeAccountServiceKeyErrors = {
      */
     404: RevokeAccountServiceKeyNotFoundProblem;
     /**
-     * ACCOUNT_DELETED: Account Deleted
+     * ACCOUNT_DELETED: Account Deleted; RETIRED_API_VERSION: Retired API Version
      */
-    410: AccountDeletedProblem;
+    410: RevokeAccountServiceKeyGoneProblem;
     /**
      * PAYLOAD_TOO_LARGE: Payload Too Large
      */
@@ -9744,31 +10880,6 @@ export type DeviceTokenResponses = {
 };
 
 export type DeviceTokenResult = DeviceTokenResponses[keyof DeviceTokenResponses];
-
-export type StartEnterpriseLoginData = {
-    body: StartEnterpriseLoginRequest;
-    path?: never;
-    query?: never;
-    url: '/v1/auth/login/enrollment';
-};
-
-export type StartEnterpriseLoginErrors = {
-    /**
-     * INVALID_RETURN_TO: Invalid Return To
-     */
-    400: InvalidReturnToProblem;
-};
-
-export type StartEnterpriseLoginError = StartEnterpriseLoginErrors[keyof StartEnterpriseLoginErrors];
-
-export type StartEnterpriseLoginResponses = {
-    /**
-     * Company SSO URL when the target has a ready connection, otherwise the ordinary Account login URL. The response never says which, and access is decided only after authentication.
-     */
-    200: StartEnterpriseLoginResponse;
-};
-
-export type StartEnterpriseLoginResult = StartEnterpriseLoginResponses[keyof StartEnterpriseLoginResponses];
 
 export type ListOauthScopesData = {
     body?: never;
@@ -10561,75 +11672,6 @@ export type GetCurrentOrganizationResponses = {
 
 export type GetCurrentOrganizationResult = GetCurrentOrganizationResponses[keyof GetCurrentOrganizationResponses];
 
-export type EnsureInitialOrganizationData = {
-    body?: never;
-    headers: {
-        /**
-         * Identifies one logical mutation across retries.
-         */
-        'Idempotency-Key': string;
-    };
-    path?: never;
-    query?: never;
-    url: '/v1/organizations/initial';
-};
-
-export type EnsureInitialOrganizationErrors = {
-    /**
-     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
-     */
-    400: EnsureInitialOrganizationBadRequestProblem;
-    /**
-     * NOT_AUTHENTICATED: Not Authenticated
-     */
-    401: NotAuthenticatedProblem;
-    /**
-     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
-     *
-     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
-     */
-    403: EnsureInitialOrganizationForbiddenProblem;
-    /**
-     * ACCOUNT_NOT_FOUND: Account Not Found
-     */
-    404: AccountNotFoundProblem;
-    /**
-     * ACCOUNT_CLOSING: Account Is Closing
-     */
-    409: AccountClosingProblem;
-    /**
-     * IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
-     */
-    422: IdempotencyKeyReusedProblem;
-    /**
-     * INTERNAL_ERROR: Internal Server Error
-     */
-    500: InternalErrorProblem;
-    /**
-     * UPSTREAM_FAILURE: Upstream Service Failure
-     */
-    502: UpstreamFailureProblem;
-    /**
-     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
-     */
-    503: UpstreamUnavailableProblem;
-    /**
-     * UPSTREAM_TIMEOUT: Upstream Service Timeout; REQUEST_TIMEOUT: Request Timeout
-     */
-    504: EnsureInitialOrganizationGatewayTimeoutProblem;
-};
-
-export type EnsureInitialOrganizationError = EnsureInitialOrganizationErrors[keyof EnsureInitialOrganizationErrors];
-
-export type EnsureInitialOrganizationResponses = {
-    /**
-     * Creates the caller's first owned organization, once per account. Never recreated after it is deleted or transferred.
-     */
-    200: EnsureInitialOrganizationResponse;
-};
-
-export type EnsureInitialOrganizationResult = EnsureInitialOrganizationResponses[keyof EnsureInitialOrganizationResponses];
-
 export type AcceptOrganizationInvitationData = {
     body: AcceptOrganizationInvitationRequest;
     headers: {
@@ -11243,9 +12285,11 @@ export type GetOrganizationBillingOverviewErrors = {
      */
     502: UpstreamFailureProblem;
     /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable; BILLING_ENTITLEMENTS_PENDING: Billing Entitlements Pending
+     *
      * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
      */
-    503: UpstreamUnavailableProblem;
+    503: GetOrganizationBillingOverviewServiceUnavailableProblem;
     /**
      * REQUEST_TIMEOUT: Request Timeout; UPSTREAM_TIMEOUT: Upstream Service Timeout
      */
@@ -11629,9 +12673,9 @@ export type PreviewOrganizationChangeErrors = {
      */
     403: PreviewOrganizationChangeForbiddenProblem;
     /**
-     * FAILED_PRECONDITION: Failed Precondition
+     * FAILED_PRECONDITION: Failed Precondition; PROMOTION_CODE_REJECTED: Promotion Code Rejected
      */
-    409: FailedPreconditionProblem;
+    409: PreviewOrganizationChangeConflictProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -11696,9 +12740,9 @@ export type PreviewProjectChangeErrors = {
      */
     403: PreviewProjectChangeForbiddenProblem;
     /**
-     * FAILED_PRECONDITION: Failed Precondition
+     * FAILED_PRECONDITION: Failed Precondition; PROMOTION_CODE_REJECTED: Promotion Code Rejected
      */
-    409: FailedPreconditionProblem;
+    409: PreviewProjectChangeConflictProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -11762,6 +12806,10 @@ export type ChangePlanErrors = {
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
+    /**
+     * ENTITLEMENT_REQUIRED: Entitlement Required
+     */
+    402: EntitlementRequiredProblem;
     /**
      * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
      *
@@ -11864,9 +12912,11 @@ export type GetEffectiveTermsErrors = {
      */
     502: UpstreamFailureProblem;
     /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable; BILLING_ENTITLEMENTS_PENDING: Billing Entitlements Pending
+     *
      * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
      */
-    503: UpstreamUnavailableProblem;
+    503: GetEffectiveTermsServiceUnavailableProblem;
     /**
      * REQUEST_TIMEOUT: Request Timeout; UPSTREAM_TIMEOUT: Upstream Service Timeout
      */
@@ -11927,9 +12977,11 @@ export type GetOrganizationTermsErrors = {
      */
     502: UpstreamFailureProblem;
     /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable; BILLING_ENTITLEMENTS_PENDING: Billing Entitlements Pending; BILLING_NOT_PROVISIONED: Billing Not Provisioned
+     *
      * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
      */
-    503: UpstreamUnavailableProblem;
+    503: GetOrganizationTermsServiceUnavailableProblem;
     /**
      * REQUEST_TIMEOUT: Request Timeout; UPSTREAM_TIMEOUT: Upstream Service Timeout
      */
@@ -14451,6 +15503,240 @@ export type TransferOrganizationOwnershipResponses = {
 
 export type TransferOrganizationOwnershipResult = TransferOrganizationOwnershipResponses[keyof TransferOrganizationOwnershipResponses];
 
+export type GetTenDlcBrandOtpData = {
+    body?: never;
+    path: {
+        brandId: string;
+        organization_id: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organization_id}/10dlc/brands/{brandId}/otp';
+};
+
+export type GetTenDlcBrandOtpErrors = {
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: GetTenDlcBrandOtpForbiddenProblem;
+    /**
+     * BRAND_NOT_FOUND: Brand Not Found
+     */
+    404: BrandNotFoundProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed
+     */
+    422: ValidationFailedProblem;
+    /**
+     * RATE_LIMITED: Too Many Requests
+     */
+    429: RateLimitedProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: GetTenDlcBrandOtpInternalServerErrorProblem;
+    /**
+     * SERVICE_FAILURE: Service Failure
+     */
+    502: ServiceFailureProblem;
+    /**
+     * SERVICE_UNAVAILABLE: Service Temporarily Unavailable
+     *
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: GetTenDlcBrandOtpServiceUnavailableProblem;
+    /**
+     * REQUEST_TIMEOUT: Request Timeout; SERVICE_TIMEOUT: Service Timeout
+     */
+    504: GetTenDlcBrandOtpGatewayTimeoutProblem;
+};
+
+export type GetTenDlcBrandOtpError = GetTenDlcBrandOtpErrors[keyof GetTenDlcBrandOtpErrors];
+
+export type GetTenDlcBrandOtpResponses = {
+    /**
+     * The redacted OTP status.
+     */
+    200: GetTenDlcBrandOtpResponse;
+};
+
+export type GetTenDlcBrandOtpResult = GetTenDlcBrandOtpResponses[keyof GetTenDlcBrandOtpResponses];
+
+export type TriggerTenDlcBrandOtpData = {
+    body?: never;
+    headers: {
+        /**
+         * Identifies one logical mutation across retries.
+         */
+        'Idempotency-Key': string;
+    };
+    path: {
+        brandId: string;
+        organization_id: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organization_id}/10dlc/brands/{brandId}/otp';
+};
+
+export type TriggerTenDlcBrandOtpErrors = {
+    /**
+     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     */
+    400: TriggerTenDlcBrandOtpBadRequestProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: TriggerTenDlcBrandOtpForbiddenProblem;
+    /**
+     * BRAND_NOT_FOUND: Brand Not Found
+     */
+    404: BrandNotFoundProblem;
+    /**
+     * IDEMPOTENCY_CONFLICT: Idempotency Conflict; INVALID_LIFECYCLE_STATE: Invalid Lifecycle State; ORGANIZATION_CLOSING: Organization is closing
+     */
+    409: TriggerTenDlcBrandOtpConflictProblem;
+    /**
+     * PAYLOAD_TOO_LARGE: Payload Too Large
+     */
+    413: PayloadTooLargeProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused; UNSUPPORTED_ENTITY_TYPE: Unsupported Entity Type; PHONE_NOT_SMS_CAPABLE: Phone Is Not SMS Capable
+     */
+    422: TriggerTenDlcBrandOtpUnprocessableEntityProblem;
+    /**
+     * RATE_LIMITED: Too Many Requests; OTP_RATE_LIMITED: OTP Rate Limited
+     */
+    429: TriggerTenDlcBrandOtpTooManyRequestsProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: TriggerTenDlcBrandOtpInternalServerErrorProblem;
+    /**
+     * SERVICE_FAILURE: Service Failure
+     */
+    502: ServiceFailureProblem;
+    /**
+     * SERVICE_UNAVAILABLE: Service Temporarily Unavailable
+     *
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: TriggerTenDlcBrandOtpServiceUnavailableProblem;
+    /**
+     * REQUEST_TIMEOUT: Request Timeout; SERVICE_TIMEOUT: Service Timeout
+     */
+    504: TriggerTenDlcBrandOtpGatewayTimeoutProblem;
+};
+
+export type TriggerTenDlcBrandOtpError = TriggerTenDlcBrandOtpErrors[keyof TriggerTenDlcBrandOtpErrors];
+
+export type TriggerTenDlcBrandOtpResponses = {
+    /**
+     * OTP delivery was accepted.
+     */
+    202: TriggerTenDlcBrandOtpResponse;
+};
+
+export type TriggerTenDlcBrandOtpResult = TriggerTenDlcBrandOtpResponses[keyof TriggerTenDlcBrandOtpResponses];
+
+export type VerifyTenDlcBrandOtpData = {
+    body: VerifyTenDlcBrandOtpRequest;
+    headers: {
+        /**
+         * Identifies one logical mutation across retries.
+         */
+        'Idempotency-Key': string;
+    };
+    path: {
+        brandId: string;
+        organization_id: string;
+    };
+    query?: never;
+    url: '/v1/organizations/{organization_id}/10dlc/brands/{brandId}/otp';
+};
+
+export type VerifyTenDlcBrandOtpErrors = {
+    /**
+     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     */
+    400: VerifyTenDlcBrandOtpBadRequestProblem;
+    /**
+     * NOT_AUTHENTICATED: Not Authenticated
+     */
+    401: NotAuthenticatedProblem;
+    /**
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     *
+     * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
+     */
+    403: VerifyTenDlcBrandOtpForbiddenProblem;
+    /**
+     * BRAND_NOT_FOUND: Brand Not Found
+     */
+    404: BrandNotFoundProblem;
+    /**
+     * IDEMPOTENCY_CONFLICT: Idempotency Conflict; INVALID_LIFECYCLE_STATE: Invalid Lifecycle State; ORGANIZATION_CLOSING: Organization is closing; OTP_LOCKED: OTP Locked
+     */
+    409: VerifyTenDlcBrandOtpConflictProblem;
+    /**
+     * PAYLOAD_TOO_LARGE: Payload Too Large
+     */
+    413: PayloadTooLargeProblem;
+    /**
+     * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused; UNSUPPORTED_ENTITY_TYPE: Unsupported Entity Type; PHONE_NOT_SMS_CAPABLE: Phone Is Not SMS Capable; OTP_VERIFICATION_REJECTED: OTP Verification Rejected
+     */
+    422: VerifyTenDlcBrandOtpUnprocessableEntityProblem;
+    /**
+     * RATE_LIMITED: Too Many Requests; OTP_RATE_LIMITED: OTP Rate Limited
+     */
+    429: VerifyTenDlcBrandOtpTooManyRequestsProblem;
+    /**
+     * INVALID_AUTH_CONTEXT: Invalid Authentication Context
+     *
+     * INTERNAL_ERROR: Internal Server Error
+     */
+    500: VerifyTenDlcBrandOtpInternalServerErrorProblem;
+    /**
+     * SERVICE_FAILURE: Service Failure
+     */
+    502: ServiceFailureProblem;
+    /**
+     * SERVICE_UNAVAILABLE: Service Temporarily Unavailable
+     *
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
+     */
+    503: VerifyTenDlcBrandOtpServiceUnavailableProblem;
+    /**
+     * REQUEST_TIMEOUT: Request Timeout; SERVICE_TIMEOUT: Service Timeout
+     */
+    504: VerifyTenDlcBrandOtpGatewayTimeoutProblem;
+};
+
+export type VerifyTenDlcBrandOtpError = VerifyTenDlcBrandOtpErrors[keyof VerifyTenDlcBrandOtpErrors];
+
+export type VerifyTenDlcBrandOtpResponses = {
+    /**
+     * The updated redacted OTP status.
+     */
+    200: VerifyTenDlcBrandOtpResponse;
+};
+
+export type VerifyTenDlcBrandOtpResult = VerifyTenDlcBrandOtpResponses[keyof VerifyTenDlcBrandOtpResponses];
+
 export type ListAttachmentsData = {
     body?: never;
     path: {
@@ -14647,6 +15933,10 @@ export type GetAttachmentErrors = {
      */
     404: AttachmentNotFoundProblem;
     /**
+     * ATTACHMENT_NOT_READY: Attachment Not Ready
+     */
+    409: AttachmentNotReadyProblem;
+    /**
      * VALIDATION_FAILED: Request Validation Failed
      */
     422: ValidationFailedProblem;
@@ -14764,7 +16054,7 @@ export type ListMessagesData = {
          */
         direction?: MessageDirection;
         /**
-         * Comma-separated content types to exclude from resource-scoped Message lists and counts. Requires resourceId. A group is excluded when group is selected or all of its parts are excluded; retained Messages are unchanged. Supported values: attachment, group, message.delete, message.read, poll, poll.update, poll.vote, reaction, space.participants.update, space.typing.update, text, text.update, voice.
+         * Comma-separated content types to exclude from resource-scoped Message lists and counts. Requires resourceId. A group is excluded when group is selected or all of its parts are excluded; retained Messages are unchanged. Supported values: attachment, group, message.delete, message.read, message.update, poll, poll.update, poll.vote, reaction, space.background.update, space.participants.update, space.profile.share, space.typing.update, text, voice.
          */
         excludeContentTypes?: string;
         /**
@@ -14897,7 +16187,7 @@ export type SendMessageErrors = {
      */
     404: SendMessageNotFoundProblem;
     /**
-     * ATTACHMENT_NOT_READY: Attachment Not Ready; SENDER_NOT_SENDABLE: Sender Not Sendable; SMS_CAMPAIGN_NOT_ELIGIBLE: SMS Campaign Not Eligible; SPACE_NOT_SENDABLE: Space Not Sendable
+     * ATTACHMENT_NOT_READY: Attachment Not Ready; SENDER_NOT_SENDABLE: Sender Not Sendable; SMS_CAMPAIGN_NOT_ELIGIBLE: SMS Campaign Not Eligible; EMAIL_ADMISSION_ENDED: Email Admission Ended; SPACE_NOT_SENDABLE: Space Not Sendable
      */
     409: SendMessageConflictProblem;
     /**
@@ -14905,7 +16195,7 @@ export type SendMessageErrors = {
      */
     413: PayloadTooLargeProblem;
     /**
-     * SHARED_LINE_GROUP_UNSUPPORTED: Shared Line Group Unsupported; VALIDATION_FAILED: Request Validation Failed; INVALID_CONTENT: Invalid Content; UNSUPPORTED_CONTENT: Unsupported Content; MESSAGE_TOO_LONG: Message Too Long; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
+     * EMAIL_RECIPIENT_SUPPRESSED: Email Recipient Suppressed; OPERATION_UNAVAILABLE: Operation Unavailable; SHARED_LINE_GROUP_UNSUPPORTED: Shared Line Group Unsupported; VALIDATION_FAILED: Request Validation Failed; INVALID_CONTENT: Invalid Content; UNSUPPORTED_CONTENT: Unsupported Content; MESSAGE_TOO_LONG: Message Too Long; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
      */
     422: SendMessageUnprocessableEntityProblem;
     /**
@@ -14958,7 +16248,7 @@ export type CountMessagesData = {
          */
         direction?: MessageDirection;
         /**
-         * Comma-separated content types to exclude from resource-scoped Message lists and counts. Requires resourceId. A group is excluded when group is selected or all of its parts are excluded; retained Messages are unchanged. Supported values: attachment, group, message.delete, message.read, poll, poll.update, poll.vote, reaction, space.participants.update, space.typing.update, text, text.update, voice.
+         * Comma-separated content types to exclude from resource-scoped Message lists and counts. Requires resourceId. A group is excluded when group is selected or all of its parts are excluded; retained Messages are unchanged. Supported values: attachment, group, message.delete, message.read, message.update, poll, poll.update, poll.vote, reaction, space.background.update, space.participants.update, space.profile.share, space.typing.update, text, voice.
          */
         excludeContentTypes?: string;
         /**
@@ -15267,7 +16557,7 @@ export type ConnectEmailDomainErrors = {
      */
     403: ConnectEmailDomainForbiddenProblem;
     /**
-     * PROJECT_CLOSING: Project Is Closing; EMAIL_DOMAIN_ALREADY_CONNECTED: Email Domain Already Connected; EMAIL_DOMAIN_CAP_EXCEEDED: Email Domain Cap Exceeded
+     * PROJECT_CLOSING: Project Is Closing; PROJECT_INITIALIZING: Project Initializing; EMAIL_DOMAIN_ALREADY_CONNECTED: Email Domain Already Connected; EMAIL_DOMAIN_CAP_EXCEEDED: Email Domain Cap Exceeded
      */
     409: ConnectEmailDomainConflictProblem;
     /**
@@ -15630,6 +16920,10 @@ export type GetProjectImessagePlatformErrors = {
      */
     403: GetProjectImessagePlatformForbiddenProblem;
     /**
+     * PROJECT_INITIALIZING: Project Initializing
+     */
+    409: ProjectInitializingProblem;
+    /**
      * VALIDATION_FAILED: Request Validation Failed
      */
     422: ValidationFailedProblem;
@@ -15760,7 +17054,7 @@ export type CreateSharedLineAssignmentErrors = {
      */
     403: CreateSharedLineAssignmentForbiddenProblem;
     /**
-     * PROJECT_CLOSING: Project Is Closing; IMESSAGE_MODE_DEDICATED: iMessage Mode Is Dedicated; SHARED_LINE_CAP_EXCEEDED: Shared Line Cap Exceeded; ASSIGNMENT_EXISTS: Assignment Exists
+     * PROJECT_INITIALIZING: Project Initializing; PROJECT_CLOSING: Project Is Closing; IMESSAGE_MODE_DEDICATED: iMessage Mode Is Dedicated; SHARED_LINE_CAP_EXCEEDED: Shared Line Cap Exceeded; ASSIGNMENT_EXISTS: Assignment Exists
      */
     409: CreateSharedLineAssignmentConflictProblem;
     /**
@@ -15933,7 +17227,7 @@ export type GetSharedLineAssignmentResponses = {
 export type GetSharedLineAssignmentResult = GetSharedLineAssignmentResponses[keyof GetSharedLineAssignmentResponses];
 
 export type ProvisionImessageDedicatedLineData = {
-    body?: never;
+    body: ProvisionImessageDedicatedLineRequest;
     headers: {
         /**
          * Identifies one logical mutation across retries.
@@ -15957,9 +17251,9 @@ export type ProvisionImessageDedicatedLineErrors = {
      */
     401: NotAuthenticatedProblem;
     /**
-     * ENTITLEMENT_REQUIRED: Entitlement Required
+     * ENTITLEMENT_REQUIRED: Entitlement Required; ENTERPRISE_PLAN_REQUIRED: Enterprise Plan Required
      */
-    402: EntitlementRequiredProblem;
+    402: ProvisionImessageDedicatedLinePaymentRequiredProblem;
     /**
      * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
      *
@@ -15967,9 +17261,9 @@ export type ProvisionImessageDedicatedLineErrors = {
      */
     403: ProvisionImessageDedicatedLineForbiddenProblem;
     /**
-     * PROJECT_CLOSING: Project Is Closing
+     * PROMOTION_CODE_REJECTED: Promotion Code Rejected; PROJECT_CLOSING: Project Is Closing; PROJECT_INITIALIZING: Project Initializing
      */
-    409: ProjectClosingProblem;
+    409: ProvisionImessageDedicatedLineConflictProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
      */
@@ -16286,6 +17580,9 @@ export type ListResourcesData = {
         ability?: string;
         pageSize?: number;
         pageToken?: string;
+        /**
+         * Comma-separated lifecycle states: unallocated, active or retired. active selects all owned, non-retired resources, including numbers whose detail.activationState is activating.
+         */
         state?: string;
         type?: string;
     };
@@ -16891,9 +18188,9 @@ export type PurchaseSmsNumberErrors = {
      */
     403: PurchaseSmsNumberForbiddenProblem;
     /**
-     * PROJECT_CLOSING: Project Is Closing
+     * PROJECT_CLOSING: Project Is Closing; PROJECT_INITIALIZING: Project Initializing
      */
-    409: ProjectClosingProblem;
+    409: PurchaseSmsNumberConflictProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
      */
@@ -17881,7 +19178,7 @@ export type UpdateVoiceProfileErrors = {
      */
     404: VoiceProfileNotFoundProblem;
     /**
-     * PROJECT_CLOSING: Project Is Closing; VOICE_PROFILE_DIRECTION_CONFIGURED: Voice Profile Direction Configured; VOICE_PROFILE_VERSION_CONFLICT: Voice Profile Version Conflict; VOICE_OUTBOUND_OPERATION_PENDING: Voice Outbound Operation Pending
+     * PROJECT_CLOSING: Project Is Closing; VOICE_PROFILE_DIRECTION_CONFIGURED: Voice Profile Direction Configured; VOICE_PROFILE_VERSION_CONFLICT: Voice Profile Version Conflict; VOICE_OUTBOUND_OPERATION_PENDING: Voice Outbound Operation Pending; VOICE_DEFAULT_PROFILE_METADATA_FORBIDDEN: Voice Default Profile Metadata Forbidden
      */
     409: UpdateVoiceProfileConflictProblem;
     /**
@@ -18311,7 +19608,7 @@ export type ConfigureVoiceProfileOutboundErrors = {
      */
     404: VoiceProfileNotFoundProblem;
     /**
-     * PROJECT_CLOSING: Project Is Closing; VOICE_PROFILE_VERSION_CONFLICT: Voice Profile Version Conflict; VOICE_OUTBOUND_OPERATION_PENDING: Voice Outbound Operation Pending; VOICE_OUTBOUND_CONFIGURED: Voice Outbound Already Configured
+     * PROJECT_CLOSING: Project Is Closing; PROJECT_INITIALIZING: Project Initializing; VOICE_PROFILE_VERSION_CONFLICT: Voice Profile Version Conflict; VOICE_OUTBOUND_OPERATION_PENDING: Voice Outbound Operation Pending; VOICE_OUTBOUND_CONFIGURED: Voice Outbound Already Configured
      */
     409: ConfigureVoiceProfileOutboundConflictProblem;
     /**
@@ -18455,6 +19752,10 @@ export type GetProjectWhatsappPlatformErrors = {
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
     403: GetProjectWhatsappPlatformForbiddenProblem;
+    /**
+     * PROJECT_INITIALIZING: Project Initializing
+     */
+    409: ProjectInitializingProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -18738,7 +20039,7 @@ export type CreateWhatsappVoipSenderErrors = {
      */
     404: CreateWhatsappVoipSenderNotFoundProblem;
     /**
-     * PROJECT_CLOSING: Project Is Closing; WHATSAPP_ACCOUNT_DISCONNECTING: WhatsApp Business Account Disconnecting; WHATSAPP_ACCOUNT_PROVISIONING: WhatsApp Business Account Has Provisioning Numbers; WHATSAPP_SENDER_CONNECTED: WhatsApp Sender Connected; WHATSAPP_SENDER_PROVISIONING: WhatsApp Sender Provisioning; WHATSAPP_VOIP_SOURCE_RELEASING: WhatsApp VoIP Source Releasing
+     * PROJECT_CLOSING: Project Is Closing; PROJECT_INITIALIZING: Project Initializing; WHATSAPP_ACCOUNT_DISCONNECTING: WhatsApp Business Account Disconnecting; WHATSAPP_ACCOUNT_PROVISIONING: WhatsApp Business Account Has Provisioning Numbers; WHATSAPP_VOIP_SOURCE_ACTIVATING: WhatsApp VoIP Source Activating; WHATSAPP_SENDER_CONNECTED: WhatsApp Sender Connected; WHATSAPP_SENDER_PROVISIONING: WhatsApp Sender Provisioning; WHATSAPP_VOIP_SOURCE_RELEASING: WhatsApp VoIP Source Releasing
      */
     409: CreateWhatsappVoipSenderConflictProblem;
     /**
@@ -18942,7 +20243,7 @@ export type CreateWhatsappSharedLineAssignmentErrors = {
      */
     403: CreateWhatsappSharedLineAssignmentForbiddenProblem;
     /**
-     * PROJECT_CLOSING: Project Is Closing; WHATSAPP_MODE_DEDICATED: WhatsApp Mode Is Dedicated; SHARED_LINE_CAP_EXCEEDED: Shared Line Cap Exceeded; ASSIGNMENT_EXISTS: Assignment Exists
+     * PROJECT_INITIALIZING: Project Initializing; PROJECT_CLOSING: Project Is Closing; WHATSAPP_MODE_DEDICATED: WhatsApp Mode Is Dedicated; SHARED_LINE_CAP_EXCEEDED: Shared Line Cap Exceeded; ASSIGNMENT_EXISTS: Assignment Exists
      */
     409: CreateWhatsappSharedLineAssignmentConflictProblem;
     /**
@@ -19115,7 +20416,7 @@ export type GetWhatsappSharedLineAssignmentResponses = {
 export type GetWhatsappSharedLineAssignmentResult = GetWhatsappSharedLineAssignmentResponses[keyof GetWhatsappSharedLineAssignmentResponses];
 
 export type ProvisionWhatsappDedicatedLineData = {
-    body?: never;
+    body: ProvisionWhatsappDedicatedLineRequest;
     headers: {
         /**
          * Identifies one logical mutation across retries.
@@ -19139,9 +20440,9 @@ export type ProvisionWhatsappDedicatedLineErrors = {
      */
     401: NotAuthenticatedProblem;
     /**
-     * ENTITLEMENT_REQUIRED: Entitlement Required
+     * ENTITLEMENT_REQUIRED: Entitlement Required; ENTERPRISE_PLAN_REQUIRED: Enterprise Plan Required
      */
-    402: EntitlementRequiredProblem;
+    402: ProvisionWhatsappDedicatedLinePaymentRequiredProblem;
     /**
      * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
      *
@@ -19149,9 +20450,9 @@ export type ProvisionWhatsappDedicatedLineErrors = {
      */
     403: ProvisionWhatsappDedicatedLineForbiddenProblem;
     /**
-     * PROJECT_CLOSING: Project Is Closing
+     * PROMOTION_CODE_REJECTED: Promotion Code Rejected; PROJECT_CLOSING: Project Is Closing; PROJECT_INITIALIZING: Project Initializing
      */
-    409: ProjectClosingProblem;
+    409: ProvisionWhatsappDedicatedLineConflictProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
      */
@@ -20945,9 +22246,11 @@ export type GetBillingOverviewErrors = {
      */
     502: UpstreamFailureProblem;
     /**
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable; BILLING_ENTITLEMENTS_PENDING: Billing Entitlements Pending
+     *
      * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
      */
-    503: UpstreamUnavailableProblem;
+    503: GetBillingOverviewServiceUnavailableProblem;
     /**
      * REQUEST_TIMEOUT: Request Timeout; UPSTREAM_TIMEOUT: Upstream Service Timeout
      */
@@ -21747,6 +23050,10 @@ export type RetryWebhookDeliveryErrors = {
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
     403: RetryWebhookDeliveryForbiddenProblem;
+    /**
+     * WEBHOOK_DESTINATION_NOT_FOUND: Webhook Destination Not Found
+     */
+    404: WebhookDestinationNotFoundProblem;
     /**
      * FAILED_PRECONDITION: Failed Precondition
      */

@@ -48,7 +48,7 @@ const result = await photon.projects.updateProjectApiKey({
   },
   body: {
     permissions: [
-      "events:read",
+      "calls:read",
     ],
   },
 });
@@ -72,7 +72,7 @@ result = photon.projects.update_project_api_key(
         },
         "body": {
             "permissions": [
-                "events:read",
+                "calls:read",
             ],
         },
     })
@@ -93,7 +93,7 @@ let result = client
         "projectId".to_owned(),
         &serde_json::from_value(serde_json::json!({
             "permissions": [
-                "events:read",
+                "calls:read",
             ],
         }))?,
     )
@@ -116,7 +116,7 @@ client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")
 var body photonapi.UpdateProjectApiKeyRequest
 if err := json.Unmarshal([]byte(`{
 	"permissions": [
-		"events:read"
+		"calls:read"
 	]
 }`), &body); err != nil {
 	return err

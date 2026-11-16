@@ -8,6 +8,34 @@ export type HeaderProvider =
   | HeaderValues
   | (() => HeaderValues | Promise<HeaderValues>);
 
+/**
+ * What `RetryOptions.onRetry` receives before an automatic retry: the attempt
+ * about to be sent, and why the previous one is retried, either a response
+ * with a retried status or a network failure or timeout.
+ */
+export type RetryContext = {
+  /** The attempt about to be sent, counting the first: 2 for the first retry. */
+  readonly attempt: number;
+  /** The most attempts the client makes for this call: `retry.maxAttempts`, clamped to 1 to 3. */
+  readonly maxAttempts: number;
+  /** How long the client waits before sending the attempt, in milliseconds: the `Retry-After` delay, or the backoff. */
+  readonly delayMs: number;
+} & (
+  | {
+      /** The retried status of the previous attempt's response. */
+      readonly status: number;
+      /** The previous attempt's response. Its body has been discarded; its status and headers can be read. */
+      readonly response: Response;
+      readonly error?: undefined;
+    }
+  | {
+      /** The network failure or timeout that ended the previous attempt. */
+      readonly error: unknown;
+      readonly status?: undefined;
+      readonly response?: undefined;
+    }
+);
+
 export interface RetryOptions {
   maxAttempts?: number;
   baseDelayMs?: number;
@@ -19,6 +47,14 @@ export interface RetryOptions {
    */
   maximumRetryAfterMs?: number;
   statuses?: readonly number[];
+  /**
+   * Called once before each automatic retry, before the client waits
+   * `delayMs`. It only observes: it cannot change, delay or cancel the retry.
+   * The client does not await it, and ignores an exception it throws or a
+   * promise it rejects. A call cancelled through its `signal` during the wait
+   * does not send the attempt it reported.
+   */
+  onRetry?: (context: RetryContext) => void;
 }
 
 export interface TransportOptions {
@@ -110,6 +146,31 @@ async function buffered(response: Response): Promise<Response> {
   });
 }
 
+/** Calls `onRetry` without awaiting it; whatever it throws or rejects with is ignored. */
+function notifyRetry(onRetry: RetryOptions["onRetry"], context: RetryContext): void {
+  if (!onRetry) {
+    return;
+  }
+  try {
+    Promise.resolve(onRetry(context)).catch(() => {});
+  } catch {}
+}
+
+const attemptCounts = new WeakMap<Response, number>();
+
+function counted(response: Response, attempts: number): Response {
+  attemptCounts.set(response, attempts);
+  return response;
+}
+
+/**
+ * How many attempts the client made for a response it returned, counting
+ * the first; undefined for any other response.
+ */
+export function attemptsMade(response: Response): number | undefined {
+  return attemptCounts.get(response);
+}
+
 function retryableRequest(method: string, headers: Headers): boolean {
   return (
     ["GET", "HEAD", "OPTIONS", "TRACE"].includes(method) ||
@@ -167,15 +228,22 @@ export function createPhotonFetch(
           !canRetry ||
           !statuses.has(response.status)
         ) {
-          return await buffered(response);
+          return counted(await buffered(response), attempt);
         }
         const retryAfter = retryAfterMs(response);
         if (retryAfter !== undefined && retryAfter > maximumRetryAfterMs) {
-          return await buffered(response);
+          return counted(await buffered(response), attempt);
         }
         const delay =
           retryAfter ?? jitterDelay(attempt, baseDelayMs, maximumDelayMs);
         await response.body?.cancel();
+        notifyRetry(retry?.onRetry, {
+          attempt: attempt + 1,
+          maxAttempts,
+          delayMs: delay,
+          status: response.status,
+          response,
+        });
         await wait(delay, original.signal);
       } catch (error) {
         if (original.signal.aborted) {
@@ -183,12 +251,11 @@ export function createPhotonFetch(
         }
         lastError = error;
         if (!canRetry || attempt >= maxAttempts) {
-          throw new TransportError("Photon request failed", { cause: error, requestId: lastRequestId });
+          throw new TransportError("Photon request failed", { cause: error, requestId: lastRequestId, attempts: attempt });
         }
-        await wait(
-          jitterDelay(attempt, baseDelayMs, maximumDelayMs),
-          original.signal,
-        );
+        const delay = jitterDelay(attempt, baseDelayMs, maximumDelayMs);
+        notifyRetry(retry?.onRetry, { attempt: attempt + 1, maxAttempts, delayMs: delay, error });
+        await wait(delay, original.signal);
       }
     }
 

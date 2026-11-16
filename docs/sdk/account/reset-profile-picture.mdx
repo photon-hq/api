@@ -21,7 +21,7 @@ photon.account.reset_profile_picture(input: ResetAccountProfilePictureInput) -> 
 </Tab>
 <Tab title="Rust">
 ```rust Rust
-client.reset_account_profile_picture(idempotency_key: String).await -> Result<ResponseValue<types::Account>, Error<ResetAccountProfilePictureError>>
+client.reset_account_profile_picture(idempotency_key: String, params: Option<ResetAccountProfilePictureParams>).await -> Result<ResponseValue<types::Account>, Error<ResetAccountProfilePictureError>>
 ```
 </Tab>
 <Tab title="Go">
@@ -69,7 +69,7 @@ let client = PhotonClientBuilder::new()
     .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
     .build()?;
 let result = client
-    .reset_account_profile_picture("idempotencyKey".to_owned())
+    .reset_account_profile_picture("idempotencyKey".to_owned(), None)
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
@@ -102,8 +102,11 @@ _ = result
   "accountId": "string",
   "createdAt": null,
   "deletedAt": null,
-  "email": "user@example.com",
+  "email": "string",
   "firstName": null,
+  "impersonator": {
+    "email": "string"
+  },
   "lastName": null,
   "phoneNumber": null,
   "phoneVerifiedAt": null,
@@ -116,6 +119,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField header="Idempotency-Key" type={"string"} required>
 Identifies one logical mutation across retries.
 </ParamField>
@@ -124,6 +131,8 @@ Identifies one logical mutation across retries.
 ## Returns
 
 **`200`** The Account reset to its default profile picture. Account
+
+Headers: `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="accountId" type={"string"} required>
 
@@ -137,12 +146,16 @@ Identifies one logical mutation across retries.
 
 </ResponseField>
 
-<ResponseField name="email" type={"string (email)"} required>
-
+<ResponseField name="email" type={"string"} required>
+Email address supplied by the identity provider.
 </ResponseField>
 
 <ResponseField name="firstName" type={"string | null"} required>
 
+</ResponseField>
+
+<ResponseField name="impersonator" type={"AccountImpersonator"}>
+Present only while a WorkOS dashboard admin is impersonating this account: the admin's email. Attribution only; grants nothing.
 </ResponseField>
 
 <ResponseField name="lastName" type={"string | null"} required>

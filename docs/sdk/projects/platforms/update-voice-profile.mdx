@@ -6,7 +6,7 @@ description: "Update Voice profile: updateVoiceProfile in the TypeScript, Python
 
 `PATCH /v1/projects/{id}/platforms/voice/profiles/{profileId}`
 
-Patches an additional profile's name, protocol, or mediaEncryption when expectedVersion matches. Omitted fields are preserved. Directional configuration is managed through the profile's inbound and outbound endpoints. Requires platforms:write bound to the path project.
+Patches an additional profile's name, protocol, or mediaEncryption when expectedVersion matches. Omitted fields are preserved. The default profile's metadata changes only through PATCH /v1/projects/&#123;id&#125;/platforms/voice/profiles/default, so a name, protocol, or mediaEncryption patch addressed to its profileId is refused with 409. Directional configuration is managed through the profile's inbound and outbound endpoints. Requires platforms:write bound to the path project.
 
 <Tabs>
 <Tab title="TypeScript">

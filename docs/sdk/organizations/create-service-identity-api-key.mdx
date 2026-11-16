@@ -6,7 +6,7 @@ description: "Create a one-time Service Identity API key: createServiceIdentityA
 
 `POST /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials/api-keys`
 
-
+Creates an API key for an active Service Identity that no app installation manages; the key acts with the identity's current permissions. Only a response with status created returns the key's value, so store it securely; retry with the same Idempotency-Key, which must be a UUID: a retry returns the key's status without the value, and status recovery_required means the value was not delivered and can't be retrieved. Owners and Admins can call it with account credentials, and expectedIdentityVersion must match the identity's current version, else 409; an identity managed by an app installation also returns 409.
 
 <Tabs>
 <Tab title="TypeScript">

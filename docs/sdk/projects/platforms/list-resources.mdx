@@ -6,7 +6,7 @@ description: "List resources: listResources in the TypeScript, Python, Rust and 
 
 `GET /v1/projects/{id}/platforms/resources`
 
-Lists the project's resources, oldest first, including retired ones unless `state` filters them out. Filter by `type`, by enabled `ability` and by comma-separated `state`. `detail` is a per-type public view. Requires the platforms:read permission bound to the project resource in the path.
+Lists the project's resources, oldest first, including retired ones unless `state` filters them out. Filter by `type`, by enabled `ability` and by comma-separated `state`. Lifecycle states are unallocated, active and retired; active means owned and non-retired, not provider-confirmed readiness. Every VoIP resource includes detail.activationState: activating or active, defaulting to active without owner-matched saved state. state=active includes numbers still activating. Requires the platforms:read permission bound to the project resource in the path.
 
 <Tabs>
 <Tab title="TypeScript">
@@ -139,7 +139,7 @@ _ = result
 </ParamField>
 
 <ParamField query="state" type={"string"}>
-
+Comma-separated lifecycle states: unallocated, active or retired. active selects all owned, non-retired resources, including numbers whose detail.activationState is activating.
 </ParamField>
 
 <ParamField query="type" type={"string"}>

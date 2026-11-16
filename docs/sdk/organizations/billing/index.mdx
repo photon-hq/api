@@ -369,6 +369,10 @@ The IANA time zone the payer is billed in, e.g. America/Los_Angeles. Billing per
 
 
 
+<ResponseField name="currentPeriod" type={"OrganizationBillingPeriod | null"} required>
+Charges so far this billing period, for an organization that pays by invoice; null for one that pays by card, or while its projects are still being moved to its billing day.
+</ResponseField>
+
 <ResponseField name="entitlementsVersion" type={"integer"} required>
 Bumps on every entitlement change for the organization.
 </ResponseField>
@@ -395,12 +399,20 @@ ISO currency code.
 
 
 
+<ResponseField name="agreement" type={"BillingAgreement"} required>
+How the organization pays: self_serve by card, each purchase paid when made; enterprise by invoice on its contract's terms, its purchases added to its next monthly invoice.
+</ResponseField>
+
 <ResponseField name="cardOnFile" type={"boolean"} required>
 True once a card is captured for the payer.
 </ResponseField>
 
 <ResponseField name="paymentMethod" type={"PaymentMethod | null"} required>
 Metadata for the default card, or null.
+</ResponseField>
+
+<ResponseField name="purchaseRefusal" type={"PurchaseRefusal | null"} required>
+Why the organization can't pay for a purchase now, or null when it can. payment_method_required: add a card first; an organization that pays by invoice never needs one. billing_not_ready: its billing is still being set up; try again shortly. Decide purchases on this, not on cardOnFile.
 </ResponseField>
 
 
@@ -549,19 +561,27 @@ What the change does beside what it bills, by the kind of change requested: fixe
 </ResponseField>
 
 <ResponseField name="dueLater" type={"BillingPreviewDeferred"} required>
-Billed later rather than with dueNow: one line per plan change addition, billed when it is added and priced as if added now. Before taxes; the balance left after dueNow applies to it first. nextCharge already includes it. No lines when nothing is billed later.
+Billed later rather than with dueNow: one line per plan change addition, billed when it is added and priced as if added now; or, for an organization that pays by invoice, what a fixed-charge change adds to its next invoice. After coupons, before taxes; the balance left after dueNow applies to it first. nextCharge already includes it. No lines when nothing is billed later.
 </ResponseField>
 
 <ResponseField name="dueNow" type={"BillingPreviewInvoice"} required>
-Charged when the change is made, priced as the change bills it. No lines when it charges nothing now.
+An invoice priced by the billing engine as it would bill it: its lines, then what coupons, taxes and credits change, and what the payer is charged. No lines when it bills nothing.
 </ResponseField>
 
 <ResponseField name="nextCharge" type={"BillingNextCharge | null"} required>
-What is charged in advance at the next period start for what is held after the change. Usage and a minimum commitment are billed after the period. Null when nothing is, or the subscription ends first.
+What is charged next for all that is held after the change: the first of upcomingInvoices, at its time and total, after coupons, with taxes, before credits. For a downgrade, the target plan's first charge at the period end. Usage and a minimum commitment are billed after the period. Null when nothing is charged, or the subscription ends first.
+</ResponseField>
+
+<ResponseField name="nextInvoiceAt" type={"string | null"} required>
+For an organization that pays by invoice: when its next monthly invoice is drafted, which bills the change instead of dueNow. A fixed-charge change's units go on it, in dueLater; an upgrade's new plan and dueLater too, while dueNow is the replaced plan's invoice, issued at once and due on the organization's terms. Null when dueNow is charged with the change.
 </ResponseField>
 
 <ResponseField name="timeZone" type={"string"} required>
 The IANA time zone the payer is billed in, e.g. America/Los_Angeles. Billing periods start and end at its midnights, so read their calendar dates in it.
+</ResponseField>
+
+<ResponseField name="upcomingInvoices" type={"array of BillingUpcomingInvoice"} required>
+The invoices the subscription the change leaves issues in the following periods, assuming no later change: one, and another while a coupon with an end discounted the last, so the last listed is the price from then on. At most 24. For a change at the period end (a downgrade, or the held plan kept), the first is what the invoice due then bills for it.
 </ResponseField>
 
 
@@ -578,19 +598,27 @@ What the change does beside what it bills, by the kind of change requested: fixe
 </ResponseField>
 
 <ResponseField name="dueLater" type={"BillingPreviewDeferred"} required>
-Billed later rather than with dueNow: one line per plan change addition, billed when it is added and priced as if added now. Before taxes; the balance left after dueNow applies to it first. nextCharge already includes it. No lines when nothing is billed later.
+Billed later rather than with dueNow: one line per plan change addition, billed when it is added and priced as if added now; or, for an organization that pays by invoice, what a fixed-charge change adds to its next invoice. After coupons, before taxes; the balance left after dueNow applies to it first. nextCharge already includes it. No lines when nothing is billed later.
 </ResponseField>
 
 <ResponseField name="dueNow" type={"BillingPreviewInvoice"} required>
-Charged when the change is made, priced as the change bills it. No lines when it charges nothing now.
+An invoice priced by the billing engine as it would bill it: its lines, then what coupons, taxes and credits change, and what the payer is charged. No lines when it bills nothing.
 </ResponseField>
 
 <ResponseField name="nextCharge" type={"BillingNextCharge | null"} required>
-What is charged in advance at the next period start for what is held after the change. Usage and a minimum commitment are billed after the period. Null when nothing is, or the subscription ends first.
+What is charged next for all that is held after the change: the first of upcomingInvoices, at its time and total, after coupons, with taxes, before credits. For a downgrade, the target plan's first charge at the period end. Usage and a minimum commitment are billed after the period. Null when nothing is charged, or the subscription ends first.
+</ResponseField>
+
+<ResponseField name="nextInvoiceAt" type={"string | null"} required>
+For an organization that pays by invoice: when its next monthly invoice is drafted, which bills the change instead of dueNow. A fixed-charge change's units go on it, in dueLater; an upgrade's new plan and dueLater too, while dueNow is the replaced plan's invoice, issued at once and due on the organization's terms. Null when dueNow is charged with the change.
 </ResponseField>
 
 <ResponseField name="timeZone" type={"string"} required>
 The IANA time zone the payer is billed in, e.g. America/Los_Angeles. Billing periods start and end at its midnights, so read their calendar dates in it.
+</ResponseField>
+
+<ResponseField name="upcomingInvoices" type={"array of BillingUpcomingInvoice"} required>
+The invoices the subscription the change leaves issues in the following periods, assuming no later change: one, and another while a coupon with an end discounted the last, so the last listed is the price from then on. At most 24. For a change at the period end (a downgrade, or the held plan kept), the first is what the invoice due then bills for it.
 </ResponseField>
 
 

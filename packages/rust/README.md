@@ -182,6 +182,24 @@ let client = PhotonClientBuilder::new()
     .build()?;
 ```
 
+## Webhooks
+
+`verify_webhook` checks a webhook delivery's
+[Standard Webhooks](https://www.standardwebhooks.com/) signature with the
+destination's signing secret, a `WebhookSecret` checked once from its
+`whsec_...` value. Pass the body exactly as it arrived and the request's
+`http::HeaderMap`, as axum and hyper provide. It returns `Ok(())` when the
+delivery verified, and the body is the event, or a `WebhookVerificationError`
+when it does not verify: answer that with `400` and ignore the body.
+`WebhookSecret::new` returns `InvalidWebhookSecret` for a value that is not a
+signing secret, a misconfiguration rather than a bad delivery.
+
+```rust,no_run
+let secret = WebhookSecret::new(&webhook_secret)?;
+verify_webhook(&body, &headers, &secret)?;
+let event: serde_json::Value = serde_json::from_slice(&body)?;
+```
+
 ## API reference
 
 The OpenAPI contract this client is generated from is
@@ -227,5 +245,5 @@ This repository is generated, so external pull requests are not accepted. See
 
 ## License
 
-MIT. See [LICENSE](https://github.com/photon-hq/api/blob/main/LICENSE) and
+Apache-2.0. See [LICENSE](https://github.com/photon-hq/api/blob/main/LICENSE) and
 [NOTICE](https://github.com/photon-hq/api/blob/main/NOTICE).

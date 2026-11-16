@@ -1,0 +1,136 @@
+---
+title: "Get sole-proprietor OTP status"
+icon: arrow-down-left
+description: "Get sole-proprietor OTP status: getTenDlcBrandOtp in the TypeScript, Python, Rust and Go clients."
+---
+
+`GET /v1/organizations/{organization_id}/10dlc/brands/{brandId}/otp`
+
+Returns the redacted one-time-password verification state for an organization-owned brand. OTP verification applies only to sole-proprietor brands. Reading this endpoint does not request another code or verify a supplied code; use the trigger and verification operations for those actions. Supply organization_id for the organization that owns the registration.
+
+<Tabs>
+<Tab title="TypeScript">
+```typescript TypeScript
+photon.organizations.getTenDlcBrandOtp(input: GetTenDlcBrandOtpInput, options?: RequestOptions): Promise<GetTenDlcBrandOtpOutput>
+```
+</Tab>
+<Tab title="Python">
+```python Python
+photon.organizations.get_ten_dlc_brand_otp(input: GetTenDlcBrandOtpInput) -> models.GetTenDlcBrandOtpResponse
+```
+</Tab>
+<Tab title="Rust">
+```rust Rust
+client.get_ten_dlc_brand_otp(brand_id: String, organization_id: String).await -> Result<ResponseValue<types::GetTenDlcBrandOtpResponse>, Error<GetTenDlcBrandOtpError>>
+```
+</Tab>
+<Tab title="Go">
+```go Go
+client.Organizations.GetTenDlcBrandOtp(ctx context.Context, params *GetTenDlcBrandOtpParams, opts ...RequestOption) (*GetTenDlcBrandOtpResponse, error)
+```
+</Tab>
+</Tabs>
+
+<RequestExample>
+```typescript TypeScript
+import { Photon } from "@photon-ai/api";
+
+const photon = new Photon({
+  headers: { Authorization: `Bearer ${process.env.PHOTON_API_TOKEN}` },
+});
+const result = await photon.organizations.getTenDlcBrandOtp({
+  path: {
+    brandId: "brandId",
+    organization_id: "organization_id",
+  },
+});
+```
+
+```python Python
+import os
+
+from photon_api import Photon
+from photon_api.rpc_generated import GetTenDlcBrandOtpInput
+
+photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
+result = photon.organizations.get_ten_dlc_brand_otp(
+    GetTenDlcBrandOtpInput.model_validate({
+        "path": {
+            "brandId": "brandId",
+            "organization_id": "organization_id",
+        },
+    })
+)
+```
+
+```rust Rust
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+
+let token = std::env::var("PHOTON_API_TOKEN")?;
+let client = PhotonClientBuilder::new()
+    .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
+    .build()?;
+let result = client
+    .get_ten_dlc_brand_otp("brandId".to_owned(), "organization_id".to_owned())
+    .await
+    .map_err(|error| format!("{error:?}"))?
+    .into_inner();
+```
+
+```go Go
+import (
+	"context"
+	"os"
+
+	photonapi "github.com/photon-hq/api/packages/go"
+)
+
+ctx := context.Background()
+client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
+result, err := client.Organizations.GetTenDlcBrandOtp(ctx, &photonapi.GetTenDlcBrandOtpParams{
+	BrandID: "brandId",
+	OrganizationID: "organization_id",
+})
+if err != nil {
+	return err
+}
+_ = result
+```
+
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "data": {
+    "attemptsRemaining": 0,
+    "brandId": "string",
+    "expiresAt": "2026-01-01T00:00:00.000Z",
+    "phoneLast4": "string",
+    "retryAfterSeconds": 0,
+    "status": "not_requested"
+  }
+}
+```
+
+</ResponseExample>
+
+## Parameters
+
+<ParamField path="brandId" type={"string"} required>
+
+</ParamField>
+
+<ParamField path="organization_id" type={"string"} required>
+
+</ParamField>
+
+
+## Returns
+
+**`200`** The redacted OTP status. GetTenDlcBrandOtpResponse
+
+<ResponseField name="data" type={"TenDlcBrandOtp"} required>
+
+</ResponseField>
+

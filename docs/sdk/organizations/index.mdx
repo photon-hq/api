@@ -105,6 +105,13 @@ photon.organizations.getSsoSubscription(input: GetSsoSubscriptionInput, options?
 ```
 `GET /v1/organizations/{organizationId}/sso/subscription`
 
+**[Get sole-proprietor OTP status](/api-client/sdk/organizations/get-ten-dlc-brand-otp)**
+
+```typescript TypeScript
+photon.organizations.getTenDlcBrandOtp(input: GetTenDlcBrandOtpInput, options?: RequestOptions): Promise<GetTenDlcBrandOtpOutput>
+```
+`GET /v1/organizations/{organization_id}/10dlc/brands/{brandId}/otp`
+
 **[Accept an invitation to all organization projects](/api-client/sdk/organizations/accept-organization-invitation)**
 
 ```typescript TypeScript
@@ -175,13 +182,6 @@ photon.organizations.createServiceIdentityClientSecret(input: CreateServiceIdent
 ```
 `POST /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials/client-secrets`
 
-**[Ensure the initial organization](/api-client/sdk/organizations/ensure-initial-organization)**
-
-```typescript TypeScript
-photon.organizations.ensureInitialOrganization(input: EnsureInitialOrganizationInput, options?: RequestOptions): Promise<EnsureInitialOrganizationOutput>
-```
-`POST /v1/organizations/initial`
-
 **[Leave an organization; Owners must transfer or close first](/api-client/sdk/organizations/leave-organization)**
 
 ```typescript TypeScript
@@ -238,6 +238,13 @@ photon.organizations.transferOrganizationOwnership(input: TransferOrganizationOw
 ```
 `POST /v1/organizations/{organizationId}/transfer-ownership`
 
+**[Trigger sole-proprietor OTP](/api-client/sdk/organizations/trigger-ten-dlc-brand-otp)**
+
+```typescript TypeScript
+photon.organizations.triggerTenDlcBrandOtp(input: TriggerTenDlcBrandOtpInput, options?: RequestOptions): Promise<TriggerTenDlcBrandOtpOutput>
+```
+`POST /v1/organizations/{organization_id}/10dlc/brands/{brandId}/otp`
+
 **[Create an organization OAuth client's secret](/api-client/sdk/organizations/setup-organization-oauth-client-secret)**
 
 ```typescript TypeScript
@@ -273,6 +280,13 @@ photon.organizations.updateServiceIdentity(input: UpdateServiceIdentityInput, op
 ```
 `PATCH /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}`
 
+**[Verify sole-proprietor OTP](/api-client/sdk/organizations/verify-ten-dlc-brand-otp)**
+
+```typescript TypeScript
+photon.organizations.verifyTenDlcBrandOtp(input: VerifyTenDlcBrandOtpInput, options?: RequestOptions): Promise<VerifyTenDlcBrandOtpOutput>
+```
+`PUT /v1/organizations/{organization_id}/10dlc/brands/{brandId}/otp`
+
 **[Delete organization](/api-client/sdk/organizations/close-organization)**
 
 ```typescript TypeScript
@@ -301,7 +315,7 @@ photon.organizations.removeOrganizationAvatar(input: RemoveOrganizationAvatarInp
 ```
 `DELETE /v1/organizations/{organizationId}/avatar`
 
-**[Remove an organization member's access to all projects](/api-client/sdk/organizations/remove-organization-member)**
+**[Remove a member from the organization](/api-client/sdk/organizations/remove-organization-member)**
 
 ```typescript TypeScript
 photon.organizations.removeOrganizationMember(input: RemoveOrganizationMemberInput, options?: RequestOptions): Promise<RemoveOrganizationMemberOutput>
@@ -408,6 +422,13 @@ photon.organizations.get_sso_subscription(input: GetSsoSubscriptionInput) -> mod
 ```
 `GET /v1/organizations/{organizationId}/sso/subscription`
 
+**[Get sole-proprietor OTP status](/api-client/sdk/organizations/get-ten-dlc-brand-otp)**
+
+```python Python
+photon.organizations.get_ten_dlc_brand_otp(input: GetTenDlcBrandOtpInput) -> models.GetTenDlcBrandOtpResponse
+```
+`GET /v1/organizations/{organization_id}/10dlc/brands/{brandId}/otp`
+
 **[Accept an invitation to all organization projects](/api-client/sdk/organizations/accept-organization-invitation)**
 
 ```python Python
@@ -478,13 +499,6 @@ photon.organizations.create_service_identity_client_secret(input: CreateServiceI
 ```
 `POST /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials/client-secrets`
 
-**[Ensure the initial organization](/api-client/sdk/organizations/ensure-initial-organization)**
-
-```python Python
-photon.organizations.ensure_initial_organization(input: EnsureInitialOrganizationInput) -> models.EnsureInitialOrganizationResponse
-```
-`POST /v1/organizations/initial`
-
 **[Leave an organization; Owners must transfer or close first](/api-client/sdk/organizations/leave-organization)**
 
 ```python Python
@@ -541,6 +555,13 @@ photon.organizations.transfer_organization_ownership(input: TransferOrganization
 ```
 `POST /v1/organizations/{organizationId}/transfer-ownership`
 
+**[Trigger sole-proprietor OTP](/api-client/sdk/organizations/trigger-ten-dlc-brand-otp)**
+
+```python Python
+photon.organizations.trigger_ten_dlc_brand_otp(input: TriggerTenDlcBrandOtpInput) -> models.TriggerTenDlcBrandOtpResponse
+```
+`POST /v1/organizations/{organization_id}/10dlc/brands/{brandId}/otp`
+
 **[Create an organization OAuth client's secret](/api-client/sdk/organizations/setup-organization-oauth-client-secret)**
 
 ```python Python
@@ -576,6 +597,13 @@ photon.organizations.update_service_identity(input: UpdateServiceIdentityInput) 
 ```
 `PATCH /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}`
 
+**[Verify sole-proprietor OTP](/api-client/sdk/organizations/verify-ten-dlc-brand-otp)**
+
+```python Python
+photon.organizations.verify_ten_dlc_brand_otp(input: VerifyTenDlcBrandOtpInput) -> models.VerifyTenDlcBrandOtpResponse
+```
+`PUT /v1/organizations/{organization_id}/10dlc/brands/{brandId}/otp`
+
 **[Delete organization](/api-client/sdk/organizations/close-organization)**
 
 ```python Python
@@ -604,7 +632,7 @@ photon.organizations.remove_organization_avatar(input: RemoveOrganizationAvatarI
 ```
 `DELETE /v1/organizations/{organizationId}/avatar`
 
-**[Remove an organization member's access to all projects](/api-client/sdk/organizations/remove-organization-member)**
+**[Remove a member from the organization](/api-client/sdk/organizations/remove-organization-member)**
 
 ```python Python
 photon.organizations.remove_organization_member(input: RemoveOrganizationMemberInput) -> models.RemoveOrganizationMemberResponse
@@ -711,6 +739,13 @@ client.get_sso_subscription(organization_id: String).await -> Result<ResponseVal
 ```
 `GET /v1/organizations/{organizationId}/sso/subscription`
 
+**[Get sole-proprietor OTP status](/api-client/sdk/organizations/get-ten-dlc-brand-otp)**
+
+```rust Rust
+client.get_ten_dlc_brand_otp(brand_id: String, organization_id: String).await -> Result<ResponseValue<types::GetTenDlcBrandOtpResponse>, Error<GetTenDlcBrandOtpError>>
+```
+`GET /v1/organizations/{organization_id}/10dlc/brands/{brandId}/otp`
+
 **[Accept an invitation to all organization projects](/api-client/sdk/organizations/accept-organization-invitation)**
 
 ```rust Rust
@@ -781,13 +816,6 @@ client.create_service_identity_client_secret(idempotency_key: String, organizati
 ```
 `POST /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials/client-secrets`
 
-**[Ensure the initial organization](/api-client/sdk/organizations/ensure-initial-organization)**
-
-```rust Rust
-client.ensure_initial_organization(idempotency_key: String).await -> Result<ResponseValue<types::EnsureInitialOrganizationResponse>, Error<EnsureInitialOrganizationError>>
-```
-`POST /v1/organizations/initial`
-
 **[Leave an organization; Owners must transfer or close first](/api-client/sdk/organizations/leave-organization)**
 
 ```rust Rust
@@ -844,6 +872,13 @@ client.transfer_organization_ownership(idempotency_key: String, organization_id:
 ```
 `POST /v1/organizations/{organizationId}/transfer-ownership`
 
+**[Trigger sole-proprietor OTP](/api-client/sdk/organizations/trigger-ten-dlc-brand-otp)**
+
+```rust Rust
+client.trigger_ten_dlc_brand_otp(idempotency_key: String, brand_id: String, organization_id: String).await -> Result<ResponseValue<types::TriggerTenDlcBrandOtpResponse>, Error<TriggerTenDlcBrandOtpError>>
+```
+`POST /v1/organizations/{organization_id}/10dlc/brands/{brandId}/otp`
+
 **[Create an organization OAuth client's secret](/api-client/sdk/organizations/setup-organization-oauth-client-secret)**
 
 ```rust Rust
@@ -879,6 +914,13 @@ client.update_service_identity(idempotency_key: String, organization_id: String,
 ```
 `PATCH /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}`
 
+**[Verify sole-proprietor OTP](/api-client/sdk/organizations/verify-ten-dlc-brand-otp)**
+
+```rust Rust
+client.verify_ten_dlc_brand_otp(idempotency_key: String, brand_id: String, organization_id: String, body: &types::VerifyTenDlcBrandOtpRequest).await -> Result<ResponseValue<types::VerifyTenDlcBrandOtpResponse>, Error<VerifyTenDlcBrandOtpError>>
+```
+`PUT /v1/organizations/{organization_id}/10dlc/brands/{brandId}/otp`
+
 **[Delete organization](/api-client/sdk/organizations/close-organization)**
 
 ```rust Rust
@@ -907,7 +949,7 @@ client.remove_organization_avatar(idempotency_key: String, organization_id: Stri
 ```
 `DELETE /v1/organizations/{organizationId}/avatar`
 
-**[Remove an organization member's access to all projects](/api-client/sdk/organizations/remove-organization-member)**
+**[Remove a member from the organization](/api-client/sdk/organizations/remove-organization-member)**
 
 ```rust Rust
 client.remove_organization_member(idempotency_key: String, organization_id: String, member_account_id: String, body: &types::RemoveOrganizationMemberRequest).await -> Result<ResponseValue<types::RemoveOrganizationMemberResponse>, Error<RemoveOrganizationMemberError>>
@@ -1014,6 +1056,13 @@ client.Organizations.GetSsoSubscription(ctx context.Context, params *GetSsoSubsc
 ```
 `GET /v1/organizations/{organizationId}/sso/subscription`
 
+**[Get sole-proprietor OTP status](/api-client/sdk/organizations/get-ten-dlc-brand-otp)**
+
+```go Go
+client.Organizations.GetTenDlcBrandOtp(ctx context.Context, params *GetTenDlcBrandOtpParams, opts ...RequestOption) (*GetTenDlcBrandOtpResponse, error)
+```
+`GET /v1/organizations/{organization_id}/10dlc/brands/{brandId}/otp`
+
 **[Accept an invitation to all organization projects](/api-client/sdk/organizations/accept-organization-invitation)**
 
 ```go Go
@@ -1084,13 +1133,6 @@ client.Organizations.CreateServiceIdentityClientSecret(ctx context.Context, para
 ```
 `POST /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials/client-secrets`
 
-**[Ensure the initial organization](/api-client/sdk/organizations/ensure-initial-organization)**
-
-```go Go
-client.Organizations.EnsureInitialOrganization(ctx context.Context, params *EnsureInitialOrganizationParams, opts ...RequestOption) (*EnsureInitialOrganizationResponse, error)
-```
-`POST /v1/organizations/initial`
-
 **[Leave an organization; Owners must transfer or close first](/api-client/sdk/organizations/leave-organization)**
 
 ```go Go
@@ -1147,6 +1189,13 @@ client.Organizations.TransferOrganizationOwnership(ctx context.Context, params *
 ```
 `POST /v1/organizations/{organizationId}/transfer-ownership`
 
+**[Trigger sole-proprietor OTP](/api-client/sdk/organizations/trigger-ten-dlc-brand-otp)**
+
+```go Go
+client.Organizations.TriggerTenDlcBrandOtp(ctx context.Context, params *TriggerTenDlcBrandOtpParams, opts ...RequestOption) (*TriggerTenDlcBrandOtpResponse, error)
+```
+`POST /v1/organizations/{organization_id}/10dlc/brands/{brandId}/otp`
+
 **[Create an organization OAuth client's secret](/api-client/sdk/organizations/setup-organization-oauth-client-secret)**
 
 ```go Go
@@ -1182,6 +1231,13 @@ client.Organizations.UpdateServiceIdentity(ctx context.Context, params *UpdateSe
 ```
 `PATCH /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}`
 
+**[Verify sole-proprietor OTP](/api-client/sdk/organizations/verify-ten-dlc-brand-otp)**
+
+```go Go
+client.Organizations.VerifyTenDlcBrandOtp(ctx context.Context, params *VerifyTenDlcBrandOtpParams, opts ...RequestOption) (*VerifyTenDlcBrandOtpResponse, error)
+```
+`PUT /v1/organizations/{organization_id}/10dlc/brands/{brandId}/otp`
+
 **[Delete organization](/api-client/sdk/organizations/close-organization)**
 
 ```go Go
@@ -1210,7 +1266,7 @@ client.Organizations.RemoveOrganizationAvatar(ctx context.Context, params *Remov
 ```
 `DELETE /v1/organizations/{organizationId}/avatar`
 
-**[Remove an organization member's access to all projects](/api-client/sdk/organizations/remove-organization-member)**
+**[Remove a member from the organization](/api-client/sdk/organizations/remove-organization-member)**
 
 ```go Go
 client.Organizations.RemoveOrganizationMember(ctx context.Context, params *RemoveOrganizationMemberParams, opts ...RequestOption) (*RemoveOrganizationMemberResponse, error)
@@ -1529,6 +1585,15 @@ Listed organizations where the caller is the Owner.
 </ResponseField>
 
 <ResponseField name="state" type={"GetSsoSubscriptionResponseState"} required>
+
+</ResponseField>
+
+
+### GetTenDlcBrandOtpResponse
+
+
+
+<ResponseField name="data" type={"TenDlcBrandOtp"} required>
 
 </ResponseField>
 
@@ -1873,15 +1938,6 @@ Listed organizations where the caller is the Owner.
 </ResponseField>
 
 
-### EnsureInitialOrganizationResponse
-
-
-
-<ResponseField name="organization" type={"Organization | null"} required>
-The initial organization this request created; null when the account already had one.
-</ResponseField>
-
-
 ### LeaveOrganizationResponse
 
 
@@ -2190,6 +2246,15 @@ The initial organization this request created; null when the account already had
 </ResponseField>
 
 
+### TriggerTenDlcBrandOtpResponse
+
+
+
+<ResponseField name="data" type={"TenDlcBrandOtp"} required>
+
+</ResponseField>
+
+
 ### SetupOrganizationOauthClientSecretResponse
 
 
@@ -2364,6 +2429,15 @@ The initial organization this request created; null when the account already had
 </ResponseField>
 
 <ResponseField name="version" type={"string"} required>
+
+</ResponseField>
+
+
+### VerifyTenDlcBrandOtpResponse
+
+
+
+<ResponseField name="data" type={"TenDlcBrandOtp"} required>
 
 </ResponseField>
 

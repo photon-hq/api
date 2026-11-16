@@ -6,7 +6,7 @@ description: "List current organization members: listOrganizationMembers in the 
 
 `GET /v1/organizations/{organizationId}/members`
 
-
+Lists the organization's active members, ordered by account ID, with each member's role, membership version and account profile (name, email and picture); a member whose account is missing or deleted has a null profile. Any member can call it with account credentials, or with an OAuth grant for this organization that has the organization:read scope. The list is not paginated.
 
 <Tabs>
 <Tab title="TypeScript">

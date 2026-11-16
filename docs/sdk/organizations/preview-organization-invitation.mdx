@@ -6,7 +6,7 @@ description: "Preview an organization invitation after sign-in: previewOrganizat
 
 `POST /v1/organizations/invitations/preview`
 
-
+Returns what an invitation offers to the signed-in account that holds its token: the organization, role, expiry, member count and inviter with masked email addresses, whether the account's verified email matches the invitation, and whether SSO is required to accept it. Call it with account credentials acting as the account itself; it changes nothing. An unknown token returns 404, and an expired or revoked invitation, or one accepted by another account, returns 409.
 
 <Tabs>
 <Tab title="TypeScript">

@@ -1,12 +1,12 @@
 ---
-title: "Remove an organization member's access to all projects"
+title: "Remove a member from the organization"
 icon: x
-description: "Remove an organization member's access to all projects: removeOrganizationMember in the TypeScript, Python, Rust and Go clients."
+description: "Remove a member from the organization: removeOrganizationMember in the TypeScript, Python, Rust and Go clients."
 ---
 
 `DELETE /v1/organizations/{organizationId}/members/{memberAccountId}`
 
-
+Removes an active member from the organization. Nothing is revoked: their sessions, OAuth grants and Account Service Keys stop being accepted for the organization and its projects shortly after the call, and project API keys and Service Identity credentials they created or hold keep working until an Owner or Admin revokes them. Owners and Admins can call it with account credentials, but only the Owner can remove an Admin, and neither the Owner nor the caller can be removed here (409; leave with leaveOrganization). Send the member's current membership version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header.
 
 <Tabs>
 <Tab title="TypeScript">

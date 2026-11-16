@@ -6,7 +6,7 @@ description: "Cancel the SSO subscription: cancelSsoSubscription in the TypeScri
 
 `POST /v1/organizations/{organizationId}/sso/subscription/cancel`
 
-
+Cancels the organization's SSO subscription at once, but only after SSO has been turned off: while SSO is still required it returns 409. The unused days become organization credit, and SSO setup closes. Only Owners and Admins can call it, with account credentials and the required Idempotency-Key header.
 
 <Tabs>
 <Tab title="TypeScript">

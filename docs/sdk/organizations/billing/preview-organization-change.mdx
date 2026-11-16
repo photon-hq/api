@@ -6,7 +6,7 @@ description: "Preview an organization billing change: previewOrganizationChange 
 
 `POST /v1/organizations/{organizationId}/billing/preview`
 
-Previews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, and nextCharge what is charged in advance at the next period start. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing.
+Previews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives.
 
 <Tabs>
 <Tab title="TypeScript">
@@ -145,6 +145,7 @@ _ = result
       {
         "amountCents": -9007199254740991,
         "code": "string",
+        "discountCents": -9007199254740991,
         "kind": "fixed_charge",
         "name": "string",
         "periodEnd": null,
@@ -163,6 +164,7 @@ _ = result
       {
         "amountCents": -9007199254740991,
         "code": "string",
+        "discountCents": -9007199254740991,
         "kind": "fixed_charge",
         "name": "string",
         "periodEnd": null,
@@ -174,7 +176,24 @@ _ = result
     "totalCents": -9007199254740991
   },
   "nextCharge": null,
-  "timeZone": "string"
+  "nextInvoiceAt": null,
+  "timeZone": "string",
+  "upcomingInvoices": [
+    {
+      "at": "string",
+      "invoice": {
+        "creditsCents": -9007199254740991,
+        "currency": "string",
+        "discountCents": -9007199254740991,
+        "feesCents": -9007199254740991,
+        "lines": [
+          {}
+        ],
+        "taxesCents": -9007199254740991,
+        "totalCents": -9007199254740991
+      }
+    }
+  ]
 }
 ```
 
@@ -193,6 +212,10 @@ _ = result
 A quantity change made now, as a purchase or release makes it.
 </ParamField>
 
+<ParamField body="promotionCode" type={"string"}>
+A promotion code the customer entered, previewed as the purchase redeems it, on an increase only: dueNow and upcomingInvoices are discounted by it. Needs billing:manage. A refused code fails the preview with PROMOTION_CODE_REJECTED, its reason as a refused purchase's failure detail.
+</ParamField>
+
 
 ## Returns
 
@@ -207,18 +230,26 @@ What the change does beside what it bills, by the kind of change requested: fixe
 </ResponseField>
 
 <ResponseField name="dueLater" type={"BillingPreviewDeferred"} required>
-Billed later rather than with dueNow: one line per plan change addition, billed when it is added and priced as if added now. Before taxes; the balance left after dueNow applies to it first. nextCharge already includes it. No lines when nothing is billed later.
+Billed later rather than with dueNow: one line per plan change addition, billed when it is added and priced as if added now; or, for an organization that pays by invoice, what a fixed-charge change adds to its next invoice. After coupons, before taxes; the balance left after dueNow applies to it first. nextCharge already includes it. No lines when nothing is billed later.
 </ResponseField>
 
 <ResponseField name="dueNow" type={"BillingPreviewInvoice"} required>
-Charged when the change is made, priced as the change bills it. No lines when it charges nothing now.
+An invoice priced by the billing engine as it would bill it: its lines, then what coupons, taxes and credits change, and what the payer is charged. No lines when it bills nothing.
 </ResponseField>
 
 <ResponseField name="nextCharge" type={"BillingNextCharge | null"} required>
-What is charged in advance at the next period start for what is held after the change. Usage and a minimum commitment are billed after the period. Null when nothing is, or the subscription ends first.
+What is charged next for all that is held after the change: the first of upcomingInvoices, at its time and total, after coupons, with taxes, before credits. For a downgrade, the target plan's first charge at the period end. Usage and a minimum commitment are billed after the period. Null when nothing is charged, or the subscription ends first.
+</ResponseField>
+
+<ResponseField name="nextInvoiceAt" type={"string | null"} required>
+For an organization that pays by invoice: when its next monthly invoice is drafted, which bills the change instead of dueNow. A fixed-charge change's units go on it, in dueLater; an upgrade's new plan and dueLater too, while dueNow is the replaced plan's invoice, issued at once and due on the organization's terms. Null when dueNow is charged with the change.
 </ResponseField>
 
 <ResponseField name="timeZone" type={"string"} required>
 The IANA time zone the payer is billed in, e.g. America/Los_Angeles. Billing periods start and end at its midnights, so read their calendar dates in it.
+</ResponseField>
+
+<ResponseField name="upcomingInvoices" type={"array of BillingUpcomingInvoice"} required>
+The invoices the subscription the change leaves issues in the following periods, assuming no later change: one, and another while a coupon with an end discounted the last, so the last listed is the price from then on. At most 24. For a change at the period end (a downgrade, or the held plan kept), the first is what the invoice due then bills for it.
 </ResponseField>
 

@@ -6,7 +6,7 @@ description: "Change organization name: updateOrganization in the TypeScript, Py
 
 `PATCH /v1/organizations/{organizationId}`
 
-
+Renames the organization and returns it with its new version. Owners and Admins can call it with account credentials. Send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header.
 
 <Tabs>
 <Tab title="TypeScript">

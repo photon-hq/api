@@ -183,12 +183,14 @@ export const CloseOrganizationOutputSchemas: OutputSchemas<CloseOrganizationOutp
 export const CommitAccountProfilePictureInputSchema = /* @__PURE__ */ (() => z.strictObject({
     body: GeneratedZod.zCommitAccountProfilePictureBody,
     headers: z.strictObject({
+        "Photon-Version": GeneratedZod.zCommitAccountProfilePictureHeaders.shape["Photon-Version"],
         idempotencyKey: GeneratedZod.zCommitAccountProfilePictureHeaders.shape["Idempotency-Key"],
     }),
 }))();
 export type CommitAccountProfilePictureInput = {
     body: WireTypes.CommitAccountProfilePictureData["body"];
     headers: {
+        "Photon-Version"?: NonNullable<WireTypes.CommitAccountProfilePictureData["headers"]>["Photon-Version"];
         idempotencyKey: NonNullable<WireTypes.CommitAccountProfilePictureData["headers"]>["Idempotency-Key"];
     };
 };
@@ -397,9 +399,15 @@ export const CountUsersOutputSchemas: OutputSchemas<CountUsersOutput> = /* @__PU
 
 export const CreateAccountProfilePictureUploadInputSchema = /* @__PURE__ */ (() => z.strictObject({
     body: GeneratedZod.zCreateAccountProfilePictureUploadBody,
+    headers: z.strictObject({
+        "Photon-Version": GeneratedZod.zCreateAccountProfilePictureUploadHeaders.shape["Photon-Version"],
+    }).optional(),
 }))();
 export type CreateAccountProfilePictureUploadInput = {
     body: WireTypes.CreateAccountProfilePictureUploadData["body"];
+    headers?: {
+        "Photon-Version"?: NonNullable<WireTypes.CreateAccountProfilePictureUploadData["headers"]>["Photon-Version"];
+    };
 };
 
 export const CreateAccountProfilePictureUploadOutputSchema = GeneratedZod.zProfilePictureUpload;
@@ -411,12 +419,14 @@ export const CreateAccountProfilePictureUploadOutputSchemas: OutputSchemas<Creat
 export const CreateAccountServiceKeyInputSchema = /* @__PURE__ */ (() => z.strictObject({
     body: GeneratedZod.zCreateAccountServiceKeyBody,
     headers: z.strictObject({
+        "Photon-Version": GeneratedZod.zCreateAccountServiceKeyHeaders.shape["Photon-Version"],
         idempotencyKey: GeneratedZod.zCreateAccountServiceKeyHeaders.shape["Idempotency-Key"],
     }),
 }))();
 export type CreateAccountServiceKeyInput = {
     body: WireTypes.CreateAccountServiceKeyData["body"];
     headers: {
+        "Photon-Version"?: NonNullable<WireTypes.CreateAccountServiceKeyData["headers"]>["Photon-Version"];
         idempotencyKey: NonNullable<WireTypes.CreateAccountServiceKeyData["headers"]>["Idempotency-Key"];
     };
 };
@@ -825,9 +835,15 @@ export const CreateWhatsappVoipSenderOutputSchemas: OutputSchemas<CreateWhatsapp
 }))();
 
 export const DeleteAccountInputSchema = /* @__PURE__ */ (() => z.strictObject({
-
+    headers: z.strictObject({
+        "Photon-Version": GeneratedZod.zDeleteAccountHeaders.shape["Photon-Version"],
+    }).optional(),
 }))();
-export type DeleteAccountInput = Record<string, never>;
+export type DeleteAccountInput = {
+    headers?: {
+        "Photon-Version"?: NonNullable<WireTypes.DeleteAccountData["headers"]>["Photon-Version"];
+    };
+};
 
 export const DeleteAccountOutputSchema = GeneratedZod.zAccount;
 export type DeleteAccountOutput = z.output<typeof DeleteAccountOutputSchema>;
@@ -1017,27 +1033,16 @@ export const DownloadAttachmentOutputSchemas: OutputSchemas<DownloadAttachmentOu
     "200": z.instanceof(Blob),
 }))();
 
-export const EnsureInitialOrganizationInputSchema = /* @__PURE__ */ (() => z.strictObject({
+export const GetAccountInputSchema = /* @__PURE__ */ (() => z.strictObject({
     headers: z.strictObject({
-        idempotencyKey: GeneratedZod.zEnsureInitialOrganizationHeaders.shape["Idempotency-Key"],
-    }),
+        "Photon-Version": GeneratedZod.zGetAccountHeaders.shape["Photon-Version"],
+    }).optional(),
 }))();
-export type EnsureInitialOrganizationInput = {
-    headers: {
-        idempotencyKey: NonNullable<WireTypes.EnsureInitialOrganizationData["headers"]>["Idempotency-Key"];
+export type GetAccountInput = {
+    headers?: {
+        "Photon-Version"?: NonNullable<WireTypes.GetAccountData["headers"]>["Photon-Version"];
     };
 };
-
-export const EnsureInitialOrganizationOutputSchema = GeneratedZod.zEnsureInitialOrganizationResponse;
-export type EnsureInitialOrganizationOutput = z.output<typeof EnsureInitialOrganizationOutputSchema>;
-export const EnsureInitialOrganizationOutputSchemas: OutputSchemas<EnsureInitialOrganizationOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zEnsureInitialOrganizationResponse,
-}))();
-
-export const GetAccountInputSchema = /* @__PURE__ */ (() => z.strictObject({
-
-}))();
-export type GetAccountInput = Record<string, never>;
 
 export const GetAccountOutputSchema = GeneratedZod.zAccount;
 export type GetAccountOutput = z.output<typeof GetAccountOutputSchema>;
@@ -1489,6 +1494,19 @@ export const GetSsoSubscriptionOutputSchemas: OutputSchemas<GetSsoSubscriptionOu
     "200": GeneratedZod.zGetSsoSubscriptionResponse,
 }))();
 
+export const GetTenDlcBrandOtpInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zGetTenDlcBrandOtpPath.strict(),
+}))();
+export type GetTenDlcBrandOtpInput = {
+    path: NonNullable<WireTypes.GetTenDlcBrandOtpData["path"]>;
+};
+
+export const GetTenDlcBrandOtpOutputSchema = GeneratedZod.zGetTenDlcBrandOtpResponse;
+export type GetTenDlcBrandOtpOutput = z.output<typeof GetTenDlcBrandOtpOutputSchema>;
+export const GetTenDlcBrandOtpOutputSchemas: OutputSchemas<GetTenDlcBrandOtpOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zGetTenDlcBrandOtpResponse,
+}))();
+
 export const GetUserInputSchema = /* @__PURE__ */ (() => z.strictObject({
     path: GeneratedZod.zGetUserPath.strict(),
     headers: z.strictObject({
@@ -1627,9 +1645,15 @@ export const LeaveOrganizationOutputSchemas: OutputSchemas<LeaveOrganizationOutp
 }))();
 
 export const ListAccountServiceKeysInputSchema = /* @__PURE__ */ (() => z.strictObject({
-
+    headers: z.strictObject({
+        "Photon-Version": GeneratedZod.zListAccountServiceKeysHeaders.shape["Photon-Version"],
+    }).optional(),
 }))();
-export type ListAccountServiceKeysInput = Record<string, never>;
+export type ListAccountServiceKeysInput = {
+    headers?: {
+        "Photon-Version"?: NonNullable<WireTypes.ListAccountServiceKeysData["headers"]>["Photon-Version"];
+    };
+};
 
 export const ListAccountServiceKeysOutputSchema = GeneratedZod.zListAccountServiceKeysResponse;
 export type ListAccountServiceKeysOutput = z.output<typeof ListAccountServiceKeysOutputSchema>;
@@ -2190,12 +2214,14 @@ export const PreviewProjectChangeOutputSchemas: OutputSchemas<PreviewProjectChan
 }))();
 
 export const ProvisionImessageDedicatedLineInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    body: GeneratedZod.zProvisionImessageDedicatedLineBody,
     path: GeneratedZod.zProvisionImessageDedicatedLinePath.strict(),
     headers: z.strictObject({
         idempotencyKey: GeneratedZod.zProvisionImessageDedicatedLineHeaders.shape["Idempotency-Key"],
     }),
 }))();
 export type ProvisionImessageDedicatedLineInput = {
+    body: WireTypes.ProvisionImessageDedicatedLineData["body"];
     path: NonNullable<WireTypes.ProvisionImessageDedicatedLineData["path"]>;
     headers: {
         idempotencyKey: NonNullable<WireTypes.ProvisionImessageDedicatedLineData["headers"]>["Idempotency-Key"];
@@ -2209,12 +2235,14 @@ export const ProvisionImessageDedicatedLineOutputSchemas: OutputSchemas<Provisio
 }))();
 
 export const ProvisionWhatsappDedicatedLineInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    body: GeneratedZod.zProvisionWhatsappDedicatedLineBody,
     path: GeneratedZod.zProvisionWhatsappDedicatedLinePath.strict(),
     headers: z.strictObject({
         idempotencyKey: GeneratedZod.zProvisionWhatsappDedicatedLineHeaders.shape["Idempotency-Key"],
     }),
 }))();
 export type ProvisionWhatsappDedicatedLineInput = {
+    body: WireTypes.ProvisionWhatsappDedicatedLineData["body"];
     path: NonNullable<WireTypes.ProvisionWhatsappDedicatedLineData["path"]>;
     headers: {
         idempotencyKey: NonNullable<WireTypes.ProvisionWhatsappDedicatedLineData["headers"]>["Idempotency-Key"];
@@ -2442,11 +2470,13 @@ export const ResendOrganizationInvitationOutputSchemas: OutputSchemas<ResendOrga
 
 export const ResetAccountProfilePictureInputSchema = /* @__PURE__ */ (() => z.strictObject({
     headers: z.strictObject({
+        "Photon-Version": GeneratedZod.zResetAccountProfilePictureHeaders.shape["Photon-Version"],
         idempotencyKey: GeneratedZod.zResetAccountProfilePictureHeaders.shape["Idempotency-Key"],
     }),
 }))();
 export type ResetAccountProfilePictureInput = {
     headers: {
+        "Photon-Version"?: NonNullable<WireTypes.ResetAccountProfilePictureData["headers"]>["Photon-Version"];
         idempotencyKey: NonNullable<WireTypes.ResetAccountProfilePictureData["headers"]>["Idempotency-Key"];
     };
 };
@@ -2513,12 +2543,14 @@ export const RetryWebhookDeliveryOutputSchemas: OutputSchemas<RetryWebhookDelive
 export const RevokeAccountServiceKeyInputSchema = /* @__PURE__ */ (() => z.strictObject({
     path: GeneratedZod.zRevokeAccountServiceKeyPath.strict(),
     headers: z.strictObject({
+        "Photon-Version": GeneratedZod.zRevokeAccountServiceKeyHeaders.shape["Photon-Version"],
         idempotencyKey: GeneratedZod.zRevokeAccountServiceKeyHeaders.shape["Idempotency-Key"],
     }),
 }))();
 export type RevokeAccountServiceKeyInput = {
     path: NonNullable<WireTypes.RevokeAccountServiceKeyData["path"]>;
     headers: {
+        "Photon-Version"?: NonNullable<WireTypes.RevokeAccountServiceKeyData["headers"]>["Photon-Version"];
         idempotencyKey: NonNullable<WireTypes.RevokeAccountServiceKeyData["headers"]>["Idempotency-Key"];
     };
 };
@@ -2720,19 +2752,6 @@ export const SetupOrganizationOauthClientSecretOutputSchemas: OutputSchemas<Setu
     "201": GeneratedZod.zSetupOrganizationOauthClientSecretCreatedResponse,
 }))();
 
-export const StartEnterpriseLoginInputSchema = /* @__PURE__ */ (() => z.strictObject({
-    body: GeneratedZod.zStartEnterpriseLoginBody,
-}))();
-export type StartEnterpriseLoginInput = {
-    body: WireTypes.StartEnterpriseLoginData["body"];
-};
-
-export const StartEnterpriseLoginOutputSchema = GeneratedZod.zStartEnterpriseLoginResponse;
-export type StartEnterpriseLoginOutput = z.output<typeof StartEnterpriseLoginOutputSchema>;
-export const StartEnterpriseLoginOutputSchemas: OutputSchemas<StartEnterpriseLoginOutput> = /* @__PURE__ */ (() => ({
-    "200": GeneratedZod.zStartEnterpriseLoginResponse,
-}))();
-
 export const SubscribeSsoInputSchema = /* @__PURE__ */ (() => z.strictObject({
     body: GeneratedZod.zSubscribeSsoBody,
     path: GeneratedZod.zSubscribeSsoPath.strict(),
@@ -2775,6 +2794,25 @@ export const TransferOrganizationOwnershipOutputSchemas: OutputSchemas<TransferO
     "200": GeneratedZod.zTransferOrganizationOwnershipResponse,
 }))();
 
+export const TriggerTenDlcBrandOtpInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    path: GeneratedZod.zTriggerTenDlcBrandOtpPath.strict(),
+    headers: z.strictObject({
+        idempotencyKey: GeneratedZod.zTriggerTenDlcBrandOtpHeaders.shape["Idempotency-Key"],
+    }),
+}))();
+export type TriggerTenDlcBrandOtpInput = {
+    path: NonNullable<WireTypes.TriggerTenDlcBrandOtpData["path"]>;
+    headers: {
+        idempotencyKey: NonNullable<WireTypes.TriggerTenDlcBrandOtpData["headers"]>["Idempotency-Key"];
+    };
+};
+
+export const TriggerTenDlcBrandOtpOutputSchema = GeneratedZod.zTriggerTenDlcBrandOtpResponse;
+export type TriggerTenDlcBrandOtpOutput = z.output<typeof TriggerTenDlcBrandOtpOutputSchema>;
+export const TriggerTenDlcBrandOtpOutputSchemas: OutputSchemas<TriggerTenDlcBrandOtpOutput> = /* @__PURE__ */ (() => ({
+    "202": GeneratedZod.zTriggerTenDlcBrandOtpResponse,
+}))();
+
 export const UnassignSmsLineCampaignInputSchema = /* @__PURE__ */ (() => z.strictObject({
     path: GeneratedZod.zUnassignSmsLineCampaignPath.strict(),
     query: GeneratedZod.zUnassignSmsLineCampaignQuery.strict(),
@@ -2815,12 +2853,14 @@ export const UnassignVoiceLineProfileOutputSchemas: OutputSchemas<UnassignVoiceL
 export const UpdateAccountInputSchema = /* @__PURE__ */ (() => z.strictObject({
     body: GeneratedZod.zUpdateAccountBody,
     headers: z.strictObject({
+        "Photon-Version": GeneratedZod.zUpdateAccountHeaders.shape["Photon-Version"],
         idempotencyKey: GeneratedZod.zUpdateAccountHeaders.shape["Idempotency-Key"],
     }),
 }))();
 export type UpdateAccountInput = {
     body: WireTypes.UpdateAccountData["body"];
     headers: {
+        "Photon-Version"?: NonNullable<WireTypes.UpdateAccountData["headers"]>["Photon-Version"];
         idempotencyKey: NonNullable<WireTypes.UpdateAccountData["headers"]>["Idempotency-Key"];
     };
 };
@@ -3098,4 +3138,25 @@ export type UploadAttachmentOutput = z.output<typeof UploadAttachmentOutputSchem
 export const UploadAttachmentOutputSchemas: OutputSchemas<UploadAttachmentOutput> = /* @__PURE__ */ (() => ({
     "200": GeneratedZod.zAttachment,
     "201": GeneratedZod.zAttachment,
+}))();
+
+export const VerifyTenDlcBrandOtpInputSchema = /* @__PURE__ */ (() => z.strictObject({
+    body: GeneratedZod.zVerifyTenDlcBrandOtpBody,
+    path: GeneratedZod.zVerifyTenDlcBrandOtpPath.strict(),
+    headers: z.strictObject({
+        idempotencyKey: GeneratedZod.zVerifyTenDlcBrandOtpHeaders.shape["Idempotency-Key"],
+    }),
+}))();
+export type VerifyTenDlcBrandOtpInput = {
+    body: WireTypes.VerifyTenDlcBrandOtpData["body"];
+    path: NonNullable<WireTypes.VerifyTenDlcBrandOtpData["path"]>;
+    headers: {
+        idempotencyKey: NonNullable<WireTypes.VerifyTenDlcBrandOtpData["headers"]>["Idempotency-Key"];
+    };
+};
+
+export const VerifyTenDlcBrandOtpOutputSchema = GeneratedZod.zVerifyTenDlcBrandOtpResponse;
+export type VerifyTenDlcBrandOtpOutput = z.output<typeof VerifyTenDlcBrandOtpOutputSchema>;
+export const VerifyTenDlcBrandOtpOutputSchemas: OutputSchemas<VerifyTenDlcBrandOtpOutput> = /* @__PURE__ */ (() => ({
+    "200": GeneratedZod.zVerifyTenDlcBrandOtpResponse,
 }))();

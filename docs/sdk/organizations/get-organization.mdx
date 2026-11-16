@@ -6,7 +6,7 @@ description: "Read organization name and avatar: getOrganization in the TypeScri
 
 `GET /v1/organizations/{organizationId}`
 
-
+Returns the organization's name, avatar URL, version and billing setup progress. Any member can read it with account credentials, and a Service Identity granted organization:read or an OAuth grant with the organization:read scope can read the organization it is bound to. Send version as expectedVersion when renaming the organization or changing its avatar.
 
 <Tabs>
 <Tab title="TypeScript">

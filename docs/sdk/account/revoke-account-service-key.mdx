@@ -21,7 +21,7 @@ photon.account.revoke_account_service_key(input: RevokeAccountServiceKeyInput) -
 </Tab>
 <Tab title="Rust">
 ```rust Rust
-client.revoke_account_service_key(idempotency_key: String, service_key_id: String).await -> Result<ResponseValue<types::RevokeAccountServiceKeyResponse>, Error<RevokeAccountServiceKeyError>>
+client.revoke_account_service_key(idempotency_key: String, service_key_id: String, params: Option<RevokeAccountServiceKeyParams>).await -> Result<ResponseValue<types::RevokeAccountServiceKeyResponse>, Error<RevokeAccountServiceKeyError>>
 ```
 </Tab>
 <Tab title="Go">
@@ -75,7 +75,7 @@ let client = PhotonClientBuilder::new()
     .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
     .build()?;
 let result = client
-    .revoke_account_service_key("idempotencyKey".to_owned(), "serviceKeyId".to_owned())
+    .revoke_account_service_key("idempotencyKey".to_owned(), "serviceKeyId".to_owned(), None)
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
@@ -121,6 +121,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField header="Idempotency-Key" type={"string"} required>
 Identifies one logical mutation across retries.
 </ParamField>
@@ -133,6 +137,8 @@ Identifies one logical mutation across retries.
 ## Returns
 
 **`200`** The revoked key metadata. Repeated revocation is stable. RevokeAccountServiceKeyResponse
+
+Headers: `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="serviceKey" type={"AccountServiceKey"} required>
 

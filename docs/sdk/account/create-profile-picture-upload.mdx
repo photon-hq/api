@@ -21,7 +21,7 @@ photon.account.create_profile_picture_upload(input: CreateAccountProfilePictureU
 </Tab>
 <Tab title="Rust">
 ```rust Rust
-client.create_account_profile_picture_upload(body: &types::ProfilePictureUploadRequest).await -> Result<ResponseValue<types::ProfilePictureUpload>, Error<CreateAccountProfilePictureUploadError>>
+client.create_account_profile_picture_upload(params: Option<CreateAccountProfilePictureUploadParams>, body: &types::ProfilePictureUploadRequest).await -> Result<ResponseValue<types::ProfilePictureUpload>, Error<CreateAccountProfilePictureUploadError>>
 ```
 </Tab>
 <Tab title="Go">
@@ -70,6 +70,7 @@ let client = PhotonClientBuilder::new()
     .build()?;
 let result = client
     .create_account_profile_picture_upload(
+        None,
         &serde_json::from_value(serde_json::json!({
             "contentType": "image/jpeg",
         }))?,
@@ -119,6 +120,13 @@ _ = result
 
 </ResponseExample>
 
+## Parameters
+
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
+
 ## Body
 
 <ParamField body="contentType" type={"ProfilePictureContentType"} required>
@@ -129,6 +137,8 @@ _ = result
 ## Returns
 
 **`201`** A short-lived, Account-bound presigned S3 POST. ProfilePictureUpload
+
+Headers: `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="expiresAt" type={"string (date-time)"} required>
 

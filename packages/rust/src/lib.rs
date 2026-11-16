@@ -2,6 +2,7 @@
 
 mod client;
 mod config_generated;
+mod webhooks;
 #[allow(unused_parens)]
 mod generated {
     include!("generated.rs");
@@ -9,3 +10,4 @@ mod generated {
 
 pub use client::{DEFAULT_BASE_URL, DEFAULT_MAXIMUM_RETRY_AFTER, PhotonClientBuilder};
 pub use generated::*;
+pub use webhooks::{InvalidWebhookSecret, WebhookSecret, WebhookVerificationError, verify_webhook};

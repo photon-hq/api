@@ -6,7 +6,7 @@ description: "Invite a Member or Viewer to all organization projects: createOrga
 
 `POST /v1/organizations/{organizationId}/invitations`
 
-
+Invites an email address to the organization as a Member or Viewer and emails it a link that stays valid for 7 days; the Admin and Owner roles can't be invited. Owners and Admins can call it with account credentials and the required Idempotency-Key header. Inviting an address that has a pending invitation for the same role resends it and a different role returns 409, while sending too often (twice within a minute, more than 30 an hour or 100 pending per organization) returns 429.
 
 <Tabs>
 <Tab title="TypeScript">

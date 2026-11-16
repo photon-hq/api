@@ -6,7 +6,7 @@ description: "Leave an organization; Owners must transfer or close first: leaveO
 
 `POST /v1/organizations/{organizationId}/leave`
 
-
+Removes the authenticated account's own membership. Nothing is revoked: the account's sessions, OAuth grants and Account Service Keys stop being accepted for the organization and its projects shortly after the call, and project API keys and Service Identity credentials it created keep working until they are revoked. Any member except the Owner can call it, with account credentials or an OAuth grant for this organization with the organization:read scope; the Owner gets 409 and must transfer ownership or delete the organization first. Send the caller's own membership version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header.
 
 <Tabs>
 <Tab title="TypeScript">

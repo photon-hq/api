@@ -6,7 +6,7 @@ description: "List pending organization invitations: listOrganizationInvitations
 
 `GET /v1/organizations/{organizationId}/invitations`
 
-
+Lists the organization's pending, unexpired invitations, newest first, in one unpaginated response; accepted, revoked and expired invitations are left out, and invitation links are never returned. Owners and Admins can call it with account credentials.
 
 <Tabs>
 <Tab title="TypeScript">

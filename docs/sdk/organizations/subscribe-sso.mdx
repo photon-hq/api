@@ -6,7 +6,7 @@ description: "Subscribe to organization SSO: subscribeSso in the TypeScript, Pyt
 
 `POST /v1/organizations/{organizationId}/sso/subscription`
 
-
+Starts the organization's SSO subscription, billed monthly in advance and prorated. Send the current quote from getSsoSubscription as expectedAmount, expectedCurrency and expectedCurrentPeriodEnd, because a changed price returns 409; the 202 means the request was accepted, and the charge and its outcome then show in the subscription's state. Only Owners and Admins can call it, with account credentials and the required Idempotency-Key header.
 
 <Tabs>
 <Tab title="TypeScript">

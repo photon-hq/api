@@ -6,7 +6,7 @@ description: "Read an organization OAuth client: getOrganizationOauthClient in t
 
 `GET /v1/organizations/{organizationId}/oauth/clients/{clientId}`
 
-
+Returns one third-party OAuth application the organization owns, without its secret. Any member can call it with account credentials. The ETag response header is the value updateOrganizationOauthClient needs in If-Match.
 
 <Tabs>
 <Tab title="TypeScript">

@@ -6,7 +6,7 @@ description: "Purchase SMS number: purchaseSmsNumber in the TypeScript, Python, 
 
 `POST /v1/projects/{id}/platforms/sms/numbers`
 
-Buys one US local number from the provider and records it as a resource with SMS enabled. Requires countryCode (US) and accepts an optional three-digit geographic areaCode. The server selects an exact matching number. Empty inventory keeps the operation running until a number is available or the caller cancels before ordering begins. Always answers 202 with an operation: the work runs behind the response, and the Location points at the operation to poll. New area-specific requests must appear in current provider coverage; discover it with GET /sms/numbers/area-codes?countryCode=US. Coverage and subscription checks run before operation creation. Billing follows delivery. Replays return the original operation without checking current coverage. The Idempotency-Key is required and permanent: repeating it returns the same operation forever, never a second number. A further number always needs a NEW key, including while others are still running. Requires the platforms:write permission bound to the project resource in the path.
+Buys one US local number from the provider and records it as a resource with SMS enabled. Requires countryCode (US) and accepts an optional three-digit geographic areaCode. The server selects an exact matching number. While inventory is empty the operation keeps searching, and the caller can cancel it until ordering begins; a search still empty one minute after the operation was created fails it with `NUMBER_INVENTORY_UNAVAILABLE`. Always answers 202 with an operation: the work runs behind the response, and the Location points at the operation to poll. New area-specific requests must appear in current provider coverage; discover it with GET /sms/numbers/area-codes?countryCode=US. Coverage and subscription checks run before operation creation. Billing follows delivery. Replays return the original operation without checking current coverage. The Idempotency-Key is required and permanent: repeating it returns the same operation forever, never a second number. A further number always needs a NEW key, including while others are still running. An optional promotionCode is redeemed with the number's charge, which follows delivery: a code billing refuses hands the number back, and its release operation carries the refusal (`reason` `charge_refused`, with `detail.chargeRefusal` `&#123; code: "promotion_code_rejected", detail: &lt;why> &#125;`). Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `ENTITLEMENT_REQUIRED`, `NUMBER_INVENTORY_UNAVAILABLE`, `NUMBER_ORDER_FAILED`, `NUMBER_ORDER_RECONCILIATION_REQUIRED`, `NUMBER_SEARCH_FAILED`.
 
 <Tabs>
 <Tab title="TypeScript">
@@ -131,8 +131,13 @@ _ = result
   "detail": {},
   "endedAt": "2026-01-01T00:00:00.000Z",
   "error": {
-    "code": "string",
-    "detail": "string"
+    "code": "CHARGE_REFUSED",
+    "remediation": {
+      "action": "Check the payment method in Billing, then request the purchase again."
+    },
+    "status": 402,
+    "title": "Charge Refused",
+    "type": "https://photon.codes/docs/problems/charge-refused"
   },
   "operationId": "string",
   "projectId": "string",
@@ -169,6 +174,10 @@ Identifies one logical mutation across retries.
 
 </ParamField>
 
+<ParamField body="promotionCode" type={"string"}>
+A promotion code to redeem with this number's charge. Billing takes a fixed amount off the charge. The charge follows delivery, so a code Billing refuses hands the number back, and the release operation carries the refusal. Part of the request's identity: repeating the Idempotency-Key with a different code, or none, is refused.
+</ParamField>
+
 
 ## Returns
 
@@ -193,7 +202,7 @@ Headers: `Location`. The raw response carries these headers; see [Raw responses]
 </ResponseField>
 
 <ResponseField name="error" type={"OperationError"}>
-
+Why the operation failed: the problem of its `code`, the same object the endpoint returns when it rejects a request, with the `status` that rejection would have had (the poll itself answers 200). Every code an operation can end with is a branch below, and the endpoint that starts the operation lists its codes. Branch on `code`, never on `status`, and keep a default: a code added after your client was generated arrives as a generic problem with `type: about:blank` and `status: 500`. That 500 means this document does not describe the code yet, not that the request failed on our side or that retrying will help.
 </ResponseField>
 
 <ResponseField name="operationId" type={"string"} required>

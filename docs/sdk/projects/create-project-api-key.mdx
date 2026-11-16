@@ -48,7 +48,7 @@ const result = await photon.projects.createProjectApiKey({
   body: {
     name: "name",
     permissions: [
-      "events:read",
+      "calls:read",
     ],
   },
 });
@@ -72,7 +72,7 @@ result = photon.projects.create_project_api_key(
         "body": {
             "name": "name",
             "permissions": [
-                "events:read",
+                "calls:read",
             ],
         },
     })
@@ -93,7 +93,7 @@ let result = client
         &serde_json::from_value(serde_json::json!({
             "name": "name",
             "permissions": [
-                "events:read",
+                "calls:read",
             ],
         }))?,
     )
@@ -117,7 +117,7 @@ var body photonapi.CreateProjectApiKeyRequest
 if err := json.Unmarshal([]byte(`{
 	"name": "name",
 	"permissions": [
-		"events:read"
+		"calls:read"
 	]
 }`), &body); err != nil {
 	return err

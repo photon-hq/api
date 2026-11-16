@@ -21,12 +21,12 @@ photon.account.list_account_service_keys(input: ListAccountServiceKeysInput | No
 </Tab>
 <Tab title="Rust">
 ```rust Rust
-client.list_account_service_keys().await -> Result<ResponseValue<types::ListAccountServiceKeysResponse>, Error<ListAccountServiceKeysError>>
+client.list_account_service_keys(params: Option<ListAccountServiceKeysParams>).await -> Result<ResponseValue<types::ListAccountServiceKeysResponse>, Error<ListAccountServiceKeysError>>
 ```
 </Tab>
 <Tab title="Go">
 ```go Go
-client.Account.ListAccountServiceKeys(ctx context.Context, opts ...RequestOption) (*ListAccountServiceKeysResponse, error)
+client.Account.ListAccountServiceKeys(ctx context.Context, params *ListAccountServiceKeysParams, opts ...RequestOption) (*ListAccountServiceKeysResponse, error)
 ```
 </Tab>
 </Tabs>
@@ -58,7 +58,7 @@ let client = PhotonClientBuilder::new()
     .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
     .build()?;
 let result = client
-    .list_account_service_keys()
+    .list_account_service_keys(None)
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
@@ -74,7 +74,7 @@ import (
 
 ctx := context.Background()
 client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
-result, err := client.Account.ListAccountServiceKeys(ctx)
+result, err := client.Account.ListAccountServiceKeys(ctx, nil)
 if err != nil {
 	return err
 }
@@ -101,9 +101,18 @@ _ = result
 
 </ResponseExample>
 
+## Parameters
+
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
+
 ## Returns
 
 **`200`** Unrevoked Account Service Key metadata, including expired keys, newest first. ListAccountServiceKeysResponse
+
+Headers: `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="serviceKeys" type={"array of AccountServiceKey"} required>
 
