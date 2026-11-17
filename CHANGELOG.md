@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.7.1 (2026-11-17)
+
+
+### Bug Fixes
+
+* **postman:** send a fresh Idempotency-Key with every request (ENG-5962)
+
 ## 0.7.0 (2026-11-16)
 
 

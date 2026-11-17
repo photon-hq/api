@@ -6,18 +6,28 @@ The button forks the hosted collection from
 [Photon's public Postman workspace](https://www.postman.com/photonhq/photon-api) into your own workspace. You can
 instead download [`collection.json`](collection.json) and import it.
 
-1. Set the empty `apiToken` variable to a supported API key or token in your
-   own workspace. Keep the credential private.
+1. Paste a supported API key or token as the value of the empty `apiToken`
+   collection variable in your own workspace. Postman keeps a variable's value
+   on your computer unless you share it, so don't share this one. Where Postman
+   shows an initial and a current value, use the current value.
 2. Fill required path, query and body values with your own values, review the
    request, and send it. Mutating requests change resources in your account.
 
-The collection sends requests to `https://api.photon.codes`. The SDKs do not run OAuth flows,
+The collection sends requests to the API origin in its `baseUrl` variable,
+`https://api.photon.codes`. The SDKs do not run OAuth flows,
 and neither does the collection: obtain an access token through your
 application's authentication flow and use it as `apiToken`.
 
-Optional query parameters and headers start disabled. Enable only the filters
-you need; for example, use either created-time or updated-time filters when the
-endpoint describes them as alternatives. Pagination tokens come from a previous
+Every request that takes an `Idempotency-Key` header sends Postman's
+`{{$guid}}` dynamic variable, so each Send uses a new key and runs the
+operation again. To retry an operation on purpose, for example after a timeout,
+open the Postman Console, copy the key that the earlier Send used, and paste it
+in place of `{{$guid}}`. Send the same body, then put `{{$guid}}` back.
+
+Optional query parameters and headers, other than `Idempotency-Key`, start
+disabled. Enable only the filters you need; for example, use either
+created-time or updated-time filters when the endpoint describes them as
+alternatives. Pagination tokens come from a previous
 response. Empty credential fields must be filled in locally before sending.
 
 The attachment upload includes a small `hello.txt` file in a complete
