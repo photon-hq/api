@@ -16,6 +16,27 @@ function withLocalCredentials(value, key = "") {
   return value;
 }
 
+// Postman replaces {{$guid}} with a new UUID on every Send; validate the
+// header schema with one such UUID without saving it in the collection.
+const freshKey = "{{$guid}}";
+const sentValue = (value) => value === freshKey ? "00000000-0000-4000-8000-000000000000" : value;
+const literalUuid = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
+
+/**
+ * Each Send needs a new Idempotency-Key, and a fixed UUID in a public
+ * collection reads as a secret to Postman's scanner. Schema validity alone
+ * permits both, so check the request, saved requests and saved responses.
+ */
+function checkHeaderValues(item) {
+  const examples = (item.response ?? []).flatMap((response) => [["saved request", response.originalRequest], ["saved response", response]]);
+  for (const [where, entry] of [["request", item.request], ...examples]) {
+    for (const { key, value, disabled } of entry?.header ?? []) {
+      assert.ok(!/^idempotency-key$/i.test(key) || (value === freshKey && !disabled), `${where}: ${key} must be an enabled ${freshKey}`);
+      assert.ok(!literalUuid.test(String(value)), `${where}: header ${key} holds a literal UUID`);
+    }
+  }
+}
+
 function* requestItems(items) {
   for (const item of items) {
     if (item.item) yield* requestItems(item.item);
@@ -72,7 +93,8 @@ export function checkCollectionSource(schema, collection) {
   const seen = new Set();
   const counts = { operations: 0, jsonBodies: 0, formBodies: 0, rawBodies: 0, headers: 0 };
   const errors = [];
-  for (const { request } of requestItems(collection.item)) {
+  for (const item of requestItems(collection.item)) {
+    const { request } = item;
     let label = request.name ?? request.method;
     try {
       const { pathItem, operation, path } = operationFor(schema, request);
@@ -118,10 +140,11 @@ export function checkCollectionSource(schema, collection) {
         if (!actual) continue;
         assert.ok(!parameter.required || !actual.disabled, `Disabled required header: ${parameter.name}`);
         assert.ok(parameter.schema !== undefined, `Missing source header schema: ${parameter.name}`);
-        validate(`${parameterPath}/schema`, withLocalCredentials(actual.value, name), `Header ${parameter.name}`);
+        validate(`${parameterPath}/schema`, withLocalCredentials(sentValue(actual.value), name), `Header ${parameter.name}`);
         if (name === "content-length" && body) assert.equal(actual.value, String(Buffer.byteLength(body.wire)), "Content-Length does not match the inline payload");
         counts.headers++;
       }
+      checkHeaderValues(item);
     } catch (error) {
       errors.push(new Error(`${label}: ${error.message}`, { cause: error }));
     }

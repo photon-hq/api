@@ -103,7 +103,7 @@ test("required headers and inline binary byte length are checked against the sou
   const { schema, collection, request, operation } = fixture({ type: "string", format: "binary", minLength: 1 }, null, "multipart/related");
   request.body.raw = "--sample\r\n\r\né\r\n--sample--\r\n";
   request.header[0].value = "multipart/related; boundary=sample";
-  request.header.push({ key: "Idempotency-Key", value: "test-request" });
+  request.header.push({ key: "Idempotency-Key", value: "{{$guid}}" });
   operation.parameters = [
     { in: "header", name: "content-length", required: true, schema: { type: "string", pattern: "^[1-9][0-9]*$" } },
     { in: "header", name: "content-type", required: true, schema: { type: "string", maxLength: 512 } },
@@ -122,6 +122,39 @@ test("required headers and inline binary byte length are checked against the sou
   assert.throws(() => checkCollectionSource(schema, collection), /fewer than 8 characters/);
   request.header.pop();
   assert.throws(() => checkCollectionSource(schema, collection), /Missing required header/);
+});
+
+test("Idempotency-Key headers must be an enabled {{$guid}} and no header may hold a literal UUID", () => {
+  const { schema, collection, request, operation } = fixture({ type: "object" }, {});
+  // The contract's UUID pattern rejects the text {{$guid}} and accepts the maximum UUID.
+  operation.parameters = [{ in: "header", name: "idempotency-key", required: true, schema: { type: "string", format: "uuid",
+    pattern: "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$" } }];
+  request.header.push({ key: "idempotency-key", value: "{{$guid}}" });
+  const response = { code: 201, originalRequest: { header: [{ key: "Idempotency-Key", value: "{{$guid}}" }] }, header: [{ key: "Content-Type", value: "application/json" }] };
+  collection.item[0].response = [response];
+  const before = structuredClone(collection);
+  assert.equal(checkCollectionSource(schema, collection).headers, 1);
+  assert.deepEqual(collection, before, "the check never saves its stand-in UUID");
+  request.header[1].key = "Idempotency-Key";
+  assert.equal(checkCollectionSource(schema, collection).headers, 1);
+  request.header[1].value = "ffffffff-ffff-ffff-ffff-ffffffffffff";
+  assert.throws(() => checkCollectionSource(schema, collection), /createItem: request: Idempotency-Key must be an enabled \{\{\$guid\}\}/);
+  request.header[1].value = "{{$guid}}";
+  request.header[1].disabled = true;
+  assert.throws(() => checkCollectionSource(schema, collection), /Disabled required header/);
+  delete request.header[1].disabled;
+  response.originalRequest.header[0].value = "QqgFV.+?872U";
+  assert.throws(() => checkCollectionSource(schema, collection), /saved request: Idempotency-Key must be an enabled/);
+  response.originalRequest.header[0] = { key: "IDEMPOTENCY-KEY", value: "{{$guid}}", disabled: true };
+  assert.throws(() => checkCollectionSource(schema, collection), /saved request: IDEMPOTENCY-KEY must be an enabled/);
+  response.originalRequest.header[0] = { key: "idempotency-key", value: "{{$guid}}" };
+  assert.equal(checkCollectionSource(schema, collection).headers, 1);
+  for (const [headers, where] of [[request.header, "request"], [response.originalRequest.header, "saved request"], [response.header, "saved response"]]) {
+    headers.push({ key: "X-Trace", value: "trace 00000000-0000-0000-0000-000000000000" });
+    assert.throws(() => checkCollectionSource(schema, collection), new RegExp(`createItem: ${where}: header X-Trace holds a literal UUID`));
+    headers.pop();
+  }
+  assert.equal(checkCollectionSource(schema, collection).headers, 1);
 });
 
 test("path parameter overrides and referenced OpenAPI objects retain their schema locations", () => {

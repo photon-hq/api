@@ -23,6 +23,12 @@ the original `allOf` accepts. If no alternative is compatible, the `allOf` is
 left unchanged and the source check reports it. Optional parameters start disabled.
 Credential fields and credential-shaped values in generated request/response
 examples are emptied, including URL variables; saved schema values are untouched.
+Every `Idempotency-Key` header, matched in any letter case, is set to Postman's
+`{{$guid}}` dynamic variable and enabled, in each request and in each saved
+example's original request. Postman generates a new UUID for it on every Send,
+so a second Send never reuses the key, as a value generated from the schema
+would. The collection description names the `baseUrl` and `apiToken`
+variables and explains how to retry an operation with the same key on purpose.
 The attachment example includes metadata and a small text file with matching
 multipart framing and byte size; request Content-Length is calculated by Postman.
 `npm run check:postman:source` in the public source tree validates requests and saved responses directly
@@ -31,7 +37,14 @@ URL-encoded form bodies, inline raw payloads and header examples are checked at
 their original schema locations, including references, formats, enums, nulls,
 unions, tuples and typed maps. Required headers must be enabled; an omitted
 Content-Length is checked using the inline payload's UTF-8 byte count because
-Postman calculates it. Optional query examples must remain disabled.
+Postman calculates it. Optional query examples must remain disabled. A
+`{{$guid}}` header is validated as a fixed valid UUID, which is never saved.
+The check also fails when an `Idempotency-Key` header, in any letter case and
+in a request or saved example, is anything but an enabled `{{$guid}}`, and when
+any request, saved request or saved response header holds a literal UUID.
+Schema validity alone is not enough here: the contract's UUID pattern accepts
+the maximum UUID, and Postman's secret scanner treats a literal UUID in a public
+workspace as a credential and replaces it.
 
 Saved response examples are checked against the original response schemas, with
 exact status codes taking precedence over ranges and `default`, and exact media
@@ -65,6 +78,22 @@ worker access disabled. These are defense-in-depth restrictions, not a claim
 that Node permissions are an operating-system sandbox. Use reviewed source and
 an unprivileged CI job without publishing credentials.
 
+## Hosted collection
+
+A release replaces the hosted collection in Photon's public Postman workspace
+with its `postman/collection.json` (`tools/publish/hosted-postman.mjs`), and
+reads it back. It never moves the hosted copy to an older release. A re-run for
+the same release refuses to overwrite a hosted copy that differs from the
+release's collection, for example after a hand edit in the workspace or after
+Postman's secret scanner replaced a value, and fails with "Hosted collection has
+unexpected edits to this release; refusing to overwrite it". The publisher
+reads the hosted release from the first line of the collection description, so
+this protection holds only while that line is intact; without it, the hosted
+copy counts as unreleased and the re-run replaces it. To recover, undo the
+edit in the workspace so that the hosted copy matches the release's collection
+again, and run the publish again; it then reports `already-current`. Or leave
+the hosted copy until the next release, which replaces the whole collection.
+
 ## Dependency assessment
 
 Verdict: **APPROVE WITH CAVEATS** for offline generation, assessed September 17,
@@ -89,10 +118,12 @@ proof that every possible input is safe. Tests exercise conversion with the
 Faker evaluator disabled.
 
 The other reported transitive issues are addressed with pinned patched
-`js-yaml`, `yaml` and `uuid`. `node tools/postman/check-audit.mjs` permits only
-this advisory for the inspected converter/Faker versions and fails on other
-advisories or audit errors. A dependency upgrade requires reassessment. Review
-upstream updates during normal dependency maintenance.
+`js-yaml`, `yaml`, `uuid` and `fast-uri`. `node tools/postman/check-audit.mjs`
+permits only this advisory for the inspected converter/Faker versions and fails
+on other advisories or audit errors. CI runs it on every pull request and push
+to main, after installing this directory's locked dependencies, and Dependabot
+proposes updates to them weekly. A dependency upgrade requires reassessment.
+Review upstream updates during normal dependency maintenance.
 
 ### Source validation dependencies
 

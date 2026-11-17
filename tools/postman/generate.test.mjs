@@ -23,6 +23,42 @@ test("converter output is reproducible and credentials are empty", async () => {
   assert.ok(!serialized.includes("_postman_id"));
 });
 
+test("every Idempotency-Key header sends a new {{$guid}}, in requests and saved examples", async () => {
+  const input = structuredClone(schema);
+  const responses = (status) => ({ [status]: { description: "Created", content: { "application/json": { schema: { type: "object", properties: { id: { type: "string" } } }, example: { id: "pho_example" } } } },
+    "409": { description: "Conflict", content: { "application/json": { schema: { type: "object", properties: { code: { type: "string" } } }, example: { code: "CONFLICT" } } } } });
+  const printable = { type: "string", minLength: 1, maxLength: 255, pattern: "^[\\x21-\\x7e]{1,255}$" };
+  // The contract's UUID pattern accepts the nil and maximum UUID, which the faker may pick.
+  const uuid = { type: "string", format: "uuid", pattern: "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$" };
+  input.paths = {
+    "/v1/projects": { post: { operationId: "createProject", summary: "Create a project", parameters: [{ name: "Idempotency-Key", in: "header", required: true, schema: printable }], responses: responses("201") } },
+    "/v1/clients": { post: { operationId: "createClient", summary: "Create a client", parameters: [{ name: "idempotency-key", in: "header", required: true, schema: uuid }], responses: responses("201") } },
+    "/v1/spaces": { put: { operationId: "putSpace", summary: "Put a space", parameters: [{ name: "Idempotency-Key", in: "header", required: false, schema: printable }], responses: responses("200") } },
+  };
+  const output = await generateCollection(input, (await import("openapi-to-postmanv2")).default);
+  const items = (list) => list.flatMap((item) => item.item ? items(item.item) : [item]);
+  const keys = items(output.item).flatMap((item) => [item.request, ...item.response.map((response) => response.originalRequest)])
+    .flatMap((request) => request.header.filter((header) => /^idempotency-key$/i.test(header.key)));
+  assert.deepEqual(new Set(keys.map((header) => header.key)), new Set(["Idempotency-Key", "idempotency-key"]));
+  assert.equal(keys.length, 9, "3 requests and 6 saved examples");
+  for (const header of keys) {
+    assert.equal(header.value, "{{$guid}}");
+    assert.equal(header.disabled, false, "enabled, including where the contract makes the header optional");
+  }
+  assert.doesNotMatch(JSON.stringify(output), /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i);
+});
+
+test("the collection description explains the setup, new keys and deliberate retries", async () => {
+  const output = await generateCollection(schema, (await import("openapi-to-postmanv2")).default);
+  const { content, type } = output.info.description;
+  assert.equal(type, "text/plain");
+  assert.ok(content.includes(`\`baseUrl\` collection variable, ${schema.servers[0].url}.`));
+  assert.match(content, /`apiToken` collection variable.*current value/s);
+  assert.match(content, /each Send uses a new key/);
+  assert.match(content, /Postman Console, copy the key the earlier Send used, and paste it in place of `\{\{\$guid\}\}`/);
+  assert.doesNotMatch(content, /Photon API \d/, "the release step adds the release line");
+});
+
 test("conversion does not call the advisory's Faker template evaluator", async () => {
   const { createRequire } = await import("node:module");
   const require = createRequire(import.meta.url);

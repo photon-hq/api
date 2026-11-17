@@ -250,6 +250,12 @@ export async function generateCollection(schema, converter) {
   variables.set("apiToken", { key: "apiToken", value: "", type: "string" });
   collection.variable = emptyCredentials([...variables.values()]);
   collection.auth = { type: "bearer", bearer: [{ key: "token", value: "{{apiToken}}", type: "string" }] };
+  // The release step puts the release line above this text.
+  collection.info.description = { content: [
+    `Requests go to the API origin in the \`baseUrl\` collection variable, ${origin}.`,
+    "Paste your API key or access token as the value of the `apiToken` collection variable. Postman keeps a variable's value on your computer unless you share it, so don't share this one. Where Postman shows an initial and a current value, use the current value.",
+    "Every request that takes an `Idempotency-Key` header sends `{{$guid}}`, so each Send uses a new key and runs the operation again. To retry an operation on purpose, for example after a timeout, open the Postman Console, copy the key the earlier Send used, and paste it in place of `{{$guid}}`. Send the same body, then put `{{$guid}}` back.",
+  ].join("\n\n"), type: "text/plain" };
   function requests(items) {
     for (const item of items) {
       if (item.item) requests(item.item);
@@ -294,6 +300,8 @@ export async function generateCollection(schema, converter) {
           example.body = { mode: "raw", raw: `--${boundary}\r\nContent-Type: application/json\r\n\r\n${JSON.stringify(metadata)}\r\n--${boundary}\r\nContent-Type: text/plain\r\n\r\n${file}\r\n--${boundary}--\r\n` };
         }
         for (const field of ["body", "header"]) if (example[field]) example[field] = emptyCredentials(example[field]);
+        // A schema example would be the same on every Send. Postman generates a new UUID for {{$guid}} each time.
+        for (const header of example.header) if (/^idempotency-key$/i.test(header.key)) Object.assign(header, { value: "{{$guid}}", disabled: false });
         if (example.url && typeof example.url === "object") {
           for (const field of ["query", "variable"]) if (example.url[field]) example.url[field] = emptyCredentials(example.url[field]);
         }
@@ -301,7 +309,7 @@ export async function generateCollection(schema, converter) {
       cleanRequestExamples(request);
       if (operation.operationId === "uploadAttachment") {
         const description = typeof request.description === "string" ? request.description : request.description?.content ?? "";
-        request.description = `${description}\n\nThis request uploads the included hello.txt text file. Set your project ID and a fresh Idempotency-Key. The raw body contains JSON metadata followed by the file bytes. If editing it, keep sizeBytes equal to the UTF-8 file byte count and preserve the CRLF boundaries. For a binary file, select a prepared multipart/related payload as a binary body and set its matching boundary in Content-Type. Postman calculates Content-Length.`;
+        request.description = `${description}\n\nThis request uploads the included hello.txt text file. Set your project ID; each Send uses a new Idempotency-Key. The raw body contains JSON metadata followed by the file bytes. If editing it, keep sizeBytes equal to the UTF-8 file byte count and preserve the CRLF boundaries. For a binary file, select a prepared multipart/related payload as a binary body and set its matching boundary in Content-Type. Postman calculates Content-Length.`;
       }
       for (const response of item.response ?? []) {
         response.name = exampleName(response.name);
