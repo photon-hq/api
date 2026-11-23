@@ -16,7 +16,7 @@ photon.projects.platforms.assignVoiceLineProfile(input: AssignVoiceLineProfileIn
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.projects.platforms.assign_voice_line_profile(input: AssignVoiceLineProfileInput) -> models.VoiceLineProfileAssignment
+photon.projects.platforms.assign_voice_line_profile(input: AssignVoiceLineProfileInput, *, options: RequestOptions | None = None) -> models.VoiceLineProfileAssignment
 ```
 </Tab>
 <Tab title="Rust">
@@ -139,6 +139,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField path="id" type={"string"} required>
 
 </ParamField>
@@ -162,6 +166,8 @@ _ = result
 ## Returns
 
 **`200`** The updated Voice line profile assignment. VoiceLineProfileAssignment
+
+Headers: `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="profileId" type={"string"}>
 

@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.8.0 (2026-11-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* update the public API from production (breaking)
+* **sdk:** keep Photon-Version and unreachable 304s out of SDK method signatures (ENG-6436)
+
+### Features
+
+* update the public API from production (breaking)
+
+
+### Bug Fixes
+
+* **sdk:** keep Photon-Version and unreachable 304s out of SDK method signatures (ENG-6436)
+
 ## 0.7.1 (2026-11-17)
 
 

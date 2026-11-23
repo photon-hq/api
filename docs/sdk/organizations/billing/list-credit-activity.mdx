@@ -16,7 +16,7 @@ photon.organizations.billing.listCreditActivity(input: ListCreditActivityInput, 
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.organizations.billing.list_credit_activity(input: ListCreditActivityInput) -> models.ListCreditActivityResponse
+photon.organizations.billing.list_credit_activity(input: ListCreditActivityInput, *, options: RequestOptions | None = None) -> models.ListCreditActivityResponse
 ```
 </Tab>
 <Tab title="Rust">
@@ -120,6 +120,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField path="organizationId" type={"string"} required>
 
 </ParamField>
@@ -133,6 +137,8 @@ Page to read, from 1: the nextPage of the page before.
 
 **`200`** One page of the organization's credit activity. ListCreditActivityResponse
 
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
 <ResponseField name="entries" type={"array of CreditActivity"} required>
 Newest first.
 </ResponseField>
@@ -140,4 +146,8 @@ Newest first.
 <ResponseField name="nextPage" type={"integer | null"} required>
 Pass as page to read the next page. Null on the last page.
 </ResponseField>
+
+**`304`** Not Modified. Sent only when If-None-Match matches the ETag of an earlier 200 response for the same representation; no body. No body.
+
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 

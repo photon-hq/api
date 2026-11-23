@@ -6,7 +6,7 @@ description: "Create project: createProject in the TypeScript, Python, Rust and 
 
 `POST /v1/organizations/{organizationId}/projects`
 
-Creates in the authorized organization. In addition to account credentials, explicitly granted Service Identity API keys and M2M tokens may create projects. Project API keys cannot create projects. Creator and private credential evidence come only from the trusted authorization context. The caller-selected slug is immutable, must be 3 to 63 lowercase ASCII alphanumerics separated by single hyphens, and cannot be reserved or held by any active or deleted project.
+Creates in the authorized organization. In addition to account credentials, explicitly granted Service Identity API keys and M2M tokens may create projects. Project API keys cannot create projects. Caller identity and credential evidence come only from the trusted authorization context. The caller-selected slug is immutable, must be 3 to 63 lowercase ASCII alphanumerics separated by single hyphens, and cannot be reserved or held by any active or deleted project.
 
 <Tabs>
 <Tab title="TypeScript">
@@ -16,7 +16,7 @@ photon.organizations.projects.create(input: CreateProjectInput, options?: Reques
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.organizations.projects.create(input: CreateProjectInput) -> models.Project
+photon.organizations.projects.create(input: CreateProjectInput, *, options: RequestOptions | None = None) -> models.Project
 ```
 </Tab>
 <Tab title="Rust">
@@ -137,9 +137,6 @@ _ = result
   },
   "billingInitialization": "pending",
   "createdAt": "2026-01-01T00:00:00.000Z",
-  "createdByAccountId": null,
-  "createdByActorId": null,
-  "createdByActorKind": null,
   "deletedAt": null,
   "name": "string",
   "organizationId": "string",
@@ -158,9 +155,6 @@ _ = result
   },
   "billingInitialization": "pending",
   "createdAt": "2026-01-01T00:00:00.000Z",
-  "createdByAccountId": null,
-  "createdByActorId": null,
-  "createdByActorKind": null,
   "deletedAt": null,
   "name": "string",
   "organizationId": "string",
@@ -173,6 +167,10 @@ _ = result
 </ResponseExample>
 
 ## Parameters
+
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
 
 <ParamField header="Idempotency-Key" type={"string"} required>
 Identifies one logical mutation across retries.
@@ -198,6 +196,8 @@ Identifies one logical mutation across retries.
 
 **`201`** The created project, ready to use: its billingInitialization is completed or unknown. A replay after setup finished answers here too. Project
 
+Headers: `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
 <ResponseField name="agentProfile" type={"AgentProfile"} required>
 
 </ResponseField>
@@ -207,18 +207,6 @@ Identifies one logical mutation across retries.
 </ResponseField>
 
 <ResponseField name="createdAt" type={"string (date-time)"} required>
-
-</ResponseField>
-
-<ResponseField name="createdByAccountId" type={"string | null"} required>
-
-</ResponseField>
-
-<ResponseField name="createdByActorId" type={"string | null"} required>
-
-</ResponseField>
-
-<ResponseField name="createdByActorKind" type={"ProjectCreatedByActorKind | null"} required>
 
 </ResponseField>
 
@@ -248,7 +236,7 @@ Identifies one logical mutation across retries.
 
 **`202`** The project is created but its billing is still being set up. GET the Location after the Retry-After interval until billingInitialization is completed or unknown; retry_required means setup is being retried, so keep polling. Project
 
-Headers: `Location`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+Headers: `Location`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="agentProfile" type={"AgentProfile"} required>
 
@@ -259,18 +247,6 @@ Headers: `Location`. The raw response carries these headers; see [Raw responses]
 </ResponseField>
 
 <ResponseField name="createdAt" type={"string (date-time)"} required>
-
-</ResponseField>
-
-<ResponseField name="createdByAccountId" type={"string | null"} required>
-
-</ResponseField>
-
-<ResponseField name="createdByActorId" type={"string | null"} required>
-
-</ResponseField>
-
-<ResponseField name="createdByActorKind" type={"ProjectCreatedByActorKind | null"} required>
 
 </ResponseField>
 

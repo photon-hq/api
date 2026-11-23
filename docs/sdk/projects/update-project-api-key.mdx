@@ -16,7 +16,7 @@ photon.projects.updateProjectApiKey(input: UpdateProjectApiKeyInput, options?: R
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.projects.update_project_api_key(input: UpdateProjectApiKeyInput) -> models.ProjectApiKeyResponse
+photon.projects.update_project_api_key(input: UpdateProjectApiKeyInput, *, options: RequestOptions | None = None) -> models.ProjectApiKeyResponse
 ```
 </Tab>
 <Tab title="Rust">
@@ -158,6 +158,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField header="Idempotency-Key" type={"string"} required>
 Identifies one logical mutation across retries.
 </ParamField>
@@ -180,7 +184,9 @@ Identifies one logical mutation across retries.
 
 ## Returns
 
-**`200`** The key with its new permission list. Sending the list it already holds returns it unchanged. ProjectApiKeyResponse
+**`200`** The key with its new permission list. Sending the list it already holds returns it unchanged and never returns a secret. ProjectApiKeyResponse
+
+Headers: `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="apiKey" type={"ApiKey"} required>
 

@@ -439,6 +439,23 @@ def media(responses: dict) -> list[tuple[str, str, str | None]]:
     return out
 
 
+def response_accept(op: dict, success_media_type: str) -> str:
+    """Accept header of a download: its media type, then the declared error media types.
+
+    A wildcard download already accepts every error body, so it stays `*/*`.
+    """
+    if success_media_type == "*/*":
+        return "*/*"
+    media_types = [success_media_type]
+    for status, content in op["responses"].items():
+        if status.startswith("2"):
+            continue
+        for media_type in content:
+            if media_type not in media_types:
+                media_types.append(media_type)
+    return ", ".join(media_types)
+
+
 def param_fields(op: dict) -> list[dict]:
     fields: list[dict] = []
     used: set[str] = set()
@@ -524,7 +541,9 @@ def emit_op(node: Node, op: dict) -> tuple[str, str]:
         _, mt, n = ok[0]
         if mt == "":
             result = None
-        elif mt == "*/*":
+        elif mt.split(";", 1)[0].strip().lower() in ("*/*", "application/octet-stream", "application/pdf"):
+            # Every download, wildcard or a declared binary media type, streams
+            # through BinaryResponse with its Content-Type and Content-Disposition.
             result = ("binary", "BinaryResponse")
         else:
             typ, _ = mapper.go_type({"$ref": PREFIX + n})
@@ -565,7 +584,7 @@ def emit_op(node: Node, op: dict) -> tuple[str, str]:
     if op["idempotencyKeyRequired"]:
         code += "\tspec.idempotent = true\n"
     if result and result[0] == "binary":
-        code += '\tspec.accept = "*/*"\n'
+        code += f'\tspec.accept = "{response_accept(op, ok[0][1])}"\n'
     if result and result[0] == "redirect":
         code += "\tspec.redirect = true\n"
     if "304" in op["responses"]:

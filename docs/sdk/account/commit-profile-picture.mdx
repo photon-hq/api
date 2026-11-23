@@ -16,12 +16,12 @@ photon.account.commitProfilePicture(input: CommitAccountProfilePictureInput, opt
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.account.commit_profile_picture(input: CommitAccountProfilePictureInput) -> models.Account
+photon.account.commit_profile_picture(input: CommitAccountProfilePictureInput, *, options: RequestOptions | None = None) -> models.Account
 ```
 </Tab>
 <Tab title="Rust">
 ```rust Rust
-client.commit_account_profile_picture(idempotency_key: String, params: Option<CommitAccountProfilePictureParams>, body: &types::CommitAccountProfilePictureRequest).await -> Result<ResponseValue<types::Account>, Error<CommitAccountProfilePictureError>>
+client.commit_account_profile_picture(idempotency_key: String, body: &types::CommitAccountProfilePictureRequest).await -> Result<ResponseValue<types::Account>, Error<CommitAccountProfilePictureError>>
 ```
 </Tab>
 <Tab title="Go">
@@ -77,7 +77,6 @@ let client = PhotonClientBuilder::new()
 let result = client
     .commit_account_profile_picture(
         "idempotencyKey".to_owned(),
-        None,
         &serde_json::from_value(serde_json::json!({
             "uploadId": "uploadId",
         }))?,

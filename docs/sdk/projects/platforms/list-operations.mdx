@@ -16,7 +16,7 @@ photon.projects.platforms.listOperations(input: ListOperationsInput, options?: R
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.projects.platforms.list_operations(input: ListOperationsInput) -> models.OperationPage
+photon.projects.platforms.list_operations(input: ListOperationsInput, *, options: RequestOptions | None = None) -> models.OperationPage
 ```
 </Tab>
 <Tab title="Rust">
@@ -133,6 +133,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField path="id" type={"string"} required>
 
 </ParamField>
@@ -166,6 +170,8 @@ _ = result
 
 **`200`** A page of the project's operations. OperationPage
 
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
 <ResponseField name="nextPageToken" type={"string"}>
 
 </ResponseField>
@@ -173,4 +179,8 @@ _ = result
 <ResponseField name="operations" type={"array of Operation"} required>
 
 </ResponseField>
+
+**`304`** Not Modified. Sent only when If-None-Match matches the ETag of an earlier 200 response for the same representation; no body. No body.
+
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 

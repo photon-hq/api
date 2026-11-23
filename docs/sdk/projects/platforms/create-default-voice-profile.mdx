@@ -16,7 +16,7 @@ photon.projects.platforms.createDefaultVoiceProfile(input: CreateDefaultVoicePro
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.projects.platforms.create_default_voice_profile(input: CreateDefaultVoiceProfileInput) -> models.VoiceProfile
+photon.projects.platforms.create_default_voice_profile(input: CreateDefaultVoiceProfileInput, *, options: RequestOptions | None = None) -> models.VoiceProfile
 ```
 </Tab>
 <Tab title="Rust">
@@ -158,6 +158,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField path="id" type={"string"} required>
 
 </ParamField>
@@ -177,6 +181,8 @@ _ = result
 ## Returns
 
 **`200`** The identically replayed default Voice profile. VoiceProfile
+
+Headers: `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="configuration" type={"VoiceProfileConfiguration"} required>
 
@@ -223,6 +229,8 @@ _ = result
 </ResponseField>
 
 **`201`** The created default Voice profile. VoiceProfile
+
+Headers: `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="configuration" type={"VoiceProfileConfiguration"} required>
 

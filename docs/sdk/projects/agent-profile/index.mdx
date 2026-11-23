@@ -47,35 +47,35 @@ photon.projects.agentProfile.resetAvatar(input: ResetAgentProfileAvatarInput, op
 **[Get agent profile](/api-client/sdk/projects/agent-profile/get)**
 
 ```python Python
-photon.projects.agent_profile.get(input: GetAgentProfileInput) -> models.AgentProfile
+photon.projects.agent_profile.get(input: GetAgentProfileInput, *, options: RequestOptions | None = None) -> models.AgentProfile
 ```
 `GET /v1/projects/{projectId}/agent-profile`
 
 **[Create agent avatar upload](/api-client/sdk/projects/agent-profile/create-avatar-upload)**
 
 ```python Python
-photon.projects.agent_profile.create_avatar_upload(input: CreateAgentProfileAvatarUploadInput) -> models.AgentProfileAvatarUpload
+photon.projects.agent_profile.create_avatar_upload(input: CreateAgentProfileAvatarUploadInput, *, options: RequestOptions | None = None) -> models.AgentProfileAvatarUpload
 ```
 `POST /v1/projects/{projectId}/agent-profile/avatar/uploads`
 
 **[Commit agent avatar](/api-client/sdk/projects/agent-profile/commit-avatar)**
 
 ```python Python
-photon.projects.agent_profile.commit_avatar(input: CommitAgentProfileAvatarInput) -> models.AgentProfile
+photon.projects.agent_profile.commit_avatar(input: CommitAgentProfileAvatarInput, *, options: RequestOptions | None = None) -> models.AgentProfile
 ```
 `PUT /v1/projects/{projectId}/agent-profile/avatar`
 
 **[Update agent profile](/api-client/sdk/projects/agent-profile/update)**
 
 ```python Python
-photon.projects.agent_profile.update(input: UpdateAgentProfileInput) -> models.AgentProfile
+photon.projects.agent_profile.update(input: UpdateAgentProfileInput, *, options: RequestOptions | None = None) -> models.AgentProfile
 ```
 `PATCH /v1/projects/{projectId}/agent-profile`
 
 **[Reset agent avatar](/api-client/sdk/projects/agent-profile/reset-avatar)**
 
 ```python Python
-photon.projects.agent_profile.reset_avatar(input: ResetAgentProfileAvatarInput) -> models.AgentProfile
+photon.projects.agent_profile.reset_avatar(input: ResetAgentProfileAvatarInput, *, options: RequestOptions | None = None) -> models.AgentProfile
 ```
 `DELETE /v1/projects/{projectId}/agent-profile/avatar`
 

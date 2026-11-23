@@ -16,7 +16,7 @@ photon.organizations.verifyTenDlcBrandOtp(input: VerifyTenDlcBrandOtpInput, opti
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.organizations.verify_ten_dlc_brand_otp(input: VerifyTenDlcBrandOtpInput) -> models.VerifyTenDlcBrandOtpResponse
+photon.organizations.verify_ten_dlc_brand_otp(input: VerifyTenDlcBrandOtpInput, *, options: RequestOptions | None = None) -> models.VerifyTenDlcBrandOtpResponse
 ```
 </Tab>
 <Tab title="Rust">
@@ -145,6 +145,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField header="Idempotency-Key" type={"string"} required>
 Identifies one logical mutation across retries.
 </ParamField>
@@ -168,6 +172,8 @@ Identifies one logical mutation across retries.
 ## Returns
 
 **`200`** The updated redacted OTP status. VerifyTenDlcBrandOtpResponse
+
+Headers: `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="data" type={"TenDlcBrandOtp"} required>
 

@@ -8,7 +8,7 @@ from pydantic.experimental.missing_sentinel import MISSING
 
 from ._model_base import BaseModel
 from .generated import models
-from .transport import AsyncTransport, OperationSpec, RawResponse, SyncTransport
+from .transport import AsyncTransport, OperationSpec, RawResponse, RequestOptions, SyncTransport
 
 
 class AcceptOrganizationInvitationHeader(BaseModel):
@@ -179,7 +179,6 @@ class CloseOrganizationInput(BaseModel):
 class CommitAccountProfilePictureHeader(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
-    photon_version: models.PhotonVersion | MISSING = Field(default=MISSING, alias="Photon-Version")
     idempotency_key: str = Field(alias="Idempotency-Key")
 
 
@@ -455,23 +454,15 @@ class CountUsersInput(BaseModel):
     query: CountUsersQuery | None = None
 
 
-class CreateAccountProfilePictureUploadHeader(BaseModel):
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    photon_version: models.PhotonVersion | MISSING = Field(default=MISSING, alias="Photon-Version")
-
-
 class CreateAccountProfilePictureUploadInput(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
     body: models.ProfilePictureUploadRequest
-    headers: CreateAccountProfilePictureUploadHeader | None = None
 
 
 class CreateAccountServiceKeyHeader(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
-    photon_version: models.PhotonVersion | MISSING = Field(default=MISSING, alias="Photon-Version")
     idempotency_key: str = Field(alias="Idempotency-Key")
 
 
@@ -840,16 +831,8 @@ class CreateWhatsappVoipSenderInput(BaseModel):
     headers: CreateWhatsappVoipSenderHeader
 
 
-class DeleteAccountHeader(BaseModel):
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    photon_version: models.PhotonVersion | MISSING = Field(default=MISSING, alias="Photon-Version")
-
-
 class DeleteAccountInput(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    headers: DeleteAccountHeader | None = None
 
 
 class DeleteOrganizationOauthClientPath(BaseModel):
@@ -1033,16 +1016,8 @@ class DownloadAttachmentInput(BaseModel):
     path: DownloadAttachmentPath
 
 
-class GetAccountHeader(BaseModel):
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    photon_version: models.PhotonVersion | MISSING = Field(default=MISSING, alias="Photon-Version")
-
-
 class GetAccountInput(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    headers: GetAccountHeader | None = None
 
 
 class GetAgentProfilePath(BaseModel):
@@ -1634,16 +1609,8 @@ class LeaveOrganizationInput(BaseModel):
     headers: LeaveOrganizationHeader
 
 
-class ListAccountServiceKeysHeader(BaseModel):
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    photon_version: models.PhotonVersion | MISSING = Field(default=MISSING, alias="Photon-Version")
-
-
 class ListAccountServiceKeysInput(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    headers: ListAccountServiceKeysHeader | None = None
 
 
 class ListAttachmentsPath(BaseModel):
@@ -2568,7 +2535,6 @@ class ResendOrganizationInvitationInput(BaseModel):
 class ResetAccountProfilePictureHeader(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
-    photon_version: models.PhotonVersion | MISSING = Field(default=MISSING, alias="Photon-Version")
     idempotency_key: str = Field(alias="Idempotency-Key")
 
 
@@ -2639,7 +2605,6 @@ class RevokeAccountServiceKeyPath(BaseModel):
 class RevokeAccountServiceKeyHeader(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
-    photon_version: models.PhotonVersion | MISSING = Field(default=MISSING, alias="Photon-Version")
     idempotency_key: str = Field(alias="Idempotency-Key")
 
 
@@ -2951,7 +2916,6 @@ class UnassignVoiceLineProfileInput(BaseModel):
 class UpdateAccountHeader(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
-    photon_version: models.PhotonVersion | MISSING = Field(default=MISSING, alias="Photon-Version")
     idempotency_key: str = Field(alias="Idempotency-Key")
 
 
@@ -4729,7 +4693,6 @@ _OP_GET_WEBHOOK_EVENT_SCHEMA = OperationSpec(
     ),
     success_responses={
         "200": TypeAdapter(models.WebhookEventSchema),
-        "304": None,
     },
 )
 
@@ -5256,7 +5219,6 @@ _OP_LIST_WEBHOOK_API_VERSIONS = OperationSpec(
     ),
     success_responses={
         "200": TypeAdapter(models.ListWebhookApiVersionsResponse),
-        "304": None,
     },
 )
 
@@ -5287,7 +5249,6 @@ _OP_LIST_WEBHOOK_EGRESS_ADDRESSES = OperationSpec(
     ),
     success_responses={
         "200": TypeAdapter(models.ListWebhookEgressAddressesResponse),
-        "304": None,
     },
 )
 
@@ -5303,7 +5264,6 @@ _OP_LIST_WEBHOOK_EVENT_TYPES = OperationSpec(
     ),
     success_responses={
         "200": TypeAdapter(models.ListWebhookEventTypesResponse),
-        "304": None,
     },
 )
 
@@ -6205,79 +6165,86 @@ class SyncRawOrganizationsBillingResource:
         self._transport = transport
 
     def change_plan(
-        self, input: ChangePlanInput
+        self, input: ChangePlanInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.TerminalBillingOperation | models.PendingBillingOperation]:
         "Change plan\n\nPurchases or changes the selected project's plan for the supplied category and planCode, redeeming promotionCode when given. A 202 response means the change is pending: poll the returned operation URL and honor Retry-After until it succeeds or fails. A 200 response means the idempotency key resolved to an operation that is already terminal; inspect that result rather than assuming success from the status code alone. Supply the required Idempotency-Key header. Supply both organizationId and projectId to select the project within its organization."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CHANGE_PLAN, payload)
+        return self._transport.request(_OP_CHANGE_PLAN, payload, options)
 
     def create_organization_payment_method_checkout(
-        self, input: CreateOrganizationPaymentMethodCheckoutInput
+        self,
+        input: CreateOrganizationPaymentMethodCheckoutInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[models.CreateOrganizationPaymentMethodCheckoutResponse]:
         "Create payment method checkout\n\nReturns a hosted payment-method collection URL for the selected organization. An Idempotency-Key header is optional; supply one to make retries safe. Complete the returned checkout flow. Receiving the URL does not mean a card has been saved; check payment-method status afterward."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CREATE_ORGANIZATION_PAYMENT_METHOD_CHECKOUT, payload)
+        return self._transport.request(
+            _OP_CREATE_ORGANIZATION_PAYMENT_METHOD_CHECKOUT, payload, options
+        )
 
     def get_effective_terms(
-        self, input: GetEffectiveTermsInput
+        self, input: GetEffectiveTermsInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.GetEffectiveTermsResponse]:
         "Get the project's effective billing terms\n\nReturns what the selected project is billed on now, per category it holds: the plan as its subscription has it, with any override applied, each fixed charge at the subscription's price and quantity, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. Supply both organizationId and projectId; the organization must pay for the project. This operation does not change billing."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_EFFECTIVE_TERMS, payload)
+        return self._transport.request(_OP_GET_EFFECTIVE_TERMS, payload, options)
 
     def get_organization_billing_overview(
-        self, input: GetOrganizationBillingOverviewInput
+        self, input: GetOrganizationBillingOverviewInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.GetOrganizationBillingOverviewResponse]:
         "Get organization billing overview\n\nReturns the selected organization’s billing subscription and entitlementsVersion. The subscription can be null. Read the returned plan, charges and entitlements to inspect organization billing; this operation does not purchase or change a plan."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_ORGANIZATION_BILLING_OVERVIEW, payload)
+        return self._transport.request(_OP_GET_ORGANIZATION_BILLING_OVERVIEW, payload, options)
 
     def get_organization_credit(
-        self, input: GetOrganizationCreditInput
+        self, input: GetOrganizationCreditInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.GetOrganizationCreditResponse]:
         "Get organization credit\n\nReturns the credit the selected organization holds: on credit notes, such as the unused time of a plan an upgrade replaced or the unused days of a prorated fixed charge it released, and in its wallet: the credit Photon granted it, such as a new account's first organization's welcome credit, and any prepaid credit it bought. It offsets that organization's invoices of any kind except one-off invoices, credit notes first. Reading it does not apply or change credit."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_ORGANIZATION_CREDIT, payload)
+        return self._transport.request(_OP_GET_ORGANIZATION_CREDIT, payload, options)
 
     def get_organization_payment_method(
-        self, input: GetOrganizationPaymentMethodInput
+        self, input: GetOrganizationPaymentMethodInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.GetOrganizationPaymentMethodResponse]:
         "Get organization payment method\n\nReports whether the selected organization has a card on file, its documented payment-method metadata, whether a purchase needs a card first (purchaseRefusal), and how it pays: by card, or by invoice on its contract's terms (agreement). Reading this endpoint does not collect a new card or create a checkout session."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_ORGANIZATION_PAYMENT_METHOD, payload)
+        return self._transport.request(_OP_GET_ORGANIZATION_PAYMENT_METHOD, payload, options)
 
     def get_organization_terms(
-        self, input: GetOrganizationTermsInput
+        self, input: GetOrganizationTermsInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.GetOrganizationTermsResponse]:
         "Get the organization's effective billing terms\n\nReturns what the selected organization is billed on now on its own subscription, such as SSO and 10DLC campaigns: the plan as the subscription has it, with any override applied, each fixed charge at the subscription's price and the quantity the organization holds, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. subscription has a project subscription's terms without its category, and is null when the organization holds none. Project subscriptions are read per project. This operation does not change billing."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_ORGANIZATION_TERMS, payload)
+        return self._transport.request(_OP_GET_ORGANIZATION_TERMS, payload, options)
 
     def list_credit_activity(
-        self, input: ListCreditActivityInput
+        self, input: ListCreditActivityInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ListCreditActivityResponse]:
         "List credit activity\n\nReturns one page of how the selected organization's credit balance changed, newest first: credit notes issued and credit granted, credit applied to invoices, credit restored when the change an invoice paid for never applied, and credit voided. Each entry names the credit note (none for granted credit), the invoice when there is one, and the charge and subscription the credit note credits, or that the credit was a grant. Pass nextPage as page to read further. This operation does not change billing."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LIST_CREDIT_ACTIVITY, payload)
+        return self._transport.request(_OP_LIST_CREDIT_ACTIVITY, payload, options)
 
-    def list_invoices(self, input: ListInvoicesInput) -> RawResponse[models.ListInvoicesResponse]:
+    def list_invoices(
+        self, input: ListInvoicesInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.ListInvoicesResponse]:
         "List invoices\n\nReturns one page of the selected organization's invoices, newest first: every invoice issued to it with a nonzero total or actual charges, including charges fully paid by credit; drafts and empty invoices are excluded. Each names what it charged the organization's own subscription and each project. Pass subject to list only the invoices that charge the organization itself or one of its projects, and nextCursor as cursor to read further. Listing invoices does not make a payment or modify a subscription."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LIST_INVOICES, payload)
+        return self._transport.request(_OP_LIST_INVOICES, payload, options)
 
     def preview_organization_change(
-        self, input: PreviewOrganizationChangeInput
+        self, input: PreviewOrganizationChangeInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.PreviewOrganizationChangeResponse]:
-        "Preview an organization billing change\n\nPreviews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives."
+        "Preview an organization billing change\n\nPreviews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. This operation does not change billing. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_PREVIEW_ORGANIZATION_CHANGE, payload)
+        return self._transport.request(_OP_PREVIEW_ORGANIZATION_CHANGE, payload, options)
 
     def preview_project_change(
-        self, input: PreviewProjectChangeInput
+        self, input: PreviewProjectChangeInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.PreviewProjectChangeResponse]:
-        "Preview a project billing change\n\nPreviews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; a downgrade, or choosing the held plan again, bills nothing now; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives. Supply both organizationId and projectId; the organization must pay for the project."
+        "Preview a project billing change\n\nPreviews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; a downgrade, or choosing the held plan again, bills nothing now; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives. Supply both organizationId and projectId; the organization must pay for the project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_PREVIEW_PROJECT_CHANGE, payload)
+        return self._transport.request(_OP_PREVIEW_PROJECT_CHANGE, payload, options)
 
 
 class SyncRawOrganizationsProjectsResource:
@@ -6285,33 +6252,39 @@ class SyncRawOrganizationsProjectsResource:
         self._transport = transport
 
     def check_project_slug_availability(
-        self, input: CheckProjectSlugAvailabilityInput
+        self, input: CheckProjectSlugAvailabilityInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.CheckProjectSlugAvailabilityResponse]:
         "Check project slug availability\n\nReports whether createProject would accept `slug` right now. Advisory: only the create itself allocates, so a caller must still handle SLUG_TAKEN. A malformed slug is rejected on shape; a reserved slug, a slug held by an active project, and a slug retired with a deleted project each answer `available: false` with a reason."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CHECK_PROJECT_SLUG_AVAILABILITY, payload)
+        return self._transport.request(_OP_CHECK_PROJECT_SLUG_AVAILABILITY, payload, options)
 
-    def count(self, input: CountProjectsInput) -> RawResponse[models.ProjectCount]:
+    def count(
+        self, input: CountProjectsInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.ProjectCount]:
         "Count projects\n\nCounts the projects the same filter would list. The count is read from the primary, so it is authoritative rather than replica-lagged."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_COUNT_PROJECTS, payload)
+        return self._transport.request(_OP_COUNT_PROJECTS, payload, options)
 
-    def create(self, input: CreateProjectInput) -> RawResponse[models.Project]:
-        "Create project\n\nCreates in the authorized organization. In addition to account credentials, explicitly granted Service Identity API keys and M2M tokens may create projects. Project API keys cannot create projects. Creator and private credential evidence come only from the trusted authorization context. The caller-selected slug is immutable, must be 3 to 63 lowercase ASCII alphanumerics separated by single hyphens, and cannot be reserved or held by any active or deleted project."
+    def create(
+        self, input: CreateProjectInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.Project]:
+        "Create project\n\nCreates in the authorized organization. In addition to account credentials, explicitly granted Service Identity API keys and M2M tokens may create projects. Project API keys cannot create projects. Caller identity and credential evidence come only from the trusted authorization context. The caller-selected slug is immutable, must be 3 to 63 lowercase ASCII alphanumerics separated by single hyphens, and cannot be reserved or held by any active or deleted project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CREATE_PROJECT, payload)
+        return self._transport.request(_OP_CREATE_PROJECT, payload, options)
 
     def get_project_closure_status(
-        self, input: GetProjectClosureStatusInput
+        self, input: GetProjectClosureStatusInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.GetProjectClosureStatusResponse]:
         "Get project closure status\n\nReturns closure progress for projectId within organizationId, including deletionOperationId, domain progress and ready. This read operation does not initiate deletion."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_PROJECT_CLOSURE_STATUS, payload)
+        return self._transport.request(_OP_GET_PROJECT_CLOSURE_STATUS, payload, options)
 
-    def list(self, input: ListProjectsInput) -> RawResponse[models.ProjectPage]:
+    def list(
+        self, input: ListProjectsInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.ProjectPage]:
         "List projects\n\nReturns a cursor-paginated page of the active projects in organizationId. Filter using query and the documented creation-time bounds, and navigate with pageSize and pageToken. Project roles are not returned and role is not a supported filter."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LIST_PROJECTS, payload)
+        return self._transport.request(_OP_LIST_PROJECTS, payload, options)
 
 
 class SyncRawOrganizationsResource:
@@ -6321,322 +6294,345 @@ class SyncRawOrganizationsResource:
         self.projects = SyncRawOrganizationsProjectsResource(transport)
 
     def accept_organization_invitation(
-        self, input: AcceptOrganizationInvitationInput
+        self, input: AcceptOrganizationInvitationInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.AcceptOrganizationInvitationResponse]:
         "Accept an invitation to all organization projects\n\nAccepts an invitation by its token and adds the signed-in account to the organization with the invited role. An existing member keeps their role, except a Viewer who joined through SSO just-in-time provisioning and whose role has never been changed, who takes the invited role; a removed member can rejoin only with an invitation created after the removal, else 409. The account's verified email must match the invited address, the invitation must be pending and unexpired, and its inviter must still be an Owner or Admin; in an organization that requires SSO it returns 403, because the invitee joins by signing in through that SSO instead. Call it with account credentials acting as the account itself and supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_ACCEPT_ORGANIZATION_INVITATION, payload)
+        return self._transport.request(_OP_ACCEPT_ORGANIZATION_INVITATION, payload, options)
 
     def cancel_sso_subscription(
-        self, input: CancelSsoSubscriptionInput
+        self, input: CancelSsoSubscriptionInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.CancelSsoSubscriptionResponse]:
         "Cancel the SSO subscription\n\nCancels the organization's SSO subscription at once, but only after SSO has been turned off: while SSO is still required it returns 409. The unused days become organization credit, and SSO setup closes. Only Owners and Admins can call it, with account credentials and the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CANCEL_SSO_SUBSCRIPTION, payload)
+        return self._transport.request(_OP_CANCEL_SSO_SUBSCRIPTION, payload, options)
 
     def check_organization_deletion(
-        self, input: CheckOrganizationDeletionInput
+        self, input: CheckOrganizationDeletionInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.CheckOrganizationDeletionResponse]:
         "Check organization deletion prerequisites\n\nReports whether the organization can be deleted now (canDelete), the blockers to clear first, such as active projects or unpaid invoices, and the version to send to closeOrganization. The answer is advisory, because deletion checks again. Only the Owner can call it, with account credentials; in an organization that requires SSO, sign in through SSO, because Account Service Keys are refused."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CHECK_ORGANIZATION_DELETION, payload)
+        return self._transport.request(_OP_CHECK_ORGANIZATION_DELETION, payload, options)
 
-    def close_organization(self, input: CloseOrganizationInput) -> RawResponse[None]:
+    def close_organization(
+        self, input: CloseOrganizationInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[None]:
         "Delete organization\n\nDeletes the organization: it leaves normal access when the call returns 204, and Photon then releases its app installations, registrations and billing subscriptions in the background. It cannot be undone and needs no active projects, nothing owed, and the expectedVersion from checkOrganizationDeletion; a blocked or stale request returns 409. Only the Owner can call it, with account credentials (in an organization that requires SSO, a session signed in through SSO) and the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CLOSE_ORGANIZATION, payload)
+        return self._transport.request(_OP_CLOSE_ORGANIZATION, payload, options)
 
     def commit_organization_avatar(
-        self, input: CommitOrganizationAvatarInput
+        self, input: CommitOrganizationAvatarInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.CommitOrganizationAvatarResponse]:
         "Commit an organization avatar\n\nSets the organization's avatar to an image uploaded with createOrganizationAvatarUpload, after checking its size, type and contents, and discards the previous avatar; an invalid or expired upload is rejected. Owners and Admins can call it with account credentials. Send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_COMMIT_ORGANIZATION_AVATAR, payload)
+        return self._transport.request(_OP_COMMIT_ORGANIZATION_AVATAR, payload, options)
 
     def create_organization(
-        self, input: CreateOrganizationInput
+        self, input: CreateOrganizationInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.CreateOrganizationResponse]:
         "Create an organization\n\nCreates an organization with the supplied name and makes the calling account its Owner; SSO and just-in-time provisioning start disabled. Billing is set up after the response, so the 201 body has no billingInitialization; read it from getOrganization or listOrganizations to follow the setup. Call it with account credentials acting as the account itself and supply the required Idempotency-Key header; an account that is closing gets 409."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CREATE_ORGANIZATION, payload)
+        return self._transport.request(_OP_CREATE_ORGANIZATION, payload, options)
 
     def create_organization_avatar_upload(
-        self, input: CreateOrganizationAvatarUploadInput
+        self, input: CreateOrganizationAvatarUploadInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.CreateOrganizationAvatarUploadResponse]:
         "Create an organization avatar upload\n\nUpload a JPEG, PNG, or WebP image up to 5 MiB with every returned form field and the file last. Upload directly without Photon credentials, then commit the uploadId. Do not log or cache upload URLs or fields."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CREATE_ORGANIZATION_AVATAR_UPLOAD, payload)
+        return self._transport.request(_OP_CREATE_ORGANIZATION_AVATAR_UPLOAD, payload, options)
 
     def create_organization_invitation(
-        self, input: CreateOrganizationInvitationInput
+        self, input: CreateOrganizationInvitationInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.CreateOrganizationInvitationResponse]:
         "Invite a Member or Viewer to all organization projects\n\nInvites an email address to the organization as a Member or Viewer and emails it a link that stays valid for 7 days; the Admin and Owner roles can't be invited. Owners and Admins can call it with account credentials and the required Idempotency-Key header. Inviting an address that has a pending invitation for the same role resends it and a different role returns 409, while sending too often (twice within a minute, more than 30 an hour or 100 pending per organization) returns 429."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CREATE_ORGANIZATION_INVITATION, payload)
+        return self._transport.request(_OP_CREATE_ORGANIZATION_INVITATION, payload, options)
 
     def create_organization_oauth_client(
-        self, input: CreateOrganizationOauthClientInput
+        self, input: CreateOrganizationOauthClientInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.CreateOrganizationOauthClientResponse]:
         "Create an organization OAuth client\n\nUse the same UUID Idempotency-Key and payload when retrying. Unknown provider outcomes require recovery; do not use a new key to retry an uncertain creation."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CREATE_ORGANIZATION_OAUTH_CLIENT, payload)
+        return self._transport.request(_OP_CREATE_ORGANIZATION_OAUTH_CLIENT, payload, options)
 
     def create_service_identity(
-        self, input: CreateServiceIdentityInput
+        self, input: CreateServiceIdentityInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.CreateServiceIdentityResponse]:
         "Create an organization Service Identity\n\nCreates an active Service Identity, a machine identity owned by the organization, with a name and a non-empty set of permissions from listServiceIdentityPermissions; it starts with no credentials. Owners and Admins can call it with account credentials and the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CREATE_SERVICE_IDENTITY, payload)
+        return self._transport.request(_OP_CREATE_SERVICE_IDENTITY, payload, options)
 
     def create_service_identity_api_key(
-        self, input: CreateServiceIdentityApiKeyInput
+        self, input: CreateServiceIdentityApiKeyInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.CreateServiceIdentityApiKeyResponse]:
         "Create a one-time Service Identity API key\n\nCreates an API key for an active Service Identity that no app installation manages; the key acts with the identity's current permissions. Only a response with status created returns the key's value, so store it securely; retry with the same Idempotency-Key, which must be a UUID: a retry returns the key's status without the value, and status recovery_required means the value was not delivered and can't be retrieved. Owners and Admins can call it with account credentials, and expectedIdentityVersion must match the identity's current version, else 409; an identity managed by an app installation also returns 409."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CREATE_SERVICE_IDENTITY_API_KEY, payload)
+        return self._transport.request(_OP_CREATE_SERVICE_IDENTITY_API_KEY, payload, options)
 
     def create_service_identity_client_secret(
-        self, input: CreateServiceIdentityClientSecretInput
+        self,
+        input: CreateServiceIdentityClientSecretInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[models.CreateServiceIdentityClientSecretResponse]:
         "Create a one-time Service Identity M2M client secret\n\nCreates a client secret for the machine-to-machine (M2M) application of an active Service Identity that no app installation manages, setting the application up first if needed, and returns the secret with its clientId once; exchange them for M2M access tokens, and never send the secret to other operations. Retry with the same Idempotency-Key, which must be a UUID: a retry returns the status without the secret, and a response with stage application (status recovery_required or cleanup_required) means the application could not be set up and no secret exists. Owners and Admins can call it with account credentials, and expectedIdentityVersion must match the identity's current version, else 409; an identity managed by an app installation also returns 409."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CREATE_SERVICE_IDENTITY_CLIENT_SECRET, payload)
+        return self._transport.request(_OP_CREATE_SERVICE_IDENTITY_CLIENT_SECRET, payload, options)
 
     def delete_organization_oauth_client(
-        self, input: DeleteOrganizationOauthClientInput
+        self, input: DeleteOrganizationOauthClientInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.DeleteOrganizationOauthClientResponse]:
         "Delete an organization OAuth client\n\nQueues deletion of the exact provider application. Retry DELETE to read its current status. Accepted deletion does not promise immediate token revocation."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_DELETE_ORGANIZATION_OAUTH_CLIENT, payload)
+        return self._transport.request(_OP_DELETE_ORGANIZATION_OAUTH_CLIENT, payload, options)
 
     def delete_organization_oauth_client_secret(
-        self, input: DeleteOrganizationOauthClientSecretInput
+        self,
+        input: DeleteOrganizationOauthClientSecretInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[None]:
         "Revoke an organization OAuth client's secret\n\nStops every secret of the app now, including one still in its grace period."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_DELETE_ORGANIZATION_OAUTH_CLIENT_SECRET, payload)
+        return self._transport.request(
+            _OP_DELETE_ORGANIZATION_OAUTH_CLIENT_SECRET, payload, options
+        )
 
     def get_current_organization(
-        self, input: GetCurrentOrganizationInput | None = None
+        self,
+        input: GetCurrentOrganizationInput | None = None,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[models.GetCurrentOrganizationResponse]:
         "Read the credential's organization\n\nReads the organization the credential is bound to: the organization an OAuth grant was consented for, or a Service Identity's own organization. Use it to discover which organization an integration acts for, and pass its organizationId to organization-scoped operations."
         payload = (input or GetCurrentOrganizationInput()).model_dump(
             mode="json", by_alias=True, exclude_unset=True
         )
-        return self._transport.request(_OP_GET_CURRENT_ORGANIZATION, payload)
+        return self._transport.request(_OP_GET_CURRENT_ORGANIZATION, payload, options)
 
     def get_organization(
-        self, input: GetOrganizationInput
+        self, input: GetOrganizationInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.GetOrganizationResponse]:
         "Read organization name and avatar\n\nReturns the organization's name, avatar URL, version and billing setup progress. Any member can read it with account credentials, and a Service Identity granted organization:read or an OAuth grant with the organization:read scope can read the organization it is bound to. Send version as expectedVersion when renaming the organization or changing its avatar."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_ORGANIZATION, payload)
+        return self._transport.request(_OP_GET_ORGANIZATION, payload, options)
 
     def get_organization_oauth_client(
-        self, input: GetOrganizationOauthClientInput
+        self, input: GetOrganizationOauthClientInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.GetOrganizationOauthClientResponse]:
         "Read an organization OAuth client\n\nReturns one third-party OAuth application the organization owns, without its secret. Any member can call it with account credentials. The ETag response header is the value updateOrganizationOauthClient needs in If-Match."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_ORGANIZATION_OAUTH_CLIENT, payload)
+        return self._transport.request(_OP_GET_ORGANIZATION_OAUTH_CLIENT, payload, options)
 
     def get_organization_oauth_client_secret(
-        self, input: GetOrganizationOauthClientSecretInput
+        self, input: GetOrganizationOauthClientSecretInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.GetOrganizationOauthClientSecretResponse]:
         "Read an organization OAuth client's secret\n\nReturns metadata about an OAuth application's secret: the current secret and, after a rotation, the previous one while it still works, with each one's hint, creation and last-use times; the previous one's validUntil is when it stops working, or null when it lasts until the next rotation or revocation. The secret value is never returned. Only Owners and Admins can call it, with account credentials."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_ORGANIZATION_OAUTH_CLIENT_SECRET, payload)
+        return self._transport.request(_OP_GET_ORGANIZATION_OAUTH_CLIENT_SECRET, payload, options)
 
     def get_service_identity(
-        self, input: GetServiceIdentityInput
+        self, input: GetServiceIdentityInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.GetServiceIdentityResponse]:
         "Read a Service Identity\n\nReturns one Service Identity with its permissions, status and version. Any member can call it with account credentials. Send version as expectedVersion to updateServiceIdentity, or as expectedIdentityVersion when creating a credential."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_SERVICE_IDENTITY, payload)
+        return self._transport.request(_OP_GET_SERVICE_IDENTITY, payload, options)
 
     def get_sso_subscription(
-        self, input: GetSsoSubscriptionInput
+        self, input: GetSsoSubscriptionInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.GetSsoSubscriptionResponse]:
         "Read SSO subscription\n\nReturns the organization's SSO subscription: its state, the current monthly price and billing period, whether a payment method must be added first, and whether SSO can be set up (canConfigure). Only Owners and Admins can call it, with account credentials. Send its amount, currency and currentPeriodEnd as the quote when subscribing."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_SSO_SUBSCRIPTION, payload)
+        return self._transport.request(_OP_GET_SSO_SUBSCRIPTION, payload, options)
 
     def get_ten_dlc_brand_otp(
-        self, input: GetTenDlcBrandOtpInput
+        self, input: GetTenDlcBrandOtpInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.GetTenDlcBrandOtpResponse]:
         "Get sole-proprietor OTP status\n\nReturns the redacted one-time-password verification state for an organization-owned brand. OTP verification applies only to sole-proprietor brands. Reading this endpoint does not request another code or verify a supplied code; use the trigger and verification operations for those actions. Supply organization_id for the organization that owns the registration."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_TEN_DLC_BRAND_OTP, payload)
+        return self._transport.request(_OP_GET_TEN_DLC_BRAND_OTP, payload, options)
 
     def leave_organization(
-        self, input: LeaveOrganizationInput
+        self, input: LeaveOrganizationInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.LeaveOrganizationResponse]:
         "Leave an organization; Owners must transfer or close first\n\nRemoves the authenticated account's own membership. Nothing is revoked: the account's sessions, OAuth grants and Account Service Keys stop being accepted for the organization and its projects shortly after the call, and project API keys and Service Identity credentials it created keep working until they are revoked. Any member except the Owner can call it, with account credentials or an OAuth grant for this organization with the organization:read scope; the Owner gets 409 and must transfer ownership or delete the organization first. Send the caller's own membership version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LEAVE_ORGANIZATION, payload)
+        return self._transport.request(_OP_LEAVE_ORGANIZATION, payload, options)
 
     def list_organization_invitations(
-        self, input: ListOrganizationInvitationsInput
+        self, input: ListOrganizationInvitationsInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ListOrganizationInvitationsResponse]:
         "List pending organization invitations\n\nLists the organization's pending, unexpired invitations, newest first, in one unpaginated response; accepted, revoked and expired invitations are left out, and invitation links are never returned. Owners and Admins can call it with account credentials."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LIST_ORGANIZATION_INVITATIONS, payload)
+        return self._transport.request(_OP_LIST_ORGANIZATION_INVITATIONS, payload, options)
 
     def list_organization_members(
-        self, input: ListOrganizationMembersInput
+        self, input: ListOrganizationMembersInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ListOrganizationMembersResponse]:
         "List current organization members\n\nLists the organization's active members, ordered by account ID, with each member's role, membership version and account profile (name, email and picture); a member whose account is missing or deleted has a null profile. Any member can call it with account credentials, or with an OAuth grant for this organization that has the organization:read scope. The list is not paginated."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LIST_ORGANIZATION_MEMBERS, payload)
+        return self._transport.request(_OP_LIST_ORGANIZATION_MEMBERS, payload, options)
 
     def list_organization_oauth_clients(
-        self, input: ListOrganizationOauthClientsInput
+        self, input: ListOrganizationOauthClientsInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ListOrganizationOauthClientsResponse]:
         "List organization OAuth clients\n\nLists the third-party OAuth applications the organization owns, with their metadata but never their secrets, in one unpaginated response. Any member can call it with account credentials."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LIST_ORGANIZATION_OAUTH_CLIENTS, payload)
+        return self._transport.request(_OP_LIST_ORGANIZATION_OAUTH_CLIENTS, payload, options)
 
     def list_organizations(
-        self, input: ListOrganizationsInput | None = None
+        self, input: ListOrganizationsInput | None = None, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ListOrganizationsResponse]:
         "List organizations\n\nLists the active organizations the authenticated account belongs to, oldest first, in one unpaginated response; ownedOrganizationIds marks the ones it owns. Call it with account credentials acting as the account itself; OAuth grants and Service Identities are refused."
         payload = (input or ListOrganizationsInput()).model_dump(
             mode="json", by_alias=True, exclude_unset=True
         )
-        return self._transport.request(_OP_LIST_ORGANIZATIONS, payload)
+        return self._transport.request(_OP_LIST_ORGANIZATIONS, payload, options)
 
     def list_service_identities(
-        self, input: ListServiceIdentitiesInput
+        self, input: ListServiceIdentitiesInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ListServiceIdentitiesResponse]:
         "List organization Service Identities\n\nLists every Service Identity in the organization, oldest first, including disabled ones and those managed by app installations, in one unpaginated response. Any member can call it with account credentials. It returns identity metadata only, never credentials."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LIST_SERVICE_IDENTITIES, payload)
+        return self._transport.request(_OP_LIST_SERVICE_IDENTITIES, payload, options)
 
     def list_service_identity_credentials(
-        self, input: ListServiceIdentityCredentialsInput
+        self, input: ListServiceIdentityCredentialsInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ListServiceIdentityCredentialsResponse]:
         "List Service Identity credential metadata\n\nLists metadata for every API key and client secret of a Service Identity, oldest first, including pending and revoked ones, in one unpaginated response; it never returns secret values. Only Owners and Admins can call it, with account credentials."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LIST_SERVICE_IDENTITY_CREDENTIALS, payload)
+        return self._transport.request(_OP_LIST_SERVICE_IDENTITY_CREDENTIALS, payload, options)
 
     def list_service_identity_permissions(
-        self, input: ListServiceIdentityPermissionsInput
+        self, input: ListServiceIdentityPermissionsInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ListServiceIdentityPermissionsResponse]:
         "List grantable Service Identity permissions\n\nThe permissions a Service Identity or installable app may be granted: the machine set of the current auth contract, sorted. Create, update, and app declarations accept exactly these values."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LIST_SERVICE_IDENTITY_PERMISSIONS, payload)
+        return self._transport.request(_OP_LIST_SERVICE_IDENTITY_PERMISSIONS, payload, options)
 
     def preview_organization_invitation(
-        self, input: PreviewOrganizationInvitationInput
+        self, input: PreviewOrganizationInvitationInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.PreviewOrganizationInvitationResponse]:
         "Preview an organization invitation after sign-in\n\nReturns what an invitation offers to the signed-in account that holds its token: the organization, role, expiry, member count and inviter with masked email addresses, whether the account's verified email matches the invitation, and whether SSO is required to accept it. Call it with account credentials acting as the account itself; it changes nothing. An unknown token returns 404, and an expired or revoked invitation, or one accepted by another account, returns 409."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_PREVIEW_ORGANIZATION_INVITATION, payload)
+        return self._transport.request(_OP_PREVIEW_ORGANIZATION_INVITATION, payload, options)
 
     def remove_organization_avatar(
-        self, input: RemoveOrganizationAvatarInput
+        self, input: RemoveOrganizationAvatarInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.RemoveOrganizationAvatarResponse]:
         "Remove an organization avatar\n\nRemoves the organization's custom avatar, so avatarUrl becomes null, and returns the organization with its new version. Owners and Admins can call it with account credentials. Send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_REMOVE_ORGANIZATION_AVATAR, payload)
+        return self._transport.request(_OP_REMOVE_ORGANIZATION_AVATAR, payload, options)
 
     def remove_organization_member(
-        self, input: RemoveOrganizationMemberInput
+        self, input: RemoveOrganizationMemberInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.RemoveOrganizationMemberResponse]:
         "Remove a member from the organization\n\nRemoves an active member from the organization. Nothing is revoked: their sessions, OAuth grants and Account Service Keys stop being accepted for the organization and its projects shortly after the call, and project API keys and Service Identity credentials they created or hold keep working until an Owner or Admin revokes them. Owners and Admins can call it with account credentials, but only the Owner can remove an Admin, and neither the Owner nor the caller can be removed here (409; leave with leaveOrganization). Send the member's current membership version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_REMOVE_ORGANIZATION_MEMBER, payload)
+        return self._transport.request(_OP_REMOVE_ORGANIZATION_MEMBER, payload, options)
 
     def resend_organization_invitation(
-        self, input: ResendOrganizationInvitationInput
+        self, input: ResendOrganizationInvitationInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ResendOrganizationInvitationResponse]:
         "Resend an organization invitation\n\nEmails a pending invitation again with the same link and restarts its 7-day expiry. Owners and Admins can call it with account credentials and the required Idempotency-Key header. An expired, revoked or accepted invitation returns 409, and a resend within 60 seconds of the last send, or past the organization's 30 sends an hour, returns 429."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_RESEND_ORGANIZATION_INVITATION, payload)
+        return self._transport.request(_OP_RESEND_ORGANIZATION_INVITATION, payload, options)
 
     def revoke_organization_invitation(
-        self, input: RevokeOrganizationInvitationInput
+        self, input: RevokeOrganizationInvitationInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.RevokeOrganizationInvitationResponse]:
         "Revoke an organization invitation\n\nRevokes an invitation so its link can no longer be previewed or accepted; no email is sent, and an accepted invitation can't be revoked (409). Owners and Admins can call it with account credentials and the required Idempotency-Key header. Revoking an invitation that is already revoked or expired succeeds."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_REVOKE_ORGANIZATION_INVITATION, payload)
+        return self._transport.request(_OP_REVOKE_ORGANIZATION_INVITATION, payload, options)
 
     def revoke_service_identity_credential(
-        self, input: RevokeServiceIdentityCredentialInput
+        self, input: RevokeServiceIdentityCredentialInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.RevokeServiceIdentityCredentialResponse]:
         "Request Service Identity credential revocation\n\nRevokes an API key or client secret of a Service Identity; this can't be undone. An API key stops working shortly after the call, while a client secret gets revocationRequestedAt and stays active until Photon confirms its deletion, and M2M access tokens already issued with it keep working until they expire; repeating the call returns the current state. Owners and Admins can call it with account credentials; send the credential's current version as expectedVersion, because a stale version returns 409, and the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_REVOKE_SERVICE_IDENTITY_CREDENTIAL, payload)
+        return self._transport.request(_OP_REVOKE_SERVICE_IDENTITY_CREDENTIAL, payload, options)
 
     def rotate_organization_oauth_client_secret(
-        self, input: RotateOrganizationOauthClientSecretInput
+        self,
+        input: RotateOrganizationOauthClientSecretInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[models.RotateOrganizationOauthClientSecretResponse]:
         "Rotate an organization OAuth client's secret\n\nMints a new secret, then retires the one it replaces: `normal` keeps the old one working for one hour, `emergency` stops it now. A secret not created through Photon always stops now. Rotating again ends an earlier grace period. Retain the same UUID Idempotency-Key when retrying: only the delivering request returns plaintext."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_ROTATE_ORGANIZATION_OAUTH_CLIENT_SECRET, payload)
+        return self._transport.request(
+            _OP_ROTATE_ORGANIZATION_OAUTH_CLIENT_SECRET, payload, options
+        )
 
     def setup_organization_oauth_client_secret(
-        self, input: SetupOrganizationOauthClientSecretInput
+        self,
+        input: SetupOrganizationOauthClientSecretInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[
         models.SetupOrganizationOauthClientSecretResponse
         | models.SetupOrganizationOauthClientSecretCreatedResponse
     ]:
         "Create an organization OAuth client's secret\n\nMints the app's first secret; once it has one, rotate it instead. Retain the same UUID Idempotency-Key when retrying: only the delivering request returns plaintext."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_SETUP_ORGANIZATION_OAUTH_CLIENT_SECRET, payload)
+        return self._transport.request(_OP_SETUP_ORGANIZATION_OAUTH_CLIENT_SECRET, payload, options)
 
-    def subscribe_sso(self, input: SubscribeSsoInput) -> RawResponse[models.SubscribeSsoResponse]:
+    def subscribe_sso(
+        self, input: SubscribeSsoInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.SubscribeSsoResponse]:
         "Subscribe to organization SSO\n\nStarts the organization's SSO subscription, billed monthly in advance and prorated. Send the current quote from getSsoSubscription as expectedAmount, expectedCurrency and expectedCurrentPeriodEnd, because a changed price returns 409; the 202 means the request was accepted, and the charge and its outcome then show in the subscription's state. Only Owners and Admins can call it, with account credentials and the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_SUBSCRIBE_SSO, payload)
+        return self._transport.request(_OP_SUBSCRIBE_SSO, payload, options)
 
     def transfer_organization_ownership(
-        self, input: TransferOrganizationOwnershipInput
+        self, input: TransferOrganizationOwnershipInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.TransferOrganizationOwnershipResponse]:
         "Transfer organization ownership to an existing member\n\nMakes another active member the Owner and turns the current Owner into a Member. Only the Owner can call it, with account credentials and the required Idempotency-Key header. Send the organization's current version, not a membership version, as expectedVersion; a stale version or naming yourself returns 409."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_TRANSFER_ORGANIZATION_OWNERSHIP, payload)
+        return self._transport.request(_OP_TRANSFER_ORGANIZATION_OWNERSHIP, payload, options)
 
     def trigger_ten_dlc_brand_otp(
-        self, input: TriggerTenDlcBrandOtpInput
+        self, input: TriggerTenDlcBrandOtpInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.TriggerTenDlcBrandOtpResponse]:
         "Trigger sole-proprietor OTP\n\nRequests delivery of a verification code for an organization-owned sole-proprietor brand. A 202 response acknowledges the delivery request and does not mean the brand has been verified. Inspect the OTP status and submit the received code through verifyTenDlcBrandOtp. Requests may be rate limited. Supply the required Idempotency-Key header. Supply organization_id for the organization that owns the registration."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_TRIGGER_TEN_DLC_BRAND_OTP, payload)
+        return self._transport.request(_OP_TRIGGER_TEN_DLC_BRAND_OTP, payload, options)
 
     def update_organization(
-        self, input: UpdateOrganizationInput
+        self, input: UpdateOrganizationInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.UpdateOrganizationResponse]:
         "Change organization name\n\nRenames the organization and returns it with its new version. Owners and Admins can call it with account credentials. Send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_UPDATE_ORGANIZATION, payload)
+        return self._transport.request(_OP_UPDATE_ORGANIZATION, payload, options)
 
     def update_organization_member_role(
-        self, input: UpdateOrganizationMemberRoleInput
+        self, input: UpdateOrganizationMemberRoleInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.UpdateOrganizationMemberRoleResponse]:
         "Change an organization member's role across all projects\n\nChanges an active member's role to admin, member or viewer. Owners and Admins can call it with account credentials, but only the Owner can make someone an Admin or change an Admin's role, and nobody can change the Owner's role or their own here (409). Send the member's current membership version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_UPDATE_ORGANIZATION_MEMBER_ROLE, payload)
+        return self._transport.request(_OP_UPDATE_ORGANIZATION_MEMBER_ROLE, payload, options)
 
     def update_organization_oauth_client(
-        self, input: UpdateOrganizationOauthClientInput
+        self, input: UpdateOrganizationOauthClientInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.UpdateOrganizationOauthClientResponse]:
         "Update an organization OAuth client\n\nRequires If-Match from the latest read. Stale versions return 412. A failed response may follow an applied provider update; reread before retrying. Version checking is not provider atomic CAS."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_UPDATE_ORGANIZATION_OAUTH_CLIENT, payload)
+        return self._transport.request(_OP_UPDATE_ORGANIZATION_OAUTH_CLIENT, payload, options)
 
     def update_service_identity(
-        self, input: UpdateServiceIdentityInput
+        self, input: UpdateServiceIdentityInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.UpdateServiceIdentityResponse]:
         "Update a Service Identity\n\nChanges a Service Identity's name, its permissions (the list replaces the current one) or its status. Disabling an identity stops its API keys and M2M tokens from authorizing requests without revoking them, and an identity managed by an app installation can't be changed (409). Owners and Admins can call it with account credentials; send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_UPDATE_SERVICE_IDENTITY, payload)
+        return self._transport.request(_OP_UPDATE_SERVICE_IDENTITY, payload, options)
 
     def verify_ten_dlc_brand_otp(
-        self, input: VerifyTenDlcBrandOtpInput
+        self, input: VerifyTenDlcBrandOtpInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.VerifyTenDlcBrandOtpResponse]:
         "Verify sole-proprietor OTP\n\nSubmits otpPin for the selected organization-owned sole-proprietor brand and returns its updated, redacted verification state. A rejected code, a locked verification flow, or rate limiting is reported as an error; read the current OTP status before deciding whether to request another code. Supply the required Idempotency-Key header. Supply organization_id for the organization that owns the registration."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_VERIFY_TEN_DLC_BRAND_OTP, payload)
+        return self._transport.request(_OP_VERIFY_TEN_DLC_BRAND_OTP, payload, options)
 
 
 class SyncRawProjectsPlatformsImessageAssignmentsResource:
@@ -6644,30 +6640,32 @@ class SyncRawProjectsPlatformsImessageAssignmentsResource:
         self._transport = transport
 
     def create(
-        self, input: CreateSharedLineAssignmentInput
+        self, input: CreateSharedLineAssignmentInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.SharedLineAssignment]:
         "Create shared line assignment\n\nMaps an end user's iMessage handle — an E.164 phone number or an email address — onto one of the project's pooled shared iMessage lines, consuming a seat from the project's entitlement. The assigned number is allocated by the server. When an email address is supplied in `email` the user is sent an invite asynchronously to that address; it is never inferred from the handle, and the response never reports whether the send succeeded. Requires the platforms:write permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CREATE_SHARED_LINE_ASSIGNMENT, payload)
+        return self._transport.request(_OP_CREATE_SHARED_LINE_ASSIGNMENT, payload, options)
 
-    def get(self, input: GetSharedLineAssignmentInput) -> RawResponse[models.SharedLineAssignment]:
+    def get(
+        self, input: GetSharedLineAssignmentInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.SharedLineAssignment]:
         "Get shared line assignment\n\nReads one shared line assignment. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_SHARED_LINE_ASSIGNMENT, payload)
+        return self._transport.request(_OP_GET_SHARED_LINE_ASSIGNMENT, payload, options)
 
     def list(
-        self, input: ListSharedLineAssignmentsInput
+        self, input: ListSharedLineAssignmentsInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.SharedLineAssignmentPage]:
         "List shared line assignments\n\nLists the project's shared line assignments, oldest first. Released assignments are excluded unless includeReleased is set. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LIST_SHARED_LINE_ASSIGNMENTS, payload)
+        return self._transport.request(_OP_LIST_SHARED_LINE_ASSIGNMENTS, payload, options)
 
     def release(
-        self, input: ReleaseSharedLineAssignmentInput
+        self, input: ReleaseSharedLineAssignmentInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.SharedLineAssignment]:
         "Release shared line assignment\n\nReleases a shared line assignment, freeing both its seat and its handle for reassignment. The row is retained for audit and returned with releasedAt set, so repeating the call is safe. Requires the platforms:write permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_RELEASE_SHARED_LINE_ASSIGNMENT, payload)
+        return self._transport.request(_OP_RELEASE_SHARED_LINE_ASSIGNMENT, payload, options)
 
 
 class SyncRawProjectsPlatformsImessageResource:
@@ -6682,374 +6680,440 @@ class SyncRawProjectsPlatformsResource:
         self.imessage = SyncRawProjectsPlatformsImessageResource(transport)
 
     def assign_sms_line_campaign(
-        self, input: AssignSmsLineCampaignInput
+        self, input: AssignSmsLineCampaignInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.Operation]:
         "Assign or replace SMS line campaign\n\nAttach a ready campaign from this project’s organization to its line. Requires platforms:write for the project; human and machine actors retain their authenticated identity. Requires a permanent Idempotency-Key and the current assignment version. Provider provisioning runs asynchronously. If the operation fails, its `error` is the problem of one of these codes: `SMS_CAMPAIGN_PROVIDER_REJECTED`, `SMS_CAMPAIGN_RECONCILIATION_REQUIRED`, `SMS_CAMPAIGN_REVOKED`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_ASSIGN_SMS_LINE_CAMPAIGN, payload)
+        return self._transport.request(_OP_ASSIGN_SMS_LINE_CAMPAIGN, payload, options)
 
     def assign_voice_line_profile(
-        self, input: AssignVoiceLineProfileInput
+        self, input: AssignVoiceLineProfileInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.VoiceLineProfileAssignment]:
         "Assign Voice line profile\n\nAssigns or replaces a line's explicit additional-profile override when the resource version matches. The current default cannot be assigned explicitly. The pstn_voice ability remains the admission source of truth. Requires platforms:write bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_ASSIGN_VOICE_LINE_PROFILE, payload)
+        return self._transport.request(_OP_ASSIGN_VOICE_LINE_PROFILE, payload, options)
 
     def batch_update_voice_line_profile_assignments(
-        self, input: BatchUpdateVoiceLineProfileAssignmentsInput
+        self,
+        input: BatchUpdateVoiceLineProfileAssignmentsInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[models.BatchUpdateVoiceLineProfileAssignmentsResponse]:
         "Batch update Voice line assignments\n\nAtomically sets additional-profile overrides or switches lines back to the project default for up to 100 Voice-capable lines. A null profileId means use the default. Every expected resource version must match or no line changes. Requires platforms:write bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_BATCH_UPDATE_VOICE_LINE_PROFILE_ASSIGNMENTS, payload)
+        return self._transport.request(
+            _OP_BATCH_UPDATE_VOICE_LINE_PROFILE_ASSIGNMENTS, payload, options
+        )
 
-    def cancel_operation(self, input: CancelOperationInput) -> RawResponse[models.Operation]:
+    def cancel_operation(
+        self, input: CancelOperationInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.Operation]:
         "Cancel operation\n\nWithdraws a provision that has not been fulfilled yet. This is an operations action rather than a DELETE, because there is nothing to delete: no resource exists until the work commits. Whether it is accepted depends on the resource type — a dedicated iMessage line may sit waiting on inventory for hours and withdrawing costs nothing, while an SMS number is cancellable during inventory waiting and answers 409 once the workflow commits to its first provider order. Campaign assignment and detachment operations cannot be cancelled in any state. Wait for completion before requesting another change; that new change is not a guaranteed rollback. The output-only `cancellable` field is a snapshot; the cancellation transaction always checks the current phase under a row lock. A cancel that loses the race against the work finishing also answers 409: the resource exists and is billed for, so what you want then is to release it. Nothing is charged for a cancelled provision — billing runs after the work, so there is never anything to refund. Requires the platforms:write permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CANCEL_OPERATION, payload)
+        return self._transport.request(_OP_CANCEL_OPERATION, payload, options)
 
     def configure_voice_profile_outbound(
-        self, input: ConfigureVoiceProfileOutboundInput
+        self, input: ConfigureVoiceProfileOutboundInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ConfigureVoiceProfileOutboundResponse]:
         "Configure Voice outbound credential\n\nConfigures a SIP credential for outbound calls from a profile when the shared profile version matches. Outbound calls are paid usage, so the organization needs a payment method and no invoices overdue 7 days or more; otherwise this returns 402 ENTITLEMENT_REQUIRED with a reason. authentication.algorithm is required: SHA-256 is recommended, while MD5 is a weaker legacy option supported over UDP, TCP, and TLS; TLS is strongly recommended because UDP and TCP do not encrypt SIP signaling. The profileId may identify the default or an additional profile. The new password is returned once and is never recoverable. Requires platforms:write bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CONFIGURE_VOICE_PROFILE_OUTBOUND, payload)
+        return self._transport.request(_OP_CONFIGURE_VOICE_PROFILE_OUTBOUND, payload, options)
 
-    def connect_email_domain(self, input: ConnectEmailDomainInput) -> RawResponse[models.Operation]:
+    def connect_email_domain(
+        self, input: ConnectEmailDomainInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.Operation]:
         "Connect email domain\n\nReserves a normalized DNS domain and starts its durable email-provider setup. The accepted provision consumes one email-domain entitlement slot until it fails, is cancelled, or becomes a live resource; the plan's email.max_email_domains value sets the project limit. The customer resource does not exist until provider identity and DNS setup reach READY; poll the returned operation for progress. A domain may have only one unfinished provision or live resource globally. Email domains have no additional per-domain charge. The Idempotency-Key is required and permanent: replaying the same key and canonical domain returns the original operation forever. Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `EMAIL_DOMAIN_PROVIDER_REJECTED`, `EMAIL_DOMAIN_VERIFICATION_FAILED`, `EMAIL_DOMAIN_VERIFICATION_TIMED_OUT`, `EMAIL_TENANT_SETUP_TIMED_OUT`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CONNECT_EMAIL_DOMAIN, payload)
+        return self._transport.request(_OP_CONNECT_EMAIL_DOMAIN, payload, options)
 
-    def connect_telegram_bot(self, input: ConnectTelegramBotInput) -> RawResponse[models.Operation]:
-        "Connect Telegram bot\n\nStarts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to create a new bot, whose name and username are chosen in Telegram, or to connect an existing managed bot, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged. If the operation fails, its `error` is the problem of one of these codes: `TELEGRAM_CONFIGURATION_FAILED`."
+    def connect_telegram_bot(
+        self, input: ConnectTelegramBotInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.Operation]:
+        "Connect Telegram bot\n\nStarts a free managed Telegram bot connection. Each project may own one current bot and have one unfinished Telegram provision, including user interaction and failure cleanup. A matching Idempotency-Key replays its original operation before either conflict check, even after completion or while a newer setup is active. For a different key, an unfinished provision takes precedence over an existing bot and returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Only when no provision is active does an existing non-retired bot return 409 TELEGRAM_BOT_ALREADY_CONNECTED with its resourceId; disconnect it before connecting another, even if messaging is disabled or disconnect is unfinished. Rejected keys remain reusable. Open detail.setupUrl to create a new bot, whose name and username are chosen in Telegram, or to connect an existing managed bot, then poll Location. The link remains usable while the operation is active and never expires. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged. If the operation fails, its `error` is the problem of one of these codes: `TELEGRAM_BOT_ALREADY_CONNECTED`, `TELEGRAM_CONFIGURATION_FAILED`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CONNECT_TELEGRAM_BOT, payload)
+        return self._transport.request(_OP_CONNECT_TELEGRAM_BOT, payload, options)
 
     def count_filtered_verification_codes(
-        self, input: CountFilteredVerificationCodesInput
+        self, input: CountFilteredVerificationCodesInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.FilteredVerificationCodeCount]:
         "Count filtered verification codes\n\nCounts the verification codes Photon kept from this project's dedicated lines, optionally for one `platform`. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_COUNT_FILTERED_VERIFICATION_CODES, payload)
+        return self._transport.request(_OP_COUNT_FILTERED_VERIFICATION_CODES, payload, options)
 
     def count_resource_filtered_verification_codes(
-        self, input: CountResourceFilteredVerificationCodesInput
+        self,
+        input: CountResourceFilteredVerificationCodesInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[models.FilteredVerificationCodeCount]:
         "Count a line's filtered verification codes\n\nCounts the verification codes Photon kept from one dedicated line. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a dedicated line receives both iMessage and WhatsApp. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_COUNT_RESOURCE_FILTERED_VERIFICATION_CODES, payload)
+        return self._transport.request(
+            _OP_COUNT_RESOURCE_FILTERED_VERIFICATION_CODES, payload, options
+        )
 
     def create_default_voice_profile(
-        self, input: CreateDefaultVoiceProfileInput
+        self, input: CreateDefaultVoiceProfileInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.VoiceProfile]:
         "Create default Voice profile\n\nCreates the project default Voice profile when absent. An identical replay returns the existing default without changing its version; a different existing default conflicts. Direction configuration is managed separately. Requires platforms:write bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CREATE_DEFAULT_VOICE_PROFILE, payload)
+        return self._transport.request(_OP_CREATE_DEFAULT_VOICE_PROFILE, payload, options)
 
     def create_voice_profile(
-        self, input: CreateVoiceProfileInput
+        self, input: CreateVoiceProfileInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.VoiceProfile]:
         "Create Voice profile\n\nCreates a direction-neutral additional Voice profile. The project default must already exist. Requires platforms:write bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CREATE_VOICE_PROFILE, payload)
+        return self._transport.request(_OP_CREATE_VOICE_PROFILE, payload, options)
 
     def create_whatsapp_shared_line_assignment(
-        self, input: CreateWhatsappSharedLineAssignmentInput
+        self,
+        input: CreateWhatsappSharedLineAssignmentInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[models.SharedLineAssignment]:
         "Create WhatsApp shared line assignment\n\nMaps an end user's phone number onto one of the project's pooled shared WhatsApp lines, consuming a seat from the project's WhatsApp entitlement. The assigned number is allocated by the server. When an email address is supplied the user is sent an invite asynchronously; the response never reports whether that succeeded. Requires the platforms:write permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CREATE_WHATSAPP_SHARED_LINE_ASSIGNMENT, payload)
+        return self._transport.request(_OP_CREATE_WHATSAPP_SHARED_LINE_ASSIGNMENT, payload, options)
 
     def create_whatsapp_voip_sender(
-        self, input: CreateWhatsappVoipSenderInput
+        self, input: CreateWhatsappVoipSenderInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.Operation]:
         "Create WhatsApp VoIP sender\n\nRegisters an active, SMS-capable Photon VoIP line on this project's connected WhatsApp Business Account. The account is resolved server-side; callers never select a WABA. The platform creates or reuses the Meta number, requests and consumes the SMS ownership code internally, verifies it, and registers the sender. displayName is optional; when omitted the project agent profile name is snapshotted before acceptance. The VoIP line remains a separate resource and never receives the whatsapp_business ability. If the operation fails, its `error` is the problem of one of these codes: `WHATSAPP_AUTHORIZATION_REVOKED`, `WHATSAPP_DISPLAY_NAME_CONFLICT`, `WHATSAPP_NUMBER_ADD_REFUSED`, `WHATSAPP_NUMBER_LOOKUP_FAILED`, `WHATSAPP_REGISTRATION_REFUSED`, `WHATSAPP_VERIFICATION_REFUSED`, `WHATSAPP_VERIFICATION_REQUEST_REFUSED`, `WHATSAPP_VERIFICATION_TIMED_OUT`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CREATE_WHATSAPP_VOIP_SENDER, payload)
+        return self._transport.request(_OP_CREATE_WHATSAPP_VOIP_SENDER, payload, options)
 
-    def delete_voice_profile(self, input: DeleteVoiceProfileInput) -> RawResponse[None]:
+    def delete_voice_profile(
+        self, input: DeleteVoiceProfileInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[None]:
         "Delete Voice profile\n\nDeletes an additional profile when expectedVersion matches. Assigned profiles require force=true, which atomically removes every stored override so affected lines follow the default. The default can never be deleted. Requires platforms:write bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_DELETE_VOICE_PROFILE, payload)
+        return self._transport.request(_OP_DELETE_VOICE_PROFILE, payload, options)
 
     def delete_voice_profile_inbound(
-        self, input: DeleteVoiceProfileInboundInput
+        self, input: DeleteVoiceProfileInboundInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.VoiceProfileInboundConfiguration]:
         "Delete Voice inbound configuration\n\nRemoves a profile's inbound destination when the shared profile version matches. The profileId may identify the default or an additional profile. The profile and its line assignments remain. Requires platforms:write bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_DELETE_VOICE_PROFILE_INBOUND, payload)
+        return self._transport.request(_OP_DELETE_VOICE_PROFILE_INBOUND, payload, options)
 
     def delete_voice_profile_outbound(
-        self, input: DeleteVoiceProfileOutboundInput
+        self, input: DeleteVoiceProfileOutboundInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.DeleteVoiceProfileOutboundResponse]:
         "Revoke Voice outbound credential\n\nRevokes outbound calling for a profile when the shared profile version matches. The profileId may identify the default or an additional profile. The profile, inbound destination, and line assignments remain. Requires platforms:write bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_DELETE_VOICE_PROFILE_OUTBOUND, payload)
+        return self._transport.request(_OP_DELETE_VOICE_PROFILE_OUTBOUND, payload, options)
 
     def disconnect_whatsapp_business_account(
-        self, input: DisconnectWhatsappBusinessAccountInput
+        self,
+        input: DisconnectWhatsappBusinessAccountInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[models.Operation]:
         "Disconnect WhatsApp Business account\n\nDisconnects every attached WhatsApp sender, then unsubscribes our app and removes the project's business account connection. Photon VoIP lines and the numbers in Meta remain. Requires Idempotency-Key. Poll the returned operation. Meta's answers do not fail it: each sender is released as `DELETE /platforms/resources/:resourceId` does, and our app's unsubscribe is a best effort, tried up to three times, a second or two apart, only while the failure is temporary. New signups are blocked while disconnecting, and existing provisions must finish before this request can be accepted. If the operation fails, its `error` is the problem of one of these codes: `WHATSAPP_ACCOUNT_DISCONNECT_FAILED`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_DISCONNECT_WHATSAPP_BUSINESS_ACCOUNT, payload)
+        return self._transport.request(_OP_DISCONNECT_WHATSAPP_BUSINESS_ACCOUNT, payload, options)
 
     def get_default_voice_profile(
-        self, input: GetDefaultVoiceProfileInput
+        self, input: GetDefaultVoiceProfileInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.VoiceProfile]:
         "Get default Voice profile\n\nGets the profile currently selected as the project default, including its optional inbound delivery state. Requires platforms:read bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_DEFAULT_VOICE_PROFILE, payload)
+        return self._transport.request(_OP_GET_DEFAULT_VOICE_PROFILE, payload, options)
 
     def get_email_delivery_metrics(
-        self, input: GetEmailDeliveryMetricsInput
+        self, input: GetEmailDeliveryMetricsInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.EmailDeliveryMetrics]:
         "Get email delivery metrics\n\nReads cached supplementary email series for the exact Project and rolling day or week. Coverage is eligible single-recipient messages; multi-recipient and simulator traffic is excluded. Observed complaints include reported feedback only. Missing data is distinct from zero. Original timestamps and availability are preserved; freshness describes retrieval, not complete event coverage. These series are not complete recipient totals, billing totals or Photon reputation rates. This read never queries the delivery provider or authorizes sending. Requires platforms:read for the path Project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_EMAIL_DELIVERY_METRICS, payload)
+        return self._transport.request(_OP_GET_EMAIL_DELIVERY_METRICS, payload, options)
 
     def get_email_sending_policies(
-        self, input: GetEmailSendingPoliciesInput
+        self, input: GetEmailSendingPoliciesInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.EmailSendingPolicies]:
         "Get email sending policies\n\nReads Organization email recipient allowances shared across all its Projects, with rolling 60-second and 24-hour windows. Also returns Project and Organization review status and Photon policy pauses. Projects have no separate recipient quota. These limits are independent of subscription allowances. A policy pause blocks sending; an unpaused policy does not guarantee that every domain, suppression or account check permits a send. Requires platforms:read for the path Project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_EMAIL_SENDING_POLICIES, payload)
+        return self._transport.request(_OP_GET_EMAIL_SENDING_POLICIES, payload, options)
 
     def get_imessage(
-        self, input: GetProjectImessagePlatformInput
+        self, input: GetProjectImessagePlatformInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ProjectPlatformSettings]:
         "Get project iMessage platform\n\nReports whether the project is on shared or dedicated iMessage lines, derived from its billing entitlements. Shared mode carries the seat cap. Both say whether a dedicated line requested now would be assigned without waiting. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_PROJECT_IMESSAGE_PLATFORM, payload)
+        return self._transport.request(_OP_GET_PROJECT_IMESSAGE_PLATFORM, payload, options)
 
-    def get_operation(self, input: GetOperationInput) -> RawResponse[models.GetOperationResponse]:
+    def get_operation(
+        self, input: GetOperationInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.GetOperationResponse]:
         "Get operation\n\nReads one operation using the same operation representation as creation and list. The API includes detail.setupUrl only with platforms:write for this project. This is the polling endpoint every asynchronous request here points its Location at, and it resolves from the moment that request is accepted — an operation is committed before its work is dispatched, so there is no window in which the URL 404s. Poll until `state` is one of `succeeded`, `failed` or `cancelled`, pacing from the Retry-After the accepting response returned. While an email domain waits for DNS, `detail` always contains the manual records and may additionally contain `automaticSetup` with a signed provider URL to open separately. Once the operation has produced a resource, the response carries that resource too, so the poll that finishes is also the one that tells you what you got. `succeeded` means the work is done; billing runs behind it and is not something the caller waits on. Operations are never purged, so a 404 means the id was never this project's. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_OPERATION, payload)
+        return self._transport.request(_OP_GET_OPERATION, payload, options)
 
     def get_project_whatsapp_platform(
-        self, input: GetProjectWhatsappPlatformInput
+        self, input: GetProjectWhatsappPlatformInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ProjectPlatformSettings]:
         "Get project WhatsApp platform\n\nReports whether the project is on shared or dedicated WhatsApp lines, derived from its billing entitlements. Shared mode carries the seat cap. Both say whether a dedicated line requested now would be assigned without waiting. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_PROJECT_WHATSAPP_PLATFORM, payload)
+        return self._transport.request(_OP_GET_PROJECT_WHATSAPP_PLATFORM, payload, options)
 
-    def get_resource(self, input: GetResourceInput) -> RawResponse[models.Resource]:
+    def get_resource(
+        self, input: GetResourceInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.Resource]:
         "Get resource\n\nReads one resource the project holds. A released number stays readable and reads `retired`, because it remains part of this project's history. A dedicated line given back does NOT: returning it to inventory is what makes it claimable by someone else, so it answers 404 and the operation that returned it is the record that this project once held it. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_RESOURCE, payload)
+        return self._transport.request(_OP_GET_RESOURCE, payload, options)
 
     def get_sms_line_campaign_assignment(
-        self, input: GetSmsLineCampaignAssignmentInput
+        self, input: GetSmsLineCampaignAssignmentInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.GetSmsLineCampaignAssignmentResponse]:
         "Get SMS line campaign assignment\n\nRead the last confirmed campaign and current eligibility. Follow changes through their operations. Eligibility is a control-plane assessment, not a delivery or recipient-consent guarantee."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_SMS_LINE_CAMPAIGN_ASSIGNMENT, payload)
+        return self._transport.request(_OP_GET_SMS_LINE_CAMPAIGN_ASSIGNMENT, payload, options)
 
     def get_voice_line_profile_assignment(
-        self, input: GetVoiceLineProfileAssignmentInput
+        self, input: GetVoiceLineProfileAssignmentInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.VoiceLineProfileAssignment]:
         "Get Voice line profile assignment\n\nGets the explicit additional-profile override for an owned Voice-capable line. A line following the project default returns 200 without profileId. Requires platforms:read bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_VOICE_LINE_PROFILE_ASSIGNMENT, payload)
+        return self._transport.request(_OP_GET_VOICE_LINE_PROFILE_ASSIGNMENT, payload, options)
 
-    def get_voice_profile(self, input: GetVoiceProfileInput) -> RawResponse[models.VoiceProfile]:
+    def get_voice_profile(
+        self, input: GetVoiceProfileInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.VoiceProfile]:
         "Get Voice profile\n\nGets one reusable Voice profile, including its optional inbound delivery state. Requires platforms:read bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_VOICE_PROFILE, payload)
+        return self._transport.request(_OP_GET_VOICE_PROFILE, payload, options)
 
     def get_whatsapp_business_account(
-        self, input: GetWhatsappBusinessAccountInput
+        self, input: GetWhatsappBusinessAccountInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.WhatsappBusinessAccount]:
         "Get WhatsApp Business account\n\nGets the one WhatsApp Business Account this project has connected, with its number of live senders. Senders are resources and are listed by GET /platforms/resources?ability=whatsapp_business. The account is not a resource and carries no access token. Meta's retained numbers are listed separately by GET /platforms/whatsapp-business/account/phone-numbers. `subscribedAt` is absent until our app is attached to the account's webhooks. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_WHATSAPP_BUSINESS_ACCOUNT, payload)
+        return self._transport.request(_OP_GET_WHATSAPP_BUSINESS_ACCOUNT, payload, options)
 
     def get_whatsapp_business_verification_code(
-        self, input: GetWhatsappBusinessVerificationCodeInput
+        self,
+        input: GetWhatsappBusinessVerificationCodeInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[models.GetWhatsappBusinessVerificationCodeResponse]:
         "Get WhatsApp Business verification code\n\nReturns the latest six-digit WhatsApp Business ownership code received by SMS for an active Photon VOIP number, but only when its provider timestamp is strictly newer than the required receivedAfter boundary. receivedAfter must be an RFC 3339 timestamp between this request's arrival time and two minutes before it; once it expires, restart Meta's verification flow with a new boundary. A missing newer code is a retryable 404 with Retry-After: 2. Poll after 2, 4, 8, then 10 seconds, applying ±20% jitter and capping later intervals at 10 seconds. Stop when the original boundary is two minutes old. Responses are never cached. Requires the platforms:write permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_WHATSAPP_BUSINESS_VERIFICATION_CODE, payload)
+        return self._transport.request(
+            _OP_GET_WHATSAPP_BUSINESS_VERIFICATION_CODE, payload, options
+        )
 
     def get_whatsapp_shared_line_assignment(
-        self, input: GetWhatsappSharedLineAssignmentInput
+        self, input: GetWhatsappSharedLineAssignmentInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.SharedLineAssignment]:
         "Get WhatsApp shared line assignment\n\nReads one WhatsApp shared line assignment. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_WHATSAPP_SHARED_LINE_ASSIGNMENT, payload)
+        return self._transport.request(_OP_GET_WHATSAPP_SHARED_LINE_ASSIGNMENT, payload, options)
 
     def list_email_recommendations(
-        self, input: ListEmailRecommendationsInput
+        self, input: ListEmailRecommendationsInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.EmailRecommendations]:
         "List email recommendations\n\nReads Photon guidance from stored sending policies, sending setup and domain checks. Project and Organization restrictions repeat on each page of domain observations. Follow nextPageToken until hasMore is false; observations describe only the current page. Recommendations are advisory reads, never permission to send or resume. Reputation-rate guidance and supplementary delivery advice are explicitly unavailable until their sources are integrated. An empty list does not indicate healthy reputation or resolved findings. Requires platforms:read for the path Project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LIST_EMAIL_RECOMMENDATIONS, payload)
+        return self._transport.request(_OP_LIST_EMAIL_RECOMMENDATIONS, payload, options)
 
     def list_filtered_verification_codes(
-        self, input: ListFilteredVerificationCodesInput
+        self, input: ListFilteredVerificationCodesInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.FilteredVerificationCodePage]:
         "List filtered verification codes\n\nLists the verification codes Photon kept from this project's dedicated lines. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Filter by `platform`; to read one line, use its own filtered-otp path. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LIST_FILTERED_VERIFICATION_CODES, payload)
+        return self._transport.request(_OP_LIST_FILTERED_VERIFICATION_CODES, payload, options)
 
     def list_number_area_codes(
-        self, input: ListNumberAreaCodesInput
+        self, input: ListNumberAreaCodesInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ListNumberAreaCodesResponse]:
         "List number area codes\n\nLists current provider coverage for US local numbers, sorted and deduplicated. Coverage does not guarantee inventory carrying every required feature. New area-specific purchases must use a listed code; accepted purchases keep waiting if coverage later changes. Requires platforms:read for the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LIST_NUMBER_AREA_CODES, payload)
+        return self._transport.request(_OP_LIST_NUMBER_AREA_CODES, payload, options)
 
     def list_number_countries(
-        self, input: ListNumberCountriesInput
+        self, input: ListNumberCountriesInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ListNumberCountriesResponse]:
         "List number countries\n\nLists supported purchase countries independently of current provider inventory. Requires platforms:read for the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LIST_NUMBER_COUNTRIES, payload)
+        return self._transport.request(_OP_LIST_NUMBER_COUNTRIES, payload, options)
 
-    def list_operations(self, input: ListOperationsInput) -> RawResponse[models.OperationPage]:
+    def list_operations(
+        self, input: ListOperationsInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.OperationPage]:
         "List operations\n\nLists the project's operations using the same operation representation as creation and GET. The API includes detail.setupUrl only with platforms:write for this project. Results are oldest first — every provision and release it has ever asked for, including the ones still running. This is the entire in-flight view: a resource only appears once it is real, so nothing half-built shows up in the resource list and nothing in flight is missing from this one. Filter by `resourceId` to get one resource's whole history, which for a pooled line is every tenure this project has had on it. `state` is comma-separated; `type` accepts one operation type and an absent filter means everything, including failed and cancelled operations. `endedAfter` keeps only operations that finished after that instant, so what failed or was withdrawn recently is one short page. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LIST_OPERATIONS, payload)
+        return self._transport.request(_OP_LIST_OPERATIONS, payload, options)
 
     def list_project_platforms(
-        self, input: ListProjectPlatformsInput
+        self, input: ListProjectPlatformsInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ListProjectPlatformsResponse]:
         "List project platforms\n\nLists the platform types available to this project. Every project currently sees the same fixed public contract, answered in-process rather than forwarded, so the list survives an outage of the private service. The project binding exists so that answer can narrow per project without moving the route. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LIST_PROJECT_PLATFORMS, payload)
+        return self._transport.request(_OP_LIST_PROJECT_PLATFORMS, payload, options)
 
     def list_resource_filtered_verification_codes(
-        self, input: ListResourceFilteredVerificationCodesInput
+        self,
+        input: ListResourceFilteredVerificationCodesInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[models.FilteredVerificationCodePage]:
         "List a line's filtered verification codes\n\nLists the verification codes Photon kept from one dedicated line. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a dedicated line receives both iMessage and WhatsApp. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LIST_RESOURCE_FILTERED_VERIFICATION_CODES, payload)
+        return self._transport.request(
+            _OP_LIST_RESOURCE_FILTERED_VERIFICATION_CODES, payload, options
+        )
 
-    def list_resources(self, input: ListResourcesInput) -> RawResponse[models.ResourcePage]:
+    def list_resources(
+        self, input: ListResourcesInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.ResourcePage]:
         "List resources\n\nLists the project's resources, oldest first, including retired ones unless `state` filters them out. Filter by `type`, by enabled `ability` and by comma-separated `state`. Lifecycle states are unallocated, active and retired; active means owned and non-retired, not provider-confirmed readiness. Every VoIP resource includes detail.activationState: activating or active, defaulting to active without owner-matched saved state. state=active includes numbers still activating. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LIST_RESOURCES, payload)
+        return self._transport.request(_OP_LIST_RESOURCES, payload, options)
 
     def list_voice_profiles(
-        self, input: ListVoiceProfilesInput
+        self, input: ListVoiceProfilesInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.VoiceProfilePage]:
         "List Voice profiles\n\nLists reusable Voice profiles in this project. Requires platforms:read bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LIST_VOICE_PROFILES, payload)
+        return self._transport.request(_OP_LIST_VOICE_PROFILES, payload, options)
 
     def list_whatsapp_account_phone_numbers(
-        self, input: ListWhatsappAccountPhoneNumbersInput
+        self, input: ListWhatsappAccountPhoneNumbersInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ListWhatsappAccountPhoneNumbersResponse]:
         "List WhatsApp account phone numbers\n\nLists the connected WABA's phone numbers directly from Meta, including numbers whose Photon sender was disconnected. Ownership is photon for a number in this project's current Photon inventory and meta otherwise. Match a Photon SMS number by its E.164 phoneNumber and reuse its existing displayName when reconnecting. A null name is unavailable, not permission to choose a new name. A failed lookup returns an error rather than an empty list. Requires platforms:read on the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LIST_WHATSAPP_ACCOUNT_PHONE_NUMBERS, payload)
+        return self._transport.request(_OP_LIST_WHATSAPP_ACCOUNT_PHONE_NUMBERS, payload, options)
 
     def list_whatsapp_shared_line_assignments(
-        self, input: ListWhatsappSharedLineAssignmentsInput
+        self,
+        input: ListWhatsappSharedLineAssignmentsInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[models.SharedLineAssignmentPage]:
         "List WhatsApp shared line assignments\n\nLists the project's WhatsApp shared line assignments, oldest first. Released assignments are excluded unless includeReleased is set. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LIST_WHATSAPP_SHARED_LINE_ASSIGNMENTS, payload)
+        return self._transport.request(_OP_LIST_WHATSAPP_SHARED_LINE_ASSIGNMENTS, payload, options)
 
     def provision_imessage_dedicated_line(
-        self, input: ProvisionImessageDedicatedLineInput
+        self, input: ProvisionImessageDedicatedLineInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.Operation]:
         "Provision dedicated iMessage line\n\nClaims one dedicated iMessage line for the project and enables iMessage on it. Always answers 202 with an operation: dedicated lines are allocated from available capacity, and unavailable capacity causes a wait rather than a failure — this can legitimately stay `running` for hours, which is exactly why the response is a handle to poll rather than a number. The project's messaging subscription must grant the dedicated iMessage lines entitlement (`imessage_dedicated_lines.can_purchase`), and that is checked before capacity is reserved. The line's own charge starts when a line is claimed; the subscription that grants the entitlement bills on its own terms, which cancelling a request does not change. Waiting requests are served first come, first served. One that is still waiting is cancelled with a `reason` if the project is deleted (`project_deleted`) or its plan stops selling dedicated lines (`entitlement_lost`); while the payer is restricted for overdue payment it keeps waiting. If you no longer want to wait, POST to the operation's cancel endpoint, which charges nothing for the line. The Idempotency-Key is required and permanent: repeating it returns the same operation forever. A further line always needs a NEW key, including while others are still waiting. An optional promotionCode is checked and claimed here, before the request waits for a line: a code that can't be used answers 409 PROMOTION_CODE_REJECTED and starts nothing. Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `CHARGE_REFUSED`, `ENTERPRISE_PLAN_REQUIRED`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_PROVISION_IMESSAGE_DEDICATED_LINE, payload)
+        return self._transport.request(_OP_PROVISION_IMESSAGE_DEDICATED_LINE, payload, options)
 
     def provision_whatsapp_dedicated_line(
-        self, input: ProvisionWhatsappDedicatedLineInput
+        self, input: ProvisionWhatsappDedicatedLineInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.Operation]:
         "Provision dedicated WhatsApp line\n\nProvisions one dedicated WhatsApp line with WhatsApp and shared Voice enabled. It attaches to an eligible iMessage line the project already owns when possible so both products keep the same number; otherwise it claims healthy, available WhatsApp-capable dedicated-line inventory. Always answers 202, because waiting when no inventory is available is not a failure. The product opens its own charge period after the abilities are enabled; Voice has no separate charge. Waiting requests are served first come, first served, and are cancelled with a `reason` exactly as for a dedicated iMessage line. Cancel the returned operation to stop waiting. An optional promotionCode is checked and claimed here, before the request waits for a line: a code that can't be used answers 409 PROMOTION_CODE_REJECTED and starts nothing. The Idempotency-Key is required and permanent. If the operation fails, its `error` is the problem of one of these codes: `CHARGE_REFUSED`, `ENTERPRISE_PLAN_REQUIRED`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_PROVISION_WHATSAPP_DEDICATED_LINE, payload)
+        return self._transport.request(_OP_PROVISION_WHATSAPP_DEDICATED_LINE, payload, options)
 
-    def purchase_sms_number(self, input: PurchaseSmsNumberInput) -> RawResponse[models.Operation]:
+    def purchase_sms_number(
+        self, input: PurchaseSmsNumberInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.Operation]:
         'Purchase SMS number\n\nBuys one US local number from the provider and records it as a resource with SMS enabled. Requires countryCode (US) and accepts an optional three-digit geographic areaCode. The server selects an exact matching number. While inventory is empty the operation keeps searching, and the caller can cancel it until ordering begins; a search still empty one minute after the operation was created fails it with `NUMBER_INVENTORY_UNAVAILABLE`. Always answers 202 with an operation: the work runs behind the response, and the Location points at the operation to poll. New area-specific requests must appear in current provider coverage; discover it with GET /sms/numbers/area-codes?countryCode=US. Coverage and subscription checks run before operation creation. Billing follows delivery. Replays return the original operation without checking current coverage. The Idempotency-Key is required and permanent: repeating it returns the same operation forever, never a second number. A further number always needs a NEW key, including while others are still running. An optional promotionCode is redeemed with the number\'s charge, which follows delivery: a code billing refuses hands the number back, and its release operation carries the refusal (`reason` `charge_refused`, with `detail.chargeRefusal` `{ code: "promotion_code_rejected", detail: <why> }`). Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `ENTITLEMENT_REQUIRED`, `NUMBER_INVENTORY_UNAVAILABLE`, `NUMBER_ORDER_FAILED`, `NUMBER_ORDER_RECONCILIATION_REQUIRED`, `NUMBER_SEARCH_FAILED`.'
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_PURCHASE_SMS_NUMBER, payload)
+        return self._transport.request(_OP_PURCHASE_SMS_NUMBER, payload, options)
 
     def release_imessage_dedicated_line(
-        self, input: ReleaseImessageDedicatedLineInput
+        self, input: ReleaseImessageDedicatedLineInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.Operation]:
         "Release dedicated iMessage line\n\nRemoves only iMessage from one dedicated line. Shared Voice is removed only when WhatsApp is absent; if WhatsApp remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open iMessage charge period identifies this product tenure. If the operation fails, its `error` is the problem of one of these codes: `RESOURCE_NOT_FOUND`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_RELEASE_IMESSAGE_DEDICATED_LINE, payload)
+        return self._transport.request(_OP_RELEASE_IMESSAGE_DEDICATED_LINE, payload, options)
 
-    def release_resource(self, input: ReleaseResourceInput) -> RawResponse[models.Operation]:
+    def release_resource(
+        self, input: ReleaseResourceInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.Operation]:
         "Release resource\n\nGives one resource back, whatever it is. What that means is the resource's own business: an SMS number goes back to the provider and is retired, a dedicated iMessage line goes back to the shared pool and stays in existence for someone else to claim. Either way the provider is contacted first where there is one, then a single transaction disables every ability, ends the project's hold and closes the charge period — so a provider that refuses leaves the resource exactly as it was, still owned and still billed. A WhatsApp Business sender is the exception: Meta never holds its release. A number on a Photon VoIP line is deregistered as a best effort, tried up to three times, a second or two apart, only while the failure is temporary; a number the customer brought is not sent to Meta at all; the sender is retired either way, and the number stays in the customer's WhatsApp Business Account. Usually finishes inside this request and answers 200; if the provider is slow it answers 202 and the Location points at the operation to poll. The decrement runs behind the answer either way, so the resource is gone when you are told it is. Takes no Idempotency-Key — releasing the same resource twice is the same request. Releasing one that is already gone answers 404. Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `EMAIL_DOMAIN_RELEASE_FAILED`, `NUMBER_RELEASE_FAILED`, `RESOURCE_NOT_FOUND`, `TELEGRAM_RELEASE_FAILED`, `WHATSAPP_SENDER_RELEASE_FAILED`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_RELEASE_RESOURCE, payload)
+        return self._transport.request(_OP_RELEASE_RESOURCE, payload, options)
 
     def release_whatsapp_dedicated_line(
-        self, input: ReleaseWhatsappDedicatedLineInput
+        self, input: ReleaseWhatsappDedicatedLineInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.Operation]:
         "Release dedicated WhatsApp line\n\nRemoves only WhatsApp from one dedicated line. Shared Voice is removed only when iMessage is absent; if iMessage remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open WhatsApp charge period identifies this product tenure. If the operation fails, its `error` is the problem of one of these codes: `RESOURCE_NOT_FOUND`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_RELEASE_WHATSAPP_DEDICATED_LINE, payload)
+        return self._transport.request(_OP_RELEASE_WHATSAPP_DEDICATED_LINE, payload, options)
 
     def release_whatsapp_shared_line_assignment(
-        self, input: ReleaseWhatsappSharedLineAssignmentInput
+        self,
+        input: ReleaseWhatsappSharedLineAssignmentInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[models.SharedLineAssignment]:
         "Release WhatsApp shared line assignment\n\nReleases a WhatsApp shared line assignment, freeing its seat for reassignment. The row is retained for audit and returned with releasedAt set, so repeating the call is safe. Requires the platforms:write permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_RELEASE_WHATSAPP_SHARED_LINE_ASSIGNMENT, payload)
+        return self._transport.request(
+            _OP_RELEASE_WHATSAPP_SHARED_LINE_ASSIGNMENT, payload, options
+        )
 
     def replace_voice_profile_inbound(
-        self, input: ReplaceVoiceProfileInboundInput
+        self, input: ReplaceVoiceProfileInboundInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.VoiceProfileInboundConfiguration]:
         "Replace Voice inbound configuration\n\nCreates or fully replaces a profile's inbound destination when the shared profile version matches. The profileId may identify the default or an additional profile. Credentials are required and nullable; null removes destination authentication. Requires platforms:write bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_REPLACE_VOICE_PROFILE_INBOUND, payload)
+        return self._transport.request(_OP_REPLACE_VOICE_PROFILE_INBOUND, payload, options)
 
     def rotate_voice_profile_outbound_credential(
-        self, input: RotateVoiceProfileOutboundCredentialInput
+        self,
+        input: RotateVoiceProfileOutboundCredentialInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[models.RotateVoiceProfileOutboundCredentialResponse]:
         "Rotate Voice outbound credential\n\nRotates a SIP profile's outbound credential when expectedVersion matches. The profileId may identify the default or an additional profile. Normal rotation gives the previous credential one hour of grace; emergency rotation gives none. The new password is returned once and is never recoverable. Requires platforms:write bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_ROTATE_VOICE_PROFILE_OUTBOUND_CREDENTIAL, payload)
+        return self._transport.request(
+            _OP_ROTATE_VOICE_PROFILE_OUTBOUND_CREDENTIAL, payload, options
+        )
 
     def unassign_sms_line_campaign(
-        self, input: UnassignSmsLineCampaignInput
+        self, input: UnassignSmsLineCampaignInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.Operation]:
         "Unassign SMS line campaign\n\nAny project writer, including a scoped API key, may detach the campaign. The number and campaign remain owned. Requires a permanent Idempotency-Key and expectedVersion. Local eligibility is blocked immediately; provider detachment runs asynchronously. If the operation fails, its `error` is the problem of one of these codes: `SMS_CAMPAIGN_PROVIDER_REJECTED`, `SMS_CAMPAIGN_RECONCILIATION_REQUIRED`, `SMS_CAMPAIGN_REVOKED`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_UNASSIGN_SMS_LINE_CAMPAIGN, payload)
+        return self._transport.request(_OP_UNASSIGN_SMS_LINE_CAMPAIGN, payload, options)
 
     def unassign_voice_line_profile(
-        self, input: UnassignVoiceLineProfileInput
+        self, input: UnassignVoiceLineProfileInput, *, options: RequestOptions | None = None
     ) -> RawResponse[None]:
         "Unassign Voice line profile\n\nRemoves a line's explicit override when the resource version matches so the line follows the project default. Profiles and the pstn_voice ability are unchanged. Requires platforms:write bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_UNASSIGN_VOICE_LINE_PROFILE, payload)
+        return self._transport.request(_OP_UNASSIGN_VOICE_LINE_PROFILE, payload, options)
 
     def update_default_voice_profile(
-        self, input: UpdateDefaultVoiceProfileInput
+        self, input: UpdateDefaultVoiceProfileInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.VoiceProfile]:
         "Update default Voice profile\n\nPatches the default profile's protocol or mediaEncryption when expectedVersion matches. Omitted fields are preserved. Its server-assigned name is immutable, and directional configuration uses the profileId returned by this resource. Requires platforms:write bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_UPDATE_DEFAULT_VOICE_PROFILE, payload)
+        return self._transport.request(_OP_UPDATE_DEFAULT_VOICE_PROFILE, payload, options)
 
     def update_voice_profile(
-        self, input: UpdateVoiceProfileInput
+        self, input: UpdateVoiceProfileInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.VoiceProfile]:
         "Update Voice profile\n\nPatches an additional profile's name, protocol, or mediaEncryption when expectedVersion matches. Omitted fields are preserved. The default profile's metadata changes only through PATCH /v1/projects/{id}/platforms/voice/profiles/default, so a name, protocol, or mediaEncryption patch addressed to its profileId is refused with 409. Directional configuration is managed through the profile's inbound and outbound endpoints. Requires platforms:write bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_UPDATE_VOICE_PROFILE, payload)
+        return self._transport.request(_OP_UPDATE_VOICE_PROFILE, payload, options)
 
     def update_voice_profile_inbound(
-        self, input: UpdateVoiceProfileInboundInput
+        self, input: UpdateVoiceProfileInboundInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.VoiceProfileInboundConfiguration]:
         "Update Voice inbound configuration\n\nUpdates selected fields of a profile's inbound destination when the shared profile version matches. The profileId may identify the default or an additional profile. At least one of destinationUri or credentials is required. Credential omission preserves destination authentication, null removes it, and an object replaces it atomically. Requires platforms:write bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_UPDATE_VOICE_PROFILE_INBOUND, payload)
+        return self._transport.request(_OP_UPDATE_VOICE_PROFILE_INBOUND, payload, options)
 
     def update_voice_profile_outbound_authentication(
-        self, input: UpdateVoiceProfileOutboundAuthenticationInput
+        self,
+        input: UpdateVoiceProfileOutboundAuthenticationInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[models.UpdateVoiceProfileOutboundAuthenticationResponse]:
         "Update Voice outbound authentication\n\nChanges a SIP profile's outbound Digest algorithm when expectedVersion matches. The profileId may identify the default or an additional profile. This policy-only change preserves the password, username, and any previous-password grace deadline. SHA-256 is recommended; MD5 is a weaker legacy option. Returns non-secret outbound metadata and the profile version. Requires platforms:write bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_UPDATE_VOICE_PROFILE_OUTBOUND_AUTHENTICATION, payload)
+        return self._transport.request(
+            _OP_UPDATE_VOICE_PROFILE_OUTBOUND_AUTHENTICATION, payload, options
+        )
 
 
 class SyncRawProjectsAgentProfileResource:
@@ -7057,33 +7121,39 @@ class SyncRawProjectsAgentProfileResource:
         self._transport = transport
 
     def commit_avatar(
-        self, input: CommitAgentProfileAvatarInput
+        self, input: CommitAgentProfileAvatarInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.AgentProfile]:
         "Commit agent avatar\n\nCommits an agent avatar previously uploaded through createAgentProfileAvatarUpload. Call this only after the direct multipart upload succeeds, using the uploadId from the same upload session and a stable Idempotency-Key. The service validates the temporary object's Project ownership, size, content type, image bytes, dimensions, encryption, and age before changing the agent profile."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_COMMIT_AGENT_PROFILE_AVATAR, payload)
+        return self._transport.request(_OP_COMMIT_AGENT_PROFILE_AVATAR, payload, options)
 
     def create_avatar_upload(
-        self, input: CreateAgentProfileAvatarUploadInput
+        self, input: CreateAgentProfileAvatarUploadInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.AgentProfileAvatarUpload]:
         "Create agent avatar upload\n\nCreates a ten-minute, Project-bound presigned S3 POST for a JPEG, PNG, or WebP agent avatar up to 5 MiB. Copy every returned formFields entry into a multipart/form-data request to uploadUrl, append the local file as the final form part, and upload it directly without sending Photon credentials. After the upload succeeds, call commitAgentProfileAvatar with the returned uploadId. Do not cache or log the upload URL or form fields."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CREATE_AGENT_PROFILE_AVATAR_UPLOAD, payload)
+        return self._transport.request(_OP_CREATE_AGENT_PROFILE_AVATAR_UPLOAD, payload, options)
 
-    def get(self, input: GetAgentProfileInput) -> RawResponse[models.AgentProfile]:
+    def get(
+        self, input: GetAgentProfileInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.AgentProfile]:
         "Get agent profile\n\nReturns the agent profile belonging to the identified project. The profile is project-scoped and is distinct from the authenticated account's personal profile. Use the dedicated avatar operations when uploading or removing an agent avatar."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_AGENT_PROFILE, payload)
+        return self._transport.request(_OP_GET_AGENT_PROFILE, payload, options)
 
-    def reset_avatar(self, input: ResetAgentProfileAvatarInput) -> RawResponse[models.AgentProfile]:
+    def reset_avatar(
+        self, input: ResetAgentProfileAvatarInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.AgentProfile]:
         "Reset agent avatar\n\nReplaces the selected project's agent avatar with the project's default avatar, a generated planet image derived from the project ID, and returns the updated agent profile. The reset does not restore an earlier avatar: a custom avatar it replaces is discarded and must be uploaded and committed again to use it. When the default avatar is already in use, the profile is returned unchanged. This does not change the account's personal profile picture. Supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_RESET_AGENT_PROFILE_AVATAR, payload)
+        return self._transport.request(_OP_RESET_AGENT_PROFILE_AVATAR, payload, options)
 
-    def update(self, input: UpdateAgentProfileInput) -> RawResponse[models.AgentProfile]:
+    def update(
+        self, input: UpdateAgentProfileInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.AgentProfile]:
         "Update agent profile\n\nUpdates the supplied firstName and lastName fields in the project's agent profile and returns the updated profile. Avatar upload, commit and reset are separate operations. The caller must be authorized to change configuration for the selected project. Supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_UPDATE_AGENT_PROFILE, payload)
+        return self._transport.request(_OP_UPDATE_AGENT_PROFILE, payload, options)
 
 
 class SyncRawProjectsBillingResource:
@@ -7091,32 +7161,32 @@ class SyncRawProjectsBillingResource:
         self._transport = transport
 
     def get_operation(
-        self, input: GetBillingOperationInput
+        self, input: GetBillingOperationInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.BillingOperation]:
         "Get billing operation\n\nReturns the authoritative state of a billing operation belonging to the selected project. Use it to recover or poll a plan-change request until the operation reaches success or failure. An accepted request is not evidence that the plan change has completed."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_BILLING_OPERATION, payload)
+        return self._transport.request(_OP_GET_BILLING_OPERATION, payload, options)
 
     def get_overview(
-        self, input: GetBillingOverviewInput
+        self, input: GetBillingOverviewInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.GetBillingOverviewResponse]:
         "Get project billing overview\n\nReturns the selected project's plan information, entitlements and current billing-period usage. This operation reads project billing state; it does not change plans or the payer's payment method. Organization-level plans are available through the organization billing overview."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_BILLING_OVERVIEW, payload)
+        return self._transport.request(_OP_GET_BILLING_OVERVIEW, payload, options)
 
     def list_billing_plans(
-        self, input: ListBillingPlansInput
+        self, input: ListBillingPlansInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ListBillingPlansResponse]:
         "List billing plans\n\nLists the billing plan catalog, grouped by their public plan-metadata type. Use the returned plan information when choosing the category and planCode for a plan change. The catalog is the same for every project, and reading it does not purchase a plan."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LIST_BILLING_PLANS, payload)
+        return self._transport.request(_OP_LIST_BILLING_PLANS, payload, options)
 
     def list_project_subscriptions(
-        self, input: ListProjectSubscriptionsInput
+        self, input: ListProjectSubscriptionsInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ListProjectSubscriptionsResponse]:
         "List project subscriptions\n\nLists the plan each of the selected project's categories holds, with its price and the payer's standing. It suits showing a project's plan wherever projects are listed; the billing overview adds billing periods, fixed charges, entitlements and usage."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LIST_PROJECT_SUBSCRIPTIONS, payload)
+        return self._transport.request(_OP_LIST_PROJECT_SUBSCRIPTIONS, payload, options)
 
 
 class SyncRawProjectsResource:
@@ -7127,244 +7197,278 @@ class SyncRawProjectsResource:
         self.platforms = SyncRawProjectsPlatformsResource(transport)
 
     def count_messages(
-        self, input: CountMessagesInput
+        self, input: CountMessagesInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.CountMessagesResponse]:
         "Count Messages\n\nCounts matching Messages before pagination. Delivery updates do not add Messages; results are eventually consistent."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_COUNT_MESSAGES, payload)
+        return self._transport.request(_OP_COUNT_MESSAGES, payload, options)
 
-    def count_spaces(self, input: CountSpacesInput) -> RawResponse[models.SpaceCount]:
+    def count_spaces(
+        self, input: CountSpacesInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.SpaceCount]:
         "Count Spaces\n\nCounts distinct Spaces matching the list filters; multiple matching Messages count once. Results are eventually consistent."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_COUNT_SPACES, payload)
+        return self._transport.request(_OP_COUNT_SPACES, payload, options)
 
-    def count_users(self, input: CountUsersInput) -> RawResponse[models.UserCount]:
+    def count_users(
+        self, input: CountUsersInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.UserCount]:
         "Count Users\n\nCounts distinct Users matching the list filters, including incoming senders or outgoing recipients selected by Message filters. Results are eventually consistent."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_COUNT_USERS, payload)
+        return self._transport.request(_OP_COUNT_USERS, payload, options)
 
     def create_or_get_space(
-        self, input: CreateOrGetSpaceInput
+        self, input: CreateOrGetSpaceInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.PlatformSpace]:
         "Create or get a Space\n\nCreates or returns a project Space. Idempotency-Key is required for every platform and binds the project, platform and initial User IDs (unordered except the iMessage creator in first position) for 24 hours after workflow completion. Concurrent matching requests join the same operation; conflicting reuse returns 422 once its outcome is available. A new email key creates a new thread; direct Spaces and SMS groups converge by participants. Every creation and successful replay requires at least one currently project-owned Agent, or for iMessage a shared-line Agent in a direct Space whose peer has an active Assignment of this project on that line. For iMessage, an existing exact match is reused; otherwise the first participant must be a project-owned dedicated phone Agent and creates the native direct chat or group. Multiple matching native groups return SPACE_AMBIGUOUS; incomplete group membership cannot establish an exact match. Replays return 200 and the current stored Space, with Idempotent-Replayed: true. A timeout does not cancel accepted work: retry the same key and input."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CREATE_OR_GET_SPACE, payload)
+        return self._transport.request(_OP_CREATE_OR_GET_SPACE, payload, options)
 
-    def create_or_get_user(self, input: CreateOrGetUserInput) -> RawResponse[models.PlatformUser]:
+    def create_or_get_user(
+        self, input: CreateOrGetUserInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.PlatformUser]:
         "Create or get a User\n\nCreates or reconciles a User by normalized handle. WhatsApp and iMessage phone classification uses line allocation and project ownership; New iMessage email handles start as Human without lookup; existing email identities retain their producer-observed classification and ownership. WhatsApp Business uses project ownership. These three platforms perform no provider profile or enrichment fetch. Shared Agents expose type=shared without ownership IDs; dedicated Agents expose resourceId for this project or pairwise managedBy for another project. Dedicated lines without an active owner are unavailable. SMS retains its existing ownership and phone number enrichment behavior. Email retains domain ownership resolution, lowercase ASCII domains and case-preserved local parts. Dependency failures fail before classification writes. The natural identity is the project path ID, platform, and handle. Retrying after a committed creation whose response was lost returns the same User with 200 rather than replaying 201."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CREATE_OR_GET_USER, payload)
+        return self._transport.request(_OP_CREATE_OR_GET_USER, payload, options)
 
     def create_project_api_key(
-        self, input: CreateProjectApiKeyInput
+        self, input: CreateProjectApiKeyInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.CreateProjectApiKeyResponse]:
         "Create project API key\n\nCreates a key bound to the selected project using the supplied name, permissions and optional expiry. The secret is returned only in this response and in idempotent replays of it; store it securely because other reads never return it. The key is scoped to this project and does not grant account-level access. Supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CREATE_PROJECT_API_KEY, payload)
+        return self._transport.request(_OP_CREATE_PROJECT_API_KEY, payload, options)
 
     def create_webhook_destination(
-        self, input: CreateWebhookDestinationInput
+        self, input: CreateWebhookDestinationInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.CreateWebhookDestinationResponse]:
         "Create webhook destination\n\nCreates a webhook destination for the selected project using its URL, payload API version, event selection and other documented settings. The response includes the signing secret, which is returned only in this response and in idempotent replays of it, never by destination reads; store it securely for signature verification. The API version must be selectable and selected event types must belong to that version's catalog. Supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CREATE_WEBHOOK_DESTINATION, payload)
+        return self._transport.request(_OP_CREATE_WEBHOOK_DESTINATION, payload, options)
 
-    def delete(self, input: DeleteProjectInput) -> RawResponse[models.Project]:
+    def delete(
+        self, input: DeleteProjectInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.Project]:
         "Delete project\n\nStarts deletion of the identified project using a credential authorized for project management. Inspect the documented response and use getProjectClosureStatus with the organization and project identifiers to read closure progress. A project API key is not an accepted credential for this operation."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_DELETE_PROJECT, payload)
+        return self._transport.request(_OP_DELETE_PROJECT, payload, options)
 
     def delete_webhook_destination(
-        self, input: DeleteWebhookDestinationInput
+        self, input: DeleteWebhookDestinationInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.WebhookDestination]:
         "Delete webhook destination\n\nDeletes the selected project's destination and returns its stable tombstone. Repeated deletion returns the deletion representation. This operation removes the destination configuration; it is separate from disabling a destination through an update."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_DELETE_WEBHOOK_DESTINATION, payload)
+        return self._transport.request(_OP_DELETE_WEBHOOK_DESTINATION, payload, options)
 
-    def download_attachment(self, input: DownloadAttachmentInput) -> RawResponse[bytes]:
+    def download_attachment(
+        self, input: DownloadAttachmentInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[bytes]:
         "Download attachment\n\nDownloads an Attachment's bytes. If unavailable after ten seconds, returns ATTACHMENT_NOT_READY with Retry-After: 5."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_DOWNLOAD_ATTACHMENT, payload)
+        return self._transport.request(_OP_DOWNLOAD_ATTACHMENT, payload, options)
 
-    def get(self, input: GetProjectInput) -> RawResponse[models.Project]:
+    def get(
+        self, input: GetProjectInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.Project]:
         "Get project\n\nReturns the identified project's settings for an authorized caller. The credential must be allowed to access that project; possession of an unrelated project's key does not provide access. Missing and deleted projects are reported through the documented error responses."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_PROJECT, payload)
+        return self._transport.request(_OP_GET_PROJECT, payload, options)
 
-    def get_attachment(self, input: GetAttachmentInput) -> RawResponse[models.Attachment]:
+    def get_attachment(
+        self, input: GetAttachmentInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.Attachment]:
         "Get attachment\n\nReturns an Attachment's metadata. Use the content endpoint to download its bytes. If its metadata is unavailable after ten seconds, returns ATTACHMENT_NOT_READY with Retry-After: 5."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_ATTACHMENT, payload)
+        return self._transport.request(_OP_GET_ATTACHMENT, payload, options)
 
-    def get_message(self, input: GetMessageInput) -> RawResponse[models.PlatformMessage | None]:
+    def get_message(
+        self, input: GetMessageInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.PlatformMessage | None]:
         "Get a Message\n\nReturns one stored Message by canonical Photon Message ID on any supported contract platform. The globally unique Message ID is resolved within the authorized Project. Unsupported platform Messages are outside this collection and return MESSAGE_NOT_FOUND."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_MESSAGE, payload)
+        return self._transport.request(_OP_GET_MESSAGE, payload, options)
 
     def get_message_metrics_backfill(
-        self, input: GetMessageMetricsBackfillInput
+        self, input: GetMessageMetricsBackfillInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.GetMessageMetricsBackfillResponse]:
         "Get metrics backfill status\n\nReturns historical metrics update progress. Completion reflects lastVerifiedAt; queries remain available during updates."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_MESSAGE_METRICS_BACKFILL, payload)
+        return self._transport.request(_OP_GET_MESSAGE_METRICS_BACKFILL, payload, options)
 
     def get_message_metrics_sql_schema(
-        self, input: GetMessageMetricsSqlSchemaInput
+        self, input: GetMessageMetricsSqlSchemaInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.GetMessageMetricsSqlSchemaResponse]:
         "Get metrics SQL schema\n\nReturns the message_events and call_events SQL schema, supported queries, and limits for the selected API version."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_MESSAGE_METRICS_SQL_SCHEMA, payload)
+        return self._transport.request(_OP_GET_MESSAGE_METRICS_SQL_SCHEMA, payload, options)
 
-    def get_space(self, input: GetSpaceInput) -> RawResponse[models.PlatformSpace | None]:
+    def get_space(
+        self, input: GetSpaceInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.PlatformSpace | None]:
         "Get a Space\n\nReturns one stored Space by canonical Photon Space ID. A Space of a kind its platform does not support returns OPERATION_UNAVAILABLE."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_SPACE, payload)
+        return self._transport.request(_OP_GET_SPACE, payload, options)
 
-    def get_user(self, input: GetUserInput) -> RawResponse[models.PlatformUser | None]:
+    def get_user(
+        self, input: GetUserInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.PlatformUser | None]:
         "Get an User\n\nReturns one User after refreshing its Human or Agent classification and project ownership where supported. iMessage email identities retain their producer-observed classification and ownership because no current email ownership lookup is available. WhatsApp, WhatsApp Business and iMessage perform no provider fetch; only SMS Human classifications perform a phone number lookup. Current-project Agents expose resourceId; external-project Agents expose only pairwise managedBy. Conditional response evaluation uses the post-reconciliation representation. Stored reads use each platform definition; projection requires adapter support."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_USER, payload)
+        return self._transport.request(_OP_GET_USER, payload, options)
 
     def get_webhook_destination(
-        self, input: GetWebhookDestinationInput
+        self, input: GetWebhookDestinationInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.WebhookDestination]:
         "Get webhook destination\n\nReturns the configuration of one webhook destination belonging to the selected project. Missing or deleted destinations are reported as errors. This read does not disclose the signing secret returned when the destination or a secret rotation was created."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_WEBHOOK_DESTINATION, payload)
+        return self._transport.request(_OP_GET_WEBHOOK_DESTINATION, payload, options)
 
     def get_webhook_event_schema(
-        self, input: GetWebhookEventSchemaInput
-    ) -> RawResponse[models.WebhookEventSchema | None]:
+        self, input: GetWebhookEventSchemaInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.WebhookEventSchema]:
         "Get webhook event schema\n\nReturns the published reader JSON Schema for eventType in the requested webhook apiVersion. Use it to interpret events for that exact payload version. The response media type is application/schema+json; an authorized conditional request may return 304 without a body. Unsupported event/version combinations are rejected."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_WEBHOOK_EVENT_SCHEMA, payload)
+        return self._transport.request(_OP_GET_WEBHOOK_EVENT_SCHEMA, payload, options)
 
-    def list_attachments(self, input: ListAttachmentsInput) -> RawResponse[models.AttachmentPage]:
+    def list_attachments(
+        self, input: ListAttachmentsInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.AttachmentPage]:
         "List attachments\n\nLists the Project's Attachment metadata, with optional time filters. An Attachment can be absent until its upload finishes, which advances its updatedAt; follow changes with updatedSince."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LIST_ATTACHMENTS, payload)
+        return self._transport.request(_OP_LIST_ATTACHMENTS, payload, options)
 
-    def list_messages(self, input: ListMessagesInput) -> RawResponse[models.MessagePage]:
+    def list_messages(
+        self, input: ListMessagesInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.MessagePage]:
         "List Messages\n\nLists the Project's Messages, with optional resource, conversation, and time filters. Results are eventually consistent."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LIST_MESSAGES, payload)
+        return self._transport.request(_OP_LIST_MESSAGES, payload, options)
 
     def list_project_api_keys(
-        self, input: ListProjectApiKeysInput
+        self, input: ListProjectApiKeysInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ListProjectApiKeysResponse]:
         "List project API keys\n\nLists the API keys on the selected project, ordered newest first. Revoked keys are not listed; expired keys stay listed until they are revoked. Entries contain key metadata and permissions, never secret values. Use the returned identifiers to manage an existing key; lost secrets cannot be recovered through this operation."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LIST_PROJECT_API_KEYS, payload)
+        return self._transport.request(_OP_LIST_PROJECT_API_KEYS, payload, options)
 
-    def list_spaces(self, input: ListSpacesInput) -> RawResponse[models.SpacePage]:
+    def list_spaces(
+        self, input: ListSpacesInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.SpacePage]:
         "List Spaces\n\nLists the Project's stored Spaces, with optional participant and Message filters. Results are eventually consistent."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LIST_SPACES, payload)
+        return self._transport.request(_OP_LIST_SPACES, payload, options)
 
-    def list_users(self, input: ListUsersInput) -> RawResponse[models.UserPage]:
+    def list_users(
+        self, input: ListUsersInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.UserPage]:
         "List Users\n\nLists stored Users without refreshing their classification; use Get User for current details. Message filters select incoming senders or outgoing recipients, excluding the Message's own endpoint."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LIST_USERS, payload)
+        return self._transport.request(_OP_LIST_USERS, payload, options)
 
     def list_webhook_api_versions(
-        self, input: ListWebhookApiVersionsInput
-    ) -> RawResponse[models.ListWebhookApiVersionsResponse | None]:
+        self, input: ListWebhookApiVersionsInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.ListWebhookApiVersionsResponse]:
         "List webhook API versions\n\nLists the published webhook payload API versions and their lifecycle metadata. The list is the same for every project. Use the selectable indicator when choosing a version for a destination. These payload dates are separate from SDK package versions. An authorized conditional request may return 304 without a response body."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LIST_WEBHOOK_API_VERSIONS, payload)
+        return self._transport.request(_OP_LIST_WEBHOOK_API_VERSIONS, payload, options)
 
     def list_webhook_destinations(
-        self, input: ListWebhookDestinationsInput
+        self, input: ListWebhookDestinationsInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.WebhookDestinationPage]:
         "List webhook destinations\n\nReturns a cursor-paginated page of active webhook destinations configured for the selected project. Use pageSize and pageToken to navigate it. The listing returns destination configuration, never signing secrets."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LIST_WEBHOOK_DESTINATIONS, payload)
+        return self._transport.request(_OP_LIST_WEBHOOK_DESTINATIONS, payload, options)
 
     def list_webhook_egress_addresses(
-        self, input: ListWebhookEgressAddressesInput
-    ) -> RawResponse[models.ListWebhookEgressAddressesResponse | None]:
+        self, input: ListWebhookEgressAddressesInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.ListWebhookEgressAddressesResponse]:
         "List webhook egress addresses\n\nReturns the public network addresses from which this environment sends webhook deliveries. Use this information when configuring the receiving system's network allowlist. The result is environment-specific and does not describe the API service's ingress addresses."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LIST_WEBHOOK_EGRESS_ADDRESSES, payload)
+        return self._transport.request(_OP_LIST_WEBHOOK_EGRESS_ADDRESSES, payload, options)
 
     def list_webhook_event_types(
-        self, input: ListWebhookEventTypesInput
-    ) -> RawResponse[models.ListWebhookEventTypesResponse | None]:
+        self, input: ListWebhookEventTypesInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.ListWebhookEventTypesResponse]:
         "List webhook event types\n\nLists the webhook event types available in the requested apiVersion, including their descriptions, audiences and reader-schema URLs. Use this versioned catalog when selecting a destination's enabledEvents. The response may include version-retirement information; an authorized conditional request can return 304 without a body."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_LIST_WEBHOOK_EVENT_TYPES, payload)
+        return self._transport.request(_OP_LIST_WEBHOOK_EVENT_TYPES, payload, options)
 
     def mark_message_read(
-        self, input: MarkMessageReadInput
+        self, input: MarkMessageReadInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.MarkMessageReadResponse]:
         "Mark a Message as read\n\nPersists a request to mark one incoming Message as read using its receiving account. A 202 means accepted for asynchronous execution, not handled by the provider. Requires Idempotency-Key. The returned action Message tracks its outcome; privacy settings may suppress remote visibility."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_MARK_MESSAGE_READ, payload)
+        return self._transport.request(_OP_MARK_MESSAGE_READ, payload, options)
 
     def query_message_metrics(
-        self, input: QueryMessageMetricsInput
+        self, input: QueryMessageMetricsInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.QueryMessageMetricsResponse]:
         "Query metrics\n\nRuns read-only SQL over the Project's message_events or call_events table. Get the SQL schema for supported columns, capabilities, and limits."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_QUERY_MESSAGE_METRICS, payload)
+        return self._transport.request(_OP_QUERY_MESSAGE_METRICS, payload, options)
 
     def retry_webhook_delivery(
-        self, input: RetryWebhookDeliveryInput
+        self, input: RetryWebhookDeliveryInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.RetryWebhookDeliveryResponse]:
         "Retry webhook delivery\n\nRequests an immediate attempt of the selected delivery if it is still the waiting head for its destination and event type. expectedAttemptCount is the failed-attempt counter recorded on the delivery and fences stale requests. This overrides the current backoff, including Retry-After, once. It preserves event identity and the retry budget. Delivered, active, disabled and dead-lettered deliveries cannot be retried. A 202 acknowledges the wake-up, not successful delivery. Supply an Idempotency-Key and retain it when retrying an ambiguous failure."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_RETRY_WEBHOOK_DELIVERY, payload)
+        return self._transport.request(_OP_RETRY_WEBHOOK_DELIVERY, payload, options)
 
     def revoke_project_api_key(
-        self, input: RevokeProjectApiKeyInput
+        self, input: RevokeProjectApiKeyInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ProjectApiKeyResponse]:
         "Revoke project API key\n\nRevokes the identified key on the selected project and returns its revoked metadata. Repeating the deletion returns the same revokedAt value. This operation does not rotate the key or return a replacement secret. Supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_REVOKE_PROJECT_API_KEY, payload)
+        return self._transport.request(_OP_REVOKE_PROJECT_API_KEY, payload, options)
 
     def rotate_webhook_signing_secret(
-        self, input: RotateWebhookSigningSecretInput
+        self, input: RotateWebhookSigningSecretInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.RotateWebhookSigningSecretResponse]:
         "Rotate webhook signing secret\n\nRotates the signing secret for the selected project's webhook destination and returns the new secret. The optional overlapSeconds controls the requested overlap with the previous secret according to the documented request constraints. Store the new secret securely and update the receiver's signature verification configuration; it is returned only in this response and in idempotent replays of it, never by destination reads. Supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_ROTATE_WEBHOOK_SIGNING_SECRET, payload)
+        return self._transport.request(_OP_ROTATE_WEBHOOK_SIGNING_SECRET, payload, options)
 
-    def send_message(self, input: SendMessageInput) -> RawResponse[models.SentMessage]:
+    def send_message(
+        self, input: SendMessageInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.SentMessage]:
         "Send a Message\n\nSends SMS, email, WhatsApp Personal, WhatsApp Business, iMessage, or Telegram text and image messages. A shared iMessage line sends only in direct Spaces, only to a peer with an active Assignment who has messaged it since that Assignment. SMS and MMS require current Platforms authorization for the sender and every recipient; campaign eligibility is required unless every recipient is in-network."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_SEND_MESSAGE, payload)
+        return self._transport.request(_OP_SEND_MESSAGE, payload, options)
 
     def set_space_typing(
-        self, input: SetSpaceTypingInput
+        self, input: SetSpaceTypingInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.SetSpaceTypingResponse]:
         "Set typing in a Space\n\nSaves one transient typing update as an authorized Agent in this Space. Returns the dispatched Message with HTTP 202. Successful provider handoff ends in accepted; rejection or expiry ends in failed. Repeat true to refresh; false stops where supported. Callers control refreshes. Unsupported platforms return OPERATION_UNAVAILABLE."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_SET_SPACE_TYPING, payload)
+        return self._transport.request(_OP_SET_SPACE_TYPING, payload, options)
 
-    def update(self, input: UpdateProjectInput) -> RawResponse[models.Project]:
+    def update(
+        self, input: UpdateProjectInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.Project]:
         "Update project\n\nUpdates the identified project's name and returns the updated project. The project slug is not a mutable field in this request. Use an authorized account or organization service-identity credential; a project API key is not accepted. Supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_UPDATE_PROJECT, payload)
+        return self._transport.request(_OP_UPDATE_PROJECT, payload, options)
 
     def update_project_api_key(
-        self, input: UpdateProjectApiKeyInput
+        self, input: UpdateProjectApiKeyInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ProjectApiKeyResponse]:
         "Update project API key permissions\n\nReplaces the identified project key's permission list with the supplied permissions and returns the updated metadata. Sending the permission list the key already has leaves it unchanged. This request does not create a new secret or change the key's project binding. Supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_UPDATE_PROJECT_API_KEY, payload)
+        return self._transport.request(_OP_UPDATE_PROJECT_API_KEY, payload, options)
 
     def update_webhook_destination(
-        self, input: UpdateWebhookDestinationInput
+        self, input: UpdateWebhookDestinationInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.WebhookDestination]:
         "Update webhook destination\n\nUpdates the supplied URL, name, description, status or enabledEvents fields on a project's webhook destination and returns its updated configuration. The payload API version is not a mutable field in this request. Event selections are checked against the destination's versioned catalog; signing-secret rotation is a separate operation. Supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_UPDATE_WEBHOOK_DESTINATION, payload)
+        return self._transport.request(_OP_UPDATE_WEBHOOK_DESTINATION, payload, options)
 
-    def upload_attachment(self, input: UploadAttachmentInput) -> RawResponse[models.Attachment]:
+    def upload_attachment(
+        self, input: UploadAttachmentInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.Attachment]:
         "Upload attachment\n\nUploads a file and returns its Attachment once ready to download."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True, exclude={"body"})
         payload["body"] = input.body.root if input.body is not None else None
-        return self._transport.request(_OP_UPLOAD_ATTACHMENT, payload)
+        return self._transport.request(_OP_UPLOAD_ATTACHMENT, payload, options)
 
 
 class SyncRawAccountResource:
@@ -7372,83 +7476,98 @@ class SyncRawAccountResource:
         self._transport = transport
 
     def commit_profile_picture(
-        self, input: CommitAccountProfilePictureInput
+        self, input: CommitAccountProfilePictureInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.Account]:
         "Commit profile picture\n\nCommits a profile picture previously uploaded through createAccountProfilePictureUpload. Call this only after the direct multipart upload succeeds, using the uploadId from the same upload session and a stable Idempotency-Key. The service validates the temporary object's ownership, size, content type, image bytes, dimensions, encryption, and age before changing the Account."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_COMMIT_ACCOUNT_PROFILE_PICTURE, payload)
+        return self._transport.request(_OP_COMMIT_ACCOUNT_PROFILE_PICTURE, payload, options)
 
     def create_account_service_key(
-        self, input: CreateAccountServiceKeyInput
+        self, input: CreateAccountServiceKeyInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.CreateAccountServiceKeyResponse]:
         "Create Account Service Key\n\nCreates a service key for the authenticated account with the supplied name and optional expiresAt. Returns key metadata and a one-time credential; store the credential securely because it cannot be retrieved through the listing endpoint. These credentials act as the account and must not be distributed as project-scoped keys. Supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CREATE_ACCOUNT_SERVICE_KEY, payload)
+        return self._transport.request(_OP_CREATE_ACCOUNT_SERVICE_KEY, payload, options)
 
     def create_profile_picture_upload(
-        self, input: CreateAccountProfilePictureUploadInput
+        self,
+        input: CreateAccountProfilePictureUploadInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[models.ProfilePictureUpload]:
         "Create profile picture upload\n\nCreates a ten-minute, Account-bound presigned S3 POST for a JPEG, PNG, or WebP profile picture up to 5 MiB. Copy every returned formFields entry into a multipart/form-data request to uploadUrl, append the local file as the final form part, and upload it directly without sending Photon credentials. After the upload succeeds, call commitAccountProfilePicture with the returned uploadId. Do not cache or log the upload URL or form fields."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CREATE_ACCOUNT_PROFILE_PICTURE_UPLOAD, payload)
+        return self._transport.request(_OP_CREATE_ACCOUNT_PROFILE_PICTURE_UPLOAD, payload, options)
 
-    def delete(self, input: DeleteAccountInput | None = None) -> RawResponse[models.Account]:
+    def delete(
+        self, input: DeleteAccountInput | None = None, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.Account]:
         "Delete account\n\nDeletes the authenticated account and returns its account tombstone. The operation is rejected while the account still owns organizations; transfer or close those organizations before retrying. This endpoint acts on the caller's account and does not accept another account's identifier."
         payload = (input or DeleteAccountInput()).model_dump(
             mode="json", by_alias=True, exclude_unset=True
         )
-        return self._transport.request(_OP_DELETE_ACCOUNT, payload)
+        return self._transport.request(_OP_DELETE_ACCOUNT, payload, options)
 
-    def get(self, input: GetAccountInput | None = None) -> RawResponse[models.Account]:
+    def get(
+        self, input: GetAccountInput | None = None, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.Account]:
         "Get account\n\nReturns the profile of the authenticated account. The account is selected from the credential rather than a request parameter. A missing or deleted account is reported as an error instead of an empty profile."
         payload = (input or GetAccountInput()).model_dump(
             mode="json", by_alias=True, exclude_unset=True
         )
-        return self._transport.request(_OP_GET_ACCOUNT, payload)
+        return self._transport.request(_OP_GET_ACCOUNT, payload, options)
 
     def list_account_service_keys(
-        self, input: ListAccountServiceKeysInput | None = None
+        self,
+        input: ListAccountServiceKeysInput | None = None,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[models.ListAccountServiceKeysResponse]:
         "List Account Service Keys\n\nReturns metadata for the authenticated account's unrevoked service keys, including expired keys, ordered newest first. Secret values are not returned; a key's credential is disclosed only when that key is created."
         payload = (input or ListAccountServiceKeysInput()).model_dump(
             mode="json", by_alias=True, exclude_unset=True
         )
-        return self._transport.request(_OP_LIST_ACCOUNT_SERVICE_KEYS, payload)
+        return self._transport.request(_OP_LIST_ACCOUNT_SERVICE_KEYS, payload, options)
 
     def list_authorized_applications(
-        self, input: ListAuthorizedApplicationsInput | None = None
+        self,
+        input: ListAuthorizedApplicationsInput | None = None,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[models.ListAuthorizedApplicationsResponse]:
         "List connected applications\n\nLists the OAuth applications authorized by the authenticated user."
         payload = (input or ListAuthorizedApplicationsInput()).model_dump(
             mode="json", by_alias=True, exclude_unset=True
         )
-        return self._transport.request(_OP_LIST_AUTHORIZED_APPLICATIONS, payload)
+        return self._transport.request(_OP_LIST_AUTHORIZED_APPLICATIONS, payload, options)
 
     def reset_profile_picture(
-        self, input: ResetAccountProfilePictureInput
+        self, input: ResetAccountProfilePictureInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.Account]:
         "Remove profile picture\n\nRemoves the authenticated account's custom profile picture and returns the account using its default picture. This operation does not upload a replacement; use the upload-and-commit operations when setting a new custom picture. Supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_RESET_ACCOUNT_PROFILE_PICTURE, payload)
+        return self._transport.request(_OP_RESET_ACCOUNT_PROFILE_PICTURE, payload, options)
 
     def revoke_account_service_key(
-        self, input: RevokeAccountServiceKeyInput
+        self, input: RevokeAccountServiceKeyInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.RevokeAccountServiceKeyResponse]:
         "Revoke Account Service Key\n\nRevokes the account-owned service key identified by serviceKeyId and returns its revoked metadata. Repeating the revocation is stable. Revocation changes the credential's validity; it does not create a replacement key. Supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_REVOKE_ACCOUNT_SERVICE_KEY, payload)
+        return self._transport.request(_OP_REVOKE_ACCOUNT_SERVICE_KEY, payload, options)
 
     def revoke_authorized_application(
-        self, input: RevokeAuthorizedApplicationInput
+        self, input: RevokeAuthorizedApplicationInput, *, options: RequestOptions | None = None
     ) -> RawResponse[None]:
         "Revoke connected application\n\nRevokes the authenticated user's grant for one OAuth application."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_REVOKE_AUTHORIZED_APPLICATION, payload)
+        return self._transport.request(_OP_REVOKE_AUTHORIZED_APPLICATION, payload, options)
 
-    def update(self, input: UpdateAccountInput) -> RawResponse[models.Account]:
+    def update(
+        self, input: UpdateAccountInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.Account]:
         "Update account\n\nUpdates the supplied firstName and lastName fields on the authenticated account and returns the updated profile. Only the documented profile fields can be changed through this endpoint; profile-picture uploads and phone-number verification use their dedicated operations. Supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_UPDATE_ACCOUNT, payload)
+        return self._transport.request(_OP_UPDATE_ACCOUNT, payload, options)
 
 
 class SyncRawSystemResource:
@@ -7456,18 +7575,18 @@ class SyncRawSystemResource:
         self._transport = transport
 
     def create_app_installation_request(
-        self, input: CreateAppInstallationRequestInput
+        self, input: CreateAppInstallationRequestInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.CreateAppInstallationRequestResponse]:
         "Request app installation\n\nAuthenticates a registered app backend using a short-lived signed client assertion. Creates request metadata only; customer approval is still required."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CREATE_APP_INSTALLATION_REQUEST, payload)
+        return self._transport.request(_OP_CREATE_APP_INSTALLATION_REQUEST, payload, options)
 
     def redeem_app_installation_delivery(
-        self, input: RedeemAppInstallationDeliveryInput
+        self, input: RedeemAppInstallationDeliveryInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.RedeemAppInstallationDeliveryResponse]:
         "Redeem installation credential\n\nThe registered app backend authenticates with a signed client assertion and a single-use code. Plaintext is returned only once; retries return status and never create another credential."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_REDEEM_APP_INSTALLATION_DELIVERY, payload)
+        return self._transport.request(_OP_REDEEM_APP_INSTALLATION_DELIVERY, payload, options)
 
 
 class SyncRawAuthDeviceResource:
@@ -7475,18 +7594,20 @@ class SyncRawAuthDeviceResource:
         self._transport = transport
 
     def authorize(
-        self, input: DeviceAuthorizeInput | None = None
+        self, input: DeviceAuthorizeInput | None = None, *, options: RequestOptions | None = None
     ) -> RawResponse[models.DeviceAuthorizeResponse]:
         "Start device authorization\n\nStarts the device authorization flow for a CLI or another device without a browser. Show the verification URL and user code, then poll the token endpoint at the returned interval. No request fields are required; any supplied body is ignored."
         payload = (input or DeviceAuthorizeInput()).model_dump(
             mode="json", by_alias=True, exclude_unset=True
         )
-        return self._transport.request(_OP_DEVICE_AUTHORIZE, payload)
+        return self._transport.request(_OP_DEVICE_AUTHORIZE, payload, options)
 
-    def token(self, input: DeviceTokenInput) -> RawResponse[models.DeviceTokenResponse]:
+    def token(
+        self, input: DeviceTokenInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.DeviceTokenResponse]:
         "Exchange device code or refresh token\n\nExchanges an authorized device code or a refresh token for an access token and rotating refresh token. Accepts JSON and form-encoded bodies. While polling, wait at least interval seconds and increase the interval on slow_down. Store the new refresh token after every successful grant.\n\nThis SDK method sends uncompressed JSON (application/json). Other request formats described above apply to direct HTTP requests."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_DEVICE_TOKEN, payload)
+        return self._transport.request(_OP_DEVICE_TOKEN, payload, options)
 
 
 class SyncRawAuthResource:
@@ -7495,62 +7616,62 @@ class SyncRawAuthResource:
         self.device = SyncRawAuthDeviceResource(transport)
 
     def create_organization_sso_portal_link(
-        self, input: CreateOrganizationSsoPortalLinkInput
+        self, input: CreateOrganizationSsoPortalLinkInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.CreateOrganizationSsoPortalLinkResponse]:
         "Create organization setup portal link\n\nReturns an organization setup portal URL. Supply returnTo and optionally intent, either sso or domain_verification; sso is the default. Open the returned URL to complete the selected setup flow."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_CREATE_ORGANIZATION_SSO_PORTAL_LINK, payload)
+        return self._transport.request(_OP_CREATE_ORGANIZATION_SSO_PORTAL_LINK, payload, options)
 
     def disable_organization_sso(
-        self, input: DisableOrganizationSsoInput
+        self, input: DisableOrganizationSsoInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.OrganizationSsoConfiguration]:
         "Disable organization SSO\n\nDeletes the provider connection, releases the SSO requirement once the connection is gone, then unbinds the chosen domains. Retry with the same Idempotency-Key to resume or await the same run."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_DISABLE_ORGANIZATION_SSO, payload)
+        return self._transport.request(_OP_DISABLE_ORGANIZATION_SSO, payload, options)
 
     def get_organization_connection_status(
-        self, input: GetOrganizationConnectionStatusInput
+        self, input: GetOrganizationConnectionStatusInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.OrganizationConnectionStatus]:
         "Get organization connection status\n\nRequires current human organization membership. Synchronization status does not attest SSO configuration or completed authorization."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_ORGANIZATION_CONNECTION_STATUS, payload)
+        return self._transport.request(_OP_GET_ORGANIZATION_CONNECTION_STATUS, payload, options)
 
     def get_organization_sso_configuration(
-        self, input: GetOrganizationSsoConfigurationInput
+        self, input: GetOrganizationSsoConfigurationInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.OrganizationSsoConfiguration]:
         "Get organization SSO configuration\n\nReturns the selected organization’s SSO connection state, configuration version, and desired and effective policy settings. Read policySyncStatus alongside the enforcement fields to distinguish requested settings from synchronized settings."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_GET_ORGANIZATION_SSO_CONFIGURATION, payload)
+        return self._transport.request(_OP_GET_ORGANIZATION_SSO_CONFIGURATION, payload, options)
 
     def list_oauth_scopes(
-        self, input: ListOauthScopesInput | None = None
+        self, input: ListOauthScopesInput | None = None, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ListOauthScopesResponse]:
         "List OAuth scopes\n\nLists the business permissions available to OAuth applications."
         payload = (input or ListOauthScopesInput()).model_dump(
             mode="json", by_alias=True, exclude_unset=True
         )
-        return self._transport.request(_OP_LIST_OAUTH_SCOPES, payload)
+        return self._transport.request(_OP_LIST_OAUTH_SCOPES, payload, options)
 
     def refresh_organization_sso_connection(
-        self, input: RefreshOrganizationSsoConnectionInput
+        self, input: RefreshOrganizationSsoConnectionInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.OrganizationSsoConfiguration]:
         "Refresh organization SSO connection\n\nRefreshes the selected organization’s SSO connection and returns its current connection state, configuration version and policy synchronization status. This operation takes no request body."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_REFRESH_ORGANIZATION_SSO_CONNECTION, payload)
+        return self._transport.request(_OP_REFRESH_ORGANIZATION_SSO_CONNECTION, payload, options)
 
     def retry_organization_connection_sync(
-        self, input: RetryOrganizationConnectionSyncInput
+        self, input: RetryOrganizationConnectionSyncInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.OrganizationConnectionStatus]:
         "Retry organization connection sync\n\nReconciles existing local intent. Takes no body and cannot change membership, roles or authentication policy."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_RETRY_ORGANIZATION_CONNECTION_SYNC, payload)
+        return self._transport.request(_OP_RETRY_ORGANIZATION_CONNECTION_SYNC, payload, options)
 
     def update_organization_sso_policy(
-        self, input: UpdateOrganizationSsoPolicyInput
+        self, input: UpdateOrganizationSsoPolicyInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.OrganizationSsoConfiguration]:
         "Update organization SSO policy\n\nUpdates whether SSO can admit new members automatically using ssoJitEnabled and the current expectedVersion. Returns the organization’s SSO configuration and policy synchronization status; a successful response does not mean every desired policy setting has finished synchronizing."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return self._transport.request(_OP_UPDATE_ORGANIZATION_SSO_POLICY, payload)
+        return self._transport.request(_OP_UPDATE_ORGANIZATION_SSO_POLICY, payload, options)
 
 
 class SyncOrganizationsBillingResource:
@@ -7558,68 +7679,75 @@ class SyncOrganizationsBillingResource:
         self._raw_resource = SyncRawOrganizationsBillingResource(transport)
 
     def change_plan(
-        self, input: ChangePlanInput
+        self, input: ChangePlanInput, *, options: RequestOptions | None = None
     ) -> models.TerminalBillingOperation | models.PendingBillingOperation:
         "Change plan\n\nPurchases or changes the selected project's plan for the supplied category and planCode, redeeming promotionCode when given. A 202 response means the change is pending: poll the returned operation URL and honor Retry-After until it succeeds or fails. A 200 response means the idempotency key resolved to an operation that is already terminal; inspect that result rather than assuming success from the status code alone. Supply the required Idempotency-Key header. Supply both organizationId and projectId to select the project within its organization."
-        return (self._raw_resource.change_plan(input)).data
+        return (self._raw_resource.change_plan(input, options=options)).data
 
     def create_organization_payment_method_checkout(
-        self, input: CreateOrganizationPaymentMethodCheckoutInput
+        self,
+        input: CreateOrganizationPaymentMethodCheckoutInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> models.CreateOrganizationPaymentMethodCheckoutResponse:
         "Create payment method checkout\n\nReturns a hosted payment-method collection URL for the selected organization. An Idempotency-Key header is optional; supply one to make retries safe. Complete the returned checkout flow. Receiving the URL does not mean a card has been saved; check payment-method status afterward."
-        return (self._raw_resource.create_organization_payment_method_checkout(input)).data
+        return (
+            self._raw_resource.create_organization_payment_method_checkout(input, options=options)
+        ).data
 
     def get_effective_terms(
-        self, input: GetEffectiveTermsInput
+        self, input: GetEffectiveTermsInput, *, options: RequestOptions | None = None
     ) -> models.GetEffectiveTermsResponse:
         "Get the project's effective billing terms\n\nReturns what the selected project is billed on now, per category it holds: the plan as its subscription has it, with any override applied, each fixed charge at the subscription's price and quantity, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. Supply both organizationId and projectId; the organization must pay for the project. This operation does not change billing."
-        return (self._raw_resource.get_effective_terms(input)).data
+        return (self._raw_resource.get_effective_terms(input, options=options)).data
 
     def get_organization_billing_overview(
-        self, input: GetOrganizationBillingOverviewInput
+        self, input: GetOrganizationBillingOverviewInput, *, options: RequestOptions | None = None
     ) -> models.GetOrganizationBillingOverviewResponse:
         "Get organization billing overview\n\nReturns the selected organization’s billing subscription and entitlementsVersion. The subscription can be null. Read the returned plan, charges and entitlements to inspect organization billing; this operation does not purchase or change a plan."
-        return (self._raw_resource.get_organization_billing_overview(input)).data
+        return (self._raw_resource.get_organization_billing_overview(input, options=options)).data
 
     def get_organization_credit(
-        self, input: GetOrganizationCreditInput
+        self, input: GetOrganizationCreditInput, *, options: RequestOptions | None = None
     ) -> models.GetOrganizationCreditResponse:
         "Get organization credit\n\nReturns the credit the selected organization holds: on credit notes, such as the unused time of a plan an upgrade replaced or the unused days of a prorated fixed charge it released, and in its wallet: the credit Photon granted it, such as a new account's first organization's welcome credit, and any prepaid credit it bought. It offsets that organization's invoices of any kind except one-off invoices, credit notes first. Reading it does not apply or change credit."
-        return (self._raw_resource.get_organization_credit(input)).data
+        return (self._raw_resource.get_organization_credit(input, options=options)).data
 
     def get_organization_payment_method(
-        self, input: GetOrganizationPaymentMethodInput
+        self, input: GetOrganizationPaymentMethodInput, *, options: RequestOptions | None = None
     ) -> models.GetOrganizationPaymentMethodResponse:
         "Get organization payment method\n\nReports whether the selected organization has a card on file, its documented payment-method metadata, whether a purchase needs a card first (purchaseRefusal), and how it pays: by card, or by invoice on its contract's terms (agreement). Reading this endpoint does not collect a new card or create a checkout session."
-        return (self._raw_resource.get_organization_payment_method(input)).data
+        return (self._raw_resource.get_organization_payment_method(input, options=options)).data
 
     def get_organization_terms(
-        self, input: GetOrganizationTermsInput
+        self, input: GetOrganizationTermsInput, *, options: RequestOptions | None = None
     ) -> models.GetOrganizationTermsResponse:
         "Get the organization's effective billing terms\n\nReturns what the selected organization is billed on now on its own subscription, such as SSO and 10DLC campaigns: the plan as the subscription has it, with any override applied, each fixed charge at the subscription's price and the quantity the organization holds, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. subscription has a project subscription's terms without its category, and is null when the organization holds none. Project subscriptions are read per project. This operation does not change billing."
-        return (self._raw_resource.get_organization_terms(input)).data
+        return (self._raw_resource.get_organization_terms(input, options=options)).data
 
     def list_credit_activity(
-        self, input: ListCreditActivityInput
+        self, input: ListCreditActivityInput, *, options: RequestOptions | None = None
     ) -> models.ListCreditActivityResponse:
         "List credit activity\n\nReturns one page of how the selected organization's credit balance changed, newest first: credit notes issued and credit granted, credit applied to invoices, credit restored when the change an invoice paid for never applied, and credit voided. Each entry names the credit note (none for granted credit), the invoice when there is one, and the charge and subscription the credit note credits, or that the credit was a grant. Pass nextPage as page to read further. This operation does not change billing."
-        return (self._raw_resource.list_credit_activity(input)).data
+        return (self._raw_resource.list_credit_activity(input, options=options)).data
 
-    def list_invoices(self, input: ListInvoicesInput) -> models.ListInvoicesResponse:
+    def list_invoices(
+        self, input: ListInvoicesInput, *, options: RequestOptions | None = None
+    ) -> models.ListInvoicesResponse:
         "List invoices\n\nReturns one page of the selected organization's invoices, newest first: every invoice issued to it with a nonzero total or actual charges, including charges fully paid by credit; drafts and empty invoices are excluded. Each names what it charged the organization's own subscription and each project. Pass subject to list only the invoices that charge the organization itself or one of its projects, and nextCursor as cursor to read further. Listing invoices does not make a payment or modify a subscription."
-        return (self._raw_resource.list_invoices(input)).data
+        return (self._raw_resource.list_invoices(input, options=options)).data
 
     def preview_organization_change(
-        self, input: PreviewOrganizationChangeInput
+        self, input: PreviewOrganizationChangeInput, *, options: RequestOptions | None = None
     ) -> models.PreviewOrganizationChangeResponse:
-        "Preview an organization billing change\n\nPreviews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives."
-        return (self._raw_resource.preview_organization_change(input)).data
+        "Preview an organization billing change\n\nPreviews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. This operation does not change billing. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives."
+        return (self._raw_resource.preview_organization_change(input, options=options)).data
 
     def preview_project_change(
-        self, input: PreviewProjectChangeInput
+        self, input: PreviewProjectChangeInput, *, options: RequestOptions | None = None
     ) -> models.PreviewProjectChangeResponse:
-        "Preview a project billing change\n\nPreviews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; a downgrade, or choosing the held plan again, bills nothing now; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives. Supply both organizationId and projectId; the organization must pay for the project."
-        return (self._raw_resource.preview_project_change(input)).data
+        "Preview a project billing change\n\nPreviews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; a downgrade, or choosing the held plan again, bills nothing now; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives. Supply both organizationId and projectId; the organization must pay for the project."
+        return (self._raw_resource.preview_project_change(input, options=options)).data
 
 
 class SyncOrganizationsProjectsResource:
@@ -7627,28 +7755,34 @@ class SyncOrganizationsProjectsResource:
         self._raw_resource = SyncRawOrganizationsProjectsResource(transport)
 
     def check_project_slug_availability(
-        self, input: CheckProjectSlugAvailabilityInput
+        self, input: CheckProjectSlugAvailabilityInput, *, options: RequestOptions | None = None
     ) -> models.CheckProjectSlugAvailabilityResponse:
         "Check project slug availability\n\nReports whether createProject would accept `slug` right now. Advisory: only the create itself allocates, so a caller must still handle SLUG_TAKEN. A malformed slug is rejected on shape; a reserved slug, a slug held by an active project, and a slug retired with a deleted project each answer `available: false` with a reason."
-        return (self._raw_resource.check_project_slug_availability(input)).data
+        return (self._raw_resource.check_project_slug_availability(input, options=options)).data
 
-    def count(self, input: CountProjectsInput) -> models.ProjectCount:
+    def count(
+        self, input: CountProjectsInput, *, options: RequestOptions | None = None
+    ) -> models.ProjectCount:
         "Count projects\n\nCounts the projects the same filter would list. The count is read from the primary, so it is authoritative rather than replica-lagged."
-        return (self._raw_resource.count(input)).data
+        return (self._raw_resource.count(input, options=options)).data
 
-    def create(self, input: CreateProjectInput) -> models.Project:
-        "Create project\n\nCreates in the authorized organization. In addition to account credentials, explicitly granted Service Identity API keys and M2M tokens may create projects. Project API keys cannot create projects. Creator and private credential evidence come only from the trusted authorization context. The caller-selected slug is immutable, must be 3 to 63 lowercase ASCII alphanumerics separated by single hyphens, and cannot be reserved or held by any active or deleted project."
-        return (self._raw_resource.create(input)).data
+    def create(
+        self, input: CreateProjectInput, *, options: RequestOptions | None = None
+    ) -> models.Project:
+        "Create project\n\nCreates in the authorized organization. In addition to account credentials, explicitly granted Service Identity API keys and M2M tokens may create projects. Project API keys cannot create projects. Caller identity and credential evidence come only from the trusted authorization context. The caller-selected slug is immutable, must be 3 to 63 lowercase ASCII alphanumerics separated by single hyphens, and cannot be reserved or held by any active or deleted project."
+        return (self._raw_resource.create(input, options=options)).data
 
     def get_project_closure_status(
-        self, input: GetProjectClosureStatusInput
+        self, input: GetProjectClosureStatusInput, *, options: RequestOptions | None = None
     ) -> models.GetProjectClosureStatusResponse:
         "Get project closure status\n\nReturns closure progress for projectId within organizationId, including deletionOperationId, domain progress and ready. This read operation does not initiate deletion."
-        return (self._raw_resource.get_project_closure_status(input)).data
+        return (self._raw_resource.get_project_closure_status(input, options=options)).data
 
-    def list(self, input: ListProjectsInput) -> models.ProjectPage:
+    def list(
+        self, input: ListProjectsInput, *, options: RequestOptions | None = None
+    ) -> models.ProjectPage:
         "List projects\n\nReturns a cursor-paginated page of the active projects in organizationId. Filter using query and the documented creation-time bounds, and navigate with pageSize and pageToken. Project roles are not returned and role is not a supported filter."
-        return (self._raw_resource.list(input)).data
+        return (self._raw_resource.list(input, options=options)).data
 
 
 class SyncOrganizationsResource:
@@ -7658,290 +7792,331 @@ class SyncOrganizationsResource:
         self.projects = SyncOrganizationsProjectsResource(transport)
 
     def accept_organization_invitation(
-        self, input: AcceptOrganizationInvitationInput
+        self, input: AcceptOrganizationInvitationInput, *, options: RequestOptions | None = None
     ) -> models.AcceptOrganizationInvitationResponse:
         "Accept an invitation to all organization projects\n\nAccepts an invitation by its token and adds the signed-in account to the organization with the invited role. An existing member keeps their role, except a Viewer who joined through SSO just-in-time provisioning and whose role has never been changed, who takes the invited role; a removed member can rejoin only with an invitation created after the removal, else 409. The account's verified email must match the invited address, the invitation must be pending and unexpired, and its inviter must still be an Owner or Admin; in an organization that requires SSO it returns 403, because the invitee joins by signing in through that SSO instead. Call it with account credentials acting as the account itself and supply the required Idempotency-Key header."
-        return (self._raw_resource.accept_organization_invitation(input)).data
+        return (self._raw_resource.accept_organization_invitation(input, options=options)).data
 
     def cancel_sso_subscription(
-        self, input: CancelSsoSubscriptionInput
+        self, input: CancelSsoSubscriptionInput, *, options: RequestOptions | None = None
     ) -> models.CancelSsoSubscriptionResponse:
         "Cancel the SSO subscription\n\nCancels the organization's SSO subscription at once, but only after SSO has been turned off: while SSO is still required it returns 409. The unused days become organization credit, and SSO setup closes. Only Owners and Admins can call it, with account credentials and the required Idempotency-Key header."
-        return (self._raw_resource.cancel_sso_subscription(input)).data
+        return (self._raw_resource.cancel_sso_subscription(input, options=options)).data
 
     def check_organization_deletion(
-        self, input: CheckOrganizationDeletionInput
+        self, input: CheckOrganizationDeletionInput, *, options: RequestOptions | None = None
     ) -> models.CheckOrganizationDeletionResponse:
         "Check organization deletion prerequisites\n\nReports whether the organization can be deleted now (canDelete), the blockers to clear first, such as active projects or unpaid invoices, and the version to send to closeOrganization. The answer is advisory, because deletion checks again. Only the Owner can call it, with account credentials; in an organization that requires SSO, sign in through SSO, because Account Service Keys are refused."
-        return (self._raw_resource.check_organization_deletion(input)).data
+        return (self._raw_resource.check_organization_deletion(input, options=options)).data
 
-    def close_organization(self, input: CloseOrganizationInput) -> None:
+    def close_organization(
+        self, input: CloseOrganizationInput, *, options: RequestOptions | None = None
+    ) -> None:
         "Delete organization\n\nDeletes the organization: it leaves normal access when the call returns 204, and Photon then releases its app installations, registrations and billing subscriptions in the background. It cannot be undone and needs no active projects, nothing owed, and the expectedVersion from checkOrganizationDeletion; a blocked or stale request returns 409. Only the Owner can call it, with account credentials (in an organization that requires SSO, a session signed in through SSO) and the required Idempotency-Key header."
-        return (self._raw_resource.close_organization(input)).data
+        return (self._raw_resource.close_organization(input, options=options)).data
 
     def commit_organization_avatar(
-        self, input: CommitOrganizationAvatarInput
+        self, input: CommitOrganizationAvatarInput, *, options: RequestOptions | None = None
     ) -> models.CommitOrganizationAvatarResponse:
         "Commit an organization avatar\n\nSets the organization's avatar to an image uploaded with createOrganizationAvatarUpload, after checking its size, type and contents, and discards the previous avatar; an invalid or expired upload is rejected. Owners and Admins can call it with account credentials. Send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
-        return (self._raw_resource.commit_organization_avatar(input)).data
+        return (self._raw_resource.commit_organization_avatar(input, options=options)).data
 
     def create_organization(
-        self, input: CreateOrganizationInput
+        self, input: CreateOrganizationInput, *, options: RequestOptions | None = None
     ) -> models.CreateOrganizationResponse:
         "Create an organization\n\nCreates an organization with the supplied name and makes the calling account its Owner; SSO and just-in-time provisioning start disabled. Billing is set up after the response, so the 201 body has no billingInitialization; read it from getOrganization or listOrganizations to follow the setup. Call it with account credentials acting as the account itself and supply the required Idempotency-Key header; an account that is closing gets 409."
-        return (self._raw_resource.create_organization(input)).data
+        return (self._raw_resource.create_organization(input, options=options)).data
 
     def create_organization_avatar_upload(
-        self, input: CreateOrganizationAvatarUploadInput
+        self, input: CreateOrganizationAvatarUploadInput, *, options: RequestOptions | None = None
     ) -> models.CreateOrganizationAvatarUploadResponse:
         "Create an organization avatar upload\n\nUpload a JPEG, PNG, or WebP image up to 5 MiB with every returned form field and the file last. Upload directly without Photon credentials, then commit the uploadId. Do not log or cache upload URLs or fields."
-        return (self._raw_resource.create_organization_avatar_upload(input)).data
+        return (self._raw_resource.create_organization_avatar_upload(input, options=options)).data
 
     def create_organization_invitation(
-        self, input: CreateOrganizationInvitationInput
+        self, input: CreateOrganizationInvitationInput, *, options: RequestOptions | None = None
     ) -> models.CreateOrganizationInvitationResponse:
         "Invite a Member or Viewer to all organization projects\n\nInvites an email address to the organization as a Member or Viewer and emails it a link that stays valid for 7 days; the Admin and Owner roles can't be invited. Owners and Admins can call it with account credentials and the required Idempotency-Key header. Inviting an address that has a pending invitation for the same role resends it and a different role returns 409, while sending too often (twice within a minute, more than 30 an hour or 100 pending per organization) returns 429."
-        return (self._raw_resource.create_organization_invitation(input)).data
+        return (self._raw_resource.create_organization_invitation(input, options=options)).data
 
     def create_organization_oauth_client(
-        self, input: CreateOrganizationOauthClientInput
+        self, input: CreateOrganizationOauthClientInput, *, options: RequestOptions | None = None
     ) -> models.CreateOrganizationOauthClientResponse:
         "Create an organization OAuth client\n\nUse the same UUID Idempotency-Key and payload when retrying. Unknown provider outcomes require recovery; do not use a new key to retry an uncertain creation."
-        return (self._raw_resource.create_organization_oauth_client(input)).data
+        return (self._raw_resource.create_organization_oauth_client(input, options=options)).data
 
     def create_service_identity(
-        self, input: CreateServiceIdentityInput
+        self, input: CreateServiceIdentityInput, *, options: RequestOptions | None = None
     ) -> models.CreateServiceIdentityResponse:
         "Create an organization Service Identity\n\nCreates an active Service Identity, a machine identity owned by the organization, with a name and a non-empty set of permissions from listServiceIdentityPermissions; it starts with no credentials. Owners and Admins can call it with account credentials and the required Idempotency-Key header."
-        return (self._raw_resource.create_service_identity(input)).data
+        return (self._raw_resource.create_service_identity(input, options=options)).data
 
     def create_service_identity_api_key(
-        self, input: CreateServiceIdentityApiKeyInput
+        self, input: CreateServiceIdentityApiKeyInput, *, options: RequestOptions | None = None
     ) -> models.CreateServiceIdentityApiKeyResponse:
         "Create a one-time Service Identity API key\n\nCreates an API key for an active Service Identity that no app installation manages; the key acts with the identity's current permissions. Only a response with status created returns the key's value, so store it securely; retry with the same Idempotency-Key, which must be a UUID: a retry returns the key's status without the value, and status recovery_required means the value was not delivered and can't be retrieved. Owners and Admins can call it with account credentials, and expectedIdentityVersion must match the identity's current version, else 409; an identity managed by an app installation also returns 409."
-        return (self._raw_resource.create_service_identity_api_key(input)).data
+        return (self._raw_resource.create_service_identity_api_key(input, options=options)).data
 
     def create_service_identity_client_secret(
-        self, input: CreateServiceIdentityClientSecretInput
+        self,
+        input: CreateServiceIdentityClientSecretInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> models.CreateServiceIdentityClientSecretResponse:
         "Create a one-time Service Identity M2M client secret\n\nCreates a client secret for the machine-to-machine (M2M) application of an active Service Identity that no app installation manages, setting the application up first if needed, and returns the secret with its clientId once; exchange them for M2M access tokens, and never send the secret to other operations. Retry with the same Idempotency-Key, which must be a UUID: a retry returns the status without the secret, and a response with stage application (status recovery_required or cleanup_required) means the application could not be set up and no secret exists. Owners and Admins can call it with account credentials, and expectedIdentityVersion must match the identity's current version, else 409; an identity managed by an app installation also returns 409."
-        return (self._raw_resource.create_service_identity_client_secret(input)).data
+        return (
+            self._raw_resource.create_service_identity_client_secret(input, options=options)
+        ).data
 
     def delete_organization_oauth_client(
-        self, input: DeleteOrganizationOauthClientInput
+        self, input: DeleteOrganizationOauthClientInput, *, options: RequestOptions | None = None
     ) -> models.DeleteOrganizationOauthClientResponse:
         "Delete an organization OAuth client\n\nQueues deletion of the exact provider application. Retry DELETE to read its current status. Accepted deletion does not promise immediate token revocation."
-        return (self._raw_resource.delete_organization_oauth_client(input)).data
+        return (self._raw_resource.delete_organization_oauth_client(input, options=options)).data
 
     def delete_organization_oauth_client_secret(
-        self, input: DeleteOrganizationOauthClientSecretInput
+        self,
+        input: DeleteOrganizationOauthClientSecretInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> None:
         "Revoke an organization OAuth client's secret\n\nStops every secret of the app now, including one still in its grace period."
-        return (self._raw_resource.delete_organization_oauth_client_secret(input)).data
+        return (
+            self._raw_resource.delete_organization_oauth_client_secret(input, options=options)
+        ).data
 
     def get_current_organization(
-        self, input: GetCurrentOrganizationInput | None = None
+        self,
+        input: GetCurrentOrganizationInput | None = None,
+        *,
+        options: RequestOptions | None = None,
     ) -> models.GetCurrentOrganizationResponse:
         "Read the credential's organization\n\nReads the organization the credential is bound to: the organization an OAuth grant was consented for, or a Service Identity's own organization. Use it to discover which organization an integration acts for, and pass its organizationId to organization-scoped operations."
-        return (self._raw_resource.get_current_organization(input)).data
+        return (self._raw_resource.get_current_organization(input, options=options)).data
 
-    def get_organization(self, input: GetOrganizationInput) -> models.GetOrganizationResponse:
+    def get_organization(
+        self, input: GetOrganizationInput, *, options: RequestOptions | None = None
+    ) -> models.GetOrganizationResponse:
         "Read organization name and avatar\n\nReturns the organization's name, avatar URL, version and billing setup progress. Any member can read it with account credentials, and a Service Identity granted organization:read or an OAuth grant with the organization:read scope can read the organization it is bound to. Send version as expectedVersion when renaming the organization or changing its avatar."
-        return (self._raw_resource.get_organization(input)).data
+        return (self._raw_resource.get_organization(input, options=options)).data
 
     def get_organization_oauth_client(
-        self, input: GetOrganizationOauthClientInput
+        self, input: GetOrganizationOauthClientInput, *, options: RequestOptions | None = None
     ) -> models.GetOrganizationOauthClientResponse:
         "Read an organization OAuth client\n\nReturns one third-party OAuth application the organization owns, without its secret. Any member can call it with account credentials. The ETag response header is the value updateOrganizationOauthClient needs in If-Match."
-        return (self._raw_resource.get_organization_oauth_client(input)).data
+        return (self._raw_resource.get_organization_oauth_client(input, options=options)).data
 
     def get_organization_oauth_client_secret(
-        self, input: GetOrganizationOauthClientSecretInput
+        self, input: GetOrganizationOauthClientSecretInput, *, options: RequestOptions | None = None
     ) -> models.GetOrganizationOauthClientSecretResponse:
         "Read an organization OAuth client's secret\n\nReturns metadata about an OAuth application's secret: the current secret and, after a rotation, the previous one while it still works, with each one's hint, creation and last-use times; the previous one's validUntil is when it stops working, or null when it lasts until the next rotation or revocation. The secret value is never returned. Only Owners and Admins can call it, with account credentials."
-        return (self._raw_resource.get_organization_oauth_client_secret(input)).data
+        return (
+            self._raw_resource.get_organization_oauth_client_secret(input, options=options)
+        ).data
 
     def get_service_identity(
-        self, input: GetServiceIdentityInput
+        self, input: GetServiceIdentityInput, *, options: RequestOptions | None = None
     ) -> models.GetServiceIdentityResponse:
         "Read a Service Identity\n\nReturns one Service Identity with its permissions, status and version. Any member can call it with account credentials. Send version as expectedVersion to updateServiceIdentity, or as expectedIdentityVersion when creating a credential."
-        return (self._raw_resource.get_service_identity(input)).data
+        return (self._raw_resource.get_service_identity(input, options=options)).data
 
     def get_sso_subscription(
-        self, input: GetSsoSubscriptionInput
+        self, input: GetSsoSubscriptionInput, *, options: RequestOptions | None = None
     ) -> models.GetSsoSubscriptionResponse:
         "Read SSO subscription\n\nReturns the organization's SSO subscription: its state, the current monthly price and billing period, whether a payment method must be added first, and whether SSO can be set up (canConfigure). Only Owners and Admins can call it, with account credentials. Send its amount, currency and currentPeriodEnd as the quote when subscribing."
-        return (self._raw_resource.get_sso_subscription(input)).data
+        return (self._raw_resource.get_sso_subscription(input, options=options)).data
 
     def get_ten_dlc_brand_otp(
-        self, input: GetTenDlcBrandOtpInput
+        self, input: GetTenDlcBrandOtpInput, *, options: RequestOptions | None = None
     ) -> models.GetTenDlcBrandOtpResponse:
         "Get sole-proprietor OTP status\n\nReturns the redacted one-time-password verification state for an organization-owned brand. OTP verification applies only to sole-proprietor brands. Reading this endpoint does not request another code or verify a supplied code; use the trigger and verification operations for those actions. Supply organization_id for the organization that owns the registration."
-        return (self._raw_resource.get_ten_dlc_brand_otp(input)).data
+        return (self._raw_resource.get_ten_dlc_brand_otp(input, options=options)).data
 
-    def leave_organization(self, input: LeaveOrganizationInput) -> models.LeaveOrganizationResponse:
+    def leave_organization(
+        self, input: LeaveOrganizationInput, *, options: RequestOptions | None = None
+    ) -> models.LeaveOrganizationResponse:
         "Leave an organization; Owners must transfer or close first\n\nRemoves the authenticated account's own membership. Nothing is revoked: the account's sessions, OAuth grants and Account Service Keys stop being accepted for the organization and its projects shortly after the call, and project API keys and Service Identity credentials it created keep working until they are revoked. Any member except the Owner can call it, with account credentials or an OAuth grant for this organization with the organization:read scope; the Owner gets 409 and must transfer ownership or delete the organization first. Send the caller's own membership version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
-        return (self._raw_resource.leave_organization(input)).data
+        return (self._raw_resource.leave_organization(input, options=options)).data
 
     def list_organization_invitations(
-        self, input: ListOrganizationInvitationsInput
+        self, input: ListOrganizationInvitationsInput, *, options: RequestOptions | None = None
     ) -> models.ListOrganizationInvitationsResponse:
         "List pending organization invitations\n\nLists the organization's pending, unexpired invitations, newest first, in one unpaginated response; accepted, revoked and expired invitations are left out, and invitation links are never returned. Owners and Admins can call it with account credentials."
-        return (self._raw_resource.list_organization_invitations(input)).data
+        return (self._raw_resource.list_organization_invitations(input, options=options)).data
 
     def list_organization_members(
-        self, input: ListOrganizationMembersInput
+        self, input: ListOrganizationMembersInput, *, options: RequestOptions | None = None
     ) -> models.ListOrganizationMembersResponse:
         "List current organization members\n\nLists the organization's active members, ordered by account ID, with each member's role, membership version and account profile (name, email and picture); a member whose account is missing or deleted has a null profile. Any member can call it with account credentials, or with an OAuth grant for this organization that has the organization:read scope. The list is not paginated."
-        return (self._raw_resource.list_organization_members(input)).data
+        return (self._raw_resource.list_organization_members(input, options=options)).data
 
     def list_organization_oauth_clients(
-        self, input: ListOrganizationOauthClientsInput
+        self, input: ListOrganizationOauthClientsInput, *, options: RequestOptions | None = None
     ) -> models.ListOrganizationOauthClientsResponse:
         "List organization OAuth clients\n\nLists the third-party OAuth applications the organization owns, with their metadata but never their secrets, in one unpaginated response. Any member can call it with account credentials."
-        return (self._raw_resource.list_organization_oauth_clients(input)).data
+        return (self._raw_resource.list_organization_oauth_clients(input, options=options)).data
 
     def list_organizations(
-        self, input: ListOrganizationsInput | None = None
+        self, input: ListOrganizationsInput | None = None, *, options: RequestOptions | None = None
     ) -> models.ListOrganizationsResponse:
         "List organizations\n\nLists the active organizations the authenticated account belongs to, oldest first, in one unpaginated response; ownedOrganizationIds marks the ones it owns. Call it with account credentials acting as the account itself; OAuth grants and Service Identities are refused."
-        return (self._raw_resource.list_organizations(input)).data
+        return (self._raw_resource.list_organizations(input, options=options)).data
 
     def list_service_identities(
-        self, input: ListServiceIdentitiesInput
+        self, input: ListServiceIdentitiesInput, *, options: RequestOptions | None = None
     ) -> models.ListServiceIdentitiesResponse:
         "List organization Service Identities\n\nLists every Service Identity in the organization, oldest first, including disabled ones and those managed by app installations, in one unpaginated response. Any member can call it with account credentials. It returns identity metadata only, never credentials."
-        return (self._raw_resource.list_service_identities(input)).data
+        return (self._raw_resource.list_service_identities(input, options=options)).data
 
     def list_service_identity_credentials(
-        self, input: ListServiceIdentityCredentialsInput
+        self, input: ListServiceIdentityCredentialsInput, *, options: RequestOptions | None = None
     ) -> models.ListServiceIdentityCredentialsResponse:
         "List Service Identity credential metadata\n\nLists metadata for every API key and client secret of a Service Identity, oldest first, including pending and revoked ones, in one unpaginated response; it never returns secret values. Only Owners and Admins can call it, with account credentials."
-        return (self._raw_resource.list_service_identity_credentials(input)).data
+        return (self._raw_resource.list_service_identity_credentials(input, options=options)).data
 
     def list_service_identity_permissions(
-        self, input: ListServiceIdentityPermissionsInput
+        self, input: ListServiceIdentityPermissionsInput, *, options: RequestOptions | None = None
     ) -> models.ListServiceIdentityPermissionsResponse:
         "List grantable Service Identity permissions\n\nThe permissions a Service Identity or installable app may be granted: the machine set of the current auth contract, sorted. Create, update, and app declarations accept exactly these values."
-        return (self._raw_resource.list_service_identity_permissions(input)).data
+        return (self._raw_resource.list_service_identity_permissions(input, options=options)).data
 
     def preview_organization_invitation(
-        self, input: PreviewOrganizationInvitationInput
+        self, input: PreviewOrganizationInvitationInput, *, options: RequestOptions | None = None
     ) -> models.PreviewOrganizationInvitationResponse:
         "Preview an organization invitation after sign-in\n\nReturns what an invitation offers to the signed-in account that holds its token: the organization, role, expiry, member count and inviter with masked email addresses, whether the account's verified email matches the invitation, and whether SSO is required to accept it. Call it with account credentials acting as the account itself; it changes nothing. An unknown token returns 404, and an expired or revoked invitation, or one accepted by another account, returns 409."
-        return (self._raw_resource.preview_organization_invitation(input)).data
+        return (self._raw_resource.preview_organization_invitation(input, options=options)).data
 
     def remove_organization_avatar(
-        self, input: RemoveOrganizationAvatarInput
+        self, input: RemoveOrganizationAvatarInput, *, options: RequestOptions | None = None
     ) -> models.RemoveOrganizationAvatarResponse:
         "Remove an organization avatar\n\nRemoves the organization's custom avatar, so avatarUrl becomes null, and returns the organization with its new version. Owners and Admins can call it with account credentials. Send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
-        return (self._raw_resource.remove_organization_avatar(input)).data
+        return (self._raw_resource.remove_organization_avatar(input, options=options)).data
 
     def remove_organization_member(
-        self, input: RemoveOrganizationMemberInput
+        self, input: RemoveOrganizationMemberInput, *, options: RequestOptions | None = None
     ) -> models.RemoveOrganizationMemberResponse:
         "Remove a member from the organization\n\nRemoves an active member from the organization. Nothing is revoked: their sessions, OAuth grants and Account Service Keys stop being accepted for the organization and its projects shortly after the call, and project API keys and Service Identity credentials they created or hold keep working until an Owner or Admin revokes them. Owners and Admins can call it with account credentials, but only the Owner can remove an Admin, and neither the Owner nor the caller can be removed here (409; leave with leaveOrganization). Send the member's current membership version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
-        return (self._raw_resource.remove_organization_member(input)).data
+        return (self._raw_resource.remove_organization_member(input, options=options)).data
 
     def resend_organization_invitation(
-        self, input: ResendOrganizationInvitationInput
+        self, input: ResendOrganizationInvitationInput, *, options: RequestOptions | None = None
     ) -> models.ResendOrganizationInvitationResponse:
         "Resend an organization invitation\n\nEmails a pending invitation again with the same link and restarts its 7-day expiry. Owners and Admins can call it with account credentials and the required Idempotency-Key header. An expired, revoked or accepted invitation returns 409, and a resend within 60 seconds of the last send, or past the organization's 30 sends an hour, returns 429."
-        return (self._raw_resource.resend_organization_invitation(input)).data
+        return (self._raw_resource.resend_organization_invitation(input, options=options)).data
 
     def revoke_organization_invitation(
-        self, input: RevokeOrganizationInvitationInput
+        self, input: RevokeOrganizationInvitationInput, *, options: RequestOptions | None = None
     ) -> models.RevokeOrganizationInvitationResponse:
         "Revoke an organization invitation\n\nRevokes an invitation so its link can no longer be previewed or accepted; no email is sent, and an accepted invitation can't be revoked (409). Owners and Admins can call it with account credentials and the required Idempotency-Key header. Revoking an invitation that is already revoked or expired succeeds."
-        return (self._raw_resource.revoke_organization_invitation(input)).data
+        return (self._raw_resource.revoke_organization_invitation(input, options=options)).data
 
     def revoke_service_identity_credential(
-        self, input: RevokeServiceIdentityCredentialInput
+        self, input: RevokeServiceIdentityCredentialInput, *, options: RequestOptions | None = None
     ) -> models.RevokeServiceIdentityCredentialResponse:
         "Request Service Identity credential revocation\n\nRevokes an API key or client secret of a Service Identity; this can't be undone. An API key stops working shortly after the call, while a client secret gets revocationRequestedAt and stays active until Photon confirms its deletion, and M2M access tokens already issued with it keep working until they expire; repeating the call returns the current state. Owners and Admins can call it with account credentials; send the credential's current version as expectedVersion, because a stale version returns 409, and the required Idempotency-Key header."
-        return (self._raw_resource.revoke_service_identity_credential(input)).data
+        return (self._raw_resource.revoke_service_identity_credential(input, options=options)).data
 
     def rotate_organization_oauth_client_secret(
-        self, input: RotateOrganizationOauthClientSecretInput
+        self,
+        input: RotateOrganizationOauthClientSecretInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> models.RotateOrganizationOauthClientSecretResponse:
         "Rotate an organization OAuth client's secret\n\nMints a new secret, then retires the one it replaces: `normal` keeps the old one working for one hour, `emergency` stops it now. A secret not created through Photon always stops now. Rotating again ends an earlier grace period. Retain the same UUID Idempotency-Key when retrying: only the delivering request returns plaintext."
-        return (self._raw_resource.rotate_organization_oauth_client_secret(input)).data
+        return (
+            self._raw_resource.rotate_organization_oauth_client_secret(input, options=options)
+        ).data
 
     def setup_organization_oauth_client_secret(
-        self, input: SetupOrganizationOauthClientSecretInput
+        self,
+        input: SetupOrganizationOauthClientSecretInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> (
         models.SetupOrganizationOauthClientSecretResponse
         | models.SetupOrganizationOauthClientSecretCreatedResponse
     ):
         "Create an organization OAuth client's secret\n\nMints the app's first secret; once it has one, rotate it instead. Retain the same UUID Idempotency-Key when retrying: only the delivering request returns plaintext."
-        return (self._raw_resource.setup_organization_oauth_client_secret(input)).data
+        return (
+            self._raw_resource.setup_organization_oauth_client_secret(input, options=options)
+        ).data
 
-    def subscribe_sso(self, input: SubscribeSsoInput) -> models.SubscribeSsoResponse:
+    def subscribe_sso(
+        self, input: SubscribeSsoInput, *, options: RequestOptions | None = None
+    ) -> models.SubscribeSsoResponse:
         "Subscribe to organization SSO\n\nStarts the organization's SSO subscription, billed monthly in advance and prorated. Send the current quote from getSsoSubscription as expectedAmount, expectedCurrency and expectedCurrentPeriodEnd, because a changed price returns 409; the 202 means the request was accepted, and the charge and its outcome then show in the subscription's state. Only Owners and Admins can call it, with account credentials and the required Idempotency-Key header."
-        return (self._raw_resource.subscribe_sso(input)).data
+        return (self._raw_resource.subscribe_sso(input, options=options)).data
 
     def transfer_organization_ownership(
-        self, input: TransferOrganizationOwnershipInput
+        self, input: TransferOrganizationOwnershipInput, *, options: RequestOptions | None = None
     ) -> models.TransferOrganizationOwnershipResponse:
         "Transfer organization ownership to an existing member\n\nMakes another active member the Owner and turns the current Owner into a Member. Only the Owner can call it, with account credentials and the required Idempotency-Key header. Send the organization's current version, not a membership version, as expectedVersion; a stale version or naming yourself returns 409."
-        return (self._raw_resource.transfer_organization_ownership(input)).data
+        return (self._raw_resource.transfer_organization_ownership(input, options=options)).data
 
     def trigger_ten_dlc_brand_otp(
-        self, input: TriggerTenDlcBrandOtpInput
+        self, input: TriggerTenDlcBrandOtpInput, *, options: RequestOptions | None = None
     ) -> models.TriggerTenDlcBrandOtpResponse:
         "Trigger sole-proprietor OTP\n\nRequests delivery of a verification code for an organization-owned sole-proprietor brand. A 202 response acknowledges the delivery request and does not mean the brand has been verified. Inspect the OTP status and submit the received code through verifyTenDlcBrandOtp. Requests may be rate limited. Supply the required Idempotency-Key header. Supply organization_id for the organization that owns the registration."
-        return (self._raw_resource.trigger_ten_dlc_brand_otp(input)).data
+        return (self._raw_resource.trigger_ten_dlc_brand_otp(input, options=options)).data
 
     def update_organization(
-        self, input: UpdateOrganizationInput
+        self, input: UpdateOrganizationInput, *, options: RequestOptions | None = None
     ) -> models.UpdateOrganizationResponse:
         "Change organization name\n\nRenames the organization and returns it with its new version. Owners and Admins can call it with account credentials. Send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
-        return (self._raw_resource.update_organization(input)).data
+        return (self._raw_resource.update_organization(input, options=options)).data
 
     def update_organization_member_role(
-        self, input: UpdateOrganizationMemberRoleInput
+        self, input: UpdateOrganizationMemberRoleInput, *, options: RequestOptions | None = None
     ) -> models.UpdateOrganizationMemberRoleResponse:
         "Change an organization member's role across all projects\n\nChanges an active member's role to admin, member or viewer. Owners and Admins can call it with account credentials, but only the Owner can make someone an Admin or change an Admin's role, and nobody can change the Owner's role or their own here (409). Send the member's current membership version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
-        return (self._raw_resource.update_organization_member_role(input)).data
+        return (self._raw_resource.update_organization_member_role(input, options=options)).data
 
     def update_organization_oauth_client(
-        self, input: UpdateOrganizationOauthClientInput
+        self, input: UpdateOrganizationOauthClientInput, *, options: RequestOptions | None = None
     ) -> models.UpdateOrganizationOauthClientResponse:
         "Update an organization OAuth client\n\nRequires If-Match from the latest read. Stale versions return 412. A failed response may follow an applied provider update; reread before retrying. Version checking is not provider atomic CAS."
-        return (self._raw_resource.update_organization_oauth_client(input)).data
+        return (self._raw_resource.update_organization_oauth_client(input, options=options)).data
 
     def update_service_identity(
-        self, input: UpdateServiceIdentityInput
+        self, input: UpdateServiceIdentityInput, *, options: RequestOptions | None = None
     ) -> models.UpdateServiceIdentityResponse:
         "Update a Service Identity\n\nChanges a Service Identity's name, its permissions (the list replaces the current one) or its status. Disabling an identity stops its API keys and M2M tokens from authorizing requests without revoking them, and an identity managed by an app installation can't be changed (409). Owners and Admins can call it with account credentials; send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
-        return (self._raw_resource.update_service_identity(input)).data
+        return (self._raw_resource.update_service_identity(input, options=options)).data
 
     def verify_ten_dlc_brand_otp(
-        self, input: VerifyTenDlcBrandOtpInput
+        self, input: VerifyTenDlcBrandOtpInput, *, options: RequestOptions | None = None
     ) -> models.VerifyTenDlcBrandOtpResponse:
         "Verify sole-proprietor OTP\n\nSubmits otpPin for the selected organization-owned sole-proprietor brand and returns its updated, redacted verification state. A rejected code, a locked verification flow, or rate limiting is reported as an error; read the current OTP status before deciding whether to request another code. Supply the required Idempotency-Key header. Supply organization_id for the organization that owns the registration."
-        return (self._raw_resource.verify_ten_dlc_brand_otp(input)).data
+        return (self._raw_resource.verify_ten_dlc_brand_otp(input, options=options)).data
 
 
 class SyncProjectsPlatformsImessageAssignmentsResource:
     def __init__(self, transport: SyncTransport) -> None:
         self._raw_resource = SyncRawProjectsPlatformsImessageAssignmentsResource(transport)
 
-    def create(self, input: CreateSharedLineAssignmentInput) -> models.SharedLineAssignment:
+    def create(
+        self, input: CreateSharedLineAssignmentInput, *, options: RequestOptions | None = None
+    ) -> models.SharedLineAssignment:
         "Create shared line assignment\n\nMaps an end user's iMessage handle — an E.164 phone number or an email address — onto one of the project's pooled shared iMessage lines, consuming a seat from the project's entitlement. The assigned number is allocated by the server. When an email address is supplied in `email` the user is sent an invite asynchronously to that address; it is never inferred from the handle, and the response never reports whether the send succeeded. Requires the platforms:write permission bound to the project resource in the path."
-        return (self._raw_resource.create(input)).data
+        return (self._raw_resource.create(input, options=options)).data
 
-    def get(self, input: GetSharedLineAssignmentInput) -> models.SharedLineAssignment:
+    def get(
+        self, input: GetSharedLineAssignmentInput, *, options: RequestOptions | None = None
+    ) -> models.SharedLineAssignment:
         "Get shared line assignment\n\nReads one shared line assignment. Requires the platforms:read permission bound to the project resource in the path."
-        return (self._raw_resource.get(input)).data
+        return (self._raw_resource.get(input, options=options)).data
 
-    def list(self, input: ListSharedLineAssignmentsInput) -> models.SharedLineAssignmentPage:
+    def list(
+        self, input: ListSharedLineAssignmentsInput, *, options: RequestOptions | None = None
+    ) -> models.SharedLineAssignmentPage:
         "List shared line assignments\n\nLists the project's shared line assignments, oldest first. Released assignments are excluded unless includeReleased is set. Requires the platforms:read permission bound to the project resource in the path."
-        return (self._raw_resource.list(input)).data
+        return (self._raw_resource.list(input, options=options)).data
 
-    def release(self, input: ReleaseSharedLineAssignmentInput) -> models.SharedLineAssignment:
+    def release(
+        self, input: ReleaseSharedLineAssignmentInput, *, options: RequestOptions | None = None
+    ) -> models.SharedLineAssignment:
         "Release shared line assignment\n\nReleases a shared line assignment, freeing both its seat and its handle for reassignment. The row is retained for audit and returned with releasedAt set, so repeating the call is safe. Requires the platforms:write permission bound to the project resource in the path."
-        return (self._raw_resource.release(input)).data
+        return (self._raw_resource.release(input, options=options)).data
 
 
 class SyncProjectsPlatformsImessageResource:
@@ -7955,353 +8130,455 @@ class SyncProjectsPlatformsResource:
         self._raw_resource = SyncRawProjectsPlatformsResource(transport)
         self.imessage = SyncProjectsPlatformsImessageResource(transport)
 
-    def assign_sms_line_campaign(self, input: AssignSmsLineCampaignInput) -> models.Operation:
+    def assign_sms_line_campaign(
+        self, input: AssignSmsLineCampaignInput, *, options: RequestOptions | None = None
+    ) -> models.Operation:
         "Assign or replace SMS line campaign\n\nAttach a ready campaign from this project’s organization to its line. Requires platforms:write for the project; human and machine actors retain their authenticated identity. Requires a permanent Idempotency-Key and the current assignment version. Provider provisioning runs asynchronously. If the operation fails, its `error` is the problem of one of these codes: `SMS_CAMPAIGN_PROVIDER_REJECTED`, `SMS_CAMPAIGN_RECONCILIATION_REQUIRED`, `SMS_CAMPAIGN_REVOKED`."
-        return (self._raw_resource.assign_sms_line_campaign(input)).data
+        return (self._raw_resource.assign_sms_line_campaign(input, options=options)).data
 
     def assign_voice_line_profile(
-        self, input: AssignVoiceLineProfileInput
+        self, input: AssignVoiceLineProfileInput, *, options: RequestOptions | None = None
     ) -> models.VoiceLineProfileAssignment:
         "Assign Voice line profile\n\nAssigns or replaces a line's explicit additional-profile override when the resource version matches. The current default cannot be assigned explicitly. The pstn_voice ability remains the admission source of truth. Requires platforms:write bound to the path project."
-        return (self._raw_resource.assign_voice_line_profile(input)).data
+        return (self._raw_resource.assign_voice_line_profile(input, options=options)).data
 
     def batch_update_voice_line_profile_assignments(
-        self, input: BatchUpdateVoiceLineProfileAssignmentsInput
+        self,
+        input: BatchUpdateVoiceLineProfileAssignmentsInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> models.BatchUpdateVoiceLineProfileAssignmentsResponse:
         "Batch update Voice line assignments\n\nAtomically sets additional-profile overrides or switches lines back to the project default for up to 100 Voice-capable lines. A null profileId means use the default. Every expected resource version must match or no line changes. Requires platforms:write bound to the path project."
-        return (self._raw_resource.batch_update_voice_line_profile_assignments(input)).data
+        return (
+            self._raw_resource.batch_update_voice_line_profile_assignments(input, options=options)
+        ).data
 
-    def cancel_operation(self, input: CancelOperationInput) -> models.Operation:
+    def cancel_operation(
+        self, input: CancelOperationInput, *, options: RequestOptions | None = None
+    ) -> models.Operation:
         "Cancel operation\n\nWithdraws a provision that has not been fulfilled yet. This is an operations action rather than a DELETE, because there is nothing to delete: no resource exists until the work commits. Whether it is accepted depends on the resource type — a dedicated iMessage line may sit waiting on inventory for hours and withdrawing costs nothing, while an SMS number is cancellable during inventory waiting and answers 409 once the workflow commits to its first provider order. Campaign assignment and detachment operations cannot be cancelled in any state. Wait for completion before requesting another change; that new change is not a guaranteed rollback. The output-only `cancellable` field is a snapshot; the cancellation transaction always checks the current phase under a row lock. A cancel that loses the race against the work finishing also answers 409: the resource exists and is billed for, so what you want then is to release it. Nothing is charged for a cancelled provision — billing runs after the work, so there is never anything to refund. Requires the platforms:write permission bound to the project resource in the path."
-        return (self._raw_resource.cancel_operation(input)).data
+        return (self._raw_resource.cancel_operation(input, options=options)).data
 
     def configure_voice_profile_outbound(
-        self, input: ConfigureVoiceProfileOutboundInput
+        self, input: ConfigureVoiceProfileOutboundInput, *, options: RequestOptions | None = None
     ) -> models.ConfigureVoiceProfileOutboundResponse:
         "Configure Voice outbound credential\n\nConfigures a SIP credential for outbound calls from a profile when the shared profile version matches. Outbound calls are paid usage, so the organization needs a payment method and no invoices overdue 7 days or more; otherwise this returns 402 ENTITLEMENT_REQUIRED with a reason. authentication.algorithm is required: SHA-256 is recommended, while MD5 is a weaker legacy option supported over UDP, TCP, and TLS; TLS is strongly recommended because UDP and TCP do not encrypt SIP signaling. The profileId may identify the default or an additional profile. The new password is returned once and is never recoverable. Requires platforms:write bound to the path project."
-        return (self._raw_resource.configure_voice_profile_outbound(input)).data
+        return (self._raw_resource.configure_voice_profile_outbound(input, options=options)).data
 
-    def connect_email_domain(self, input: ConnectEmailDomainInput) -> models.Operation:
+    def connect_email_domain(
+        self, input: ConnectEmailDomainInput, *, options: RequestOptions | None = None
+    ) -> models.Operation:
         "Connect email domain\n\nReserves a normalized DNS domain and starts its durable email-provider setup. The accepted provision consumes one email-domain entitlement slot until it fails, is cancelled, or becomes a live resource; the plan's email.max_email_domains value sets the project limit. The customer resource does not exist until provider identity and DNS setup reach READY; poll the returned operation for progress. A domain may have only one unfinished provision or live resource globally. Email domains have no additional per-domain charge. The Idempotency-Key is required and permanent: replaying the same key and canonical domain returns the original operation forever. Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `EMAIL_DOMAIN_PROVIDER_REJECTED`, `EMAIL_DOMAIN_VERIFICATION_FAILED`, `EMAIL_DOMAIN_VERIFICATION_TIMED_OUT`, `EMAIL_TENANT_SETUP_TIMED_OUT`."
-        return (self._raw_resource.connect_email_domain(input)).data
+        return (self._raw_resource.connect_email_domain(input, options=options)).data
 
-    def connect_telegram_bot(self, input: ConnectTelegramBotInput) -> models.Operation:
-        "Connect Telegram bot\n\nStarts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to create a new bot, whose name and username are chosen in Telegram, or to connect an existing managed bot, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged. If the operation fails, its `error` is the problem of one of these codes: `TELEGRAM_CONFIGURATION_FAILED`."
-        return (self._raw_resource.connect_telegram_bot(input)).data
+    def connect_telegram_bot(
+        self, input: ConnectTelegramBotInput, *, options: RequestOptions | None = None
+    ) -> models.Operation:
+        "Connect Telegram bot\n\nStarts a free managed Telegram bot connection. Each project may own one current bot and have one unfinished Telegram provision, including user interaction and failure cleanup. A matching Idempotency-Key replays its original operation before either conflict check, even after completion or while a newer setup is active. For a different key, an unfinished provision takes precedence over an existing bot and returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Only when no provision is active does an existing non-retired bot return 409 TELEGRAM_BOT_ALREADY_CONNECTED with its resourceId; disconnect it before connecting another, even if messaging is disabled or disconnect is unfinished. Rejected keys remain reusable. Open detail.setupUrl to create a new bot, whose name and username are chosen in Telegram, or to connect an existing managed bot, then poll Location. The link remains usable while the operation is active and never expires. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged. If the operation fails, its `error` is the problem of one of these codes: `TELEGRAM_BOT_ALREADY_CONNECTED`, `TELEGRAM_CONFIGURATION_FAILED`."
+        return (self._raw_resource.connect_telegram_bot(input, options=options)).data
 
     def count_filtered_verification_codes(
-        self, input: CountFilteredVerificationCodesInput
+        self, input: CountFilteredVerificationCodesInput, *, options: RequestOptions | None = None
     ) -> models.FilteredVerificationCodeCount:
         "Count filtered verification codes\n\nCounts the verification codes Photon kept from this project's dedicated lines, optionally for one `platform`. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Requires the platforms:read permission bound to the project resource in the path."
-        return (self._raw_resource.count_filtered_verification_codes(input)).data
+        return (self._raw_resource.count_filtered_verification_codes(input, options=options)).data
 
     def count_resource_filtered_verification_codes(
-        self, input: CountResourceFilteredVerificationCodesInput
+        self,
+        input: CountResourceFilteredVerificationCodesInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> models.FilteredVerificationCodeCount:
         "Count a line's filtered verification codes\n\nCounts the verification codes Photon kept from one dedicated line. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a dedicated line receives both iMessage and WhatsApp. Requires the platforms:read permission bound to the project resource in the path."
-        return (self._raw_resource.count_resource_filtered_verification_codes(input)).data
+        return (
+            self._raw_resource.count_resource_filtered_verification_codes(input, options=options)
+        ).data
 
     def create_default_voice_profile(
-        self, input: CreateDefaultVoiceProfileInput
+        self, input: CreateDefaultVoiceProfileInput, *, options: RequestOptions | None = None
     ) -> models.VoiceProfile:
         "Create default Voice profile\n\nCreates the project default Voice profile when absent. An identical replay returns the existing default without changing its version; a different existing default conflicts. Direction configuration is managed separately. Requires platforms:write bound to the path project."
-        return (self._raw_resource.create_default_voice_profile(input)).data
+        return (self._raw_resource.create_default_voice_profile(input, options=options)).data
 
-    def create_voice_profile(self, input: CreateVoiceProfileInput) -> models.VoiceProfile:
+    def create_voice_profile(
+        self, input: CreateVoiceProfileInput, *, options: RequestOptions | None = None
+    ) -> models.VoiceProfile:
         "Create Voice profile\n\nCreates a direction-neutral additional Voice profile. The project default must already exist. Requires platforms:write bound to the path project."
-        return (self._raw_resource.create_voice_profile(input)).data
+        return (self._raw_resource.create_voice_profile(input, options=options)).data
 
     def create_whatsapp_shared_line_assignment(
-        self, input: CreateWhatsappSharedLineAssignmentInput
+        self,
+        input: CreateWhatsappSharedLineAssignmentInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> models.SharedLineAssignment:
         "Create WhatsApp shared line assignment\n\nMaps an end user's phone number onto one of the project's pooled shared WhatsApp lines, consuming a seat from the project's WhatsApp entitlement. The assigned number is allocated by the server. When an email address is supplied the user is sent an invite asynchronously; the response never reports whether that succeeded. Requires the platforms:write permission bound to the project resource in the path."
-        return (self._raw_resource.create_whatsapp_shared_line_assignment(input)).data
+        return (
+            self._raw_resource.create_whatsapp_shared_line_assignment(input, options=options)
+        ).data
 
-    def create_whatsapp_voip_sender(self, input: CreateWhatsappVoipSenderInput) -> models.Operation:
+    def create_whatsapp_voip_sender(
+        self, input: CreateWhatsappVoipSenderInput, *, options: RequestOptions | None = None
+    ) -> models.Operation:
         "Create WhatsApp VoIP sender\n\nRegisters an active, SMS-capable Photon VoIP line on this project's connected WhatsApp Business Account. The account is resolved server-side; callers never select a WABA. The platform creates or reuses the Meta number, requests and consumes the SMS ownership code internally, verifies it, and registers the sender. displayName is optional; when omitted the project agent profile name is snapshotted before acceptance. The VoIP line remains a separate resource and never receives the whatsapp_business ability. If the operation fails, its `error` is the problem of one of these codes: `WHATSAPP_AUTHORIZATION_REVOKED`, `WHATSAPP_DISPLAY_NAME_CONFLICT`, `WHATSAPP_NUMBER_ADD_REFUSED`, `WHATSAPP_NUMBER_LOOKUP_FAILED`, `WHATSAPP_REGISTRATION_REFUSED`, `WHATSAPP_VERIFICATION_REFUSED`, `WHATSAPP_VERIFICATION_REQUEST_REFUSED`, `WHATSAPP_VERIFICATION_TIMED_OUT`."
-        return (self._raw_resource.create_whatsapp_voip_sender(input)).data
+        return (self._raw_resource.create_whatsapp_voip_sender(input, options=options)).data
 
-    def delete_voice_profile(self, input: DeleteVoiceProfileInput) -> None:
+    def delete_voice_profile(
+        self, input: DeleteVoiceProfileInput, *, options: RequestOptions | None = None
+    ) -> None:
         "Delete Voice profile\n\nDeletes an additional profile when expectedVersion matches. Assigned profiles require force=true, which atomically removes every stored override so affected lines follow the default. The default can never be deleted. Requires platforms:write bound to the path project."
-        return (self._raw_resource.delete_voice_profile(input)).data
+        return (self._raw_resource.delete_voice_profile(input, options=options)).data
 
     def delete_voice_profile_inbound(
-        self, input: DeleteVoiceProfileInboundInput
+        self, input: DeleteVoiceProfileInboundInput, *, options: RequestOptions | None = None
     ) -> models.VoiceProfileInboundConfiguration:
         "Delete Voice inbound configuration\n\nRemoves a profile's inbound destination when the shared profile version matches. The profileId may identify the default or an additional profile. The profile and its line assignments remain. Requires platforms:write bound to the path project."
-        return (self._raw_resource.delete_voice_profile_inbound(input)).data
+        return (self._raw_resource.delete_voice_profile_inbound(input, options=options)).data
 
     def delete_voice_profile_outbound(
-        self, input: DeleteVoiceProfileOutboundInput
+        self, input: DeleteVoiceProfileOutboundInput, *, options: RequestOptions | None = None
     ) -> models.DeleteVoiceProfileOutboundResponse:
         "Revoke Voice outbound credential\n\nRevokes outbound calling for a profile when the shared profile version matches. The profileId may identify the default or an additional profile. The profile, inbound destination, and line assignments remain. Requires platforms:write bound to the path project."
-        return (self._raw_resource.delete_voice_profile_outbound(input)).data
+        return (self._raw_resource.delete_voice_profile_outbound(input, options=options)).data
 
     def disconnect_whatsapp_business_account(
-        self, input: DisconnectWhatsappBusinessAccountInput
+        self,
+        input: DisconnectWhatsappBusinessAccountInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> models.Operation:
         "Disconnect WhatsApp Business account\n\nDisconnects every attached WhatsApp sender, then unsubscribes our app and removes the project's business account connection. Photon VoIP lines and the numbers in Meta remain. Requires Idempotency-Key. Poll the returned operation. Meta's answers do not fail it: each sender is released as `DELETE /platforms/resources/:resourceId` does, and our app's unsubscribe is a best effort, tried up to three times, a second or two apart, only while the failure is temporary. New signups are blocked while disconnecting, and existing provisions must finish before this request can be accepted. If the operation fails, its `error` is the problem of one of these codes: `WHATSAPP_ACCOUNT_DISCONNECT_FAILED`."
-        return (self._raw_resource.disconnect_whatsapp_business_account(input)).data
+        return (
+            self._raw_resource.disconnect_whatsapp_business_account(input, options=options)
+        ).data
 
-    def get_default_voice_profile(self, input: GetDefaultVoiceProfileInput) -> models.VoiceProfile:
+    def get_default_voice_profile(
+        self, input: GetDefaultVoiceProfileInput, *, options: RequestOptions | None = None
+    ) -> models.VoiceProfile:
         "Get default Voice profile\n\nGets the profile currently selected as the project default, including its optional inbound delivery state. Requires platforms:read bound to the path project."
-        return (self._raw_resource.get_default_voice_profile(input)).data
+        return (self._raw_resource.get_default_voice_profile(input, options=options)).data
 
     def get_email_delivery_metrics(
-        self, input: GetEmailDeliveryMetricsInput
+        self, input: GetEmailDeliveryMetricsInput, *, options: RequestOptions | None = None
     ) -> models.EmailDeliveryMetrics:
         "Get email delivery metrics\n\nReads cached supplementary email series for the exact Project and rolling day or week. Coverage is eligible single-recipient messages; multi-recipient and simulator traffic is excluded. Observed complaints include reported feedback only. Missing data is distinct from zero. Original timestamps and availability are preserved; freshness describes retrieval, not complete event coverage. These series are not complete recipient totals, billing totals or Photon reputation rates. This read never queries the delivery provider or authorizes sending. Requires platforms:read for the path Project."
-        return (self._raw_resource.get_email_delivery_metrics(input)).data
+        return (self._raw_resource.get_email_delivery_metrics(input, options=options)).data
 
     def get_email_sending_policies(
-        self, input: GetEmailSendingPoliciesInput
+        self, input: GetEmailSendingPoliciesInput, *, options: RequestOptions | None = None
     ) -> models.EmailSendingPolicies:
         "Get email sending policies\n\nReads Organization email recipient allowances shared across all its Projects, with rolling 60-second and 24-hour windows. Also returns Project and Organization review status and Photon policy pauses. Projects have no separate recipient quota. These limits are independent of subscription allowances. A policy pause blocks sending; an unpaused policy does not guarantee that every domain, suppression or account check permits a send. Requires platforms:read for the path Project."
-        return (self._raw_resource.get_email_sending_policies(input)).data
+        return (self._raw_resource.get_email_sending_policies(input, options=options)).data
 
     def get_imessage(
-        self, input: GetProjectImessagePlatformInput
+        self, input: GetProjectImessagePlatformInput, *, options: RequestOptions | None = None
     ) -> models.ProjectPlatformSettings:
         "Get project iMessage platform\n\nReports whether the project is on shared or dedicated iMessage lines, derived from its billing entitlements. Shared mode carries the seat cap. Both say whether a dedicated line requested now would be assigned without waiting. Requires the platforms:read permission bound to the project resource in the path."
-        return (self._raw_resource.get_imessage(input)).data
+        return (self._raw_resource.get_imessage(input, options=options)).data
 
-    def get_operation(self, input: GetOperationInput) -> models.GetOperationResponse:
+    def get_operation(
+        self, input: GetOperationInput, *, options: RequestOptions | None = None
+    ) -> models.GetOperationResponse:
         "Get operation\n\nReads one operation using the same operation representation as creation and list. The API includes detail.setupUrl only with platforms:write for this project. This is the polling endpoint every asynchronous request here points its Location at, and it resolves from the moment that request is accepted — an operation is committed before its work is dispatched, so there is no window in which the URL 404s. Poll until `state` is one of `succeeded`, `failed` or `cancelled`, pacing from the Retry-After the accepting response returned. While an email domain waits for DNS, `detail` always contains the manual records and may additionally contain `automaticSetup` with a signed provider URL to open separately. Once the operation has produced a resource, the response carries that resource too, so the poll that finishes is also the one that tells you what you got. `succeeded` means the work is done; billing runs behind it and is not something the caller waits on. Operations are never purged, so a 404 means the id was never this project's. Requires the platforms:read permission bound to the project resource in the path."
-        return (self._raw_resource.get_operation(input)).data
+        return (self._raw_resource.get_operation(input, options=options)).data
 
     def get_project_whatsapp_platform(
-        self, input: GetProjectWhatsappPlatformInput
+        self, input: GetProjectWhatsappPlatformInput, *, options: RequestOptions | None = None
     ) -> models.ProjectPlatformSettings:
         "Get project WhatsApp platform\n\nReports whether the project is on shared or dedicated WhatsApp lines, derived from its billing entitlements. Shared mode carries the seat cap. Both say whether a dedicated line requested now would be assigned without waiting. Requires the platforms:read permission bound to the project resource in the path."
-        return (self._raw_resource.get_project_whatsapp_platform(input)).data
+        return (self._raw_resource.get_project_whatsapp_platform(input, options=options)).data
 
-    def get_resource(self, input: GetResourceInput) -> models.Resource:
+    def get_resource(
+        self, input: GetResourceInput, *, options: RequestOptions | None = None
+    ) -> models.Resource:
         "Get resource\n\nReads one resource the project holds. A released number stays readable and reads `retired`, because it remains part of this project's history. A dedicated line given back does NOT: returning it to inventory is what makes it claimable by someone else, so it answers 404 and the operation that returned it is the record that this project once held it. Requires the platforms:read permission bound to the project resource in the path."
-        return (self._raw_resource.get_resource(input)).data
+        return (self._raw_resource.get_resource(input, options=options)).data
 
     def get_sms_line_campaign_assignment(
-        self, input: GetSmsLineCampaignAssignmentInput
+        self, input: GetSmsLineCampaignAssignmentInput, *, options: RequestOptions | None = None
     ) -> models.GetSmsLineCampaignAssignmentResponse:
         "Get SMS line campaign assignment\n\nRead the last confirmed campaign and current eligibility. Follow changes through their operations. Eligibility is a control-plane assessment, not a delivery or recipient-consent guarantee."
-        return (self._raw_resource.get_sms_line_campaign_assignment(input)).data
+        return (self._raw_resource.get_sms_line_campaign_assignment(input, options=options)).data
 
     def get_voice_line_profile_assignment(
-        self, input: GetVoiceLineProfileAssignmentInput
+        self, input: GetVoiceLineProfileAssignmentInput, *, options: RequestOptions | None = None
     ) -> models.VoiceLineProfileAssignment:
         "Get Voice line profile assignment\n\nGets the explicit additional-profile override for an owned Voice-capable line. A line following the project default returns 200 without profileId. Requires platforms:read bound to the path project."
-        return (self._raw_resource.get_voice_line_profile_assignment(input)).data
+        return (self._raw_resource.get_voice_line_profile_assignment(input, options=options)).data
 
-    def get_voice_profile(self, input: GetVoiceProfileInput) -> models.VoiceProfile:
+    def get_voice_profile(
+        self, input: GetVoiceProfileInput, *, options: RequestOptions | None = None
+    ) -> models.VoiceProfile:
         "Get Voice profile\n\nGets one reusable Voice profile, including its optional inbound delivery state. Requires platforms:read bound to the path project."
-        return (self._raw_resource.get_voice_profile(input)).data
+        return (self._raw_resource.get_voice_profile(input, options=options)).data
 
     def get_whatsapp_business_account(
-        self, input: GetWhatsappBusinessAccountInput
+        self, input: GetWhatsappBusinessAccountInput, *, options: RequestOptions | None = None
     ) -> models.WhatsappBusinessAccount:
         "Get WhatsApp Business account\n\nGets the one WhatsApp Business Account this project has connected, with its number of live senders. Senders are resources and are listed by GET /platforms/resources?ability=whatsapp_business. The account is not a resource and carries no access token. Meta's retained numbers are listed separately by GET /platforms/whatsapp-business/account/phone-numbers. `subscribedAt` is absent until our app is attached to the account's webhooks. Requires the platforms:read permission bound to the project resource in the path."
-        return (self._raw_resource.get_whatsapp_business_account(input)).data
+        return (self._raw_resource.get_whatsapp_business_account(input, options=options)).data
 
     def get_whatsapp_business_verification_code(
-        self, input: GetWhatsappBusinessVerificationCodeInput
+        self,
+        input: GetWhatsappBusinessVerificationCodeInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> models.GetWhatsappBusinessVerificationCodeResponse:
         "Get WhatsApp Business verification code\n\nReturns the latest six-digit WhatsApp Business ownership code received by SMS for an active Photon VOIP number, but only when its provider timestamp is strictly newer than the required receivedAfter boundary. receivedAfter must be an RFC 3339 timestamp between this request's arrival time and two minutes before it; once it expires, restart Meta's verification flow with a new boundary. A missing newer code is a retryable 404 with Retry-After: 2. Poll after 2, 4, 8, then 10 seconds, applying ±20% jitter and capping later intervals at 10 seconds. Stop when the original boundary is two minutes old. Responses are never cached. Requires the platforms:write permission bound to the project resource in the path."
-        return (self._raw_resource.get_whatsapp_business_verification_code(input)).data
+        return (
+            self._raw_resource.get_whatsapp_business_verification_code(input, options=options)
+        ).data
 
     def get_whatsapp_shared_line_assignment(
-        self, input: GetWhatsappSharedLineAssignmentInput
+        self, input: GetWhatsappSharedLineAssignmentInput, *, options: RequestOptions | None = None
     ) -> models.SharedLineAssignment:
         "Get WhatsApp shared line assignment\n\nReads one WhatsApp shared line assignment. Requires the platforms:read permission bound to the project resource in the path."
-        return (self._raw_resource.get_whatsapp_shared_line_assignment(input)).data
+        return (self._raw_resource.get_whatsapp_shared_line_assignment(input, options=options)).data
 
     def list_email_recommendations(
-        self, input: ListEmailRecommendationsInput
+        self, input: ListEmailRecommendationsInput, *, options: RequestOptions | None = None
     ) -> models.EmailRecommendations:
         "List email recommendations\n\nReads Photon guidance from stored sending policies, sending setup and domain checks. Project and Organization restrictions repeat on each page of domain observations. Follow nextPageToken until hasMore is false; observations describe only the current page. Recommendations are advisory reads, never permission to send or resume. Reputation-rate guidance and supplementary delivery advice are explicitly unavailable until their sources are integrated. An empty list does not indicate healthy reputation or resolved findings. Requires platforms:read for the path Project."
-        return (self._raw_resource.list_email_recommendations(input)).data
+        return (self._raw_resource.list_email_recommendations(input, options=options)).data
 
     def list_filtered_verification_codes(
-        self, input: ListFilteredVerificationCodesInput
+        self, input: ListFilteredVerificationCodesInput, *, options: RequestOptions | None = None
     ) -> models.FilteredVerificationCodePage:
         "List filtered verification codes\n\nLists the verification codes Photon kept from this project's dedicated lines. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Filter by `platform`; to read one line, use its own filtered-otp path. Requires the platforms:read permission bound to the project resource in the path."
-        return (self._raw_resource.list_filtered_verification_codes(input)).data
+        return (self._raw_resource.list_filtered_verification_codes(input, options=options)).data
 
     def list_number_area_codes(
-        self, input: ListNumberAreaCodesInput
+        self, input: ListNumberAreaCodesInput, *, options: RequestOptions | None = None
     ) -> models.ListNumberAreaCodesResponse:
         "List number area codes\n\nLists current provider coverage for US local numbers, sorted and deduplicated. Coverage does not guarantee inventory carrying every required feature. New area-specific purchases must use a listed code; accepted purchases keep waiting if coverage later changes. Requires platforms:read for the path project."
-        return (self._raw_resource.list_number_area_codes(input)).data
+        return (self._raw_resource.list_number_area_codes(input, options=options)).data
 
     def list_number_countries(
-        self, input: ListNumberCountriesInput
+        self, input: ListNumberCountriesInput, *, options: RequestOptions | None = None
     ) -> models.ListNumberCountriesResponse:
         "List number countries\n\nLists supported purchase countries independently of current provider inventory. Requires platforms:read for the path project."
-        return (self._raw_resource.list_number_countries(input)).data
+        return (self._raw_resource.list_number_countries(input, options=options)).data
 
-    def list_operations(self, input: ListOperationsInput) -> models.OperationPage:
+    def list_operations(
+        self, input: ListOperationsInput, *, options: RequestOptions | None = None
+    ) -> models.OperationPage:
         "List operations\n\nLists the project's operations using the same operation representation as creation and GET. The API includes detail.setupUrl only with platforms:write for this project. Results are oldest first — every provision and release it has ever asked for, including the ones still running. This is the entire in-flight view: a resource only appears once it is real, so nothing half-built shows up in the resource list and nothing in flight is missing from this one. Filter by `resourceId` to get one resource's whole history, which for a pooled line is every tenure this project has had on it. `state` is comma-separated; `type` accepts one operation type and an absent filter means everything, including failed and cancelled operations. `endedAfter` keeps only operations that finished after that instant, so what failed or was withdrawn recently is one short page. Requires the platforms:read permission bound to the project resource in the path."
-        return (self._raw_resource.list_operations(input)).data
+        return (self._raw_resource.list_operations(input, options=options)).data
 
     def list_project_platforms(
-        self, input: ListProjectPlatformsInput
+        self, input: ListProjectPlatformsInput, *, options: RequestOptions | None = None
     ) -> models.ListProjectPlatformsResponse:
         "List project platforms\n\nLists the platform types available to this project. Every project currently sees the same fixed public contract, answered in-process rather than forwarded, so the list survives an outage of the private service. The project binding exists so that answer can narrow per project without moving the route. Requires the platforms:read permission bound to the project resource in the path."
-        return (self._raw_resource.list_project_platforms(input)).data
+        return (self._raw_resource.list_project_platforms(input, options=options)).data
 
     def list_resource_filtered_verification_codes(
-        self, input: ListResourceFilteredVerificationCodesInput
+        self,
+        input: ListResourceFilteredVerificationCodesInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> models.FilteredVerificationCodePage:
         "List a line's filtered verification codes\n\nLists the verification codes Photon kept from one dedicated line. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a dedicated line receives both iMessage and WhatsApp. Requires the platforms:read permission bound to the project resource in the path."
-        return (self._raw_resource.list_resource_filtered_verification_codes(input)).data
+        return (
+            self._raw_resource.list_resource_filtered_verification_codes(input, options=options)
+        ).data
 
-    def list_resources(self, input: ListResourcesInput) -> models.ResourcePage:
+    def list_resources(
+        self, input: ListResourcesInput, *, options: RequestOptions | None = None
+    ) -> models.ResourcePage:
         "List resources\n\nLists the project's resources, oldest first, including retired ones unless `state` filters them out. Filter by `type`, by enabled `ability` and by comma-separated `state`. Lifecycle states are unallocated, active and retired; active means owned and non-retired, not provider-confirmed readiness. Every VoIP resource includes detail.activationState: activating or active, defaulting to active without owner-matched saved state. state=active includes numbers still activating. Requires the platforms:read permission bound to the project resource in the path."
-        return (self._raw_resource.list_resources(input)).data
+        return (self._raw_resource.list_resources(input, options=options)).data
 
-    def list_voice_profiles(self, input: ListVoiceProfilesInput) -> models.VoiceProfilePage:
+    def list_voice_profiles(
+        self, input: ListVoiceProfilesInput, *, options: RequestOptions | None = None
+    ) -> models.VoiceProfilePage:
         "List Voice profiles\n\nLists reusable Voice profiles in this project. Requires platforms:read bound to the path project."
-        return (self._raw_resource.list_voice_profiles(input)).data
+        return (self._raw_resource.list_voice_profiles(input, options=options)).data
 
     def list_whatsapp_account_phone_numbers(
-        self, input: ListWhatsappAccountPhoneNumbersInput
+        self, input: ListWhatsappAccountPhoneNumbersInput, *, options: RequestOptions | None = None
     ) -> models.ListWhatsappAccountPhoneNumbersResponse:
         "List WhatsApp account phone numbers\n\nLists the connected WABA's phone numbers directly from Meta, including numbers whose Photon sender was disconnected. Ownership is photon for a number in this project's current Photon inventory and meta otherwise. Match a Photon SMS number by its E.164 phoneNumber and reuse its existing displayName when reconnecting. A null name is unavailable, not permission to choose a new name. A failed lookup returns an error rather than an empty list. Requires platforms:read on the path project."
-        return (self._raw_resource.list_whatsapp_account_phone_numbers(input)).data
+        return (self._raw_resource.list_whatsapp_account_phone_numbers(input, options=options)).data
 
     def list_whatsapp_shared_line_assignments(
-        self, input: ListWhatsappSharedLineAssignmentsInput
+        self,
+        input: ListWhatsappSharedLineAssignmentsInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> models.SharedLineAssignmentPage:
         "List WhatsApp shared line assignments\n\nLists the project's WhatsApp shared line assignments, oldest first. Released assignments are excluded unless includeReleased is set. Requires the platforms:read permission bound to the project resource in the path."
-        return (self._raw_resource.list_whatsapp_shared_line_assignments(input)).data
+        return (
+            self._raw_resource.list_whatsapp_shared_line_assignments(input, options=options)
+        ).data
 
     def provision_imessage_dedicated_line(
-        self, input: ProvisionImessageDedicatedLineInput
+        self, input: ProvisionImessageDedicatedLineInput, *, options: RequestOptions | None = None
     ) -> models.Operation:
         "Provision dedicated iMessage line\n\nClaims one dedicated iMessage line for the project and enables iMessage on it. Always answers 202 with an operation: dedicated lines are allocated from available capacity, and unavailable capacity causes a wait rather than a failure — this can legitimately stay `running` for hours, which is exactly why the response is a handle to poll rather than a number. The project's messaging subscription must grant the dedicated iMessage lines entitlement (`imessage_dedicated_lines.can_purchase`), and that is checked before capacity is reserved. The line's own charge starts when a line is claimed; the subscription that grants the entitlement bills on its own terms, which cancelling a request does not change. Waiting requests are served first come, first served. One that is still waiting is cancelled with a `reason` if the project is deleted (`project_deleted`) or its plan stops selling dedicated lines (`entitlement_lost`); while the payer is restricted for overdue payment it keeps waiting. If you no longer want to wait, POST to the operation's cancel endpoint, which charges nothing for the line. The Idempotency-Key is required and permanent: repeating it returns the same operation forever. A further line always needs a NEW key, including while others are still waiting. An optional promotionCode is checked and claimed here, before the request waits for a line: a code that can't be used answers 409 PROMOTION_CODE_REJECTED and starts nothing. Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `CHARGE_REFUSED`, `ENTERPRISE_PLAN_REQUIRED`."
-        return (self._raw_resource.provision_imessage_dedicated_line(input)).data
+        return (self._raw_resource.provision_imessage_dedicated_line(input, options=options)).data
 
     def provision_whatsapp_dedicated_line(
-        self, input: ProvisionWhatsappDedicatedLineInput
+        self, input: ProvisionWhatsappDedicatedLineInput, *, options: RequestOptions | None = None
     ) -> models.Operation:
         "Provision dedicated WhatsApp line\n\nProvisions one dedicated WhatsApp line with WhatsApp and shared Voice enabled. It attaches to an eligible iMessage line the project already owns when possible so both products keep the same number; otherwise it claims healthy, available WhatsApp-capable dedicated-line inventory. Always answers 202, because waiting when no inventory is available is not a failure. The product opens its own charge period after the abilities are enabled; Voice has no separate charge. Waiting requests are served first come, first served, and are cancelled with a `reason` exactly as for a dedicated iMessage line. Cancel the returned operation to stop waiting. An optional promotionCode is checked and claimed here, before the request waits for a line: a code that can't be used answers 409 PROMOTION_CODE_REJECTED and starts nothing. The Idempotency-Key is required and permanent. If the operation fails, its `error` is the problem of one of these codes: `CHARGE_REFUSED`, `ENTERPRISE_PLAN_REQUIRED`."
-        return (self._raw_resource.provision_whatsapp_dedicated_line(input)).data
+        return (self._raw_resource.provision_whatsapp_dedicated_line(input, options=options)).data
 
-    def purchase_sms_number(self, input: PurchaseSmsNumberInput) -> models.Operation:
+    def purchase_sms_number(
+        self, input: PurchaseSmsNumberInput, *, options: RequestOptions | None = None
+    ) -> models.Operation:
         'Purchase SMS number\n\nBuys one US local number from the provider and records it as a resource with SMS enabled. Requires countryCode (US) and accepts an optional three-digit geographic areaCode. The server selects an exact matching number. While inventory is empty the operation keeps searching, and the caller can cancel it until ordering begins; a search still empty one minute after the operation was created fails it with `NUMBER_INVENTORY_UNAVAILABLE`. Always answers 202 with an operation: the work runs behind the response, and the Location points at the operation to poll. New area-specific requests must appear in current provider coverage; discover it with GET /sms/numbers/area-codes?countryCode=US. Coverage and subscription checks run before operation creation. Billing follows delivery. Replays return the original operation without checking current coverage. The Idempotency-Key is required and permanent: repeating it returns the same operation forever, never a second number. A further number always needs a NEW key, including while others are still running. An optional promotionCode is redeemed with the number\'s charge, which follows delivery: a code billing refuses hands the number back, and its release operation carries the refusal (`reason` `charge_refused`, with `detail.chargeRefusal` `{ code: "promotion_code_rejected", detail: <why> }`). Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `ENTITLEMENT_REQUIRED`, `NUMBER_INVENTORY_UNAVAILABLE`, `NUMBER_ORDER_FAILED`, `NUMBER_ORDER_RECONCILIATION_REQUIRED`, `NUMBER_SEARCH_FAILED`.'
-        return (self._raw_resource.purchase_sms_number(input)).data
+        return (self._raw_resource.purchase_sms_number(input, options=options)).data
 
     def release_imessage_dedicated_line(
-        self, input: ReleaseImessageDedicatedLineInput
+        self, input: ReleaseImessageDedicatedLineInput, *, options: RequestOptions | None = None
     ) -> models.Operation:
         "Release dedicated iMessage line\n\nRemoves only iMessage from one dedicated line. Shared Voice is removed only when WhatsApp is absent; if WhatsApp remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open iMessage charge period identifies this product tenure. If the operation fails, its `error` is the problem of one of these codes: `RESOURCE_NOT_FOUND`."
-        return (self._raw_resource.release_imessage_dedicated_line(input)).data
+        return (self._raw_resource.release_imessage_dedicated_line(input, options=options)).data
 
-    def release_resource(self, input: ReleaseResourceInput) -> models.Operation:
+    def release_resource(
+        self, input: ReleaseResourceInput, *, options: RequestOptions | None = None
+    ) -> models.Operation:
         "Release resource\n\nGives one resource back, whatever it is. What that means is the resource's own business: an SMS number goes back to the provider and is retired, a dedicated iMessage line goes back to the shared pool and stays in existence for someone else to claim. Either way the provider is contacted first where there is one, then a single transaction disables every ability, ends the project's hold and closes the charge period — so a provider that refuses leaves the resource exactly as it was, still owned and still billed. A WhatsApp Business sender is the exception: Meta never holds its release. A number on a Photon VoIP line is deregistered as a best effort, tried up to three times, a second or two apart, only while the failure is temporary; a number the customer brought is not sent to Meta at all; the sender is retired either way, and the number stays in the customer's WhatsApp Business Account. Usually finishes inside this request and answers 200; if the provider is slow it answers 202 and the Location points at the operation to poll. The decrement runs behind the answer either way, so the resource is gone when you are told it is. Takes no Idempotency-Key — releasing the same resource twice is the same request. Releasing one that is already gone answers 404. Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `EMAIL_DOMAIN_RELEASE_FAILED`, `NUMBER_RELEASE_FAILED`, `RESOURCE_NOT_FOUND`, `TELEGRAM_RELEASE_FAILED`, `WHATSAPP_SENDER_RELEASE_FAILED`."
-        return (self._raw_resource.release_resource(input)).data
+        return (self._raw_resource.release_resource(input, options=options)).data
 
     def release_whatsapp_dedicated_line(
-        self, input: ReleaseWhatsappDedicatedLineInput
+        self, input: ReleaseWhatsappDedicatedLineInput, *, options: RequestOptions | None = None
     ) -> models.Operation:
         "Release dedicated WhatsApp line\n\nRemoves only WhatsApp from one dedicated line. Shared Voice is removed only when iMessage is absent; if iMessage remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open WhatsApp charge period identifies this product tenure. If the operation fails, its `error` is the problem of one of these codes: `RESOURCE_NOT_FOUND`."
-        return (self._raw_resource.release_whatsapp_dedicated_line(input)).data
+        return (self._raw_resource.release_whatsapp_dedicated_line(input, options=options)).data
 
     def release_whatsapp_shared_line_assignment(
-        self, input: ReleaseWhatsappSharedLineAssignmentInput
+        self,
+        input: ReleaseWhatsappSharedLineAssignmentInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> models.SharedLineAssignment:
         "Release WhatsApp shared line assignment\n\nReleases a WhatsApp shared line assignment, freeing its seat for reassignment. The row is retained for audit and returned with releasedAt set, so repeating the call is safe. Requires the platforms:write permission bound to the project resource in the path."
-        return (self._raw_resource.release_whatsapp_shared_line_assignment(input)).data
+        return (
+            self._raw_resource.release_whatsapp_shared_line_assignment(input, options=options)
+        ).data
 
     def replace_voice_profile_inbound(
-        self, input: ReplaceVoiceProfileInboundInput
+        self, input: ReplaceVoiceProfileInboundInput, *, options: RequestOptions | None = None
     ) -> models.VoiceProfileInboundConfiguration:
         "Replace Voice inbound configuration\n\nCreates or fully replaces a profile's inbound destination when the shared profile version matches. The profileId may identify the default or an additional profile. Credentials are required and nullable; null removes destination authentication. Requires platforms:write bound to the path project."
-        return (self._raw_resource.replace_voice_profile_inbound(input)).data
+        return (self._raw_resource.replace_voice_profile_inbound(input, options=options)).data
 
     def rotate_voice_profile_outbound_credential(
-        self, input: RotateVoiceProfileOutboundCredentialInput
+        self,
+        input: RotateVoiceProfileOutboundCredentialInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> models.RotateVoiceProfileOutboundCredentialResponse:
         "Rotate Voice outbound credential\n\nRotates a SIP profile's outbound credential when expectedVersion matches. The profileId may identify the default or an additional profile. Normal rotation gives the previous credential one hour of grace; emergency rotation gives none. The new password is returned once and is never recoverable. Requires platforms:write bound to the path project."
-        return (self._raw_resource.rotate_voice_profile_outbound_credential(input)).data
+        return (
+            self._raw_resource.rotate_voice_profile_outbound_credential(input, options=options)
+        ).data
 
-    def unassign_sms_line_campaign(self, input: UnassignSmsLineCampaignInput) -> models.Operation:
+    def unassign_sms_line_campaign(
+        self, input: UnassignSmsLineCampaignInput, *, options: RequestOptions | None = None
+    ) -> models.Operation:
         "Unassign SMS line campaign\n\nAny project writer, including a scoped API key, may detach the campaign. The number and campaign remain owned. Requires a permanent Idempotency-Key and expectedVersion. Local eligibility is blocked immediately; provider detachment runs asynchronously. If the operation fails, its `error` is the problem of one of these codes: `SMS_CAMPAIGN_PROVIDER_REJECTED`, `SMS_CAMPAIGN_RECONCILIATION_REQUIRED`, `SMS_CAMPAIGN_REVOKED`."
-        return (self._raw_resource.unassign_sms_line_campaign(input)).data
+        return (self._raw_resource.unassign_sms_line_campaign(input, options=options)).data
 
-    def unassign_voice_line_profile(self, input: UnassignVoiceLineProfileInput) -> None:
+    def unassign_voice_line_profile(
+        self, input: UnassignVoiceLineProfileInput, *, options: RequestOptions | None = None
+    ) -> None:
         "Unassign Voice line profile\n\nRemoves a line's explicit override when the resource version matches so the line follows the project default. Profiles and the pstn_voice ability are unchanged. Requires platforms:write bound to the path project."
-        return (self._raw_resource.unassign_voice_line_profile(input)).data
+        return (self._raw_resource.unassign_voice_line_profile(input, options=options)).data
 
     def update_default_voice_profile(
-        self, input: UpdateDefaultVoiceProfileInput
+        self, input: UpdateDefaultVoiceProfileInput, *, options: RequestOptions | None = None
     ) -> models.VoiceProfile:
         "Update default Voice profile\n\nPatches the default profile's protocol or mediaEncryption when expectedVersion matches. Omitted fields are preserved. Its server-assigned name is immutable, and directional configuration uses the profileId returned by this resource. Requires platforms:write bound to the path project."
-        return (self._raw_resource.update_default_voice_profile(input)).data
+        return (self._raw_resource.update_default_voice_profile(input, options=options)).data
 
-    def update_voice_profile(self, input: UpdateVoiceProfileInput) -> models.VoiceProfile:
+    def update_voice_profile(
+        self, input: UpdateVoiceProfileInput, *, options: RequestOptions | None = None
+    ) -> models.VoiceProfile:
         "Update Voice profile\n\nPatches an additional profile's name, protocol, or mediaEncryption when expectedVersion matches. Omitted fields are preserved. The default profile's metadata changes only through PATCH /v1/projects/{id}/platforms/voice/profiles/default, so a name, protocol, or mediaEncryption patch addressed to its profileId is refused with 409. Directional configuration is managed through the profile's inbound and outbound endpoints. Requires platforms:write bound to the path project."
-        return (self._raw_resource.update_voice_profile(input)).data
+        return (self._raw_resource.update_voice_profile(input, options=options)).data
 
     def update_voice_profile_inbound(
-        self, input: UpdateVoiceProfileInboundInput
+        self, input: UpdateVoiceProfileInboundInput, *, options: RequestOptions | None = None
     ) -> models.VoiceProfileInboundConfiguration:
         "Update Voice inbound configuration\n\nUpdates selected fields of a profile's inbound destination when the shared profile version matches. The profileId may identify the default or an additional profile. At least one of destinationUri or credentials is required. Credential omission preserves destination authentication, null removes it, and an object replaces it atomically. Requires platforms:write bound to the path project."
-        return (self._raw_resource.update_voice_profile_inbound(input)).data
+        return (self._raw_resource.update_voice_profile_inbound(input, options=options)).data
 
     def update_voice_profile_outbound_authentication(
-        self, input: UpdateVoiceProfileOutboundAuthenticationInput
+        self,
+        input: UpdateVoiceProfileOutboundAuthenticationInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> models.UpdateVoiceProfileOutboundAuthenticationResponse:
         "Update Voice outbound authentication\n\nChanges a SIP profile's outbound Digest algorithm when expectedVersion matches. The profileId may identify the default or an additional profile. This policy-only change preserves the password, username, and any previous-password grace deadline. SHA-256 is recommended; MD5 is a weaker legacy option. Returns non-secret outbound metadata and the profile version. Requires platforms:write bound to the path project."
-        return (self._raw_resource.update_voice_profile_outbound_authentication(input)).data
+        return (
+            self._raw_resource.update_voice_profile_outbound_authentication(input, options=options)
+        ).data
 
 
 class SyncProjectsAgentProfileResource:
     def __init__(self, transport: SyncTransport) -> None:
         self._raw_resource = SyncRawProjectsAgentProfileResource(transport)
 
-    def commit_avatar(self, input: CommitAgentProfileAvatarInput) -> models.AgentProfile:
+    def commit_avatar(
+        self, input: CommitAgentProfileAvatarInput, *, options: RequestOptions | None = None
+    ) -> models.AgentProfile:
         "Commit agent avatar\n\nCommits an agent avatar previously uploaded through createAgentProfileAvatarUpload. Call this only after the direct multipart upload succeeds, using the uploadId from the same upload session and a stable Idempotency-Key. The service validates the temporary object's Project ownership, size, content type, image bytes, dimensions, encryption, and age before changing the agent profile."
-        return (self._raw_resource.commit_avatar(input)).data
+        return (self._raw_resource.commit_avatar(input, options=options)).data
 
     def create_avatar_upload(
-        self, input: CreateAgentProfileAvatarUploadInput
+        self, input: CreateAgentProfileAvatarUploadInput, *, options: RequestOptions | None = None
     ) -> models.AgentProfileAvatarUpload:
         "Create agent avatar upload\n\nCreates a ten-minute, Project-bound presigned S3 POST for a JPEG, PNG, or WebP agent avatar up to 5 MiB. Copy every returned formFields entry into a multipart/form-data request to uploadUrl, append the local file as the final form part, and upload it directly without sending Photon credentials. After the upload succeeds, call commitAgentProfileAvatar with the returned uploadId. Do not cache or log the upload URL or form fields."
-        return (self._raw_resource.create_avatar_upload(input)).data
+        return (self._raw_resource.create_avatar_upload(input, options=options)).data
 
-    def get(self, input: GetAgentProfileInput) -> models.AgentProfile:
+    def get(
+        self, input: GetAgentProfileInput, *, options: RequestOptions | None = None
+    ) -> models.AgentProfile:
         "Get agent profile\n\nReturns the agent profile belonging to the identified project. The profile is project-scoped and is distinct from the authenticated account's personal profile. Use the dedicated avatar operations when uploading or removing an agent avatar."
-        return (self._raw_resource.get(input)).data
+        return (self._raw_resource.get(input, options=options)).data
 
-    def reset_avatar(self, input: ResetAgentProfileAvatarInput) -> models.AgentProfile:
+    def reset_avatar(
+        self, input: ResetAgentProfileAvatarInput, *, options: RequestOptions | None = None
+    ) -> models.AgentProfile:
         "Reset agent avatar\n\nReplaces the selected project's agent avatar with the project's default avatar, a generated planet image derived from the project ID, and returns the updated agent profile. The reset does not restore an earlier avatar: a custom avatar it replaces is discarded and must be uploaded and committed again to use it. When the default avatar is already in use, the profile is returned unchanged. This does not change the account's personal profile picture. Supply the required Idempotency-Key header."
-        return (self._raw_resource.reset_avatar(input)).data
+        return (self._raw_resource.reset_avatar(input, options=options)).data
 
-    def update(self, input: UpdateAgentProfileInput) -> models.AgentProfile:
+    def update(
+        self, input: UpdateAgentProfileInput, *, options: RequestOptions | None = None
+    ) -> models.AgentProfile:
         "Update agent profile\n\nUpdates the supplied firstName and lastName fields in the project's agent profile and returns the updated profile. Avatar upload, commit and reset are separate operations. The caller must be authorized to change configuration for the selected project. Supply the required Idempotency-Key header."
-        return (self._raw_resource.update(input)).data
+        return (self._raw_resource.update(input, options=options)).data
 
 
 class SyncProjectsBillingResource:
     def __init__(self, transport: SyncTransport) -> None:
         self._raw_resource = SyncRawProjectsBillingResource(transport)
 
-    def get_operation(self, input: GetBillingOperationInput) -> models.BillingOperation:
+    def get_operation(
+        self, input: GetBillingOperationInput, *, options: RequestOptions | None = None
+    ) -> models.BillingOperation:
         "Get billing operation\n\nReturns the authoritative state of a billing operation belonging to the selected project. Use it to recover or poll a plan-change request until the operation reaches success or failure. An accepted request is not evidence that the plan change has completed."
-        return (self._raw_resource.get_operation(input)).data
+        return (self._raw_resource.get_operation(input, options=options)).data
 
-    def get_overview(self, input: GetBillingOverviewInput) -> models.GetBillingOverviewResponse:
+    def get_overview(
+        self, input: GetBillingOverviewInput, *, options: RequestOptions | None = None
+    ) -> models.GetBillingOverviewResponse:
         "Get project billing overview\n\nReturns the selected project's plan information, entitlements and current billing-period usage. This operation reads project billing state; it does not change plans or the payer's payment method. Organization-level plans are available through the organization billing overview."
-        return (self._raw_resource.get_overview(input)).data
+        return (self._raw_resource.get_overview(input, options=options)).data
 
-    def list_billing_plans(self, input: ListBillingPlansInput) -> models.ListBillingPlansResponse:
+    def list_billing_plans(
+        self, input: ListBillingPlansInput, *, options: RequestOptions | None = None
+    ) -> models.ListBillingPlansResponse:
         "List billing plans\n\nLists the billing plan catalog, grouped by their public plan-metadata type. Use the returned plan information when choosing the category and planCode for a plan change. The catalog is the same for every project, and reading it does not purchase a plan."
-        return (self._raw_resource.list_billing_plans(input)).data
+        return (self._raw_resource.list_billing_plans(input, options=options)).data
 
     def list_project_subscriptions(
-        self, input: ListProjectSubscriptionsInput
+        self, input: ListProjectSubscriptionsInput, *, options: RequestOptions | None = None
     ) -> models.ListProjectSubscriptionsResponse:
         "List project subscriptions\n\nLists the plan each of the selected project's categories holds, with its price and the payer's standing. It suits showing a project's plan wherever projects are listed; the billing overview adds billing periods, fixed charges, entitlements and usage."
-        return (self._raw_resource.list_project_subscriptions(input)).data
+        return (self._raw_resource.list_project_subscriptions(input, options=options)).data
 
 
 class SyncProjectsResource:
@@ -8311,256 +8588,319 @@ class SyncProjectsResource:
         self.billing = SyncProjectsBillingResource(transport)
         self.platforms = SyncProjectsPlatformsResource(transport)
 
-    def count_messages(self, input: CountMessagesInput) -> models.CountMessagesResponse:
+    def count_messages(
+        self, input: CountMessagesInput, *, options: RequestOptions | None = None
+    ) -> models.CountMessagesResponse:
         "Count Messages\n\nCounts matching Messages before pagination. Delivery updates do not add Messages; results are eventually consistent."
-        return (self._raw_resource.count_messages(input)).data
+        return (self._raw_resource.count_messages(input, options=options)).data
 
-    def count_spaces(self, input: CountSpacesInput) -> models.SpaceCount:
+    def count_spaces(
+        self, input: CountSpacesInput, *, options: RequestOptions | None = None
+    ) -> models.SpaceCount:
         "Count Spaces\n\nCounts distinct Spaces matching the list filters; multiple matching Messages count once. Results are eventually consistent."
-        return (self._raw_resource.count_spaces(input)).data
+        return (self._raw_resource.count_spaces(input, options=options)).data
 
-    def count_users(self, input: CountUsersInput) -> models.UserCount:
+    def count_users(
+        self, input: CountUsersInput, *, options: RequestOptions | None = None
+    ) -> models.UserCount:
         "Count Users\n\nCounts distinct Users matching the list filters, including incoming senders or outgoing recipients selected by Message filters. Results are eventually consistent."
-        return (self._raw_resource.count_users(input)).data
+        return (self._raw_resource.count_users(input, options=options)).data
 
-    def create_or_get_space(self, input: CreateOrGetSpaceInput) -> models.PlatformSpace:
+    def create_or_get_space(
+        self, input: CreateOrGetSpaceInput, *, options: RequestOptions | None = None
+    ) -> models.PlatformSpace:
         "Create or get a Space\n\nCreates or returns a project Space. Idempotency-Key is required for every platform and binds the project, platform and initial User IDs (unordered except the iMessage creator in first position) for 24 hours after workflow completion. Concurrent matching requests join the same operation; conflicting reuse returns 422 once its outcome is available. A new email key creates a new thread; direct Spaces and SMS groups converge by participants. Every creation and successful replay requires at least one currently project-owned Agent, or for iMessage a shared-line Agent in a direct Space whose peer has an active Assignment of this project on that line. For iMessage, an existing exact match is reused; otherwise the first participant must be a project-owned dedicated phone Agent and creates the native direct chat or group. Multiple matching native groups return SPACE_AMBIGUOUS; incomplete group membership cannot establish an exact match. Replays return 200 and the current stored Space, with Idempotent-Replayed: true. A timeout does not cancel accepted work: retry the same key and input."
-        return (self._raw_resource.create_or_get_space(input)).data
+        return (self._raw_resource.create_or_get_space(input, options=options)).data
 
-    def create_or_get_user(self, input: CreateOrGetUserInput) -> models.PlatformUser:
+    def create_or_get_user(
+        self, input: CreateOrGetUserInput, *, options: RequestOptions | None = None
+    ) -> models.PlatformUser:
         "Create or get a User\n\nCreates or reconciles a User by normalized handle. WhatsApp and iMessage phone classification uses line allocation and project ownership; New iMessage email handles start as Human without lookup; existing email identities retain their producer-observed classification and ownership. WhatsApp Business uses project ownership. These three platforms perform no provider profile or enrichment fetch. Shared Agents expose type=shared without ownership IDs; dedicated Agents expose resourceId for this project or pairwise managedBy for another project. Dedicated lines without an active owner are unavailable. SMS retains its existing ownership and phone number enrichment behavior. Email retains domain ownership resolution, lowercase ASCII domains and case-preserved local parts. Dependency failures fail before classification writes. The natural identity is the project path ID, platform, and handle. Retrying after a committed creation whose response was lost returns the same User with 200 rather than replaying 201."
-        return (self._raw_resource.create_or_get_user(input)).data
+        return (self._raw_resource.create_or_get_user(input, options=options)).data
 
     def create_project_api_key(
-        self, input: CreateProjectApiKeyInput
+        self, input: CreateProjectApiKeyInput, *, options: RequestOptions | None = None
     ) -> models.CreateProjectApiKeyResponse:
         "Create project API key\n\nCreates a key bound to the selected project using the supplied name, permissions and optional expiry. The secret is returned only in this response and in idempotent replays of it; store it securely because other reads never return it. The key is scoped to this project and does not grant account-level access. Supply the required Idempotency-Key header."
-        return (self._raw_resource.create_project_api_key(input)).data
+        return (self._raw_resource.create_project_api_key(input, options=options)).data
 
     def create_webhook_destination(
-        self, input: CreateWebhookDestinationInput
+        self, input: CreateWebhookDestinationInput, *, options: RequestOptions | None = None
     ) -> models.CreateWebhookDestinationResponse:
         "Create webhook destination\n\nCreates a webhook destination for the selected project using its URL, payload API version, event selection and other documented settings. The response includes the signing secret, which is returned only in this response and in idempotent replays of it, never by destination reads; store it securely for signature verification. The API version must be selectable and selected event types must belong to that version's catalog. Supply the required Idempotency-Key header."
-        return (self._raw_resource.create_webhook_destination(input)).data
+        return (self._raw_resource.create_webhook_destination(input, options=options)).data
 
-    def delete(self, input: DeleteProjectInput) -> models.Project:
+    def delete(
+        self, input: DeleteProjectInput, *, options: RequestOptions | None = None
+    ) -> models.Project:
         "Delete project\n\nStarts deletion of the identified project using a credential authorized for project management. Inspect the documented response and use getProjectClosureStatus with the organization and project identifiers to read closure progress. A project API key is not an accepted credential for this operation."
-        return (self._raw_resource.delete(input)).data
+        return (self._raw_resource.delete(input, options=options)).data
 
     def delete_webhook_destination(
-        self, input: DeleteWebhookDestinationInput
+        self, input: DeleteWebhookDestinationInput, *, options: RequestOptions | None = None
     ) -> models.WebhookDestination:
         "Delete webhook destination\n\nDeletes the selected project's destination and returns its stable tombstone. Repeated deletion returns the deletion representation. This operation removes the destination configuration; it is separate from disabling a destination through an update."
-        return (self._raw_resource.delete_webhook_destination(input)).data
+        return (self._raw_resource.delete_webhook_destination(input, options=options)).data
 
-    def download_attachment(self, input: DownloadAttachmentInput) -> bytes:
+    def download_attachment(
+        self, input: DownloadAttachmentInput, *, options: RequestOptions | None = None
+    ) -> bytes:
         "Download attachment\n\nDownloads an Attachment's bytes. If unavailable after ten seconds, returns ATTACHMENT_NOT_READY with Retry-After: 5."
-        return (self._raw_resource.download_attachment(input)).data
+        return (self._raw_resource.download_attachment(input, options=options)).data
 
-    def get(self, input: GetProjectInput) -> models.Project:
+    def get(
+        self, input: GetProjectInput, *, options: RequestOptions | None = None
+    ) -> models.Project:
         "Get project\n\nReturns the identified project's settings for an authorized caller. The credential must be allowed to access that project; possession of an unrelated project's key does not provide access. Missing and deleted projects are reported through the documented error responses."
-        return (self._raw_resource.get(input)).data
+        return (self._raw_resource.get(input, options=options)).data
 
-    def get_attachment(self, input: GetAttachmentInput) -> models.Attachment:
+    def get_attachment(
+        self, input: GetAttachmentInput, *, options: RequestOptions | None = None
+    ) -> models.Attachment:
         "Get attachment\n\nReturns an Attachment's metadata. Use the content endpoint to download its bytes. If its metadata is unavailable after ten seconds, returns ATTACHMENT_NOT_READY with Retry-After: 5."
-        return (self._raw_resource.get_attachment(input)).data
+        return (self._raw_resource.get_attachment(input, options=options)).data
 
-    def get_message(self, input: GetMessageInput) -> models.PlatformMessage | None:
+    def get_message(
+        self, input: GetMessageInput, *, options: RequestOptions | None = None
+    ) -> models.PlatformMessage | None:
         "Get a Message\n\nReturns one stored Message by canonical Photon Message ID on any supported contract platform. The globally unique Message ID is resolved within the authorized Project. Unsupported platform Messages are outside this collection and return MESSAGE_NOT_FOUND."
-        return (self._raw_resource.get_message(input)).data
+        return (self._raw_resource.get_message(input, options=options)).data
 
     def get_message_metrics_backfill(
-        self, input: GetMessageMetricsBackfillInput
+        self, input: GetMessageMetricsBackfillInput, *, options: RequestOptions | None = None
     ) -> models.GetMessageMetricsBackfillResponse:
         "Get metrics backfill status\n\nReturns historical metrics update progress. Completion reflects lastVerifiedAt; queries remain available during updates."
-        return (self._raw_resource.get_message_metrics_backfill(input)).data
+        return (self._raw_resource.get_message_metrics_backfill(input, options=options)).data
 
     def get_message_metrics_sql_schema(
-        self, input: GetMessageMetricsSqlSchemaInput
+        self, input: GetMessageMetricsSqlSchemaInput, *, options: RequestOptions | None = None
     ) -> models.GetMessageMetricsSqlSchemaResponse:
         "Get metrics SQL schema\n\nReturns the message_events and call_events SQL schema, supported queries, and limits for the selected API version."
-        return (self._raw_resource.get_message_metrics_sql_schema(input)).data
+        return (self._raw_resource.get_message_metrics_sql_schema(input, options=options)).data
 
-    def get_space(self, input: GetSpaceInput) -> models.PlatformSpace | None:
+    def get_space(
+        self, input: GetSpaceInput, *, options: RequestOptions | None = None
+    ) -> models.PlatformSpace | None:
         "Get a Space\n\nReturns one stored Space by canonical Photon Space ID. A Space of a kind its platform does not support returns OPERATION_UNAVAILABLE."
-        return (self._raw_resource.get_space(input)).data
+        return (self._raw_resource.get_space(input, options=options)).data
 
-    def get_user(self, input: GetUserInput) -> models.PlatformUser | None:
+    def get_user(
+        self, input: GetUserInput, *, options: RequestOptions | None = None
+    ) -> models.PlatformUser | None:
         "Get an User\n\nReturns one User after refreshing its Human or Agent classification and project ownership where supported. iMessage email identities retain their producer-observed classification and ownership because no current email ownership lookup is available. WhatsApp, WhatsApp Business and iMessage perform no provider fetch; only SMS Human classifications perform a phone number lookup. Current-project Agents expose resourceId; external-project Agents expose only pairwise managedBy. Conditional response evaluation uses the post-reconciliation representation. Stored reads use each platform definition; projection requires adapter support."
-        return (self._raw_resource.get_user(input)).data
+        return (self._raw_resource.get_user(input, options=options)).data
 
     def get_webhook_destination(
-        self, input: GetWebhookDestinationInput
+        self, input: GetWebhookDestinationInput, *, options: RequestOptions | None = None
     ) -> models.WebhookDestination:
         "Get webhook destination\n\nReturns the configuration of one webhook destination belonging to the selected project. Missing or deleted destinations are reported as errors. This read does not disclose the signing secret returned when the destination or a secret rotation was created."
-        return (self._raw_resource.get_webhook_destination(input)).data
+        return (self._raw_resource.get_webhook_destination(input, options=options)).data
 
     def get_webhook_event_schema(
-        self, input: GetWebhookEventSchemaInput
-    ) -> models.WebhookEventSchema | None:
+        self, input: GetWebhookEventSchemaInput, *, options: RequestOptions | None = None
+    ) -> models.WebhookEventSchema:
         "Get webhook event schema\n\nReturns the published reader JSON Schema for eventType in the requested webhook apiVersion. Use it to interpret events for that exact payload version. The response media type is application/schema+json; an authorized conditional request may return 304 without a body. Unsupported event/version combinations are rejected."
-        return (self._raw_resource.get_webhook_event_schema(input)).data
+        return (self._raw_resource.get_webhook_event_schema(input, options=options)).data
 
-    def list_attachments(self, input: ListAttachmentsInput) -> models.AttachmentPage:
+    def list_attachments(
+        self, input: ListAttachmentsInput, *, options: RequestOptions | None = None
+    ) -> models.AttachmentPage:
         "List attachments\n\nLists the Project's Attachment metadata, with optional time filters. An Attachment can be absent until its upload finishes, which advances its updatedAt; follow changes with updatedSince."
-        return (self._raw_resource.list_attachments(input)).data
+        return (self._raw_resource.list_attachments(input, options=options)).data
 
-    def list_messages(self, input: ListMessagesInput) -> models.MessagePage:
+    def list_messages(
+        self, input: ListMessagesInput, *, options: RequestOptions | None = None
+    ) -> models.MessagePage:
         "List Messages\n\nLists the Project's Messages, with optional resource, conversation, and time filters. Results are eventually consistent."
-        return (self._raw_resource.list_messages(input)).data
+        return (self._raw_resource.list_messages(input, options=options)).data
 
     def list_project_api_keys(
-        self, input: ListProjectApiKeysInput
+        self, input: ListProjectApiKeysInput, *, options: RequestOptions | None = None
     ) -> models.ListProjectApiKeysResponse:
         "List project API keys\n\nLists the API keys on the selected project, ordered newest first. Revoked keys are not listed; expired keys stay listed until they are revoked. Entries contain key metadata and permissions, never secret values. Use the returned identifiers to manage an existing key; lost secrets cannot be recovered through this operation."
-        return (self._raw_resource.list_project_api_keys(input)).data
+        return (self._raw_resource.list_project_api_keys(input, options=options)).data
 
-    def list_spaces(self, input: ListSpacesInput) -> models.SpacePage:
+    def list_spaces(
+        self, input: ListSpacesInput, *, options: RequestOptions | None = None
+    ) -> models.SpacePage:
         "List Spaces\n\nLists the Project's stored Spaces, with optional participant and Message filters. Results are eventually consistent."
-        return (self._raw_resource.list_spaces(input)).data
+        return (self._raw_resource.list_spaces(input, options=options)).data
 
-    def list_users(self, input: ListUsersInput) -> models.UserPage:
+    def list_users(
+        self, input: ListUsersInput, *, options: RequestOptions | None = None
+    ) -> models.UserPage:
         "List Users\n\nLists stored Users without refreshing their classification; use Get User for current details. Message filters select incoming senders or outgoing recipients, excluding the Message's own endpoint."
-        return (self._raw_resource.list_users(input)).data
+        return (self._raw_resource.list_users(input, options=options)).data
 
     def list_webhook_api_versions(
-        self, input: ListWebhookApiVersionsInput
-    ) -> models.ListWebhookApiVersionsResponse | None:
+        self, input: ListWebhookApiVersionsInput, *, options: RequestOptions | None = None
+    ) -> models.ListWebhookApiVersionsResponse:
         "List webhook API versions\n\nLists the published webhook payload API versions and their lifecycle metadata. The list is the same for every project. Use the selectable indicator when choosing a version for a destination. These payload dates are separate from SDK package versions. An authorized conditional request may return 304 without a response body."
-        return (self._raw_resource.list_webhook_api_versions(input)).data
+        return (self._raw_resource.list_webhook_api_versions(input, options=options)).data
 
     def list_webhook_destinations(
-        self, input: ListWebhookDestinationsInput
+        self, input: ListWebhookDestinationsInput, *, options: RequestOptions | None = None
     ) -> models.WebhookDestinationPage:
         "List webhook destinations\n\nReturns a cursor-paginated page of active webhook destinations configured for the selected project. Use pageSize and pageToken to navigate it. The listing returns destination configuration, never signing secrets."
-        return (self._raw_resource.list_webhook_destinations(input)).data
+        return (self._raw_resource.list_webhook_destinations(input, options=options)).data
 
     def list_webhook_egress_addresses(
-        self, input: ListWebhookEgressAddressesInput
-    ) -> models.ListWebhookEgressAddressesResponse | None:
+        self, input: ListWebhookEgressAddressesInput, *, options: RequestOptions | None = None
+    ) -> models.ListWebhookEgressAddressesResponse:
         "List webhook egress addresses\n\nReturns the public network addresses from which this environment sends webhook deliveries. Use this information when configuring the receiving system's network allowlist. The result is environment-specific and does not describe the API service's ingress addresses."
-        return (self._raw_resource.list_webhook_egress_addresses(input)).data
+        return (self._raw_resource.list_webhook_egress_addresses(input, options=options)).data
 
     def list_webhook_event_types(
-        self, input: ListWebhookEventTypesInput
-    ) -> models.ListWebhookEventTypesResponse | None:
+        self, input: ListWebhookEventTypesInput, *, options: RequestOptions | None = None
+    ) -> models.ListWebhookEventTypesResponse:
         "List webhook event types\n\nLists the webhook event types available in the requested apiVersion, including their descriptions, audiences and reader-schema URLs. Use this versioned catalog when selecting a destination's enabledEvents. The response may include version-retirement information; an authorized conditional request can return 304 without a body."
-        return (self._raw_resource.list_webhook_event_types(input)).data
+        return (self._raw_resource.list_webhook_event_types(input, options=options)).data
 
-    def mark_message_read(self, input: MarkMessageReadInput) -> models.MarkMessageReadResponse:
+    def mark_message_read(
+        self, input: MarkMessageReadInput, *, options: RequestOptions | None = None
+    ) -> models.MarkMessageReadResponse:
         "Mark a Message as read\n\nPersists a request to mark one incoming Message as read using its receiving account. A 202 means accepted for asynchronous execution, not handled by the provider. Requires Idempotency-Key. The returned action Message tracks its outcome; privacy settings may suppress remote visibility."
-        return (self._raw_resource.mark_message_read(input)).data
+        return (self._raw_resource.mark_message_read(input, options=options)).data
 
     def query_message_metrics(
-        self, input: QueryMessageMetricsInput
+        self, input: QueryMessageMetricsInput, *, options: RequestOptions | None = None
     ) -> models.QueryMessageMetricsResponse:
         "Query metrics\n\nRuns read-only SQL over the Project's message_events or call_events table. Get the SQL schema for supported columns, capabilities, and limits."
-        return (self._raw_resource.query_message_metrics(input)).data
+        return (self._raw_resource.query_message_metrics(input, options=options)).data
 
     def retry_webhook_delivery(
-        self, input: RetryWebhookDeliveryInput
+        self, input: RetryWebhookDeliveryInput, *, options: RequestOptions | None = None
     ) -> models.RetryWebhookDeliveryResponse:
         "Retry webhook delivery\n\nRequests an immediate attempt of the selected delivery if it is still the waiting head for its destination and event type. expectedAttemptCount is the failed-attempt counter recorded on the delivery and fences stale requests. This overrides the current backoff, including Retry-After, once. It preserves event identity and the retry budget. Delivered, active, disabled and dead-lettered deliveries cannot be retried. A 202 acknowledges the wake-up, not successful delivery. Supply an Idempotency-Key and retain it when retrying an ambiguous failure."
-        return (self._raw_resource.retry_webhook_delivery(input)).data
+        return (self._raw_resource.retry_webhook_delivery(input, options=options)).data
 
     def revoke_project_api_key(
-        self, input: RevokeProjectApiKeyInput
+        self, input: RevokeProjectApiKeyInput, *, options: RequestOptions | None = None
     ) -> models.ProjectApiKeyResponse:
         "Revoke project API key\n\nRevokes the identified key on the selected project and returns its revoked metadata. Repeating the deletion returns the same revokedAt value. This operation does not rotate the key or return a replacement secret. Supply the required Idempotency-Key header."
-        return (self._raw_resource.revoke_project_api_key(input)).data
+        return (self._raw_resource.revoke_project_api_key(input, options=options)).data
 
     def rotate_webhook_signing_secret(
-        self, input: RotateWebhookSigningSecretInput
+        self, input: RotateWebhookSigningSecretInput, *, options: RequestOptions | None = None
     ) -> models.RotateWebhookSigningSecretResponse:
         "Rotate webhook signing secret\n\nRotates the signing secret for the selected project's webhook destination and returns the new secret. The optional overlapSeconds controls the requested overlap with the previous secret according to the documented request constraints. Store the new secret securely and update the receiver's signature verification configuration; it is returned only in this response and in idempotent replays of it, never by destination reads. Supply the required Idempotency-Key header."
-        return (self._raw_resource.rotate_webhook_signing_secret(input)).data
+        return (self._raw_resource.rotate_webhook_signing_secret(input, options=options)).data
 
-    def send_message(self, input: SendMessageInput) -> models.SentMessage:
+    def send_message(
+        self, input: SendMessageInput, *, options: RequestOptions | None = None
+    ) -> models.SentMessage:
         "Send a Message\n\nSends SMS, email, WhatsApp Personal, WhatsApp Business, iMessage, or Telegram text and image messages. A shared iMessage line sends only in direct Spaces, only to a peer with an active Assignment who has messaged it since that Assignment. SMS and MMS require current Platforms authorization for the sender and every recipient; campaign eligibility is required unless every recipient is in-network."
-        return (self._raw_resource.send_message(input)).data
+        return (self._raw_resource.send_message(input, options=options)).data
 
-    def set_space_typing(self, input: SetSpaceTypingInput) -> models.SetSpaceTypingResponse:
+    def set_space_typing(
+        self, input: SetSpaceTypingInput, *, options: RequestOptions | None = None
+    ) -> models.SetSpaceTypingResponse:
         "Set typing in a Space\n\nSaves one transient typing update as an authorized Agent in this Space. Returns the dispatched Message with HTTP 202. Successful provider handoff ends in accepted; rejection or expiry ends in failed. Repeat true to refresh; false stops where supported. Callers control refreshes. Unsupported platforms return OPERATION_UNAVAILABLE."
-        return (self._raw_resource.set_space_typing(input)).data
+        return (self._raw_resource.set_space_typing(input, options=options)).data
 
-    def update(self, input: UpdateProjectInput) -> models.Project:
+    def update(
+        self, input: UpdateProjectInput, *, options: RequestOptions | None = None
+    ) -> models.Project:
         "Update project\n\nUpdates the identified project's name and returns the updated project. The project slug is not a mutable field in this request. Use an authorized account or organization service-identity credential; a project API key is not accepted. Supply the required Idempotency-Key header."
-        return (self._raw_resource.update(input)).data
+        return (self._raw_resource.update(input, options=options)).data
 
     def update_project_api_key(
-        self, input: UpdateProjectApiKeyInput
+        self, input: UpdateProjectApiKeyInput, *, options: RequestOptions | None = None
     ) -> models.ProjectApiKeyResponse:
         "Update project API key permissions\n\nReplaces the identified project key's permission list with the supplied permissions and returns the updated metadata. Sending the permission list the key already has leaves it unchanged. This request does not create a new secret or change the key's project binding. Supply the required Idempotency-Key header."
-        return (self._raw_resource.update_project_api_key(input)).data
+        return (self._raw_resource.update_project_api_key(input, options=options)).data
 
     def update_webhook_destination(
-        self, input: UpdateWebhookDestinationInput
+        self, input: UpdateWebhookDestinationInput, *, options: RequestOptions | None = None
     ) -> models.WebhookDestination:
         "Update webhook destination\n\nUpdates the supplied URL, name, description, status or enabledEvents fields on a project's webhook destination and returns its updated configuration. The payload API version is not a mutable field in this request. Event selections are checked against the destination's versioned catalog; signing-secret rotation is a separate operation. Supply the required Idempotency-Key header."
-        return (self._raw_resource.update_webhook_destination(input)).data
+        return (self._raw_resource.update_webhook_destination(input, options=options)).data
 
-    def upload_attachment(self, input: UploadAttachmentInput) -> models.Attachment:
+    def upload_attachment(
+        self, input: UploadAttachmentInput, *, options: RequestOptions | None = None
+    ) -> models.Attachment:
         "Upload attachment\n\nUploads a file and returns its Attachment once ready to download."
-        return (self._raw_resource.upload_attachment(input)).data
+        return (self._raw_resource.upload_attachment(input, options=options)).data
 
 
 class SyncAccountResource:
     def __init__(self, transport: SyncTransport) -> None:
         self._raw_resource = SyncRawAccountResource(transport)
 
-    def commit_profile_picture(self, input: CommitAccountProfilePictureInput) -> models.Account:
+    def commit_profile_picture(
+        self, input: CommitAccountProfilePictureInput, *, options: RequestOptions | None = None
+    ) -> models.Account:
         "Commit profile picture\n\nCommits a profile picture previously uploaded through createAccountProfilePictureUpload. Call this only after the direct multipart upload succeeds, using the uploadId from the same upload session and a stable Idempotency-Key. The service validates the temporary object's ownership, size, content type, image bytes, dimensions, encryption, and age before changing the Account."
-        return (self._raw_resource.commit_profile_picture(input)).data
+        return (self._raw_resource.commit_profile_picture(input, options=options)).data
 
     def create_account_service_key(
-        self, input: CreateAccountServiceKeyInput
+        self, input: CreateAccountServiceKeyInput, *, options: RequestOptions | None = None
     ) -> models.CreateAccountServiceKeyResponse:
         "Create Account Service Key\n\nCreates a service key for the authenticated account with the supplied name and optional expiresAt. Returns key metadata and a one-time credential; store the credential securely because it cannot be retrieved through the listing endpoint. These credentials act as the account and must not be distributed as project-scoped keys. Supply the required Idempotency-Key header."
-        return (self._raw_resource.create_account_service_key(input)).data
+        return (self._raw_resource.create_account_service_key(input, options=options)).data
 
     def create_profile_picture_upload(
-        self, input: CreateAccountProfilePictureUploadInput
+        self,
+        input: CreateAccountProfilePictureUploadInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> models.ProfilePictureUpload:
         "Create profile picture upload\n\nCreates a ten-minute, Account-bound presigned S3 POST for a JPEG, PNG, or WebP profile picture up to 5 MiB. Copy every returned formFields entry into a multipart/form-data request to uploadUrl, append the local file as the final form part, and upload it directly without sending Photon credentials. After the upload succeeds, call commitAccountProfilePicture with the returned uploadId. Do not cache or log the upload URL or form fields."
-        return (self._raw_resource.create_profile_picture_upload(input)).data
+        return (self._raw_resource.create_profile_picture_upload(input, options=options)).data
 
-    def delete(self, input: DeleteAccountInput | None = None) -> models.Account:
+    def delete(
+        self, input: DeleteAccountInput | None = None, *, options: RequestOptions | None = None
+    ) -> models.Account:
         "Delete account\n\nDeletes the authenticated account and returns its account tombstone. The operation is rejected while the account still owns organizations; transfer or close those organizations before retrying. This endpoint acts on the caller's account and does not accept another account's identifier."
-        return (self._raw_resource.delete(input)).data
+        return (self._raw_resource.delete(input, options=options)).data
 
-    def get(self, input: GetAccountInput | None = None) -> models.Account:
+    def get(
+        self, input: GetAccountInput | None = None, *, options: RequestOptions | None = None
+    ) -> models.Account:
         "Get account\n\nReturns the profile of the authenticated account. The account is selected from the credential rather than a request parameter. A missing or deleted account is reported as an error instead of an empty profile."
-        return (self._raw_resource.get(input)).data
+        return (self._raw_resource.get(input, options=options)).data
 
     def list_account_service_keys(
-        self, input: ListAccountServiceKeysInput | None = None
+        self,
+        input: ListAccountServiceKeysInput | None = None,
+        *,
+        options: RequestOptions | None = None,
     ) -> models.ListAccountServiceKeysResponse:
         "List Account Service Keys\n\nReturns metadata for the authenticated account's unrevoked service keys, including expired keys, ordered newest first. Secret values are not returned; a key's credential is disclosed only when that key is created."
-        return (self._raw_resource.list_account_service_keys(input)).data
+        return (self._raw_resource.list_account_service_keys(input, options=options)).data
 
     def list_authorized_applications(
-        self, input: ListAuthorizedApplicationsInput | None = None
+        self,
+        input: ListAuthorizedApplicationsInput | None = None,
+        *,
+        options: RequestOptions | None = None,
     ) -> models.ListAuthorizedApplicationsResponse:
         "List connected applications\n\nLists the OAuth applications authorized by the authenticated user."
-        return (self._raw_resource.list_authorized_applications(input)).data
+        return (self._raw_resource.list_authorized_applications(input, options=options)).data
 
-    def reset_profile_picture(self, input: ResetAccountProfilePictureInput) -> models.Account:
+    def reset_profile_picture(
+        self, input: ResetAccountProfilePictureInput, *, options: RequestOptions | None = None
+    ) -> models.Account:
         "Remove profile picture\n\nRemoves the authenticated account's custom profile picture and returns the account using its default picture. This operation does not upload a replacement; use the upload-and-commit operations when setting a new custom picture. Supply the required Idempotency-Key header."
-        return (self._raw_resource.reset_profile_picture(input)).data
+        return (self._raw_resource.reset_profile_picture(input, options=options)).data
 
     def revoke_account_service_key(
-        self, input: RevokeAccountServiceKeyInput
+        self, input: RevokeAccountServiceKeyInput, *, options: RequestOptions | None = None
     ) -> models.RevokeAccountServiceKeyResponse:
         "Revoke Account Service Key\n\nRevokes the account-owned service key identified by serviceKeyId and returns its revoked metadata. Repeating the revocation is stable. Revocation changes the credential's validity; it does not create a replacement key. Supply the required Idempotency-Key header."
-        return (self._raw_resource.revoke_account_service_key(input)).data
+        return (self._raw_resource.revoke_account_service_key(input, options=options)).data
 
-    def revoke_authorized_application(self, input: RevokeAuthorizedApplicationInput) -> None:
+    def revoke_authorized_application(
+        self, input: RevokeAuthorizedApplicationInput, *, options: RequestOptions | None = None
+    ) -> None:
         "Revoke connected application\n\nRevokes the authenticated user's grant for one OAuth application."
-        return (self._raw_resource.revoke_authorized_application(input)).data
+        return (self._raw_resource.revoke_authorized_application(input, options=options)).data
 
-    def update(self, input: UpdateAccountInput) -> models.Account:
+    def update(
+        self, input: UpdateAccountInput, *, options: RequestOptions | None = None
+    ) -> models.Account:
         "Update account\n\nUpdates the supplied firstName and lastName fields on the authenticated account and returns the updated profile. Only the documented profile fields can be changed through this endpoint; profile-picture uploads and phone-number verification use their dedicated operations. Supply the required Idempotency-Key header."
-        return (self._raw_resource.update(input)).data
+        return (self._raw_resource.update(input, options=options)).data
 
 
 class SyncSystemResource:
@@ -8568,16 +8908,16 @@ class SyncSystemResource:
         self._raw_resource = SyncRawSystemResource(transport)
 
     def create_app_installation_request(
-        self, input: CreateAppInstallationRequestInput
+        self, input: CreateAppInstallationRequestInput, *, options: RequestOptions | None = None
     ) -> models.CreateAppInstallationRequestResponse:
         "Request app installation\n\nAuthenticates a registered app backend using a short-lived signed client assertion. Creates request metadata only; customer approval is still required."
-        return (self._raw_resource.create_app_installation_request(input)).data
+        return (self._raw_resource.create_app_installation_request(input, options=options)).data
 
     def redeem_app_installation_delivery(
-        self, input: RedeemAppInstallationDeliveryInput
+        self, input: RedeemAppInstallationDeliveryInput, *, options: RequestOptions | None = None
     ) -> models.RedeemAppInstallationDeliveryResponse:
         "Redeem installation credential\n\nThe registered app backend authenticates with a signed client assertion and a single-use code. Plaintext is returned only once; retries return status and never create another credential."
-        return (self._raw_resource.redeem_app_installation_delivery(input)).data
+        return (self._raw_resource.redeem_app_installation_delivery(input, options=options)).data
 
 
 class SyncAuthDeviceResource:
@@ -8585,14 +8925,16 @@ class SyncAuthDeviceResource:
         self._raw_resource = SyncRawAuthDeviceResource(transport)
 
     def authorize(
-        self, input: DeviceAuthorizeInput | None = None
+        self, input: DeviceAuthorizeInput | None = None, *, options: RequestOptions | None = None
     ) -> models.DeviceAuthorizeResponse:
         "Start device authorization\n\nStarts the device authorization flow for a CLI or another device without a browser. Show the verification URL and user code, then poll the token endpoint at the returned interval. No request fields are required; any supplied body is ignored."
-        return (self._raw_resource.authorize(input)).data
+        return (self._raw_resource.authorize(input, options=options)).data
 
-    def token(self, input: DeviceTokenInput) -> models.DeviceTokenResponse:
+    def token(
+        self, input: DeviceTokenInput, *, options: RequestOptions | None = None
+    ) -> models.DeviceTokenResponse:
         "Exchange device code or refresh token\n\nExchanges an authorized device code or a refresh token for an access token and rotating refresh token. Accepts JSON and form-encoded bodies. While polling, wait at least interval seconds and increase the interval on slow_down. Store the new refresh token after every successful grant.\n\nThis SDK method sends uncompressed JSON (application/json). Other request formats described above apply to direct HTTP requests."
-        return (self._raw_resource.token(input)).data
+        return (self._raw_resource.token(input, options=options)).data
 
 
 class SyncAuthResource:
@@ -8601,52 +8943,52 @@ class SyncAuthResource:
         self.device = SyncAuthDeviceResource(transport)
 
     def create_organization_sso_portal_link(
-        self, input: CreateOrganizationSsoPortalLinkInput
+        self, input: CreateOrganizationSsoPortalLinkInput, *, options: RequestOptions | None = None
     ) -> models.CreateOrganizationSsoPortalLinkResponse:
         "Create organization setup portal link\n\nReturns an organization setup portal URL. Supply returnTo and optionally intent, either sso or domain_verification; sso is the default. Open the returned URL to complete the selected setup flow."
-        return (self._raw_resource.create_organization_sso_portal_link(input)).data
+        return (self._raw_resource.create_organization_sso_portal_link(input, options=options)).data
 
     def disable_organization_sso(
-        self, input: DisableOrganizationSsoInput
+        self, input: DisableOrganizationSsoInput, *, options: RequestOptions | None = None
     ) -> models.OrganizationSsoConfiguration:
         "Disable organization SSO\n\nDeletes the provider connection, releases the SSO requirement once the connection is gone, then unbinds the chosen domains. Retry with the same Idempotency-Key to resume or await the same run."
-        return (self._raw_resource.disable_organization_sso(input)).data
+        return (self._raw_resource.disable_organization_sso(input, options=options)).data
 
     def get_organization_connection_status(
-        self, input: GetOrganizationConnectionStatusInput
+        self, input: GetOrganizationConnectionStatusInput, *, options: RequestOptions | None = None
     ) -> models.OrganizationConnectionStatus:
         "Get organization connection status\n\nRequires current human organization membership. Synchronization status does not attest SSO configuration or completed authorization."
-        return (self._raw_resource.get_organization_connection_status(input)).data
+        return (self._raw_resource.get_organization_connection_status(input, options=options)).data
 
     def get_organization_sso_configuration(
-        self, input: GetOrganizationSsoConfigurationInput
+        self, input: GetOrganizationSsoConfigurationInput, *, options: RequestOptions | None = None
     ) -> models.OrganizationSsoConfiguration:
         "Get organization SSO configuration\n\nReturns the selected organization’s SSO connection state, configuration version, and desired and effective policy settings. Read policySyncStatus alongside the enforcement fields to distinguish requested settings from synchronized settings."
-        return (self._raw_resource.get_organization_sso_configuration(input)).data
+        return (self._raw_resource.get_organization_sso_configuration(input, options=options)).data
 
     def list_oauth_scopes(
-        self, input: ListOauthScopesInput | None = None
+        self, input: ListOauthScopesInput | None = None, *, options: RequestOptions | None = None
     ) -> models.ListOauthScopesResponse:
         "List OAuth scopes\n\nLists the business permissions available to OAuth applications."
-        return (self._raw_resource.list_oauth_scopes(input)).data
+        return (self._raw_resource.list_oauth_scopes(input, options=options)).data
 
     def refresh_organization_sso_connection(
-        self, input: RefreshOrganizationSsoConnectionInput
+        self, input: RefreshOrganizationSsoConnectionInput, *, options: RequestOptions | None = None
     ) -> models.OrganizationSsoConfiguration:
         "Refresh organization SSO connection\n\nRefreshes the selected organization’s SSO connection and returns its current connection state, configuration version and policy synchronization status. This operation takes no request body."
-        return (self._raw_resource.refresh_organization_sso_connection(input)).data
+        return (self._raw_resource.refresh_organization_sso_connection(input, options=options)).data
 
     def retry_organization_connection_sync(
-        self, input: RetryOrganizationConnectionSyncInput
+        self, input: RetryOrganizationConnectionSyncInput, *, options: RequestOptions | None = None
     ) -> models.OrganizationConnectionStatus:
         "Retry organization connection sync\n\nReconciles existing local intent. Takes no body and cannot change membership, roles or authentication policy."
-        return (self._raw_resource.retry_organization_connection_sync(input)).data
+        return (self._raw_resource.retry_organization_connection_sync(input, options=options)).data
 
     def update_organization_sso_policy(
-        self, input: UpdateOrganizationSsoPolicyInput
+        self, input: UpdateOrganizationSsoPolicyInput, *, options: RequestOptions | None = None
     ) -> models.OrganizationSsoConfiguration:
         "Update organization SSO policy\n\nUpdates whether SSO can admit new members automatically using ssoJitEnabled and the current expectedVersion. Returns the organization’s SSO configuration and policy synchronization status; a successful response does not mean every desired policy setting has finished synchronizing."
-        return (self._raw_resource.update_organization_sso_policy(input)).data
+        return (self._raw_resource.update_organization_sso_policy(input, options=options)).data
 
 
 class AsyncRawOrganizationsBillingResource:
@@ -8654,83 +8996,88 @@ class AsyncRawOrganizationsBillingResource:
         self._transport = transport
 
     async def change_plan(
-        self, input: ChangePlanInput
+        self, input: ChangePlanInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.TerminalBillingOperation | models.PendingBillingOperation]:
         "Change plan\n\nPurchases or changes the selected project's plan for the supplied category and planCode, redeeming promotionCode when given. A 202 response means the change is pending: poll the returned operation URL and honor Retry-After until it succeeds or fails. A 200 response means the idempotency key resolved to an operation that is already terminal; inspect that result rather than assuming success from the status code alone. Supply the required Idempotency-Key header. Supply both organizationId and projectId to select the project within its organization."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CHANGE_PLAN, payload)
+        return await self._transport.request(_OP_CHANGE_PLAN, payload, options)
 
     async def create_organization_payment_method_checkout(
-        self, input: CreateOrganizationPaymentMethodCheckoutInput
+        self,
+        input: CreateOrganizationPaymentMethodCheckoutInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[models.CreateOrganizationPaymentMethodCheckoutResponse]:
         "Create payment method checkout\n\nReturns a hosted payment-method collection URL for the selected organization. An Idempotency-Key header is optional; supply one to make retries safe. Complete the returned checkout flow. Receiving the URL does not mean a card has been saved; check payment-method status afterward."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(
-            _OP_CREATE_ORGANIZATION_PAYMENT_METHOD_CHECKOUT, payload
+            _OP_CREATE_ORGANIZATION_PAYMENT_METHOD_CHECKOUT, payload, options
         )
 
     async def get_effective_terms(
-        self, input: GetEffectiveTermsInput
+        self, input: GetEffectiveTermsInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.GetEffectiveTermsResponse]:
         "Get the project's effective billing terms\n\nReturns what the selected project is billed on now, per category it holds: the plan as its subscription has it, with any override applied, each fixed charge at the subscription's price and quantity, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. Supply both organizationId and projectId; the organization must pay for the project. This operation does not change billing."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_EFFECTIVE_TERMS, payload)
+        return await self._transport.request(_OP_GET_EFFECTIVE_TERMS, payload, options)
 
     async def get_organization_billing_overview(
-        self, input: GetOrganizationBillingOverviewInput
+        self, input: GetOrganizationBillingOverviewInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.GetOrganizationBillingOverviewResponse]:
         "Get organization billing overview\n\nReturns the selected organization’s billing subscription and entitlementsVersion. The subscription can be null. Read the returned plan, charges and entitlements to inspect organization billing; this operation does not purchase or change a plan."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_ORGANIZATION_BILLING_OVERVIEW, payload)
+        return await self._transport.request(
+            _OP_GET_ORGANIZATION_BILLING_OVERVIEW, payload, options
+        )
 
     async def get_organization_credit(
-        self, input: GetOrganizationCreditInput
+        self, input: GetOrganizationCreditInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.GetOrganizationCreditResponse]:
         "Get organization credit\n\nReturns the credit the selected organization holds: on credit notes, such as the unused time of a plan an upgrade replaced or the unused days of a prorated fixed charge it released, and in its wallet: the credit Photon granted it, such as a new account's first organization's welcome credit, and any prepaid credit it bought. It offsets that organization's invoices of any kind except one-off invoices, credit notes first. Reading it does not apply or change credit."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_ORGANIZATION_CREDIT, payload)
+        return await self._transport.request(_OP_GET_ORGANIZATION_CREDIT, payload, options)
 
     async def get_organization_payment_method(
-        self, input: GetOrganizationPaymentMethodInput
+        self, input: GetOrganizationPaymentMethodInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.GetOrganizationPaymentMethodResponse]:
         "Get organization payment method\n\nReports whether the selected organization has a card on file, its documented payment-method metadata, whether a purchase needs a card first (purchaseRefusal), and how it pays: by card, or by invoice on its contract's terms (agreement). Reading this endpoint does not collect a new card or create a checkout session."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_ORGANIZATION_PAYMENT_METHOD, payload)
+        return await self._transport.request(_OP_GET_ORGANIZATION_PAYMENT_METHOD, payload, options)
 
     async def get_organization_terms(
-        self, input: GetOrganizationTermsInput
+        self, input: GetOrganizationTermsInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.GetOrganizationTermsResponse]:
         "Get the organization's effective billing terms\n\nReturns what the selected organization is billed on now on its own subscription, such as SSO and 10DLC campaigns: the plan as the subscription has it, with any override applied, each fixed charge at the subscription's price and the quantity the organization holds, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. subscription has a project subscription's terms without its category, and is null when the organization holds none. Project subscriptions are read per project. This operation does not change billing."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_ORGANIZATION_TERMS, payload)
+        return await self._transport.request(_OP_GET_ORGANIZATION_TERMS, payload, options)
 
     async def list_credit_activity(
-        self, input: ListCreditActivityInput
+        self, input: ListCreditActivityInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ListCreditActivityResponse]:
         "List credit activity\n\nReturns one page of how the selected organization's credit balance changed, newest first: credit notes issued and credit granted, credit applied to invoices, credit restored when the change an invoice paid for never applied, and credit voided. Each entry names the credit note (none for granted credit), the invoice when there is one, and the charge and subscription the credit note credits, or that the credit was a grant. Pass nextPage as page to read further. This operation does not change billing."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LIST_CREDIT_ACTIVITY, payload)
+        return await self._transport.request(_OP_LIST_CREDIT_ACTIVITY, payload, options)
 
     async def list_invoices(
-        self, input: ListInvoicesInput
+        self, input: ListInvoicesInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ListInvoicesResponse]:
         "List invoices\n\nReturns one page of the selected organization's invoices, newest first: every invoice issued to it with a nonzero total or actual charges, including charges fully paid by credit; drafts and empty invoices are excluded. Each names what it charged the organization's own subscription and each project. Pass subject to list only the invoices that charge the organization itself or one of its projects, and nextCursor as cursor to read further. Listing invoices does not make a payment or modify a subscription."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LIST_INVOICES, payload)
+        return await self._transport.request(_OP_LIST_INVOICES, payload, options)
 
     async def preview_organization_change(
-        self, input: PreviewOrganizationChangeInput
+        self, input: PreviewOrganizationChangeInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.PreviewOrganizationChangeResponse]:
-        "Preview an organization billing change\n\nPreviews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives."
+        "Preview an organization billing change\n\nPreviews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. This operation does not change billing. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_PREVIEW_ORGANIZATION_CHANGE, payload)
+        return await self._transport.request(_OP_PREVIEW_ORGANIZATION_CHANGE, payload, options)
 
     async def preview_project_change(
-        self, input: PreviewProjectChangeInput
+        self, input: PreviewProjectChangeInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.PreviewProjectChangeResponse]:
-        "Preview a project billing change\n\nPreviews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; a downgrade, or choosing the held plan again, bills nothing now; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives. Supply both organizationId and projectId; the organization must pay for the project."
+        "Preview a project billing change\n\nPreviews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; a downgrade, or choosing the held plan again, bills nothing now; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives. Supply both organizationId and projectId; the organization must pay for the project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_PREVIEW_PROJECT_CHANGE, payload)
+        return await self._transport.request(_OP_PREVIEW_PROJECT_CHANGE, payload, options)
 
 
 class AsyncRawOrganizationsProjectsResource:
@@ -8738,33 +9085,39 @@ class AsyncRawOrganizationsProjectsResource:
         self._transport = transport
 
     async def check_project_slug_availability(
-        self, input: CheckProjectSlugAvailabilityInput
+        self, input: CheckProjectSlugAvailabilityInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.CheckProjectSlugAvailabilityResponse]:
         "Check project slug availability\n\nReports whether createProject would accept `slug` right now. Advisory: only the create itself allocates, so a caller must still handle SLUG_TAKEN. A malformed slug is rejected on shape; a reserved slug, a slug held by an active project, and a slug retired with a deleted project each answer `available: false` with a reason."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CHECK_PROJECT_SLUG_AVAILABILITY, payload)
+        return await self._transport.request(_OP_CHECK_PROJECT_SLUG_AVAILABILITY, payload, options)
 
-    async def count(self, input: CountProjectsInput) -> RawResponse[models.ProjectCount]:
+    async def count(
+        self, input: CountProjectsInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.ProjectCount]:
         "Count projects\n\nCounts the projects the same filter would list. The count is read from the primary, so it is authoritative rather than replica-lagged."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_COUNT_PROJECTS, payload)
+        return await self._transport.request(_OP_COUNT_PROJECTS, payload, options)
 
-    async def create(self, input: CreateProjectInput) -> RawResponse[models.Project]:
-        "Create project\n\nCreates in the authorized organization. In addition to account credentials, explicitly granted Service Identity API keys and M2M tokens may create projects. Project API keys cannot create projects. Creator and private credential evidence come only from the trusted authorization context. The caller-selected slug is immutable, must be 3 to 63 lowercase ASCII alphanumerics separated by single hyphens, and cannot be reserved or held by any active or deleted project."
+    async def create(
+        self, input: CreateProjectInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.Project]:
+        "Create project\n\nCreates in the authorized organization. In addition to account credentials, explicitly granted Service Identity API keys and M2M tokens may create projects. Project API keys cannot create projects. Caller identity and credential evidence come only from the trusted authorization context. The caller-selected slug is immutable, must be 3 to 63 lowercase ASCII alphanumerics separated by single hyphens, and cannot be reserved or held by any active or deleted project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CREATE_PROJECT, payload)
+        return await self._transport.request(_OP_CREATE_PROJECT, payload, options)
 
     async def get_project_closure_status(
-        self, input: GetProjectClosureStatusInput
+        self, input: GetProjectClosureStatusInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.GetProjectClosureStatusResponse]:
         "Get project closure status\n\nReturns closure progress for projectId within organizationId, including deletionOperationId, domain progress and ready. This read operation does not initiate deletion."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_PROJECT_CLOSURE_STATUS, payload)
+        return await self._transport.request(_OP_GET_PROJECT_CLOSURE_STATUS, payload, options)
 
-    async def list(self, input: ListProjectsInput) -> RawResponse[models.ProjectPage]:
+    async def list(
+        self, input: ListProjectsInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.ProjectPage]:
         "List projects\n\nReturns a cursor-paginated page of the active projects in organizationId. Filter using query and the documented creation-time bounds, and navigate with pageSize and pageToken. Project roles are not returned and role is not a supported filter."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LIST_PROJECTS, payload)
+        return await self._transport.request(_OP_LIST_PROJECTS, payload, options)
 
 
 class AsyncRawOrganizationsResource:
@@ -8774,324 +9127,359 @@ class AsyncRawOrganizationsResource:
         self.projects = AsyncRawOrganizationsProjectsResource(transport)
 
     async def accept_organization_invitation(
-        self, input: AcceptOrganizationInvitationInput
+        self, input: AcceptOrganizationInvitationInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.AcceptOrganizationInvitationResponse]:
         "Accept an invitation to all organization projects\n\nAccepts an invitation by its token and adds the signed-in account to the organization with the invited role. An existing member keeps their role, except a Viewer who joined through SSO just-in-time provisioning and whose role has never been changed, who takes the invited role; a removed member can rejoin only with an invitation created after the removal, else 409. The account's verified email must match the invited address, the invitation must be pending and unexpired, and its inviter must still be an Owner or Admin; in an organization that requires SSO it returns 403, because the invitee joins by signing in through that SSO instead. Call it with account credentials acting as the account itself and supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_ACCEPT_ORGANIZATION_INVITATION, payload)
+        return await self._transport.request(_OP_ACCEPT_ORGANIZATION_INVITATION, payload, options)
 
     async def cancel_sso_subscription(
-        self, input: CancelSsoSubscriptionInput
+        self, input: CancelSsoSubscriptionInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.CancelSsoSubscriptionResponse]:
         "Cancel the SSO subscription\n\nCancels the organization's SSO subscription at once, but only after SSO has been turned off: while SSO is still required it returns 409. The unused days become organization credit, and SSO setup closes. Only Owners and Admins can call it, with account credentials and the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CANCEL_SSO_SUBSCRIPTION, payload)
+        return await self._transport.request(_OP_CANCEL_SSO_SUBSCRIPTION, payload, options)
 
     async def check_organization_deletion(
-        self, input: CheckOrganizationDeletionInput
+        self, input: CheckOrganizationDeletionInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.CheckOrganizationDeletionResponse]:
         "Check organization deletion prerequisites\n\nReports whether the organization can be deleted now (canDelete), the blockers to clear first, such as active projects or unpaid invoices, and the version to send to closeOrganization. The answer is advisory, because deletion checks again. Only the Owner can call it, with account credentials; in an organization that requires SSO, sign in through SSO, because Account Service Keys are refused."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CHECK_ORGANIZATION_DELETION, payload)
+        return await self._transport.request(_OP_CHECK_ORGANIZATION_DELETION, payload, options)
 
-    async def close_organization(self, input: CloseOrganizationInput) -> RawResponse[None]:
+    async def close_organization(
+        self, input: CloseOrganizationInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[None]:
         "Delete organization\n\nDeletes the organization: it leaves normal access when the call returns 204, and Photon then releases its app installations, registrations and billing subscriptions in the background. It cannot be undone and needs no active projects, nothing owed, and the expectedVersion from checkOrganizationDeletion; a blocked or stale request returns 409. Only the Owner can call it, with account credentials (in an organization that requires SSO, a session signed in through SSO) and the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CLOSE_ORGANIZATION, payload)
+        return await self._transport.request(_OP_CLOSE_ORGANIZATION, payload, options)
 
     async def commit_organization_avatar(
-        self, input: CommitOrganizationAvatarInput
+        self, input: CommitOrganizationAvatarInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.CommitOrganizationAvatarResponse]:
         "Commit an organization avatar\n\nSets the organization's avatar to an image uploaded with createOrganizationAvatarUpload, after checking its size, type and contents, and discards the previous avatar; an invalid or expired upload is rejected. Owners and Admins can call it with account credentials. Send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_COMMIT_ORGANIZATION_AVATAR, payload)
+        return await self._transport.request(_OP_COMMIT_ORGANIZATION_AVATAR, payload, options)
 
     async def create_organization(
-        self, input: CreateOrganizationInput
+        self, input: CreateOrganizationInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.CreateOrganizationResponse]:
         "Create an organization\n\nCreates an organization with the supplied name and makes the calling account its Owner; SSO and just-in-time provisioning start disabled. Billing is set up after the response, so the 201 body has no billingInitialization; read it from getOrganization or listOrganizations to follow the setup. Call it with account credentials acting as the account itself and supply the required Idempotency-Key header; an account that is closing gets 409."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CREATE_ORGANIZATION, payload)
+        return await self._transport.request(_OP_CREATE_ORGANIZATION, payload, options)
 
     async def create_organization_avatar_upload(
-        self, input: CreateOrganizationAvatarUploadInput
+        self, input: CreateOrganizationAvatarUploadInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.CreateOrganizationAvatarUploadResponse]:
         "Create an organization avatar upload\n\nUpload a JPEG, PNG, or WebP image up to 5 MiB with every returned form field and the file last. Upload directly without Photon credentials, then commit the uploadId. Do not log or cache upload URLs or fields."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CREATE_ORGANIZATION_AVATAR_UPLOAD, payload)
+        return await self._transport.request(
+            _OP_CREATE_ORGANIZATION_AVATAR_UPLOAD, payload, options
+        )
 
     async def create_organization_invitation(
-        self, input: CreateOrganizationInvitationInput
+        self, input: CreateOrganizationInvitationInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.CreateOrganizationInvitationResponse]:
         "Invite a Member or Viewer to all organization projects\n\nInvites an email address to the organization as a Member or Viewer and emails it a link that stays valid for 7 days; the Admin and Owner roles can't be invited. Owners and Admins can call it with account credentials and the required Idempotency-Key header. Inviting an address that has a pending invitation for the same role resends it and a different role returns 409, while sending too often (twice within a minute, more than 30 an hour or 100 pending per organization) returns 429."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CREATE_ORGANIZATION_INVITATION, payload)
+        return await self._transport.request(_OP_CREATE_ORGANIZATION_INVITATION, payload, options)
 
     async def create_organization_oauth_client(
-        self, input: CreateOrganizationOauthClientInput
+        self, input: CreateOrganizationOauthClientInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.CreateOrganizationOauthClientResponse]:
         "Create an organization OAuth client\n\nUse the same UUID Idempotency-Key and payload when retrying. Unknown provider outcomes require recovery; do not use a new key to retry an uncertain creation."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CREATE_ORGANIZATION_OAUTH_CLIENT, payload)
+        return await self._transport.request(_OP_CREATE_ORGANIZATION_OAUTH_CLIENT, payload, options)
 
     async def create_service_identity(
-        self, input: CreateServiceIdentityInput
+        self, input: CreateServiceIdentityInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.CreateServiceIdentityResponse]:
         "Create an organization Service Identity\n\nCreates an active Service Identity, a machine identity owned by the organization, with a name and a non-empty set of permissions from listServiceIdentityPermissions; it starts with no credentials. Owners and Admins can call it with account credentials and the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CREATE_SERVICE_IDENTITY, payload)
+        return await self._transport.request(_OP_CREATE_SERVICE_IDENTITY, payload, options)
 
     async def create_service_identity_api_key(
-        self, input: CreateServiceIdentityApiKeyInput
+        self, input: CreateServiceIdentityApiKeyInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.CreateServiceIdentityApiKeyResponse]:
         "Create a one-time Service Identity API key\n\nCreates an API key for an active Service Identity that no app installation manages; the key acts with the identity's current permissions. Only a response with status created returns the key's value, so store it securely; retry with the same Idempotency-Key, which must be a UUID: a retry returns the key's status without the value, and status recovery_required means the value was not delivered and can't be retrieved. Owners and Admins can call it with account credentials, and expectedIdentityVersion must match the identity's current version, else 409; an identity managed by an app installation also returns 409."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CREATE_SERVICE_IDENTITY_API_KEY, payload)
+        return await self._transport.request(_OP_CREATE_SERVICE_IDENTITY_API_KEY, payload, options)
 
     async def create_service_identity_client_secret(
-        self, input: CreateServiceIdentityClientSecretInput
+        self,
+        input: CreateServiceIdentityClientSecretInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[models.CreateServiceIdentityClientSecretResponse]:
         "Create a one-time Service Identity M2M client secret\n\nCreates a client secret for the machine-to-machine (M2M) application of an active Service Identity that no app installation manages, setting the application up first if needed, and returns the secret with its clientId once; exchange them for M2M access tokens, and never send the secret to other operations. Retry with the same Idempotency-Key, which must be a UUID: a retry returns the status without the secret, and a response with stage application (status recovery_required or cleanup_required) means the application could not be set up and no secret exists. Owners and Admins can call it with account credentials, and expectedIdentityVersion must match the identity's current version, else 409; an identity managed by an app installation also returns 409."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CREATE_SERVICE_IDENTITY_CLIENT_SECRET, payload)
+        return await self._transport.request(
+            _OP_CREATE_SERVICE_IDENTITY_CLIENT_SECRET, payload, options
+        )
 
     async def delete_organization_oauth_client(
-        self, input: DeleteOrganizationOauthClientInput
+        self, input: DeleteOrganizationOauthClientInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.DeleteOrganizationOauthClientResponse]:
         "Delete an organization OAuth client\n\nQueues deletion of the exact provider application. Retry DELETE to read its current status. Accepted deletion does not promise immediate token revocation."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_DELETE_ORGANIZATION_OAUTH_CLIENT, payload)
+        return await self._transport.request(_OP_DELETE_ORGANIZATION_OAUTH_CLIENT, payload, options)
 
     async def delete_organization_oauth_client_secret(
-        self, input: DeleteOrganizationOauthClientSecretInput
+        self,
+        input: DeleteOrganizationOauthClientSecretInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[None]:
         "Revoke an organization OAuth client's secret\n\nStops every secret of the app now, including one still in its grace period."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_DELETE_ORGANIZATION_OAUTH_CLIENT_SECRET, payload)
+        return await self._transport.request(
+            _OP_DELETE_ORGANIZATION_OAUTH_CLIENT_SECRET, payload, options
+        )
 
     async def get_current_organization(
-        self, input: GetCurrentOrganizationInput | None = None
+        self,
+        input: GetCurrentOrganizationInput | None = None,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[models.GetCurrentOrganizationResponse]:
         "Read the credential's organization\n\nReads the organization the credential is bound to: the organization an OAuth grant was consented for, or a Service Identity's own organization. Use it to discover which organization an integration acts for, and pass its organizationId to organization-scoped operations."
         payload = (input or GetCurrentOrganizationInput()).model_dump(
             mode="json", by_alias=True, exclude_unset=True
         )
-        return await self._transport.request(_OP_GET_CURRENT_ORGANIZATION, payload)
+        return await self._transport.request(_OP_GET_CURRENT_ORGANIZATION, payload, options)
 
     async def get_organization(
-        self, input: GetOrganizationInput
+        self, input: GetOrganizationInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.GetOrganizationResponse]:
         "Read organization name and avatar\n\nReturns the organization's name, avatar URL, version and billing setup progress. Any member can read it with account credentials, and a Service Identity granted organization:read or an OAuth grant with the organization:read scope can read the organization it is bound to. Send version as expectedVersion when renaming the organization or changing its avatar."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_ORGANIZATION, payload)
+        return await self._transport.request(_OP_GET_ORGANIZATION, payload, options)
 
     async def get_organization_oauth_client(
-        self, input: GetOrganizationOauthClientInput
+        self, input: GetOrganizationOauthClientInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.GetOrganizationOauthClientResponse]:
         "Read an organization OAuth client\n\nReturns one third-party OAuth application the organization owns, without its secret. Any member can call it with account credentials. The ETag response header is the value updateOrganizationOauthClient needs in If-Match."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_ORGANIZATION_OAUTH_CLIENT, payload)
+        return await self._transport.request(_OP_GET_ORGANIZATION_OAUTH_CLIENT, payload, options)
 
     async def get_organization_oauth_client_secret(
-        self, input: GetOrganizationOauthClientSecretInput
+        self, input: GetOrganizationOauthClientSecretInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.GetOrganizationOauthClientSecretResponse]:
         "Read an organization OAuth client's secret\n\nReturns metadata about an OAuth application's secret: the current secret and, after a rotation, the previous one while it still works, with each one's hint, creation and last-use times; the previous one's validUntil is when it stops working, or null when it lasts until the next rotation or revocation. The secret value is never returned. Only Owners and Admins can call it, with account credentials."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_ORGANIZATION_OAUTH_CLIENT_SECRET, payload)
+        return await self._transport.request(
+            _OP_GET_ORGANIZATION_OAUTH_CLIENT_SECRET, payload, options
+        )
 
     async def get_service_identity(
-        self, input: GetServiceIdentityInput
+        self, input: GetServiceIdentityInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.GetServiceIdentityResponse]:
         "Read a Service Identity\n\nReturns one Service Identity with its permissions, status and version. Any member can call it with account credentials. Send version as expectedVersion to updateServiceIdentity, or as expectedIdentityVersion when creating a credential."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_SERVICE_IDENTITY, payload)
+        return await self._transport.request(_OP_GET_SERVICE_IDENTITY, payload, options)
 
     async def get_sso_subscription(
-        self, input: GetSsoSubscriptionInput
+        self, input: GetSsoSubscriptionInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.GetSsoSubscriptionResponse]:
         "Read SSO subscription\n\nReturns the organization's SSO subscription: its state, the current monthly price and billing period, whether a payment method must be added first, and whether SSO can be set up (canConfigure). Only Owners and Admins can call it, with account credentials. Send its amount, currency and currentPeriodEnd as the quote when subscribing."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_SSO_SUBSCRIPTION, payload)
+        return await self._transport.request(_OP_GET_SSO_SUBSCRIPTION, payload, options)
 
     async def get_ten_dlc_brand_otp(
-        self, input: GetTenDlcBrandOtpInput
+        self, input: GetTenDlcBrandOtpInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.GetTenDlcBrandOtpResponse]:
         "Get sole-proprietor OTP status\n\nReturns the redacted one-time-password verification state for an organization-owned brand. OTP verification applies only to sole-proprietor brands. Reading this endpoint does not request another code or verify a supplied code; use the trigger and verification operations for those actions. Supply organization_id for the organization that owns the registration."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_TEN_DLC_BRAND_OTP, payload)
+        return await self._transport.request(_OP_GET_TEN_DLC_BRAND_OTP, payload, options)
 
     async def leave_organization(
-        self, input: LeaveOrganizationInput
+        self, input: LeaveOrganizationInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.LeaveOrganizationResponse]:
         "Leave an organization; Owners must transfer or close first\n\nRemoves the authenticated account's own membership. Nothing is revoked: the account's sessions, OAuth grants and Account Service Keys stop being accepted for the organization and its projects shortly after the call, and project API keys and Service Identity credentials it created keep working until they are revoked. Any member except the Owner can call it, with account credentials or an OAuth grant for this organization with the organization:read scope; the Owner gets 409 and must transfer ownership or delete the organization first. Send the caller's own membership version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LEAVE_ORGANIZATION, payload)
+        return await self._transport.request(_OP_LEAVE_ORGANIZATION, payload, options)
 
     async def list_organization_invitations(
-        self, input: ListOrganizationInvitationsInput
+        self, input: ListOrganizationInvitationsInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ListOrganizationInvitationsResponse]:
         "List pending organization invitations\n\nLists the organization's pending, unexpired invitations, newest first, in one unpaginated response; accepted, revoked and expired invitations are left out, and invitation links are never returned. Owners and Admins can call it with account credentials."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LIST_ORGANIZATION_INVITATIONS, payload)
+        return await self._transport.request(_OP_LIST_ORGANIZATION_INVITATIONS, payload, options)
 
     async def list_organization_members(
-        self, input: ListOrganizationMembersInput
+        self, input: ListOrganizationMembersInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ListOrganizationMembersResponse]:
         "List current organization members\n\nLists the organization's active members, ordered by account ID, with each member's role, membership version and account profile (name, email and picture); a member whose account is missing or deleted has a null profile. Any member can call it with account credentials, or with an OAuth grant for this organization that has the organization:read scope. The list is not paginated."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LIST_ORGANIZATION_MEMBERS, payload)
+        return await self._transport.request(_OP_LIST_ORGANIZATION_MEMBERS, payload, options)
 
     async def list_organization_oauth_clients(
-        self, input: ListOrganizationOauthClientsInput
+        self, input: ListOrganizationOauthClientsInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ListOrganizationOauthClientsResponse]:
         "List organization OAuth clients\n\nLists the third-party OAuth applications the organization owns, with their metadata but never their secrets, in one unpaginated response. Any member can call it with account credentials."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LIST_ORGANIZATION_OAUTH_CLIENTS, payload)
+        return await self._transport.request(_OP_LIST_ORGANIZATION_OAUTH_CLIENTS, payload, options)
 
     async def list_organizations(
-        self, input: ListOrganizationsInput | None = None
+        self, input: ListOrganizationsInput | None = None, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ListOrganizationsResponse]:
         "List organizations\n\nLists the active organizations the authenticated account belongs to, oldest first, in one unpaginated response; ownedOrganizationIds marks the ones it owns. Call it with account credentials acting as the account itself; OAuth grants and Service Identities are refused."
         payload = (input or ListOrganizationsInput()).model_dump(
             mode="json", by_alias=True, exclude_unset=True
         )
-        return await self._transport.request(_OP_LIST_ORGANIZATIONS, payload)
+        return await self._transport.request(_OP_LIST_ORGANIZATIONS, payload, options)
 
     async def list_service_identities(
-        self, input: ListServiceIdentitiesInput
+        self, input: ListServiceIdentitiesInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ListServiceIdentitiesResponse]:
         "List organization Service Identities\n\nLists every Service Identity in the organization, oldest first, including disabled ones and those managed by app installations, in one unpaginated response. Any member can call it with account credentials. It returns identity metadata only, never credentials."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LIST_SERVICE_IDENTITIES, payload)
+        return await self._transport.request(_OP_LIST_SERVICE_IDENTITIES, payload, options)
 
     async def list_service_identity_credentials(
-        self, input: ListServiceIdentityCredentialsInput
+        self, input: ListServiceIdentityCredentialsInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ListServiceIdentityCredentialsResponse]:
         "List Service Identity credential metadata\n\nLists metadata for every API key and client secret of a Service Identity, oldest first, including pending and revoked ones, in one unpaginated response; it never returns secret values. Only Owners and Admins can call it, with account credentials."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LIST_SERVICE_IDENTITY_CREDENTIALS, payload)
+        return await self._transport.request(
+            _OP_LIST_SERVICE_IDENTITY_CREDENTIALS, payload, options
+        )
 
     async def list_service_identity_permissions(
-        self, input: ListServiceIdentityPermissionsInput
+        self, input: ListServiceIdentityPermissionsInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ListServiceIdentityPermissionsResponse]:
         "List grantable Service Identity permissions\n\nThe permissions a Service Identity or installable app may be granted: the machine set of the current auth contract, sorted. Create, update, and app declarations accept exactly these values."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LIST_SERVICE_IDENTITY_PERMISSIONS, payload)
+        return await self._transport.request(
+            _OP_LIST_SERVICE_IDENTITY_PERMISSIONS, payload, options
+        )
 
     async def preview_organization_invitation(
-        self, input: PreviewOrganizationInvitationInput
+        self, input: PreviewOrganizationInvitationInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.PreviewOrganizationInvitationResponse]:
         "Preview an organization invitation after sign-in\n\nReturns what an invitation offers to the signed-in account that holds its token: the organization, role, expiry, member count and inviter with masked email addresses, whether the account's verified email matches the invitation, and whether SSO is required to accept it. Call it with account credentials acting as the account itself; it changes nothing. An unknown token returns 404, and an expired or revoked invitation, or one accepted by another account, returns 409."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_PREVIEW_ORGANIZATION_INVITATION, payload)
+        return await self._transport.request(_OP_PREVIEW_ORGANIZATION_INVITATION, payload, options)
 
     async def remove_organization_avatar(
-        self, input: RemoveOrganizationAvatarInput
+        self, input: RemoveOrganizationAvatarInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.RemoveOrganizationAvatarResponse]:
         "Remove an organization avatar\n\nRemoves the organization's custom avatar, so avatarUrl becomes null, and returns the organization with its new version. Owners and Admins can call it with account credentials. Send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_REMOVE_ORGANIZATION_AVATAR, payload)
+        return await self._transport.request(_OP_REMOVE_ORGANIZATION_AVATAR, payload, options)
 
     async def remove_organization_member(
-        self, input: RemoveOrganizationMemberInput
+        self, input: RemoveOrganizationMemberInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.RemoveOrganizationMemberResponse]:
         "Remove a member from the organization\n\nRemoves an active member from the organization. Nothing is revoked: their sessions, OAuth grants and Account Service Keys stop being accepted for the organization and its projects shortly after the call, and project API keys and Service Identity credentials they created or hold keep working until an Owner or Admin revokes them. Owners and Admins can call it with account credentials, but only the Owner can remove an Admin, and neither the Owner nor the caller can be removed here (409; leave with leaveOrganization). Send the member's current membership version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_REMOVE_ORGANIZATION_MEMBER, payload)
+        return await self._transport.request(_OP_REMOVE_ORGANIZATION_MEMBER, payload, options)
 
     async def resend_organization_invitation(
-        self, input: ResendOrganizationInvitationInput
+        self, input: ResendOrganizationInvitationInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ResendOrganizationInvitationResponse]:
         "Resend an organization invitation\n\nEmails a pending invitation again with the same link and restarts its 7-day expiry. Owners and Admins can call it with account credentials and the required Idempotency-Key header. An expired, revoked or accepted invitation returns 409, and a resend within 60 seconds of the last send, or past the organization's 30 sends an hour, returns 429."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_RESEND_ORGANIZATION_INVITATION, payload)
+        return await self._transport.request(_OP_RESEND_ORGANIZATION_INVITATION, payload, options)
 
     async def revoke_organization_invitation(
-        self, input: RevokeOrganizationInvitationInput
+        self, input: RevokeOrganizationInvitationInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.RevokeOrganizationInvitationResponse]:
         "Revoke an organization invitation\n\nRevokes an invitation so its link can no longer be previewed or accepted; no email is sent, and an accepted invitation can't be revoked (409). Owners and Admins can call it with account credentials and the required Idempotency-Key header. Revoking an invitation that is already revoked or expired succeeds."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_REVOKE_ORGANIZATION_INVITATION, payload)
+        return await self._transport.request(_OP_REVOKE_ORGANIZATION_INVITATION, payload, options)
 
     async def revoke_service_identity_credential(
-        self, input: RevokeServiceIdentityCredentialInput
+        self, input: RevokeServiceIdentityCredentialInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.RevokeServiceIdentityCredentialResponse]:
         "Request Service Identity credential revocation\n\nRevokes an API key or client secret of a Service Identity; this can't be undone. An API key stops working shortly after the call, while a client secret gets revocationRequestedAt and stays active until Photon confirms its deletion, and M2M access tokens already issued with it keep working until they expire; repeating the call returns the current state. Owners and Admins can call it with account credentials; send the credential's current version as expectedVersion, because a stale version returns 409, and the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_REVOKE_SERVICE_IDENTITY_CREDENTIAL, payload)
+        return await self._transport.request(
+            _OP_REVOKE_SERVICE_IDENTITY_CREDENTIAL, payload, options
+        )
 
     async def rotate_organization_oauth_client_secret(
-        self, input: RotateOrganizationOauthClientSecretInput
+        self,
+        input: RotateOrganizationOauthClientSecretInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[models.RotateOrganizationOauthClientSecretResponse]:
         "Rotate an organization OAuth client's secret\n\nMints a new secret, then retires the one it replaces: `normal` keeps the old one working for one hour, `emergency` stops it now. A secret not created through Photon always stops now. Rotating again ends an earlier grace period. Retain the same UUID Idempotency-Key when retrying: only the delivering request returns plaintext."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_ROTATE_ORGANIZATION_OAUTH_CLIENT_SECRET, payload)
+        return await self._transport.request(
+            _OP_ROTATE_ORGANIZATION_OAUTH_CLIENT_SECRET, payload, options
+        )
 
     async def setup_organization_oauth_client_secret(
-        self, input: SetupOrganizationOauthClientSecretInput
+        self,
+        input: SetupOrganizationOauthClientSecretInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[
         models.SetupOrganizationOauthClientSecretResponse
         | models.SetupOrganizationOauthClientSecretCreatedResponse
     ]:
         "Create an organization OAuth client's secret\n\nMints the app's first secret; once it has one, rotate it instead. Retain the same UUID Idempotency-Key when retrying: only the delivering request returns plaintext."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_SETUP_ORGANIZATION_OAUTH_CLIENT_SECRET, payload)
+        return await self._transport.request(
+            _OP_SETUP_ORGANIZATION_OAUTH_CLIENT_SECRET, payload, options
+        )
 
     async def subscribe_sso(
-        self, input: SubscribeSsoInput
+        self, input: SubscribeSsoInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.SubscribeSsoResponse]:
         "Subscribe to organization SSO\n\nStarts the organization's SSO subscription, billed monthly in advance and prorated. Send the current quote from getSsoSubscription as expectedAmount, expectedCurrency and expectedCurrentPeriodEnd, because a changed price returns 409; the 202 means the request was accepted, and the charge and its outcome then show in the subscription's state. Only Owners and Admins can call it, with account credentials and the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_SUBSCRIBE_SSO, payload)
+        return await self._transport.request(_OP_SUBSCRIBE_SSO, payload, options)
 
     async def transfer_organization_ownership(
-        self, input: TransferOrganizationOwnershipInput
+        self, input: TransferOrganizationOwnershipInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.TransferOrganizationOwnershipResponse]:
         "Transfer organization ownership to an existing member\n\nMakes another active member the Owner and turns the current Owner into a Member. Only the Owner can call it, with account credentials and the required Idempotency-Key header. Send the organization's current version, not a membership version, as expectedVersion; a stale version or naming yourself returns 409."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_TRANSFER_ORGANIZATION_OWNERSHIP, payload)
+        return await self._transport.request(_OP_TRANSFER_ORGANIZATION_OWNERSHIP, payload, options)
 
     async def trigger_ten_dlc_brand_otp(
-        self, input: TriggerTenDlcBrandOtpInput
+        self, input: TriggerTenDlcBrandOtpInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.TriggerTenDlcBrandOtpResponse]:
         "Trigger sole-proprietor OTP\n\nRequests delivery of a verification code for an organization-owned sole-proprietor brand. A 202 response acknowledges the delivery request and does not mean the brand has been verified. Inspect the OTP status and submit the received code through verifyTenDlcBrandOtp. Requests may be rate limited. Supply the required Idempotency-Key header. Supply organization_id for the organization that owns the registration."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_TRIGGER_TEN_DLC_BRAND_OTP, payload)
+        return await self._transport.request(_OP_TRIGGER_TEN_DLC_BRAND_OTP, payload, options)
 
     async def update_organization(
-        self, input: UpdateOrganizationInput
+        self, input: UpdateOrganizationInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.UpdateOrganizationResponse]:
         "Change organization name\n\nRenames the organization and returns it with its new version. Owners and Admins can call it with account credentials. Send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_UPDATE_ORGANIZATION, payload)
+        return await self._transport.request(_OP_UPDATE_ORGANIZATION, payload, options)
 
     async def update_organization_member_role(
-        self, input: UpdateOrganizationMemberRoleInput
+        self, input: UpdateOrganizationMemberRoleInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.UpdateOrganizationMemberRoleResponse]:
         "Change an organization member's role across all projects\n\nChanges an active member's role to admin, member or viewer. Owners and Admins can call it with account credentials, but only the Owner can make someone an Admin or change an Admin's role, and nobody can change the Owner's role or their own here (409). Send the member's current membership version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_UPDATE_ORGANIZATION_MEMBER_ROLE, payload)
+        return await self._transport.request(_OP_UPDATE_ORGANIZATION_MEMBER_ROLE, payload, options)
 
     async def update_organization_oauth_client(
-        self, input: UpdateOrganizationOauthClientInput
+        self, input: UpdateOrganizationOauthClientInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.UpdateOrganizationOauthClientResponse]:
         "Update an organization OAuth client\n\nRequires If-Match from the latest read. Stale versions return 412. A failed response may follow an applied provider update; reread before retrying. Version checking is not provider atomic CAS."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_UPDATE_ORGANIZATION_OAUTH_CLIENT, payload)
+        return await self._transport.request(_OP_UPDATE_ORGANIZATION_OAUTH_CLIENT, payload, options)
 
     async def update_service_identity(
-        self, input: UpdateServiceIdentityInput
+        self, input: UpdateServiceIdentityInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.UpdateServiceIdentityResponse]:
         "Update a Service Identity\n\nChanges a Service Identity's name, its permissions (the list replaces the current one) or its status. Disabling an identity stops its API keys and M2M tokens from authorizing requests without revoking them, and an identity managed by an app installation can't be changed (409). Owners and Admins can call it with account credentials; send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_UPDATE_SERVICE_IDENTITY, payload)
+        return await self._transport.request(_OP_UPDATE_SERVICE_IDENTITY, payload, options)
 
     async def verify_ten_dlc_brand_otp(
-        self, input: VerifyTenDlcBrandOtpInput
+        self, input: VerifyTenDlcBrandOtpInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.VerifyTenDlcBrandOtpResponse]:
         "Verify sole-proprietor OTP\n\nSubmits otpPin for the selected organization-owned sole-proprietor brand and returns its updated, redacted verification state. A rejected code, a locked verification flow, or rate limiting is reported as an error; read the current OTP status before deciding whether to request another code. Supply the required Idempotency-Key header. Supply organization_id for the organization that owns the registration."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_VERIFY_TEN_DLC_BRAND_OTP, payload)
+        return await self._transport.request(_OP_VERIFY_TEN_DLC_BRAND_OTP, payload, options)
 
 
 class AsyncRawProjectsPlatformsImessageAssignmentsResource:
@@ -9099,32 +9487,32 @@ class AsyncRawProjectsPlatformsImessageAssignmentsResource:
         self._transport = transport
 
     async def create(
-        self, input: CreateSharedLineAssignmentInput
+        self, input: CreateSharedLineAssignmentInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.SharedLineAssignment]:
         "Create shared line assignment\n\nMaps an end user's iMessage handle — an E.164 phone number or an email address — onto one of the project's pooled shared iMessage lines, consuming a seat from the project's entitlement. The assigned number is allocated by the server. When an email address is supplied in `email` the user is sent an invite asynchronously to that address; it is never inferred from the handle, and the response never reports whether the send succeeded. Requires the platforms:write permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CREATE_SHARED_LINE_ASSIGNMENT, payload)
+        return await self._transport.request(_OP_CREATE_SHARED_LINE_ASSIGNMENT, payload, options)
 
     async def get(
-        self, input: GetSharedLineAssignmentInput
+        self, input: GetSharedLineAssignmentInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.SharedLineAssignment]:
         "Get shared line assignment\n\nReads one shared line assignment. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_SHARED_LINE_ASSIGNMENT, payload)
+        return await self._transport.request(_OP_GET_SHARED_LINE_ASSIGNMENT, payload, options)
 
     async def list(
-        self, input: ListSharedLineAssignmentsInput
+        self, input: ListSharedLineAssignmentsInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.SharedLineAssignmentPage]:
         "List shared line assignments\n\nLists the project's shared line assignments, oldest first. Released assignments are excluded unless includeReleased is set. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LIST_SHARED_LINE_ASSIGNMENTS, payload)
+        return await self._transport.request(_OP_LIST_SHARED_LINE_ASSIGNMENTS, payload, options)
 
     async def release(
-        self, input: ReleaseSharedLineAssignmentInput
+        self, input: ReleaseSharedLineAssignmentInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.SharedLineAssignment]:
         "Release shared line assignment\n\nReleases a shared line assignment, freeing both its seat and its handle for reassignment. The row is retained for audit and returned with releasedAt set, so repeating the call is safe. Requires the platforms:write permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_RELEASE_SHARED_LINE_ASSIGNMENT, payload)
+        return await self._transport.request(_OP_RELEASE_SHARED_LINE_ASSIGNMENT, payload, options)
 
 
 class AsyncRawProjectsPlatformsImessageResource:
@@ -9139,391 +9527,457 @@ class AsyncRawProjectsPlatformsResource:
         self.imessage = AsyncRawProjectsPlatformsImessageResource(transport)
 
     async def assign_sms_line_campaign(
-        self, input: AssignSmsLineCampaignInput
+        self, input: AssignSmsLineCampaignInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.Operation]:
         "Assign or replace SMS line campaign\n\nAttach a ready campaign from this project’s organization to its line. Requires platforms:write for the project; human and machine actors retain their authenticated identity. Requires a permanent Idempotency-Key and the current assignment version. Provider provisioning runs asynchronously. If the operation fails, its `error` is the problem of one of these codes: `SMS_CAMPAIGN_PROVIDER_REJECTED`, `SMS_CAMPAIGN_RECONCILIATION_REQUIRED`, `SMS_CAMPAIGN_REVOKED`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_ASSIGN_SMS_LINE_CAMPAIGN, payload)
+        return await self._transport.request(_OP_ASSIGN_SMS_LINE_CAMPAIGN, payload, options)
 
     async def assign_voice_line_profile(
-        self, input: AssignVoiceLineProfileInput
+        self, input: AssignVoiceLineProfileInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.VoiceLineProfileAssignment]:
         "Assign Voice line profile\n\nAssigns or replaces a line's explicit additional-profile override when the resource version matches. The current default cannot be assigned explicitly. The pstn_voice ability remains the admission source of truth. Requires platforms:write bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_ASSIGN_VOICE_LINE_PROFILE, payload)
+        return await self._transport.request(_OP_ASSIGN_VOICE_LINE_PROFILE, payload, options)
 
     async def batch_update_voice_line_profile_assignments(
-        self, input: BatchUpdateVoiceLineProfileAssignmentsInput
+        self,
+        input: BatchUpdateVoiceLineProfileAssignmentsInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[models.BatchUpdateVoiceLineProfileAssignmentsResponse]:
         "Batch update Voice line assignments\n\nAtomically sets additional-profile overrides or switches lines back to the project default for up to 100 Voice-capable lines. A null profileId means use the default. Every expected resource version must match or no line changes. Requires platforms:write bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(
-            _OP_BATCH_UPDATE_VOICE_LINE_PROFILE_ASSIGNMENTS, payload
+            _OP_BATCH_UPDATE_VOICE_LINE_PROFILE_ASSIGNMENTS, payload, options
         )
 
-    async def cancel_operation(self, input: CancelOperationInput) -> RawResponse[models.Operation]:
+    async def cancel_operation(
+        self, input: CancelOperationInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.Operation]:
         "Cancel operation\n\nWithdraws a provision that has not been fulfilled yet. This is an operations action rather than a DELETE, because there is nothing to delete: no resource exists until the work commits. Whether it is accepted depends on the resource type — a dedicated iMessage line may sit waiting on inventory for hours and withdrawing costs nothing, while an SMS number is cancellable during inventory waiting and answers 409 once the workflow commits to its first provider order. Campaign assignment and detachment operations cannot be cancelled in any state. Wait for completion before requesting another change; that new change is not a guaranteed rollback. The output-only `cancellable` field is a snapshot; the cancellation transaction always checks the current phase under a row lock. A cancel that loses the race against the work finishing also answers 409: the resource exists and is billed for, so what you want then is to release it. Nothing is charged for a cancelled provision — billing runs after the work, so there is never anything to refund. Requires the platforms:write permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CANCEL_OPERATION, payload)
+        return await self._transport.request(_OP_CANCEL_OPERATION, payload, options)
 
     async def configure_voice_profile_outbound(
-        self, input: ConfigureVoiceProfileOutboundInput
+        self, input: ConfigureVoiceProfileOutboundInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ConfigureVoiceProfileOutboundResponse]:
         "Configure Voice outbound credential\n\nConfigures a SIP credential for outbound calls from a profile when the shared profile version matches. Outbound calls are paid usage, so the organization needs a payment method and no invoices overdue 7 days or more; otherwise this returns 402 ENTITLEMENT_REQUIRED with a reason. authentication.algorithm is required: SHA-256 is recommended, while MD5 is a weaker legacy option supported over UDP, TCP, and TLS; TLS is strongly recommended because UDP and TCP do not encrypt SIP signaling. The profileId may identify the default or an additional profile. The new password is returned once and is never recoverable. Requires platforms:write bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CONFIGURE_VOICE_PROFILE_OUTBOUND, payload)
+        return await self._transport.request(_OP_CONFIGURE_VOICE_PROFILE_OUTBOUND, payload, options)
 
     async def connect_email_domain(
-        self, input: ConnectEmailDomainInput
+        self, input: ConnectEmailDomainInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.Operation]:
         "Connect email domain\n\nReserves a normalized DNS domain and starts its durable email-provider setup. The accepted provision consumes one email-domain entitlement slot until it fails, is cancelled, or becomes a live resource; the plan's email.max_email_domains value sets the project limit. The customer resource does not exist until provider identity and DNS setup reach READY; poll the returned operation for progress. A domain may have only one unfinished provision or live resource globally. Email domains have no additional per-domain charge. The Idempotency-Key is required and permanent: replaying the same key and canonical domain returns the original operation forever. Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `EMAIL_DOMAIN_PROVIDER_REJECTED`, `EMAIL_DOMAIN_VERIFICATION_FAILED`, `EMAIL_DOMAIN_VERIFICATION_TIMED_OUT`, `EMAIL_TENANT_SETUP_TIMED_OUT`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CONNECT_EMAIL_DOMAIN, payload)
+        return await self._transport.request(_OP_CONNECT_EMAIL_DOMAIN, payload, options)
 
     async def connect_telegram_bot(
-        self, input: ConnectTelegramBotInput
+        self, input: ConnectTelegramBotInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.Operation]:
-        "Connect Telegram bot\n\nStarts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to create a new bot, whose name and username are chosen in Telegram, or to connect an existing managed bot, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged. If the operation fails, its `error` is the problem of one of these codes: `TELEGRAM_CONFIGURATION_FAILED`."
+        "Connect Telegram bot\n\nStarts a free managed Telegram bot connection. Each project may own one current bot and have one unfinished Telegram provision, including user interaction and failure cleanup. A matching Idempotency-Key replays its original operation before either conflict check, even after completion or while a newer setup is active. For a different key, an unfinished provision takes precedence over an existing bot and returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Only when no provision is active does an existing non-retired bot return 409 TELEGRAM_BOT_ALREADY_CONNECTED with its resourceId; disconnect it before connecting another, even if messaging is disabled or disconnect is unfinished. Rejected keys remain reusable. Open detail.setupUrl to create a new bot, whose name and username are chosen in Telegram, or to connect an existing managed bot, then poll Location. The link remains usable while the operation is active and never expires. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged. If the operation fails, its `error` is the problem of one of these codes: `TELEGRAM_BOT_ALREADY_CONNECTED`, `TELEGRAM_CONFIGURATION_FAILED`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CONNECT_TELEGRAM_BOT, payload)
+        return await self._transport.request(_OP_CONNECT_TELEGRAM_BOT, payload, options)
 
     async def count_filtered_verification_codes(
-        self, input: CountFilteredVerificationCodesInput
+        self, input: CountFilteredVerificationCodesInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.FilteredVerificationCodeCount]:
         "Count filtered verification codes\n\nCounts the verification codes Photon kept from this project's dedicated lines, optionally for one `platform`. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_COUNT_FILTERED_VERIFICATION_CODES, payload)
+        return await self._transport.request(
+            _OP_COUNT_FILTERED_VERIFICATION_CODES, payload, options
+        )
 
     async def count_resource_filtered_verification_codes(
-        self, input: CountResourceFilteredVerificationCodesInput
+        self,
+        input: CountResourceFilteredVerificationCodesInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[models.FilteredVerificationCodeCount]:
         "Count a line's filtered verification codes\n\nCounts the verification codes Photon kept from one dedicated line. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a dedicated line receives both iMessage and WhatsApp. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(
-            _OP_COUNT_RESOURCE_FILTERED_VERIFICATION_CODES, payload
+            _OP_COUNT_RESOURCE_FILTERED_VERIFICATION_CODES, payload, options
         )
 
     async def create_default_voice_profile(
-        self, input: CreateDefaultVoiceProfileInput
+        self, input: CreateDefaultVoiceProfileInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.VoiceProfile]:
         "Create default Voice profile\n\nCreates the project default Voice profile when absent. An identical replay returns the existing default without changing its version; a different existing default conflicts. Direction configuration is managed separately. Requires platforms:write bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CREATE_DEFAULT_VOICE_PROFILE, payload)
+        return await self._transport.request(_OP_CREATE_DEFAULT_VOICE_PROFILE, payload, options)
 
     async def create_voice_profile(
-        self, input: CreateVoiceProfileInput
+        self, input: CreateVoiceProfileInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.VoiceProfile]:
         "Create Voice profile\n\nCreates a direction-neutral additional Voice profile. The project default must already exist. Requires platforms:write bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CREATE_VOICE_PROFILE, payload)
+        return await self._transport.request(_OP_CREATE_VOICE_PROFILE, payload, options)
 
     async def create_whatsapp_shared_line_assignment(
-        self, input: CreateWhatsappSharedLineAssignmentInput
+        self,
+        input: CreateWhatsappSharedLineAssignmentInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[models.SharedLineAssignment]:
         "Create WhatsApp shared line assignment\n\nMaps an end user's phone number onto one of the project's pooled shared WhatsApp lines, consuming a seat from the project's WhatsApp entitlement. The assigned number is allocated by the server. When an email address is supplied the user is sent an invite asynchronously; the response never reports whether that succeeded. Requires the platforms:write permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CREATE_WHATSAPP_SHARED_LINE_ASSIGNMENT, payload)
+        return await self._transport.request(
+            _OP_CREATE_WHATSAPP_SHARED_LINE_ASSIGNMENT, payload, options
+        )
 
     async def create_whatsapp_voip_sender(
-        self, input: CreateWhatsappVoipSenderInput
+        self, input: CreateWhatsappVoipSenderInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.Operation]:
         "Create WhatsApp VoIP sender\n\nRegisters an active, SMS-capable Photon VoIP line on this project's connected WhatsApp Business Account. The account is resolved server-side; callers never select a WABA. The platform creates or reuses the Meta number, requests and consumes the SMS ownership code internally, verifies it, and registers the sender. displayName is optional; when omitted the project agent profile name is snapshotted before acceptance. The VoIP line remains a separate resource and never receives the whatsapp_business ability. If the operation fails, its `error` is the problem of one of these codes: `WHATSAPP_AUTHORIZATION_REVOKED`, `WHATSAPP_DISPLAY_NAME_CONFLICT`, `WHATSAPP_NUMBER_ADD_REFUSED`, `WHATSAPP_NUMBER_LOOKUP_FAILED`, `WHATSAPP_REGISTRATION_REFUSED`, `WHATSAPP_VERIFICATION_REFUSED`, `WHATSAPP_VERIFICATION_REQUEST_REFUSED`, `WHATSAPP_VERIFICATION_TIMED_OUT`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CREATE_WHATSAPP_VOIP_SENDER, payload)
+        return await self._transport.request(_OP_CREATE_WHATSAPP_VOIP_SENDER, payload, options)
 
-    async def delete_voice_profile(self, input: DeleteVoiceProfileInput) -> RawResponse[None]:
+    async def delete_voice_profile(
+        self, input: DeleteVoiceProfileInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[None]:
         "Delete Voice profile\n\nDeletes an additional profile when expectedVersion matches. Assigned profiles require force=true, which atomically removes every stored override so affected lines follow the default. The default can never be deleted. Requires platforms:write bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_DELETE_VOICE_PROFILE, payload)
+        return await self._transport.request(_OP_DELETE_VOICE_PROFILE, payload, options)
 
     async def delete_voice_profile_inbound(
-        self, input: DeleteVoiceProfileInboundInput
+        self, input: DeleteVoiceProfileInboundInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.VoiceProfileInboundConfiguration]:
         "Delete Voice inbound configuration\n\nRemoves a profile's inbound destination when the shared profile version matches. The profileId may identify the default or an additional profile. The profile and its line assignments remain. Requires platforms:write bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_DELETE_VOICE_PROFILE_INBOUND, payload)
+        return await self._transport.request(_OP_DELETE_VOICE_PROFILE_INBOUND, payload, options)
 
     async def delete_voice_profile_outbound(
-        self, input: DeleteVoiceProfileOutboundInput
+        self, input: DeleteVoiceProfileOutboundInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.DeleteVoiceProfileOutboundResponse]:
         "Revoke Voice outbound credential\n\nRevokes outbound calling for a profile when the shared profile version matches. The profileId may identify the default or an additional profile. The profile, inbound destination, and line assignments remain. Requires platforms:write bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_DELETE_VOICE_PROFILE_OUTBOUND, payload)
+        return await self._transport.request(_OP_DELETE_VOICE_PROFILE_OUTBOUND, payload, options)
 
     async def disconnect_whatsapp_business_account(
-        self, input: DisconnectWhatsappBusinessAccountInput
+        self,
+        input: DisconnectWhatsappBusinessAccountInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[models.Operation]:
         "Disconnect WhatsApp Business account\n\nDisconnects every attached WhatsApp sender, then unsubscribes our app and removes the project's business account connection. Photon VoIP lines and the numbers in Meta remain. Requires Idempotency-Key. Poll the returned operation. Meta's answers do not fail it: each sender is released as `DELETE /platforms/resources/:resourceId` does, and our app's unsubscribe is a best effort, tried up to three times, a second or two apart, only while the failure is temporary. New signups are blocked while disconnecting, and existing provisions must finish before this request can be accepted. If the operation fails, its `error` is the problem of one of these codes: `WHATSAPP_ACCOUNT_DISCONNECT_FAILED`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_DISCONNECT_WHATSAPP_BUSINESS_ACCOUNT, payload)
+        return await self._transport.request(
+            _OP_DISCONNECT_WHATSAPP_BUSINESS_ACCOUNT, payload, options
+        )
 
     async def get_default_voice_profile(
-        self, input: GetDefaultVoiceProfileInput
+        self, input: GetDefaultVoiceProfileInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.VoiceProfile]:
         "Get default Voice profile\n\nGets the profile currently selected as the project default, including its optional inbound delivery state. Requires platforms:read bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_DEFAULT_VOICE_PROFILE, payload)
+        return await self._transport.request(_OP_GET_DEFAULT_VOICE_PROFILE, payload, options)
 
     async def get_email_delivery_metrics(
-        self, input: GetEmailDeliveryMetricsInput
+        self, input: GetEmailDeliveryMetricsInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.EmailDeliveryMetrics]:
         "Get email delivery metrics\n\nReads cached supplementary email series for the exact Project and rolling day or week. Coverage is eligible single-recipient messages; multi-recipient and simulator traffic is excluded. Observed complaints include reported feedback only. Missing data is distinct from zero. Original timestamps and availability are preserved; freshness describes retrieval, not complete event coverage. These series are not complete recipient totals, billing totals or Photon reputation rates. This read never queries the delivery provider or authorizes sending. Requires platforms:read for the path Project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_EMAIL_DELIVERY_METRICS, payload)
+        return await self._transport.request(_OP_GET_EMAIL_DELIVERY_METRICS, payload, options)
 
     async def get_email_sending_policies(
-        self, input: GetEmailSendingPoliciesInput
+        self, input: GetEmailSendingPoliciesInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.EmailSendingPolicies]:
         "Get email sending policies\n\nReads Organization email recipient allowances shared across all its Projects, with rolling 60-second and 24-hour windows. Also returns Project and Organization review status and Photon policy pauses. Projects have no separate recipient quota. These limits are independent of subscription allowances. A policy pause blocks sending; an unpaused policy does not guarantee that every domain, suppression or account check permits a send. Requires platforms:read for the path Project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_EMAIL_SENDING_POLICIES, payload)
+        return await self._transport.request(_OP_GET_EMAIL_SENDING_POLICIES, payload, options)
 
     async def get_imessage(
-        self, input: GetProjectImessagePlatformInput
+        self, input: GetProjectImessagePlatformInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ProjectPlatformSettings]:
         "Get project iMessage platform\n\nReports whether the project is on shared or dedicated iMessage lines, derived from its billing entitlements. Shared mode carries the seat cap. Both say whether a dedicated line requested now would be assigned without waiting. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_PROJECT_IMESSAGE_PLATFORM, payload)
+        return await self._transport.request(_OP_GET_PROJECT_IMESSAGE_PLATFORM, payload, options)
 
     async def get_operation(
-        self, input: GetOperationInput
+        self, input: GetOperationInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.GetOperationResponse]:
         "Get operation\n\nReads one operation using the same operation representation as creation and list. The API includes detail.setupUrl only with platforms:write for this project. This is the polling endpoint every asynchronous request here points its Location at, and it resolves from the moment that request is accepted — an operation is committed before its work is dispatched, so there is no window in which the URL 404s. Poll until `state` is one of `succeeded`, `failed` or `cancelled`, pacing from the Retry-After the accepting response returned. While an email domain waits for DNS, `detail` always contains the manual records and may additionally contain `automaticSetup` with a signed provider URL to open separately. Once the operation has produced a resource, the response carries that resource too, so the poll that finishes is also the one that tells you what you got. `succeeded` means the work is done; billing runs behind it and is not something the caller waits on. Operations are never purged, so a 404 means the id was never this project's. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_OPERATION, payload)
+        return await self._transport.request(_OP_GET_OPERATION, payload, options)
 
     async def get_project_whatsapp_platform(
-        self, input: GetProjectWhatsappPlatformInput
+        self, input: GetProjectWhatsappPlatformInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ProjectPlatformSettings]:
         "Get project WhatsApp platform\n\nReports whether the project is on shared or dedicated WhatsApp lines, derived from its billing entitlements. Shared mode carries the seat cap. Both say whether a dedicated line requested now would be assigned without waiting. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_PROJECT_WHATSAPP_PLATFORM, payload)
+        return await self._transport.request(_OP_GET_PROJECT_WHATSAPP_PLATFORM, payload, options)
 
-    async def get_resource(self, input: GetResourceInput) -> RawResponse[models.Resource]:
+    async def get_resource(
+        self, input: GetResourceInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.Resource]:
         "Get resource\n\nReads one resource the project holds. A released number stays readable and reads `retired`, because it remains part of this project's history. A dedicated line given back does NOT: returning it to inventory is what makes it claimable by someone else, so it answers 404 and the operation that returned it is the record that this project once held it. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_RESOURCE, payload)
+        return await self._transport.request(_OP_GET_RESOURCE, payload, options)
 
     async def get_sms_line_campaign_assignment(
-        self, input: GetSmsLineCampaignAssignmentInput
+        self, input: GetSmsLineCampaignAssignmentInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.GetSmsLineCampaignAssignmentResponse]:
         "Get SMS line campaign assignment\n\nRead the last confirmed campaign and current eligibility. Follow changes through their operations. Eligibility is a control-plane assessment, not a delivery or recipient-consent guarantee."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_SMS_LINE_CAMPAIGN_ASSIGNMENT, payload)
+        return await self._transport.request(_OP_GET_SMS_LINE_CAMPAIGN_ASSIGNMENT, payload, options)
 
     async def get_voice_line_profile_assignment(
-        self, input: GetVoiceLineProfileAssignmentInput
+        self, input: GetVoiceLineProfileAssignmentInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.VoiceLineProfileAssignment]:
         "Get Voice line profile assignment\n\nGets the explicit additional-profile override for an owned Voice-capable line. A line following the project default returns 200 without profileId. Requires platforms:read bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_VOICE_LINE_PROFILE_ASSIGNMENT, payload)
+        return await self._transport.request(
+            _OP_GET_VOICE_LINE_PROFILE_ASSIGNMENT, payload, options
+        )
 
     async def get_voice_profile(
-        self, input: GetVoiceProfileInput
+        self, input: GetVoiceProfileInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.VoiceProfile]:
         "Get Voice profile\n\nGets one reusable Voice profile, including its optional inbound delivery state. Requires platforms:read bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_VOICE_PROFILE, payload)
+        return await self._transport.request(_OP_GET_VOICE_PROFILE, payload, options)
 
     async def get_whatsapp_business_account(
-        self, input: GetWhatsappBusinessAccountInput
+        self, input: GetWhatsappBusinessAccountInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.WhatsappBusinessAccount]:
         "Get WhatsApp Business account\n\nGets the one WhatsApp Business Account this project has connected, with its number of live senders. Senders are resources and are listed by GET /platforms/resources?ability=whatsapp_business. The account is not a resource and carries no access token. Meta's retained numbers are listed separately by GET /platforms/whatsapp-business/account/phone-numbers. `subscribedAt` is absent until our app is attached to the account's webhooks. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_WHATSAPP_BUSINESS_ACCOUNT, payload)
+        return await self._transport.request(_OP_GET_WHATSAPP_BUSINESS_ACCOUNT, payload, options)
 
     async def get_whatsapp_business_verification_code(
-        self, input: GetWhatsappBusinessVerificationCodeInput
+        self,
+        input: GetWhatsappBusinessVerificationCodeInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[models.GetWhatsappBusinessVerificationCodeResponse]:
         "Get WhatsApp Business verification code\n\nReturns the latest six-digit WhatsApp Business ownership code received by SMS for an active Photon VOIP number, but only when its provider timestamp is strictly newer than the required receivedAfter boundary. receivedAfter must be an RFC 3339 timestamp between this request's arrival time and two minutes before it; once it expires, restart Meta's verification flow with a new boundary. A missing newer code is a retryable 404 with Retry-After: 2. Poll after 2, 4, 8, then 10 seconds, applying ±20% jitter and capping later intervals at 10 seconds. Stop when the original boundary is two minutes old. Responses are never cached. Requires the platforms:write permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_WHATSAPP_BUSINESS_VERIFICATION_CODE, payload)
+        return await self._transport.request(
+            _OP_GET_WHATSAPP_BUSINESS_VERIFICATION_CODE, payload, options
+        )
 
     async def get_whatsapp_shared_line_assignment(
-        self, input: GetWhatsappSharedLineAssignmentInput
+        self, input: GetWhatsappSharedLineAssignmentInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.SharedLineAssignment]:
         "Get WhatsApp shared line assignment\n\nReads one WhatsApp shared line assignment. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_WHATSAPP_SHARED_LINE_ASSIGNMENT, payload)
+        return await self._transport.request(
+            _OP_GET_WHATSAPP_SHARED_LINE_ASSIGNMENT, payload, options
+        )
 
     async def list_email_recommendations(
-        self, input: ListEmailRecommendationsInput
+        self, input: ListEmailRecommendationsInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.EmailRecommendations]:
         "List email recommendations\n\nReads Photon guidance from stored sending policies, sending setup and domain checks. Project and Organization restrictions repeat on each page of domain observations. Follow nextPageToken until hasMore is false; observations describe only the current page. Recommendations are advisory reads, never permission to send or resume. Reputation-rate guidance and supplementary delivery advice are explicitly unavailable until their sources are integrated. An empty list does not indicate healthy reputation or resolved findings. Requires platforms:read for the path Project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LIST_EMAIL_RECOMMENDATIONS, payload)
+        return await self._transport.request(_OP_LIST_EMAIL_RECOMMENDATIONS, payload, options)
 
     async def list_filtered_verification_codes(
-        self, input: ListFilteredVerificationCodesInput
+        self, input: ListFilteredVerificationCodesInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.FilteredVerificationCodePage]:
         "List filtered verification codes\n\nLists the verification codes Photon kept from this project's dedicated lines. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Filter by `platform`; to read one line, use its own filtered-otp path. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LIST_FILTERED_VERIFICATION_CODES, payload)
+        return await self._transport.request(_OP_LIST_FILTERED_VERIFICATION_CODES, payload, options)
 
     async def list_number_area_codes(
-        self, input: ListNumberAreaCodesInput
+        self, input: ListNumberAreaCodesInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ListNumberAreaCodesResponse]:
         "List number area codes\n\nLists current provider coverage for US local numbers, sorted and deduplicated. Coverage does not guarantee inventory carrying every required feature. New area-specific purchases must use a listed code; accepted purchases keep waiting if coverage later changes. Requires platforms:read for the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LIST_NUMBER_AREA_CODES, payload)
+        return await self._transport.request(_OP_LIST_NUMBER_AREA_CODES, payload, options)
 
     async def list_number_countries(
-        self, input: ListNumberCountriesInput
+        self, input: ListNumberCountriesInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ListNumberCountriesResponse]:
         "List number countries\n\nLists supported purchase countries independently of current provider inventory. Requires platforms:read for the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LIST_NUMBER_COUNTRIES, payload)
+        return await self._transport.request(_OP_LIST_NUMBER_COUNTRIES, payload, options)
 
     async def list_operations(
-        self, input: ListOperationsInput
+        self, input: ListOperationsInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.OperationPage]:
         "List operations\n\nLists the project's operations using the same operation representation as creation and GET. The API includes detail.setupUrl only with platforms:write for this project. Results are oldest first — every provision and release it has ever asked for, including the ones still running. This is the entire in-flight view: a resource only appears once it is real, so nothing half-built shows up in the resource list and nothing in flight is missing from this one. Filter by `resourceId` to get one resource's whole history, which for a pooled line is every tenure this project has had on it. `state` is comma-separated; `type` accepts one operation type and an absent filter means everything, including failed and cancelled operations. `endedAfter` keeps only operations that finished after that instant, so what failed or was withdrawn recently is one short page. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LIST_OPERATIONS, payload)
+        return await self._transport.request(_OP_LIST_OPERATIONS, payload, options)
 
     async def list_project_platforms(
-        self, input: ListProjectPlatformsInput
+        self, input: ListProjectPlatformsInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ListProjectPlatformsResponse]:
         "List project platforms\n\nLists the platform types available to this project. Every project currently sees the same fixed public contract, answered in-process rather than forwarded, so the list survives an outage of the private service. The project binding exists so that answer can narrow per project without moving the route. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LIST_PROJECT_PLATFORMS, payload)
+        return await self._transport.request(_OP_LIST_PROJECT_PLATFORMS, payload, options)
 
     async def list_resource_filtered_verification_codes(
-        self, input: ListResourceFilteredVerificationCodesInput
+        self,
+        input: ListResourceFilteredVerificationCodesInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[models.FilteredVerificationCodePage]:
         "List a line's filtered verification codes\n\nLists the verification codes Photon kept from one dedicated line. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a dedicated line receives both iMessage and WhatsApp. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LIST_RESOURCE_FILTERED_VERIFICATION_CODES, payload)
+        return await self._transport.request(
+            _OP_LIST_RESOURCE_FILTERED_VERIFICATION_CODES, payload, options
+        )
 
-    async def list_resources(self, input: ListResourcesInput) -> RawResponse[models.ResourcePage]:
+    async def list_resources(
+        self, input: ListResourcesInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.ResourcePage]:
         "List resources\n\nLists the project's resources, oldest first, including retired ones unless `state` filters them out. Filter by `type`, by enabled `ability` and by comma-separated `state`. Lifecycle states are unallocated, active and retired; active means owned and non-retired, not provider-confirmed readiness. Every VoIP resource includes detail.activationState: activating or active, defaulting to active without owner-matched saved state. state=active includes numbers still activating. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LIST_RESOURCES, payload)
+        return await self._transport.request(_OP_LIST_RESOURCES, payload, options)
 
     async def list_voice_profiles(
-        self, input: ListVoiceProfilesInput
+        self, input: ListVoiceProfilesInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.VoiceProfilePage]:
         "List Voice profiles\n\nLists reusable Voice profiles in this project. Requires platforms:read bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LIST_VOICE_PROFILES, payload)
+        return await self._transport.request(_OP_LIST_VOICE_PROFILES, payload, options)
 
     async def list_whatsapp_account_phone_numbers(
-        self, input: ListWhatsappAccountPhoneNumbersInput
+        self, input: ListWhatsappAccountPhoneNumbersInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ListWhatsappAccountPhoneNumbersResponse]:
         "List WhatsApp account phone numbers\n\nLists the connected WABA's phone numbers directly from Meta, including numbers whose Photon sender was disconnected. Ownership is photon for a number in this project's current Photon inventory and meta otherwise. Match a Photon SMS number by its E.164 phoneNumber and reuse its existing displayName when reconnecting. A null name is unavailable, not permission to choose a new name. A failed lookup returns an error rather than an empty list. Requires platforms:read on the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LIST_WHATSAPP_ACCOUNT_PHONE_NUMBERS, payload)
+        return await self._transport.request(
+            _OP_LIST_WHATSAPP_ACCOUNT_PHONE_NUMBERS, payload, options
+        )
 
     async def list_whatsapp_shared_line_assignments(
-        self, input: ListWhatsappSharedLineAssignmentsInput
+        self,
+        input: ListWhatsappSharedLineAssignmentsInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[models.SharedLineAssignmentPage]:
         "List WhatsApp shared line assignments\n\nLists the project's WhatsApp shared line assignments, oldest first. Released assignments are excluded unless includeReleased is set. Requires the platforms:read permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LIST_WHATSAPP_SHARED_LINE_ASSIGNMENTS, payload)
+        return await self._transport.request(
+            _OP_LIST_WHATSAPP_SHARED_LINE_ASSIGNMENTS, payload, options
+        )
 
     async def provision_imessage_dedicated_line(
-        self, input: ProvisionImessageDedicatedLineInput
+        self, input: ProvisionImessageDedicatedLineInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.Operation]:
         "Provision dedicated iMessage line\n\nClaims one dedicated iMessage line for the project and enables iMessage on it. Always answers 202 with an operation: dedicated lines are allocated from available capacity, and unavailable capacity causes a wait rather than a failure — this can legitimately stay `running` for hours, which is exactly why the response is a handle to poll rather than a number. The project's messaging subscription must grant the dedicated iMessage lines entitlement (`imessage_dedicated_lines.can_purchase`), and that is checked before capacity is reserved. The line's own charge starts when a line is claimed; the subscription that grants the entitlement bills on its own terms, which cancelling a request does not change. Waiting requests are served first come, first served. One that is still waiting is cancelled with a `reason` if the project is deleted (`project_deleted`) or its plan stops selling dedicated lines (`entitlement_lost`); while the payer is restricted for overdue payment it keeps waiting. If you no longer want to wait, POST to the operation's cancel endpoint, which charges nothing for the line. The Idempotency-Key is required and permanent: repeating it returns the same operation forever. A further line always needs a NEW key, including while others are still waiting. An optional promotionCode is checked and claimed here, before the request waits for a line: a code that can't be used answers 409 PROMOTION_CODE_REJECTED and starts nothing. Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `CHARGE_REFUSED`, `ENTERPRISE_PLAN_REQUIRED`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_PROVISION_IMESSAGE_DEDICATED_LINE, payload)
+        return await self._transport.request(
+            _OP_PROVISION_IMESSAGE_DEDICATED_LINE, payload, options
+        )
 
     async def provision_whatsapp_dedicated_line(
-        self, input: ProvisionWhatsappDedicatedLineInput
+        self, input: ProvisionWhatsappDedicatedLineInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.Operation]:
         "Provision dedicated WhatsApp line\n\nProvisions one dedicated WhatsApp line with WhatsApp and shared Voice enabled. It attaches to an eligible iMessage line the project already owns when possible so both products keep the same number; otherwise it claims healthy, available WhatsApp-capable dedicated-line inventory. Always answers 202, because waiting when no inventory is available is not a failure. The product opens its own charge period after the abilities are enabled; Voice has no separate charge. Waiting requests are served first come, first served, and are cancelled with a `reason` exactly as for a dedicated iMessage line. Cancel the returned operation to stop waiting. An optional promotionCode is checked and claimed here, before the request waits for a line: a code that can't be used answers 409 PROMOTION_CODE_REJECTED and starts nothing. The Idempotency-Key is required and permanent. If the operation fails, its `error` is the problem of one of these codes: `CHARGE_REFUSED`, `ENTERPRISE_PLAN_REQUIRED`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_PROVISION_WHATSAPP_DEDICATED_LINE, payload)
+        return await self._transport.request(
+            _OP_PROVISION_WHATSAPP_DEDICATED_LINE, payload, options
+        )
 
     async def purchase_sms_number(
-        self, input: PurchaseSmsNumberInput
+        self, input: PurchaseSmsNumberInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.Operation]:
         'Purchase SMS number\n\nBuys one US local number from the provider and records it as a resource with SMS enabled. Requires countryCode (US) and accepts an optional three-digit geographic areaCode. The server selects an exact matching number. While inventory is empty the operation keeps searching, and the caller can cancel it until ordering begins; a search still empty one minute after the operation was created fails it with `NUMBER_INVENTORY_UNAVAILABLE`. Always answers 202 with an operation: the work runs behind the response, and the Location points at the operation to poll. New area-specific requests must appear in current provider coverage; discover it with GET /sms/numbers/area-codes?countryCode=US. Coverage and subscription checks run before operation creation. Billing follows delivery. Replays return the original operation without checking current coverage. The Idempotency-Key is required and permanent: repeating it returns the same operation forever, never a second number. A further number always needs a NEW key, including while others are still running. An optional promotionCode is redeemed with the number\'s charge, which follows delivery: a code billing refuses hands the number back, and its release operation carries the refusal (`reason` `charge_refused`, with `detail.chargeRefusal` `{ code: "promotion_code_rejected", detail: <why> }`). Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `ENTITLEMENT_REQUIRED`, `NUMBER_INVENTORY_UNAVAILABLE`, `NUMBER_ORDER_FAILED`, `NUMBER_ORDER_RECONCILIATION_REQUIRED`, `NUMBER_SEARCH_FAILED`.'
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_PURCHASE_SMS_NUMBER, payload)
+        return await self._transport.request(_OP_PURCHASE_SMS_NUMBER, payload, options)
 
     async def release_imessage_dedicated_line(
-        self, input: ReleaseImessageDedicatedLineInput
+        self, input: ReleaseImessageDedicatedLineInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.Operation]:
         "Release dedicated iMessage line\n\nRemoves only iMessage from one dedicated line. Shared Voice is removed only when WhatsApp is absent; if WhatsApp remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open iMessage charge period identifies this product tenure. If the operation fails, its `error` is the problem of one of these codes: `RESOURCE_NOT_FOUND`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_RELEASE_IMESSAGE_DEDICATED_LINE, payload)
+        return await self._transport.request(_OP_RELEASE_IMESSAGE_DEDICATED_LINE, payload, options)
 
-    async def release_resource(self, input: ReleaseResourceInput) -> RawResponse[models.Operation]:
+    async def release_resource(
+        self, input: ReleaseResourceInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.Operation]:
         "Release resource\n\nGives one resource back, whatever it is. What that means is the resource's own business: an SMS number goes back to the provider and is retired, a dedicated iMessage line goes back to the shared pool and stays in existence for someone else to claim. Either way the provider is contacted first where there is one, then a single transaction disables every ability, ends the project's hold and closes the charge period — so a provider that refuses leaves the resource exactly as it was, still owned and still billed. A WhatsApp Business sender is the exception: Meta never holds its release. A number on a Photon VoIP line is deregistered as a best effort, tried up to three times, a second or two apart, only while the failure is temporary; a number the customer brought is not sent to Meta at all; the sender is retired either way, and the number stays in the customer's WhatsApp Business Account. Usually finishes inside this request and answers 200; if the provider is slow it answers 202 and the Location points at the operation to poll. The decrement runs behind the answer either way, so the resource is gone when you are told it is. Takes no Idempotency-Key — releasing the same resource twice is the same request. Releasing one that is already gone answers 404. Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `EMAIL_DOMAIN_RELEASE_FAILED`, `NUMBER_RELEASE_FAILED`, `RESOURCE_NOT_FOUND`, `TELEGRAM_RELEASE_FAILED`, `WHATSAPP_SENDER_RELEASE_FAILED`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_RELEASE_RESOURCE, payload)
+        return await self._transport.request(_OP_RELEASE_RESOURCE, payload, options)
 
     async def release_whatsapp_dedicated_line(
-        self, input: ReleaseWhatsappDedicatedLineInput
+        self, input: ReleaseWhatsappDedicatedLineInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.Operation]:
         "Release dedicated WhatsApp line\n\nRemoves only WhatsApp from one dedicated line. Shared Voice is removed only when iMessage is absent; if iMessage remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open WhatsApp charge period identifies this product tenure. If the operation fails, its `error` is the problem of one of these codes: `RESOURCE_NOT_FOUND`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_RELEASE_WHATSAPP_DEDICATED_LINE, payload)
+        return await self._transport.request(_OP_RELEASE_WHATSAPP_DEDICATED_LINE, payload, options)
 
     async def release_whatsapp_shared_line_assignment(
-        self, input: ReleaseWhatsappSharedLineAssignmentInput
+        self,
+        input: ReleaseWhatsappSharedLineAssignmentInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[models.SharedLineAssignment]:
         "Release WhatsApp shared line assignment\n\nReleases a WhatsApp shared line assignment, freeing its seat for reassignment. The row is retained for audit and returned with releasedAt set, so repeating the call is safe. Requires the platforms:write permission bound to the project resource in the path."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_RELEASE_WHATSAPP_SHARED_LINE_ASSIGNMENT, payload)
+        return await self._transport.request(
+            _OP_RELEASE_WHATSAPP_SHARED_LINE_ASSIGNMENT, payload, options
+        )
 
     async def replace_voice_profile_inbound(
-        self, input: ReplaceVoiceProfileInboundInput
+        self, input: ReplaceVoiceProfileInboundInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.VoiceProfileInboundConfiguration]:
         "Replace Voice inbound configuration\n\nCreates or fully replaces a profile's inbound destination when the shared profile version matches. The profileId may identify the default or an additional profile. Credentials are required and nullable; null removes destination authentication. Requires platforms:write bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_REPLACE_VOICE_PROFILE_INBOUND, payload)
+        return await self._transport.request(_OP_REPLACE_VOICE_PROFILE_INBOUND, payload, options)
 
     async def rotate_voice_profile_outbound_credential(
-        self, input: RotateVoiceProfileOutboundCredentialInput
+        self,
+        input: RotateVoiceProfileOutboundCredentialInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[models.RotateVoiceProfileOutboundCredentialResponse]:
         "Rotate Voice outbound credential\n\nRotates a SIP profile's outbound credential when expectedVersion matches. The profileId may identify the default or an additional profile. Normal rotation gives the previous credential one hour of grace; emergency rotation gives none. The new password is returned once and is never recoverable. Requires platforms:write bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_ROTATE_VOICE_PROFILE_OUTBOUND_CREDENTIAL, payload)
+        return await self._transport.request(
+            _OP_ROTATE_VOICE_PROFILE_OUTBOUND_CREDENTIAL, payload, options
+        )
 
     async def unassign_sms_line_campaign(
-        self, input: UnassignSmsLineCampaignInput
+        self, input: UnassignSmsLineCampaignInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.Operation]:
         "Unassign SMS line campaign\n\nAny project writer, including a scoped API key, may detach the campaign. The number and campaign remain owned. Requires a permanent Idempotency-Key and expectedVersion. Local eligibility is blocked immediately; provider detachment runs asynchronously. If the operation fails, its `error` is the problem of one of these codes: `SMS_CAMPAIGN_PROVIDER_REJECTED`, `SMS_CAMPAIGN_RECONCILIATION_REQUIRED`, `SMS_CAMPAIGN_REVOKED`."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_UNASSIGN_SMS_LINE_CAMPAIGN, payload)
+        return await self._transport.request(_OP_UNASSIGN_SMS_LINE_CAMPAIGN, payload, options)
 
     async def unassign_voice_line_profile(
-        self, input: UnassignVoiceLineProfileInput
+        self, input: UnassignVoiceLineProfileInput, *, options: RequestOptions | None = None
     ) -> RawResponse[None]:
         "Unassign Voice line profile\n\nRemoves a line's explicit override when the resource version matches so the line follows the project default. Profiles and the pstn_voice ability are unchanged. Requires platforms:write bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_UNASSIGN_VOICE_LINE_PROFILE, payload)
+        return await self._transport.request(_OP_UNASSIGN_VOICE_LINE_PROFILE, payload, options)
 
     async def update_default_voice_profile(
-        self, input: UpdateDefaultVoiceProfileInput
+        self, input: UpdateDefaultVoiceProfileInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.VoiceProfile]:
         "Update default Voice profile\n\nPatches the default profile's protocol or mediaEncryption when expectedVersion matches. Omitted fields are preserved. Its server-assigned name is immutable, and directional configuration uses the profileId returned by this resource. Requires platforms:write bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_UPDATE_DEFAULT_VOICE_PROFILE, payload)
+        return await self._transport.request(_OP_UPDATE_DEFAULT_VOICE_PROFILE, payload, options)
 
     async def update_voice_profile(
-        self, input: UpdateVoiceProfileInput
+        self, input: UpdateVoiceProfileInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.VoiceProfile]:
         "Update Voice profile\n\nPatches an additional profile's name, protocol, or mediaEncryption when expectedVersion matches. Omitted fields are preserved. The default profile's metadata changes only through PATCH /v1/projects/{id}/platforms/voice/profiles/default, so a name, protocol, or mediaEncryption patch addressed to its profileId is refused with 409. Directional configuration is managed through the profile's inbound and outbound endpoints. Requires platforms:write bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_UPDATE_VOICE_PROFILE, payload)
+        return await self._transport.request(_OP_UPDATE_VOICE_PROFILE, payload, options)
 
     async def update_voice_profile_inbound(
-        self, input: UpdateVoiceProfileInboundInput
+        self, input: UpdateVoiceProfileInboundInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.VoiceProfileInboundConfiguration]:
         "Update Voice inbound configuration\n\nUpdates selected fields of a profile's inbound destination when the shared profile version matches. The profileId may identify the default or an additional profile. At least one of destinationUri or credentials is required. Credential omission preserves destination authentication, null removes it, and an object replaces it atomically. Requires platforms:write bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_UPDATE_VOICE_PROFILE_INBOUND, payload)
+        return await self._transport.request(_OP_UPDATE_VOICE_PROFILE_INBOUND, payload, options)
 
     async def update_voice_profile_outbound_authentication(
-        self, input: UpdateVoiceProfileOutboundAuthenticationInput
+        self,
+        input: UpdateVoiceProfileOutboundAuthenticationInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[models.UpdateVoiceProfileOutboundAuthenticationResponse]:
         "Update Voice outbound authentication\n\nChanges a SIP profile's outbound Digest algorithm when expectedVersion matches. The profileId may identify the default or an additional profile. This policy-only change preserves the password, username, and any previous-password grace deadline. SHA-256 is recommended; MD5 is a weaker legacy option. Returns non-secret outbound metadata and the profile version. Requires platforms:write bound to the path project."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(
-            _OP_UPDATE_VOICE_PROFILE_OUTBOUND_AUTHENTICATION, payload
+            _OP_UPDATE_VOICE_PROFILE_OUTBOUND_AUTHENTICATION, payload, options
         )
 
 
@@ -9532,35 +9986,41 @@ class AsyncRawProjectsAgentProfileResource:
         self._transport = transport
 
     async def commit_avatar(
-        self, input: CommitAgentProfileAvatarInput
+        self, input: CommitAgentProfileAvatarInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.AgentProfile]:
         "Commit agent avatar\n\nCommits an agent avatar previously uploaded through createAgentProfileAvatarUpload. Call this only after the direct multipart upload succeeds, using the uploadId from the same upload session and a stable Idempotency-Key. The service validates the temporary object's Project ownership, size, content type, image bytes, dimensions, encryption, and age before changing the agent profile."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_COMMIT_AGENT_PROFILE_AVATAR, payload)
+        return await self._transport.request(_OP_COMMIT_AGENT_PROFILE_AVATAR, payload, options)
 
     async def create_avatar_upload(
-        self, input: CreateAgentProfileAvatarUploadInput
+        self, input: CreateAgentProfileAvatarUploadInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.AgentProfileAvatarUpload]:
         "Create agent avatar upload\n\nCreates a ten-minute, Project-bound presigned S3 POST for a JPEG, PNG, or WebP agent avatar up to 5 MiB. Copy every returned formFields entry into a multipart/form-data request to uploadUrl, append the local file as the final form part, and upload it directly without sending Photon credentials. After the upload succeeds, call commitAgentProfileAvatar with the returned uploadId. Do not cache or log the upload URL or form fields."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CREATE_AGENT_PROFILE_AVATAR_UPLOAD, payload)
+        return await self._transport.request(
+            _OP_CREATE_AGENT_PROFILE_AVATAR_UPLOAD, payload, options
+        )
 
-    async def get(self, input: GetAgentProfileInput) -> RawResponse[models.AgentProfile]:
+    async def get(
+        self, input: GetAgentProfileInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.AgentProfile]:
         "Get agent profile\n\nReturns the agent profile belonging to the identified project. The profile is project-scoped and is distinct from the authenticated account's personal profile. Use the dedicated avatar operations when uploading or removing an agent avatar."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_AGENT_PROFILE, payload)
+        return await self._transport.request(_OP_GET_AGENT_PROFILE, payload, options)
 
     async def reset_avatar(
-        self, input: ResetAgentProfileAvatarInput
+        self, input: ResetAgentProfileAvatarInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.AgentProfile]:
         "Reset agent avatar\n\nReplaces the selected project's agent avatar with the project's default avatar, a generated planet image derived from the project ID, and returns the updated agent profile. The reset does not restore an earlier avatar: a custom avatar it replaces is discarded and must be uploaded and committed again to use it. When the default avatar is already in use, the profile is returned unchanged. This does not change the account's personal profile picture. Supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_RESET_AGENT_PROFILE_AVATAR, payload)
+        return await self._transport.request(_OP_RESET_AGENT_PROFILE_AVATAR, payload, options)
 
-    async def update(self, input: UpdateAgentProfileInput) -> RawResponse[models.AgentProfile]:
+    async def update(
+        self, input: UpdateAgentProfileInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.AgentProfile]:
         "Update agent profile\n\nUpdates the supplied firstName and lastName fields in the project's agent profile and returns the updated profile. Avatar upload, commit and reset are separate operations. The caller must be authorized to change configuration for the selected project. Supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_UPDATE_AGENT_PROFILE, payload)
+        return await self._transport.request(_OP_UPDATE_AGENT_PROFILE, payload, options)
 
 
 class AsyncRawProjectsBillingResource:
@@ -9568,32 +10028,32 @@ class AsyncRawProjectsBillingResource:
         self._transport = transport
 
     async def get_operation(
-        self, input: GetBillingOperationInput
+        self, input: GetBillingOperationInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.BillingOperation]:
         "Get billing operation\n\nReturns the authoritative state of a billing operation belonging to the selected project. Use it to recover or poll a plan-change request until the operation reaches success or failure. An accepted request is not evidence that the plan change has completed."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_BILLING_OPERATION, payload)
+        return await self._transport.request(_OP_GET_BILLING_OPERATION, payload, options)
 
     async def get_overview(
-        self, input: GetBillingOverviewInput
+        self, input: GetBillingOverviewInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.GetBillingOverviewResponse]:
         "Get project billing overview\n\nReturns the selected project's plan information, entitlements and current billing-period usage. This operation reads project billing state; it does not change plans or the payer's payment method. Organization-level plans are available through the organization billing overview."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_BILLING_OVERVIEW, payload)
+        return await self._transport.request(_OP_GET_BILLING_OVERVIEW, payload, options)
 
     async def list_billing_plans(
-        self, input: ListBillingPlansInput
+        self, input: ListBillingPlansInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ListBillingPlansResponse]:
         "List billing plans\n\nLists the billing plan catalog, grouped by their public plan-metadata type. Use the returned plan information when choosing the category and planCode for a plan change. The catalog is the same for every project, and reading it does not purchase a plan."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LIST_BILLING_PLANS, payload)
+        return await self._transport.request(_OP_LIST_BILLING_PLANS, payload, options)
 
     async def list_project_subscriptions(
-        self, input: ListProjectSubscriptionsInput
+        self, input: ListProjectSubscriptionsInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ListProjectSubscriptionsResponse]:
         "List project subscriptions\n\nLists the plan each of the selected project's categories holds, with its price and the payer's standing. It suits showing a project's plan wherever projects are listed; the billing overview adds billing periods, fixed charges, entitlements and usage."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LIST_PROJECT_SUBSCRIPTIONS, payload)
+        return await self._transport.request(_OP_LIST_PROJECT_SUBSCRIPTIONS, payload, options)
 
 
 class AsyncRawProjectsResource:
@@ -9604,252 +10064,278 @@ class AsyncRawProjectsResource:
         self.platforms = AsyncRawProjectsPlatformsResource(transport)
 
     async def count_messages(
-        self, input: CountMessagesInput
+        self, input: CountMessagesInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.CountMessagesResponse]:
         "Count Messages\n\nCounts matching Messages before pagination. Delivery updates do not add Messages; results are eventually consistent."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_COUNT_MESSAGES, payload)
+        return await self._transport.request(_OP_COUNT_MESSAGES, payload, options)
 
-    async def count_spaces(self, input: CountSpacesInput) -> RawResponse[models.SpaceCount]:
+    async def count_spaces(
+        self, input: CountSpacesInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.SpaceCount]:
         "Count Spaces\n\nCounts distinct Spaces matching the list filters; multiple matching Messages count once. Results are eventually consistent."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_COUNT_SPACES, payload)
+        return await self._transport.request(_OP_COUNT_SPACES, payload, options)
 
-    async def count_users(self, input: CountUsersInput) -> RawResponse[models.UserCount]:
+    async def count_users(
+        self, input: CountUsersInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.UserCount]:
         "Count Users\n\nCounts distinct Users matching the list filters, including incoming senders or outgoing recipients selected by Message filters. Results are eventually consistent."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_COUNT_USERS, payload)
+        return await self._transport.request(_OP_COUNT_USERS, payload, options)
 
     async def create_or_get_space(
-        self, input: CreateOrGetSpaceInput
+        self, input: CreateOrGetSpaceInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.PlatformSpace]:
         "Create or get a Space\n\nCreates or returns a project Space. Idempotency-Key is required for every platform and binds the project, platform and initial User IDs (unordered except the iMessage creator in first position) for 24 hours after workflow completion. Concurrent matching requests join the same operation; conflicting reuse returns 422 once its outcome is available. A new email key creates a new thread; direct Spaces and SMS groups converge by participants. Every creation and successful replay requires at least one currently project-owned Agent, or for iMessage a shared-line Agent in a direct Space whose peer has an active Assignment of this project on that line. For iMessage, an existing exact match is reused; otherwise the first participant must be a project-owned dedicated phone Agent and creates the native direct chat or group. Multiple matching native groups return SPACE_AMBIGUOUS; incomplete group membership cannot establish an exact match. Replays return 200 and the current stored Space, with Idempotent-Replayed: true. A timeout does not cancel accepted work: retry the same key and input."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CREATE_OR_GET_SPACE, payload)
+        return await self._transport.request(_OP_CREATE_OR_GET_SPACE, payload, options)
 
     async def create_or_get_user(
-        self, input: CreateOrGetUserInput
+        self, input: CreateOrGetUserInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.PlatformUser]:
         "Create or get a User\n\nCreates or reconciles a User by normalized handle. WhatsApp and iMessage phone classification uses line allocation and project ownership; New iMessage email handles start as Human without lookup; existing email identities retain their producer-observed classification and ownership. WhatsApp Business uses project ownership. These three platforms perform no provider profile or enrichment fetch. Shared Agents expose type=shared without ownership IDs; dedicated Agents expose resourceId for this project or pairwise managedBy for another project. Dedicated lines without an active owner are unavailable. SMS retains its existing ownership and phone number enrichment behavior. Email retains domain ownership resolution, lowercase ASCII domains and case-preserved local parts. Dependency failures fail before classification writes. The natural identity is the project path ID, platform, and handle. Retrying after a committed creation whose response was lost returns the same User with 200 rather than replaying 201."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CREATE_OR_GET_USER, payload)
+        return await self._transport.request(_OP_CREATE_OR_GET_USER, payload, options)
 
     async def create_project_api_key(
-        self, input: CreateProjectApiKeyInput
+        self, input: CreateProjectApiKeyInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.CreateProjectApiKeyResponse]:
         "Create project API key\n\nCreates a key bound to the selected project using the supplied name, permissions and optional expiry. The secret is returned only in this response and in idempotent replays of it; store it securely because other reads never return it. The key is scoped to this project and does not grant account-level access. Supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CREATE_PROJECT_API_KEY, payload)
+        return await self._transport.request(_OP_CREATE_PROJECT_API_KEY, payload, options)
 
     async def create_webhook_destination(
-        self, input: CreateWebhookDestinationInput
+        self, input: CreateWebhookDestinationInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.CreateWebhookDestinationResponse]:
         "Create webhook destination\n\nCreates a webhook destination for the selected project using its URL, payload API version, event selection and other documented settings. The response includes the signing secret, which is returned only in this response and in idempotent replays of it, never by destination reads; store it securely for signature verification. The API version must be selectable and selected event types must belong to that version's catalog. Supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CREATE_WEBHOOK_DESTINATION, payload)
+        return await self._transport.request(_OP_CREATE_WEBHOOK_DESTINATION, payload, options)
 
-    async def delete(self, input: DeleteProjectInput) -> RawResponse[models.Project]:
+    async def delete(
+        self, input: DeleteProjectInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.Project]:
         "Delete project\n\nStarts deletion of the identified project using a credential authorized for project management. Inspect the documented response and use getProjectClosureStatus with the organization and project identifiers to read closure progress. A project API key is not an accepted credential for this operation."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_DELETE_PROJECT, payload)
+        return await self._transport.request(_OP_DELETE_PROJECT, payload, options)
 
     async def delete_webhook_destination(
-        self, input: DeleteWebhookDestinationInput
+        self, input: DeleteWebhookDestinationInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.WebhookDestination]:
         "Delete webhook destination\n\nDeletes the selected project's destination and returns its stable tombstone. Repeated deletion returns the deletion representation. This operation removes the destination configuration; it is separate from disabling a destination through an update."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_DELETE_WEBHOOK_DESTINATION, payload)
+        return await self._transport.request(_OP_DELETE_WEBHOOK_DESTINATION, payload, options)
 
-    async def download_attachment(self, input: DownloadAttachmentInput) -> RawResponse[bytes]:
+    async def download_attachment(
+        self, input: DownloadAttachmentInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[bytes]:
         "Download attachment\n\nDownloads an Attachment's bytes. If unavailable after ten seconds, returns ATTACHMENT_NOT_READY with Retry-After: 5."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_DOWNLOAD_ATTACHMENT, payload)
+        return await self._transport.request(_OP_DOWNLOAD_ATTACHMENT, payload, options)
 
-    async def get(self, input: GetProjectInput) -> RawResponse[models.Project]:
+    async def get(
+        self, input: GetProjectInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.Project]:
         "Get project\n\nReturns the identified project's settings for an authorized caller. The credential must be allowed to access that project; possession of an unrelated project's key does not provide access. Missing and deleted projects are reported through the documented error responses."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_PROJECT, payload)
+        return await self._transport.request(_OP_GET_PROJECT, payload, options)
 
-    async def get_attachment(self, input: GetAttachmentInput) -> RawResponse[models.Attachment]:
+    async def get_attachment(
+        self, input: GetAttachmentInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.Attachment]:
         "Get attachment\n\nReturns an Attachment's metadata. Use the content endpoint to download its bytes. If its metadata is unavailable after ten seconds, returns ATTACHMENT_NOT_READY with Retry-After: 5."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_ATTACHMENT, payload)
+        return await self._transport.request(_OP_GET_ATTACHMENT, payload, options)
 
     async def get_message(
-        self, input: GetMessageInput
+        self, input: GetMessageInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.PlatformMessage | None]:
         "Get a Message\n\nReturns one stored Message by canonical Photon Message ID on any supported contract platform. The globally unique Message ID is resolved within the authorized Project. Unsupported platform Messages are outside this collection and return MESSAGE_NOT_FOUND."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_MESSAGE, payload)
+        return await self._transport.request(_OP_GET_MESSAGE, payload, options)
 
     async def get_message_metrics_backfill(
-        self, input: GetMessageMetricsBackfillInput
+        self, input: GetMessageMetricsBackfillInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.GetMessageMetricsBackfillResponse]:
         "Get metrics backfill status\n\nReturns historical metrics update progress. Completion reflects lastVerifiedAt; queries remain available during updates."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_MESSAGE_METRICS_BACKFILL, payload)
+        return await self._transport.request(_OP_GET_MESSAGE_METRICS_BACKFILL, payload, options)
 
     async def get_message_metrics_sql_schema(
-        self, input: GetMessageMetricsSqlSchemaInput
+        self, input: GetMessageMetricsSqlSchemaInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.GetMessageMetricsSqlSchemaResponse]:
         "Get metrics SQL schema\n\nReturns the message_events and call_events SQL schema, supported queries, and limits for the selected API version."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_MESSAGE_METRICS_SQL_SCHEMA, payload)
+        return await self._transport.request(_OP_GET_MESSAGE_METRICS_SQL_SCHEMA, payload, options)
 
-    async def get_space(self, input: GetSpaceInput) -> RawResponse[models.PlatformSpace | None]:
+    async def get_space(
+        self, input: GetSpaceInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.PlatformSpace | None]:
         "Get a Space\n\nReturns one stored Space by canonical Photon Space ID. A Space of a kind its platform does not support returns OPERATION_UNAVAILABLE."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_SPACE, payload)
+        return await self._transport.request(_OP_GET_SPACE, payload, options)
 
-    async def get_user(self, input: GetUserInput) -> RawResponse[models.PlatformUser | None]:
+    async def get_user(
+        self, input: GetUserInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.PlatformUser | None]:
         "Get an User\n\nReturns one User after refreshing its Human or Agent classification and project ownership where supported. iMessage email identities retain their producer-observed classification and ownership because no current email ownership lookup is available. WhatsApp, WhatsApp Business and iMessage perform no provider fetch; only SMS Human classifications perform a phone number lookup. Current-project Agents expose resourceId; external-project Agents expose only pairwise managedBy. Conditional response evaluation uses the post-reconciliation representation. Stored reads use each platform definition; projection requires adapter support."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_USER, payload)
+        return await self._transport.request(_OP_GET_USER, payload, options)
 
     async def get_webhook_destination(
-        self, input: GetWebhookDestinationInput
+        self, input: GetWebhookDestinationInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.WebhookDestination]:
         "Get webhook destination\n\nReturns the configuration of one webhook destination belonging to the selected project. Missing or deleted destinations are reported as errors. This read does not disclose the signing secret returned when the destination or a secret rotation was created."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_WEBHOOK_DESTINATION, payload)
+        return await self._transport.request(_OP_GET_WEBHOOK_DESTINATION, payload, options)
 
     async def get_webhook_event_schema(
-        self, input: GetWebhookEventSchemaInput
-    ) -> RawResponse[models.WebhookEventSchema | None]:
+        self, input: GetWebhookEventSchemaInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.WebhookEventSchema]:
         "Get webhook event schema\n\nReturns the published reader JSON Schema for eventType in the requested webhook apiVersion. Use it to interpret events for that exact payload version. The response media type is application/schema+json; an authorized conditional request may return 304 without a body. Unsupported event/version combinations are rejected."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_WEBHOOK_EVENT_SCHEMA, payload)
+        return await self._transport.request(_OP_GET_WEBHOOK_EVENT_SCHEMA, payload, options)
 
     async def list_attachments(
-        self, input: ListAttachmentsInput
+        self, input: ListAttachmentsInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.AttachmentPage]:
         "List attachments\n\nLists the Project's Attachment metadata, with optional time filters. An Attachment can be absent until its upload finishes, which advances its updatedAt; follow changes with updatedSince."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LIST_ATTACHMENTS, payload)
+        return await self._transport.request(_OP_LIST_ATTACHMENTS, payload, options)
 
-    async def list_messages(self, input: ListMessagesInput) -> RawResponse[models.MessagePage]:
+    async def list_messages(
+        self, input: ListMessagesInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.MessagePage]:
         "List Messages\n\nLists the Project's Messages, with optional resource, conversation, and time filters. Results are eventually consistent."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LIST_MESSAGES, payload)
+        return await self._transport.request(_OP_LIST_MESSAGES, payload, options)
 
     async def list_project_api_keys(
-        self, input: ListProjectApiKeysInput
+        self, input: ListProjectApiKeysInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ListProjectApiKeysResponse]:
         "List project API keys\n\nLists the API keys on the selected project, ordered newest first. Revoked keys are not listed; expired keys stay listed until they are revoked. Entries contain key metadata and permissions, never secret values. Use the returned identifiers to manage an existing key; lost secrets cannot be recovered through this operation."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LIST_PROJECT_API_KEYS, payload)
+        return await self._transport.request(_OP_LIST_PROJECT_API_KEYS, payload, options)
 
-    async def list_spaces(self, input: ListSpacesInput) -> RawResponse[models.SpacePage]:
+    async def list_spaces(
+        self, input: ListSpacesInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.SpacePage]:
         "List Spaces\n\nLists the Project's stored Spaces, with optional participant and Message filters. Results are eventually consistent."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LIST_SPACES, payload)
+        return await self._transport.request(_OP_LIST_SPACES, payload, options)
 
-    async def list_users(self, input: ListUsersInput) -> RawResponse[models.UserPage]:
+    async def list_users(
+        self, input: ListUsersInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.UserPage]:
         "List Users\n\nLists stored Users without refreshing their classification; use Get User for current details. Message filters select incoming senders or outgoing recipients, excluding the Message's own endpoint."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LIST_USERS, payload)
+        return await self._transport.request(_OP_LIST_USERS, payload, options)
 
     async def list_webhook_api_versions(
-        self, input: ListWebhookApiVersionsInput
-    ) -> RawResponse[models.ListWebhookApiVersionsResponse | None]:
+        self, input: ListWebhookApiVersionsInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.ListWebhookApiVersionsResponse]:
         "List webhook API versions\n\nLists the published webhook payload API versions and their lifecycle metadata. The list is the same for every project. Use the selectable indicator when choosing a version for a destination. These payload dates are separate from SDK package versions. An authorized conditional request may return 304 without a response body."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LIST_WEBHOOK_API_VERSIONS, payload)
+        return await self._transport.request(_OP_LIST_WEBHOOK_API_VERSIONS, payload, options)
 
     async def list_webhook_destinations(
-        self, input: ListWebhookDestinationsInput
+        self, input: ListWebhookDestinationsInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.WebhookDestinationPage]:
         "List webhook destinations\n\nReturns a cursor-paginated page of active webhook destinations configured for the selected project. Use pageSize and pageToken to navigate it. The listing returns destination configuration, never signing secrets."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LIST_WEBHOOK_DESTINATIONS, payload)
+        return await self._transport.request(_OP_LIST_WEBHOOK_DESTINATIONS, payload, options)
 
     async def list_webhook_egress_addresses(
-        self, input: ListWebhookEgressAddressesInput
-    ) -> RawResponse[models.ListWebhookEgressAddressesResponse | None]:
+        self, input: ListWebhookEgressAddressesInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.ListWebhookEgressAddressesResponse]:
         "List webhook egress addresses\n\nReturns the public network addresses from which this environment sends webhook deliveries. Use this information when configuring the receiving system's network allowlist. The result is environment-specific and does not describe the API service's ingress addresses."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LIST_WEBHOOK_EGRESS_ADDRESSES, payload)
+        return await self._transport.request(_OP_LIST_WEBHOOK_EGRESS_ADDRESSES, payload, options)
 
     async def list_webhook_event_types(
-        self, input: ListWebhookEventTypesInput
-    ) -> RawResponse[models.ListWebhookEventTypesResponse | None]:
+        self, input: ListWebhookEventTypesInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.ListWebhookEventTypesResponse]:
         "List webhook event types\n\nLists the webhook event types available in the requested apiVersion, including their descriptions, audiences and reader-schema URLs. Use this versioned catalog when selecting a destination's enabledEvents. The response may include version-retirement information; an authorized conditional request can return 304 without a body."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_LIST_WEBHOOK_EVENT_TYPES, payload)
+        return await self._transport.request(_OP_LIST_WEBHOOK_EVENT_TYPES, payload, options)
 
     async def mark_message_read(
-        self, input: MarkMessageReadInput
+        self, input: MarkMessageReadInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.MarkMessageReadResponse]:
         "Mark a Message as read\n\nPersists a request to mark one incoming Message as read using its receiving account. A 202 means accepted for asynchronous execution, not handled by the provider. Requires Idempotency-Key. The returned action Message tracks its outcome; privacy settings may suppress remote visibility."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_MARK_MESSAGE_READ, payload)
+        return await self._transport.request(_OP_MARK_MESSAGE_READ, payload, options)
 
     async def query_message_metrics(
-        self, input: QueryMessageMetricsInput
+        self, input: QueryMessageMetricsInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.QueryMessageMetricsResponse]:
         "Query metrics\n\nRuns read-only SQL over the Project's message_events or call_events table. Get the SQL schema for supported columns, capabilities, and limits."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_QUERY_MESSAGE_METRICS, payload)
+        return await self._transport.request(_OP_QUERY_MESSAGE_METRICS, payload, options)
 
     async def retry_webhook_delivery(
-        self, input: RetryWebhookDeliveryInput
+        self, input: RetryWebhookDeliveryInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.RetryWebhookDeliveryResponse]:
         "Retry webhook delivery\n\nRequests an immediate attempt of the selected delivery if it is still the waiting head for its destination and event type. expectedAttemptCount is the failed-attempt counter recorded on the delivery and fences stale requests. This overrides the current backoff, including Retry-After, once. It preserves event identity and the retry budget. Delivered, active, disabled and dead-lettered deliveries cannot be retried. A 202 acknowledges the wake-up, not successful delivery. Supply an Idempotency-Key and retain it when retrying an ambiguous failure."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_RETRY_WEBHOOK_DELIVERY, payload)
+        return await self._transport.request(_OP_RETRY_WEBHOOK_DELIVERY, payload, options)
 
     async def revoke_project_api_key(
-        self, input: RevokeProjectApiKeyInput
+        self, input: RevokeProjectApiKeyInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ProjectApiKeyResponse]:
         "Revoke project API key\n\nRevokes the identified key on the selected project and returns its revoked metadata. Repeating the deletion returns the same revokedAt value. This operation does not rotate the key or return a replacement secret. Supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_REVOKE_PROJECT_API_KEY, payload)
+        return await self._transport.request(_OP_REVOKE_PROJECT_API_KEY, payload, options)
 
     async def rotate_webhook_signing_secret(
-        self, input: RotateWebhookSigningSecretInput
+        self, input: RotateWebhookSigningSecretInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.RotateWebhookSigningSecretResponse]:
         "Rotate webhook signing secret\n\nRotates the signing secret for the selected project's webhook destination and returns the new secret. The optional overlapSeconds controls the requested overlap with the previous secret according to the documented request constraints. Store the new secret securely and update the receiver's signature verification configuration; it is returned only in this response and in idempotent replays of it, never by destination reads. Supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_ROTATE_WEBHOOK_SIGNING_SECRET, payload)
+        return await self._transport.request(_OP_ROTATE_WEBHOOK_SIGNING_SECRET, payload, options)
 
-    async def send_message(self, input: SendMessageInput) -> RawResponse[models.SentMessage]:
+    async def send_message(
+        self, input: SendMessageInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.SentMessage]:
         "Send a Message\n\nSends SMS, email, WhatsApp Personal, WhatsApp Business, iMessage, or Telegram text and image messages. A shared iMessage line sends only in direct Spaces, only to a peer with an active Assignment who has messaged it since that Assignment. SMS and MMS require current Platforms authorization for the sender and every recipient; campaign eligibility is required unless every recipient is in-network."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_SEND_MESSAGE, payload)
+        return await self._transport.request(_OP_SEND_MESSAGE, payload, options)
 
     async def set_space_typing(
-        self, input: SetSpaceTypingInput
+        self, input: SetSpaceTypingInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.SetSpaceTypingResponse]:
         "Set typing in a Space\n\nSaves one transient typing update as an authorized Agent in this Space. Returns the dispatched Message with HTTP 202. Successful provider handoff ends in accepted; rejection or expiry ends in failed. Repeat true to refresh; false stops where supported. Callers control refreshes. Unsupported platforms return OPERATION_UNAVAILABLE."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_SET_SPACE_TYPING, payload)
+        return await self._transport.request(_OP_SET_SPACE_TYPING, payload, options)
 
-    async def update(self, input: UpdateProjectInput) -> RawResponse[models.Project]:
+    async def update(
+        self, input: UpdateProjectInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.Project]:
         "Update project\n\nUpdates the identified project's name and returns the updated project. The project slug is not a mutable field in this request. Use an authorized account or organization service-identity credential; a project API key is not accepted. Supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_UPDATE_PROJECT, payload)
+        return await self._transport.request(_OP_UPDATE_PROJECT, payload, options)
 
     async def update_project_api_key(
-        self, input: UpdateProjectApiKeyInput
+        self, input: UpdateProjectApiKeyInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ProjectApiKeyResponse]:
         "Update project API key permissions\n\nReplaces the identified project key's permission list with the supplied permissions and returns the updated metadata. Sending the permission list the key already has leaves it unchanged. This request does not create a new secret or change the key's project binding. Supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_UPDATE_PROJECT_API_KEY, payload)
+        return await self._transport.request(_OP_UPDATE_PROJECT_API_KEY, payload, options)
 
     async def update_webhook_destination(
-        self, input: UpdateWebhookDestinationInput
+        self, input: UpdateWebhookDestinationInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.WebhookDestination]:
         "Update webhook destination\n\nUpdates the supplied URL, name, description, status or enabledEvents fields on a project's webhook destination and returns its updated configuration. The payload API version is not a mutable field in this request. Event selections are checked against the destination's versioned catalog; signing-secret rotation is a separate operation. Supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_UPDATE_WEBHOOK_DESTINATION, payload)
+        return await self._transport.request(_OP_UPDATE_WEBHOOK_DESTINATION, payload, options)
 
     async def upload_attachment(
-        self, input: UploadAttachmentInput
+        self, input: UploadAttachmentInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.Attachment]:
         "Upload attachment\n\nUploads a file and returns its Attachment once ready to download."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True, exclude={"body"})
         payload["body"] = input.body.root if input.body is not None else None
-        return await self._transport.request(_OP_UPLOAD_ATTACHMENT, payload)
+        return await self._transport.request(_OP_UPLOAD_ATTACHMENT, payload, options)
 
 
 class AsyncRawAccountResource:
@@ -9857,83 +10343,100 @@ class AsyncRawAccountResource:
         self._transport = transport
 
     async def commit_profile_picture(
-        self, input: CommitAccountProfilePictureInput
+        self, input: CommitAccountProfilePictureInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.Account]:
         "Commit profile picture\n\nCommits a profile picture previously uploaded through createAccountProfilePictureUpload. Call this only after the direct multipart upload succeeds, using the uploadId from the same upload session and a stable Idempotency-Key. The service validates the temporary object's ownership, size, content type, image bytes, dimensions, encryption, and age before changing the Account."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_COMMIT_ACCOUNT_PROFILE_PICTURE, payload)
+        return await self._transport.request(_OP_COMMIT_ACCOUNT_PROFILE_PICTURE, payload, options)
 
     async def create_account_service_key(
-        self, input: CreateAccountServiceKeyInput
+        self, input: CreateAccountServiceKeyInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.CreateAccountServiceKeyResponse]:
         "Create Account Service Key\n\nCreates a service key for the authenticated account with the supplied name and optional expiresAt. Returns key metadata and a one-time credential; store the credential securely because it cannot be retrieved through the listing endpoint. These credentials act as the account and must not be distributed as project-scoped keys. Supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CREATE_ACCOUNT_SERVICE_KEY, payload)
+        return await self._transport.request(_OP_CREATE_ACCOUNT_SERVICE_KEY, payload, options)
 
     async def create_profile_picture_upload(
-        self, input: CreateAccountProfilePictureUploadInput
+        self,
+        input: CreateAccountProfilePictureUploadInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[models.ProfilePictureUpload]:
         "Create profile picture upload\n\nCreates a ten-minute, Account-bound presigned S3 POST for a JPEG, PNG, or WebP profile picture up to 5 MiB. Copy every returned formFields entry into a multipart/form-data request to uploadUrl, append the local file as the final form part, and upload it directly without sending Photon credentials. After the upload succeeds, call commitAccountProfilePicture with the returned uploadId. Do not cache or log the upload URL or form fields."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CREATE_ACCOUNT_PROFILE_PICTURE_UPLOAD, payload)
+        return await self._transport.request(
+            _OP_CREATE_ACCOUNT_PROFILE_PICTURE_UPLOAD, payload, options
+        )
 
-    async def delete(self, input: DeleteAccountInput | None = None) -> RawResponse[models.Account]:
+    async def delete(
+        self, input: DeleteAccountInput | None = None, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.Account]:
         "Delete account\n\nDeletes the authenticated account and returns its account tombstone. The operation is rejected while the account still owns organizations; transfer or close those organizations before retrying. This endpoint acts on the caller's account and does not accept another account's identifier."
         payload = (input or DeleteAccountInput()).model_dump(
             mode="json", by_alias=True, exclude_unset=True
         )
-        return await self._transport.request(_OP_DELETE_ACCOUNT, payload)
+        return await self._transport.request(_OP_DELETE_ACCOUNT, payload, options)
 
-    async def get(self, input: GetAccountInput | None = None) -> RawResponse[models.Account]:
+    async def get(
+        self, input: GetAccountInput | None = None, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.Account]:
         "Get account\n\nReturns the profile of the authenticated account. The account is selected from the credential rather than a request parameter. A missing or deleted account is reported as an error instead of an empty profile."
         payload = (input or GetAccountInput()).model_dump(
             mode="json", by_alias=True, exclude_unset=True
         )
-        return await self._transport.request(_OP_GET_ACCOUNT, payload)
+        return await self._transport.request(_OP_GET_ACCOUNT, payload, options)
 
     async def list_account_service_keys(
-        self, input: ListAccountServiceKeysInput | None = None
+        self,
+        input: ListAccountServiceKeysInput | None = None,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[models.ListAccountServiceKeysResponse]:
         "List Account Service Keys\n\nReturns metadata for the authenticated account's unrevoked service keys, including expired keys, ordered newest first. Secret values are not returned; a key's credential is disclosed only when that key is created."
         payload = (input or ListAccountServiceKeysInput()).model_dump(
             mode="json", by_alias=True, exclude_unset=True
         )
-        return await self._transport.request(_OP_LIST_ACCOUNT_SERVICE_KEYS, payload)
+        return await self._transport.request(_OP_LIST_ACCOUNT_SERVICE_KEYS, payload, options)
 
     async def list_authorized_applications(
-        self, input: ListAuthorizedApplicationsInput | None = None
+        self,
+        input: ListAuthorizedApplicationsInput | None = None,
+        *,
+        options: RequestOptions | None = None,
     ) -> RawResponse[models.ListAuthorizedApplicationsResponse]:
         "List connected applications\n\nLists the OAuth applications authorized by the authenticated user."
         payload = (input or ListAuthorizedApplicationsInput()).model_dump(
             mode="json", by_alias=True, exclude_unset=True
         )
-        return await self._transport.request(_OP_LIST_AUTHORIZED_APPLICATIONS, payload)
+        return await self._transport.request(_OP_LIST_AUTHORIZED_APPLICATIONS, payload, options)
 
     async def reset_profile_picture(
-        self, input: ResetAccountProfilePictureInput
+        self, input: ResetAccountProfilePictureInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.Account]:
         "Remove profile picture\n\nRemoves the authenticated account's custom profile picture and returns the account using its default picture. This operation does not upload a replacement; use the upload-and-commit operations when setting a new custom picture. Supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_RESET_ACCOUNT_PROFILE_PICTURE, payload)
+        return await self._transport.request(_OP_RESET_ACCOUNT_PROFILE_PICTURE, payload, options)
 
     async def revoke_account_service_key(
-        self, input: RevokeAccountServiceKeyInput
+        self, input: RevokeAccountServiceKeyInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.RevokeAccountServiceKeyResponse]:
         "Revoke Account Service Key\n\nRevokes the account-owned service key identified by serviceKeyId and returns its revoked metadata. Repeating the revocation is stable. Revocation changes the credential's validity; it does not create a replacement key. Supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_REVOKE_ACCOUNT_SERVICE_KEY, payload)
+        return await self._transport.request(_OP_REVOKE_ACCOUNT_SERVICE_KEY, payload, options)
 
     async def revoke_authorized_application(
-        self, input: RevokeAuthorizedApplicationInput
+        self, input: RevokeAuthorizedApplicationInput, *, options: RequestOptions | None = None
     ) -> RawResponse[None]:
         "Revoke connected application\n\nRevokes the authenticated user's grant for one OAuth application."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_REVOKE_AUTHORIZED_APPLICATION, payload)
+        return await self._transport.request(_OP_REVOKE_AUTHORIZED_APPLICATION, payload, options)
 
-    async def update(self, input: UpdateAccountInput) -> RawResponse[models.Account]:
+    async def update(
+        self, input: UpdateAccountInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.Account]:
         "Update account\n\nUpdates the supplied firstName and lastName fields on the authenticated account and returns the updated profile. Only the documented profile fields can be changed through this endpoint; profile-picture uploads and phone-number verification use their dedicated operations. Supply the required Idempotency-Key header."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_UPDATE_ACCOUNT, payload)
+        return await self._transport.request(_OP_UPDATE_ACCOUNT, payload, options)
 
 
 class AsyncRawSystemResource:
@@ -9941,18 +10444,18 @@ class AsyncRawSystemResource:
         self._transport = transport
 
     async def create_app_installation_request(
-        self, input: CreateAppInstallationRequestInput
+        self, input: CreateAppInstallationRequestInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.CreateAppInstallationRequestResponse]:
         "Request app installation\n\nAuthenticates a registered app backend using a short-lived signed client assertion. Creates request metadata only; customer approval is still required."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CREATE_APP_INSTALLATION_REQUEST, payload)
+        return await self._transport.request(_OP_CREATE_APP_INSTALLATION_REQUEST, payload, options)
 
     async def redeem_app_installation_delivery(
-        self, input: RedeemAppInstallationDeliveryInput
+        self, input: RedeemAppInstallationDeliveryInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.RedeemAppInstallationDeliveryResponse]:
         "Redeem installation credential\n\nThe registered app backend authenticates with a signed client assertion and a single-use code. Plaintext is returned only once; retries return status and never create another credential."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_REDEEM_APP_INSTALLATION_DELIVERY, payload)
+        return await self._transport.request(_OP_REDEEM_APP_INSTALLATION_DELIVERY, payload, options)
 
 
 class AsyncRawAuthDeviceResource:
@@ -9960,18 +10463,20 @@ class AsyncRawAuthDeviceResource:
         self._transport = transport
 
     async def authorize(
-        self, input: DeviceAuthorizeInput | None = None
+        self, input: DeviceAuthorizeInput | None = None, *, options: RequestOptions | None = None
     ) -> RawResponse[models.DeviceAuthorizeResponse]:
         "Start device authorization\n\nStarts the device authorization flow for a CLI or another device without a browser. Show the verification URL and user code, then poll the token endpoint at the returned interval. No request fields are required; any supplied body is ignored."
         payload = (input or DeviceAuthorizeInput()).model_dump(
             mode="json", by_alias=True, exclude_unset=True
         )
-        return await self._transport.request(_OP_DEVICE_AUTHORIZE, payload)
+        return await self._transport.request(_OP_DEVICE_AUTHORIZE, payload, options)
 
-    async def token(self, input: DeviceTokenInput) -> RawResponse[models.DeviceTokenResponse]:
+    async def token(
+        self, input: DeviceTokenInput, *, options: RequestOptions | None = None
+    ) -> RawResponse[models.DeviceTokenResponse]:
         "Exchange device code or refresh token\n\nExchanges an authorized device code or a refresh token for an access token and rotating refresh token. Accepts JSON and form-encoded bodies. While polling, wait at least interval seconds and increase the interval on slow_down. Store the new refresh token after every successful grant.\n\nThis SDK method sends uncompressed JSON (application/json). Other request formats described above apply to direct HTTP requests."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_DEVICE_TOKEN, payload)
+        return await self._transport.request(_OP_DEVICE_TOKEN, payload, options)
 
 
 class AsyncRawAuthResource:
@@ -9980,62 +10485,72 @@ class AsyncRawAuthResource:
         self.device = AsyncRawAuthDeviceResource(transport)
 
     async def create_organization_sso_portal_link(
-        self, input: CreateOrganizationSsoPortalLinkInput
+        self, input: CreateOrganizationSsoPortalLinkInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.CreateOrganizationSsoPortalLinkResponse]:
         "Create organization setup portal link\n\nReturns an organization setup portal URL. Supply returnTo and optionally intent, either sso or domain_verification; sso is the default. Open the returned URL to complete the selected setup flow."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_CREATE_ORGANIZATION_SSO_PORTAL_LINK, payload)
+        return await self._transport.request(
+            _OP_CREATE_ORGANIZATION_SSO_PORTAL_LINK, payload, options
+        )
 
     async def disable_organization_sso(
-        self, input: DisableOrganizationSsoInput
+        self, input: DisableOrganizationSsoInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.OrganizationSsoConfiguration]:
         "Disable organization SSO\n\nDeletes the provider connection, releases the SSO requirement once the connection is gone, then unbinds the chosen domains. Retry with the same Idempotency-Key to resume or await the same run."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_DISABLE_ORGANIZATION_SSO, payload)
+        return await self._transport.request(_OP_DISABLE_ORGANIZATION_SSO, payload, options)
 
     async def get_organization_connection_status(
-        self, input: GetOrganizationConnectionStatusInput
+        self, input: GetOrganizationConnectionStatusInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.OrganizationConnectionStatus]:
         "Get organization connection status\n\nRequires current human organization membership. Synchronization status does not attest SSO configuration or completed authorization."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_ORGANIZATION_CONNECTION_STATUS, payload)
+        return await self._transport.request(
+            _OP_GET_ORGANIZATION_CONNECTION_STATUS, payload, options
+        )
 
     async def get_organization_sso_configuration(
-        self, input: GetOrganizationSsoConfigurationInput
+        self, input: GetOrganizationSsoConfigurationInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.OrganizationSsoConfiguration]:
         "Get organization SSO configuration\n\nReturns the selected organization’s SSO connection state, configuration version, and desired and effective policy settings. Read policySyncStatus alongside the enforcement fields to distinguish requested settings from synchronized settings."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_GET_ORGANIZATION_SSO_CONFIGURATION, payload)
+        return await self._transport.request(
+            _OP_GET_ORGANIZATION_SSO_CONFIGURATION, payload, options
+        )
 
     async def list_oauth_scopes(
-        self, input: ListOauthScopesInput | None = None
+        self, input: ListOauthScopesInput | None = None, *, options: RequestOptions | None = None
     ) -> RawResponse[models.ListOauthScopesResponse]:
         "List OAuth scopes\n\nLists the business permissions available to OAuth applications."
         payload = (input or ListOauthScopesInput()).model_dump(
             mode="json", by_alias=True, exclude_unset=True
         )
-        return await self._transport.request(_OP_LIST_OAUTH_SCOPES, payload)
+        return await self._transport.request(_OP_LIST_OAUTH_SCOPES, payload, options)
 
     async def refresh_organization_sso_connection(
-        self, input: RefreshOrganizationSsoConnectionInput
+        self, input: RefreshOrganizationSsoConnectionInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.OrganizationSsoConfiguration]:
         "Refresh organization SSO connection\n\nRefreshes the selected organization’s SSO connection and returns its current connection state, configuration version and policy synchronization status. This operation takes no request body."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_REFRESH_ORGANIZATION_SSO_CONNECTION, payload)
+        return await self._transport.request(
+            _OP_REFRESH_ORGANIZATION_SSO_CONNECTION, payload, options
+        )
 
     async def retry_organization_connection_sync(
-        self, input: RetryOrganizationConnectionSyncInput
+        self, input: RetryOrganizationConnectionSyncInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.OrganizationConnectionStatus]:
         "Retry organization connection sync\n\nReconciles existing local intent. Takes no body and cannot change membership, roles or authentication policy."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_RETRY_ORGANIZATION_CONNECTION_SYNC, payload)
+        return await self._transport.request(
+            _OP_RETRY_ORGANIZATION_CONNECTION_SYNC, payload, options
+        )
 
     async def update_organization_sso_policy(
-        self, input: UpdateOrganizationSsoPolicyInput
+        self, input: UpdateOrganizationSsoPolicyInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.OrganizationSsoConfiguration]:
         "Update organization SSO policy\n\nUpdates whether SSO can admit new members automatically using ssoJitEnabled and the current expectedVersion. Returns the organization’s SSO configuration and policy synchronization status; a successful response does not mean every desired policy setting has finished synchronizing."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
-        return await self._transport.request(_OP_UPDATE_ORGANIZATION_SSO_POLICY, payload)
+        return await self._transport.request(_OP_UPDATE_ORGANIZATION_SSO_POLICY, payload, options)
 
 
 class AsyncOrganizationsBillingResource:
@@ -10043,68 +10558,81 @@ class AsyncOrganizationsBillingResource:
         self._raw_resource = AsyncRawOrganizationsBillingResource(transport)
 
     async def change_plan(
-        self, input: ChangePlanInput
+        self, input: ChangePlanInput, *, options: RequestOptions | None = None
     ) -> models.TerminalBillingOperation | models.PendingBillingOperation:
         "Change plan\n\nPurchases or changes the selected project's plan for the supplied category and planCode, redeeming promotionCode when given. A 202 response means the change is pending: poll the returned operation URL and honor Retry-After until it succeeds or fails. A 200 response means the idempotency key resolved to an operation that is already terminal; inspect that result rather than assuming success from the status code alone. Supply the required Idempotency-Key header. Supply both organizationId and projectId to select the project within its organization."
-        return (await self._raw_resource.change_plan(input)).data
+        return (await self._raw_resource.change_plan(input, options=options)).data
 
     async def create_organization_payment_method_checkout(
-        self, input: CreateOrganizationPaymentMethodCheckoutInput
+        self,
+        input: CreateOrganizationPaymentMethodCheckoutInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> models.CreateOrganizationPaymentMethodCheckoutResponse:
         "Create payment method checkout\n\nReturns a hosted payment-method collection URL for the selected organization. An Idempotency-Key header is optional; supply one to make retries safe. Complete the returned checkout flow. Receiving the URL does not mean a card has been saved; check payment-method status afterward."
-        return (await self._raw_resource.create_organization_payment_method_checkout(input)).data
+        return (
+            await self._raw_resource.create_organization_payment_method_checkout(
+                input, options=options
+            )
+        ).data
 
     async def get_effective_terms(
-        self, input: GetEffectiveTermsInput
+        self, input: GetEffectiveTermsInput, *, options: RequestOptions | None = None
     ) -> models.GetEffectiveTermsResponse:
         "Get the project's effective billing terms\n\nReturns what the selected project is billed on now, per category it holds: the plan as its subscription has it, with any override applied, each fixed charge at the subscription's price and quantity, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. Supply both organizationId and projectId; the organization must pay for the project. This operation does not change billing."
-        return (await self._raw_resource.get_effective_terms(input)).data
+        return (await self._raw_resource.get_effective_terms(input, options=options)).data
 
     async def get_organization_billing_overview(
-        self, input: GetOrganizationBillingOverviewInput
+        self, input: GetOrganizationBillingOverviewInput, *, options: RequestOptions | None = None
     ) -> models.GetOrganizationBillingOverviewResponse:
         "Get organization billing overview\n\nReturns the selected organization’s billing subscription and entitlementsVersion. The subscription can be null. Read the returned plan, charges and entitlements to inspect organization billing; this operation does not purchase or change a plan."
-        return (await self._raw_resource.get_organization_billing_overview(input)).data
+        return (
+            await self._raw_resource.get_organization_billing_overview(input, options=options)
+        ).data
 
     async def get_organization_credit(
-        self, input: GetOrganizationCreditInput
+        self, input: GetOrganizationCreditInput, *, options: RequestOptions | None = None
     ) -> models.GetOrganizationCreditResponse:
         "Get organization credit\n\nReturns the credit the selected organization holds: on credit notes, such as the unused time of a plan an upgrade replaced or the unused days of a prorated fixed charge it released, and in its wallet: the credit Photon granted it, such as a new account's first organization's welcome credit, and any prepaid credit it bought. It offsets that organization's invoices of any kind except one-off invoices, credit notes first. Reading it does not apply or change credit."
-        return (await self._raw_resource.get_organization_credit(input)).data
+        return (await self._raw_resource.get_organization_credit(input, options=options)).data
 
     async def get_organization_payment_method(
-        self, input: GetOrganizationPaymentMethodInput
+        self, input: GetOrganizationPaymentMethodInput, *, options: RequestOptions | None = None
     ) -> models.GetOrganizationPaymentMethodResponse:
         "Get organization payment method\n\nReports whether the selected organization has a card on file, its documented payment-method metadata, whether a purchase needs a card first (purchaseRefusal), and how it pays: by card, or by invoice on its contract's terms (agreement). Reading this endpoint does not collect a new card or create a checkout session."
-        return (await self._raw_resource.get_organization_payment_method(input)).data
+        return (
+            await self._raw_resource.get_organization_payment_method(input, options=options)
+        ).data
 
     async def get_organization_terms(
-        self, input: GetOrganizationTermsInput
+        self, input: GetOrganizationTermsInput, *, options: RequestOptions | None = None
     ) -> models.GetOrganizationTermsResponse:
         "Get the organization's effective billing terms\n\nReturns what the selected organization is billed on now on its own subscription, such as SSO and 10DLC campaigns: the plan as the subscription has it, with any override applied, each fixed charge at the subscription's price and the quantity the organization holds, and resolved entitlements; where the plan comes from; how invoices are paid; the current period and next billing date; and any downgrade or cancellation waiting for the period end. subscription has a project subscription's terms without its category, and is null when the organization holds none. Project subscriptions are read per project. This operation does not change billing."
-        return (await self._raw_resource.get_organization_terms(input)).data
+        return (await self._raw_resource.get_organization_terms(input, options=options)).data
 
     async def list_credit_activity(
-        self, input: ListCreditActivityInput
+        self, input: ListCreditActivityInput, *, options: RequestOptions | None = None
     ) -> models.ListCreditActivityResponse:
         "List credit activity\n\nReturns one page of how the selected organization's credit balance changed, newest first: credit notes issued and credit granted, credit applied to invoices, credit restored when the change an invoice paid for never applied, and credit voided. Each entry names the credit note (none for granted credit), the invoice when there is one, and the charge and subscription the credit note credits, or that the credit was a grant. Pass nextPage as page to read further. This operation does not change billing."
-        return (await self._raw_resource.list_credit_activity(input)).data
+        return (await self._raw_resource.list_credit_activity(input, options=options)).data
 
-    async def list_invoices(self, input: ListInvoicesInput) -> models.ListInvoicesResponse:
+    async def list_invoices(
+        self, input: ListInvoicesInput, *, options: RequestOptions | None = None
+    ) -> models.ListInvoicesResponse:
         "List invoices\n\nReturns one page of the selected organization's invoices, newest first: every invoice issued to it with a nonzero total or actual charges, including charges fully paid by credit; drafts and empty invoices are excluded. Each names what it charged the organization's own subscription and each project. Pass subject to list only the invoices that charge the organization itself or one of its projects, and nextCursor as cursor to read further. Listing invoices does not make a payment or modify a subscription."
-        return (await self._raw_resource.list_invoices(input)).data
+        return (await self._raw_resource.list_invoices(input, options=options)).data
 
     async def preview_organization_change(
-        self, input: PreviewOrganizationChangeInput
+        self, input: PreviewOrganizationChangeInput, *, options: RequestOptions | None = None
     ) -> models.PreviewOrganizationChangeResponse:
-        "Preview an organization billing change\n\nPreviews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives."
-        return (await self._raw_resource.preview_organization_change(input)).data
+        "Preview an organization billing change\n\nPreviews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. This operation does not change billing. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives."
+        return (await self._raw_resource.preview_organization_change(input, options=options)).data
 
     async def preview_project_change(
-        self, input: PreviewProjectChangeInput
+        self, input: PreviewProjectChangeInput, *, options: RequestOptions | None = None
     ) -> models.PreviewProjectChangeResponse:
-        "Preview a project billing change\n\nPreviews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; a downgrade, or choosing the held plan again, bills nothing now; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives. Supply both organizationId and projectId; the organization must pay for the project."
-        return (await self._raw_resource.preview_project_change(input)).data
+        "Preview a project billing change\n\nPreviews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; a downgrade, or choosing the held plan again, bills nothing now; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives. Supply both organizationId and projectId; the organization must pay for the project."
+        return (await self._raw_resource.preview_project_change(input, options=options)).data
 
 
 class AsyncOrganizationsProjectsResource:
@@ -10112,28 +10640,36 @@ class AsyncOrganizationsProjectsResource:
         self._raw_resource = AsyncRawOrganizationsProjectsResource(transport)
 
     async def check_project_slug_availability(
-        self, input: CheckProjectSlugAvailabilityInput
+        self, input: CheckProjectSlugAvailabilityInput, *, options: RequestOptions | None = None
     ) -> models.CheckProjectSlugAvailabilityResponse:
         "Check project slug availability\n\nReports whether createProject would accept `slug` right now. Advisory: only the create itself allocates, so a caller must still handle SLUG_TAKEN. A malformed slug is rejected on shape; a reserved slug, a slug held by an active project, and a slug retired with a deleted project each answer `available: false` with a reason."
-        return (await self._raw_resource.check_project_slug_availability(input)).data
+        return (
+            await self._raw_resource.check_project_slug_availability(input, options=options)
+        ).data
 
-    async def count(self, input: CountProjectsInput) -> models.ProjectCount:
+    async def count(
+        self, input: CountProjectsInput, *, options: RequestOptions | None = None
+    ) -> models.ProjectCount:
         "Count projects\n\nCounts the projects the same filter would list. The count is read from the primary, so it is authoritative rather than replica-lagged."
-        return (await self._raw_resource.count(input)).data
+        return (await self._raw_resource.count(input, options=options)).data
 
-    async def create(self, input: CreateProjectInput) -> models.Project:
-        "Create project\n\nCreates in the authorized organization. In addition to account credentials, explicitly granted Service Identity API keys and M2M tokens may create projects. Project API keys cannot create projects. Creator and private credential evidence come only from the trusted authorization context. The caller-selected slug is immutable, must be 3 to 63 lowercase ASCII alphanumerics separated by single hyphens, and cannot be reserved or held by any active or deleted project."
-        return (await self._raw_resource.create(input)).data
+    async def create(
+        self, input: CreateProjectInput, *, options: RequestOptions | None = None
+    ) -> models.Project:
+        "Create project\n\nCreates in the authorized organization. In addition to account credentials, explicitly granted Service Identity API keys and M2M tokens may create projects. Project API keys cannot create projects. Caller identity and credential evidence come only from the trusted authorization context. The caller-selected slug is immutable, must be 3 to 63 lowercase ASCII alphanumerics separated by single hyphens, and cannot be reserved or held by any active or deleted project."
+        return (await self._raw_resource.create(input, options=options)).data
 
     async def get_project_closure_status(
-        self, input: GetProjectClosureStatusInput
+        self, input: GetProjectClosureStatusInput, *, options: RequestOptions | None = None
     ) -> models.GetProjectClosureStatusResponse:
         "Get project closure status\n\nReturns closure progress for projectId within organizationId, including deletionOperationId, domain progress and ready. This read operation does not initiate deletion."
-        return (await self._raw_resource.get_project_closure_status(input)).data
+        return (await self._raw_resource.get_project_closure_status(input, options=options)).data
 
-    async def list(self, input: ListProjectsInput) -> models.ProjectPage:
+    async def list(
+        self, input: ListProjectsInput, *, options: RequestOptions | None = None
+    ) -> models.ProjectPage:
         "List projects\n\nReturns a cursor-paginated page of the active projects in organizationId. Filter using query and the documented creation-time bounds, and navigate with pageSize and pageToken. Project roles are not returned and role is not a supported filter."
-        return (await self._raw_resource.list(input)).data
+        return (await self._raw_resource.list(input, options=options)).data
 
 
 class AsyncOrganizationsResource:
@@ -10143,292 +10679,363 @@ class AsyncOrganizationsResource:
         self.projects = AsyncOrganizationsProjectsResource(transport)
 
     async def accept_organization_invitation(
-        self, input: AcceptOrganizationInvitationInput
+        self, input: AcceptOrganizationInvitationInput, *, options: RequestOptions | None = None
     ) -> models.AcceptOrganizationInvitationResponse:
         "Accept an invitation to all organization projects\n\nAccepts an invitation by its token and adds the signed-in account to the organization with the invited role. An existing member keeps their role, except a Viewer who joined through SSO just-in-time provisioning and whose role has never been changed, who takes the invited role; a removed member can rejoin only with an invitation created after the removal, else 409. The account's verified email must match the invited address, the invitation must be pending and unexpired, and its inviter must still be an Owner or Admin; in an organization that requires SSO it returns 403, because the invitee joins by signing in through that SSO instead. Call it with account credentials acting as the account itself and supply the required Idempotency-Key header."
-        return (await self._raw_resource.accept_organization_invitation(input)).data
+        return (
+            await self._raw_resource.accept_organization_invitation(input, options=options)
+        ).data
 
     async def cancel_sso_subscription(
-        self, input: CancelSsoSubscriptionInput
+        self, input: CancelSsoSubscriptionInput, *, options: RequestOptions | None = None
     ) -> models.CancelSsoSubscriptionResponse:
         "Cancel the SSO subscription\n\nCancels the organization's SSO subscription at once, but only after SSO has been turned off: while SSO is still required it returns 409. The unused days become organization credit, and SSO setup closes. Only Owners and Admins can call it, with account credentials and the required Idempotency-Key header."
-        return (await self._raw_resource.cancel_sso_subscription(input)).data
+        return (await self._raw_resource.cancel_sso_subscription(input, options=options)).data
 
     async def check_organization_deletion(
-        self, input: CheckOrganizationDeletionInput
+        self, input: CheckOrganizationDeletionInput, *, options: RequestOptions | None = None
     ) -> models.CheckOrganizationDeletionResponse:
         "Check organization deletion prerequisites\n\nReports whether the organization can be deleted now (canDelete), the blockers to clear first, such as active projects or unpaid invoices, and the version to send to closeOrganization. The answer is advisory, because deletion checks again. Only the Owner can call it, with account credentials; in an organization that requires SSO, sign in through SSO, because Account Service Keys are refused."
-        return (await self._raw_resource.check_organization_deletion(input)).data
+        return (await self._raw_resource.check_organization_deletion(input, options=options)).data
 
-    async def close_organization(self, input: CloseOrganizationInput) -> None:
+    async def close_organization(
+        self, input: CloseOrganizationInput, *, options: RequestOptions | None = None
+    ) -> None:
         "Delete organization\n\nDeletes the organization: it leaves normal access when the call returns 204, and Photon then releases its app installations, registrations and billing subscriptions in the background. It cannot be undone and needs no active projects, nothing owed, and the expectedVersion from checkOrganizationDeletion; a blocked or stale request returns 409. Only the Owner can call it, with account credentials (in an organization that requires SSO, a session signed in through SSO) and the required Idempotency-Key header."
-        return (await self._raw_resource.close_organization(input)).data
+        return (await self._raw_resource.close_organization(input, options=options)).data
 
     async def commit_organization_avatar(
-        self, input: CommitOrganizationAvatarInput
+        self, input: CommitOrganizationAvatarInput, *, options: RequestOptions | None = None
     ) -> models.CommitOrganizationAvatarResponse:
         "Commit an organization avatar\n\nSets the organization's avatar to an image uploaded with createOrganizationAvatarUpload, after checking its size, type and contents, and discards the previous avatar; an invalid or expired upload is rejected. Owners and Admins can call it with account credentials. Send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
-        return (await self._raw_resource.commit_organization_avatar(input)).data
+        return (await self._raw_resource.commit_organization_avatar(input, options=options)).data
 
     async def create_organization(
-        self, input: CreateOrganizationInput
+        self, input: CreateOrganizationInput, *, options: RequestOptions | None = None
     ) -> models.CreateOrganizationResponse:
         "Create an organization\n\nCreates an organization with the supplied name and makes the calling account its Owner; SSO and just-in-time provisioning start disabled. Billing is set up after the response, so the 201 body has no billingInitialization; read it from getOrganization or listOrganizations to follow the setup. Call it with account credentials acting as the account itself and supply the required Idempotency-Key header; an account that is closing gets 409."
-        return (await self._raw_resource.create_organization(input)).data
+        return (await self._raw_resource.create_organization(input, options=options)).data
 
     async def create_organization_avatar_upload(
-        self, input: CreateOrganizationAvatarUploadInput
+        self, input: CreateOrganizationAvatarUploadInput, *, options: RequestOptions | None = None
     ) -> models.CreateOrganizationAvatarUploadResponse:
         "Create an organization avatar upload\n\nUpload a JPEG, PNG, or WebP image up to 5 MiB with every returned form field and the file last. Upload directly without Photon credentials, then commit the uploadId. Do not log or cache upload URLs or fields."
-        return (await self._raw_resource.create_organization_avatar_upload(input)).data
+        return (
+            await self._raw_resource.create_organization_avatar_upload(input, options=options)
+        ).data
 
     async def create_organization_invitation(
-        self, input: CreateOrganizationInvitationInput
+        self, input: CreateOrganizationInvitationInput, *, options: RequestOptions | None = None
     ) -> models.CreateOrganizationInvitationResponse:
         "Invite a Member or Viewer to all organization projects\n\nInvites an email address to the organization as a Member or Viewer and emails it a link that stays valid for 7 days; the Admin and Owner roles can't be invited. Owners and Admins can call it with account credentials and the required Idempotency-Key header. Inviting an address that has a pending invitation for the same role resends it and a different role returns 409, while sending too often (twice within a minute, more than 30 an hour or 100 pending per organization) returns 429."
-        return (await self._raw_resource.create_organization_invitation(input)).data
+        return (
+            await self._raw_resource.create_organization_invitation(input, options=options)
+        ).data
 
     async def create_organization_oauth_client(
-        self, input: CreateOrganizationOauthClientInput
+        self, input: CreateOrganizationOauthClientInput, *, options: RequestOptions | None = None
     ) -> models.CreateOrganizationOauthClientResponse:
         "Create an organization OAuth client\n\nUse the same UUID Idempotency-Key and payload when retrying. Unknown provider outcomes require recovery; do not use a new key to retry an uncertain creation."
-        return (await self._raw_resource.create_organization_oauth_client(input)).data
+        return (
+            await self._raw_resource.create_organization_oauth_client(input, options=options)
+        ).data
 
     async def create_service_identity(
-        self, input: CreateServiceIdentityInput
+        self, input: CreateServiceIdentityInput, *, options: RequestOptions | None = None
     ) -> models.CreateServiceIdentityResponse:
         "Create an organization Service Identity\n\nCreates an active Service Identity, a machine identity owned by the organization, with a name and a non-empty set of permissions from listServiceIdentityPermissions; it starts with no credentials. Owners and Admins can call it with account credentials and the required Idempotency-Key header."
-        return (await self._raw_resource.create_service_identity(input)).data
+        return (await self._raw_resource.create_service_identity(input, options=options)).data
 
     async def create_service_identity_api_key(
-        self, input: CreateServiceIdentityApiKeyInput
+        self, input: CreateServiceIdentityApiKeyInput, *, options: RequestOptions | None = None
     ) -> models.CreateServiceIdentityApiKeyResponse:
         "Create a one-time Service Identity API key\n\nCreates an API key for an active Service Identity that no app installation manages; the key acts with the identity's current permissions. Only a response with status created returns the key's value, so store it securely; retry with the same Idempotency-Key, which must be a UUID: a retry returns the key's status without the value, and status recovery_required means the value was not delivered and can't be retrieved. Owners and Admins can call it with account credentials, and expectedIdentityVersion must match the identity's current version, else 409; an identity managed by an app installation also returns 409."
-        return (await self._raw_resource.create_service_identity_api_key(input)).data
+        return (
+            await self._raw_resource.create_service_identity_api_key(input, options=options)
+        ).data
 
     async def create_service_identity_client_secret(
-        self, input: CreateServiceIdentityClientSecretInput
+        self,
+        input: CreateServiceIdentityClientSecretInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> models.CreateServiceIdentityClientSecretResponse:
         "Create a one-time Service Identity M2M client secret\n\nCreates a client secret for the machine-to-machine (M2M) application of an active Service Identity that no app installation manages, setting the application up first if needed, and returns the secret with its clientId once; exchange them for M2M access tokens, and never send the secret to other operations. Retry with the same Idempotency-Key, which must be a UUID: a retry returns the status without the secret, and a response with stage application (status recovery_required or cleanup_required) means the application could not be set up and no secret exists. Owners and Admins can call it with account credentials, and expectedIdentityVersion must match the identity's current version, else 409; an identity managed by an app installation also returns 409."
-        return (await self._raw_resource.create_service_identity_client_secret(input)).data
+        return (
+            await self._raw_resource.create_service_identity_client_secret(input, options=options)
+        ).data
 
     async def delete_organization_oauth_client(
-        self, input: DeleteOrganizationOauthClientInput
+        self, input: DeleteOrganizationOauthClientInput, *, options: RequestOptions | None = None
     ) -> models.DeleteOrganizationOauthClientResponse:
         "Delete an organization OAuth client\n\nQueues deletion of the exact provider application. Retry DELETE to read its current status. Accepted deletion does not promise immediate token revocation."
-        return (await self._raw_resource.delete_organization_oauth_client(input)).data
+        return (
+            await self._raw_resource.delete_organization_oauth_client(input, options=options)
+        ).data
 
     async def delete_organization_oauth_client_secret(
-        self, input: DeleteOrganizationOauthClientSecretInput
+        self,
+        input: DeleteOrganizationOauthClientSecretInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> None:
         "Revoke an organization OAuth client's secret\n\nStops every secret of the app now, including one still in its grace period."
-        return (await self._raw_resource.delete_organization_oauth_client_secret(input)).data
+        return (
+            await self._raw_resource.delete_organization_oauth_client_secret(input, options=options)
+        ).data
 
     async def get_current_organization(
-        self, input: GetCurrentOrganizationInput | None = None
+        self,
+        input: GetCurrentOrganizationInput | None = None,
+        *,
+        options: RequestOptions | None = None,
     ) -> models.GetCurrentOrganizationResponse:
         "Read the credential's organization\n\nReads the organization the credential is bound to: the organization an OAuth grant was consented for, or a Service Identity's own organization. Use it to discover which organization an integration acts for, and pass its organizationId to organization-scoped operations."
-        return (await self._raw_resource.get_current_organization(input)).data
+        return (await self._raw_resource.get_current_organization(input, options=options)).data
 
-    async def get_organization(self, input: GetOrganizationInput) -> models.GetOrganizationResponse:
+    async def get_organization(
+        self, input: GetOrganizationInput, *, options: RequestOptions | None = None
+    ) -> models.GetOrganizationResponse:
         "Read organization name and avatar\n\nReturns the organization's name, avatar URL, version and billing setup progress. Any member can read it with account credentials, and a Service Identity granted organization:read or an OAuth grant with the organization:read scope can read the organization it is bound to. Send version as expectedVersion when renaming the organization or changing its avatar."
-        return (await self._raw_resource.get_organization(input)).data
+        return (await self._raw_resource.get_organization(input, options=options)).data
 
     async def get_organization_oauth_client(
-        self, input: GetOrganizationOauthClientInput
+        self, input: GetOrganizationOauthClientInput, *, options: RequestOptions | None = None
     ) -> models.GetOrganizationOauthClientResponse:
         "Read an organization OAuth client\n\nReturns one third-party OAuth application the organization owns, without its secret. Any member can call it with account credentials. The ETag response header is the value updateOrganizationOauthClient needs in If-Match."
-        return (await self._raw_resource.get_organization_oauth_client(input)).data
+        return (await self._raw_resource.get_organization_oauth_client(input, options=options)).data
 
     async def get_organization_oauth_client_secret(
-        self, input: GetOrganizationOauthClientSecretInput
+        self, input: GetOrganizationOauthClientSecretInput, *, options: RequestOptions | None = None
     ) -> models.GetOrganizationOauthClientSecretResponse:
         "Read an organization OAuth client's secret\n\nReturns metadata about an OAuth application's secret: the current secret and, after a rotation, the previous one while it still works, with each one's hint, creation and last-use times; the previous one's validUntil is when it stops working, or null when it lasts until the next rotation or revocation. The secret value is never returned. Only Owners and Admins can call it, with account credentials."
-        return (await self._raw_resource.get_organization_oauth_client_secret(input)).data
+        return (
+            await self._raw_resource.get_organization_oauth_client_secret(input, options=options)
+        ).data
 
     async def get_service_identity(
-        self, input: GetServiceIdentityInput
+        self, input: GetServiceIdentityInput, *, options: RequestOptions | None = None
     ) -> models.GetServiceIdentityResponse:
         "Read a Service Identity\n\nReturns one Service Identity with its permissions, status and version. Any member can call it with account credentials. Send version as expectedVersion to updateServiceIdentity, or as expectedIdentityVersion when creating a credential."
-        return (await self._raw_resource.get_service_identity(input)).data
+        return (await self._raw_resource.get_service_identity(input, options=options)).data
 
     async def get_sso_subscription(
-        self, input: GetSsoSubscriptionInput
+        self, input: GetSsoSubscriptionInput, *, options: RequestOptions | None = None
     ) -> models.GetSsoSubscriptionResponse:
         "Read SSO subscription\n\nReturns the organization's SSO subscription: its state, the current monthly price and billing period, whether a payment method must be added first, and whether SSO can be set up (canConfigure). Only Owners and Admins can call it, with account credentials. Send its amount, currency and currentPeriodEnd as the quote when subscribing."
-        return (await self._raw_resource.get_sso_subscription(input)).data
+        return (await self._raw_resource.get_sso_subscription(input, options=options)).data
 
     async def get_ten_dlc_brand_otp(
-        self, input: GetTenDlcBrandOtpInput
+        self, input: GetTenDlcBrandOtpInput, *, options: RequestOptions | None = None
     ) -> models.GetTenDlcBrandOtpResponse:
         "Get sole-proprietor OTP status\n\nReturns the redacted one-time-password verification state for an organization-owned brand. OTP verification applies only to sole-proprietor brands. Reading this endpoint does not request another code or verify a supplied code; use the trigger and verification operations for those actions. Supply organization_id for the organization that owns the registration."
-        return (await self._raw_resource.get_ten_dlc_brand_otp(input)).data
+        return (await self._raw_resource.get_ten_dlc_brand_otp(input, options=options)).data
 
     async def leave_organization(
-        self, input: LeaveOrganizationInput
+        self, input: LeaveOrganizationInput, *, options: RequestOptions | None = None
     ) -> models.LeaveOrganizationResponse:
         "Leave an organization; Owners must transfer or close first\n\nRemoves the authenticated account's own membership. Nothing is revoked: the account's sessions, OAuth grants and Account Service Keys stop being accepted for the organization and its projects shortly after the call, and project API keys and Service Identity credentials it created keep working until they are revoked. Any member except the Owner can call it, with account credentials or an OAuth grant for this organization with the organization:read scope; the Owner gets 409 and must transfer ownership or delete the organization first. Send the caller's own membership version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
-        return (await self._raw_resource.leave_organization(input)).data
+        return (await self._raw_resource.leave_organization(input, options=options)).data
 
     async def list_organization_invitations(
-        self, input: ListOrganizationInvitationsInput
+        self, input: ListOrganizationInvitationsInput, *, options: RequestOptions | None = None
     ) -> models.ListOrganizationInvitationsResponse:
         "List pending organization invitations\n\nLists the organization's pending, unexpired invitations, newest first, in one unpaginated response; accepted, revoked and expired invitations are left out, and invitation links are never returned. Owners and Admins can call it with account credentials."
-        return (await self._raw_resource.list_organization_invitations(input)).data
+        return (await self._raw_resource.list_organization_invitations(input, options=options)).data
 
     async def list_organization_members(
-        self, input: ListOrganizationMembersInput
+        self, input: ListOrganizationMembersInput, *, options: RequestOptions | None = None
     ) -> models.ListOrganizationMembersResponse:
         "List current organization members\n\nLists the organization's active members, ordered by account ID, with each member's role, membership version and account profile (name, email and picture); a member whose account is missing or deleted has a null profile. Any member can call it with account credentials, or with an OAuth grant for this organization that has the organization:read scope. The list is not paginated."
-        return (await self._raw_resource.list_organization_members(input)).data
+        return (await self._raw_resource.list_organization_members(input, options=options)).data
 
     async def list_organization_oauth_clients(
-        self, input: ListOrganizationOauthClientsInput
+        self, input: ListOrganizationOauthClientsInput, *, options: RequestOptions | None = None
     ) -> models.ListOrganizationOauthClientsResponse:
         "List organization OAuth clients\n\nLists the third-party OAuth applications the organization owns, with their metadata but never their secrets, in one unpaginated response. Any member can call it with account credentials."
-        return (await self._raw_resource.list_organization_oauth_clients(input)).data
+        return (
+            await self._raw_resource.list_organization_oauth_clients(input, options=options)
+        ).data
 
     async def list_organizations(
-        self, input: ListOrganizationsInput | None = None
+        self, input: ListOrganizationsInput | None = None, *, options: RequestOptions | None = None
     ) -> models.ListOrganizationsResponse:
         "List organizations\n\nLists the active organizations the authenticated account belongs to, oldest first, in one unpaginated response; ownedOrganizationIds marks the ones it owns. Call it with account credentials acting as the account itself; OAuth grants and Service Identities are refused."
-        return (await self._raw_resource.list_organizations(input)).data
+        return (await self._raw_resource.list_organizations(input, options=options)).data
 
     async def list_service_identities(
-        self, input: ListServiceIdentitiesInput
+        self, input: ListServiceIdentitiesInput, *, options: RequestOptions | None = None
     ) -> models.ListServiceIdentitiesResponse:
         "List organization Service Identities\n\nLists every Service Identity in the organization, oldest first, including disabled ones and those managed by app installations, in one unpaginated response. Any member can call it with account credentials. It returns identity metadata only, never credentials."
-        return (await self._raw_resource.list_service_identities(input)).data
+        return (await self._raw_resource.list_service_identities(input, options=options)).data
 
     async def list_service_identity_credentials(
-        self, input: ListServiceIdentityCredentialsInput
+        self, input: ListServiceIdentityCredentialsInput, *, options: RequestOptions | None = None
     ) -> models.ListServiceIdentityCredentialsResponse:
         "List Service Identity credential metadata\n\nLists metadata for every API key and client secret of a Service Identity, oldest first, including pending and revoked ones, in one unpaginated response; it never returns secret values. Only Owners and Admins can call it, with account credentials."
-        return (await self._raw_resource.list_service_identity_credentials(input)).data
+        return (
+            await self._raw_resource.list_service_identity_credentials(input, options=options)
+        ).data
 
     async def list_service_identity_permissions(
-        self, input: ListServiceIdentityPermissionsInput
+        self, input: ListServiceIdentityPermissionsInput, *, options: RequestOptions | None = None
     ) -> models.ListServiceIdentityPermissionsResponse:
         "List grantable Service Identity permissions\n\nThe permissions a Service Identity or installable app may be granted: the machine set of the current auth contract, sorted. Create, update, and app declarations accept exactly these values."
-        return (await self._raw_resource.list_service_identity_permissions(input)).data
+        return (
+            await self._raw_resource.list_service_identity_permissions(input, options=options)
+        ).data
 
     async def preview_organization_invitation(
-        self, input: PreviewOrganizationInvitationInput
+        self, input: PreviewOrganizationInvitationInput, *, options: RequestOptions | None = None
     ) -> models.PreviewOrganizationInvitationResponse:
         "Preview an organization invitation after sign-in\n\nReturns what an invitation offers to the signed-in account that holds its token: the organization, role, expiry, member count and inviter with masked email addresses, whether the account's verified email matches the invitation, and whether SSO is required to accept it. Call it with account credentials acting as the account itself; it changes nothing. An unknown token returns 404, and an expired or revoked invitation, or one accepted by another account, returns 409."
-        return (await self._raw_resource.preview_organization_invitation(input)).data
+        return (
+            await self._raw_resource.preview_organization_invitation(input, options=options)
+        ).data
 
     async def remove_organization_avatar(
-        self, input: RemoveOrganizationAvatarInput
+        self, input: RemoveOrganizationAvatarInput, *, options: RequestOptions | None = None
     ) -> models.RemoveOrganizationAvatarResponse:
         "Remove an organization avatar\n\nRemoves the organization's custom avatar, so avatarUrl becomes null, and returns the organization with its new version. Owners and Admins can call it with account credentials. Send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
-        return (await self._raw_resource.remove_organization_avatar(input)).data
+        return (await self._raw_resource.remove_organization_avatar(input, options=options)).data
 
     async def remove_organization_member(
-        self, input: RemoveOrganizationMemberInput
+        self, input: RemoveOrganizationMemberInput, *, options: RequestOptions | None = None
     ) -> models.RemoveOrganizationMemberResponse:
         "Remove a member from the organization\n\nRemoves an active member from the organization. Nothing is revoked: their sessions, OAuth grants and Account Service Keys stop being accepted for the organization and its projects shortly after the call, and project API keys and Service Identity credentials they created or hold keep working until an Owner or Admin revokes them. Owners and Admins can call it with account credentials, but only the Owner can remove an Admin, and neither the Owner nor the caller can be removed here (409; leave with leaveOrganization). Send the member's current membership version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
-        return (await self._raw_resource.remove_organization_member(input)).data
+        return (await self._raw_resource.remove_organization_member(input, options=options)).data
 
     async def resend_organization_invitation(
-        self, input: ResendOrganizationInvitationInput
+        self, input: ResendOrganizationInvitationInput, *, options: RequestOptions | None = None
     ) -> models.ResendOrganizationInvitationResponse:
         "Resend an organization invitation\n\nEmails a pending invitation again with the same link and restarts its 7-day expiry. Owners and Admins can call it with account credentials and the required Idempotency-Key header. An expired, revoked or accepted invitation returns 409, and a resend within 60 seconds of the last send, or past the organization's 30 sends an hour, returns 429."
-        return (await self._raw_resource.resend_organization_invitation(input)).data
+        return (
+            await self._raw_resource.resend_organization_invitation(input, options=options)
+        ).data
 
     async def revoke_organization_invitation(
-        self, input: RevokeOrganizationInvitationInput
+        self, input: RevokeOrganizationInvitationInput, *, options: RequestOptions | None = None
     ) -> models.RevokeOrganizationInvitationResponse:
         "Revoke an organization invitation\n\nRevokes an invitation so its link can no longer be previewed or accepted; no email is sent, and an accepted invitation can't be revoked (409). Owners and Admins can call it with account credentials and the required Idempotency-Key header. Revoking an invitation that is already revoked or expired succeeds."
-        return (await self._raw_resource.revoke_organization_invitation(input)).data
+        return (
+            await self._raw_resource.revoke_organization_invitation(input, options=options)
+        ).data
 
     async def revoke_service_identity_credential(
-        self, input: RevokeServiceIdentityCredentialInput
+        self, input: RevokeServiceIdentityCredentialInput, *, options: RequestOptions | None = None
     ) -> models.RevokeServiceIdentityCredentialResponse:
         "Request Service Identity credential revocation\n\nRevokes an API key or client secret of a Service Identity; this can't be undone. An API key stops working shortly after the call, while a client secret gets revocationRequestedAt and stays active until Photon confirms its deletion, and M2M access tokens already issued with it keep working until they expire; repeating the call returns the current state. Owners and Admins can call it with account credentials; send the credential's current version as expectedVersion, because a stale version returns 409, and the required Idempotency-Key header."
-        return (await self._raw_resource.revoke_service_identity_credential(input)).data
+        return (
+            await self._raw_resource.revoke_service_identity_credential(input, options=options)
+        ).data
 
     async def rotate_organization_oauth_client_secret(
-        self, input: RotateOrganizationOauthClientSecretInput
+        self,
+        input: RotateOrganizationOauthClientSecretInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> models.RotateOrganizationOauthClientSecretResponse:
         "Rotate an organization OAuth client's secret\n\nMints a new secret, then retires the one it replaces: `normal` keeps the old one working for one hour, `emergency` stops it now. A secret not created through Photon always stops now. Rotating again ends an earlier grace period. Retain the same UUID Idempotency-Key when retrying: only the delivering request returns plaintext."
-        return (await self._raw_resource.rotate_organization_oauth_client_secret(input)).data
+        return (
+            await self._raw_resource.rotate_organization_oauth_client_secret(input, options=options)
+        ).data
 
     async def setup_organization_oauth_client_secret(
-        self, input: SetupOrganizationOauthClientSecretInput
+        self,
+        input: SetupOrganizationOauthClientSecretInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> (
         models.SetupOrganizationOauthClientSecretResponse
         | models.SetupOrganizationOauthClientSecretCreatedResponse
     ):
         "Create an organization OAuth client's secret\n\nMints the app's first secret; once it has one, rotate it instead. Retain the same UUID Idempotency-Key when retrying: only the delivering request returns plaintext."
-        return (await self._raw_resource.setup_organization_oauth_client_secret(input)).data
+        return (
+            await self._raw_resource.setup_organization_oauth_client_secret(input, options=options)
+        ).data
 
-    async def subscribe_sso(self, input: SubscribeSsoInput) -> models.SubscribeSsoResponse:
+    async def subscribe_sso(
+        self, input: SubscribeSsoInput, *, options: RequestOptions | None = None
+    ) -> models.SubscribeSsoResponse:
         "Subscribe to organization SSO\n\nStarts the organization's SSO subscription, billed monthly in advance and prorated. Send the current quote from getSsoSubscription as expectedAmount, expectedCurrency and expectedCurrentPeriodEnd, because a changed price returns 409; the 202 means the request was accepted, and the charge and its outcome then show in the subscription's state. Only Owners and Admins can call it, with account credentials and the required Idempotency-Key header."
-        return (await self._raw_resource.subscribe_sso(input)).data
+        return (await self._raw_resource.subscribe_sso(input, options=options)).data
 
     async def transfer_organization_ownership(
-        self, input: TransferOrganizationOwnershipInput
+        self, input: TransferOrganizationOwnershipInput, *, options: RequestOptions | None = None
     ) -> models.TransferOrganizationOwnershipResponse:
         "Transfer organization ownership to an existing member\n\nMakes another active member the Owner and turns the current Owner into a Member. Only the Owner can call it, with account credentials and the required Idempotency-Key header. Send the organization's current version, not a membership version, as expectedVersion; a stale version or naming yourself returns 409."
-        return (await self._raw_resource.transfer_organization_ownership(input)).data
+        return (
+            await self._raw_resource.transfer_organization_ownership(input, options=options)
+        ).data
 
     async def trigger_ten_dlc_brand_otp(
-        self, input: TriggerTenDlcBrandOtpInput
+        self, input: TriggerTenDlcBrandOtpInput, *, options: RequestOptions | None = None
     ) -> models.TriggerTenDlcBrandOtpResponse:
         "Trigger sole-proprietor OTP\n\nRequests delivery of a verification code for an organization-owned sole-proprietor brand. A 202 response acknowledges the delivery request and does not mean the brand has been verified. Inspect the OTP status and submit the received code through verifyTenDlcBrandOtp. Requests may be rate limited. Supply the required Idempotency-Key header. Supply organization_id for the organization that owns the registration."
-        return (await self._raw_resource.trigger_ten_dlc_brand_otp(input)).data
+        return (await self._raw_resource.trigger_ten_dlc_brand_otp(input, options=options)).data
 
     async def update_organization(
-        self, input: UpdateOrganizationInput
+        self, input: UpdateOrganizationInput, *, options: RequestOptions | None = None
     ) -> models.UpdateOrganizationResponse:
         "Change organization name\n\nRenames the organization and returns it with its new version. Owners and Admins can call it with account credentials. Send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
-        return (await self._raw_resource.update_organization(input)).data
+        return (await self._raw_resource.update_organization(input, options=options)).data
 
     async def update_organization_member_role(
-        self, input: UpdateOrganizationMemberRoleInput
+        self, input: UpdateOrganizationMemberRoleInput, *, options: RequestOptions | None = None
     ) -> models.UpdateOrganizationMemberRoleResponse:
         "Change an organization member's role across all projects\n\nChanges an active member's role to admin, member or viewer. Owners and Admins can call it with account credentials, but only the Owner can make someone an Admin or change an Admin's role, and nobody can change the Owner's role or their own here (409). Send the member's current membership version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
-        return (await self._raw_resource.update_organization_member_role(input)).data
+        return (
+            await self._raw_resource.update_organization_member_role(input, options=options)
+        ).data
 
     async def update_organization_oauth_client(
-        self, input: UpdateOrganizationOauthClientInput
+        self, input: UpdateOrganizationOauthClientInput, *, options: RequestOptions | None = None
     ) -> models.UpdateOrganizationOauthClientResponse:
         "Update an organization OAuth client\n\nRequires If-Match from the latest read. Stale versions return 412. A failed response may follow an applied provider update; reread before retrying. Version checking is not provider atomic CAS."
-        return (await self._raw_resource.update_organization_oauth_client(input)).data
+        return (
+            await self._raw_resource.update_organization_oauth_client(input, options=options)
+        ).data
 
     async def update_service_identity(
-        self, input: UpdateServiceIdentityInput
+        self, input: UpdateServiceIdentityInput, *, options: RequestOptions | None = None
     ) -> models.UpdateServiceIdentityResponse:
         "Update a Service Identity\n\nChanges a Service Identity's name, its permissions (the list replaces the current one) or its status. Disabling an identity stops its API keys and M2M tokens from authorizing requests without revoking them, and an identity managed by an app installation can't be changed (409). Owners and Admins can call it with account credentials; send the current version as expectedVersion, because a stale version returns 409, and supply the required Idempotency-Key header."
-        return (await self._raw_resource.update_service_identity(input)).data
+        return (await self._raw_resource.update_service_identity(input, options=options)).data
 
     async def verify_ten_dlc_brand_otp(
-        self, input: VerifyTenDlcBrandOtpInput
+        self, input: VerifyTenDlcBrandOtpInput, *, options: RequestOptions | None = None
     ) -> models.VerifyTenDlcBrandOtpResponse:
         "Verify sole-proprietor OTP\n\nSubmits otpPin for the selected organization-owned sole-proprietor brand and returns its updated, redacted verification state. A rejected code, a locked verification flow, or rate limiting is reported as an error; read the current OTP status before deciding whether to request another code. Supply the required Idempotency-Key header. Supply organization_id for the organization that owns the registration."
-        return (await self._raw_resource.verify_ten_dlc_brand_otp(input)).data
+        return (await self._raw_resource.verify_ten_dlc_brand_otp(input, options=options)).data
 
 
 class AsyncProjectsPlatformsImessageAssignmentsResource:
     def __init__(self, transport: AsyncTransport) -> None:
         self._raw_resource = AsyncRawProjectsPlatformsImessageAssignmentsResource(transport)
 
-    async def create(self, input: CreateSharedLineAssignmentInput) -> models.SharedLineAssignment:
+    async def create(
+        self, input: CreateSharedLineAssignmentInput, *, options: RequestOptions | None = None
+    ) -> models.SharedLineAssignment:
         "Create shared line assignment\n\nMaps an end user's iMessage handle — an E.164 phone number or an email address — onto one of the project's pooled shared iMessage lines, consuming a seat from the project's entitlement. The assigned number is allocated by the server. When an email address is supplied in `email` the user is sent an invite asynchronously to that address; it is never inferred from the handle, and the response never reports whether the send succeeded. Requires the platforms:write permission bound to the project resource in the path."
-        return (await self._raw_resource.create(input)).data
+        return (await self._raw_resource.create(input, options=options)).data
 
-    async def get(self, input: GetSharedLineAssignmentInput) -> models.SharedLineAssignment:
+    async def get(
+        self, input: GetSharedLineAssignmentInput, *, options: RequestOptions | None = None
+    ) -> models.SharedLineAssignment:
         "Get shared line assignment\n\nReads one shared line assignment. Requires the platforms:read permission bound to the project resource in the path."
-        return (await self._raw_resource.get(input)).data
+        return (await self._raw_resource.get(input, options=options)).data
 
-    async def list(self, input: ListSharedLineAssignmentsInput) -> models.SharedLineAssignmentPage:
+    async def list(
+        self, input: ListSharedLineAssignmentsInput, *, options: RequestOptions | None = None
+    ) -> models.SharedLineAssignmentPage:
         "List shared line assignments\n\nLists the project's shared line assignments, oldest first. Released assignments are excluded unless includeReleased is set. Requires the platforms:read permission bound to the project resource in the path."
-        return (await self._raw_resource.list(input)).data
+        return (await self._raw_resource.list(input, options=options)).data
 
-    async def release(self, input: ReleaseSharedLineAssignmentInput) -> models.SharedLineAssignment:
+    async def release(
+        self, input: ReleaseSharedLineAssignmentInput, *, options: RequestOptions | None = None
+    ) -> models.SharedLineAssignment:
         "Release shared line assignment\n\nReleases a shared line assignment, freeing both its seat and its handle for reassignment. The row is retained for audit and returned with releasedAt set, so repeating the call is safe. Requires the platforms:write permission bound to the project resource in the path."
-        return (await self._raw_resource.release(input)).data
+        return (await self._raw_resource.release(input, options=options)).data
 
 
 class AsyncProjectsPlatformsImessageResource:
@@ -10442,363 +11049,487 @@ class AsyncProjectsPlatformsResource:
         self._raw_resource = AsyncRawProjectsPlatformsResource(transport)
         self.imessage = AsyncProjectsPlatformsImessageResource(transport)
 
-    async def assign_sms_line_campaign(self, input: AssignSmsLineCampaignInput) -> models.Operation:
+    async def assign_sms_line_campaign(
+        self, input: AssignSmsLineCampaignInput, *, options: RequestOptions | None = None
+    ) -> models.Operation:
         "Assign or replace SMS line campaign\n\nAttach a ready campaign from this project’s organization to its line. Requires platforms:write for the project; human and machine actors retain their authenticated identity. Requires a permanent Idempotency-Key and the current assignment version. Provider provisioning runs asynchronously. If the operation fails, its `error` is the problem of one of these codes: `SMS_CAMPAIGN_PROVIDER_REJECTED`, `SMS_CAMPAIGN_RECONCILIATION_REQUIRED`, `SMS_CAMPAIGN_REVOKED`."
-        return (await self._raw_resource.assign_sms_line_campaign(input)).data
+        return (await self._raw_resource.assign_sms_line_campaign(input, options=options)).data
 
     async def assign_voice_line_profile(
-        self, input: AssignVoiceLineProfileInput
+        self, input: AssignVoiceLineProfileInput, *, options: RequestOptions | None = None
     ) -> models.VoiceLineProfileAssignment:
         "Assign Voice line profile\n\nAssigns or replaces a line's explicit additional-profile override when the resource version matches. The current default cannot be assigned explicitly. The pstn_voice ability remains the admission source of truth. Requires platforms:write bound to the path project."
-        return (await self._raw_resource.assign_voice_line_profile(input)).data
+        return (await self._raw_resource.assign_voice_line_profile(input, options=options)).data
 
     async def batch_update_voice_line_profile_assignments(
-        self, input: BatchUpdateVoiceLineProfileAssignmentsInput
+        self,
+        input: BatchUpdateVoiceLineProfileAssignmentsInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> models.BatchUpdateVoiceLineProfileAssignmentsResponse:
         "Batch update Voice line assignments\n\nAtomically sets additional-profile overrides or switches lines back to the project default for up to 100 Voice-capable lines. A null profileId means use the default. Every expected resource version must match or no line changes. Requires platforms:write bound to the path project."
-        return (await self._raw_resource.batch_update_voice_line_profile_assignments(input)).data
+        return (
+            await self._raw_resource.batch_update_voice_line_profile_assignments(
+                input, options=options
+            )
+        ).data
 
-    async def cancel_operation(self, input: CancelOperationInput) -> models.Operation:
+    async def cancel_operation(
+        self, input: CancelOperationInput, *, options: RequestOptions | None = None
+    ) -> models.Operation:
         "Cancel operation\n\nWithdraws a provision that has not been fulfilled yet. This is an operations action rather than a DELETE, because there is nothing to delete: no resource exists until the work commits. Whether it is accepted depends on the resource type — a dedicated iMessage line may sit waiting on inventory for hours and withdrawing costs nothing, while an SMS number is cancellable during inventory waiting and answers 409 once the workflow commits to its first provider order. Campaign assignment and detachment operations cannot be cancelled in any state. Wait for completion before requesting another change; that new change is not a guaranteed rollback. The output-only `cancellable` field is a snapshot; the cancellation transaction always checks the current phase under a row lock. A cancel that loses the race against the work finishing also answers 409: the resource exists and is billed for, so what you want then is to release it. Nothing is charged for a cancelled provision — billing runs after the work, so there is never anything to refund. Requires the platforms:write permission bound to the project resource in the path."
-        return (await self._raw_resource.cancel_operation(input)).data
+        return (await self._raw_resource.cancel_operation(input, options=options)).data
 
     async def configure_voice_profile_outbound(
-        self, input: ConfigureVoiceProfileOutboundInput
+        self, input: ConfigureVoiceProfileOutboundInput, *, options: RequestOptions | None = None
     ) -> models.ConfigureVoiceProfileOutboundResponse:
         "Configure Voice outbound credential\n\nConfigures a SIP credential for outbound calls from a profile when the shared profile version matches. Outbound calls are paid usage, so the organization needs a payment method and no invoices overdue 7 days or more; otherwise this returns 402 ENTITLEMENT_REQUIRED with a reason. authentication.algorithm is required: SHA-256 is recommended, while MD5 is a weaker legacy option supported over UDP, TCP, and TLS; TLS is strongly recommended because UDP and TCP do not encrypt SIP signaling. The profileId may identify the default or an additional profile. The new password is returned once and is never recoverable. Requires platforms:write bound to the path project."
-        return (await self._raw_resource.configure_voice_profile_outbound(input)).data
+        return (
+            await self._raw_resource.configure_voice_profile_outbound(input, options=options)
+        ).data
 
-    async def connect_email_domain(self, input: ConnectEmailDomainInput) -> models.Operation:
+    async def connect_email_domain(
+        self, input: ConnectEmailDomainInput, *, options: RequestOptions | None = None
+    ) -> models.Operation:
         "Connect email domain\n\nReserves a normalized DNS domain and starts its durable email-provider setup. The accepted provision consumes one email-domain entitlement slot until it fails, is cancelled, or becomes a live resource; the plan's email.max_email_domains value sets the project limit. The customer resource does not exist until provider identity and DNS setup reach READY; poll the returned operation for progress. A domain may have only one unfinished provision or live resource globally. Email domains have no additional per-domain charge. The Idempotency-Key is required and permanent: replaying the same key and canonical domain returns the original operation forever. Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `EMAIL_DOMAIN_PROVIDER_REJECTED`, `EMAIL_DOMAIN_VERIFICATION_FAILED`, `EMAIL_DOMAIN_VERIFICATION_TIMED_OUT`, `EMAIL_TENANT_SETUP_TIMED_OUT`."
-        return (await self._raw_resource.connect_email_domain(input)).data
+        return (await self._raw_resource.connect_email_domain(input, options=options)).data
 
-    async def connect_telegram_bot(self, input: ConnectTelegramBotInput) -> models.Operation:
-        "Connect Telegram bot\n\nStarts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to create a new bot, whose name and username are chosen in Telegram, or to connect an existing managed bot, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged. If the operation fails, its `error` is the problem of one of these codes: `TELEGRAM_CONFIGURATION_FAILED`."
-        return (await self._raw_resource.connect_telegram_bot(input)).data
+    async def connect_telegram_bot(
+        self, input: ConnectTelegramBotInput, *, options: RequestOptions | None = None
+    ) -> models.Operation:
+        "Connect Telegram bot\n\nStarts a free managed Telegram bot connection. Each project may own one current bot and have one unfinished Telegram provision, including user interaction and failure cleanup. A matching Idempotency-Key replays its original operation before either conflict check, even after completion or while a newer setup is active. For a different key, an unfinished provision takes precedence over an existing bot and returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Only when no provision is active does an existing non-retired bot return 409 TELEGRAM_BOT_ALREADY_CONNECTED with its resourceId; disconnect it before connecting another, even if messaging is disabled or disconnect is unfinished. Rejected keys remain reusable. Open detail.setupUrl to create a new bot, whose name and username are chosen in Telegram, or to connect an existing managed bot, then poll Location. The link remains usable while the operation is active and never expires. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged. If the operation fails, its `error` is the problem of one of these codes: `TELEGRAM_BOT_ALREADY_CONNECTED`, `TELEGRAM_CONFIGURATION_FAILED`."
+        return (await self._raw_resource.connect_telegram_bot(input, options=options)).data
 
     async def count_filtered_verification_codes(
-        self, input: CountFilteredVerificationCodesInput
+        self, input: CountFilteredVerificationCodesInput, *, options: RequestOptions | None = None
     ) -> models.FilteredVerificationCodeCount:
         "Count filtered verification codes\n\nCounts the verification codes Photon kept from this project's dedicated lines, optionally for one `platform`. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Requires the platforms:read permission bound to the project resource in the path."
-        return (await self._raw_resource.count_filtered_verification_codes(input)).data
+        return (
+            await self._raw_resource.count_filtered_verification_codes(input, options=options)
+        ).data
 
     async def count_resource_filtered_verification_codes(
-        self, input: CountResourceFilteredVerificationCodesInput
+        self,
+        input: CountResourceFilteredVerificationCodesInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> models.FilteredVerificationCodeCount:
         "Count a line's filtered verification codes\n\nCounts the verification codes Photon kept from one dedicated line. Without `receivedAfter` and `receivedBefore` the window is the 30 days before the request; a window longer than 366 days is rejected. The response echoes the window it resolved, so the number always says which period it covers. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a dedicated line receives both iMessage and WhatsApp. Requires the platforms:read permission bound to the project resource in the path."
-        return (await self._raw_resource.count_resource_filtered_verification_codes(input)).data
+        return (
+            await self._raw_resource.count_resource_filtered_verification_codes(
+                input, options=options
+            )
+        ).data
 
     async def create_default_voice_profile(
-        self, input: CreateDefaultVoiceProfileInput
+        self, input: CreateDefaultVoiceProfileInput, *, options: RequestOptions | None = None
     ) -> models.VoiceProfile:
         "Create default Voice profile\n\nCreates the project default Voice profile when absent. An identical replay returns the existing default without changing its version; a different existing default conflicts. Direction configuration is managed separately. Requires platforms:write bound to the path project."
-        return (await self._raw_resource.create_default_voice_profile(input)).data
+        return (await self._raw_resource.create_default_voice_profile(input, options=options)).data
 
-    async def create_voice_profile(self, input: CreateVoiceProfileInput) -> models.VoiceProfile:
+    async def create_voice_profile(
+        self, input: CreateVoiceProfileInput, *, options: RequestOptions | None = None
+    ) -> models.VoiceProfile:
         "Create Voice profile\n\nCreates a direction-neutral additional Voice profile. The project default must already exist. Requires platforms:write bound to the path project."
-        return (await self._raw_resource.create_voice_profile(input)).data
+        return (await self._raw_resource.create_voice_profile(input, options=options)).data
 
     async def create_whatsapp_shared_line_assignment(
-        self, input: CreateWhatsappSharedLineAssignmentInput
+        self,
+        input: CreateWhatsappSharedLineAssignmentInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> models.SharedLineAssignment:
         "Create WhatsApp shared line assignment\n\nMaps an end user's phone number onto one of the project's pooled shared WhatsApp lines, consuming a seat from the project's WhatsApp entitlement. The assigned number is allocated by the server. When an email address is supplied the user is sent an invite asynchronously; the response never reports whether that succeeded. Requires the platforms:write permission bound to the project resource in the path."
-        return (await self._raw_resource.create_whatsapp_shared_line_assignment(input)).data
+        return (
+            await self._raw_resource.create_whatsapp_shared_line_assignment(input, options=options)
+        ).data
 
     async def create_whatsapp_voip_sender(
-        self, input: CreateWhatsappVoipSenderInput
+        self, input: CreateWhatsappVoipSenderInput, *, options: RequestOptions | None = None
     ) -> models.Operation:
         "Create WhatsApp VoIP sender\n\nRegisters an active, SMS-capable Photon VoIP line on this project's connected WhatsApp Business Account. The account is resolved server-side; callers never select a WABA. The platform creates or reuses the Meta number, requests and consumes the SMS ownership code internally, verifies it, and registers the sender. displayName is optional; when omitted the project agent profile name is snapshotted before acceptance. The VoIP line remains a separate resource and never receives the whatsapp_business ability. If the operation fails, its `error` is the problem of one of these codes: `WHATSAPP_AUTHORIZATION_REVOKED`, `WHATSAPP_DISPLAY_NAME_CONFLICT`, `WHATSAPP_NUMBER_ADD_REFUSED`, `WHATSAPP_NUMBER_LOOKUP_FAILED`, `WHATSAPP_REGISTRATION_REFUSED`, `WHATSAPP_VERIFICATION_REFUSED`, `WHATSAPP_VERIFICATION_REQUEST_REFUSED`, `WHATSAPP_VERIFICATION_TIMED_OUT`."
-        return (await self._raw_resource.create_whatsapp_voip_sender(input)).data
+        return (await self._raw_resource.create_whatsapp_voip_sender(input, options=options)).data
 
-    async def delete_voice_profile(self, input: DeleteVoiceProfileInput) -> None:
+    async def delete_voice_profile(
+        self, input: DeleteVoiceProfileInput, *, options: RequestOptions | None = None
+    ) -> None:
         "Delete Voice profile\n\nDeletes an additional profile when expectedVersion matches. Assigned profiles require force=true, which atomically removes every stored override so affected lines follow the default. The default can never be deleted. Requires platforms:write bound to the path project."
-        return (await self._raw_resource.delete_voice_profile(input)).data
+        return (await self._raw_resource.delete_voice_profile(input, options=options)).data
 
     async def delete_voice_profile_inbound(
-        self, input: DeleteVoiceProfileInboundInput
+        self, input: DeleteVoiceProfileInboundInput, *, options: RequestOptions | None = None
     ) -> models.VoiceProfileInboundConfiguration:
         "Delete Voice inbound configuration\n\nRemoves a profile's inbound destination when the shared profile version matches. The profileId may identify the default or an additional profile. The profile and its line assignments remain. Requires platforms:write bound to the path project."
-        return (await self._raw_resource.delete_voice_profile_inbound(input)).data
+        return (await self._raw_resource.delete_voice_profile_inbound(input, options=options)).data
 
     async def delete_voice_profile_outbound(
-        self, input: DeleteVoiceProfileOutboundInput
+        self, input: DeleteVoiceProfileOutboundInput, *, options: RequestOptions | None = None
     ) -> models.DeleteVoiceProfileOutboundResponse:
         "Revoke Voice outbound credential\n\nRevokes outbound calling for a profile when the shared profile version matches. The profileId may identify the default or an additional profile. The profile, inbound destination, and line assignments remain. Requires platforms:write bound to the path project."
-        return (await self._raw_resource.delete_voice_profile_outbound(input)).data
+        return (await self._raw_resource.delete_voice_profile_outbound(input, options=options)).data
 
     async def disconnect_whatsapp_business_account(
-        self, input: DisconnectWhatsappBusinessAccountInput
+        self,
+        input: DisconnectWhatsappBusinessAccountInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> models.Operation:
         "Disconnect WhatsApp Business account\n\nDisconnects every attached WhatsApp sender, then unsubscribes our app and removes the project's business account connection. Photon VoIP lines and the numbers in Meta remain. Requires Idempotency-Key. Poll the returned operation. Meta's answers do not fail it: each sender is released as `DELETE /platforms/resources/:resourceId` does, and our app's unsubscribe is a best effort, tried up to three times, a second or two apart, only while the failure is temporary. New signups are blocked while disconnecting, and existing provisions must finish before this request can be accepted. If the operation fails, its `error` is the problem of one of these codes: `WHATSAPP_ACCOUNT_DISCONNECT_FAILED`."
-        return (await self._raw_resource.disconnect_whatsapp_business_account(input)).data
+        return (
+            await self._raw_resource.disconnect_whatsapp_business_account(input, options=options)
+        ).data
 
     async def get_default_voice_profile(
-        self, input: GetDefaultVoiceProfileInput
+        self, input: GetDefaultVoiceProfileInput, *, options: RequestOptions | None = None
     ) -> models.VoiceProfile:
         "Get default Voice profile\n\nGets the profile currently selected as the project default, including its optional inbound delivery state. Requires platforms:read bound to the path project."
-        return (await self._raw_resource.get_default_voice_profile(input)).data
+        return (await self._raw_resource.get_default_voice_profile(input, options=options)).data
 
     async def get_email_delivery_metrics(
-        self, input: GetEmailDeliveryMetricsInput
+        self, input: GetEmailDeliveryMetricsInput, *, options: RequestOptions | None = None
     ) -> models.EmailDeliveryMetrics:
         "Get email delivery metrics\n\nReads cached supplementary email series for the exact Project and rolling day or week. Coverage is eligible single-recipient messages; multi-recipient and simulator traffic is excluded. Observed complaints include reported feedback only. Missing data is distinct from zero. Original timestamps and availability are preserved; freshness describes retrieval, not complete event coverage. These series are not complete recipient totals, billing totals or Photon reputation rates. This read never queries the delivery provider or authorizes sending. Requires platforms:read for the path Project."
-        return (await self._raw_resource.get_email_delivery_metrics(input)).data
+        return (await self._raw_resource.get_email_delivery_metrics(input, options=options)).data
 
     async def get_email_sending_policies(
-        self, input: GetEmailSendingPoliciesInput
+        self, input: GetEmailSendingPoliciesInput, *, options: RequestOptions | None = None
     ) -> models.EmailSendingPolicies:
         "Get email sending policies\n\nReads Organization email recipient allowances shared across all its Projects, with rolling 60-second and 24-hour windows. Also returns Project and Organization review status and Photon policy pauses. Projects have no separate recipient quota. These limits are independent of subscription allowances. A policy pause blocks sending; an unpaused policy does not guarantee that every domain, suppression or account check permits a send. Requires platforms:read for the path Project."
-        return (await self._raw_resource.get_email_sending_policies(input)).data
+        return (await self._raw_resource.get_email_sending_policies(input, options=options)).data
 
     async def get_imessage(
-        self, input: GetProjectImessagePlatformInput
+        self, input: GetProjectImessagePlatformInput, *, options: RequestOptions | None = None
     ) -> models.ProjectPlatformSettings:
         "Get project iMessage platform\n\nReports whether the project is on shared or dedicated iMessage lines, derived from its billing entitlements. Shared mode carries the seat cap. Both say whether a dedicated line requested now would be assigned without waiting. Requires the platforms:read permission bound to the project resource in the path."
-        return (await self._raw_resource.get_imessage(input)).data
+        return (await self._raw_resource.get_imessage(input, options=options)).data
 
-    async def get_operation(self, input: GetOperationInput) -> models.GetOperationResponse:
+    async def get_operation(
+        self, input: GetOperationInput, *, options: RequestOptions | None = None
+    ) -> models.GetOperationResponse:
         "Get operation\n\nReads one operation using the same operation representation as creation and list. The API includes detail.setupUrl only with platforms:write for this project. This is the polling endpoint every asynchronous request here points its Location at, and it resolves from the moment that request is accepted — an operation is committed before its work is dispatched, so there is no window in which the URL 404s. Poll until `state` is one of `succeeded`, `failed` or `cancelled`, pacing from the Retry-After the accepting response returned. While an email domain waits for DNS, `detail` always contains the manual records and may additionally contain `automaticSetup` with a signed provider URL to open separately. Once the operation has produced a resource, the response carries that resource too, so the poll that finishes is also the one that tells you what you got. `succeeded` means the work is done; billing runs behind it and is not something the caller waits on. Operations are never purged, so a 404 means the id was never this project's. Requires the platforms:read permission bound to the project resource in the path."
-        return (await self._raw_resource.get_operation(input)).data
+        return (await self._raw_resource.get_operation(input, options=options)).data
 
     async def get_project_whatsapp_platform(
-        self, input: GetProjectWhatsappPlatformInput
+        self, input: GetProjectWhatsappPlatformInput, *, options: RequestOptions | None = None
     ) -> models.ProjectPlatformSettings:
         "Get project WhatsApp platform\n\nReports whether the project is on shared or dedicated WhatsApp lines, derived from its billing entitlements. Shared mode carries the seat cap. Both say whether a dedicated line requested now would be assigned without waiting. Requires the platforms:read permission bound to the project resource in the path."
-        return (await self._raw_resource.get_project_whatsapp_platform(input)).data
+        return (await self._raw_resource.get_project_whatsapp_platform(input, options=options)).data
 
-    async def get_resource(self, input: GetResourceInput) -> models.Resource:
+    async def get_resource(
+        self, input: GetResourceInput, *, options: RequestOptions | None = None
+    ) -> models.Resource:
         "Get resource\n\nReads one resource the project holds. A released number stays readable and reads `retired`, because it remains part of this project's history. A dedicated line given back does NOT: returning it to inventory is what makes it claimable by someone else, so it answers 404 and the operation that returned it is the record that this project once held it. Requires the platforms:read permission bound to the project resource in the path."
-        return (await self._raw_resource.get_resource(input)).data
+        return (await self._raw_resource.get_resource(input, options=options)).data
 
     async def get_sms_line_campaign_assignment(
-        self, input: GetSmsLineCampaignAssignmentInput
+        self, input: GetSmsLineCampaignAssignmentInput, *, options: RequestOptions | None = None
     ) -> models.GetSmsLineCampaignAssignmentResponse:
         "Get SMS line campaign assignment\n\nRead the last confirmed campaign and current eligibility. Follow changes through their operations. Eligibility is a control-plane assessment, not a delivery or recipient-consent guarantee."
-        return (await self._raw_resource.get_sms_line_campaign_assignment(input)).data
+        return (
+            await self._raw_resource.get_sms_line_campaign_assignment(input, options=options)
+        ).data
 
     async def get_voice_line_profile_assignment(
-        self, input: GetVoiceLineProfileAssignmentInput
+        self, input: GetVoiceLineProfileAssignmentInput, *, options: RequestOptions | None = None
     ) -> models.VoiceLineProfileAssignment:
         "Get Voice line profile assignment\n\nGets the explicit additional-profile override for an owned Voice-capable line. A line following the project default returns 200 without profileId. Requires platforms:read bound to the path project."
-        return (await self._raw_resource.get_voice_line_profile_assignment(input)).data
+        return (
+            await self._raw_resource.get_voice_line_profile_assignment(input, options=options)
+        ).data
 
-    async def get_voice_profile(self, input: GetVoiceProfileInput) -> models.VoiceProfile:
+    async def get_voice_profile(
+        self, input: GetVoiceProfileInput, *, options: RequestOptions | None = None
+    ) -> models.VoiceProfile:
         "Get Voice profile\n\nGets one reusable Voice profile, including its optional inbound delivery state. Requires platforms:read bound to the path project."
-        return (await self._raw_resource.get_voice_profile(input)).data
+        return (await self._raw_resource.get_voice_profile(input, options=options)).data
 
     async def get_whatsapp_business_account(
-        self, input: GetWhatsappBusinessAccountInput
+        self, input: GetWhatsappBusinessAccountInput, *, options: RequestOptions | None = None
     ) -> models.WhatsappBusinessAccount:
         "Get WhatsApp Business account\n\nGets the one WhatsApp Business Account this project has connected, with its number of live senders. Senders are resources and are listed by GET /platforms/resources?ability=whatsapp_business. The account is not a resource and carries no access token. Meta's retained numbers are listed separately by GET /platforms/whatsapp-business/account/phone-numbers. `subscribedAt` is absent until our app is attached to the account's webhooks. Requires the platforms:read permission bound to the project resource in the path."
-        return (await self._raw_resource.get_whatsapp_business_account(input)).data
+        return (await self._raw_resource.get_whatsapp_business_account(input, options=options)).data
 
     async def get_whatsapp_business_verification_code(
-        self, input: GetWhatsappBusinessVerificationCodeInput
+        self,
+        input: GetWhatsappBusinessVerificationCodeInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> models.GetWhatsappBusinessVerificationCodeResponse:
         "Get WhatsApp Business verification code\n\nReturns the latest six-digit WhatsApp Business ownership code received by SMS for an active Photon VOIP number, but only when its provider timestamp is strictly newer than the required receivedAfter boundary. receivedAfter must be an RFC 3339 timestamp between this request's arrival time and two minutes before it; once it expires, restart Meta's verification flow with a new boundary. A missing newer code is a retryable 404 with Retry-After: 2. Poll after 2, 4, 8, then 10 seconds, applying ±20% jitter and capping later intervals at 10 seconds. Stop when the original boundary is two minutes old. Responses are never cached. Requires the platforms:write permission bound to the project resource in the path."
-        return (await self._raw_resource.get_whatsapp_business_verification_code(input)).data
+        return (
+            await self._raw_resource.get_whatsapp_business_verification_code(input, options=options)
+        ).data
 
     async def get_whatsapp_shared_line_assignment(
-        self, input: GetWhatsappSharedLineAssignmentInput
+        self, input: GetWhatsappSharedLineAssignmentInput, *, options: RequestOptions | None = None
     ) -> models.SharedLineAssignment:
         "Get WhatsApp shared line assignment\n\nReads one WhatsApp shared line assignment. Requires the platforms:read permission bound to the project resource in the path."
-        return (await self._raw_resource.get_whatsapp_shared_line_assignment(input)).data
+        return (
+            await self._raw_resource.get_whatsapp_shared_line_assignment(input, options=options)
+        ).data
 
     async def list_email_recommendations(
-        self, input: ListEmailRecommendationsInput
+        self, input: ListEmailRecommendationsInput, *, options: RequestOptions | None = None
     ) -> models.EmailRecommendations:
         "List email recommendations\n\nReads Photon guidance from stored sending policies, sending setup and domain checks. Project and Organization restrictions repeat on each page of domain observations. Follow nextPageToken until hasMore is false; observations describe only the current page. Recommendations are advisory reads, never permission to send or resume. Reputation-rate guidance and supplementary delivery advice are explicitly unavailable until their sources are integrated. An empty list does not indicate healthy reputation or resolved findings. Requires platforms:read for the path Project."
-        return (await self._raw_resource.list_email_recommendations(input)).data
+        return (await self._raw_resource.list_email_recommendations(input, options=options)).data
 
     async def list_filtered_verification_codes(
-        self, input: ListFilteredVerificationCodesInput
+        self, input: ListFilteredVerificationCodesInput, *, options: RequestOptions | None = None
     ) -> models.FilteredVerificationCodePage:
         "List filtered verification codes\n\nLists the verification codes Photon kept from this project's dedicated lines. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Filter by `platform`; to read one line, use its own filtered-otp path. Requires the platforms:read permission bound to the project resource in the path."
-        return (await self._raw_resource.list_filtered_verification_codes(input)).data
+        return (
+            await self._raw_resource.list_filtered_verification_codes(input, options=options)
+        ).data
 
     async def list_number_area_codes(
-        self, input: ListNumberAreaCodesInput
+        self, input: ListNumberAreaCodesInput, *, options: RequestOptions | None = None
     ) -> models.ListNumberAreaCodesResponse:
         "List number area codes\n\nLists current provider coverage for US local numbers, sorted and deduplicated. Coverage does not guarantee inventory carrying every required feature. New area-specific purchases must use a listed code; accepted purchases keep waiting if coverage later changes. Requires platforms:read for the path project."
-        return (await self._raw_resource.list_number_area_codes(input)).data
+        return (await self._raw_resource.list_number_area_codes(input, options=options)).data
 
     async def list_number_countries(
-        self, input: ListNumberCountriesInput
+        self, input: ListNumberCountriesInput, *, options: RequestOptions | None = None
     ) -> models.ListNumberCountriesResponse:
         "List number countries\n\nLists supported purchase countries independently of current provider inventory. Requires platforms:read for the path project."
-        return (await self._raw_resource.list_number_countries(input)).data
+        return (await self._raw_resource.list_number_countries(input, options=options)).data
 
-    async def list_operations(self, input: ListOperationsInput) -> models.OperationPage:
+    async def list_operations(
+        self, input: ListOperationsInput, *, options: RequestOptions | None = None
+    ) -> models.OperationPage:
         "List operations\n\nLists the project's operations using the same operation representation as creation and GET. The API includes detail.setupUrl only with platforms:write for this project. Results are oldest first — every provision and release it has ever asked for, including the ones still running. This is the entire in-flight view: a resource only appears once it is real, so nothing half-built shows up in the resource list and nothing in flight is missing from this one. Filter by `resourceId` to get one resource's whole history, which for a pooled line is every tenure this project has had on it. `state` is comma-separated; `type` accepts one operation type and an absent filter means everything, including failed and cancelled operations. `endedAfter` keeps only operations that finished after that instant, so what failed or was withdrawn recently is one short page. Requires the platforms:read permission bound to the project resource in the path."
-        return (await self._raw_resource.list_operations(input)).data
+        return (await self._raw_resource.list_operations(input, options=options)).data
 
     async def list_project_platforms(
-        self, input: ListProjectPlatformsInput
+        self, input: ListProjectPlatformsInput, *, options: RequestOptions | None = None
     ) -> models.ListProjectPlatformsResponse:
         "List project platforms\n\nLists the platform types available to this project. Every project currently sees the same fixed public contract, answered in-process rather than forwarded, so the list survives an outage of the private service. The project binding exists so that answer can narrow per project without moving the route. Requires the platforms:read permission bound to the project resource in the path."
-        return (await self._raw_resource.list_project_platforms(input)).data
+        return (await self._raw_resource.list_project_platforms(input, options=options)).data
 
     async def list_resource_filtered_verification_codes(
-        self, input: ListResourceFilteredVerificationCodesInput
+        self,
+        input: ListResourceFilteredVerificationCodesInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> models.FilteredVerificationCodePage:
         "List a line's filtered verification codes\n\nLists the verification codes Photon kept from one dedicated line. Inbound messages that carry a one-time code are filtered before delivery; this is the record that they arrived, so a quiet line can be told apart from a broken one. It records the receiving line, its platform and when the code arrived — never the code itself. Each entry names the dedicated line (`resourceId`) that received it. Newest first, within an optional inclusive `receivedAfter`/`receivedBefore` window. A page may hold fewer than `pageSize` entries and still return a `nextPageToken`; only its absence means the end. Answers 404 unless the project holds the resource now. Codes from an earlier tenure stay in the project-wide list. Filter by `platform` — a dedicated line receives both iMessage and WhatsApp. Requires the platforms:read permission bound to the project resource in the path."
-        return (await self._raw_resource.list_resource_filtered_verification_codes(input)).data
+        return (
+            await self._raw_resource.list_resource_filtered_verification_codes(
+                input, options=options
+            )
+        ).data
 
-    async def list_resources(self, input: ListResourcesInput) -> models.ResourcePage:
+    async def list_resources(
+        self, input: ListResourcesInput, *, options: RequestOptions | None = None
+    ) -> models.ResourcePage:
         "List resources\n\nLists the project's resources, oldest first, including retired ones unless `state` filters them out. Filter by `type`, by enabled `ability` and by comma-separated `state`. Lifecycle states are unallocated, active and retired; active means owned and non-retired, not provider-confirmed readiness. Every VoIP resource includes detail.activationState: activating or active, defaulting to active without owner-matched saved state. state=active includes numbers still activating. Requires the platforms:read permission bound to the project resource in the path."
-        return (await self._raw_resource.list_resources(input)).data
+        return (await self._raw_resource.list_resources(input, options=options)).data
 
-    async def list_voice_profiles(self, input: ListVoiceProfilesInput) -> models.VoiceProfilePage:
+    async def list_voice_profiles(
+        self, input: ListVoiceProfilesInput, *, options: RequestOptions | None = None
+    ) -> models.VoiceProfilePage:
         "List Voice profiles\n\nLists reusable Voice profiles in this project. Requires platforms:read bound to the path project."
-        return (await self._raw_resource.list_voice_profiles(input)).data
+        return (await self._raw_resource.list_voice_profiles(input, options=options)).data
 
     async def list_whatsapp_account_phone_numbers(
-        self, input: ListWhatsappAccountPhoneNumbersInput
+        self, input: ListWhatsappAccountPhoneNumbersInput, *, options: RequestOptions | None = None
     ) -> models.ListWhatsappAccountPhoneNumbersResponse:
         "List WhatsApp account phone numbers\n\nLists the connected WABA's phone numbers directly from Meta, including numbers whose Photon sender was disconnected. Ownership is photon for a number in this project's current Photon inventory and meta otherwise. Match a Photon SMS number by its E.164 phoneNumber and reuse its existing displayName when reconnecting. A null name is unavailable, not permission to choose a new name. A failed lookup returns an error rather than an empty list. Requires platforms:read on the path project."
-        return (await self._raw_resource.list_whatsapp_account_phone_numbers(input)).data
+        return (
+            await self._raw_resource.list_whatsapp_account_phone_numbers(input, options=options)
+        ).data
 
     async def list_whatsapp_shared_line_assignments(
-        self, input: ListWhatsappSharedLineAssignmentsInput
+        self,
+        input: ListWhatsappSharedLineAssignmentsInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> models.SharedLineAssignmentPage:
         "List WhatsApp shared line assignments\n\nLists the project's WhatsApp shared line assignments, oldest first. Released assignments are excluded unless includeReleased is set. Requires the platforms:read permission bound to the project resource in the path."
-        return (await self._raw_resource.list_whatsapp_shared_line_assignments(input)).data
+        return (
+            await self._raw_resource.list_whatsapp_shared_line_assignments(input, options=options)
+        ).data
 
     async def provision_imessage_dedicated_line(
-        self, input: ProvisionImessageDedicatedLineInput
+        self, input: ProvisionImessageDedicatedLineInput, *, options: RequestOptions | None = None
     ) -> models.Operation:
         "Provision dedicated iMessage line\n\nClaims one dedicated iMessage line for the project and enables iMessage on it. Always answers 202 with an operation: dedicated lines are allocated from available capacity, and unavailable capacity causes a wait rather than a failure — this can legitimately stay `running` for hours, which is exactly why the response is a handle to poll rather than a number. The project's messaging subscription must grant the dedicated iMessage lines entitlement (`imessage_dedicated_lines.can_purchase`), and that is checked before capacity is reserved. The line's own charge starts when a line is claimed; the subscription that grants the entitlement bills on its own terms, which cancelling a request does not change. Waiting requests are served first come, first served. One that is still waiting is cancelled with a `reason` if the project is deleted (`project_deleted`) or its plan stops selling dedicated lines (`entitlement_lost`); while the payer is restricted for overdue payment it keeps waiting. If you no longer want to wait, POST to the operation's cancel endpoint, which charges nothing for the line. The Idempotency-Key is required and permanent: repeating it returns the same operation forever. A further line always needs a NEW key, including while others are still waiting. An optional promotionCode is checked and claimed here, before the request waits for a line: a code that can't be used answers 409 PROMOTION_CODE_REJECTED and starts nothing. Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `CHARGE_REFUSED`, `ENTERPRISE_PLAN_REQUIRED`."
-        return (await self._raw_resource.provision_imessage_dedicated_line(input)).data
+        return (
+            await self._raw_resource.provision_imessage_dedicated_line(input, options=options)
+        ).data
 
     async def provision_whatsapp_dedicated_line(
-        self, input: ProvisionWhatsappDedicatedLineInput
+        self, input: ProvisionWhatsappDedicatedLineInput, *, options: RequestOptions | None = None
     ) -> models.Operation:
         "Provision dedicated WhatsApp line\n\nProvisions one dedicated WhatsApp line with WhatsApp and shared Voice enabled. It attaches to an eligible iMessage line the project already owns when possible so both products keep the same number; otherwise it claims healthy, available WhatsApp-capable dedicated-line inventory. Always answers 202, because waiting when no inventory is available is not a failure. The product opens its own charge period after the abilities are enabled; Voice has no separate charge. Waiting requests are served first come, first served, and are cancelled with a `reason` exactly as for a dedicated iMessage line. Cancel the returned operation to stop waiting. An optional promotionCode is checked and claimed here, before the request waits for a line: a code that can't be used answers 409 PROMOTION_CODE_REJECTED and starts nothing. The Idempotency-Key is required and permanent. If the operation fails, its `error` is the problem of one of these codes: `CHARGE_REFUSED`, `ENTERPRISE_PLAN_REQUIRED`."
-        return (await self._raw_resource.provision_whatsapp_dedicated_line(input)).data
+        return (
+            await self._raw_resource.provision_whatsapp_dedicated_line(input, options=options)
+        ).data
 
-    async def purchase_sms_number(self, input: PurchaseSmsNumberInput) -> models.Operation:
+    async def purchase_sms_number(
+        self, input: PurchaseSmsNumberInput, *, options: RequestOptions | None = None
+    ) -> models.Operation:
         'Purchase SMS number\n\nBuys one US local number from the provider and records it as a resource with SMS enabled. Requires countryCode (US) and accepts an optional three-digit geographic areaCode. The server selects an exact matching number. While inventory is empty the operation keeps searching, and the caller can cancel it until ordering begins; a search still empty one minute after the operation was created fails it with `NUMBER_INVENTORY_UNAVAILABLE`. Always answers 202 with an operation: the work runs behind the response, and the Location points at the operation to poll. New area-specific requests must appear in current provider coverage; discover it with GET /sms/numbers/area-codes?countryCode=US. Coverage and subscription checks run before operation creation. Billing follows delivery. Replays return the original operation without checking current coverage. The Idempotency-Key is required and permanent: repeating it returns the same operation forever, never a second number. A further number always needs a NEW key, including while others are still running. An optional promotionCode is redeemed with the number\'s charge, which follows delivery: a code billing refuses hands the number back, and its release operation carries the refusal (`reason` `charge_refused`, with `detail.chargeRefusal` `{ code: "promotion_code_rejected", detail: <why> }`). Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `ENTITLEMENT_REQUIRED`, `NUMBER_INVENTORY_UNAVAILABLE`, `NUMBER_ORDER_FAILED`, `NUMBER_ORDER_RECONCILIATION_REQUIRED`, `NUMBER_SEARCH_FAILED`.'
-        return (await self._raw_resource.purchase_sms_number(input)).data
+        return (await self._raw_resource.purchase_sms_number(input, options=options)).data
 
     async def release_imessage_dedicated_line(
-        self, input: ReleaseImessageDedicatedLineInput
+        self, input: ReleaseImessageDedicatedLineInput, *, options: RequestOptions | None = None
     ) -> models.Operation:
         "Release dedicated iMessage line\n\nRemoves only iMessage from one dedicated line. Shared Voice is removed only when WhatsApp is absent; if WhatsApp remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open iMessage charge period identifies this product tenure. If the operation fails, its `error` is the problem of one of these codes: `RESOURCE_NOT_FOUND`."
-        return (await self._raw_resource.release_imessage_dedicated_line(input)).data
+        return (
+            await self._raw_resource.release_imessage_dedicated_line(input, options=options)
+        ).data
 
-    async def release_resource(self, input: ReleaseResourceInput) -> models.Operation:
+    async def release_resource(
+        self, input: ReleaseResourceInput, *, options: RequestOptions | None = None
+    ) -> models.Operation:
         "Release resource\n\nGives one resource back, whatever it is. What that means is the resource's own business: an SMS number goes back to the provider and is retired, a dedicated iMessage line goes back to the shared pool and stays in existence for someone else to claim. Either way the provider is contacted first where there is one, then a single transaction disables every ability, ends the project's hold and closes the charge period — so a provider that refuses leaves the resource exactly as it was, still owned and still billed. A WhatsApp Business sender is the exception: Meta never holds its release. A number on a Photon VoIP line is deregistered as a best effort, tried up to three times, a second or two apart, only while the failure is temporary; a number the customer brought is not sent to Meta at all; the sender is retired either way, and the number stays in the customer's WhatsApp Business Account. Usually finishes inside this request and answers 200; if the provider is slow it answers 202 and the Location points at the operation to poll. The decrement runs behind the answer either way, so the resource is gone when you are told it is. Takes no Idempotency-Key — releasing the same resource twice is the same request. Releasing one that is already gone answers 404. Requires the platforms:write permission bound to the project resource in the path. If the operation fails, its `error` is the problem of one of these codes: `EMAIL_DOMAIN_RELEASE_FAILED`, `NUMBER_RELEASE_FAILED`, `RESOURCE_NOT_FOUND`, `TELEGRAM_RELEASE_FAILED`, `WHATSAPP_SENDER_RELEASE_FAILED`."
-        return (await self._raw_resource.release_resource(input)).data
+        return (await self._raw_resource.release_resource(input, options=options)).data
 
     async def release_whatsapp_dedicated_line(
-        self, input: ReleaseWhatsappDedicatedLineInput
+        self, input: ReleaseWhatsappDedicatedLineInput, *, options: RequestOptions | None = None
     ) -> models.Operation:
         "Release dedicated WhatsApp line\n\nRemoves only WhatsApp from one dedicated line. Shared Voice is removed only when iMessage is absent; if iMessage remains, Voice, the resource, ownership, and phone number are preserved. Usually finishes inside this request and answers 200; a slow workflow answers 202 with an operation to poll. Takes no Idempotency-Key because the open WhatsApp charge period identifies this product tenure. If the operation fails, its `error` is the problem of one of these codes: `RESOURCE_NOT_FOUND`."
-        return (await self._raw_resource.release_whatsapp_dedicated_line(input)).data
+        return (
+            await self._raw_resource.release_whatsapp_dedicated_line(input, options=options)
+        ).data
 
     async def release_whatsapp_shared_line_assignment(
-        self, input: ReleaseWhatsappSharedLineAssignmentInput
+        self,
+        input: ReleaseWhatsappSharedLineAssignmentInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> models.SharedLineAssignment:
         "Release WhatsApp shared line assignment\n\nReleases a WhatsApp shared line assignment, freeing its seat for reassignment. The row is retained for audit and returned with releasedAt set, so repeating the call is safe. Requires the platforms:write permission bound to the project resource in the path."
-        return (await self._raw_resource.release_whatsapp_shared_line_assignment(input)).data
+        return (
+            await self._raw_resource.release_whatsapp_shared_line_assignment(input, options=options)
+        ).data
 
     async def replace_voice_profile_inbound(
-        self, input: ReplaceVoiceProfileInboundInput
+        self, input: ReplaceVoiceProfileInboundInput, *, options: RequestOptions | None = None
     ) -> models.VoiceProfileInboundConfiguration:
         "Replace Voice inbound configuration\n\nCreates or fully replaces a profile's inbound destination when the shared profile version matches. The profileId may identify the default or an additional profile. Credentials are required and nullable; null removes destination authentication. Requires platforms:write bound to the path project."
-        return (await self._raw_resource.replace_voice_profile_inbound(input)).data
+        return (await self._raw_resource.replace_voice_profile_inbound(input, options=options)).data
 
     async def rotate_voice_profile_outbound_credential(
-        self, input: RotateVoiceProfileOutboundCredentialInput
+        self,
+        input: RotateVoiceProfileOutboundCredentialInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> models.RotateVoiceProfileOutboundCredentialResponse:
         "Rotate Voice outbound credential\n\nRotates a SIP profile's outbound credential when expectedVersion matches. The profileId may identify the default or an additional profile. Normal rotation gives the previous credential one hour of grace; emergency rotation gives none. The new password is returned once and is never recoverable. Requires platforms:write bound to the path project."
-        return (await self._raw_resource.rotate_voice_profile_outbound_credential(input)).data
+        return (
+            await self._raw_resource.rotate_voice_profile_outbound_credential(
+                input, options=options
+            )
+        ).data
 
     async def unassign_sms_line_campaign(
-        self, input: UnassignSmsLineCampaignInput
+        self, input: UnassignSmsLineCampaignInput, *, options: RequestOptions | None = None
     ) -> models.Operation:
         "Unassign SMS line campaign\n\nAny project writer, including a scoped API key, may detach the campaign. The number and campaign remain owned. Requires a permanent Idempotency-Key and expectedVersion. Local eligibility is blocked immediately; provider detachment runs asynchronously. If the operation fails, its `error` is the problem of one of these codes: `SMS_CAMPAIGN_PROVIDER_REJECTED`, `SMS_CAMPAIGN_RECONCILIATION_REQUIRED`, `SMS_CAMPAIGN_REVOKED`."
-        return (await self._raw_resource.unassign_sms_line_campaign(input)).data
+        return (await self._raw_resource.unassign_sms_line_campaign(input, options=options)).data
 
-    async def unassign_voice_line_profile(self, input: UnassignVoiceLineProfileInput) -> None:
+    async def unassign_voice_line_profile(
+        self, input: UnassignVoiceLineProfileInput, *, options: RequestOptions | None = None
+    ) -> None:
         "Unassign Voice line profile\n\nRemoves a line's explicit override when the resource version matches so the line follows the project default. Profiles and the pstn_voice ability are unchanged. Requires platforms:write bound to the path project."
-        return (await self._raw_resource.unassign_voice_line_profile(input)).data
+        return (await self._raw_resource.unassign_voice_line_profile(input, options=options)).data
 
     async def update_default_voice_profile(
-        self, input: UpdateDefaultVoiceProfileInput
+        self, input: UpdateDefaultVoiceProfileInput, *, options: RequestOptions | None = None
     ) -> models.VoiceProfile:
         "Update default Voice profile\n\nPatches the default profile's protocol or mediaEncryption when expectedVersion matches. Omitted fields are preserved. Its server-assigned name is immutable, and directional configuration uses the profileId returned by this resource. Requires platforms:write bound to the path project."
-        return (await self._raw_resource.update_default_voice_profile(input)).data
+        return (await self._raw_resource.update_default_voice_profile(input, options=options)).data
 
-    async def update_voice_profile(self, input: UpdateVoiceProfileInput) -> models.VoiceProfile:
+    async def update_voice_profile(
+        self, input: UpdateVoiceProfileInput, *, options: RequestOptions | None = None
+    ) -> models.VoiceProfile:
         "Update Voice profile\n\nPatches an additional profile's name, protocol, or mediaEncryption when expectedVersion matches. Omitted fields are preserved. The default profile's metadata changes only through PATCH /v1/projects/{id}/platforms/voice/profiles/default, so a name, protocol, or mediaEncryption patch addressed to its profileId is refused with 409. Directional configuration is managed through the profile's inbound and outbound endpoints. Requires platforms:write bound to the path project."
-        return (await self._raw_resource.update_voice_profile(input)).data
+        return (await self._raw_resource.update_voice_profile(input, options=options)).data
 
     async def update_voice_profile_inbound(
-        self, input: UpdateVoiceProfileInboundInput
+        self, input: UpdateVoiceProfileInboundInput, *, options: RequestOptions | None = None
     ) -> models.VoiceProfileInboundConfiguration:
         "Update Voice inbound configuration\n\nUpdates selected fields of a profile's inbound destination when the shared profile version matches. The profileId may identify the default or an additional profile. At least one of destinationUri or credentials is required. Credential omission preserves destination authentication, null removes it, and an object replaces it atomically. Requires platforms:write bound to the path project."
-        return (await self._raw_resource.update_voice_profile_inbound(input)).data
+        return (await self._raw_resource.update_voice_profile_inbound(input, options=options)).data
 
     async def update_voice_profile_outbound_authentication(
-        self, input: UpdateVoiceProfileOutboundAuthenticationInput
+        self,
+        input: UpdateVoiceProfileOutboundAuthenticationInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> models.UpdateVoiceProfileOutboundAuthenticationResponse:
         "Update Voice outbound authentication\n\nChanges a SIP profile's outbound Digest algorithm when expectedVersion matches. The profileId may identify the default or an additional profile. This policy-only change preserves the password, username, and any previous-password grace deadline. SHA-256 is recommended; MD5 is a weaker legacy option. Returns non-secret outbound metadata and the profile version. Requires platforms:write bound to the path project."
-        return (await self._raw_resource.update_voice_profile_outbound_authentication(input)).data
+        return (
+            await self._raw_resource.update_voice_profile_outbound_authentication(
+                input, options=options
+            )
+        ).data
 
 
 class AsyncProjectsAgentProfileResource:
     def __init__(self, transport: AsyncTransport) -> None:
         self._raw_resource = AsyncRawProjectsAgentProfileResource(transport)
 
-    async def commit_avatar(self, input: CommitAgentProfileAvatarInput) -> models.AgentProfile:
+    async def commit_avatar(
+        self, input: CommitAgentProfileAvatarInput, *, options: RequestOptions | None = None
+    ) -> models.AgentProfile:
         "Commit agent avatar\n\nCommits an agent avatar previously uploaded through createAgentProfileAvatarUpload. Call this only after the direct multipart upload succeeds, using the uploadId from the same upload session and a stable Idempotency-Key. The service validates the temporary object's Project ownership, size, content type, image bytes, dimensions, encryption, and age before changing the agent profile."
-        return (await self._raw_resource.commit_avatar(input)).data
+        return (await self._raw_resource.commit_avatar(input, options=options)).data
 
     async def create_avatar_upload(
-        self, input: CreateAgentProfileAvatarUploadInput
+        self, input: CreateAgentProfileAvatarUploadInput, *, options: RequestOptions | None = None
     ) -> models.AgentProfileAvatarUpload:
         "Create agent avatar upload\n\nCreates a ten-minute, Project-bound presigned S3 POST for a JPEG, PNG, or WebP agent avatar up to 5 MiB. Copy every returned formFields entry into a multipart/form-data request to uploadUrl, append the local file as the final form part, and upload it directly without sending Photon credentials. After the upload succeeds, call commitAgentProfileAvatar with the returned uploadId. Do not cache or log the upload URL or form fields."
-        return (await self._raw_resource.create_avatar_upload(input)).data
+        return (await self._raw_resource.create_avatar_upload(input, options=options)).data
 
-    async def get(self, input: GetAgentProfileInput) -> models.AgentProfile:
+    async def get(
+        self, input: GetAgentProfileInput, *, options: RequestOptions | None = None
+    ) -> models.AgentProfile:
         "Get agent profile\n\nReturns the agent profile belonging to the identified project. The profile is project-scoped and is distinct from the authenticated account's personal profile. Use the dedicated avatar operations when uploading or removing an agent avatar."
-        return (await self._raw_resource.get(input)).data
+        return (await self._raw_resource.get(input, options=options)).data
 
-    async def reset_avatar(self, input: ResetAgentProfileAvatarInput) -> models.AgentProfile:
+    async def reset_avatar(
+        self, input: ResetAgentProfileAvatarInput, *, options: RequestOptions | None = None
+    ) -> models.AgentProfile:
         "Reset agent avatar\n\nReplaces the selected project's agent avatar with the project's default avatar, a generated planet image derived from the project ID, and returns the updated agent profile. The reset does not restore an earlier avatar: a custom avatar it replaces is discarded and must be uploaded and committed again to use it. When the default avatar is already in use, the profile is returned unchanged. This does not change the account's personal profile picture. Supply the required Idempotency-Key header."
-        return (await self._raw_resource.reset_avatar(input)).data
+        return (await self._raw_resource.reset_avatar(input, options=options)).data
 
-    async def update(self, input: UpdateAgentProfileInput) -> models.AgentProfile:
+    async def update(
+        self, input: UpdateAgentProfileInput, *, options: RequestOptions | None = None
+    ) -> models.AgentProfile:
         "Update agent profile\n\nUpdates the supplied firstName and lastName fields in the project's agent profile and returns the updated profile. Avatar upload, commit and reset are separate operations. The caller must be authorized to change configuration for the selected project. Supply the required Idempotency-Key header."
-        return (await self._raw_resource.update(input)).data
+        return (await self._raw_resource.update(input, options=options)).data
 
 
 class AsyncProjectsBillingResource:
     def __init__(self, transport: AsyncTransport) -> None:
         self._raw_resource = AsyncRawProjectsBillingResource(transport)
 
-    async def get_operation(self, input: GetBillingOperationInput) -> models.BillingOperation:
+    async def get_operation(
+        self, input: GetBillingOperationInput, *, options: RequestOptions | None = None
+    ) -> models.BillingOperation:
         "Get billing operation\n\nReturns the authoritative state of a billing operation belonging to the selected project. Use it to recover or poll a plan-change request until the operation reaches success or failure. An accepted request is not evidence that the plan change has completed."
-        return (await self._raw_resource.get_operation(input)).data
+        return (await self._raw_resource.get_operation(input, options=options)).data
 
     async def get_overview(
-        self, input: GetBillingOverviewInput
+        self, input: GetBillingOverviewInput, *, options: RequestOptions | None = None
     ) -> models.GetBillingOverviewResponse:
         "Get project billing overview\n\nReturns the selected project's plan information, entitlements and current billing-period usage. This operation reads project billing state; it does not change plans or the payer's payment method. Organization-level plans are available through the organization billing overview."
-        return (await self._raw_resource.get_overview(input)).data
+        return (await self._raw_resource.get_overview(input, options=options)).data
 
     async def list_billing_plans(
-        self, input: ListBillingPlansInput
+        self, input: ListBillingPlansInput, *, options: RequestOptions | None = None
     ) -> models.ListBillingPlansResponse:
         "List billing plans\n\nLists the billing plan catalog, grouped by their public plan-metadata type. Use the returned plan information when choosing the category and planCode for a plan change. The catalog is the same for every project, and reading it does not purchase a plan."
-        return (await self._raw_resource.list_billing_plans(input)).data
+        return (await self._raw_resource.list_billing_plans(input, options=options)).data
 
     async def list_project_subscriptions(
-        self, input: ListProjectSubscriptionsInput
+        self, input: ListProjectSubscriptionsInput, *, options: RequestOptions | None = None
     ) -> models.ListProjectSubscriptionsResponse:
         "List project subscriptions\n\nLists the plan each of the selected project's categories holds, with its price and the payer's standing. It suits showing a project's plan wherever projects are listed; the billing overview adds billing periods, fixed charges, entitlements and usage."
-        return (await self._raw_resource.list_project_subscriptions(input)).data
+        return (await self._raw_resource.list_project_subscriptions(input, options=options)).data
 
 
 class AsyncProjectsResource:
@@ -10808,199 +11539,241 @@ class AsyncProjectsResource:
         self.billing = AsyncProjectsBillingResource(transport)
         self.platforms = AsyncProjectsPlatformsResource(transport)
 
-    async def count_messages(self, input: CountMessagesInput) -> models.CountMessagesResponse:
+    async def count_messages(
+        self, input: CountMessagesInput, *, options: RequestOptions | None = None
+    ) -> models.CountMessagesResponse:
         "Count Messages\n\nCounts matching Messages before pagination. Delivery updates do not add Messages; results are eventually consistent."
-        return (await self._raw_resource.count_messages(input)).data
+        return (await self._raw_resource.count_messages(input, options=options)).data
 
-    async def count_spaces(self, input: CountSpacesInput) -> models.SpaceCount:
+    async def count_spaces(
+        self, input: CountSpacesInput, *, options: RequestOptions | None = None
+    ) -> models.SpaceCount:
         "Count Spaces\n\nCounts distinct Spaces matching the list filters; multiple matching Messages count once. Results are eventually consistent."
-        return (await self._raw_resource.count_spaces(input)).data
+        return (await self._raw_resource.count_spaces(input, options=options)).data
 
-    async def count_users(self, input: CountUsersInput) -> models.UserCount:
+    async def count_users(
+        self, input: CountUsersInput, *, options: RequestOptions | None = None
+    ) -> models.UserCount:
         "Count Users\n\nCounts distinct Users matching the list filters, including incoming senders or outgoing recipients selected by Message filters. Results are eventually consistent."
-        return (await self._raw_resource.count_users(input)).data
+        return (await self._raw_resource.count_users(input, options=options)).data
 
-    async def create_or_get_space(self, input: CreateOrGetSpaceInput) -> models.PlatformSpace:
+    async def create_or_get_space(
+        self, input: CreateOrGetSpaceInput, *, options: RequestOptions | None = None
+    ) -> models.PlatformSpace:
         "Create or get a Space\n\nCreates or returns a project Space. Idempotency-Key is required for every platform and binds the project, platform and initial User IDs (unordered except the iMessage creator in first position) for 24 hours after workflow completion. Concurrent matching requests join the same operation; conflicting reuse returns 422 once its outcome is available. A new email key creates a new thread; direct Spaces and SMS groups converge by participants. Every creation and successful replay requires at least one currently project-owned Agent, or for iMessage a shared-line Agent in a direct Space whose peer has an active Assignment of this project on that line. For iMessage, an existing exact match is reused; otherwise the first participant must be a project-owned dedicated phone Agent and creates the native direct chat or group. Multiple matching native groups return SPACE_AMBIGUOUS; incomplete group membership cannot establish an exact match. Replays return 200 and the current stored Space, with Idempotent-Replayed: true. A timeout does not cancel accepted work: retry the same key and input."
-        return (await self._raw_resource.create_or_get_space(input)).data
+        return (await self._raw_resource.create_or_get_space(input, options=options)).data
 
-    async def create_or_get_user(self, input: CreateOrGetUserInput) -> models.PlatformUser:
+    async def create_or_get_user(
+        self, input: CreateOrGetUserInput, *, options: RequestOptions | None = None
+    ) -> models.PlatformUser:
         "Create or get a User\n\nCreates or reconciles a User by normalized handle. WhatsApp and iMessage phone classification uses line allocation and project ownership; New iMessage email handles start as Human without lookup; existing email identities retain their producer-observed classification and ownership. WhatsApp Business uses project ownership. These three platforms perform no provider profile or enrichment fetch. Shared Agents expose type=shared without ownership IDs; dedicated Agents expose resourceId for this project or pairwise managedBy for another project. Dedicated lines without an active owner are unavailable. SMS retains its existing ownership and phone number enrichment behavior. Email retains domain ownership resolution, lowercase ASCII domains and case-preserved local parts. Dependency failures fail before classification writes. The natural identity is the project path ID, platform, and handle. Retrying after a committed creation whose response was lost returns the same User with 200 rather than replaying 201."
-        return (await self._raw_resource.create_or_get_user(input)).data
+        return (await self._raw_resource.create_or_get_user(input, options=options)).data
 
     async def create_project_api_key(
-        self, input: CreateProjectApiKeyInput
+        self, input: CreateProjectApiKeyInput, *, options: RequestOptions | None = None
     ) -> models.CreateProjectApiKeyResponse:
         "Create project API key\n\nCreates a key bound to the selected project using the supplied name, permissions and optional expiry. The secret is returned only in this response and in idempotent replays of it; store it securely because other reads never return it. The key is scoped to this project and does not grant account-level access. Supply the required Idempotency-Key header."
-        return (await self._raw_resource.create_project_api_key(input)).data
+        return (await self._raw_resource.create_project_api_key(input, options=options)).data
 
     async def create_webhook_destination(
-        self, input: CreateWebhookDestinationInput
+        self, input: CreateWebhookDestinationInput, *, options: RequestOptions | None = None
     ) -> models.CreateWebhookDestinationResponse:
         "Create webhook destination\n\nCreates a webhook destination for the selected project using its URL, payload API version, event selection and other documented settings. The response includes the signing secret, which is returned only in this response and in idempotent replays of it, never by destination reads; store it securely for signature verification. The API version must be selectable and selected event types must belong to that version's catalog. Supply the required Idempotency-Key header."
-        return (await self._raw_resource.create_webhook_destination(input)).data
+        return (await self._raw_resource.create_webhook_destination(input, options=options)).data
 
-    async def delete(self, input: DeleteProjectInput) -> models.Project:
+    async def delete(
+        self, input: DeleteProjectInput, *, options: RequestOptions | None = None
+    ) -> models.Project:
         "Delete project\n\nStarts deletion of the identified project using a credential authorized for project management. Inspect the documented response and use getProjectClosureStatus with the organization and project identifiers to read closure progress. A project API key is not an accepted credential for this operation."
-        return (await self._raw_resource.delete(input)).data
+        return (await self._raw_resource.delete(input, options=options)).data
 
     async def delete_webhook_destination(
-        self, input: DeleteWebhookDestinationInput
+        self, input: DeleteWebhookDestinationInput, *, options: RequestOptions | None = None
     ) -> models.WebhookDestination:
         "Delete webhook destination\n\nDeletes the selected project's destination and returns its stable tombstone. Repeated deletion returns the deletion representation. This operation removes the destination configuration; it is separate from disabling a destination through an update."
-        return (await self._raw_resource.delete_webhook_destination(input)).data
+        return (await self._raw_resource.delete_webhook_destination(input, options=options)).data
 
-    async def download_attachment(self, input: DownloadAttachmentInput) -> bytes:
+    async def download_attachment(
+        self, input: DownloadAttachmentInput, *, options: RequestOptions | None = None
+    ) -> bytes:
         "Download attachment\n\nDownloads an Attachment's bytes. If unavailable after ten seconds, returns ATTACHMENT_NOT_READY with Retry-After: 5."
-        return (await self._raw_resource.download_attachment(input)).data
+        return (await self._raw_resource.download_attachment(input, options=options)).data
 
-    async def get(self, input: GetProjectInput) -> models.Project:
+    async def get(
+        self, input: GetProjectInput, *, options: RequestOptions | None = None
+    ) -> models.Project:
         "Get project\n\nReturns the identified project's settings for an authorized caller. The credential must be allowed to access that project; possession of an unrelated project's key does not provide access. Missing and deleted projects are reported through the documented error responses."
-        return (await self._raw_resource.get(input)).data
+        return (await self._raw_resource.get(input, options=options)).data
 
-    async def get_attachment(self, input: GetAttachmentInput) -> models.Attachment:
+    async def get_attachment(
+        self, input: GetAttachmentInput, *, options: RequestOptions | None = None
+    ) -> models.Attachment:
         "Get attachment\n\nReturns an Attachment's metadata. Use the content endpoint to download its bytes. If its metadata is unavailable after ten seconds, returns ATTACHMENT_NOT_READY with Retry-After: 5."
-        return (await self._raw_resource.get_attachment(input)).data
+        return (await self._raw_resource.get_attachment(input, options=options)).data
 
-    async def get_message(self, input: GetMessageInput) -> models.PlatformMessage | None:
+    async def get_message(
+        self, input: GetMessageInput, *, options: RequestOptions | None = None
+    ) -> models.PlatformMessage | None:
         "Get a Message\n\nReturns one stored Message by canonical Photon Message ID on any supported contract platform. The globally unique Message ID is resolved within the authorized Project. Unsupported platform Messages are outside this collection and return MESSAGE_NOT_FOUND."
-        return (await self._raw_resource.get_message(input)).data
+        return (await self._raw_resource.get_message(input, options=options)).data
 
     async def get_message_metrics_backfill(
-        self, input: GetMessageMetricsBackfillInput
+        self, input: GetMessageMetricsBackfillInput, *, options: RequestOptions | None = None
     ) -> models.GetMessageMetricsBackfillResponse:
         "Get metrics backfill status\n\nReturns historical metrics update progress. Completion reflects lastVerifiedAt; queries remain available during updates."
-        return (await self._raw_resource.get_message_metrics_backfill(input)).data
+        return (await self._raw_resource.get_message_metrics_backfill(input, options=options)).data
 
     async def get_message_metrics_sql_schema(
-        self, input: GetMessageMetricsSqlSchemaInput
+        self, input: GetMessageMetricsSqlSchemaInput, *, options: RequestOptions | None = None
     ) -> models.GetMessageMetricsSqlSchemaResponse:
         "Get metrics SQL schema\n\nReturns the message_events and call_events SQL schema, supported queries, and limits for the selected API version."
-        return (await self._raw_resource.get_message_metrics_sql_schema(input)).data
+        return (
+            await self._raw_resource.get_message_metrics_sql_schema(input, options=options)
+        ).data
 
-    async def get_space(self, input: GetSpaceInput) -> models.PlatformSpace | None:
+    async def get_space(
+        self, input: GetSpaceInput, *, options: RequestOptions | None = None
+    ) -> models.PlatformSpace | None:
         "Get a Space\n\nReturns one stored Space by canonical Photon Space ID. A Space of a kind its platform does not support returns OPERATION_UNAVAILABLE."
-        return (await self._raw_resource.get_space(input)).data
+        return (await self._raw_resource.get_space(input, options=options)).data
 
-    async def get_user(self, input: GetUserInput) -> models.PlatformUser | None:
+    async def get_user(
+        self, input: GetUserInput, *, options: RequestOptions | None = None
+    ) -> models.PlatformUser | None:
         "Get an User\n\nReturns one User after refreshing its Human or Agent classification and project ownership where supported. iMessage email identities retain their producer-observed classification and ownership because no current email ownership lookup is available. WhatsApp, WhatsApp Business and iMessage perform no provider fetch; only SMS Human classifications perform a phone number lookup. Current-project Agents expose resourceId; external-project Agents expose only pairwise managedBy. Conditional response evaluation uses the post-reconciliation representation. Stored reads use each platform definition; projection requires adapter support."
-        return (await self._raw_resource.get_user(input)).data
+        return (await self._raw_resource.get_user(input, options=options)).data
 
     async def get_webhook_destination(
-        self, input: GetWebhookDestinationInput
+        self, input: GetWebhookDestinationInput, *, options: RequestOptions | None = None
     ) -> models.WebhookDestination:
         "Get webhook destination\n\nReturns the configuration of one webhook destination belonging to the selected project. Missing or deleted destinations are reported as errors. This read does not disclose the signing secret returned when the destination or a secret rotation was created."
-        return (await self._raw_resource.get_webhook_destination(input)).data
+        return (await self._raw_resource.get_webhook_destination(input, options=options)).data
 
     async def get_webhook_event_schema(
-        self, input: GetWebhookEventSchemaInput
-    ) -> models.WebhookEventSchema | None:
+        self, input: GetWebhookEventSchemaInput, *, options: RequestOptions | None = None
+    ) -> models.WebhookEventSchema:
         "Get webhook event schema\n\nReturns the published reader JSON Schema for eventType in the requested webhook apiVersion. Use it to interpret events for that exact payload version. The response media type is application/schema+json; an authorized conditional request may return 304 without a body. Unsupported event/version combinations are rejected."
-        return (await self._raw_resource.get_webhook_event_schema(input)).data
+        return (await self._raw_resource.get_webhook_event_schema(input, options=options)).data
 
-    async def list_attachments(self, input: ListAttachmentsInput) -> models.AttachmentPage:
+    async def list_attachments(
+        self, input: ListAttachmentsInput, *, options: RequestOptions | None = None
+    ) -> models.AttachmentPage:
         "List attachments\n\nLists the Project's Attachment metadata, with optional time filters. An Attachment can be absent until its upload finishes, which advances its updatedAt; follow changes with updatedSince."
-        return (await self._raw_resource.list_attachments(input)).data
+        return (await self._raw_resource.list_attachments(input, options=options)).data
 
-    async def list_messages(self, input: ListMessagesInput) -> models.MessagePage:
+    async def list_messages(
+        self, input: ListMessagesInput, *, options: RequestOptions | None = None
+    ) -> models.MessagePage:
         "List Messages\n\nLists the Project's Messages, with optional resource, conversation, and time filters. Results are eventually consistent."
-        return (await self._raw_resource.list_messages(input)).data
+        return (await self._raw_resource.list_messages(input, options=options)).data
 
     async def list_project_api_keys(
-        self, input: ListProjectApiKeysInput
+        self, input: ListProjectApiKeysInput, *, options: RequestOptions | None = None
     ) -> models.ListProjectApiKeysResponse:
         "List project API keys\n\nLists the API keys on the selected project, ordered newest first. Revoked keys are not listed; expired keys stay listed until they are revoked. Entries contain key metadata and permissions, never secret values. Use the returned identifiers to manage an existing key; lost secrets cannot be recovered through this operation."
-        return (await self._raw_resource.list_project_api_keys(input)).data
+        return (await self._raw_resource.list_project_api_keys(input, options=options)).data
 
-    async def list_spaces(self, input: ListSpacesInput) -> models.SpacePage:
+    async def list_spaces(
+        self, input: ListSpacesInput, *, options: RequestOptions | None = None
+    ) -> models.SpacePage:
         "List Spaces\n\nLists the Project's stored Spaces, with optional participant and Message filters. Results are eventually consistent."
-        return (await self._raw_resource.list_spaces(input)).data
+        return (await self._raw_resource.list_spaces(input, options=options)).data
 
-    async def list_users(self, input: ListUsersInput) -> models.UserPage:
+    async def list_users(
+        self, input: ListUsersInput, *, options: RequestOptions | None = None
+    ) -> models.UserPage:
         "List Users\n\nLists stored Users without refreshing their classification; use Get User for current details. Message filters select incoming senders or outgoing recipients, excluding the Message's own endpoint."
-        return (await self._raw_resource.list_users(input)).data
+        return (await self._raw_resource.list_users(input, options=options)).data
 
     async def list_webhook_api_versions(
-        self, input: ListWebhookApiVersionsInput
-    ) -> models.ListWebhookApiVersionsResponse | None:
+        self, input: ListWebhookApiVersionsInput, *, options: RequestOptions | None = None
+    ) -> models.ListWebhookApiVersionsResponse:
         "List webhook API versions\n\nLists the published webhook payload API versions and their lifecycle metadata. The list is the same for every project. Use the selectable indicator when choosing a version for a destination. These payload dates are separate from SDK package versions. An authorized conditional request may return 304 without a response body."
-        return (await self._raw_resource.list_webhook_api_versions(input)).data
+        return (await self._raw_resource.list_webhook_api_versions(input, options=options)).data
 
     async def list_webhook_destinations(
-        self, input: ListWebhookDestinationsInput
+        self, input: ListWebhookDestinationsInput, *, options: RequestOptions | None = None
     ) -> models.WebhookDestinationPage:
         "List webhook destinations\n\nReturns a cursor-paginated page of active webhook destinations configured for the selected project. Use pageSize and pageToken to navigate it. The listing returns destination configuration, never signing secrets."
-        return (await self._raw_resource.list_webhook_destinations(input)).data
+        return (await self._raw_resource.list_webhook_destinations(input, options=options)).data
 
     async def list_webhook_egress_addresses(
-        self, input: ListWebhookEgressAddressesInput
-    ) -> models.ListWebhookEgressAddressesResponse | None:
+        self, input: ListWebhookEgressAddressesInput, *, options: RequestOptions | None = None
+    ) -> models.ListWebhookEgressAddressesResponse:
         "List webhook egress addresses\n\nReturns the public network addresses from which this environment sends webhook deliveries. Use this information when configuring the receiving system's network allowlist. The result is environment-specific and does not describe the API service's ingress addresses."
-        return (await self._raw_resource.list_webhook_egress_addresses(input)).data
+        return (await self._raw_resource.list_webhook_egress_addresses(input, options=options)).data
 
     async def list_webhook_event_types(
-        self, input: ListWebhookEventTypesInput
-    ) -> models.ListWebhookEventTypesResponse | None:
+        self, input: ListWebhookEventTypesInput, *, options: RequestOptions | None = None
+    ) -> models.ListWebhookEventTypesResponse:
         "List webhook event types\n\nLists the webhook event types available in the requested apiVersion, including their descriptions, audiences and reader-schema URLs. Use this versioned catalog when selecting a destination's enabledEvents. The response may include version-retirement information; an authorized conditional request can return 304 without a body."
-        return (await self._raw_resource.list_webhook_event_types(input)).data
+        return (await self._raw_resource.list_webhook_event_types(input, options=options)).data
 
     async def mark_message_read(
-        self, input: MarkMessageReadInput
+        self, input: MarkMessageReadInput, *, options: RequestOptions | None = None
     ) -> models.MarkMessageReadResponse:
         "Mark a Message as read\n\nPersists a request to mark one incoming Message as read using its receiving account. A 202 means accepted for asynchronous execution, not handled by the provider. Requires Idempotency-Key. The returned action Message tracks its outcome; privacy settings may suppress remote visibility."
-        return (await self._raw_resource.mark_message_read(input)).data
+        return (await self._raw_resource.mark_message_read(input, options=options)).data
 
     async def query_message_metrics(
-        self, input: QueryMessageMetricsInput
+        self, input: QueryMessageMetricsInput, *, options: RequestOptions | None = None
     ) -> models.QueryMessageMetricsResponse:
         "Query metrics\n\nRuns read-only SQL over the Project's message_events or call_events table. Get the SQL schema for supported columns, capabilities, and limits."
-        return (await self._raw_resource.query_message_metrics(input)).data
+        return (await self._raw_resource.query_message_metrics(input, options=options)).data
 
     async def retry_webhook_delivery(
-        self, input: RetryWebhookDeliveryInput
+        self, input: RetryWebhookDeliveryInput, *, options: RequestOptions | None = None
     ) -> models.RetryWebhookDeliveryResponse:
         "Retry webhook delivery\n\nRequests an immediate attempt of the selected delivery if it is still the waiting head for its destination and event type. expectedAttemptCount is the failed-attempt counter recorded on the delivery and fences stale requests. This overrides the current backoff, including Retry-After, once. It preserves event identity and the retry budget. Delivered, active, disabled and dead-lettered deliveries cannot be retried. A 202 acknowledges the wake-up, not successful delivery. Supply an Idempotency-Key and retain it when retrying an ambiguous failure."
-        return (await self._raw_resource.retry_webhook_delivery(input)).data
+        return (await self._raw_resource.retry_webhook_delivery(input, options=options)).data
 
     async def revoke_project_api_key(
-        self, input: RevokeProjectApiKeyInput
+        self, input: RevokeProjectApiKeyInput, *, options: RequestOptions | None = None
     ) -> models.ProjectApiKeyResponse:
         "Revoke project API key\n\nRevokes the identified key on the selected project and returns its revoked metadata. Repeating the deletion returns the same revokedAt value. This operation does not rotate the key or return a replacement secret. Supply the required Idempotency-Key header."
-        return (await self._raw_resource.revoke_project_api_key(input)).data
+        return (await self._raw_resource.revoke_project_api_key(input, options=options)).data
 
     async def rotate_webhook_signing_secret(
-        self, input: RotateWebhookSigningSecretInput
+        self, input: RotateWebhookSigningSecretInput, *, options: RequestOptions | None = None
     ) -> models.RotateWebhookSigningSecretResponse:
         "Rotate webhook signing secret\n\nRotates the signing secret for the selected project's webhook destination and returns the new secret. The optional overlapSeconds controls the requested overlap with the previous secret according to the documented request constraints. Store the new secret securely and update the receiver's signature verification configuration; it is returned only in this response and in idempotent replays of it, never by destination reads. Supply the required Idempotency-Key header."
-        return (await self._raw_resource.rotate_webhook_signing_secret(input)).data
+        return (await self._raw_resource.rotate_webhook_signing_secret(input, options=options)).data
 
-    async def send_message(self, input: SendMessageInput) -> models.SentMessage:
+    async def send_message(
+        self, input: SendMessageInput, *, options: RequestOptions | None = None
+    ) -> models.SentMessage:
         "Send a Message\n\nSends SMS, email, WhatsApp Personal, WhatsApp Business, iMessage, or Telegram text and image messages. A shared iMessage line sends only in direct Spaces, only to a peer with an active Assignment who has messaged it since that Assignment. SMS and MMS require current Platforms authorization for the sender and every recipient; campaign eligibility is required unless every recipient is in-network."
-        return (await self._raw_resource.send_message(input)).data
+        return (await self._raw_resource.send_message(input, options=options)).data
 
-    async def set_space_typing(self, input: SetSpaceTypingInput) -> models.SetSpaceTypingResponse:
+    async def set_space_typing(
+        self, input: SetSpaceTypingInput, *, options: RequestOptions | None = None
+    ) -> models.SetSpaceTypingResponse:
         "Set typing in a Space\n\nSaves one transient typing update as an authorized Agent in this Space. Returns the dispatched Message with HTTP 202. Successful provider handoff ends in accepted; rejection or expiry ends in failed. Repeat true to refresh; false stops where supported. Callers control refreshes. Unsupported platforms return OPERATION_UNAVAILABLE."
-        return (await self._raw_resource.set_space_typing(input)).data
+        return (await self._raw_resource.set_space_typing(input, options=options)).data
 
-    async def update(self, input: UpdateProjectInput) -> models.Project:
+    async def update(
+        self, input: UpdateProjectInput, *, options: RequestOptions | None = None
+    ) -> models.Project:
         "Update project\n\nUpdates the identified project's name and returns the updated project. The project slug is not a mutable field in this request. Use an authorized account or organization service-identity credential; a project API key is not accepted. Supply the required Idempotency-Key header."
-        return (await self._raw_resource.update(input)).data
+        return (await self._raw_resource.update(input, options=options)).data
 
     async def update_project_api_key(
-        self, input: UpdateProjectApiKeyInput
+        self, input: UpdateProjectApiKeyInput, *, options: RequestOptions | None = None
     ) -> models.ProjectApiKeyResponse:
         "Update project API key permissions\n\nReplaces the identified project key's permission list with the supplied permissions and returns the updated metadata. Sending the permission list the key already has leaves it unchanged. This request does not create a new secret or change the key's project binding. Supply the required Idempotency-Key header."
-        return (await self._raw_resource.update_project_api_key(input)).data
+        return (await self._raw_resource.update_project_api_key(input, options=options)).data
 
     async def update_webhook_destination(
-        self, input: UpdateWebhookDestinationInput
+        self, input: UpdateWebhookDestinationInput, *, options: RequestOptions | None = None
     ) -> models.WebhookDestination:
         "Update webhook destination\n\nUpdates the supplied URL, name, description, status or enabledEvents fields on a project's webhook destination and returns its updated configuration. The payload API version is not a mutable field in this request. Event selections are checked against the destination's versioned catalog; signing-secret rotation is a separate operation. Supply the required Idempotency-Key header."
-        return (await self._raw_resource.update_webhook_destination(input)).data
+        return (await self._raw_resource.update_webhook_destination(input, options=options)).data
 
-    async def upload_attachment(self, input: UploadAttachmentInput) -> models.Attachment:
+    async def upload_attachment(
+        self, input: UploadAttachmentInput, *, options: RequestOptions | None = None
+    ) -> models.Attachment:
         "Upload attachment\n\nUploads a file and returns its Attachment once ready to download."
-        return (await self._raw_resource.upload_attachment(input)).data
+        return (await self._raw_resource.upload_attachment(input, options=options)).data
 
 
 class AsyncAccountResource:
@@ -11008,60 +11781,79 @@ class AsyncAccountResource:
         self._raw_resource = AsyncRawAccountResource(transport)
 
     async def commit_profile_picture(
-        self, input: CommitAccountProfilePictureInput
+        self, input: CommitAccountProfilePictureInput, *, options: RequestOptions | None = None
     ) -> models.Account:
         "Commit profile picture\n\nCommits a profile picture previously uploaded through createAccountProfilePictureUpload. Call this only after the direct multipart upload succeeds, using the uploadId from the same upload session and a stable Idempotency-Key. The service validates the temporary object's ownership, size, content type, image bytes, dimensions, encryption, and age before changing the Account."
-        return (await self._raw_resource.commit_profile_picture(input)).data
+        return (await self._raw_resource.commit_profile_picture(input, options=options)).data
 
     async def create_account_service_key(
-        self, input: CreateAccountServiceKeyInput
+        self, input: CreateAccountServiceKeyInput, *, options: RequestOptions | None = None
     ) -> models.CreateAccountServiceKeyResponse:
         "Create Account Service Key\n\nCreates a service key for the authenticated account with the supplied name and optional expiresAt. Returns key metadata and a one-time credential; store the credential securely because it cannot be retrieved through the listing endpoint. These credentials act as the account and must not be distributed as project-scoped keys. Supply the required Idempotency-Key header."
-        return (await self._raw_resource.create_account_service_key(input)).data
+        return (await self._raw_resource.create_account_service_key(input, options=options)).data
 
     async def create_profile_picture_upload(
-        self, input: CreateAccountProfilePictureUploadInput
+        self,
+        input: CreateAccountProfilePictureUploadInput,
+        *,
+        options: RequestOptions | None = None,
     ) -> models.ProfilePictureUpload:
         "Create profile picture upload\n\nCreates a ten-minute, Account-bound presigned S3 POST for a JPEG, PNG, or WebP profile picture up to 5 MiB. Copy every returned formFields entry into a multipart/form-data request to uploadUrl, append the local file as the final form part, and upload it directly without sending Photon credentials. After the upload succeeds, call commitAccountProfilePicture with the returned uploadId. Do not cache or log the upload URL or form fields."
-        return (await self._raw_resource.create_profile_picture_upload(input)).data
+        return (await self._raw_resource.create_profile_picture_upload(input, options=options)).data
 
-    async def delete(self, input: DeleteAccountInput | None = None) -> models.Account:
+    async def delete(
+        self, input: DeleteAccountInput | None = None, *, options: RequestOptions | None = None
+    ) -> models.Account:
         "Delete account\n\nDeletes the authenticated account and returns its account tombstone. The operation is rejected while the account still owns organizations; transfer or close those organizations before retrying. This endpoint acts on the caller's account and does not accept another account's identifier."
-        return (await self._raw_resource.delete(input)).data
+        return (await self._raw_resource.delete(input, options=options)).data
 
-    async def get(self, input: GetAccountInput | None = None) -> models.Account:
+    async def get(
+        self, input: GetAccountInput | None = None, *, options: RequestOptions | None = None
+    ) -> models.Account:
         "Get account\n\nReturns the profile of the authenticated account. The account is selected from the credential rather than a request parameter. A missing or deleted account is reported as an error instead of an empty profile."
-        return (await self._raw_resource.get(input)).data
+        return (await self._raw_resource.get(input, options=options)).data
 
     async def list_account_service_keys(
-        self, input: ListAccountServiceKeysInput | None = None
+        self,
+        input: ListAccountServiceKeysInput | None = None,
+        *,
+        options: RequestOptions | None = None,
     ) -> models.ListAccountServiceKeysResponse:
         "List Account Service Keys\n\nReturns metadata for the authenticated account's unrevoked service keys, including expired keys, ordered newest first. Secret values are not returned; a key's credential is disclosed only when that key is created."
-        return (await self._raw_resource.list_account_service_keys(input)).data
+        return (await self._raw_resource.list_account_service_keys(input, options=options)).data
 
     async def list_authorized_applications(
-        self, input: ListAuthorizedApplicationsInput | None = None
+        self,
+        input: ListAuthorizedApplicationsInput | None = None,
+        *,
+        options: RequestOptions | None = None,
     ) -> models.ListAuthorizedApplicationsResponse:
         "List connected applications\n\nLists the OAuth applications authorized by the authenticated user."
-        return (await self._raw_resource.list_authorized_applications(input)).data
+        return (await self._raw_resource.list_authorized_applications(input, options=options)).data
 
-    async def reset_profile_picture(self, input: ResetAccountProfilePictureInput) -> models.Account:
+    async def reset_profile_picture(
+        self, input: ResetAccountProfilePictureInput, *, options: RequestOptions | None = None
+    ) -> models.Account:
         "Remove profile picture\n\nRemoves the authenticated account's custom profile picture and returns the account using its default picture. This operation does not upload a replacement; use the upload-and-commit operations when setting a new custom picture. Supply the required Idempotency-Key header."
-        return (await self._raw_resource.reset_profile_picture(input)).data
+        return (await self._raw_resource.reset_profile_picture(input, options=options)).data
 
     async def revoke_account_service_key(
-        self, input: RevokeAccountServiceKeyInput
+        self, input: RevokeAccountServiceKeyInput, *, options: RequestOptions | None = None
     ) -> models.RevokeAccountServiceKeyResponse:
         "Revoke Account Service Key\n\nRevokes the account-owned service key identified by serviceKeyId and returns its revoked metadata. Repeating the revocation is stable. Revocation changes the credential's validity; it does not create a replacement key. Supply the required Idempotency-Key header."
-        return (await self._raw_resource.revoke_account_service_key(input)).data
+        return (await self._raw_resource.revoke_account_service_key(input, options=options)).data
 
-    async def revoke_authorized_application(self, input: RevokeAuthorizedApplicationInput) -> None:
+    async def revoke_authorized_application(
+        self, input: RevokeAuthorizedApplicationInput, *, options: RequestOptions | None = None
+    ) -> None:
         "Revoke connected application\n\nRevokes the authenticated user's grant for one OAuth application."
-        return (await self._raw_resource.revoke_authorized_application(input)).data
+        return (await self._raw_resource.revoke_authorized_application(input, options=options)).data
 
-    async def update(self, input: UpdateAccountInput) -> models.Account:
+    async def update(
+        self, input: UpdateAccountInput, *, options: RequestOptions | None = None
+    ) -> models.Account:
         "Update account\n\nUpdates the supplied firstName and lastName fields on the authenticated account and returns the updated profile. Only the documented profile fields can be changed through this endpoint; profile-picture uploads and phone-number verification use their dedicated operations. Supply the required Idempotency-Key header."
-        return (await self._raw_resource.update(input)).data
+        return (await self._raw_resource.update(input, options=options)).data
 
 
 class AsyncSystemResource:
@@ -11069,16 +11861,20 @@ class AsyncSystemResource:
         self._raw_resource = AsyncRawSystemResource(transport)
 
     async def create_app_installation_request(
-        self, input: CreateAppInstallationRequestInput
+        self, input: CreateAppInstallationRequestInput, *, options: RequestOptions | None = None
     ) -> models.CreateAppInstallationRequestResponse:
         "Request app installation\n\nAuthenticates a registered app backend using a short-lived signed client assertion. Creates request metadata only; customer approval is still required."
-        return (await self._raw_resource.create_app_installation_request(input)).data
+        return (
+            await self._raw_resource.create_app_installation_request(input, options=options)
+        ).data
 
     async def redeem_app_installation_delivery(
-        self, input: RedeemAppInstallationDeliveryInput
+        self, input: RedeemAppInstallationDeliveryInput, *, options: RequestOptions | None = None
     ) -> models.RedeemAppInstallationDeliveryResponse:
         "Redeem installation credential\n\nThe registered app backend authenticates with a signed client assertion and a single-use code. Plaintext is returned only once; retries return status and never create another credential."
-        return (await self._raw_resource.redeem_app_installation_delivery(input)).data
+        return (
+            await self._raw_resource.redeem_app_installation_delivery(input, options=options)
+        ).data
 
 
 class AsyncAuthDeviceResource:
@@ -11086,14 +11882,16 @@ class AsyncAuthDeviceResource:
         self._raw_resource = AsyncRawAuthDeviceResource(transport)
 
     async def authorize(
-        self, input: DeviceAuthorizeInput | None = None
+        self, input: DeviceAuthorizeInput | None = None, *, options: RequestOptions | None = None
     ) -> models.DeviceAuthorizeResponse:
         "Start device authorization\n\nStarts the device authorization flow for a CLI or another device without a browser. Show the verification URL and user code, then poll the token endpoint at the returned interval. No request fields are required; any supplied body is ignored."
-        return (await self._raw_resource.authorize(input)).data
+        return (await self._raw_resource.authorize(input, options=options)).data
 
-    async def token(self, input: DeviceTokenInput) -> models.DeviceTokenResponse:
+    async def token(
+        self, input: DeviceTokenInput, *, options: RequestOptions | None = None
+    ) -> models.DeviceTokenResponse:
         "Exchange device code or refresh token\n\nExchanges an authorized device code or a refresh token for an access token and rotating refresh token. Accepts JSON and form-encoded bodies. While polling, wait at least interval seconds and increase the interval on slow_down. Store the new refresh token after every successful grant.\n\nThis SDK method sends uncompressed JSON (application/json). Other request formats described above apply to direct HTTP requests."
-        return (await self._raw_resource.token(input)).data
+        return (await self._raw_resource.token(input, options=options)).data
 
 
 class AsyncAuthResource:
@@ -11102,52 +11900,64 @@ class AsyncAuthResource:
         self.device = AsyncAuthDeviceResource(transport)
 
     async def create_organization_sso_portal_link(
-        self, input: CreateOrganizationSsoPortalLinkInput
+        self, input: CreateOrganizationSsoPortalLinkInput, *, options: RequestOptions | None = None
     ) -> models.CreateOrganizationSsoPortalLinkResponse:
         "Create organization setup portal link\n\nReturns an organization setup portal URL. Supply returnTo and optionally intent, either sso or domain_verification; sso is the default. Open the returned URL to complete the selected setup flow."
-        return (await self._raw_resource.create_organization_sso_portal_link(input)).data
+        return (
+            await self._raw_resource.create_organization_sso_portal_link(input, options=options)
+        ).data
 
     async def disable_organization_sso(
-        self, input: DisableOrganizationSsoInput
+        self, input: DisableOrganizationSsoInput, *, options: RequestOptions | None = None
     ) -> models.OrganizationSsoConfiguration:
         "Disable organization SSO\n\nDeletes the provider connection, releases the SSO requirement once the connection is gone, then unbinds the chosen domains. Retry with the same Idempotency-Key to resume or await the same run."
-        return (await self._raw_resource.disable_organization_sso(input)).data
+        return (await self._raw_resource.disable_organization_sso(input, options=options)).data
 
     async def get_organization_connection_status(
-        self, input: GetOrganizationConnectionStatusInput
+        self, input: GetOrganizationConnectionStatusInput, *, options: RequestOptions | None = None
     ) -> models.OrganizationConnectionStatus:
         "Get organization connection status\n\nRequires current human organization membership. Synchronization status does not attest SSO configuration or completed authorization."
-        return (await self._raw_resource.get_organization_connection_status(input)).data
+        return (
+            await self._raw_resource.get_organization_connection_status(input, options=options)
+        ).data
 
     async def get_organization_sso_configuration(
-        self, input: GetOrganizationSsoConfigurationInput
+        self, input: GetOrganizationSsoConfigurationInput, *, options: RequestOptions | None = None
     ) -> models.OrganizationSsoConfiguration:
         "Get organization SSO configuration\n\nReturns the selected organization’s SSO connection state, configuration version, and desired and effective policy settings. Read policySyncStatus alongside the enforcement fields to distinguish requested settings from synchronized settings."
-        return (await self._raw_resource.get_organization_sso_configuration(input)).data
+        return (
+            await self._raw_resource.get_organization_sso_configuration(input, options=options)
+        ).data
 
     async def list_oauth_scopes(
-        self, input: ListOauthScopesInput | None = None
+        self, input: ListOauthScopesInput | None = None, *, options: RequestOptions | None = None
     ) -> models.ListOauthScopesResponse:
         "List OAuth scopes\n\nLists the business permissions available to OAuth applications."
-        return (await self._raw_resource.list_oauth_scopes(input)).data
+        return (await self._raw_resource.list_oauth_scopes(input, options=options)).data
 
     async def refresh_organization_sso_connection(
-        self, input: RefreshOrganizationSsoConnectionInput
+        self, input: RefreshOrganizationSsoConnectionInput, *, options: RequestOptions | None = None
     ) -> models.OrganizationSsoConfiguration:
         "Refresh organization SSO connection\n\nRefreshes the selected organization’s SSO connection and returns its current connection state, configuration version and policy synchronization status. This operation takes no request body."
-        return (await self._raw_resource.refresh_organization_sso_connection(input)).data
+        return (
+            await self._raw_resource.refresh_organization_sso_connection(input, options=options)
+        ).data
 
     async def retry_organization_connection_sync(
-        self, input: RetryOrganizationConnectionSyncInput
+        self, input: RetryOrganizationConnectionSyncInput, *, options: RequestOptions | None = None
     ) -> models.OrganizationConnectionStatus:
         "Retry organization connection sync\n\nReconciles existing local intent. Takes no body and cannot change membership, roles or authentication policy."
-        return (await self._raw_resource.retry_organization_connection_sync(input)).data
+        return (
+            await self._raw_resource.retry_organization_connection_sync(input, options=options)
+        ).data
 
     async def update_organization_sso_policy(
-        self, input: UpdateOrganizationSsoPolicyInput
+        self, input: UpdateOrganizationSsoPolicyInput, *, options: RequestOptions | None = None
     ) -> models.OrganizationSsoConfiguration:
         "Update organization SSO policy\n\nUpdates whether SSO can admit new members automatically using ssoJitEnabled and the current expectedVersion. Returns the organization’s SSO configuration and policy synchronization status; a successful response does not mean every desired policy setting has finished synchronizing."
-        return (await self._raw_resource.update_organization_sso_policy(input)).data
+        return (
+            await self._raw_resource.update_organization_sso_policy(input, options=options)
+        ).data
 
 
 class SyncRawRoot:

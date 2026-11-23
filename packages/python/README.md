@@ -78,6 +78,9 @@ asyncio.run(main())
   as in `photon.projects.agent_profile.get`. Each method takes one input model from
   `photon_api.rpc_generated` (for example `CountProjectsInput`) with
   `path`, `query`, `body` and header members as the operation declares.
+- Every method also takes a keyword-only `options`, a `RequestOptions`
+  dictionary, for one call: its `headers` replace the client's value for the
+  same header names, and a header member of the input still takes precedence.
 - The normal facade returns the response model. `photon.raw` has the same methods
   and returns a `RawResponse` with `data`, `status`, `headers` and `request_id`
   (the `x-request-id` response header when present).

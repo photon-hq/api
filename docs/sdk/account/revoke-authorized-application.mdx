@@ -16,7 +16,7 @@ photon.account.revokeAuthorizedApplication(input: RevokeAuthorizedApplicationInp
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.account.revoke_authorized_application(input: RevokeAuthorizedApplicationInput) -> None
+photon.account.revoke_authorized_application(input: RevokeAuthorizedApplicationInput, *, options: RequestOptions | None = None) -> None
 ```
 </Tab>
 <Tab title="Rust">
@@ -96,6 +96,10 @@ if err != nil {
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField path="applicationId" type={"string"} required>
 Authorized application's id, prefixed with connect_app_. Use application.id from the list response, not its clientId or authorizationId.
 </ParamField>
@@ -104,4 +108,6 @@ Authorized application's id, prefixed with connect_app_. Use application.id from
 ## Returns
 
 **`204`** OAuth application grant revoked. No body.
+
+Headers: `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 

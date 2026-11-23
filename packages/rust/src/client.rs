@@ -9,7 +9,7 @@ use std::{
 
 use reqwest::{
     Method, Request, Response, StatusCode,
-    header::{HeaderMap, RETRY_AFTER},
+    header::{HeaderMap, HeaderValue, IntoHeaderName, RETRY_AFTER},
 };
 
 use crate::{Client, Credential, Error, ExecuteFuture, HttpBackend, TransportError};
@@ -264,6 +264,72 @@ fn retryable_status(status: StatusCode) -> bool {
 
 fn retryable_outcome(status: Option<StatusCode>) -> bool {
     status.is_some_and(retryable_status)
+}
+
+/// Headers for the calls made through a client from [`Client::with_request_options`].
+///
+/// Each header replaces the value the client would otherwise send for the same
+/// name, from [`PhotonClientBuilder::static_headers`],
+/// [`PhotonClientBuilder::headers`] or a supplied `reqwest::Client`'s default
+/// headers, so the request carries one value. A header parameter passed to the
+/// operation itself takes precedence.
+#[derive(Clone, Default)]
+pub struct RequestOptions {
+    headers: HeaderMap,
+}
+
+impl fmt::Debug for RequestOptions {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("RequestOptions")
+            .field("headers", &self.headers.keys().collect::<Vec<_>>())
+            .finish()
+    }
+}
+
+impl RequestOptions {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Send `value` as the `name` header, replacing an earlier value set here
+    /// for the same name.
+    #[must_use]
+    pub fn header<K: IntoHeaderName>(mut self, name: K, value: HeaderValue) -> Self {
+        self.headers.insert(name, value);
+        self
+    }
+
+    pub(crate) fn layer(self, inner: Arc<dyn HttpBackend>) -> Arc<dyn HttpBackend> {
+        Arc::new(RequestOptionsBackend {
+            inner,
+            headers: self.headers,
+        })
+    }
+}
+
+/// Adds the per-call headers before the request reaches the client's own
+/// backend, which only fills headers the request does not already carry.
+struct RequestOptionsBackend {
+    inner: Arc<dyn HttpBackend>,
+    headers: HeaderMap,
+}
+
+impl fmt::Debug for RequestOptionsBackend {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("RequestOptionsBackend")
+            .field("inner", &self.inner)
+            .field("headers", &self.headers.keys().collect::<Vec<_>>())
+            .finish()
+    }
+}
+
+impl HttpBackend for RequestOptionsBackend {
+    fn execute(&self, mut request: Request) -> ExecuteFuture<'_> {
+        merge_configured_headers(&mut request, &self.headers);
+        self.inner.execute(request)
+    }
 }
 
 fn merge_configured_headers(request: &mut Request, configured: &HeaderMap) {

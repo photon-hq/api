@@ -327,315 +327,315 @@ photon.organizations.removeOrganizationMember(input: RemoveOrganizationMemberInp
 **[List pending organization invitations](/api-client/sdk/organizations/list-organization-invitations)**
 
 ```python Python
-photon.organizations.list_organization_invitations(input: ListOrganizationInvitationsInput) -> models.ListOrganizationInvitationsResponse
+photon.organizations.list_organization_invitations(input: ListOrganizationInvitationsInput, *, options: RequestOptions | None = None) -> models.ListOrganizationInvitationsResponse
 ```
 `GET /v1/organizations/{organizationId}/invitations`
 
 **[List current organization members](/api-client/sdk/organizations/list-organization-members)**
 
 ```python Python
-photon.organizations.list_organization_members(input: ListOrganizationMembersInput) -> models.ListOrganizationMembersResponse
+photon.organizations.list_organization_members(input: ListOrganizationMembersInput, *, options: RequestOptions | None = None) -> models.ListOrganizationMembersResponse
 ```
 `GET /v1/organizations/{organizationId}/members`
 
 **[List organization OAuth clients](/api-client/sdk/organizations/list-organization-oauth-clients)**
 
 ```python Python
-photon.organizations.list_organization_oauth_clients(input: ListOrganizationOauthClientsInput) -> models.ListOrganizationOauthClientsResponse
+photon.organizations.list_organization_oauth_clients(input: ListOrganizationOauthClientsInput, *, options: RequestOptions | None = None) -> models.ListOrganizationOauthClientsResponse
 ```
 `GET /v1/organizations/{organizationId}/oauth/clients`
 
 **[List organizations](/api-client/sdk/organizations/list-organizations)**
 
 ```python Python
-photon.organizations.list_organizations(input: ListOrganizationsInput | None = None) -> models.ListOrganizationsResponse
+photon.organizations.list_organizations(input: ListOrganizationsInput | None = None, *, options: RequestOptions | None = None) -> models.ListOrganizationsResponse
 ```
 `GET /v1/organizations`
 
 **[List organization Service Identities](/api-client/sdk/organizations/list-service-identities)**
 
 ```python Python
-photon.organizations.list_service_identities(input: ListServiceIdentitiesInput) -> models.ListServiceIdentitiesResponse
+photon.organizations.list_service_identities(input: ListServiceIdentitiesInput, *, options: RequestOptions | None = None) -> models.ListServiceIdentitiesResponse
 ```
 `GET /v1/organizations/{organizationId}/service-identities`
 
 **[List Service Identity credential metadata](/api-client/sdk/organizations/list-service-identity-credentials)**
 
 ```python Python
-photon.organizations.list_service_identity_credentials(input: ListServiceIdentityCredentialsInput) -> models.ListServiceIdentityCredentialsResponse
+photon.organizations.list_service_identity_credentials(input: ListServiceIdentityCredentialsInput, *, options: RequestOptions | None = None) -> models.ListServiceIdentityCredentialsResponse
 ```
 `GET /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials`
 
 **[List grantable Service Identity permissions](/api-client/sdk/organizations/list-service-identity-permissions)**
 
 ```python Python
-photon.organizations.list_service_identity_permissions(input: ListServiceIdentityPermissionsInput) -> models.ListServiceIdentityPermissionsResponse
+photon.organizations.list_service_identity_permissions(input: ListServiceIdentityPermissionsInput, *, options: RequestOptions | None = None) -> models.ListServiceIdentityPermissionsResponse
 ```
 `GET /v1/organizations/{organizationId}/service-identities/permissions`
 
 **[Check organization deletion prerequisites](/api-client/sdk/organizations/check-organization-deletion)**
 
 ```python Python
-photon.organizations.check_organization_deletion(input: CheckOrganizationDeletionInput) -> models.CheckOrganizationDeletionResponse
+photon.organizations.check_organization_deletion(input: CheckOrganizationDeletionInput, *, options: RequestOptions | None = None) -> models.CheckOrganizationDeletionResponse
 ```
 `GET /v1/organizations/{organizationId}/deletion-check`
 
 **[Read the credential's organization](/api-client/sdk/organizations/get-current-organization)**
 
 ```python Python
-photon.organizations.get_current_organization(input: GetCurrentOrganizationInput | None = None) -> models.GetCurrentOrganizationResponse
+photon.organizations.get_current_organization(input: GetCurrentOrganizationInput | None = None, *, options: RequestOptions | None = None,) -> models.GetCurrentOrganizationResponse
 ```
 `GET /v1/organizations/current`
 
 **[Read organization name and avatar](/api-client/sdk/organizations/get-organization)**
 
 ```python Python
-photon.organizations.get_organization(input: GetOrganizationInput) -> models.GetOrganizationResponse
+photon.organizations.get_organization(input: GetOrganizationInput, *, options: RequestOptions | None = None) -> models.GetOrganizationResponse
 ```
 `GET /v1/organizations/{organizationId}`
 
 **[Read an organization OAuth client](/api-client/sdk/organizations/get-organization-oauth-client)**
 
 ```python Python
-photon.organizations.get_organization_oauth_client(input: GetOrganizationOauthClientInput) -> models.GetOrganizationOauthClientResponse
+photon.organizations.get_organization_oauth_client(input: GetOrganizationOauthClientInput, *, options: RequestOptions | None = None) -> models.GetOrganizationOauthClientResponse
 ```
 `GET /v1/organizations/{organizationId}/oauth/clients/{clientId}`
 
 **[Read an organization OAuth client's secret](/api-client/sdk/organizations/get-organization-oauth-client-secret)**
 
 ```python Python
-photon.organizations.get_organization_oauth_client_secret(input: GetOrganizationOauthClientSecretInput) -> models.GetOrganizationOauthClientSecretResponse
+photon.organizations.get_organization_oauth_client_secret(input: GetOrganizationOauthClientSecretInput, *, options: RequestOptions | None = None) -> models.GetOrganizationOauthClientSecretResponse
 ```
 `GET /v1/organizations/{organizationId}/oauth/clients/{clientId}/secret`
 
 **[Read a Service Identity](/api-client/sdk/organizations/get-service-identity)**
 
 ```python Python
-photon.organizations.get_service_identity(input: GetServiceIdentityInput) -> models.GetServiceIdentityResponse
+photon.organizations.get_service_identity(input: GetServiceIdentityInput, *, options: RequestOptions | None = None) -> models.GetServiceIdentityResponse
 ```
 `GET /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}`
 
 **[Read SSO subscription](/api-client/sdk/organizations/get-sso-subscription)**
 
 ```python Python
-photon.organizations.get_sso_subscription(input: GetSsoSubscriptionInput) -> models.GetSsoSubscriptionResponse
+photon.organizations.get_sso_subscription(input: GetSsoSubscriptionInput, *, options: RequestOptions | None = None) -> models.GetSsoSubscriptionResponse
 ```
 `GET /v1/organizations/{organizationId}/sso/subscription`
 
 **[Get sole-proprietor OTP status](/api-client/sdk/organizations/get-ten-dlc-brand-otp)**
 
 ```python Python
-photon.organizations.get_ten_dlc_brand_otp(input: GetTenDlcBrandOtpInput) -> models.GetTenDlcBrandOtpResponse
+photon.organizations.get_ten_dlc_brand_otp(input: GetTenDlcBrandOtpInput, *, options: RequestOptions | None = None) -> models.GetTenDlcBrandOtpResponse
 ```
 `GET /v1/organizations/{organization_id}/10dlc/brands/{brandId}/otp`
 
 **[Accept an invitation to all organization projects](/api-client/sdk/organizations/accept-organization-invitation)**
 
 ```python Python
-photon.organizations.accept_organization_invitation(input: AcceptOrganizationInvitationInput) -> models.AcceptOrganizationInvitationResponse
+photon.organizations.accept_organization_invitation(input: AcceptOrganizationInvitationInput, *, options: RequestOptions | None = None) -> models.AcceptOrganizationInvitationResponse
 ```
 `POST /v1/organizations/invitations/accept`
 
 **[Cancel the SSO subscription](/api-client/sdk/organizations/cancel-sso-subscription)**
 
 ```python Python
-photon.organizations.cancel_sso_subscription(input: CancelSsoSubscriptionInput) -> models.CancelSsoSubscriptionResponse
+photon.organizations.cancel_sso_subscription(input: CancelSsoSubscriptionInput, *, options: RequestOptions | None = None) -> models.CancelSsoSubscriptionResponse
 ```
 `POST /v1/organizations/{organizationId}/sso/subscription/cancel`
 
 **[Commit an organization avatar](/api-client/sdk/organizations/commit-organization-avatar)**
 
 ```python Python
-photon.organizations.commit_organization_avatar(input: CommitOrganizationAvatarInput) -> models.CommitOrganizationAvatarResponse
+photon.organizations.commit_organization_avatar(input: CommitOrganizationAvatarInput, *, options: RequestOptions | None = None) -> models.CommitOrganizationAvatarResponse
 ```
 `POST /v1/organizations/{organizationId}/avatar/commit`
 
 **[Create an organization](/api-client/sdk/organizations/create-organization)**
 
 ```python Python
-photon.organizations.create_organization(input: CreateOrganizationInput) -> models.CreateOrganizationResponse
+photon.organizations.create_organization(input: CreateOrganizationInput, *, options: RequestOptions | None = None) -> models.CreateOrganizationResponse
 ```
 `POST /v1/organizations`
 
 **[Create an organization avatar upload](/api-client/sdk/organizations/create-organization-avatar-upload)**
 
 ```python Python
-photon.organizations.create_organization_avatar_upload(input: CreateOrganizationAvatarUploadInput) -> models.CreateOrganizationAvatarUploadResponse
+photon.organizations.create_organization_avatar_upload(input: CreateOrganizationAvatarUploadInput, *, options: RequestOptions | None = None) -> models.CreateOrganizationAvatarUploadResponse
 ```
 `POST /v1/organizations/{organizationId}/avatar/uploads`
 
 **[Invite a Member or Viewer to all organization projects](/api-client/sdk/organizations/create-organization-invitation)**
 
 ```python Python
-photon.organizations.create_organization_invitation(input: CreateOrganizationInvitationInput) -> models.CreateOrganizationInvitationResponse
+photon.organizations.create_organization_invitation(input: CreateOrganizationInvitationInput, *, options: RequestOptions | None = None) -> models.CreateOrganizationInvitationResponse
 ```
 `POST /v1/organizations/{organizationId}/invitations`
 
 **[Create an organization OAuth client](/api-client/sdk/organizations/create-organization-oauth-client)**
 
 ```python Python
-photon.organizations.create_organization_oauth_client(input: CreateOrganizationOauthClientInput) -> models.CreateOrganizationOauthClientResponse
+photon.organizations.create_organization_oauth_client(input: CreateOrganizationOauthClientInput, *, options: RequestOptions | None = None) -> models.CreateOrganizationOauthClientResponse
 ```
 `POST /v1/organizations/{organizationId}/oauth/clients`
 
 **[Create an organization Service Identity](/api-client/sdk/organizations/create-service-identity)**
 
 ```python Python
-photon.organizations.create_service_identity(input: CreateServiceIdentityInput) -> models.CreateServiceIdentityResponse
+photon.organizations.create_service_identity(input: CreateServiceIdentityInput, *, options: RequestOptions | None = None) -> models.CreateServiceIdentityResponse
 ```
 `POST /v1/organizations/{organizationId}/service-identities`
 
 **[Create a one-time Service Identity API key](/api-client/sdk/organizations/create-service-identity-api-key)**
 
 ```python Python
-photon.organizations.create_service_identity_api_key(input: CreateServiceIdentityApiKeyInput) -> models.CreateServiceIdentityApiKeyResponse
+photon.organizations.create_service_identity_api_key(input: CreateServiceIdentityApiKeyInput, *, options: RequestOptions | None = None) -> models.CreateServiceIdentityApiKeyResponse
 ```
 `POST /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials/api-keys`
 
 **[Create a one-time Service Identity M2M client secret](/api-client/sdk/organizations/create-service-identity-client-secret)**
 
 ```python Python
-photon.organizations.create_service_identity_client_secret(input: CreateServiceIdentityClientSecretInput) -> models.CreateServiceIdentityClientSecretResponse
+photon.organizations.create_service_identity_client_secret(input: CreateServiceIdentityClientSecretInput, *, options: RequestOptions | None = None,) -> models.CreateServiceIdentityClientSecretResponse
 ```
 `POST /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials/client-secrets`
 
 **[Leave an organization; Owners must transfer or close first](/api-client/sdk/organizations/leave-organization)**
 
 ```python Python
-photon.organizations.leave_organization(input: LeaveOrganizationInput) -> models.LeaveOrganizationResponse
+photon.organizations.leave_organization(input: LeaveOrganizationInput, *, options: RequestOptions | None = None) -> models.LeaveOrganizationResponse
 ```
 `POST /v1/organizations/{organizationId}/leave`
 
 **[Preview an organization invitation after sign-in](/api-client/sdk/organizations/preview-organization-invitation)**
 
 ```python Python
-photon.organizations.preview_organization_invitation(input: PreviewOrganizationInvitationInput) -> models.PreviewOrganizationInvitationResponse
+photon.organizations.preview_organization_invitation(input: PreviewOrganizationInvitationInput, *, options: RequestOptions | None = None) -> models.PreviewOrganizationInvitationResponse
 ```
 `POST /v1/organizations/invitations/preview`
 
 **[Resend an organization invitation](/api-client/sdk/organizations/resend-organization-invitation)**
 
 ```python Python
-photon.organizations.resend_organization_invitation(input: ResendOrganizationInvitationInput) -> models.ResendOrganizationInvitationResponse
+photon.organizations.resend_organization_invitation(input: ResendOrganizationInvitationInput, *, options: RequestOptions | None = None) -> models.ResendOrganizationInvitationResponse
 ```
 `POST /v1/organizations/{organizationId}/invitations/{invitationId}/resend`
 
 **[Revoke an organization invitation](/api-client/sdk/organizations/revoke-organization-invitation)**
 
 ```python Python
-photon.organizations.revoke_organization_invitation(input: RevokeOrganizationInvitationInput) -> models.RevokeOrganizationInvitationResponse
+photon.organizations.revoke_organization_invitation(input: RevokeOrganizationInvitationInput, *, options: RequestOptions | None = None) -> models.RevokeOrganizationInvitationResponse
 ```
 `POST /v1/organizations/{organizationId}/invitations/{invitationId}/revoke`
 
 **[Request Service Identity credential revocation](/api-client/sdk/organizations/revoke-service-identity-credential)**
 
 ```python Python
-photon.organizations.revoke_service_identity_credential(input: RevokeServiceIdentityCredentialInput) -> models.RevokeServiceIdentityCredentialResponse
+photon.organizations.revoke_service_identity_credential(input: RevokeServiceIdentityCredentialInput, *, options: RequestOptions | None = None) -> models.RevokeServiceIdentityCredentialResponse
 ```
 `POST /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}/credentials/{credentialId}/revoke`
 
 **[Rotate an organization OAuth client's secret](/api-client/sdk/organizations/rotate-organization-oauth-client-secret)**
 
 ```python Python
-photon.organizations.rotate_organization_oauth_client_secret(input: RotateOrganizationOauthClientSecretInput) -> models.RotateOrganizationOauthClientSecretResponse
+photon.organizations.rotate_organization_oauth_client_secret(input: RotateOrganizationOauthClientSecretInput, *, options: RequestOptions | None = None,) -> models.RotateOrganizationOauthClientSecretResponse
 ```
 `POST /v1/organizations/{organizationId}/oauth/clients/{clientId}/secret/rotate`
 
 **[Subscribe to organization SSO](/api-client/sdk/organizations/subscribe-sso)**
 
 ```python Python
-photon.organizations.subscribe_sso(input: SubscribeSsoInput) -> models.SubscribeSsoResponse
+photon.organizations.subscribe_sso(input: SubscribeSsoInput, *, options: RequestOptions | None = None) -> models.SubscribeSsoResponse
 ```
 `POST /v1/organizations/{organizationId}/sso/subscription`
 
 **[Transfer organization ownership to an existing member](/api-client/sdk/organizations/transfer-organization-ownership)**
 
 ```python Python
-photon.organizations.transfer_organization_ownership(input: TransferOrganizationOwnershipInput) -> models.TransferOrganizationOwnershipResponse
+photon.organizations.transfer_organization_ownership(input: TransferOrganizationOwnershipInput, *, options: RequestOptions | None = None) -> models.TransferOrganizationOwnershipResponse
 ```
 `POST /v1/organizations/{organizationId}/transfer-ownership`
 
 **[Trigger sole-proprietor OTP](/api-client/sdk/organizations/trigger-ten-dlc-brand-otp)**
 
 ```python Python
-photon.organizations.trigger_ten_dlc_brand_otp(input: TriggerTenDlcBrandOtpInput) -> models.TriggerTenDlcBrandOtpResponse
+photon.organizations.trigger_ten_dlc_brand_otp(input: TriggerTenDlcBrandOtpInput, *, options: RequestOptions | None = None) -> models.TriggerTenDlcBrandOtpResponse
 ```
 `POST /v1/organizations/{organization_id}/10dlc/brands/{brandId}/otp`
 
 **[Create an organization OAuth client's secret](/api-client/sdk/organizations/setup-organization-oauth-client-secret)**
 
 ```python Python
-photon.organizations.setup_organization_oauth_client_secret(input: SetupOrganizationOauthClientSecretInput) -> ( models.SetupOrganizationOauthClientSecretResponse | models.SetupOrganizationOauthClientSecretCreatedResponse )
+photon.organizations.setup_organization_oauth_client_secret(input: SetupOrganizationOauthClientSecretInput, *, options: RequestOptions | None = None,) -> ( models.SetupOrganizationOauthClientSecretResponse | models.SetupOrganizationOauthClientSecretCreatedResponse )
 ```
 `PUT /v1/organizations/{organizationId}/oauth/clients/{clientId}/secret`
 
 **[Change organization name](/api-client/sdk/organizations/update-organization)**
 
 ```python Python
-photon.organizations.update_organization(input: UpdateOrganizationInput) -> models.UpdateOrganizationResponse
+photon.organizations.update_organization(input: UpdateOrganizationInput, *, options: RequestOptions | None = None) -> models.UpdateOrganizationResponse
 ```
 `PATCH /v1/organizations/{organizationId}`
 
 **[Change an organization member's role across all projects](/api-client/sdk/organizations/update-organization-member-role)**
 
 ```python Python
-photon.organizations.update_organization_member_role(input: UpdateOrganizationMemberRoleInput) -> models.UpdateOrganizationMemberRoleResponse
+photon.organizations.update_organization_member_role(input: UpdateOrganizationMemberRoleInput, *, options: RequestOptions | None = None) -> models.UpdateOrganizationMemberRoleResponse
 ```
 `PATCH /v1/organizations/{organizationId}/members/{memberAccountId}`
 
 **[Update an organization OAuth client](/api-client/sdk/organizations/update-organization-oauth-client)**
 
 ```python Python
-photon.organizations.update_organization_oauth_client(input: UpdateOrganizationOauthClientInput) -> models.UpdateOrganizationOauthClientResponse
+photon.organizations.update_organization_oauth_client(input: UpdateOrganizationOauthClientInput, *, options: RequestOptions | None = None) -> models.UpdateOrganizationOauthClientResponse
 ```
 `PATCH /v1/organizations/{organizationId}/oauth/clients/{clientId}`
 
 **[Update a Service Identity](/api-client/sdk/organizations/update-service-identity)**
 
 ```python Python
-photon.organizations.update_service_identity(input: UpdateServiceIdentityInput) -> models.UpdateServiceIdentityResponse
+photon.organizations.update_service_identity(input: UpdateServiceIdentityInput, *, options: RequestOptions | None = None) -> models.UpdateServiceIdentityResponse
 ```
 `PATCH /v1/organizations/{organizationId}/service-identities/{serviceIdentityId}`
 
 **[Verify sole-proprietor OTP](/api-client/sdk/organizations/verify-ten-dlc-brand-otp)**
 
 ```python Python
-photon.organizations.verify_ten_dlc_brand_otp(input: VerifyTenDlcBrandOtpInput) -> models.VerifyTenDlcBrandOtpResponse
+photon.organizations.verify_ten_dlc_brand_otp(input: VerifyTenDlcBrandOtpInput, *, options: RequestOptions | None = None) -> models.VerifyTenDlcBrandOtpResponse
 ```
 `PUT /v1/organizations/{organization_id}/10dlc/brands/{brandId}/otp`
 
 **[Delete organization](/api-client/sdk/organizations/close-organization)**
 
 ```python Python
-photon.organizations.close_organization(input: CloseOrganizationInput) -> None
+photon.organizations.close_organization(input: CloseOrganizationInput, *, options: RequestOptions | None = None) -> None
 ```
 `DELETE /v1/organizations/{organizationId}`
 
 **[Delete an organization OAuth client](/api-client/sdk/organizations/delete-organization-oauth-client)**
 
 ```python Python
-photon.organizations.delete_organization_oauth_client(input: DeleteOrganizationOauthClientInput) -> models.DeleteOrganizationOauthClientResponse
+photon.organizations.delete_organization_oauth_client(input: DeleteOrganizationOauthClientInput, *, options: RequestOptions | None = None) -> models.DeleteOrganizationOauthClientResponse
 ```
 `DELETE /v1/organizations/{organizationId}/oauth/clients/{clientId}`
 
 **[Revoke an organization OAuth client's secret](/api-client/sdk/organizations/delete-organization-oauth-client-secret)**
 
 ```python Python
-photon.organizations.delete_organization_oauth_client_secret(input: DeleteOrganizationOauthClientSecretInput) -> None
+photon.organizations.delete_organization_oauth_client_secret(input: DeleteOrganizationOauthClientSecretInput, *, options: RequestOptions | None = None,) -> None
 ```
 `DELETE /v1/organizations/{organizationId}/oauth/clients/{clientId}/secret`
 
 **[Remove an organization avatar](/api-client/sdk/organizations/remove-organization-avatar)**
 
 ```python Python
-photon.organizations.remove_organization_avatar(input: RemoveOrganizationAvatarInput) -> models.RemoveOrganizationAvatarResponse
+photon.organizations.remove_organization_avatar(input: RemoveOrganizationAvatarInput, *, options: RequestOptions | None = None) -> models.RemoveOrganizationAvatarResponse
 ```
 `DELETE /v1/organizations/{organizationId}/avatar`
 
 **[Remove a member from the organization](/api-client/sdk/organizations/remove-organization-member)**
 
 ```python Python
-photon.organizations.remove_organization_member(input: RemoveOrganizationMemberInput) -> models.RemoveOrganizationMemberResponse
+photon.organizations.remove_organization_member(input: RemoveOrganizationMemberInput, *, options: RequestOptions | None = None) -> models.RemoveOrganizationMemberResponse
 ```
 `DELETE /v1/organizations/{organizationId}/members/{memberAccountId}`
 

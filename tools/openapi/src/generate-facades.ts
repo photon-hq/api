@@ -568,18 +568,18 @@ function pythonMethod(
   if (!raw) {
     // The client's method returns the decoded result; its raw counterpart
     // (photon.raw) holds the request and returns the whole response.
-    return `    ${asyncPrefix}def ${methodName}(self, ${input}) -> ${outputType}:\n` +
+    return `    ${asyncPrefix}def ${methodName}(self, ${input}, *, options: RequestOptions | None = None) -> ${outputType}:\n` +
       pythonDocumentation(operation) +
-      `        return (${awaitPrefix}self._raw_resource.${methodName}(input)).data\n`;
+      `        return (${awaitPrefix}self._raw_resource.${methodName}(input, options=options)).data\n`;
   }
   const parsedInput = required ? "input" : `(input or ${typeName}Input())`;
   const rawRequest = operationMedia(operation).rawRequest;
-  return `    ${asyncPrefix}def ${methodName}(self, ${input}) -> RawResponse[${outputType}]:\n` +
+  return `    ${asyncPrefix}def ${methodName}(self, ${input}, *, options: RequestOptions | None = None) -> RawResponse[${outputType}]:\n` +
     pythonDocumentation(operation) +
     `        payload = ${parsedInput}.model_dump(mode="json", by_alias=True, exclude_unset=True${rawRequest ? ', exclude={"body"}' : ""})\n` +
     (rawRequest ? `        payload["body"] = ${parsedInput}.body.root if ${parsedInput}.body is not None else None\n` : "") +
     `        return ${awaitPrefix}self._transport.request(\n` +
-    `            _OP_${snakeCase(operation.operationId).toUpperCase()}, payload\n` +
+    `            _OP_${snakeCase(operation.operationId).toUpperCase()}, payload, options\n` +
     `        )\n`;
 }
 
@@ -674,7 +674,7 @@ from pydantic.experimental.missing_sentinel import MISSING
 from ._model_base import BaseModel
 
 from .generated import models
-from .transport import AsyncTransport, OperationSpec, RawResponse, SyncTransport
+from .transport import AsyncTransport, OperationSpec, RawResponse, RequestOptions, SyncTransport
 `;
   const inputClasses = operations.map(pythonInputClasses).join("\n");
   const constants = operations.map(pythonOperationConstant).join("\n\n");

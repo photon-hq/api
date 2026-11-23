@@ -89,77 +89,77 @@ photon.account.revokeAuthorizedApplication(input: RevokeAuthorizedApplicationInp
 **[List Account Service Keys](/api-client/sdk/account/list-account-service-keys)**
 
 ```python Python
-photon.account.list_account_service_keys(input: ListAccountServiceKeysInput | None = None) -> models.ListAccountServiceKeysResponse
+photon.account.list_account_service_keys(input: ListAccountServiceKeysInput | None = None, *, options: RequestOptions | None = None,) -> models.ListAccountServiceKeysResponse
 ```
 `GET /v1/account/service-keys`
 
 **[List connected applications](/api-client/sdk/account/list-authorized-applications)**
 
 ```python Python
-photon.account.list_authorized_applications(input: ListAuthorizedApplicationsInput | None = None) -> models.ListAuthorizedApplicationsResponse
+photon.account.list_authorized_applications(input: ListAuthorizedApplicationsInput | None = None, *, options: RequestOptions | None = None,) -> models.ListAuthorizedApplicationsResponse
 ```
 `GET /v1/account/oauth/authorized-applications`
 
 **[Get account](/api-client/sdk/account/get)**
 
 ```python Python
-photon.account.get(input: GetAccountInput | None = None) -> models.Account
+photon.account.get(input: GetAccountInput | None = None, *, options: RequestOptions | None = None) -> models.Account
 ```
 `GET /v1/account`
 
 **[Create Account Service Key](/api-client/sdk/account/create-account-service-key)**
 
 ```python Python
-photon.account.create_account_service_key(input: CreateAccountServiceKeyInput) -> models.CreateAccountServiceKeyResponse
+photon.account.create_account_service_key(input: CreateAccountServiceKeyInput, *, options: RequestOptions | None = None) -> models.CreateAccountServiceKeyResponse
 ```
 `POST /v1/account/service-keys`
 
 **[Create profile picture upload](/api-client/sdk/account/create-profile-picture-upload)**
 
 ```python Python
-photon.account.create_profile_picture_upload(input: CreateAccountProfilePictureUploadInput) -> models.ProfilePictureUpload
+photon.account.create_profile_picture_upload(input: CreateAccountProfilePictureUploadInput, *, options: RequestOptions | None = None,) -> models.ProfilePictureUpload
 ```
 `POST /v1/account/profile-picture/uploads`
 
 **[Commit profile picture](/api-client/sdk/account/commit-profile-picture)**
 
 ```python Python
-photon.account.commit_profile_picture(input: CommitAccountProfilePictureInput) -> models.Account
+photon.account.commit_profile_picture(input: CommitAccountProfilePictureInput, *, options: RequestOptions | None = None) -> models.Account
 ```
 `PUT /v1/account/profile-picture`
 
 **[Update account](/api-client/sdk/account/update)**
 
 ```python Python
-photon.account.update(input: UpdateAccountInput) -> models.Account
+photon.account.update(input: UpdateAccountInput, *, options: RequestOptions | None = None) -> models.Account
 ```
 `PATCH /v1/account`
 
 **[Delete account](/api-client/sdk/account/delete)**
 
 ```python Python
-photon.account.delete(input: DeleteAccountInput | None = None) -> models.Account
+photon.account.delete(input: DeleteAccountInput | None = None, *, options: RequestOptions | None = None) -> models.Account
 ```
 `DELETE /v1/account`
 
 **[Remove profile picture](/api-client/sdk/account/reset-profile-picture)**
 
 ```python Python
-photon.account.reset_profile_picture(input: ResetAccountProfilePictureInput) -> models.Account
+photon.account.reset_profile_picture(input: ResetAccountProfilePictureInput, *, options: RequestOptions | None = None) -> models.Account
 ```
 `DELETE /v1/account/profile-picture`
 
 **[Revoke Account Service Key](/api-client/sdk/account/revoke-account-service-key)**
 
 ```python Python
-photon.account.revoke_account_service_key(input: RevokeAccountServiceKeyInput) -> models.RevokeAccountServiceKeyResponse
+photon.account.revoke_account_service_key(input: RevokeAccountServiceKeyInput, *, options: RequestOptions | None = None) -> models.RevokeAccountServiceKeyResponse
 ```
 `DELETE /v1/account/service-keys/{serviceKeyId}`
 
 **[Revoke connected application](/api-client/sdk/account/revoke-authorized-application)**
 
 ```python Python
-photon.account.revoke_authorized_application(input: RevokeAuthorizedApplicationInput) -> None
+photon.account.revoke_authorized_application(input: RevokeAuthorizedApplicationInput, *, options: RequestOptions | None = None) -> None
 ```
 `DELETE /v1/account/oauth/authorized-applications/{applicationId}`
 
@@ -168,7 +168,7 @@ photon.account.revoke_authorized_application(input: RevokeAuthorizedApplicationI
 **[List Account Service Keys](/api-client/sdk/account/list-account-service-keys)**
 
 ```rust Rust
-client.list_account_service_keys(params: Option<ListAccountServiceKeysParams>).await -> Result<ResponseValue<types::ListAccountServiceKeysResponse>, Error<ListAccountServiceKeysError>>
+client.list_account_service_keys().await -> Result<ResponseValue<types::ListAccountServiceKeysResponse>, Error<ListAccountServiceKeysError>>
 ```
 `GET /v1/account/service-keys`
 
@@ -182,56 +182,56 @@ client.list_authorized_applications(params: Option<ListAuthorizedApplicationsPar
 **[Get account](/api-client/sdk/account/get)**
 
 ```rust Rust
-client.get_account(params: Option<GetAccountParams>).await -> Result<ResponseValue<types::Account>, Error<GetAccountError>>
+client.get_account().await -> Result<ResponseValue<types::Account>, Error<GetAccountError>>
 ```
 `GET /v1/account`
 
 **[Create Account Service Key](/api-client/sdk/account/create-account-service-key)**
 
 ```rust Rust
-client.create_account_service_key(idempotency_key: String, params: Option<CreateAccountServiceKeyParams>, body: &types::CreateAccountServiceKeyRequest).await -> Result<ResponseValue<types::CreateAccountServiceKeyResponse>, Error<CreateAccountServiceKeyError>>
+client.create_account_service_key(idempotency_key: String, body: &types::CreateAccountServiceKeyRequest).await -> Result<ResponseValue<types::CreateAccountServiceKeyResponse>, Error<CreateAccountServiceKeyError>>
 ```
 `POST /v1/account/service-keys`
 
 **[Create profile picture upload](/api-client/sdk/account/create-profile-picture-upload)**
 
 ```rust Rust
-client.create_account_profile_picture_upload(params: Option<CreateAccountProfilePictureUploadParams>, body: &types::ProfilePictureUploadRequest).await -> Result<ResponseValue<types::ProfilePictureUpload>, Error<CreateAccountProfilePictureUploadError>>
+client.create_account_profile_picture_upload(body: &types::ProfilePictureUploadRequest).await -> Result<ResponseValue<types::ProfilePictureUpload>, Error<CreateAccountProfilePictureUploadError>>
 ```
 `POST /v1/account/profile-picture/uploads`
 
 **[Commit profile picture](/api-client/sdk/account/commit-profile-picture)**
 
 ```rust Rust
-client.commit_account_profile_picture(idempotency_key: String, params: Option<CommitAccountProfilePictureParams>, body: &types::CommitAccountProfilePictureRequest).await -> Result<ResponseValue<types::Account>, Error<CommitAccountProfilePictureError>>
+client.commit_account_profile_picture(idempotency_key: String, body: &types::CommitAccountProfilePictureRequest).await -> Result<ResponseValue<types::Account>, Error<CommitAccountProfilePictureError>>
 ```
 `PUT /v1/account/profile-picture`
 
 **[Update account](/api-client/sdk/account/update)**
 
 ```rust Rust
-client.update_account(idempotency_key: String, params: Option<UpdateAccountParams>, body: &types::UpdateAccountRequest).await -> Result<ResponseValue<types::Account>, Error<UpdateAccountError>>
+client.update_account(idempotency_key: String, body: &types::UpdateAccountRequest).await -> Result<ResponseValue<types::Account>, Error<UpdateAccountError>>
 ```
 `PATCH /v1/account`
 
 **[Delete account](/api-client/sdk/account/delete)**
 
 ```rust Rust
-client.delete_account(params: Option<DeleteAccountParams>).await -> Result<ResponseValue<types::Account>, Error<DeleteAccountError>>
+client.delete_account().await -> Result<ResponseValue<types::Account>, Error<DeleteAccountError>>
 ```
 `DELETE /v1/account`
 
 **[Remove profile picture](/api-client/sdk/account/reset-profile-picture)**
 
 ```rust Rust
-client.reset_account_profile_picture(idempotency_key: String, params: Option<ResetAccountProfilePictureParams>).await -> Result<ResponseValue<types::Account>, Error<ResetAccountProfilePictureError>>
+client.reset_account_profile_picture(idempotency_key: String).await -> Result<ResponseValue<types::Account>, Error<ResetAccountProfilePictureError>>
 ```
 `DELETE /v1/account/profile-picture`
 
 **[Revoke Account Service Key](/api-client/sdk/account/revoke-account-service-key)**
 
 ```rust Rust
-client.revoke_account_service_key(idempotency_key: String, service_key_id: String, params: Option<RevokeAccountServiceKeyParams>).await -> Result<ResponseValue<types::RevokeAccountServiceKeyResponse>, Error<RevokeAccountServiceKeyError>>
+client.revoke_account_service_key(idempotency_key: String, service_key_id: String).await -> Result<ResponseValue<types::RevokeAccountServiceKeyResponse>, Error<RevokeAccountServiceKeyError>>
 ```
 `DELETE /v1/account/service-keys/{serviceKeyId}`
 
@@ -247,7 +247,7 @@ client.revoke_authorized_application(application_id: String).await -> Result<Res
 **[List Account Service Keys](/api-client/sdk/account/list-account-service-keys)**
 
 ```go Go
-client.Account.ListAccountServiceKeys(ctx context.Context, params *ListAccountServiceKeysParams, opts ...RequestOption) (*ListAccountServiceKeysResponse, error)
+client.Account.ListAccountServiceKeys(ctx context.Context, opts ...RequestOption) (*ListAccountServiceKeysResponse, error)
 ```
 `GET /v1/account/service-keys`
 
@@ -261,7 +261,7 @@ client.Account.ListAuthorizedApplications(ctx context.Context, params *ListAutho
 **[Get account](/api-client/sdk/account/get)**
 
 ```go Go
-client.Account.Get(ctx context.Context, params *GetAccountParams, opts ...RequestOption) (*Account, error)
+client.Account.Get(ctx context.Context, opts ...RequestOption) (*Account, error)
 ```
 `GET /v1/account`
 
@@ -296,7 +296,7 @@ client.Account.Update(ctx context.Context, params *UpdateAccountParams, opts ...
 **[Delete account](/api-client/sdk/account/delete)**
 
 ```go Go
-client.Account.Delete(ctx context.Context, params *DeleteAccountParams, opts ...RequestOption) (*Account, error)
+client.Account.Delete(ctx context.Context, opts ...RequestOption) (*Account, error)
 ```
 `DELETE /v1/account`
 

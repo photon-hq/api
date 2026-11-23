@@ -16,7 +16,7 @@ photon.projects.agentProfile.update(input: UpdateAgentProfileInput, options?: Re
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.projects.agent_profile.update(input: UpdateAgentProfileInput) -> models.AgentProfile
+photon.projects.agent_profile.update(input: UpdateAgentProfileInput, *, options: RequestOptions | None = None) -> models.AgentProfile
 ```
 </Tab>
 <Tab title="Rust">
@@ -128,6 +128,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField header="Idempotency-Key" type={"string"} required>
 Identifies one logical mutation across retries.
 </ParamField>
@@ -151,6 +155,8 @@ Identifies one logical mutation across retries.
 ## Returns
 
 **`200`** The updated agent profile. AgentProfile
+
+Headers: `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="avatarUrl" type={"string (uri)"} required>
 

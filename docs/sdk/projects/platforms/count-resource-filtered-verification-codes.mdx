@@ -16,7 +16,7 @@ photon.projects.platforms.countResourceFilteredVerificationCodes(input: CountRes
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.projects.platforms.count_resource_filtered_verification_codes(input: CountResourceFilteredVerificationCodesInput) -> models.FilteredVerificationCodeCount
+photon.projects.platforms.count_resource_filtered_verification_codes(input: CountResourceFilteredVerificationCodesInput, *, options: RequestOptions | None = None,) -> models.FilteredVerificationCodeCount
 ```
 </Tab>
 <Tab title="Rust">
@@ -112,6 +112,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField path="id" type={"string"} required>
 
 </ParamField>
@@ -137,6 +141,8 @@ _ = result
 
 **`200`** How many codes were filtered in the resolved window. FilteredVerificationCodeCount
 
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
 <ResponseField name="count" type={"integer"} required>
 
 </ResponseField>
@@ -148,4 +154,8 @@ _ = result
 <ResponseField name="receivedBefore" type={"string (date-time)"} required>
 
 </ResponseField>
+
+**`304`** Not Modified. Sent only when If-None-Match matches the ETag of an earlier 200 response for the same representation; no body. No body.
+
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 

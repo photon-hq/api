@@ -16,7 +16,7 @@ photon.organizations.projects.getProjectClosureStatus(input: GetProjectClosureSt
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.organizations.projects.get_project_closure_status(input: GetProjectClosureStatusInput) -> models.GetProjectClosureStatusResponse
+photon.organizations.projects.get_project_closure_status(input: GetProjectClosureStatusInput, *, options: RequestOptions | None = None) -> models.GetProjectClosureStatusResponse
 ```
 </Tab>
 <Tab title="Rust">
@@ -126,6 +126,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField path="organizationId" type={"string"} required>
 
 </ParamField>
@@ -138,6 +142,8 @@ _ = result
 ## Returns
 
 **`200`** Current cleanup and settlement evidence. Project deletion alone does not establish readiness. GetProjectClosureStatusResponse
+
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="deletionOperationId" type={"string | null"} required>
 
@@ -158,4 +164,8 @@ _ = result
 <ResponseField name="ready" type={"boolean"} required>
 
 </ResponseField>
+
+**`304`** Not Modified. Sent only when If-None-Match matches the ETag of an earlier 200 response for the same representation; no body. No body.
+
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 

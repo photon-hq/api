@@ -16,7 +16,7 @@ photon.system.createAppInstallationRequest(input: CreateAppInstallationRequestIn
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.system.create_app_installation_request(input: CreateAppInstallationRequestInput) -> models.CreateAppInstallationRequestResponse
+photon.system.create_app_installation_request(input: CreateAppInstallationRequestInput, *, options: RequestOptions | None = None) -> models.CreateAppInstallationRequestResponse
 ```
 </Tab>
 <Tab title="Rust">
@@ -125,6 +125,13 @@ _ = result
 
 </ResponseExample>
 
+## Parameters
+
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
+
 ## Body
 
 <ParamField body="appId" type={"string"} required>
@@ -147,6 +154,8 @@ _ = result
 ## Returns
 
 **`201`** Installation request metadata. No customer credential or access is issued. CreateAppInstallationRequestResponse
+
+Headers: `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="appId" type={"string"} required>
 

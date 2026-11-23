@@ -16,7 +16,7 @@ photon.projects.platforms.replaceVoiceProfileInbound(input: ReplaceVoiceProfileI
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.projects.platforms.replace_voice_profile_inbound(input: ReplaceVoiceProfileInboundInput) -> models.VoiceProfileInboundConfiguration
+photon.projects.platforms.replace_voice_profile_inbound(input: ReplaceVoiceProfileInboundInput, *, options: RequestOptions | None = None) -> models.VoiceProfileInboundConfiguration
 ```
 </Tab>
 <Tab title="Rust">
@@ -158,6 +158,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField path="id" type={"string"} required>
 
 </ParamField>
@@ -186,6 +190,8 @@ _ = result
 
 **`200`** The replaced inbound configuration and profile version. VoiceProfileInboundConfiguration
 
+Headers: `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
 <ResponseField name="inbound" type={"SipInboundConfiguration | null"} required>
 
 </ResponseField>
@@ -195,6 +201,8 @@ _ = result
 </ResponseField>
 
 **`201`** The newly created inbound configuration and profile version. VoiceProfileInboundConfiguration
+
+Headers: `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="inbound" type={"SipInboundConfiguration | null"} required>
 

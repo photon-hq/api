@@ -16,7 +16,7 @@ photon.projects.get(input: GetProjectInput, options?: RequestOptions): Promise<G
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.projects.get(input: GetProjectInput) -> models.Project
+photon.projects.get(input: GetProjectInput, *, options: RequestOptions | None = None) -> models.Project
 ```
 </Tab>
 <Tab title="Rust">
@@ -106,9 +106,6 @@ _ = result
   },
   "billingInitialization": "pending",
   "createdAt": "2026-01-01T00:00:00.000Z",
-  "createdByAccountId": null,
-  "createdByActorId": null,
-  "createdByActorKind": null,
   "deletedAt": null,
   "name": "string",
   "organizationId": "string",
@@ -122,6 +119,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField path="projectId" type={"string"} required>
 
 </ParamField>
@@ -130,6 +131,8 @@ _ = result
 ## Returns
 
 **`200`** The requested project. Project
+
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="agentProfile" type={"AgentProfile"} required>
 
@@ -140,18 +143,6 @@ _ = result
 </ResponseField>
 
 <ResponseField name="createdAt" type={"string (date-time)"} required>
-
-</ResponseField>
-
-<ResponseField name="createdByAccountId" type={"string | null"} required>
-
-</ResponseField>
-
-<ResponseField name="createdByActorId" type={"string | null"} required>
-
-</ResponseField>
-
-<ResponseField name="createdByActorKind" type={"ProjectCreatedByActorKind | null"} required>
 
 </ResponseField>
 
@@ -178,4 +169,8 @@ _ = result
 <ResponseField name="updatedAt" type={"string (date-time)"} required>
 
 </ResponseField>
+
+**`304`** Not Modified. Sent only when If-None-Match matches the ETag of an earlier 200 response for the same representation; no body. No body.
+
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 

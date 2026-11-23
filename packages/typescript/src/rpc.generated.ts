@@ -1204,8 +1204,7 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "application/problem+json"
     ],
     "responseKinds": {
-      "200": "json",
-      "304": "empty"
+      "200": "json"
     }
   },
   "getWhatsappBusinessAccount": {
@@ -1626,8 +1625,7 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "application/problem+json"
     ],
     "responseKinds": {
-      "200": "json",
-      "304": "empty"
+      "200": "json"
     }
   },
   "listWebhookDestinations": {
@@ -1651,8 +1649,7 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "application/problem+json"
     ],
     "responseKinds": {
-      "200": "json",
-      "304": "empty"
+      "200": "json"
     }
   },
   "listWebhookEventTypes": {
@@ -1664,8 +1661,7 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
       "application/problem+json"
     ],
     "responseKinds": {
-      "200": "json",
-      "304": "empty"
+      "200": "json"
     }
   },
   "listWhatsappAccountPhoneNumbers": {
@@ -2800,7 +2796,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Preview an organization billing change
              *
-             * Previews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives.
+             * Previews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. This operation does not change billing. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives.
              */
             previewOrganizationChange: (input: Schemas.PreviewOrganizationChangeInput, options?: RequestOptions) => invokers.data<Schemas.PreviewOrganizationChangeInput, Schemas.PreviewOrganizationChangeOutput>(
                 "previewOrganizationChange",
@@ -2812,7 +2808,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Preview a project billing change
              *
-             * Previews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; a downgrade, or choosing the held plan again, bills nothing now; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives. Supply both organizationId and projectId; the organization must pay for the project.
+             * Previews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; a downgrade, or choosing the held plan again, bills nothing now; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives. Supply both organizationId and projectId; the organization must pay for the project.
              */
             previewProjectChange: (input: Schemas.PreviewProjectChangeInput, options?: RequestOptions) => invokers.data<Schemas.PreviewProjectChangeInput, Schemas.PreviewProjectChangeOutput>(
                 "previewProjectChange",
@@ -2850,7 +2846,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Create project
              *
-             * Creates in the authorized organization. In addition to account credentials, explicitly granted Service Identity API keys and M2M tokens may create projects. Project API keys cannot create projects. Creator and private credential evidence come only from the trusted authorization context. The caller-selected slug is immutable, must be 3 to 63 lowercase ASCII alphanumerics separated by single hyphens, and cannot be reserved or held by any active or deleted project.
+             * Creates in the authorized organization. In addition to account credentials, explicitly granted Service Identity API keys and M2M tokens may create projects. Project API keys cannot create projects. Caller identity and credential evidence come only from the trusted authorization context. The caller-selected slug is immutable, must be 3 to 63 lowercase ASCII alphanumerics separated by single hyphens, and cannot be reserved or held by any active or deleted project.
              */
             create: (input: Schemas.CreateProjectInput, options?: RequestOptions) => invokers.data<Schemas.CreateProjectInput, Schemas.CreateProjectOutput>(
                 "createProject",
@@ -3666,7 +3662,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Connect Telegram bot
              *
-             * Starts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to create a new bot, whose name and username are chosen in Telegram, or to connect an existing managed bot, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged. If the operation fails, its `error` is the problem of one of these codes: `TELEGRAM_CONFIGURATION_FAILED`.
+             * Starts a free managed Telegram bot connection. Each project may own one current bot and have one unfinished Telegram provision, including user interaction and failure cleanup. A matching Idempotency-Key replays its original operation before either conflict check, even after completion or while a newer setup is active. For a different key, an unfinished provision takes precedence over an existing bot and returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Only when no provision is active does an existing non-retired bot return 409 TELEGRAM_BOT_ALREADY_CONNECTED with its resourceId; disconnect it before connecting another, even if messaging is disabled or disconnect is unfinished. Rejected keys remain reusable. Open detail.setupUrl to create a new bot, whose name and username are chosen in Telegram, or to connect an existing managed bot, then poll Location. The link remains usable while the operation is active and never expires. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged. If the operation fails, its `error` is the problem of one of these codes: `TELEGRAM_BOT_ALREADY_CONNECTED`, `TELEGRAM_CONFIGURATION_FAILED`.
              */
             connectTelegramBot: (input: Schemas.ConnectTelegramBotInput, options?: RequestOptions) => invokers.data<Schemas.ConnectTelegramBotInput, Schemas.ConnectTelegramBotOutput>(
                 "connectTelegramBot",
@@ -5134,7 +5130,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Preview an organization billing change
              *
-             * Previews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives.
+             * Previews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. This operation does not change billing. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives.
              */
             previewOrganizationChange: (input: Schemas.PreviewOrganizationChangeInput, options?: RequestOptions) => invokers.raw<Schemas.PreviewOrganizationChangeInput, Schemas.PreviewOrganizationChangeOutput>(
                 "previewOrganizationChange",
@@ -5146,7 +5142,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Preview a project billing change
              *
-             * Previews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; a downgrade, or choosing the held plan again, bills nothing now; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives. Supply both organizationId and projectId; the organization must pay for the project.
+             * Previews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; a downgrade, or choosing the held plan again, bills nothing now; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives. Supply both organizationId and projectId; the organization must pay for the project.
              */
             previewProjectChange: (input: Schemas.PreviewProjectChangeInput, options?: RequestOptions) => invokers.raw<Schemas.PreviewProjectChangeInput, Schemas.PreviewProjectChangeOutput>(
                 "previewProjectChange",
@@ -5184,7 +5180,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Create project
              *
-             * Creates in the authorized organization. In addition to account credentials, explicitly granted Service Identity API keys and M2M tokens may create projects. Project API keys cannot create projects. Creator and private credential evidence come only from the trusted authorization context. The caller-selected slug is immutable, must be 3 to 63 lowercase ASCII alphanumerics separated by single hyphens, and cannot be reserved or held by any active or deleted project.
+             * Creates in the authorized organization. In addition to account credentials, explicitly granted Service Identity API keys and M2M tokens may create projects. Project API keys cannot create projects. Caller identity and credential evidence come only from the trusted authorization context. The caller-selected slug is immutable, must be 3 to 63 lowercase ASCII alphanumerics separated by single hyphens, and cannot be reserved or held by any active or deleted project.
              */
             create: (input: Schemas.CreateProjectInput, options?: RequestOptions) => invokers.raw<Schemas.CreateProjectInput, Schemas.CreateProjectOutput>(
                 "createProject",
@@ -6000,7 +5996,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
             /**
              * Connect Telegram bot
              *
-             * Starts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to create a new bot, whose name and username are chosen in Telegram, or to connect an existing managed bot, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged. If the operation fails, its `error` is the problem of one of these codes: `TELEGRAM_CONFIGURATION_FAILED`.
+             * Starts a free managed Telegram bot connection. Each project may own one current bot and have one unfinished Telegram provision, including user interaction and failure cleanup. A matching Idempotency-Key replays its original operation before either conflict check, even after completion or while a newer setup is active. For a different key, an unfinished provision takes precedence over an existing bot and returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Only when no provision is active does an existing non-retired bot return 409 TELEGRAM_BOT_ALREADY_CONNECTED with its resourceId; disconnect it before connecting another, even if messaging is disabled or disconnect is unfinished. Rejected keys remain reusable. Open detail.setupUrl to create a new bot, whose name and username are chosen in Telegram, or to connect an existing managed bot, then poll Location. The link remains usable while the operation is active and never expires. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged. If the operation fails, its `error` is the problem of one of these codes: `TELEGRAM_BOT_ALREADY_CONNECTED`, `TELEGRAM_CONFIGURATION_FAILED`.
              */
             connectTelegramBot: (input: Schemas.ConnectTelegramBotInput, options?: RequestOptions) => invokers.raw<Schemas.ConnectTelegramBotInput, Schemas.ConnectTelegramBotOutput>(
                 "connectTelegramBot",

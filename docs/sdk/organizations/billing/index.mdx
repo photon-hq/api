@@ -89,77 +89,77 @@ photon.organizations.billing.previewProjectChange(input: PreviewProjectChangeInp
 **[List credit activity](/api-client/sdk/organizations/billing/list-credit-activity)**
 
 ```python Python
-photon.organizations.billing.list_credit_activity(input: ListCreditActivityInput) -> models.ListCreditActivityResponse
+photon.organizations.billing.list_credit_activity(input: ListCreditActivityInput, *, options: RequestOptions | None = None) -> models.ListCreditActivityResponse
 ```
 `GET /v1/organizations/{organizationId}/billing/credit/activity`
 
 **[List invoices](/api-client/sdk/organizations/billing/list-invoices)**
 
 ```python Python
-photon.organizations.billing.list_invoices(input: ListInvoicesInput) -> models.ListInvoicesResponse
+photon.organizations.billing.list_invoices(input: ListInvoicesInput, *, options: RequestOptions | None = None) -> models.ListInvoicesResponse
 ```
 `GET /v1/organizations/{organizationId}/billing/invoices`
 
 **[Get the project's effective billing terms](/api-client/sdk/organizations/billing/get-effective-terms)**
 
 ```python Python
-photon.organizations.billing.get_effective_terms(input: GetEffectiveTermsInput) -> models.GetEffectiveTermsResponse
+photon.organizations.billing.get_effective_terms(input: GetEffectiveTermsInput, *, options: RequestOptions | None = None) -> models.GetEffectiveTermsResponse
 ```
 `GET /v1/organizations/{organizationId}/billing/projects/{projectId}/terms`
 
 **[Get organization billing overview](/api-client/sdk/organizations/billing/get-organization-billing-overview)**
 
 ```python Python
-photon.organizations.billing.get_organization_billing_overview(input: GetOrganizationBillingOverviewInput) -> models.GetOrganizationBillingOverviewResponse
+photon.organizations.billing.get_organization_billing_overview(input: GetOrganizationBillingOverviewInput, *, options: RequestOptions | None = None) -> models.GetOrganizationBillingOverviewResponse
 ```
 `GET /v1/organizations/{organizationId}/billing`
 
 **[Get organization credit](/api-client/sdk/organizations/billing/get-organization-credit)**
 
 ```python Python
-photon.organizations.billing.get_organization_credit(input: GetOrganizationCreditInput) -> models.GetOrganizationCreditResponse
+photon.organizations.billing.get_organization_credit(input: GetOrganizationCreditInput, *, options: RequestOptions | None = None) -> models.GetOrganizationCreditResponse
 ```
 `GET /v1/organizations/{organizationId}/billing/credit`
 
 **[Get organization payment method](/api-client/sdk/organizations/billing/get-organization-payment-method)**
 
 ```python Python
-photon.organizations.billing.get_organization_payment_method(input: GetOrganizationPaymentMethodInput) -> models.GetOrganizationPaymentMethodResponse
+photon.organizations.billing.get_organization_payment_method(input: GetOrganizationPaymentMethodInput, *, options: RequestOptions | None = None) -> models.GetOrganizationPaymentMethodResponse
 ```
 `GET /v1/organizations/{organizationId}/billing/payment-method`
 
 **[Get the organization's effective billing terms](/api-client/sdk/organizations/billing/get-organization-terms)**
 
 ```python Python
-photon.organizations.billing.get_organization_terms(input: GetOrganizationTermsInput) -> models.GetOrganizationTermsResponse
+photon.organizations.billing.get_organization_terms(input: GetOrganizationTermsInput, *, options: RequestOptions | None = None) -> models.GetOrganizationTermsResponse
 ```
 `GET /v1/organizations/{organizationId}/billing/terms`
 
 **[Change plan](/api-client/sdk/organizations/billing/change-plan)**
 
 ```python Python
-photon.organizations.billing.change_plan(input: ChangePlanInput) -> models.TerminalBillingOperation | models.PendingBillingOperation
+photon.organizations.billing.change_plan(input: ChangePlanInput, *, options: RequestOptions | None = None) -> models.TerminalBillingOperation | models.PendingBillingOperation
 ```
 `POST /v1/organizations/{organizationId}/billing/projects/{projectId}/purchase`
 
 **[Create payment method checkout](/api-client/sdk/organizations/billing/create-organization-payment-method-checkout)**
 
 ```python Python
-photon.organizations.billing.create_organization_payment_method_checkout(input: CreateOrganizationPaymentMethodCheckoutInput) -> models.CreateOrganizationPaymentMethodCheckoutResponse
+photon.organizations.billing.create_organization_payment_method_checkout(input: CreateOrganizationPaymentMethodCheckoutInput, *, options: RequestOptions | None = None,) -> models.CreateOrganizationPaymentMethodCheckoutResponse
 ```
 `POST /v1/organizations/{organizationId}/billing/checkout`
 
 **[Preview an organization billing change](/api-client/sdk/organizations/billing/preview-organization-change)**
 
 ```python Python
-photon.organizations.billing.preview_organization_change(input: PreviewOrganizationChangeInput) -> models.PreviewOrganizationChangeResponse
+photon.organizations.billing.preview_organization_change(input: PreviewOrganizationChangeInput, *, options: RequestOptions | None = None) -> models.PreviewOrganizationChangeResponse
 ```
 `POST /v1/organizations/{organizationId}/billing/preview`
 
 **[Preview a project billing change](/api-client/sdk/organizations/billing/preview-project-change)**
 
 ```python Python
-photon.organizations.billing.preview_project_change(input: PreviewProjectChangeInput) -> models.PreviewProjectChangeResponse
+photon.organizations.billing.preview_project_change(input: PreviewProjectChangeInput, *, options: RequestOptions | None = None) -> models.PreviewProjectChangeResponse
 ```
 `POST /v1/organizations/{organizationId}/billing/projects/{projectId}/preview`
 
@@ -387,7 +387,7 @@ The organization-owned subscription, or null when billing was never opened or ha
 
 
 <ResponseField name="balanceCents" type={"integer"} required>
-Credit left to offset the organization's next invoices, in cents: on credit notes, and in its wallet, granted to it or purchased. Zero when none is left.
+Credit left to offset the organization's next invoices, in cents: on credit notes, and in its wallet, granted to it or purchased. Zero when none is left. An overdrawn wallet can make the balance negative.
 </ResponseField>
 
 <ResponseField name="currency" type={"string"} required>

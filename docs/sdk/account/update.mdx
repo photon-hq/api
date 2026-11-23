@@ -16,12 +16,12 @@ photon.account.update(input: UpdateAccountInput, options?: RequestOptions): Prom
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.account.update(input: UpdateAccountInput) -> models.Account
+photon.account.update(input: UpdateAccountInput, *, options: RequestOptions | None = None) -> models.Account
 ```
 </Tab>
 <Tab title="Rust">
 ```rust Rust
-client.update_account(idempotency_key: String, params: Option<UpdateAccountParams>, body: &types::UpdateAccountRequest).await -> Result<ResponseValue<types::Account>, Error<UpdateAccountError>>
+client.update_account(idempotency_key: String, body: &types::UpdateAccountRequest).await -> Result<ResponseValue<types::Account>, Error<UpdateAccountError>>
 ```
 </Tab>
 <Tab title="Go">
@@ -73,7 +73,6 @@ let client = PhotonClientBuilder::new()
 let result = client
     .update_account(
         "idempotencyKey".to_owned(),
-        None,
         &serde_json::from_value(serde_json::json!({}))?,
     )
     .await

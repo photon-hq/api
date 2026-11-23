@@ -16,12 +16,12 @@ photon.projects.listWebhookEventTypes(input: ListWebhookEventTypesInput, options
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.projects.list_webhook_event_types(input: ListWebhookEventTypesInput) -> models.ListWebhookEventTypesResponse | None
+photon.projects.list_webhook_event_types(input: ListWebhookEventTypesInput, *, options: RequestOptions | None = None) -> models.ListWebhookEventTypesResponse
 ```
 </Tab>
 <Tab title="Rust">
 ```rust Rust
-client.list_webhook_event_types(project_id: String, api_version: Date).await -> Result<ResponseValue<ListWebhookEventTypesResponse>, Error<ListWebhookEventTypesError>>
+client.list_webhook_event_types(project_id: String, api_version: Date).await -> Result<ResponseValue<types::ListWebhookEventTypesResponse>, Error<ListWebhookEventTypesError>>
 ```
 </Tab>
 <Tab title="Go">
@@ -132,6 +132,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField path="projectId" type={"string"} required>
 
 </ParamField>
@@ -144,6 +148,8 @@ _ = result
 ## Returns
 
 **`200`** Events available in the selected API version. ListWebhookEventTypesResponse
+
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 **One of: SelectableWebhookEventCatalog**
 
@@ -213,5 +219,7 @@ _ = result
 
 </ResponseField>
 
-**`304`** The authorized cached representation is current; no response body. No body.
+**`304`** Not Modified. Sent only when If-None-Match matches the ETag of an earlier 200 response for the same representation; no body. No body.
+
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 

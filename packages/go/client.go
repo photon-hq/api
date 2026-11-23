@@ -264,7 +264,9 @@ func formatValue(v any) string {
 func (c *core) do(ctx context.Context, spec *requestSpec, out any, opts []RequestOption) error {
 	cfg := requestConfig{header: http.Header{}}
 	for _, opt := range opts {
-		opt(&cfg)
+		if opt != nil {
+			opt(&cfg)
+		}
 	}
 
 	target := c.baseURL + spec.path

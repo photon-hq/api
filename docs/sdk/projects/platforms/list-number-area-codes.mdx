@@ -16,7 +16,7 @@ photon.projects.platforms.listNumberAreaCodes(input: ListNumberAreaCodesInput, o
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.projects.platforms.list_number_area_codes(input: ListNumberAreaCodesInput) -> models.ListNumberAreaCodesResponse
+photon.projects.platforms.list_number_area_codes(input: ListNumberAreaCodesInput, *, options: RequestOptions | None = None) -> models.ListNumberAreaCodesResponse
 ```
 </Tab>
 <Tab title="Rust">
@@ -117,6 +117,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField path="id" type={"string"} required>
 
 </ParamField>
@@ -130,7 +134,7 @@ _ = result
 
 **`200`** Current area-code coverage. An empty list is a successful coverage read, not an upstream failure. ListNumberAreaCodesResponse
 
-Headers: `Cache-Control`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+Headers: `Cache-Control`, `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="areaCodes" type={"array of string"} required>
 
@@ -139,4 +143,8 @@ Headers: `Cache-Control`. The raw response carries these headers; see [Raw respo
 <ResponseField name="countryCode" type={"\"US\""} required>
 
 </ResponseField>
+
+**`304`** Not Modified. Sent only when If-None-Match matches the ETag of an earlier 200 response for the same representation; no body. No body.
+
+Headers: `Cache-Control`, `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 

@@ -40,28 +40,28 @@ photon.projects.billing.getOverview(input: GetBillingOverviewInput, options?: Re
 **[List billing plans](/api-client/sdk/projects/billing/list-billing-plans)**
 
 ```python Python
-photon.projects.billing.list_billing_plans(input: ListBillingPlansInput) -> models.ListBillingPlansResponse
+photon.projects.billing.list_billing_plans(input: ListBillingPlansInput, *, options: RequestOptions | None = None) -> models.ListBillingPlansResponse
 ```
 `GET /v1/projects/{projectId}/billing/plans`
 
 **[List project subscriptions](/api-client/sdk/projects/billing/list-project-subscriptions)**
 
 ```python Python
-photon.projects.billing.list_project_subscriptions(input: ListProjectSubscriptionsInput) -> models.ListProjectSubscriptionsResponse
+photon.projects.billing.list_project_subscriptions(input: ListProjectSubscriptionsInput, *, options: RequestOptions | None = None) -> models.ListProjectSubscriptionsResponse
 ```
 `GET /v1/projects/{projectId}/billing/subscriptions`
 
 **[Get billing operation](/api-client/sdk/projects/billing/get-operation)**
 
 ```python Python
-photon.projects.billing.get_operation(input: GetBillingOperationInput) -> models.BillingOperation
+photon.projects.billing.get_operation(input: GetBillingOperationInput, *, options: RequestOptions | None = None) -> models.BillingOperation
 ```
 `GET /v1/projects/{projectId}/billing/operations/{operationId}`
 
 **[Get project billing overview](/api-client/sdk/projects/billing/get-overview)**
 
 ```python Python
-photon.projects.billing.get_overview(input: GetBillingOverviewInput) -> models.GetBillingOverviewResponse
+photon.projects.billing.get_overview(input: GetBillingOverviewInput, *, options: RequestOptions | None = None) -> models.GetBillingOverviewResponse
 ```
 `GET /v1/projects/{projectId}/billing`
 

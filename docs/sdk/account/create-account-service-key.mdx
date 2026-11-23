@@ -16,12 +16,12 @@ photon.account.createAccountServiceKey(input: CreateAccountServiceKeyInput, opti
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.account.create_account_service_key(input: CreateAccountServiceKeyInput) -> models.CreateAccountServiceKeyResponse
+photon.account.create_account_service_key(input: CreateAccountServiceKeyInput, *, options: RequestOptions | None = None) -> models.CreateAccountServiceKeyResponse
 ```
 </Tab>
 <Tab title="Rust">
 ```rust Rust
-client.create_account_service_key(idempotency_key: String, params: Option<CreateAccountServiceKeyParams>, body: &types::CreateAccountServiceKeyRequest).await -> Result<ResponseValue<types::CreateAccountServiceKeyResponse>, Error<CreateAccountServiceKeyError>>
+client.create_account_service_key(idempotency_key: String, body: &types::CreateAccountServiceKeyRequest).await -> Result<ResponseValue<types::CreateAccountServiceKeyResponse>, Error<CreateAccountServiceKeyError>>
 ```
 </Tab>
 <Tab title="Go">
@@ -77,7 +77,6 @@ let client = PhotonClientBuilder::new()
 let result = client
     .create_account_service_key(
         "idempotencyKey".to_owned(),
-        None,
         &serde_json::from_value(serde_json::json!({
             "name": "name",
         }))?,

@@ -16,12 +16,12 @@ photon.account.resetProfilePicture(input: ResetAccountProfilePictureInput, optio
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.account.reset_profile_picture(input: ResetAccountProfilePictureInput) -> models.Account
+photon.account.reset_profile_picture(input: ResetAccountProfilePictureInput, *, options: RequestOptions | None = None) -> models.Account
 ```
 </Tab>
 <Tab title="Rust">
 ```rust Rust
-client.reset_account_profile_picture(idempotency_key: String, params: Option<ResetAccountProfilePictureParams>).await -> Result<ResponseValue<types::Account>, Error<ResetAccountProfilePictureError>>
+client.reset_account_profile_picture(idempotency_key: String).await -> Result<ResponseValue<types::Account>, Error<ResetAccountProfilePictureError>>
 ```
 </Tab>
 <Tab title="Go">
@@ -69,7 +69,7 @@ let client = PhotonClientBuilder::new()
     .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
     .build()?;
 let result = client
-    .reset_account_profile_picture("idempotencyKey".to_owned(), None)
+    .reset_account_profile_picture("idempotencyKey".to_owned())
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();

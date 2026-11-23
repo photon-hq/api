@@ -5,7 +5,7 @@ from .errors import (
     ResponseValidationError,
     TransportError,
 )
-from .transport import RawResponse
+from .transport import RawResponse, RequestOptions
 from .webhooks import WebhookVerificationError, verify_webhook
 
 __all__ = [
@@ -14,6 +14,7 @@ __all__ = [
     "Photon",
     "PhotonError",
     "RawResponse",
+    "RequestOptions",
     "ResponseValidationError",
     "TransportError",
     "WebhookVerificationError",

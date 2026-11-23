@@ -16,7 +16,7 @@ photon.projects.billing.getOperation(input: GetBillingOperationInput, options?: 
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.projects.billing.get_operation(input: GetBillingOperationInput) -> models.BillingOperation
+photon.projects.billing.get_operation(input: GetBillingOperationInput, *, options: RequestOptions | None = None) -> models.BillingOperation
 ```
 </Tab>
 <Tab title="Rust">
@@ -117,6 +117,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField path="projectId" type={"string"} required>
 The project being billed.
 </ParamField>
@@ -129,6 +133,8 @@ Operation id returned by a purchase or quantity change.
 ## Returns
 
 **`200`** Authoritative recovery snapshot for a billing operation. BillingOperation
+
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 **One of: PendingBillingOperation**
 
@@ -231,4 +237,8 @@ Terminal. Failure contains a stable code and retryability.
 <ResponseField name="submittedAt" type={"string | null"} required>
 
 </ResponseField>
+
+**`304`** Not Modified. Sent only when If-None-Match matches the ETag of an earlier 200 response for the same representation; no body. No body.
+
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 

@@ -1764,8 +1764,6 @@ type ListProjectSubscriptionsParams struct {
 
 // CommitAccountProfilePictureParams holds the parameters of CommitProfilePicture.
 type CommitAccountProfilePictureParams struct {
-	// PhotonVersion is the header parameter Photon-Version.
-	PhotonVersion *PhotonVersion
 	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
 	IdempotencyKey string
 	// Body is the request body.
@@ -1774,38 +1772,16 @@ type CommitAccountProfilePictureParams struct {
 
 // CreateAccountProfilePictureUploadParams holds the parameters of CreateProfilePictureUpload.
 type CreateAccountProfilePictureUploadParams struct {
-	// PhotonVersion is the header parameter Photon-Version.
-	PhotonVersion *PhotonVersion
 	// Body is the request body.
 	Body ProfilePictureUploadRequest
 }
 
 // CreateAccountServiceKeyParams holds the parameters of CreateAccountServiceKey.
 type CreateAccountServiceKeyParams struct {
-	// PhotonVersion is the header parameter Photon-Version.
-	PhotonVersion *PhotonVersion
 	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
 	IdempotencyKey string
 	// Body is the request body.
 	Body CreateAccountServiceKeyRequest
-}
-
-// DeleteAccountParams holds the parameters of Delete.
-type DeleteAccountParams struct {
-	// PhotonVersion is the header parameter Photon-Version.
-	PhotonVersion *PhotonVersion
-}
-
-// GetAccountParams holds the parameters of Get.
-type GetAccountParams struct {
-	// PhotonVersion is the header parameter Photon-Version.
-	PhotonVersion *PhotonVersion
-}
-
-// ListAccountServiceKeysParams holds the parameters of ListAccountServiceKeys.
-type ListAccountServiceKeysParams struct {
-	// PhotonVersion is the header parameter Photon-Version.
-	PhotonVersion *PhotonVersion
 }
 
 // ListAuthorizedApplicationsParams holds the parameters of ListAuthorizedApplications.
@@ -1822,16 +1798,12 @@ type ListAuthorizedApplicationsParams struct {
 
 // ResetAccountProfilePictureParams holds the parameters of ResetProfilePicture.
 type ResetAccountProfilePictureParams struct {
-	// PhotonVersion is the header parameter Photon-Version.
-	PhotonVersion *PhotonVersion
 	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
 	IdempotencyKey string
 }
 
 // RevokeAccountServiceKeyParams holds the parameters of RevokeAccountServiceKey.
 type RevokeAccountServiceKeyParams struct {
-	// PhotonVersion is the header parameter Photon-Version.
-	PhotonVersion *PhotonVersion
 	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
 	IdempotencyKey string
 	// ServiceKeyID is the path parameter serviceKeyId.
@@ -1846,8 +1818,6 @@ type RevokeAuthorizedApplicationParams struct {
 
 // UpdateAccountParams holds the parameters of Update.
 type UpdateAccountParams struct {
-	// PhotonVersion is the header parameter Photon-Version.
-	PhotonVersion *PhotonVersion
 	// IdempotencyKey is the header parameter Idempotency-Key. Generated when empty.
 	IdempotencyKey string
 	// Body is the request body.
@@ -2940,7 +2910,7 @@ func (s *OrganizationsBillingService) ListInvoices(ctx context.Context, params *
 
 // Preview an organization billing change
 //
-// Previews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives.
+// Previews a fixed-charge quantity change on the selected organization's own subscription, such as SSO. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. This operation does not change billing. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives.
 func (s *OrganizationsBillingService) PreviewOrganizationChange(ctx context.Context, params *PreviewOrganizationChangeParams, opts ...RequestOption) (*PreviewOrganizationChangeResponse, error) {
 	if params == nil {
 		params = &PreviewOrganizationChangeParams{}
@@ -2957,7 +2927,7 @@ func (s *OrganizationsBillingService) PreviewOrganizationChange(ctx context.Cont
 
 // Preview a project billing change
 //
-// Previews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. change says what the change does by its kind: for a fixed-charge change, pass change.quote on with the purchase so it is refused if the price or period no longer hold. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; a downgrade, or choosing the held plan again, bills nothing now; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives. Supply both organizationId and projectId; the organization must pay for the project.
+// Previews a change on the selected project's subscription in the supplied category: a fixed-charge quantity change, or a plan change with the held fixed charges it carries over. Prices the change by the billing engine exactly as making it would bill it now: dueNow is that invoice, with taxes and the payer's credits applied. A purchase bills each unit it adds, even after a release this period. A release bills nothing; releasing a prorated charge credits its unused days to the organization's credit. dueLater is what the change leads to that is billed later instead, upcomingInvoices what the subscription it leaves bills in the following periods, and nextCharge the first of them. This operation does not change billing. An upgrade bills the replaced plan's usage to date and the new plan from now, less the replaced plan's unused time; a downgrade, or choosing the held plan again, bills nothing now; change says when it applies and which held fixed charges the target does not sell: released first for a change that applies now, released with a downgrade when it applies. additions quotes what is added once an upgrade applies, each billed when it is added, in dueLater and outside dueNow. promotionCode previews a code as the purchase redeems it, and needs billing:manage; a refused code answers PROMOTION_CODE_REJECTED with the reason a refused purchase gives. Supply both organizationId and projectId; the organization must pay for the project.
 func (s *OrganizationsBillingService) PreviewProjectChange(ctx context.Context, params *PreviewProjectChangeParams, opts ...RequestOption) (*PreviewProjectChangeResponse, error) {
 	if params == nil {
 		params = &PreviewProjectChangeParams{}
@@ -3023,7 +2993,7 @@ func (s *OrganizationsProjectsService) Count(ctx context.Context, params *CountP
 
 // Create project
 //
-// Creates in the authorized organization. In addition to account credentials, explicitly granted Service Identity API keys and M2M tokens may create projects. Project API keys cannot create projects. Creator and private credential evidence come only from the trusted authorization context. The caller-selected slug is immutable, must be 3 to 63 lowercase ASCII alphanumerics separated by single hyphens, and cannot be reserved or held by any active or deleted project.
+// Creates in the authorized organization. In addition to account credentials, explicitly granted Service Identity API keys and M2M tokens may create projects. Project API keys cannot create projects. Caller identity and credential evidence come only from the trusted authorization context. The caller-selected slug is immutable, must be 3 to 63 lowercase ASCII alphanumerics separated by single hyphens, and cannot be reserved or held by any active or deleted project.
 func (s *OrganizationsProjectsService) Create(ctx context.Context, params *CreateProjectParams, opts ...RequestOption) (*Project, error) {
 	if params == nil {
 		params = &CreateProjectParams{}
@@ -3467,7 +3437,6 @@ func (s *ProjectsService) GetWebhookEventSchema(ctx context.Context, params *Get
 	}
 	spec := newSpec("getWebhookEventSchema", "GET", "/v1/projects/{projectId}/webhooks/event-types/{eventType}/schema")
 	spec.safe = true
-	spec.notModified = true
 	spec.setPath("projectId", params.ProjectID)
 	spec.setPath("eventType", params.EventType)
 	spec.addQuery("apiVersion", params.APIVersion)
@@ -3624,7 +3593,6 @@ func (s *ProjectsService) ListWebhookApiVersions(ctx context.Context, params *Li
 	}
 	spec := newSpec("listWebhookApiVersions", "GET", "/v1/projects/{projectId}/webhooks/api-versions")
 	spec.safe = true
-	spec.notModified = true
 	spec.setPath("projectId", params.ProjectID)
 	var out ListWebhookApiVersionsResponse
 	if err := s.c.do(ctx, spec, &out, opts); err != nil {
@@ -3661,7 +3629,6 @@ func (s *ProjectsService) ListWebhookEgressAddresses(ctx context.Context, params
 	}
 	spec := newSpec("listWebhookEgressAddresses", "GET", "/v1/projects/{projectId}/webhooks/egress-addresses")
 	spec.safe = true
-	spec.notModified = true
 	spec.setPath("projectId", params.ProjectID)
 	var out ListWebhookEgressAddressesResponse
 	if err := s.c.do(ctx, spec, &out, opts); err != nil {
@@ -3679,7 +3646,6 @@ func (s *ProjectsService) ListWebhookEventTypes(ctx context.Context, params *Lis
 	}
 	spec := newSpec("listWebhookEventTypes", "GET", "/v1/projects/{projectId}/webhooks/event-types")
 	spec.safe = true
-	spec.notModified = true
 	spec.setPath("projectId", params.ProjectID)
 	spec.addQuery("apiVersion", params.APIVersion)
 	var out ListWebhookEventTypesResponse
@@ -4027,7 +3993,7 @@ func (s *ProjectsPlatformsService) ConnectEmailDomain(ctx context.Context, param
 
 // Connect Telegram bot
 //
-// Starts a free managed Telegram bot connection. Each project may have one unfinished Telegram provision, including user interaction and failure cleanup. A different Idempotency-Key while one is active returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Rejected keys remain reusable. Open detail.setupUrl to create a new bot, whose name and username are chosen in Telegram, or to connect an existing managed bot, then poll Location. The link remains usable while the operation is active and never expires. Replaying the same Idempotency-Key returns the original operation, even after completion or while a newer setup is active. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged. If the operation fails, its `error` is the problem of one of these codes: `TELEGRAM_CONFIGURATION_FAILED`.
+// Starts a free managed Telegram bot connection. Each project may own one current bot and have one unfinished Telegram provision, including user interaction and failure cleanup. A matching Idempotency-Key replays its original operation before either conflict check, even after completion or while a newer setup is active. For a different key, an unfinished provision takes precedence over an existing bot and returns 409 TELEGRAM_PROVISION_IN_PROGRESS with its operationId and operationUrl; resume it, cancel it while cancellation is available, or wait for it to finish. Only when no provision is active does an existing non-retired bot return 409 TELEGRAM_BOT_ALREADY_CONNECTED with its resourceId; disconnect it before connecting another, even if messaging is disabled or disconnect is unfinished. Rejected keys remain reusable. Open detail.setupUrl to create a new bot, whose name and username are chosen in Telegram, or to connect an existing managed bot, then poll Location. The link remains usable while the operation is active and never expires. POST, GET and list share the same operation details. The API includes detail.setupUrl only for callers with platforms:write for the project; read-only callers receive the other details unchanged. If the operation fails, its `error` is the problem of one of these codes: `TELEGRAM_BOT_ALREADY_CONNECTED`, `TELEGRAM_CONFIGURATION_FAILED`.
 func (s *ProjectsPlatformsService) ConnectTelegramBot(ctx context.Context, params *ConnectTelegramBotParams, opts ...RequestOption) (*Operation, error) {
 	if params == nil {
 		params = &ConnectTelegramBotParams{}
@@ -5236,7 +5202,6 @@ func (s *AccountService) CommitProfilePicture(ctx context.Context, params *Commi
 	}
 	spec := newSpec("commitAccountProfilePicture", "PUT", "/v1/account/profile-picture")
 	spec.idempotent = true
-	spec.setHeader("Photon-Version", params.PhotonVersion)
 	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
 	spec.setJSON(params.Body)
 	var out Account
@@ -5254,7 +5219,6 @@ func (s *AccountService) CreateProfilePictureUpload(ctx context.Context, params 
 		params = &CreateAccountProfilePictureUploadParams{}
 	}
 	spec := newSpec("createAccountProfilePictureUpload", "POST", "/v1/account/profile-picture/uploads")
-	spec.setHeader("Photon-Version", params.PhotonVersion)
 	spec.setJSON(params.Body)
 	var out ProfilePictureUpload
 	if err := s.c.do(ctx, spec, &out, opts); err != nil {
@@ -5272,7 +5236,6 @@ func (s *AccountService) CreateAccountServiceKey(ctx context.Context, params *Cr
 	}
 	spec := newSpec("createAccountServiceKey", "POST", "/v1/account/service-keys")
 	spec.idempotent = true
-	spec.setHeader("Photon-Version", params.PhotonVersion)
 	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
 	spec.setJSON(params.Body)
 	var out CreateAccountServiceKeyResponse
@@ -5285,12 +5248,8 @@ func (s *AccountService) CreateAccountServiceKey(ctx context.Context, params *Cr
 // Delete account
 //
 // Deletes the authenticated account and returns its account tombstone. The operation is rejected while the account still owns organizations; transfer or close those organizations before retrying. This endpoint acts on the caller's account and does not accept another account's identifier.
-func (s *AccountService) Delete(ctx context.Context, params *DeleteAccountParams, opts ...RequestOption) (*Account, error) {
-	if params == nil {
-		params = &DeleteAccountParams{}
-	}
+func (s *AccountService) Delete(ctx context.Context, opts ...RequestOption) (*Account, error) {
 	spec := newSpec("deleteAccount", "DELETE", "/v1/account")
-	spec.setHeader("Photon-Version", params.PhotonVersion)
 	var out Account
 	if err := s.c.do(ctx, spec, &out, opts); err != nil {
 		return nil, err
@@ -5301,13 +5260,9 @@ func (s *AccountService) Delete(ctx context.Context, params *DeleteAccountParams
 // Get account
 //
 // Returns the profile of the authenticated account. The account is selected from the credential rather than a request parameter. A missing or deleted account is reported as an error instead of an empty profile.
-func (s *AccountService) Get(ctx context.Context, params *GetAccountParams, opts ...RequestOption) (*Account, error) {
-	if params == nil {
-		params = &GetAccountParams{}
-	}
+func (s *AccountService) Get(ctx context.Context, opts ...RequestOption) (*Account, error) {
 	spec := newSpec("getAccount", "GET", "/v1/account")
 	spec.safe = true
-	spec.setHeader("Photon-Version", params.PhotonVersion)
 	var out Account
 	if err := s.c.do(ctx, spec, &out, opts); err != nil {
 		return nil, err
@@ -5318,13 +5273,9 @@ func (s *AccountService) Get(ctx context.Context, params *GetAccountParams, opts
 // List Account Service Keys
 //
 // Returns metadata for the authenticated account's unrevoked service keys, including expired keys, ordered newest first. Secret values are not returned; a key's credential is disclosed only when that key is created.
-func (s *AccountService) ListAccountServiceKeys(ctx context.Context, params *ListAccountServiceKeysParams, opts ...RequestOption) (*ListAccountServiceKeysResponse, error) {
-	if params == nil {
-		params = &ListAccountServiceKeysParams{}
-	}
+func (s *AccountService) ListAccountServiceKeys(ctx context.Context, opts ...RequestOption) (*ListAccountServiceKeysResponse, error) {
 	spec := newSpec("listAccountServiceKeys", "GET", "/v1/account/service-keys")
 	spec.safe = true
-	spec.setHeader("Photon-Version", params.PhotonVersion)
 	var out ListAccountServiceKeysResponse
 	if err := s.c.do(ctx, spec, &out, opts); err != nil {
 		return nil, err
@@ -5361,7 +5312,6 @@ func (s *AccountService) ResetProfilePicture(ctx context.Context, params *ResetA
 	}
 	spec := newSpec("resetAccountProfilePicture", "DELETE", "/v1/account/profile-picture")
 	spec.idempotent = true
-	spec.setHeader("Photon-Version", params.PhotonVersion)
 	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
 	var out Account
 	if err := s.c.do(ctx, spec, &out, opts); err != nil {
@@ -5379,7 +5329,6 @@ func (s *AccountService) RevokeAccountServiceKey(ctx context.Context, params *Re
 	}
 	spec := newSpec("revokeAccountServiceKey", "DELETE", "/v1/account/service-keys/{serviceKeyId}")
 	spec.idempotent = true
-	spec.setHeader("Photon-Version", params.PhotonVersion)
 	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
 	spec.setPath("serviceKeyId", params.ServiceKeyID)
 	var out RevokeAccountServiceKeyResponse
@@ -5410,7 +5359,6 @@ func (s *AccountService) Update(ctx context.Context, params *UpdateAccountParams
 	}
 	spec := newSpec("updateAccount", "PATCH", "/v1/account")
 	spec.idempotent = true
-	spec.setHeader("Photon-Version", params.PhotonVersion)
 	spec.setHeader("Idempotency-Key", params.IdempotencyKey)
 	spec.setJSON(params.Body)
 	var out Account

@@ -56,7 +56,15 @@ export function isJsonMediaType(mediaType: string): boolean {
 }
 
 export function isBinaryMediaType(mediaType: string): boolean {
-  return ["application/octet-stream", "*/*"].includes(baseMediaType(mediaType));
+  return ["application/octet-stream", "application/pdf", "*/*"].includes(
+    baseMediaType(mediaType),
+  );
+}
+
+function sdkResponseMediaType(mediaType: string): string {
+  return baseMediaType(mediaType) === "application/pdf"
+    ? "application/octet-stream"
+    : mediaType;
 }
 
 /** Binary-only downloads retain bytes; mixed representations still select JSON. */
@@ -75,21 +83,21 @@ export function sdkRequestNote(content: Record<string, unknown> | undefined): st
   return `This SDK method sends uncompressed JSON (${selected.mediaType}). Other request formats described above apply to direct HTTP requests.`;
 }
 
-function supportsRawBytes(
+function rawBytesSchema(
   schema: unknown,
   document: JsonObject,
   seen = new Set<string>(),
-): boolean {
-  if (schema === undefined || schema === true) return true;
-  if (!isObject(schema)) return false;
+): JsonObject | undefined {
+  if (schema === undefined || schema === true) return {};
+  if (!isObject(schema)) return undefined;
   const annotations = new Set([
     "title", "description", "example", "examples", "default", "$schema", "deprecated", "readOnly", "writeOnly",
   ]);
   const keys = Object.keys(schema).filter((key) => !annotations.has(key));
-  if (keys.length === 0) return true;
+  if (keys.length === 0) return schema;
   if (keys.length === 1 && typeof schema.$ref === "string") {
     const prefix = "#/components/schemas/";
-    if (!schema.$ref.startsWith(prefix) || seen.has(schema.$ref)) return false;
+    if (!schema.$ref.startsWith(prefix) || seen.has(schema.$ref)) return undefined;
     seen.add(schema.$ref);
     const name = decodeURIComponent(schema.$ref.slice(prefix.length))
       .replaceAll("~1", "/")
@@ -97,11 +105,13 @@ function supportsRawBytes(
     const schemas = isObject(document.components) && document.components.schemas;
     return isObject(schemas)
       && name in schemas
-      && supportsRawBytes(schemas[name], document, seen);
+      ? rawBytesSchema(schemas[name], document, seen)
+      : undefined;
   }
   return schema.format === "binary"
     && (schema.type === undefined || schema.type === "string")
-    && keys.every((key) => key === "type" || key === "format");
+    && keys.every((key) => key === "type" || key === "format")
+    ? schema : undefined;
 }
 
 /** Keep the full hoisted document intact; select media only in SDK inputs. */
@@ -160,12 +170,30 @@ export function jsonSdkDocument(hoisted: JsonObject): JsonObject {
     );
     if (!selected) return;
     if (!request && isBinaryMediaType(selected.mediaType)) {
+      const schema = isObject(selected.value)
+        ? rawBytesSchema(selected.value.schema, document) : undefined;
       assert(
-        isObject(selected.value) && supportsRawBytes(selected.value.schema, document),
+        isObject(selected.value) && schema !== undefined,
         `${context}: wildcard response requires an unconstrained or binary schema`,
       );
+      if (baseMediaType(selected.mediaType) === "application/pdf" && schema.format !== "binary") {
+        const binarySchema: JsonObject = {
+          ...schema,
+          ...(isObject(selected.value.schema) ? selected.value.schema : {}),
+          type: "string",
+          format: "binary",
+        };
+        delete binarySchema.$ref;
+        selected.value = {
+          ...selected.value,
+          schema: binarySchema,
+        };
+      }
     }
-    holder.content = { [selected.mediaType]: selected.value };
+    holder.content = {
+      [request ? selected.mediaType : sdkResponseMediaType(selected.mediaType)]:
+        selected.value,
+    };
   };
   assert(isObject(document.paths), "SDK document must have paths");
   for (const [path, pathItem] of Object.entries(document.paths)) {

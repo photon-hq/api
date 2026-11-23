@@ -4,6 +4,7 @@ import test from "node:test";
 import { resolve } from "node:path";
 import { addUnknownPlatformMembers, namesFromContract, prepareOptionsFor, prepareSdk, type PrepareOptions } from "./prepare-sdk.js";
 import { jsonSdkDocument } from "./media-types.js";
+import { prepareMethodSurface } from "./method-surface.js";
 import { loadSdkConfig } from "./sdk-config.js";
 
 import {
@@ -153,10 +154,14 @@ test("all generators share the JSON projection without losing operations", async
 });
 
 test("manifest preserves source routes, response statuses and every declared media type", async () => {
-  const [source, manifest] = await Promise.all([
+  const [contract, manifest] = await Promise.all([
     readJson<JsonObject>(resolve(repositoryRoot, contractPath())),
     readJson<Manifest>(resolve(repositoryRoot, "openapi/rpc-manifest.json")),
   ]);
+  // The manifest describes the methods, which leave out what method-surface.ts
+  // removes from the SDK input.
+  const source = structuredClone(contract);
+  prepareMethodSurface(source);
   assert(isObject(source.paths));
   for (const operation of manifest.operations) {
     const item: JsonValue | undefined = source.paths[operation.path];
@@ -263,9 +268,11 @@ test("every hoisted operation schema preserves the selected source contract", as
     readJson<JsonObject>(resolve(repositoryRoot, "openapi/sdk.json")),
     repositoryOptions(),
   ]);
-  // The unknown-platform fallback is SDK policy (prepare-sdk.ts), not hoisting:
-  // expect it as preparation applies it.
+  // The method surface and the unknown-platform fallback are SDK policy
+  // (method-surface.ts, prepare-sdk.ts), not hoisting: expect them as
+  // preparation applies them.
   const withFallbacks = structuredClone(source);
+  prepareMethodSurface(withFallbacks);
   addUnknownPlatformMembers(withFallbacks, namesFromContract(options));
   const projected = jsonSdkDocument(withFallbacks);
   assert(isObject(projected.components) && isObject(projected.components.schemas));

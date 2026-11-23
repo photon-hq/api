@@ -79,6 +79,12 @@ in your application's own authentication flow, then supply the current token.
 - `static_headers(HeaderMap)` or `headers(async closure)` add headers to every
   request; the closure runs before every attempt. Headers set by the operation
   take precedence.
+- For one call, `client.with_request_options(RequestOptions::new().header(name, value))`
+  returns a client with the same connections, retry settings and credentials
+  whose requests also carry those headers. Each replaces the client's value for
+  the same name, including a supplied reqwest client's default headers; headers
+  set by the operation still take precedence. `BlockingClient` has no request
+  options.
 
 Serde checks required fields, primitive types, unions and constants. Constraints
 such as string patterns, numeric ranges and collection sizes are validated by

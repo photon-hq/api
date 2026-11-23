@@ -16,7 +16,7 @@ photon.projects.billing.getOverview(input: GetBillingOverviewInput, options?: Re
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.projects.billing.get_overview(input: GetBillingOverviewInput) -> models.GetBillingOverviewResponse
+photon.projects.billing.get_overview(input: GetBillingOverviewInput, *, options: RequestOptions | None = None) -> models.GetBillingOverviewResponse
 ```
 </Tab>
 <Tab title="Rust">
@@ -150,6 +150,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField path="projectId" type={"string"} required>
 The project being billed.
 </ParamField>
@@ -158,6 +162,8 @@ The project being billed.
 ## Returns
 
 **`200`** Plan, entitlements, and current-period usage. GetBillingOverviewResponse
+
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="entitlementsVersion" type={"integer"} required>
 Bumps on every entitlement change in any category.
@@ -170,4 +176,8 @@ One entry per category that currently holds a subscription. Empty means none do 
 <ResponseField name="usage" type={"array of MeteredUsage"} required>
 Current-period metered usage, priced.
 </ResponseField>
+
+**`304`** Not Modified. Sent only when If-None-Match matches the ETag of an earlier 200 response for the same representation; no body. No body.
+
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 

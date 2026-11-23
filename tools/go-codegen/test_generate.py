@@ -172,6 +172,41 @@ func TestSyntheticRoundTrip(t *testing.T) {
         self.assertIn("func (u *ChangeThingResponse) setStatus(code int) { u.status = code }", structure)
         self.assertIn("(*ChangeThingResponse, error)", code)
 
+    def test_downloads_stream_through_binary_response(self):
+        # A declared binary media type (application/pdf) and a wildcard both
+        # return *BinaryResponse; only the Accept header differs.
+        problem = {"application/problem+json": "#/components/schemas/Problem"}
+        cases = [
+            ("application/pdf", "#/components/schemas/InvoicePdf", "application/pdf, application/problem+json"),
+            ("application/pdf", "#/components/schemas/Anything", "application/pdf, application/problem+json"),
+            ("application/pdf", None, "application/pdf, application/problem+json"),
+            ("application/octet-stream", "#/components/schemas/Anything", "application/octet-stream, application/problem+json"),
+            ("*/*", "#/components/schemas/Anything", "*/*"),
+        ]
+        schemas = {"InvoicePdf": {"type": "string", "format": "binary"}, "Anything": {}}
+        for media_type, ref, accept in cases:
+            op = {
+                "operationId": "getFile", "rpcMethod": "get", "namespace": ["files"],
+                "httpMethod": "GET", "path": "/v1/files/{id}", "safe": True, "idempotencyKeyRequired": False,
+                "parameters": [],
+                "responses": {"200": {media_type: ref}, "404": problem, "default": problem},
+            }
+            with self.subTest(media_type=media_type, schema=ref), mock.patch.object(generate, "SCHEMAS", schemas), mock.patch.object(generate, "mapper", generate.Mapper()):
+                _, code = generate.emit_op(generate.Node(("files",)), op)
+                self.assertIn("(*BinaryResponse, error)", code)
+                self.assertIn(f'\tspec.accept = "{accept}"\n', code)
+                self.assertIn("\tvar out BinaryResponse\n", code)
+
+    def test_response_accept_lists_each_error_media_type_once(self):
+        op = {"responses": {
+            "200": {"application/pdf": None},
+            "401": {"application/problem+json": None},
+            "406": {"application/json": None, "application/problem+json": None},
+            "default": {"application/problem+json": None},
+        }}
+        self.assertEqual(generate.response_accept(op, "application/pdf"), "application/pdf, application/problem+json, application/json")
+        self.assertEqual(generate.response_accept(op, "*/*"), "*/*")
+
     def test_path_parameters_hoist_nothing(self):
         op = {
             "operationId": "getThing",

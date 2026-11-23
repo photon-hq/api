@@ -16,12 +16,12 @@ photon.projects.listWebhookEgressAddresses(input: ListWebhookEgressAddressesInpu
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.projects.list_webhook_egress_addresses(input: ListWebhookEgressAddressesInput) -> models.ListWebhookEgressAddressesResponse | None
+photon.projects.list_webhook_egress_addresses(input: ListWebhookEgressAddressesInput, *, options: RequestOptions | None = None) -> models.ListWebhookEgressAddressesResponse
 ```
 </Tab>
 <Tab title="Rust">
 ```rust Rust
-client.list_webhook_egress_addresses(project_id: String).await -> Result<ResponseValue<ListWebhookEgressAddressesResponse>, Error<ListWebhookEgressAddressesError>>
+client.list_webhook_egress_addresses(project_id: String).await -> Result<ResponseValue<types::ListWebhookEgressAddressesResponse>, Error<ListWebhookEgressAddressesError>>
 ```
 </Tab>
 <Tab title="Go">
@@ -109,6 +109,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField path="projectId" type={"string"} required>
 
 </ParamField>
@@ -118,9 +122,13 @@ _ = result
 
 **`200`** The public addresses webhook deliveries originate from in this environment. ListWebhookEgressAddressesResponse
 
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
 <ResponseField name="ipAddresses" type={"array of string (ipv4)"} required>
 Every public IPv4 address webhook deliveries can originate from. Allow-list all of them; deliveries are spread across every address.
 </ResponseField>
 
-**`304`** The authorized cached representation is current; no response body. No body.
+**`304`** Not Modified. Sent only when If-None-Match matches the ETag of an earlier 200 response for the same representation; no body. No body.
+
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 

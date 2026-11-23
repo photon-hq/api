@@ -9,7 +9,7 @@ import time
 from collections.abc import Awaitable, Callable, Mapping
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic, TypedDict, TypeVar
 from urllib.parse import quote
 
 import httpx
@@ -21,6 +21,18 @@ T = TypeVar("T")
 HeaderMap = Mapping[str, str]
 SyncHeaderProvider = HeaderMap | Callable[[], HeaderMap]
 AsyncHeaderProvider = HeaderMap | Callable[[], HeaderMap | Awaitable[HeaderMap]]
+
+
+class RequestOptions(TypedDict, total=False):
+    """Options for one call, passed to a method as `options=`.
+
+    `headers` are sent with that call only. They replace the client's value
+    for the same header, case-insensitively; a header parameter set on the
+    operation's input takes precedence over them.
+    """
+
+    headers: HeaderMap
+
 
 RETRYABLE_STATUSES = frozenset({408, 429, 502, 503, 504})
 DEFAULT_MAX_RETRY_AFTER = 60.0
@@ -172,11 +184,14 @@ def _request_parts(
     operation: OperationSpec,
     payload: Mapping[str, Any],
     configured_headers: HeaderMap,
+    options: RequestOptions | None,
 ) -> tuple[str, dict[str, Any], Any, dict[str, str]]:
     path = _render_path(operation.path, payload.get("path") or {})
     query = dict(payload.get("query") or {})
     body = payload.get("body")
     headers = httpx.Headers({str(key): str(value) for key, value in configured_headers.items()})
+    call_headers = (options or {}).get("headers") or {}
+    headers.update({str(key): str(value) for key, value in call_headers.items()})
     declared_headers = payload.get("headers") or {}
     headers.update({str(key): str(value) for key, value in declared_headers.items()})
     if operation.request_media_type:
@@ -213,6 +228,7 @@ class SyncTransport:
         self,
         operation: OperationSpec,
         payload: Mapping[str, Any],
+        options: RequestOptions | None = None,
     ) -> RawResponse[Any]:
         attempts = 1
         last_error: Exception | None = None
@@ -223,7 +239,7 @@ class SyncTransport:
             configured = self._headers() if callable(self._headers) else self._headers or {}
             if inspect.isawaitable(configured):
                 raise TypeError("Photon sync header providers cannot be async")
-            path, query, body, headers = _request_parts(operation, payload, configured)
+            path, query, body, headers = _request_parts(operation, payload, configured, options)
             if attempt == 1:
                 # Decided once the configured headers are merged, so an
                 # Idempotency-Key from the client-wide headers enables retries too.
@@ -292,6 +308,7 @@ class AsyncTransport:
         self,
         operation: OperationSpec,
         payload: Mapping[str, Any],
+        options: RequestOptions | None = None,
     ) -> RawResponse[Any]:
         attempts = 1
         last_error: Exception | None = None
@@ -302,7 +319,7 @@ class AsyncTransport:
             configured = self._headers() if callable(self._headers) else self._headers or {}
             if inspect.isawaitable(configured):
                 configured = await configured
-            path, query, body, headers = _request_parts(operation, payload, configured)
+            path, query, body, headers = _request_parts(operation, payload, configured, options)
             if attempt == 1:
                 # Decided once the configured headers are merged, so an
                 # Idempotency-Key from the client-wide headers enables retries too.

@@ -16,7 +16,7 @@ photon.projects.billing.listProjectSubscriptions(input: ListProjectSubscriptions
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.projects.billing.list_project_subscriptions(input: ListProjectSubscriptionsInput) -> models.ListProjectSubscriptionsResponse
+photon.projects.billing.list_project_subscriptions(input: ListProjectSubscriptionsInput, *, options: RequestOptions | None = None) -> models.ListProjectSubscriptionsResponse
 ```
 </Tab>
 <Tab title="Rust">
@@ -119,6 +119,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField path="projectId" type={"string"} required>
 The project being billed.
 </ParamField>
@@ -128,7 +132,13 @@ The project being billed.
 
 **`200`** The plan each category holds. ListProjectSubscriptionsResponse
 
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
 <ResponseField name="subscriptions" type={"array of ProjectHeldPlan"} required>
 One entry per category that currently holds a subscription. Empty means none do — cancelled, or never opened.
 </ResponseField>
+
+**`304`** Not Modified. Sent only when If-None-Match matches the ETag of an earlier 200 response for the same representation; no body. No body.
+
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 

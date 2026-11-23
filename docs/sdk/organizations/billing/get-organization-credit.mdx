@@ -16,7 +16,7 @@ photon.organizations.billing.getOrganizationCredit(input: GetOrganizationCreditI
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.organizations.billing.get_organization_credit(input: GetOrganizationCreditInput) -> models.GetOrganizationCreditResponse
+photon.organizations.billing.get_organization_credit(input: GetOrganizationCreditInput, *, options: RequestOptions | None = None) -> models.GetOrganizationCreditResponse
 ```
 </Tab>
 <Tab title="Rust">
@@ -99,7 +99,7 @@ _ = result
 <ResponseExample>
 ```json 200
 {
-  "balanceCents": 0,
+  "balanceCents": -9007199254740991,
   "currency": "string"
 }
 ```
@@ -107,6 +107,10 @@ _ = result
 </ResponseExample>
 
 ## Parameters
+
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
 
 <ParamField path="organizationId" type={"string"} required>
 
@@ -117,11 +121,17 @@ _ = result
 
 **`200`** The organization's credit balance. GetOrganizationCreditResponse
 
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
 <ResponseField name="balanceCents" type={"integer"} required>
-Credit left to offset the organization's next invoices, in cents: on credit notes, and in its wallet, granted to it or purchased. Zero when none is left.
+Credit left to offset the organization's next invoices, in cents: on credit notes, and in its wallet, granted to it or purchased. Zero when none is left. An overdrawn wallet can make the balance negative.
 </ResponseField>
 
 <ResponseField name="currency" type={"string"} required>
 ISO currency code.
 </ResponseField>
+
+**`304`** Not Modified. Sent only when If-None-Match matches the ETag of an earlier 200 response for the same representation; no body. No body.
+
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 

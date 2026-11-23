@@ -16,7 +16,7 @@ photon.projects.updateWebhookDestination(input: UpdateWebhookDestinationInput, o
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.projects.update_webhook_destination(input: UpdateWebhookDestinationInput) -> models.WebhookDestination
+photon.projects.update_webhook_destination(input: UpdateWebhookDestinationInput, *, options: RequestOptions | None = None) -> models.WebhookDestination
 ```
 </Tab>
 <Tab title="Rust">
@@ -142,6 +142,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField header="Idempotency-Key" type={"string"} required>
 Identifies one logical mutation across retries.
 </ParamField>
@@ -181,6 +185,8 @@ HTTPS URL without credentials or a fragment.
 ## Returns
 
 **`200`** The updated webhook destination. WebhookDestination
+
+Headers: `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="apiVersion" type={"string (date)"} required>
 
