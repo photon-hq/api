@@ -26,14 +26,14 @@ photon.system.redeemAppInstallationDelivery(input: RedeemAppInstallationDelivery
 **[Request app installation](/api-client/sdk/system/create-app-installation-request)**
 
 ```python Python
-photon.system.create_app_installation_request(input: CreateAppInstallationRequestInput) -> models.CreateAppInstallationRequestResponse
+photon.system.create_app_installation_request(input: CreateAppInstallationRequestInput, *, options: RequestOptions | None = None) -> models.CreateAppInstallationRequestResponse
 ```
 `POST /v1/installation-requests`
 
 **[Redeem installation credential](/api-client/sdk/system/redeem-app-installation-delivery)**
 
 ```python Python
-photon.system.redeem_app_installation_delivery(input: RedeemAppInstallationDeliveryInput) -> models.RedeemAppInstallationDeliveryResponse
+photon.system.redeem_app_installation_delivery(input: RedeemAppInstallationDeliveryInput, *, options: RequestOptions | None = None) -> models.RedeemAppInstallationDeliveryResponse
 ```
 `POST /v1/installation-requests/redeem`
 

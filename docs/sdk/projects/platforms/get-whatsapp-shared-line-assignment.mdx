@@ -16,7 +16,7 @@ photon.projects.platforms.getWhatsappSharedLineAssignment(input: GetWhatsappShar
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.projects.platforms.get_whatsapp_shared_line_assignment(input: GetWhatsappSharedLineAssignmentInput) -> models.SharedLineAssignment
+photon.projects.platforms.get_whatsapp_shared_line_assignment(input: GetWhatsappSharedLineAssignmentInput, *, options: RequestOptions | None = None) -> models.SharedLineAssignment
 ```
 </Tab>
 <Tab title="Rust">
@@ -124,6 +124,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField path="assignmentId" type={"string"} required>
 
 </ParamField>
@@ -136,6 +140,8 @@ _ = result
 ## Returns
 
 **`200`** The WhatsApp shared line assignment. SharedLineAssignment
+
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="assignedPhoneNumber" type={"string"} required>
 
@@ -184,4 +190,8 @@ Whether the end user has texted the assigned line from their handle since this a
 <ResponseField name="updatedAt" type={"string (date-time)"} required>
 
 </ResponseField>
+
+**`304`** Not Modified. Sent only when If-None-Match matches the ETag of an earlier 200 response for the same representation; no body. No body.
+
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 

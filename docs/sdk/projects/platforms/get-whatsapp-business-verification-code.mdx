@@ -16,7 +16,7 @@ photon.projects.platforms.getWhatsappBusinessVerificationCode(input: GetWhatsapp
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.projects.platforms.get_whatsapp_business_verification_code(input: GetWhatsappBusinessVerificationCodeInput) -> models.GetWhatsappBusinessVerificationCodeResponse
+photon.projects.platforms.get_whatsapp_business_verification_code(input: GetWhatsappBusinessVerificationCodeInput, *, options: RequestOptions | None = None,) -> models.GetWhatsappBusinessVerificationCodeResponse
 ```
 </Tab>
 <Tab title="Rust">
@@ -122,6 +122,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField path="id" type={"string"} required>
 
 </ParamField>
@@ -139,6 +143,8 @@ _ = result
 
 **`200`** A verification code received strictly after receivedAfter. Treat it as an authentication secret. GetWhatsappBusinessVerificationCodeResponse
 
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
 <ResponseField name="code" type={"string"} required>
 
 </ResponseField>
@@ -146,4 +152,8 @@ _ = result
 <ResponseField name="receivedAt" type={"string (date-time)"} required>
 
 </ResponseField>
+
+**`304`** Not Modified. Sent only when If-None-Match matches the ETag of an earlier 200 response for the same representation; no body. No body.
+
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 

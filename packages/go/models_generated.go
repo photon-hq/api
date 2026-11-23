@@ -2555,7 +2555,7 @@ type FixedChargePricing struct {
 
 // The unit price, currency and period the preview was priced on. Pass them on with the purchase so it is refused if they no longer hold.
 type FixedChargeQuote struct {
-	// Decimal amount in the plan currency. Kept as text so sub-cent unit prices remain exact.
+	// Decimal unit price in the charge currency. The billing engine can use exponent notation. Kept as text so the price stays exact.
 	Amount   string `json:"amount"`
 	Currency string `json:"currency"`
 	// ISO 8601.
@@ -2627,7 +2627,7 @@ type GetOrganizationBillingOverviewResponse struct {
 }
 
 type GetOrganizationCreditResponse struct {
-	// Credit left to offset the organization's next invoices, in cents: on credit notes, and in its wallet, granted to it or purchased. Zero when none is left.
+	// Credit left to offset the organization's next invoices, in cents: on credit notes, and in its wallet, granted to it or purchased. Zero when none is left. An overdrawn wallet can make the balance negative.
 	BalanceCents int64 `json:"balanceCents"`
 	// ISO currency code.
 	Currency string `json:"currency"`
@@ -3978,6 +3978,11 @@ func (u OperationError) AsSmsCampaignRevokedProblem() (SmsCampaignRevokedProblem
 	return UnionAs[SmsCampaignRevokedProblem](u.Union)
 }
 
+// AsTelegramBotAlreadyConnectedProblem decodes the value as TelegramBotAlreadyConnectedProblem.
+func (u OperationError) AsTelegramBotAlreadyConnectedProblem() (TelegramBotAlreadyConnectedProblem, error) {
+	return UnionAs[TelegramBotAlreadyConnectedProblem](u.Union)
+}
+
 // AsTelegramConfigurationFailedProblem decodes the value as TelegramConfigurationFailedProblem.
 func (u OperationError) AsTelegramConfigurationFailedProblem() (TelegramConfigurationFailedProblem, error) {
 	return UnionAs[TelegramConfigurationFailedProblem](u.Union)
@@ -4403,12 +4408,6 @@ type PhoneCarrier struct {
 	NormalizedName    *string `json:"normalizedName,omitempty"`
 }
 
-type PhotonVersion string
-
-const (
-	PhotonVersionX20260701 PhotonVersion = "2026-07-01"
-)
-
 type PlanSource string
 
 const (
@@ -4698,9 +4697,6 @@ type Project struct {
 	AgentProfile          AgentProfile                  `json:"agentProfile"`
 	BillingInitialization *ProjectBillingInitialization `json:"billingInitialization,omitempty"`
 	CreatedAt             Timestamp                     `json:"createdAt"`
-	CreatedByAccountID    *string                       `json:"createdByAccountId"`
-	CreatedByActorID      *string                       `json:"createdByActorId"`
-	CreatedByActorKind    *ProjectCreatedByActorKind    `json:"createdByActorKind"`
 	DeletedAt             *Timestamp                    `json:"deletedAt"`
 	Name                  string                        `json:"name"`
 	OrganizationID        string                        `json:"organizationId"`
@@ -4740,13 +4736,6 @@ type ProjectClosureDomainStatus struct {
 type ProjectCount struct {
 	Count int64 `json:"count"`
 }
-
-type ProjectCreatedByActorKind string
-
-const (
-	ProjectCreatedByActorKindAccount         ProjectCreatedByActorKind = "account"
-	ProjectCreatedByActorKindServiceIdentity ProjectCreatedByActorKind = "service_identity"
-)
 
 type ProjectCreditSubject struct {
 	ProjectID string `json:"projectId"`
@@ -6382,6 +6371,18 @@ type SupportedPlatform struct {
 
 type SupportedPlatformConstraint struct {
 	Platform Platform `json:"platform"`
+}
+
+type TelegramBotAlreadyConnectedProblem struct {
+	Code        string             `json:"code"`
+	Detail      *string            `json:"detail,omitempty"`
+	Instance    *string            `json:"instance,omitempty"`
+	Remediation ProblemRemediation `json:"remediation"`
+	RequestID   *string            `json:"requestId,omitempty"`
+	ResourceID  *string            `json:"resourceId,omitempty"`
+	Status      float64            `json:"status"`
+	Title       string             `json:"title"`
+	Type        string             `json:"type"`
 }
 
 type TelegramConfigurationFailedProblem struct {

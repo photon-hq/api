@@ -16,7 +16,7 @@ photon.projects.platforms.listProjectPlatforms(input: ListProjectPlatformsInput,
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.projects.platforms.list_project_platforms(input: ListProjectPlatformsInput) -> models.ListProjectPlatformsResponse
+photon.projects.platforms.list_project_platforms(input: ListProjectPlatformsInput, *, options: RequestOptions | None = None) -> models.ListProjectPlatformsResponse
 ```
 </Tab>
 <Tab title="Rust">
@@ -113,6 +113,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField path="id" type={"string"} required>
 
 </ParamField>
@@ -122,7 +126,13 @@ _ = result
 
 **`200`** Every platform type available to the project. ListProjectPlatformsResponse
 
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
 <ResponseField name="platforms" type={"array of SupportedPlatform"} required>
 
 </ResponseField>
+
+**`304`** Not Modified. Sent only when If-None-Match matches the ETag of an earlier 200 response for the same representation; no body. No body.
+
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 

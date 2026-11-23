@@ -16,7 +16,7 @@ photon.projects.platforms.batchUpdateVoiceLineProfileAssignments(input: BatchUpd
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.projects.platforms.batch_update_voice_line_profile_assignments(input: BatchUpdateVoiceLineProfileAssignmentsInput) -> models.BatchUpdateVoiceLineProfileAssignmentsResponse
+photon.projects.platforms.batch_update_voice_line_profile_assignments(input: BatchUpdateVoiceLineProfileAssignmentsInput, *, options: RequestOptions | None = None,) -> models.BatchUpdateVoiceLineProfileAssignmentsResponse
 ```
 </Tab>
 <Tab title="Rust">
@@ -159,6 +159,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField path="id" type={"string"} required>
 
 </ParamField>
@@ -174,6 +178,8 @@ _ = result
 ## Returns
 
 **`200`** The updated line profile assignments. BatchUpdateVoiceLineProfileAssignmentsResponse
+
+Headers: `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="assignments" type={"array of VoiceLineProfileAssignment"} required>
 

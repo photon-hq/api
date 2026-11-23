@@ -16,7 +16,7 @@ photon.projects.platforms.getImessage(input: GetProjectImessagePlatformInput, op
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.projects.platforms.get_imessage(input: GetProjectImessagePlatformInput) -> models.ProjectPlatformSettings
+photon.projects.platforms.get_imessage(input: GetProjectImessagePlatformInput, *, options: RequestOptions | None = None) -> models.ProjectPlatformSettings
 ```
 </Tab>
 <Tab title="Rust">
@@ -109,6 +109,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField path="id" type={"string"} required>
 
 </ParamField>
@@ -117,6 +121,8 @@ _ = result
 ## Returns
 
 **`200`** The project's iMessage line mode. ProjectPlatformSettings
+
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 **One of: SharedProjectPlatformSettings**
 
@@ -141,4 +147,8 @@ _ = result
 <ResponseField name="mode" type={"\"dedicated\""} required>
 
 </ResponseField>
+
+**`304`** Not Modified. Sent only when If-None-Match matches the ETag of an earlier 200 response for the same representation; no body. No body.
+
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 

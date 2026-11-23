@@ -16,7 +16,7 @@ photon.organizations.billing.listInvoices(input: ListInvoicesInput, options?: Re
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.organizations.billing.list_invoices(input: ListInvoicesInput) -> models.ListInvoicesResponse
+photon.organizations.billing.list_invoices(input: ListInvoicesInput, *, options: RequestOptions | None = None) -> models.ListInvoicesResponse
 ```
 </Tab>
 <Tab title="Rust">
@@ -132,6 +132,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField path="organizationId" type={"string"} required>
 
 </ParamField>
@@ -153,6 +157,8 @@ Only the invoices that charge this subject a nonzero amount: organization for th
 
 **`200`** One page of the organization's invoices, newest first, excluding drafts and empty invoices; includes charges fully paid by credit. ListInvoicesResponse
 
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
 <ResponseField name="invoices" type={"array of Invoice"} required>
 
 </ResponseField>
@@ -160,4 +166,8 @@ Only the invoices that charge this subject a nonzero amount: organization for th
 <ResponseField name="nextCursor" type={"string | null"} required>
 Pass as cursor to read the next page. Null on the last page.
 </ResponseField>
+
+**`304`** Not Modified. Sent only when If-None-Match matches the ETag of an earlier 200 response for the same representation; no body. No body.
+
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 

@@ -15,6 +15,7 @@ import {
   type JsonObject,
   type JsonValue,
 } from "./shared.js";
+import { prepareMethodSurface } from "./method-surface.js";
 
 const HTTP_METHODS = new Set([
   "get",
@@ -656,6 +657,7 @@ export function prepareSdk(
     assertPublicErrorRepresentations(source);
   }
   const hoisted = clone(source);
+  prepareMethodSurface(hoisted);
 
   if (!isObject(hoisted.components)) {
     hoisted.components = {};

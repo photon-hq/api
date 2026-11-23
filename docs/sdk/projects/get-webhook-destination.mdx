@@ -16,7 +16,7 @@ photon.projects.getWebhookDestination(input: GetWebhookDestinationInput, options
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.projects.get_webhook_destination(input: GetWebhookDestinationInput) -> models.WebhookDestination
+photon.projects.get_webhook_destination(input: GetWebhookDestinationInput, *, options: RequestOptions | None = None) -> models.WebhookDestination
 ```
 </Tab>
 <Tab title="Rust">
@@ -122,6 +122,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField path="destinationId" type={"string"} required>
 
 </ParamField>
@@ -134,6 +138,8 @@ _ = result
 ## Returns
 
 **`200`** The requested webhook destination. WebhookDestination
+
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="apiVersion" type={"string (date)"} required>
 
@@ -178,4 +184,8 @@ _ = result
 <ResponseField name="url" type={"string (uri)"} required>
 
 </ResponseField>
+
+**`304`** Not Modified. Sent only when If-None-Match matches the ETag of an earlier 200 response for the same representation; no body. No body.
+
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 

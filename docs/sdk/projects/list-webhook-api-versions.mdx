@@ -16,12 +16,12 @@ photon.projects.listWebhookApiVersions(input: ListWebhookApiVersionsInput, optio
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.projects.list_webhook_api_versions(input: ListWebhookApiVersionsInput) -> models.ListWebhookApiVersionsResponse | None
+photon.projects.list_webhook_api_versions(input: ListWebhookApiVersionsInput, *, options: RequestOptions | None = None) -> models.ListWebhookApiVersionsResponse
 ```
 </Tab>
 <Tab title="Rust">
 ```rust Rust
-client.list_webhook_api_versions(project_id: String).await -> Result<ResponseValue<ListWebhookApiVersionsResponse>, Error<ListWebhookApiVersionsError>>
+client.list_webhook_api_versions(project_id: String).await -> Result<ResponseValue<types::ListWebhookApiVersionsResponse>, Error<ListWebhookApiVersionsError>>
 ```
 </Tab>
 <Tab title="Go">
@@ -117,6 +117,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField path="projectId" type={"string"} required>
 
 </ParamField>
@@ -125,6 +129,8 @@ _ = result
 ## Returns
 
 **`200`** Published webhook payload API versions. ListWebhookApiVersionsResponse
+
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="apiVersions" type={"array of WebhookApiVersion"} required>
 
@@ -138,5 +144,7 @@ _ = result
 
 </ResponseField>
 
-**`304`** The authorized cached representation is current; no response body. No body.
+**`304`** Not Modified. Sent only when If-None-Match matches the ETag of an earlier 200 response for the same representation; no body. No body.
+
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 

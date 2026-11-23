@@ -16,12 +16,12 @@ photon.account.revokeAccountServiceKey(input: RevokeAccountServiceKeyInput, opti
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.account.revoke_account_service_key(input: RevokeAccountServiceKeyInput) -> models.RevokeAccountServiceKeyResponse
+photon.account.revoke_account_service_key(input: RevokeAccountServiceKeyInput, *, options: RequestOptions | None = None) -> models.RevokeAccountServiceKeyResponse
 ```
 </Tab>
 <Tab title="Rust">
 ```rust Rust
-client.revoke_account_service_key(idempotency_key: String, service_key_id: String, params: Option<RevokeAccountServiceKeyParams>).await -> Result<ResponseValue<types::RevokeAccountServiceKeyResponse>, Error<RevokeAccountServiceKeyError>>
+client.revoke_account_service_key(idempotency_key: String, service_key_id: String).await -> Result<ResponseValue<types::RevokeAccountServiceKeyResponse>, Error<RevokeAccountServiceKeyError>>
 ```
 </Tab>
 <Tab title="Go">
@@ -75,7 +75,7 @@ let client = PhotonClientBuilder::new()
     .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
     .build()?;
 let result = client
-    .revoke_account_service_key("idempotencyKey".to_owned(), "serviceKeyId".to_owned(), None)
+    .revoke_account_service_key("idempotencyKey".to_owned(), "serviceKeyId".to_owned())
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();

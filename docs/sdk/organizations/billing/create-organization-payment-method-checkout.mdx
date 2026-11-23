@@ -16,7 +16,7 @@ photon.organizations.billing.createOrganizationPaymentMethodCheckout(input: Crea
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.organizations.billing.create_organization_payment_method_checkout(input: CreateOrganizationPaymentMethodCheckoutInput) -> models.CreateOrganizationPaymentMethodCheckoutResponse
+photon.organizations.billing.create_organization_payment_method_checkout(input: CreateOrganizationPaymentMethodCheckoutInput, *, options: RequestOptions | None = None,) -> models.CreateOrganizationPaymentMethodCheckoutResponse
 ```
 </Tab>
 <Tab title="Rust">
@@ -107,6 +107,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField header="Idempotency-Key" type={"string"}>
 Identifies one logical mutation across retries.
 </ParamField>
@@ -119,6 +123,8 @@ Identifies one logical mutation across retries.
 ## Returns
 
 **`200`** Hosted card-capture page for the organization. CreateOrganizationPaymentMethodCheckoutResponse
+
+Headers: `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="checkoutUrl" type={"string (uri)"} required>
 Hosted Stripe page; send the user here.

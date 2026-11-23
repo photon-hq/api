@@ -16,7 +16,7 @@ photon.projects.platforms.getOperation(input: GetOperationInput, options?: Reque
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.projects.platforms.get_operation(input: GetOperationInput) -> models.GetOperationResponse
+photon.projects.platforms.get_operation(input: GetOperationInput, *, options: RequestOptions | None = None) -> models.GetOperationResponse
 ```
 </Tab>
 <Tab title="Rust">
@@ -146,6 +146,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField path="id" type={"string"} required>
 
 </ParamField>
@@ -159,7 +163,7 @@ _ = result
 
 **`200`** The operation, and the resource it produced once one exists. Retry-After is supplied for pending/running campaign and Telegram operations and omitted once terminal. GetOperationResponse
 
-Headers: `Cache-Control`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+Headers: `Cache-Control`, `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="operation" type={"Operation"} required>
 
@@ -168,4 +172,8 @@ Headers: `Cache-Control`. The raw response carries these headers; see [Raw respo
 <ResponseField name="resource" type={"Resource"}>
 
 </ResponseField>
+
+**`304`** Not Modified. Sent only when If-None-Match matches the ETag of an earlier 200 response for the same representation; no body. No body.
+
+Headers: `Cache-Control`, `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 

@@ -16,17 +16,17 @@ photon.account.listAccountServiceKeys(input?: ListAccountServiceKeysInput, optio
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.account.list_account_service_keys(input: ListAccountServiceKeysInput | None = None) -> models.ListAccountServiceKeysResponse
+photon.account.list_account_service_keys(input: ListAccountServiceKeysInput | None = None, *, options: RequestOptions | None = None,) -> models.ListAccountServiceKeysResponse
 ```
 </Tab>
 <Tab title="Rust">
 ```rust Rust
-client.list_account_service_keys(params: Option<ListAccountServiceKeysParams>).await -> Result<ResponseValue<types::ListAccountServiceKeysResponse>, Error<ListAccountServiceKeysError>>
+client.list_account_service_keys().await -> Result<ResponseValue<types::ListAccountServiceKeysResponse>, Error<ListAccountServiceKeysError>>
 ```
 </Tab>
 <Tab title="Go">
 ```go Go
-client.Account.ListAccountServiceKeys(ctx context.Context, params *ListAccountServiceKeysParams, opts ...RequestOption) (*ListAccountServiceKeysResponse, error)
+client.Account.ListAccountServiceKeys(ctx context.Context, opts ...RequestOption) (*ListAccountServiceKeysResponse, error)
 ```
 </Tab>
 </Tabs>
@@ -58,7 +58,7 @@ let client = PhotonClientBuilder::new()
     .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
     .build()?;
 let result = client
-    .list_account_service_keys(None)
+    .list_account_service_keys()
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
@@ -74,7 +74,7 @@ import (
 
 ctx := context.Background()
 client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
-result, err := client.Account.ListAccountServiceKeys(ctx, nil)
+result, err := client.Account.ListAccountServiceKeys(ctx)
 if err != nil {
 	return err
 }

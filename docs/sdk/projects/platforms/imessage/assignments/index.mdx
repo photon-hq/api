@@ -40,28 +40,28 @@ photon.projects.platforms.imessage.assignments.release(input: ReleaseSharedLineA
 **[List shared line assignments](/api-client/sdk/projects/platforms/imessage/assignments/list)**
 
 ```python Python
-photon.projects.platforms.imessage.assignments.list(input: ListSharedLineAssignmentsInput) -> models.SharedLineAssignmentPage
+photon.projects.platforms.imessage.assignments.list(input: ListSharedLineAssignmentsInput, *, options: RequestOptions | None = None) -> models.SharedLineAssignmentPage
 ```
 `GET /v1/projects/{id}/platforms/imessage/assignments`
 
 **[Get shared line assignment](/api-client/sdk/projects/platforms/imessage/assignments/get)**
 
 ```python Python
-photon.projects.platforms.imessage.assignments.get(input: GetSharedLineAssignmentInput) -> models.SharedLineAssignment
+photon.projects.platforms.imessage.assignments.get(input: GetSharedLineAssignmentInput, *, options: RequestOptions | None = None) -> models.SharedLineAssignment
 ```
 `GET /v1/projects/{id}/platforms/imessage/assignments/{assignmentId}`
 
 **[Create shared line assignment](/api-client/sdk/projects/platforms/imessage/assignments/create)**
 
 ```python Python
-photon.projects.platforms.imessage.assignments.create(input: CreateSharedLineAssignmentInput) -> models.SharedLineAssignment
+photon.projects.platforms.imessage.assignments.create(input: CreateSharedLineAssignmentInput, *, options: RequestOptions | None = None) -> models.SharedLineAssignment
 ```
 `POST /v1/projects/{id}/platforms/imessage/assignments`
 
 **[Release shared line assignment](/api-client/sdk/projects/platforms/imessage/assignments/release)**
 
 ```python Python
-photon.projects.platforms.imessage.assignments.release(input: ReleaseSharedLineAssignmentInput) -> models.SharedLineAssignment
+photon.projects.platforms.imessage.assignments.release(input: ReleaseSharedLineAssignmentInput, *, options: RequestOptions | None = None) -> models.SharedLineAssignment
 ```
 `DELETE /v1/projects/{id}/platforms/imessage/assignments/{assignmentId}`
 

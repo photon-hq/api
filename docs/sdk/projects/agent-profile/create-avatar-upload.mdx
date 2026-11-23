@@ -16,7 +16,7 @@ photon.projects.agentProfile.createAvatarUpload(input: CreateAgentProfileAvatarU
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.projects.agent_profile.create_avatar_upload(input: CreateAgentProfileAvatarUploadInput) -> models.AgentProfileAvatarUpload
+photon.projects.agent_profile.create_avatar_upload(input: CreateAgentProfileAvatarUploadInput, *, options: RequestOptions | None = None) -> models.AgentProfileAvatarUpload
 ```
 </Tab>
 <Tab title="Rust">
@@ -129,6 +129,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField path="projectId" type={"string"} required>
 
 </ParamField>
@@ -144,6 +148,8 @@ _ = result
 ## Returns
 
 **`201`** A short-lived, project-bound presigned S3 POST. AgentProfileAvatarUpload
+
+Headers: `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="expiresAt" type={"string (date-time)"} required>
 

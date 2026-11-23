@@ -16,17 +16,17 @@ photon.account.delete(input?: DeleteAccountInput, options?: RequestOptions): Pro
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.account.delete(input: DeleteAccountInput | None = None) -> models.Account
+photon.account.delete(input: DeleteAccountInput | None = None, *, options: RequestOptions | None = None) -> models.Account
 ```
 </Tab>
 <Tab title="Rust">
 ```rust Rust
-client.delete_account(params: Option<DeleteAccountParams>).await -> Result<ResponseValue<types::Account>, Error<DeleteAccountError>>
+client.delete_account().await -> Result<ResponseValue<types::Account>, Error<DeleteAccountError>>
 ```
 </Tab>
 <Tab title="Go">
 ```go Go
-client.Account.Delete(ctx context.Context, params *DeleteAccountParams, opts ...RequestOption) (*Account, error)
+client.Account.Delete(ctx context.Context, opts ...RequestOption) (*Account, error)
 ```
 </Tab>
 </Tabs>
@@ -58,7 +58,7 @@ let client = PhotonClientBuilder::new()
     .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
     .build()?;
 let result = client
-    .delete_account(None)
+    .delete_account()
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
@@ -74,7 +74,7 @@ import (
 
 ctx := context.Background()
 client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
-result, err := client.Account.Delete(ctx, nil)
+result, err := client.Account.Delete(ctx)
 if err != nil {
 	return err
 }

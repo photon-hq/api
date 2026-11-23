@@ -16,12 +16,12 @@ photon.projects.getWebhookEventSchema(input: GetWebhookEventSchemaInput, options
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.projects.get_webhook_event_schema(input: GetWebhookEventSchemaInput) -> models.WebhookEventSchema | None
+photon.projects.get_webhook_event_schema(input: GetWebhookEventSchemaInput, *, options: RequestOptions | None = None) -> models.WebhookEventSchema
 ```
 </Tab>
 <Tab title="Rust">
 ```rust Rust
-client.get_webhook_event_schema(project_id: String, event_type: String, api_version: Date).await -> Result<ResponseValue<GetWebhookEventSchemaResponse>, Error<GetWebhookEventSchemaError>>
+client.get_webhook_event_schema(project_id: String, event_type: String, api_version: Date).await -> Result<ResponseValue<types::WebhookEventSchema>, Error<GetWebhookEventSchemaError>>
 ```
 </Tab>
 <Tab title="Go">
@@ -112,6 +112,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField path="projectId" type={"string"} required>
 
 </ParamField>
@@ -129,5 +133,9 @@ _ = result
 
 **`200`** The published reader JSON Schema for the event. The `application/schema+json` body.
 
-**`304`** The authorized cached representation is current; no response body. No body.
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
+**`304`** Not Modified. Sent only when If-None-Match matches the ETag of an earlier 200 response for the same representation; no body. No body.
+
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 

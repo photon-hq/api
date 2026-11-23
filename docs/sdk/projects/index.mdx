@@ -285,273 +285,273 @@ photon.projects.revokeProjectApiKey(input: RevokeProjectApiKeyInput, options?: R
 **[List attachments](/api-client/sdk/projects/list-attachments)**
 
 ```python Python
-photon.projects.list_attachments(input: ListAttachmentsInput) -> models.AttachmentPage
+photon.projects.list_attachments(input: ListAttachmentsInput, *, options: RequestOptions | None = None) -> models.AttachmentPage
 ```
 `GET /v1/projects/{id}/attachments`
 
 **[List Messages](/api-client/sdk/projects/list-messages)**
 
 ```python Python
-photon.projects.list_messages(input: ListMessagesInput) -> models.MessagePage
+photon.projects.list_messages(input: ListMessagesInput, *, options: RequestOptions | None = None) -> models.MessagePage
 ```
 `GET /v1/projects/{id}/messages`
 
 **[List project API keys](/api-client/sdk/projects/list-project-api-keys)**
 
 ```python Python
-photon.projects.list_project_api_keys(input: ListProjectApiKeysInput) -> models.ListProjectApiKeysResponse
+photon.projects.list_project_api_keys(input: ListProjectApiKeysInput, *, options: RequestOptions | None = None) -> models.ListProjectApiKeysResponse
 ```
 `GET /v1/projects/{projectId}/api-keys`
 
 **[List Spaces](/api-client/sdk/projects/list-spaces)**
 
 ```python Python
-photon.projects.list_spaces(input: ListSpacesInput) -> models.SpacePage
+photon.projects.list_spaces(input: ListSpacesInput, *, options: RequestOptions | None = None) -> models.SpacePage
 ```
 `GET /v1/projects/{id}/spaces`
 
 **[List Users](/api-client/sdk/projects/list-users)**
 
 ```python Python
-photon.projects.list_users(input: ListUsersInput) -> models.UserPage
+photon.projects.list_users(input: ListUsersInput, *, options: RequestOptions | None = None) -> models.UserPage
 ```
 `GET /v1/projects/{id}/users`
 
 **[List webhook API versions](/api-client/sdk/projects/list-webhook-api-versions)**
 
 ```python Python
-photon.projects.list_webhook_api_versions(input: ListWebhookApiVersionsInput) -> models.ListWebhookApiVersionsResponse | None
+photon.projects.list_webhook_api_versions(input: ListWebhookApiVersionsInput, *, options: RequestOptions | None = None) -> models.ListWebhookApiVersionsResponse
 ```
 `GET /v1/projects/{projectId}/webhooks/api-versions`
 
 **[List webhook destinations](/api-client/sdk/projects/list-webhook-destinations)**
 
 ```python Python
-photon.projects.list_webhook_destinations(input: ListWebhookDestinationsInput) -> models.WebhookDestinationPage
+photon.projects.list_webhook_destinations(input: ListWebhookDestinationsInput, *, options: RequestOptions | None = None) -> models.WebhookDestinationPage
 ```
 `GET /v1/projects/{projectId}/webhooks/destinations`
 
 **[List webhook egress addresses](/api-client/sdk/projects/list-webhook-egress-addresses)**
 
 ```python Python
-photon.projects.list_webhook_egress_addresses(input: ListWebhookEgressAddressesInput) -> models.ListWebhookEgressAddressesResponse | None
+photon.projects.list_webhook_egress_addresses(input: ListWebhookEgressAddressesInput, *, options: RequestOptions | None = None) -> models.ListWebhookEgressAddressesResponse
 ```
 `GET /v1/projects/{projectId}/webhooks/egress-addresses`
 
 **[List webhook event types](/api-client/sdk/projects/list-webhook-event-types)**
 
 ```python Python
-photon.projects.list_webhook_event_types(input: ListWebhookEventTypesInput) -> models.ListWebhookEventTypesResponse | None
+photon.projects.list_webhook_event_types(input: ListWebhookEventTypesInput, *, options: RequestOptions | None = None) -> models.ListWebhookEventTypesResponse
 ```
 `GET /v1/projects/{projectId}/webhooks/event-types`
 
 **[Count Messages](/api-client/sdk/projects/count-messages)**
 
 ```python Python
-photon.projects.count_messages(input: CountMessagesInput) -> models.CountMessagesResponse
+photon.projects.count_messages(input: CountMessagesInput, *, options: RequestOptions | None = None) -> models.CountMessagesResponse
 ```
 `GET /v1/projects/{id}/messages/count`
 
 **[Count Spaces](/api-client/sdk/projects/count-spaces)**
 
 ```python Python
-photon.projects.count_spaces(input: CountSpacesInput) -> models.SpaceCount
+photon.projects.count_spaces(input: CountSpacesInput, *, options: RequestOptions | None = None) -> models.SpaceCount
 ```
 `GET /v1/projects/{id}/spaces/count`
 
 **[Count Users](/api-client/sdk/projects/count-users)**
 
 ```python Python
-photon.projects.count_users(input: CountUsersInput) -> models.UserCount
+photon.projects.count_users(input: CountUsersInput, *, options: RequestOptions | None = None) -> models.UserCount
 ```
 `GET /v1/projects/{id}/users/count`
 
 **[Download attachment](/api-client/sdk/projects/download-attachment)**
 
 ```python Python
-photon.projects.download_attachment(input: DownloadAttachmentInput) -> bytes
+photon.projects.download_attachment(input: DownloadAttachmentInput, *, options: RequestOptions | None = None) -> bytes
 ```
 `GET /v1/projects/{id}/attachments/{attachmentId}/content`
 
 **[Get project](/api-client/sdk/projects/get)**
 
 ```python Python
-photon.projects.get(input: GetProjectInput) -> models.Project
+photon.projects.get(input: GetProjectInput, *, options: RequestOptions | None = None) -> models.Project
 ```
 `GET /v1/projects/{projectId}`
 
 **[Get attachment](/api-client/sdk/projects/get-attachment)**
 
 ```python Python
-photon.projects.get_attachment(input: GetAttachmentInput) -> models.Attachment
+photon.projects.get_attachment(input: GetAttachmentInput, *, options: RequestOptions | None = None) -> models.Attachment
 ```
 `GET /v1/projects/{id}/attachments/{attachmentId}`
 
 **[Get a Message](/api-client/sdk/projects/get-message)**
 
 ```python Python
-photon.projects.get_message(input: GetMessageInput) -> models.PlatformMessage | None
+photon.projects.get_message(input: GetMessageInput, *, options: RequestOptions | None = None) -> models.PlatformMessage | None
 ```
 `GET /v1/projects/{id}/messages/{messageId}`
 
 **[Get metrics backfill status](/api-client/sdk/projects/get-message-metrics-backfill)**
 
 ```python Python
-photon.projects.get_message_metrics_backfill(input: GetMessageMetricsBackfillInput) -> models.GetMessageMetricsBackfillResponse
+photon.projects.get_message_metrics_backfill(input: GetMessageMetricsBackfillInput, *, options: RequestOptions | None = None) -> models.GetMessageMetricsBackfillResponse
 ```
 `GET /v1/projects/{projectId}/metrics/backfill`
 
 **[Get metrics SQL schema](/api-client/sdk/projects/get-message-metrics-sql-schema)**
 
 ```python Python
-photon.projects.get_message_metrics_sql_schema(input: GetMessageMetricsSqlSchemaInput) -> models.GetMessageMetricsSqlSchemaResponse
+photon.projects.get_message_metrics_sql_schema(input: GetMessageMetricsSqlSchemaInput, *, options: RequestOptions | None = None) -> models.GetMessageMetricsSqlSchemaResponse
 ```
 `GET /v1/projects/{projectId}/metrics/query`
 
 **[Get a Space](/api-client/sdk/projects/get-space)**
 
 ```python Python
-photon.projects.get_space(input: GetSpaceInput) -> models.PlatformSpace | None
+photon.projects.get_space(input: GetSpaceInput, *, options: RequestOptions | None = None) -> models.PlatformSpace | None
 ```
 `GET /v1/projects/{id}/spaces/{spaceId}`
 
 **[Get an User](/api-client/sdk/projects/get-user)**
 
 ```python Python
-photon.projects.get_user(input: GetUserInput) -> models.PlatformUser | None
+photon.projects.get_user(input: GetUserInput, *, options: RequestOptions | None = None) -> models.PlatformUser | None
 ```
 `GET /v1/projects/{id}/users/{userId}`
 
 **[Get webhook destination](/api-client/sdk/projects/get-webhook-destination)**
 
 ```python Python
-photon.projects.get_webhook_destination(input: GetWebhookDestinationInput) -> models.WebhookDestination
+photon.projects.get_webhook_destination(input: GetWebhookDestinationInput, *, options: RequestOptions | None = None) -> models.WebhookDestination
 ```
 `GET /v1/projects/{projectId}/webhooks/destinations/{destinationId}`
 
 **[Get webhook event schema](/api-client/sdk/projects/get-webhook-event-schema)**
 
 ```python Python
-photon.projects.get_webhook_event_schema(input: GetWebhookEventSchemaInput) -> models.WebhookEventSchema | None
+photon.projects.get_webhook_event_schema(input: GetWebhookEventSchemaInput, *, options: RequestOptions | None = None) -> models.WebhookEventSchema
 ```
 `GET /v1/projects/{projectId}/webhooks/event-types/{eventType}/schema`
 
 **[Create or get a Space](/api-client/sdk/projects/create-or-get-space)**
 
 ```python Python
-photon.projects.create_or_get_space(input: CreateOrGetSpaceInput) -> models.PlatformSpace
+photon.projects.create_or_get_space(input: CreateOrGetSpaceInput, *, options: RequestOptions | None = None) -> models.PlatformSpace
 ```
 `POST /v1/projects/{id}/spaces`
 
 **[Create or get a User](/api-client/sdk/projects/create-or-get-user)**
 
 ```python Python
-photon.projects.create_or_get_user(input: CreateOrGetUserInput) -> models.PlatformUser
+photon.projects.create_or_get_user(input: CreateOrGetUserInput, *, options: RequestOptions | None = None) -> models.PlatformUser
 ```
 `POST /v1/projects/{id}/users`
 
 **[Create project API key](/api-client/sdk/projects/create-project-api-key)**
 
 ```python Python
-photon.projects.create_project_api_key(input: CreateProjectApiKeyInput) -> models.CreateProjectApiKeyResponse
+photon.projects.create_project_api_key(input: CreateProjectApiKeyInput, *, options: RequestOptions | None = None) -> models.CreateProjectApiKeyResponse
 ```
 `POST /v1/projects/{projectId}/api-keys`
 
 **[Create webhook destination](/api-client/sdk/projects/create-webhook-destination)**
 
 ```python Python
-photon.projects.create_webhook_destination(input: CreateWebhookDestinationInput) -> models.CreateWebhookDestinationResponse
+photon.projects.create_webhook_destination(input: CreateWebhookDestinationInput, *, options: RequestOptions | None = None) -> models.CreateWebhookDestinationResponse
 ```
 `POST /v1/projects/{projectId}/webhooks/destinations`
 
 **[Mark a Message as read](/api-client/sdk/projects/mark-message-read)**
 
 ```python Python
-photon.projects.mark_message_read(input: MarkMessageReadInput) -> models.MarkMessageReadResponse
+photon.projects.mark_message_read(input: MarkMessageReadInput, *, options: RequestOptions | None = None) -> models.MarkMessageReadResponse
 ```
 `POST /v1/projects/{id}/messages/{messageId}/read`
 
 **[Query metrics](/api-client/sdk/projects/query-message-metrics)**
 
 ```python Python
-photon.projects.query_message_metrics(input: QueryMessageMetricsInput) -> models.QueryMessageMetricsResponse
+photon.projects.query_message_metrics(input: QueryMessageMetricsInput, *, options: RequestOptions | None = None) -> models.QueryMessageMetricsResponse
 ```
 `POST /v1/projects/{projectId}/metrics/query`
 
 **[Retry webhook delivery](/api-client/sdk/projects/retry-webhook-delivery)**
 
 ```python Python
-photon.projects.retry_webhook_delivery(input: RetryWebhookDeliveryInput) -> models.RetryWebhookDeliveryResponse
+photon.projects.retry_webhook_delivery(input: RetryWebhookDeliveryInput, *, options: RequestOptions | None = None) -> models.RetryWebhookDeliveryResponse
 ```
 `POST /v1/projects/{projectId}/webhooks/destinations/{destinationId}/retries`
 
 **[Rotate webhook signing secret](/api-client/sdk/projects/rotate-webhook-signing-secret)**
 
 ```python Python
-photon.projects.rotate_webhook_signing_secret(input: RotateWebhookSigningSecretInput) -> models.RotateWebhookSigningSecretResponse
+photon.projects.rotate_webhook_signing_secret(input: RotateWebhookSigningSecretInput, *, options: RequestOptions | None = None) -> models.RotateWebhookSigningSecretResponse
 ```
 `POST /v1/projects/{projectId}/webhooks/destinations/{destinationId}/secret-rotations`
 
 **[Send a Message](/api-client/sdk/projects/send-message)**
 
 ```python Python
-photon.projects.send_message(input: SendMessageInput) -> models.SentMessage
+photon.projects.send_message(input: SendMessageInput, *, options: RequestOptions | None = None) -> models.SentMessage
 ```
 `POST /v1/projects/{id}/messages`
 
 **[Set typing in a Space](/api-client/sdk/projects/set-space-typing)**
 
 ```python Python
-photon.projects.set_space_typing(input: SetSpaceTypingInput) -> models.SetSpaceTypingResponse
+photon.projects.set_space_typing(input: SetSpaceTypingInput, *, options: RequestOptions | None = None) -> models.SetSpaceTypingResponse
 ```
 `POST /v1/projects/{id}/spaces/{spaceId}/typing`
 
 **[Upload attachment](/api-client/sdk/projects/upload-attachment)**
 
 ```python Python
-photon.projects.upload_attachment(input: UploadAttachmentInput) -> models.Attachment
+photon.projects.upload_attachment(input: UploadAttachmentInput, *, options: RequestOptions | None = None) -> models.Attachment
 ```
 `POST /v1/projects/{id}/attachments`
 
 **[Update project](/api-client/sdk/projects/update)**
 
 ```python Python
-photon.projects.update(input: UpdateProjectInput) -> models.Project
+photon.projects.update(input: UpdateProjectInput, *, options: RequestOptions | None = None) -> models.Project
 ```
 `PATCH /v1/projects/{projectId}`
 
 **[Update project API key permissions](/api-client/sdk/projects/update-project-api-key)**
 
 ```python Python
-photon.projects.update_project_api_key(input: UpdateProjectApiKeyInput) -> models.ProjectApiKeyResponse
+photon.projects.update_project_api_key(input: UpdateProjectApiKeyInput, *, options: RequestOptions | None = None) -> models.ProjectApiKeyResponse
 ```
 `PATCH /v1/projects/{projectId}/api-keys/{apiKeyId}`
 
 **[Update webhook destination](/api-client/sdk/projects/update-webhook-destination)**
 
 ```python Python
-photon.projects.update_webhook_destination(input: UpdateWebhookDestinationInput) -> models.WebhookDestination
+photon.projects.update_webhook_destination(input: UpdateWebhookDestinationInput, *, options: RequestOptions | None = None) -> models.WebhookDestination
 ```
 `PATCH /v1/projects/{projectId}/webhooks/destinations/{destinationId}`
 
 **[Delete project](/api-client/sdk/projects/delete)**
 
 ```python Python
-photon.projects.delete(input: DeleteProjectInput) -> models.Project
+photon.projects.delete(input: DeleteProjectInput, *, options: RequestOptions | None = None) -> models.Project
 ```
 `DELETE /v1/projects/{projectId}`
 
 **[Delete webhook destination](/api-client/sdk/projects/delete-webhook-destination)**
 
 ```python Python
-photon.projects.delete_webhook_destination(input: DeleteWebhookDestinationInput) -> models.WebhookDestination
+photon.projects.delete_webhook_destination(input: DeleteWebhookDestinationInput, *, options: RequestOptions | None = None) -> models.WebhookDestination
 ```
 `DELETE /v1/projects/{projectId}/webhooks/destinations/{destinationId}`
 
 **[Revoke project API key](/api-client/sdk/projects/revoke-project-api-key)**
 
 ```python Python
-photon.projects.revoke_project_api_key(input: RevokeProjectApiKeyInput) -> models.ProjectApiKeyResponse
+photon.projects.revoke_project_api_key(input: RevokeProjectApiKeyInput, *, options: RequestOptions | None = None) -> models.ProjectApiKeyResponse
 ```
 `DELETE /v1/projects/{projectId}/api-keys/{apiKeyId}`
 
@@ -595,7 +595,7 @@ client.list_users(id: String, params: Option<ListUsersParams>).await -> Result<R
 **[List webhook API versions](/api-client/sdk/projects/list-webhook-api-versions)**
 
 ```rust Rust
-client.list_webhook_api_versions(project_id: String).await -> Result<ResponseValue<ListWebhookApiVersionsResponse>, Error<ListWebhookApiVersionsError>>
+client.list_webhook_api_versions(project_id: String).await -> Result<ResponseValue<types::ListWebhookApiVersionsResponse>, Error<ListWebhookApiVersionsError>>
 ```
 `GET /v1/projects/{projectId}/webhooks/api-versions`
 
@@ -609,14 +609,14 @@ client.list_webhook_destinations(project_id: String, params: Option<ListWebhookD
 **[List webhook egress addresses](/api-client/sdk/projects/list-webhook-egress-addresses)**
 
 ```rust Rust
-client.list_webhook_egress_addresses(project_id: String).await -> Result<ResponseValue<ListWebhookEgressAddressesResponse>, Error<ListWebhookEgressAddressesError>>
+client.list_webhook_egress_addresses(project_id: String).await -> Result<ResponseValue<types::ListWebhookEgressAddressesResponse>, Error<ListWebhookEgressAddressesError>>
 ```
 `GET /v1/projects/{projectId}/webhooks/egress-addresses`
 
 **[List webhook event types](/api-client/sdk/projects/list-webhook-event-types)**
 
 ```rust Rust
-client.list_webhook_event_types(project_id: String, api_version: Date).await -> Result<ResponseValue<ListWebhookEventTypesResponse>, Error<ListWebhookEventTypesError>>
+client.list_webhook_event_types(project_id: String, api_version: Date).await -> Result<ResponseValue<types::ListWebhookEventTypesResponse>, Error<ListWebhookEventTypesError>>
 ```
 `GET /v1/projects/{projectId}/webhooks/event-types`
 
@@ -707,7 +707,7 @@ client.get_webhook_destination(destination_id: String, project_id: String).await
 **[Get webhook event schema](/api-client/sdk/projects/get-webhook-event-schema)**
 
 ```rust Rust
-client.get_webhook_event_schema(project_id: String, event_type: String, api_version: Date).await -> Result<ResponseValue<GetWebhookEventSchemaResponse>, Error<GetWebhookEventSchemaError>>
+client.get_webhook_event_schema(project_id: String, event_type: String, api_version: Date).await -> Result<ResponseValue<types::WebhookEventSchema>, Error<GetWebhookEventSchemaError>>
 ```
 `GET /v1/projects/{projectId}/webhooks/event-types/{eventType}/schema`
 
@@ -1357,18 +1357,6 @@ Every public IPv4 address webhook deliveries can originate from. Allow-list all 
 </ResponseField>
 
 <ResponseField name="createdAt" type={"string (date-time)"} required>
-
-</ResponseField>
-
-<ResponseField name="createdByAccountId" type={"string | null"} required>
-
-</ResponseField>
-
-<ResponseField name="createdByActorId" type={"string | null"} required>
-
-</ResponseField>
-
-<ResponseField name="createdByActorKind" type={"ProjectCreatedByActorKind | null"} required>
 
 </ResponseField>
 

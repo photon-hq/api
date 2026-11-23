@@ -16,7 +16,7 @@ photon.projects.platforms.provisionWhatsappDedicatedLine(input: ProvisionWhatsap
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.projects.platforms.provision_whatsapp_dedicated_line(input: ProvisionWhatsappDedicatedLineInput) -> models.Operation
+photon.projects.platforms.provision_whatsapp_dedicated_line(input: ProvisionWhatsappDedicatedLineInput, *, options: RequestOptions | None = None) -> models.Operation
 ```
 </Tab>
 <Tab title="Rust">
@@ -147,6 +147,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField header="Idempotency-Key" type={"string"} required>
 Identifies one logical mutation across retries.
 </ParamField>
@@ -167,7 +171,7 @@ A promotion code to apply to this line's charge. Billing takes a fixed amount of
 
 **`202`** The attachment was accepted and is running. GET the Location after the Retry-After interval until `state` is terminal. Operation
 
-Headers: `Location`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+Headers: `Location`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="cancellable" type={"boolean"} required>
 

@@ -68,56 +68,56 @@ photon.auth.updateOrganizationSsoPolicy(input: UpdateOrganizationSsoPolicyInput,
 **[List OAuth scopes](/api-client/sdk/auth/list-oauth-scopes)**
 
 ```python Python
-photon.auth.list_oauth_scopes(input: ListOauthScopesInput | None = None) -> models.ListOauthScopesResponse
+photon.auth.list_oauth_scopes(input: ListOauthScopesInput | None = None, *, options: RequestOptions | None = None) -> models.ListOauthScopesResponse
 ```
 `GET /v1/auth/oauth/scopes`
 
 **[Get organization connection status](/api-client/sdk/auth/get-organization-connection-status)**
 
 ```python Python
-photon.auth.get_organization_connection_status(input: GetOrganizationConnectionStatusInput) -> models.OrganizationConnectionStatus
+photon.auth.get_organization_connection_status(input: GetOrganizationConnectionStatusInput, *, options: RequestOptions | None = None) -> models.OrganizationConnectionStatus
 ```
 `GET /v1/auth/organizations/{orgId}/connection-status`
 
 **[Get organization SSO configuration](/api-client/sdk/auth/get-organization-sso-configuration)**
 
 ```python Python
-photon.auth.get_organization_sso_configuration(input: GetOrganizationSsoConfigurationInput) -> models.OrganizationSsoConfiguration
+photon.auth.get_organization_sso_configuration(input: GetOrganizationSsoConfigurationInput, *, options: RequestOptions | None = None) -> models.OrganizationSsoConfiguration
 ```
 `GET /v1/auth/organizations/{orgId}/sso`
 
 **[Create organization setup portal link](/api-client/sdk/auth/create-organization-sso-portal-link)**
 
 ```python Python
-photon.auth.create_organization_sso_portal_link(input: CreateOrganizationSsoPortalLinkInput) -> models.CreateOrganizationSsoPortalLinkResponse
+photon.auth.create_organization_sso_portal_link(input: CreateOrganizationSsoPortalLinkInput, *, options: RequestOptions | None = None) -> models.CreateOrganizationSsoPortalLinkResponse
 ```
 `POST /v1/auth/organizations/{orgId}/sso/portal`
 
 **[Disable organization SSO](/api-client/sdk/auth/disable-organization-sso)**
 
 ```python Python
-photon.auth.disable_organization_sso(input: DisableOrganizationSsoInput) -> models.OrganizationSsoConfiguration
+photon.auth.disable_organization_sso(input: DisableOrganizationSsoInput, *, options: RequestOptions | None = None) -> models.OrganizationSsoConfiguration
 ```
 `POST /v1/auth/organizations/{orgId}/sso/disable`
 
 **[Refresh organization SSO connection](/api-client/sdk/auth/refresh-organization-sso-connection)**
 
 ```python Python
-photon.auth.refresh_organization_sso_connection(input: RefreshOrganizationSsoConnectionInput) -> models.OrganizationSsoConfiguration
+photon.auth.refresh_organization_sso_connection(input: RefreshOrganizationSsoConnectionInput, *, options: RequestOptions | None = None) -> models.OrganizationSsoConfiguration
 ```
 `POST /v1/auth/organizations/{orgId}/sso/refresh`
 
 **[Retry organization connection sync](/api-client/sdk/auth/retry-organization-connection-sync)**
 
 ```python Python
-photon.auth.retry_organization_connection_sync(input: RetryOrganizationConnectionSyncInput) -> models.OrganizationConnectionStatus
+photon.auth.retry_organization_connection_sync(input: RetryOrganizationConnectionSyncInput, *, options: RequestOptions | None = None) -> models.OrganizationConnectionStatus
 ```
 `POST /v1/auth/organizations/{orgId}/connection-sync/retry`
 
 **[Update organization SSO policy](/api-client/sdk/auth/update-organization-sso-policy)**
 
 ```python Python
-photon.auth.update_organization_sso_policy(input: UpdateOrganizationSsoPolicyInput) -> models.OrganizationSsoConfiguration
+photon.auth.update_organization_sso_policy(input: UpdateOrganizationSsoPolicyInput, *, options: RequestOptions | None = None) -> models.OrganizationSsoConfiguration
 ```
 `PATCH /v1/auth/organizations/{orgId}/sso`
 

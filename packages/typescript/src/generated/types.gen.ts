@@ -460,7 +460,7 @@ export type AppInstallationManagedProblem = {
     [key: string]: JsonValue | 'APP_INSTALLATION_MANAGED' | string | never | 409 | 'App Installation Managed' | 'https://photon.codes/docs/problems/app-installation-managed' | undefined;
 };
 
-export type AssignSmsLineCampaignBadRequestProblem = SmsCampaignInvalidRequestProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+export type AssignSmsLineCampaignBadRequestProblem = SmsCampaignInvalidRequestProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem;
 
 export type AssignSmsLineCampaignConflictProblem = ProjectClosingProblem | SmsLineUnsupportedProblem | SmsCampaignNotReadyProblem | SmsCampaignVersionConflictProblem | SmsCampaignCapacityExceededProblem | SmsCampaignReconciliationRequiredProblem | SmsCampaignMutationInProgressProblem;
 
@@ -478,6 +478,8 @@ export type AssignSmsLineCampaignRequest = {
 };
 
 export type AssignSmsLineCampaignServiceUnavailableProblem = SmsCampaignContextUnavailableProblem | UpstreamUnavailableProblem;
+
+export type AssignSmsLineCampaignUnprocessableEntityProblem = IdempotencyKeyReusedProblem | ValidationFailedProblem;
 
 export type AssignVoiceLineProfileConflictProblem = ProjectClosingProblem | VoiceDefaultProfileAssignmentForbiddenProblem | VoiceProfileVersionConflictProblem;
 
@@ -611,7 +613,6 @@ export type AuthorizedApplication = {
      * OAuth resource associated with the grant, or null when no resource is specified.
      */
     oauthResource: string | null;
-    [key: string]: unknown;
 };
 
 /**
@@ -662,7 +663,6 @@ export type AuthorizedOAuthApplication = {
      * Whether the application uses Proof Key for Code Exchange (PKCE).
      */
     usesPkce: boolean;
-    [key: string]: unknown;
 };
 
 export type AuthorizedOAuthApplicationRedirectUri = {
@@ -674,7 +674,6 @@ export type AuthorizedOAuthApplicationRedirectUri = {
      * Registered OAuth callback URL for the application.
      */
     uri: string;
-    [key: string]: unknown;
 };
 
 export type AvailableProjectSlug = {
@@ -1108,7 +1107,7 @@ export type CancelSsoSubscriptionResponse = {
 
 export type CancelSsoSubscriptionUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
-export type ChangePlanBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+export type ChangePlanBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem;
 
 export type ChangePlanConflictProblem = FailedPreconditionProblem | IdempotencyRequestInProgressProblem;
 
@@ -1161,6 +1160,8 @@ export type CheckOrganizationDeletionResponse = {
     organizationId: string;
     version: string;
 };
+
+export type CheckProjectSlugAvailabilityBadRequestProblem = InvalidArgumentProblem | InvalidApiVersionProblem;
 
 export type CheckProjectSlugAvailabilityForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -1217,11 +1218,13 @@ export type CommitAccountProfilePictureRequest = {
 
 export type CommitAccountProfilePictureUnprocessableEntityProblem = IdempotencyKeyReusedProblem | ValidationFailedProblem;
 
-export type CommitAgentProfileAvatarBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem;
+export type CommitAgentProfileAvatarBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem | InvalidApiVersionProblem;
 
 export type CommitAgentProfileAvatarForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type CommitAgentProfileAvatarGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type CommitAgentProfileAvatarGoneProblem = ProjectDeletedProblem | RetiredApiVersionProblem;
 
 export type CommitAgentProfileAvatarRequest = {
     uploadId: string;
@@ -1254,7 +1257,7 @@ export type CommitOrganizationAvatarResponse = {
 
 export type CommitOrganizationAvatarUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
-export type ConfigureVoiceProfileOutboundBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+export type ConfigureVoiceProfileOutboundBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem;
 
 export type ConfigureVoiceProfileOutboundConflictProblem = ProjectClosingProblem | ProjectInitializingProblem | VoiceProfileVersionConflictProblem | VoiceOutboundOperationPendingProblem | VoiceOutboundConfiguredProblem;
 
@@ -1288,7 +1291,7 @@ export type ConfirmedRecipient = {
     userId: UserId;
 };
 
-export type ConnectEmailDomainBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+export type ConnectEmailDomainBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem;
 
 export type ConnectEmailDomainConflictProblem = ProjectClosingProblem | ProjectInitializingProblem | EmailDomainAlreadyConnectedProblem | EmailDomainCapExceededProblem;
 
@@ -1306,9 +1309,9 @@ export type ConnectEmailDomainServiceUnavailableProblem = BillingEntitlementsPen
 
 export type ConnectEmailDomainUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
-export type ConnectTelegramBotBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+export type ConnectTelegramBotBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem;
 
-export type ConnectTelegramBotConflictProblem = TelegramProjectDeletedProblem | ProjectClosingProblem | TelegramProvisionInProgressProblem;
+export type ConnectTelegramBotConflictProblem = TelegramBotAlreadyConnectedProblem | TelegramProjectDeletedProblem | ProjectClosingProblem | TelegramProvisionInProgressProblem;
 
 export type ConnectTelegramBotForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -1352,6 +1355,8 @@ export type CountMessagesGatewayTimeoutProblem = UpstreamTimeoutProblem | Reques
 export type CountMessagesInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
 export type CountMessagesResponse = MessageCount | DailyMessageCount;
+
+export type CountProjectsBadRequestProblem = InvalidArgumentProblem | InvalidApiVersionProblem;
 
 export type CountProjectsForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -1423,9 +1428,13 @@ export type CreateAgentProfileAvatarUploadForbiddenProblem = ForbiddenProblem | 
 
 export type CreateAgentProfileAvatarUploadGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
 
+export type CreateAgentProfileAvatarUploadGoneProblem = ProjectDeletedProblem | RetiredApiVersionProblem;
+
 export type CreateAgentProfileAvatarUploadRequest = {
     contentType: AgentProfileAvatarContentType;
 };
+
+export type CreateAppInstallationRequestBadRequestProblem = InvalidArgumentProblem | InvalidApiVersionProblem;
 
 export type CreateAppInstallationRequestConflictProblem = AppInstallationAssertionReplayedProblem | AppInstallationConfigChangedProblem;
 
@@ -1445,7 +1454,6 @@ export type CreateAppInstallationRequestResponse = {
     redirectUri: string;
     requestId: string;
     state: string;
-    [key: string]: unknown;
 };
 
 export type CreateDefaultVoiceProfileConflictProblem = ProjectClosingProblem | VoiceDefaultProfileExistsProblem;
@@ -1576,7 +1584,7 @@ export type CreateOrganizationOauthClientResponse = {
     updatedAt: string;
 };
 
-export type CreateOrganizationPaymentMethodCheckoutBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+export type CreateOrganizationPaymentMethodCheckoutBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem;
 
 export type CreateOrganizationPaymentMethodCheckoutForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -1609,7 +1617,7 @@ export type CreateOrganizationResponse = {
     version: string;
 };
 
-export type CreateOrganizationSsoPortalLinkBadRequestProblem = InvalidReturnToProblem | InvalidArgumentProblem;
+export type CreateOrganizationSsoPortalLinkBadRequestProblem = InvalidReturnToProblem | InvalidArgumentProblem | InvalidApiVersionProblem;
 
 export type CreateOrganizationSsoPortalLinkForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem;
 
@@ -1631,14 +1639,15 @@ export type CreateOrganizationSsoPortalLinkRequestIntent = 'sso' | 'domain_verif
 
 export type CreateOrganizationSsoPortalLinkResponse = {
     url: string;
-    [key: string]: unknown;
 };
 
 export type CreateOrganizationUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
-export type CreateProjectApiKeyBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem;
+export type CreateProjectApiKeyBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem | InvalidApiVersionProblem;
 
 export type CreateProjectApiKeyForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type CreateProjectApiKeyGoneProblem = ProjectDeletedProblem | RetiredApiVersionProblem;
 
 export type CreateProjectApiKeyRequest = {
     expiresAt?: string;
@@ -1653,7 +1662,7 @@ export type CreateProjectApiKeyResponse = {
 
 export type CreateProjectApiKeyUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
-export type CreateProjectBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem;
+export type CreateProjectBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem | InvalidApiVersionProblem;
 
 export type CreateProjectForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -1766,7 +1775,7 @@ export type CreateServiceIdentityResponse = {
 
 export type CreateServiceIdentityUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
-export type CreateSharedLineAssignmentBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+export type CreateSharedLineAssignmentBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem;
 
 export type CreateSharedLineAssignmentConflictProblem = ProjectInitializingProblem | ProjectClosingProblem | ImessageModeDedicatedProblem | SharedLineCapExceededProblem | AssignmentExistsProblem;
 
@@ -1801,7 +1810,7 @@ export type CreateVoiceProfileRequest = {
     protocol: 'sip';
 };
 
-export type CreateWebhookDestinationBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem;
+export type CreateWebhookDestinationBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem | InvalidApiVersionProblem;
 
 export type CreateWebhookDestinationForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -1829,7 +1838,7 @@ export type CreateWebhookDestinationResponse = {
 
 export type CreateWebhookDestinationUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
-export type CreateWhatsappSharedLineAssignmentBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+export type CreateWhatsappSharedLineAssignmentBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem;
 
 export type CreateWhatsappSharedLineAssignmentConflictProblem = ProjectInitializingProblem | ProjectClosingProblem | WhatsappModeDedicatedProblem | SharedLineCapExceededProblem | AssignmentExistsProblem;
 
@@ -1850,7 +1859,7 @@ export type CreateWhatsappSharedLineAssignmentServiceUnavailableProblem = Billin
 
 export type CreateWhatsappSharedLineAssignmentUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
-export type CreateWhatsappVoipSenderBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+export type CreateWhatsappVoipSenderBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem;
 
 export type CreateWhatsappVoipSenderConflictProblem = ProjectClosingProblem | ProjectInitializingProblem | WhatsappAccountDisconnectingProblem | WhatsappAccountProvisioningProblem | WhatsappVoipSourceActivatingProblem | WhatsappSenderConnectedProblem | WhatsappSenderProvisioningProblem | WhatsappVoipSourceReleasingProblem;
 
@@ -2003,7 +2012,7 @@ export type DeleteOrganizationOauthClientSecretGatewayTimeoutProblem = UpstreamT
 
 export type DeleteOrganizationOauthClientSecretInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
-export type DeleteProjectBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+export type DeleteProjectBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem;
 
 export type DeleteProjectForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -2400,7 +2409,7 @@ export type DeviceTokenResponseUser = {
     [key: string]: unknown;
 };
 
-export type DisableOrganizationSsoBadRequestProblem = InvalidReturnToProblem | InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+export type DisableOrganizationSsoBadRequestProblem = InvalidReturnToProblem | InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem;
 
 export type DisableOrganizationSsoForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem;
 
@@ -2420,7 +2429,7 @@ export type DisableOrganizationSsoRequest = {
 
 export type DisableOrganizationSsoUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
-export type DisconnectWhatsappBusinessAccountBadRequestProblem = IdempotencyKeyInvalidProblem | IdempotencyKeyRequiredProblem;
+export type DisconnectWhatsappBusinessAccountBadRequestProblem = IdempotencyKeyInvalidProblem | IdempotencyKeyRequiredProblem | InvalidApiVersionProblem;
 
 export type DisconnectWhatsappBusinessAccountConflictProblem = WhatsappAccountDisconnectingProblem | WhatsappAccountProvisioningProblem;
 
@@ -3393,7 +3402,7 @@ export type FixedChargePricing = {
  */
 export type FixedChargeQuote = {
     /**
-     * Decimal amount in the plan currency. Kept as text so sub-cent unit prices remain exact.
+     * Decimal unit price in the charge currency. The billing engine can use exponent notation. Kept as text so the price stays exact.
      */
     amount: string;
     currency: string;
@@ -3434,17 +3443,25 @@ export type GetAgentProfileForbiddenProblem = ForbiddenProblem | InsufficientSco
 
 export type GetAgentProfileGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
 
+export type GetAgentProfileGoneProblem = ProjectDeletedProblem | RetiredApiVersionProblem;
+
 export type GetAttachmentForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type GetAttachmentGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
 
 export type GetAttachmentInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
+export type GetBillingOperationBadRequestProblem = InvalidArgumentProblem | InvalidApiVersionProblem;
+
 export type GetBillingOperationForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type GetBillingOperationGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
 
 export type GetBillingOperationInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type GetBillingOverviewBadRequestProblem = InvalidArgumentProblem | InvalidApiVersionProblem;
+
+export type GetBillingOverviewConflictProblem = FailedPreconditionProblem | ProjectInitializingProblem;
 
 export type GetBillingOverviewForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -3490,6 +3507,10 @@ export type GetDefaultVoiceProfileForbiddenProblem = ForbiddenProblem | Insuffic
 export type GetDefaultVoiceProfileGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
 
 export type GetDefaultVoiceProfileInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type GetEffectiveTermsBadRequestProblem = InvalidArgumentProblem | InvalidApiVersionProblem;
+
+export type GetEffectiveTermsConflictProblem = FailedPreconditionProblem | OrganizationInitializingProblem | ProjectInitializingProblem;
 
 export type GetEffectiveTermsForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -3561,6 +3582,10 @@ export type GetOperationResponse = {
     resource?: Resource;
 };
 
+export type GetOrganizationBillingOverviewBadRequestProblem = InvalidArgumentProblem | InvalidApiVersionProblem;
+
+export type GetOrganizationBillingOverviewConflictProblem = FailedPreconditionProblem | OrganizationInitializingProblem;
+
 export type GetOrganizationBillingOverviewForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type GetOrganizationBillingOverviewGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
@@ -3586,11 +3611,17 @@ export type GetOrganizationBillingOverviewServiceUnavailableProblem = BillingEnt
 
 export type GetOrganizationConflictProblem = OrganizationAuthPolicyChangedProblem | OrganizationUnavailableProblem | OrganizationVersionConflictProblem;
 
+export type GetOrganizationConnectionStatusBadRequestProblem = InvalidArgumentProblem | InvalidApiVersionProblem;
+
 export type GetOrganizationConnectionStatusForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem;
 
 export type GetOrganizationConnectionStatusGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
 
 export type GetOrganizationConnectionStatusInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type GetOrganizationCreditBadRequestProblem = InvalidArgumentProblem | InvalidApiVersionProblem;
+
+export type GetOrganizationCreditConflictProblem = FailedPreconditionProblem | OrganizationInitializingProblem;
 
 export type GetOrganizationCreditForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -3600,7 +3631,7 @@ export type GetOrganizationCreditInternalServerErrorProblem = InternalErrorProbl
 
 export type GetOrganizationCreditResponse = {
     /**
-     * Credit left to offset the organization's next invoices, in cents: on credit notes, and in its wallet, granted to it or purchased. Zero when none is left.
+     * Credit left to offset the organization's next invoices, in cents: on credit notes, and in its wallet, granted to it or purchased. Zero when none is left. An overdrawn wallet can make the balance negative.
      */
     balanceCents: number;
     /**
@@ -3653,6 +3684,8 @@ export type GetOrganizationOauthClientSecretResponsePrevious = {
     validUntil: string | null;
 };
 
+export type GetOrganizationPaymentMethodBadRequestProblem = InvalidArgumentProblem | InvalidApiVersionProblem;
+
 export type GetOrganizationPaymentMethodForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type GetOrganizationPaymentMethodGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
@@ -3685,7 +3718,7 @@ export type GetOrganizationResponse = {
     version: string;
 };
 
-export type GetOrganizationSsoConfigurationBadRequestProblem = InvalidReturnToProblem | InvalidArgumentProblem;
+export type GetOrganizationSsoConfigurationBadRequestProblem = InvalidReturnToProblem | InvalidArgumentProblem | InvalidApiVersionProblem;
 
 export type GetOrganizationSsoConfigurationForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem;
 
@@ -3694,6 +3727,10 @@ export type GetOrganizationSsoConfigurationGatewayTimeoutProblem = UpstreamTimeo
 export type GetOrganizationSsoConfigurationInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
 export type GetOrganizationSsoConfigurationPreconditionFailedProblem = OrganizationSsoPreconditionFailedProblem | SsoSubscriptionRequiredProblem;
+
+export type GetOrganizationTermsBadRequestProblem = InvalidArgumentProblem | InvalidApiVersionProblem;
+
+export type GetOrganizationTermsConflictProblem = FailedPreconditionProblem | OrganizationInitializingProblem;
 
 export type GetOrganizationTermsForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -3712,7 +3749,9 @@ export type GetOrganizationTermsResponse = {
     timeZone: string;
 };
 
-export type GetOrganizationTermsServiceUnavailableProblem = BillingEntitlementsPendingProblem | BillingNotProvisionedProblem | UpstreamUnavailableProblem;
+export type GetOrganizationTermsServiceUnavailableProblem = BillingEntitlementsPendingProblem | UpstreamUnavailableProblem;
+
+export type GetProjectClosureStatusBadRequestProblem = InvalidArgumentProblem | InvalidApiVersionProblem;
 
 export type GetProjectClosureStatusForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -3724,12 +3763,13 @@ export type GetProjectClosureStatusResponse = {
     organizationId: string;
     projectId: string;
     ready: boolean;
-    [key: string]: unknown;
 };
 
 export type GetProjectForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type GetProjectGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type GetProjectGoneProblem = ProjectDeletedProblem | RetiredApiVersionProblem;
 
 export type GetProjectImessagePlatformForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -3779,6 +3819,8 @@ export type GetSharedLineAssignmentGatewayTimeoutProblem = RequestTimeoutProblem
 
 export type GetSharedLineAssignmentInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
+export type GetSmsLineCampaignAssignmentBadRequestProblem = SmsCampaignInvalidRequestProblem | InvalidApiVersionProblem;
+
 export type GetSmsLineCampaignAssignmentConflictProblem = ProjectClosingProblem | SmsLineUnsupportedProblem | SmsCampaignNotReadyProblem | SmsCampaignVersionConflictProblem | SmsCampaignCapacityExceededProblem | SmsCampaignReconciliationRequiredProblem | SmsCampaignMutationInProgressProblem;
 
 export type GetSmsLineCampaignAssignmentForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem | SmsCampaignOrganizationMismatchProblem;
@@ -3795,7 +3837,6 @@ export type GetSmsLineCampaignAssignmentResponse = {
     reasonCode: string | null;
     resourceId: string;
     version: number;
-    [key: string]: unknown;
 };
 
 export type GetSmsLineCampaignAssignmentServiceUnavailableProblem = SmsCampaignContextUnavailableProblem | UpstreamUnavailableProblem;
@@ -3830,6 +3871,8 @@ export type GetSsoSubscriptionResponse = {
 };
 
 export type GetSsoSubscriptionResponseState = 'not_subscribed' | 'subscribing' | 'subscribed' | 'cancellation_pending' | 'cancel_scheduled' | 'cancelled' | 'needs_attention' | (string & {});
+
+export type GetTenDlcBrandOtpBadGatewayProblem = ServiceFailureProblem | UpstreamFailureProblem;
 
 export type GetTenDlcBrandOtpForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -3866,6 +3909,10 @@ export type GetVoiceProfileInternalServerErrorProblem = InternalErrorProblem | I
 export type GetWebhookDestinationForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type GetWebhookDestinationGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
+
+export type GetWebhookDestinationGoneProblem = WebhookDestinationDeletedProblem | RetiredApiVersionProblem;
+
+export type GetWebhookEventSchemaBadRequestProblem = InvalidArgumentProblem | InvalidApiVersionProblem;
 
 export type GetWebhookEventSchemaForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -4454,7 +4501,6 @@ export type ListAuthorizedApplicationsResponse = {
      */
     authorizedApplications: Array<AuthorizedApplication>;
     listMetadata: ListAuthorizedApplicationsResponseListMetadata;
-    [key: string]: unknown;
 };
 
 /**
@@ -4469,8 +4515,9 @@ export type ListAuthorizedApplicationsResponseListMetadata = {
      * Cursor for the previous page, or null when there is no previous page.
      */
     before: string | null;
-    [key: string]: unknown;
 };
+
+export type ListBillingPlansBadRequestProblem = InvalidArgumentProblem | InvalidApiVersionProblem;
 
 export type ListBillingPlansForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -4486,6 +4533,10 @@ export type ListBillingPlansResponse = {
         [key: string]: Array<BillingPlan>;
     };
 };
+
+export type ListCreditActivityBadRequestProblem = InvalidArgumentProblem | InvalidApiVersionProblem;
+
+export type ListCreditActivityConflictProblem = FailedPreconditionProblem | OrganizationInitializingProblem;
 
 export type ListCreditActivityForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -4515,6 +4566,8 @@ export type ListFilteredVerificationCodesForbiddenProblem = ForbiddenProblem | I
 export type ListFilteredVerificationCodesGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
 
 export type ListFilteredVerificationCodesInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type ListInvoicesBadRequestProblem = InvalidArgumentProblem | InvalidApiVersionProblem;
 
 export type ListInvoicesForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -4568,7 +4621,6 @@ export type ListOauthScopesResponse = {
      * Business permissions an OAuth application can be configured with. Client creation and scope updates accept only these values. OIDC protocol scopes (openid, profile, email, offline_access) are not included.
      */
     scopes: Array<string>;
-    [key: string]: unknown;
 };
 
 export type ListOperationsForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
@@ -4670,7 +4722,11 @@ export type ListOrganizationsResponse = {
     ownedOrganizationIds: Array<string>;
 };
 
+export type ListProjectApiKeysBadRequestProblem = InvalidArgumentProblem | InvalidApiVersionProblem;
+
 export type ListProjectApiKeysForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type ListProjectApiKeysGoneProblem = ProjectDeletedProblem | RetiredApiVersionProblem;
 
 export type ListProjectApiKeysResponse = {
     apiKeys: Array<ApiKey>;
@@ -4684,6 +4740,8 @@ export type ListProjectPlatformsResponse = {
     platforms: Array<SupportedPlatform>;
 };
 
+export type ListProjectSubscriptionsBadRequestProblem = InvalidArgumentProblem | InvalidApiVersionProblem;
+
 export type ListProjectSubscriptionsForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type ListProjectSubscriptionsGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
@@ -4696,6 +4754,8 @@ export type ListProjectSubscriptionsResponse = {
      */
     subscriptions: Array<ProjectHeldPlan>;
 };
+
+export type ListProjectsBadRequestProblem = InvalidArgumentProblem | InvalidApiVersionProblem;
 
 export type ListProjectsForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -4815,6 +4875,8 @@ export type ListWebhookApiVersionsResponse = {
     packageVersion: string;
 };
 
+export type ListWebhookDestinationsBadRequestProblem = InvalidArgumentProblem | InvalidApiVersionProblem;
+
 export type ListWebhookDestinationsForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type ListWebhookDestinationsGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
@@ -4827,6 +4889,8 @@ export type ListWebhookEgressAddressesResponse = {
      */
     ipAddresses: Array<WebhookEgressAddress>;
 };
+
+export type ListWebhookEventTypesBadRequestProblem = InvalidArgumentProblem | InvalidApiVersionProblem;
 
 export type ListWebhookEventTypesForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -5406,7 +5470,7 @@ export type Operation = {
 /**
  * Why the operation failed: the problem of its `code`, the same object the endpoint returns when it rejects a request, with the `status` that rejection would have had (the poll itself answers 200). Every code an operation can end with is a branch below, and the endpoint that starts the operation lists its codes. Branch on `code`, never on `status`, and keep a default: a code added after your client was generated arrives as a generic problem with `type: about:blank` and `status: 500`. That 500 means this document does not describe the code yet, not that the request failed on our side or that retrying will help.
  */
-export type OperationError = ChargeRefusedProblem | EmailDomainProviderRejectedProblem | EmailDomainReleaseFailedProblem | EmailDomainVerificationFailedProblem | EmailDomainVerificationTimedOutProblem | EmailTenantSetupTimedOutProblem | EnterprisePlanRequiredProblem | EntitlementRequiredProblem | NumberInventoryUnavailableProblem | NumberOrderFailedProblem | NumberOrderReconciliationRequiredProblem | NumberReleaseFailedProblem | NumberSearchFailedProblem | ResourceNotFoundProblem | SmsCampaignProviderRejectedProblem | SmsCampaignReconciliationRequiredProblem | SmsCampaignRevokedProblem | TelegramConfigurationFailedProblem | TelegramReleaseFailedProblem | WhatsappAccountDisconnectFailedProblem | WhatsappAuthorizationRevokedProblem | WhatsappCodeExchangeFailedProblem | WhatsappCosmosLineNotSupportedProblem | WhatsappDisplayNameConflictProblem | WhatsappEmbeddedSignupPhoneLookupFailedProblem | WhatsappEmbeddedSignupPhoneNotFoundProblem | WhatsappEmbeddedSignupPhoneNotVerifiedProblem | WhatsappEmbeddedSignupWabaNotAuthorizedProblem | WhatsappNumberAddRefusedProblem | WhatsappNumberLookupFailedProblem | WhatsappProjectWabaAlreadyConnectedProblem | WhatsappRegistrationRefusedProblem | WhatsappSenderConnectedProblem | WhatsappSenderProvisioningProblem | WhatsappSenderReleaseFailedProblem | WhatsappSignupExpiredProblem | WhatsappSubscriptionRefusedProblem | WhatsappVerificationRefusedProblem | WhatsappVerificationRequestRefusedProblem | WhatsappVerificationTimedOutProblem | WhatsappVoipSourceNotEligibleProblem | WhatsappVoipSourceReleasingProblem | WhatsappWabaAlreadyConnectedProblem | ProblemDetails;
+export type OperationError = ChargeRefusedProblem | EmailDomainProviderRejectedProblem | EmailDomainReleaseFailedProblem | EmailDomainVerificationFailedProblem | EmailDomainVerificationTimedOutProblem | EmailTenantSetupTimedOutProblem | EnterprisePlanRequiredProblem | EntitlementRequiredProblem | NumberInventoryUnavailableProblem | NumberOrderFailedProblem | NumberOrderReconciliationRequiredProblem | NumberReleaseFailedProblem | NumberSearchFailedProblem | ResourceNotFoundProblem | SmsCampaignProviderRejectedProblem | SmsCampaignReconciliationRequiredProblem | SmsCampaignRevokedProblem | TelegramBotAlreadyConnectedProblem | TelegramConfigurationFailedProblem | TelegramReleaseFailedProblem | WhatsappAccountDisconnectFailedProblem | WhatsappAuthorizationRevokedProblem | WhatsappCodeExchangeFailedProblem | WhatsappCosmosLineNotSupportedProblem | WhatsappDisplayNameConflictProblem | WhatsappEmbeddedSignupPhoneLookupFailedProblem | WhatsappEmbeddedSignupPhoneNotFoundProblem | WhatsappEmbeddedSignupPhoneNotVerifiedProblem | WhatsappEmbeddedSignupWabaNotAuthorizedProblem | WhatsappNumberAddRefusedProblem | WhatsappNumberLookupFailedProblem | WhatsappProjectWabaAlreadyConnectedProblem | WhatsappRegistrationRefusedProblem | WhatsappSenderConnectedProblem | WhatsappSenderProvisioningProblem | WhatsappSenderReleaseFailedProblem | WhatsappSignupExpiredProblem | WhatsappSubscriptionRefusedProblem | WhatsappVerificationRefusedProblem | WhatsappVerificationRequestRefusedProblem | WhatsappVerificationTimedOutProblem | WhatsappVoipSourceNotEligibleProblem | WhatsappVoipSourceReleasingProblem | WhatsappWabaAlreadyConnectedProblem | ProblemDetails;
 
 export type OperationNotCancellableProblem = {
     code: 'OPERATION_NOT_CANCELLABLE';
@@ -5539,26 +5603,35 @@ export type OrganizationConnectionStatus = {
     organization: OrganizationConnectionStatusOrganization;
     organizationId: string;
     synchronized: boolean;
-    [key: string]: unknown;
 };
 
 export type OrganizationConnectionStatusMembership = {
     errorCode: string | null;
     retryAt: string | null;
     status: OrganizationConnectionSyncStatus;
-    [key: string]: unknown;
 };
 
 export type OrganizationConnectionStatusOrganization = {
     errorCode: string | null;
     status: OrganizationConnectionSyncStatus;
-    [key: string]: unknown;
 };
 
 export type OrganizationConnectionSyncStatus = 'pending' | 'syncing' | 'ready' | 'error' | 'blocked' | (string & {});
 
 export type OrganizationCreditSubject = {
     type: 'organization';
+};
+
+export type OrganizationInitializingProblem = {
+    code: 'ORGANIZATION_INITIALIZING';
+    detail?: string;
+    instance?: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    status: 409;
+    title: 'Organization Initializing';
+    type: 'https://photon.codes/docs/problems/organization-initializing';
+    [key: string]: JsonValue | 'ORGANIZATION_INITIALIZING' | string | ProblemRemediation | 409 | 'Organization Initializing' | 'https://photon.codes/docs/problems/organization-initializing' | undefined;
 };
 
 export type OrganizationInvitationRole = 'member' | 'viewer' | (string & {});
@@ -5696,7 +5769,6 @@ export type OrganizationSsoConfiguration = {
     ssoEnforced: boolean;
     ssoJitEnabled: boolean;
     version: string;
-    [key: string]: unknown;
 };
 
 export type OrganizationSsoConfigurationConnectionState = 'not_configured' | 'configuring' | 'ready' | 'error' | (string & {});
@@ -5718,7 +5790,6 @@ export type OrganizationSsoConflictProblem = {
 export type OrganizationSsoDomain = {
     domain: string;
     state: OrganizationSsoDomainState;
-    [key: string]: unknown;
 };
 
 export type OrganizationSsoDomainState = 'verified' | 'pending' | 'failed' | (string & {});
@@ -6058,6 +6129,8 @@ export type PollVoteContent = {
     type: 'poll.vote';
 };
 
+export type PreviewOrganizationChangeBadRequestProblem = InvalidArgumentProblem | InvalidApiVersionProblem;
+
 export type PreviewOrganizationChangeConflictProblem = FailedPreconditionProblem | PromotionCodeRejectedProblem;
 
 export type PreviewOrganizationChangeForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
@@ -6134,6 +6207,8 @@ export type PreviewOrganizationInvitationResponseInviter = {
 
 export type PreviewOrganizationInvitationResponseStatus = 'pending' | 'accepted' | (string & {});
 
+export type PreviewProjectChangeBadRequestProblem = InvalidArgumentProblem | InvalidApiVersionProblem;
+
 export type PreviewProjectChangeConflictProblem = FailedPreconditionProblem | PromotionCodeRejectedProblem;
 
 export type PreviewProjectChangeForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
@@ -6208,9 +6283,6 @@ export type Project = {
     agentProfile: AgentProfile;
     billingInitialization?: ProjectBillingInitialization;
     createdAt: string;
-    createdByAccountId: string | null;
-    createdByActorId: string | null;
-    createdByActorKind: ProjectCreatedByActorKind | null;
     deletedAt: string | null;
     name: string;
     organizationId: string;
@@ -6243,14 +6315,11 @@ export type ProjectClosureDomainStatus = {
     blockers: Array<string>;
     domain: ProjectClosureDomain;
     ready: boolean;
-    [key: string]: unknown;
 };
 
 export type ProjectCount = {
     count: number;
 };
-
-export type ProjectCreatedByActorKind = 'account' | 'service_identity' | (string & {});
 
 export type ProjectCreditSubject = {
     projectId: string;
@@ -6413,7 +6482,7 @@ export type PromotionCodeRejectedProblem = {
     [key: string]: JsonValue | 'PROMOTION_CODE_REJECTED' | string | ProblemRemediation | 409 | 'Promotion Code Rejected' | 'https://photon.codes/docs/problems/promotion-code-rejected' | undefined;
 };
 
-export type ProvisionImessageDedicatedLineBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+export type ProvisionImessageDedicatedLineBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem;
 
 export type ProvisionImessageDedicatedLineConflictProblem = PromotionCodeRejectedProblem | ProjectClosingProblem | ProjectInitializingProblem;
 
@@ -6436,7 +6505,7 @@ export type ProvisionImessageDedicatedLineServiceUnavailableProblem = BillingEnt
 
 export type ProvisionImessageDedicatedLineUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
-export type ProvisionWhatsappDedicatedLineBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+export type ProvisionWhatsappDedicatedLineBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem;
 
 export type ProvisionWhatsappDedicatedLineConflictProblem = PromotionCodeRejectedProblem | ProjectClosingProblem | ProjectInitializingProblem;
 
@@ -6461,7 +6530,7 @@ export type ProvisionWhatsappDedicatedLineUnprocessableEntityProblem = Validatio
 
 export type PurchaseRefusal = 'payment_method_required' | 'billing_not_ready' | (string & {});
 
-export type PurchaseSmsNumberBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+export type PurchaseSmsNumberBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem;
 
 export type PurchaseSmsNumberConflictProblem = ProjectClosingProblem | ProjectInitializingProblem;
 
@@ -6756,6 +6825,8 @@ export type RecipientUnreachableFailure = {
     message: string;
 };
 
+export type RedeemAppInstallationDeliveryBadRequestProblem = InvalidArgumentProblem | InvalidApiVersionProblem;
+
 export type RedeemAppInstallationDeliveryGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
 
 export type RedeemAppInstallationDeliveryRequest = {
@@ -6766,7 +6837,7 @@ export type RedeemAppInstallationDeliveryRequest = {
 
 export type RedeemAppInstallationDeliveryResponse = CreatedAppInstallationDelivery | ExistingAppInstallationDelivery;
 
-export type RefreshOrganizationSsoConnectionBadRequestProblem = InvalidReturnToProblem | InvalidArgumentProblem;
+export type RefreshOrganizationSsoConnectionBadRequestProblem = InvalidReturnToProblem | InvalidArgumentProblem | InvalidApiVersionProblem;
 
 export type RefreshOrganizationSsoConnectionForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem;
 
@@ -6933,11 +7004,13 @@ export type ResetAccountProfilePictureInternalServerErrorProblem = InternalError
 
 export type ResetAccountProfilePictureUnprocessableEntityProblem = IdempotencyKeyReusedProblem | ValidationFailedProblem;
 
-export type ResetAgentProfileAvatarBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+export type ResetAgentProfileAvatarBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem;
 
 export type ResetAgentProfileAvatarForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type ResetAgentProfileAvatarGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type ResetAgentProfileAvatarGoneProblem = ProjectDeletedProblem | RetiredApiVersionProblem;
 
 export type ResetAgentProfileAvatarUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
@@ -7011,13 +7084,15 @@ export type RetiredApiVersionProblem = {
     [key: string]: JsonValue | 'RETIRED_API_VERSION' | string | never | 410 | Array<string> | 'Retired API Version' | 'https://photon.codes/docs/problems/retired-api-version' | undefined;
 };
 
+export type RetryOrganizationConnectionSyncBadRequestProblem = InvalidArgumentProblem | InvalidApiVersionProblem;
+
 export type RetryOrganizationConnectionSyncForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem;
 
 export type RetryOrganizationConnectionSyncGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
 
 export type RetryOrganizationConnectionSyncInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
-export type RetryWebhookDeliveryBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+export type RetryWebhookDeliveryBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem;
 
 export type RetryWebhookDeliveryForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -7080,9 +7155,11 @@ export type RevokeOrganizationInvitationResponse = {
 
 export type RevokeOrganizationInvitationUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
-export type RevokeProjectApiKeyBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem;
+export type RevokeProjectApiKeyBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem | InvalidApiVersionProblem;
 
 export type RevokeProjectApiKeyForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type RevokeProjectApiKeyGoneProblem = ProjectDeletedProblem | RetiredApiVersionProblem;
 
 export type RevokeProjectApiKeyNotFoundProblem = ProjectNotFoundProblem | ApiKeyNotFoundProblem;
 
@@ -7139,7 +7216,7 @@ export type RotateOrganizationOauthClientSecretResponse = {
     value: string | null;
 };
 
-export type RotateVoiceProfileOutboundCredentialBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+export type RotateVoiceProfileOutboundCredentialBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem;
 
 export type RotateVoiceProfileOutboundCredentialConflictProblem = ProjectClosingProblem | VoiceProfileVersionConflictProblem | VoiceOutboundOperationPendingProblem | VoiceOutboundNotConfiguredProblem;
 
@@ -7162,11 +7239,13 @@ export type RotateVoiceProfileOutboundCredentialResponse = {
 
 export type RotateVoiceProfileOutboundCredentialUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
-export type RotateWebhookSigningSecretBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem;
+export type RotateWebhookSigningSecretBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem | InvalidApiVersionProblem;
 
 export type RotateWebhookSigningSecretForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type RotateWebhookSigningSecretGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
+
+export type RotateWebhookSigningSecretGoneProblem = WebhookDestinationDeletedProblem | RetiredApiVersionProblem;
 
 export type RotateWebhookSigningSecretRequest = {
     /**
@@ -7892,7 +7971,6 @@ export type SmsGroupContentPart = TextContent | AttachmentContent | VoiceContent
 export type SmsLineCampaign = {
     id: string;
     organizationId: string;
-    [key: string]: unknown;
 };
 
 export type SmsLineCampaignEligibility = 'eligible' | 'blocked' | 'unknown' | (string & {});
@@ -8282,6 +8360,19 @@ export type SuppressedEmailRecipient = {
     role: EmailRecipientRole;
 };
 
+export type TelegramBotAlreadyConnectedProblem = {
+    code: 'TELEGRAM_BOT_ALREADY_CONNECTED';
+    detail?: string;
+    instance?: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    resourceId?: string;
+    status: 409;
+    title: 'Telegram Bot Already Connected';
+    type: 'https://photon.codes/docs/problems/telegram-bot-already-connected';
+    [key: string]: JsonValue | 'TELEGRAM_BOT_ALREADY_CONNECTED' | string | ProblemRemediation | 409 | 'Telegram Bot Already Connected' | 'https://photon.codes/docs/problems/telegram-bot-already-connected' | undefined;
+};
+
 export type TelegramConfigurationFailedProblem = {
     code: 'TELEGRAM_CONFIGURATION_FAILED';
     detail?: string;
@@ -8458,7 +8549,9 @@ export type TransferOrganizationOwnershipResponse = {
 
 export type TransferOrganizationOwnershipUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
-export type TriggerTenDlcBrandOtpBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+export type TriggerTenDlcBrandOtpBadGatewayProblem = ServiceFailureProblem | UpstreamFailureProblem;
+
+export type TriggerTenDlcBrandOtpBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem;
 
 export type TriggerTenDlcBrandOtpConflictProblem = IdempotencyConflictProblem | InvalidLifecycleStateProblem | OrganizationClosingProblem;
 
@@ -8478,7 +8571,7 @@ export type TriggerTenDlcBrandOtpTooManyRequestsProblem = RateLimitedProblem | O
 
 export type TriggerTenDlcBrandOtpUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem | UnsupportedEntityTypeProblem | PhoneNotSmsCapableProblem;
 
-export type UnassignSmsLineCampaignBadRequestProblem = SmsCampaignInvalidRequestProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+export type UnassignSmsLineCampaignBadRequestProblem = SmsCampaignInvalidRequestProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem;
 
 export type UnassignSmsLineCampaignConflictProblem = ProjectClosingProblem | SmsLineUnsupportedProblem | SmsCampaignNotReadyProblem | SmsCampaignVersionConflictProblem | SmsCampaignCapacityExceededProblem | SmsCampaignReconciliationRequiredProblem | SmsCampaignMutationInProgressProblem;
 
@@ -8621,11 +8714,13 @@ export type UpdateAccountRequest = {
 
 export type UpdateAccountUnprocessableEntityProblem = IdempotencyKeyReusedProblem | ValidationFailedProblem;
 
-export type UpdateAgentProfileBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+export type UpdateAgentProfileBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem;
 
 export type UpdateAgentProfileForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type UpdateAgentProfileGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type UpdateAgentProfileGoneProblem = ProjectDeletedProblem | RetiredApiVersionProblem;
 
 export type UpdateAgentProfileRequest = {
     firstName?: string;
@@ -8724,7 +8819,7 @@ export type UpdateOrganizationResponse = {
     version: string;
 };
 
-export type UpdateOrganizationSsoPolicyBadRequestProblem = InvalidReturnToProblem | InvalidArgumentProblem;
+export type UpdateOrganizationSsoPolicyBadRequestProblem = InvalidReturnToProblem | InvalidArgumentProblem | InvalidApiVersionProblem;
 
 export type UpdateOrganizationSsoPolicyForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem;
 
@@ -8741,9 +8836,11 @@ export type UpdateOrganizationSsoPolicyRequest = {
 
 export type UpdateOrganizationUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
-export type UpdateProjectApiKeyBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem;
+export type UpdateProjectApiKeyBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem | InvalidApiVersionProblem;
 
 export type UpdateProjectApiKeyForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+
+export type UpdateProjectApiKeyGoneProblem = ProjectDeletedProblem | RetiredApiVersionProblem;
 
 export type UpdateProjectApiKeyNotFoundProblem = ProjectNotFoundProblem | ApiKeyNotFoundProblem;
 
@@ -8753,11 +8850,13 @@ export type UpdateProjectApiKeyRequest = {
 
 export type UpdateProjectApiKeyUnprocessableEntityProblem = ValidationFailedProblem | IdempotencyKeyReusedProblem;
 
-export type UpdateProjectBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+export type UpdateProjectBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem;
 
 export type UpdateProjectForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type UpdateProjectGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
+
+export type UpdateProjectGoneProblem = ProjectDeletedProblem | RetiredApiVersionProblem;
 
 export type UpdateProjectRequest = {
     name: string;
@@ -8843,11 +8942,13 @@ export type UpdateVoiceProfileRequest = {
     protocol?: 'sip';
 };
 
-export type UpdateWebhookDestinationBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem;
+export type UpdateWebhookDestinationBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem | InvalidApiVersionProblem;
 
 export type UpdateWebhookDestinationForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type UpdateWebhookDestinationGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
+
+export type UpdateWebhookDestinationGoneProblem = WebhookDestinationDeletedProblem | RetiredApiVersionProblem;
 
 export type UpdateWebhookDestinationRequest = {
     description?: string | null;
@@ -9033,7 +9134,9 @@ export type ValidationIssue = {
 
 export type ValidationLocation = 'body' | 'cookie' | 'form' | 'header' | 'json' | 'param' | 'query' | (string & {});
 
-export type VerifyTenDlcBrandOtpBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+export type VerifyTenDlcBrandOtpBadGatewayProblem = ServiceFailureProblem | UpstreamFailureProblem;
+
+export type VerifyTenDlcBrandOtpBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem;
 
 export type VerifyTenDlcBrandOtpConflictProblem = IdempotencyConflictProblem | InvalidLifecycleStateProblem | OrganizationClosingProblem | OtpLockedProblem;
 
@@ -10005,12 +10108,6 @@ export type WhatsappWabaNotConnectedProblem = {
 
 export type DeleteAccountData = {
     body?: never;
-    headers?: {
-        /**
-         * Selects the API contract date. Without it, the request is served as 2026-07-01.
-         */
-        'Photon-Version'?: PhotonVersion;
-    };
     path?: never;
     query?: never;
     url: '/v1/account';
@@ -10076,12 +10173,6 @@ export type DeleteAccountResult = DeleteAccountResponses[keyof DeleteAccountResp
 
 export type GetAccountData = {
     body?: never;
-    headers?: {
-        /**
-         * Selects the API contract date. Without it, the request is served as 2026-07-01.
-         */
-        'Photon-Version'?: PhotonVersion;
-    };
     path?: never;
     query?: never;
     url: '/v1/account';
@@ -10144,10 +10235,6 @@ export type GetAccountResult = GetAccountResponses[keyof GetAccountResponses];
 export type UpdateAccountData = {
     body: UpdateAccountRequest;
     headers: {
-        /**
-         * Selects the API contract date. Without it, the request is served as 2026-07-01.
-         */
-        'Photon-Version'?: PhotonVersion;
         /**
          * Identifies one logical mutation across retries.
          */
@@ -10246,6 +10333,10 @@ export type ListAuthorizedApplicationsData = {
 
 export type ListAuthorizedApplicationsErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -10255,6 +10346,10 @@ export type ListAuthorizedApplicationsErrors = {
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
     403: ListAuthorizedApplicationsForbiddenProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -10304,6 +10399,10 @@ export type RevokeAuthorizedApplicationData = {
 
 export type RevokeAuthorizedApplicationErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -10313,6 +10412,10 @@ export type RevokeAuthorizedApplicationErrors = {
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
     403: RevokeAuthorizedApplicationForbiddenProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -10351,10 +10454,6 @@ export type RevokeAuthorizedApplicationResult = RevokeAuthorizedApplicationRespo
 export type ResetAccountProfilePictureData = {
     body?: never;
     headers: {
-        /**
-         * Selects the API contract date. Without it, the request is served as 2026-07-01.
-         */
-        'Photon-Version'?: PhotonVersion;
         /**
          * Identifies one logical mutation across retries.
          */
@@ -10431,10 +10530,6 @@ export type CommitAccountProfilePictureData = {
     body: CommitAccountProfilePictureRequest;
     headers: {
         /**
-         * Selects the API contract date. Without it, the request is served as 2026-07-01.
-         */
-        'Photon-Version'?: PhotonVersion;
-        /**
          * Identifies one logical mutation across retries.
          */
         'Idempotency-Key': string;
@@ -10508,12 +10603,6 @@ export type CommitAccountProfilePictureResult = CommitAccountProfilePictureRespo
 
 export type CreateAccountProfilePictureUploadData = {
     body: ProfilePictureUploadRequest;
-    headers?: {
-        /**
-         * Selects the API contract date. Without it, the request is served as 2026-07-01.
-         */
-        'Photon-Version'?: PhotonVersion;
-    };
     path?: never;
     query?: never;
     url: '/v1/account/profile-picture/uploads';
@@ -10583,12 +10672,6 @@ export type CreateAccountProfilePictureUploadResult = CreateAccountProfilePictur
 
 export type ListAccountServiceKeysData = {
     body?: never;
-    headers?: {
-        /**
-         * Selects the API contract date. Without it, the request is served as 2026-07-01.
-         */
-        'Photon-Version'?: PhotonVersion;
-    };
     path?: never;
     query?: never;
     url: '/v1/account/service-keys';
@@ -10651,10 +10734,6 @@ export type ListAccountServiceKeysResult = ListAccountServiceKeysResponses[keyof
 export type CreateAccountServiceKeyData = {
     body: CreateAccountServiceKeyRequest;
     headers: {
-        /**
-         * Selects the API contract date. Without it, the request is served as 2026-07-01.
-         */
-        'Photon-Version'?: PhotonVersion;
         /**
          * Identifies one logical mutation across retries.
          */
@@ -10734,10 +10813,6 @@ export type CreateAccountServiceKeyResult = CreateAccountServiceKeyResponses[key
 export type RevokeAccountServiceKeyData = {
     body?: never;
     headers: {
-        /**
-         * Selects the API contract date. Without it, the request is served as 2026-07-01.
-         */
-        'Photon-Version'?: PhotonVersion;
         /**
          * Identifies one logical mutation across retries.
          */
@@ -10890,6 +10965,18 @@ export type ListOauthScopesData = {
 
 export type ListOauthScopesErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
+    /**
      * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
      */
     503: UpstreamUnavailableProblem;
@@ -10921,9 +11008,9 @@ export type GetOrganizationConnectionStatusData = {
 
 export type GetOrganizationConnectionStatusErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument
+     * INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
-    400: InvalidArgumentProblem;
+    400: GetOrganizationConnectionStatusBadRequestProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -10940,6 +11027,10 @@ export type GetOrganizationConnectionStatusErrors = {
      * ORGANIZATION_SYNC_UNAVAILABLE: Organization Synchronization Unavailable
      */
     409: OrganizationSyncUnavailableProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -10986,9 +11077,9 @@ export type RetryOrganizationConnectionSyncData = {
 
 export type RetryOrganizationConnectionSyncErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument
+     * INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
-    400: InvalidArgumentProblem;
+    400: RetryOrganizationConnectionSyncBadRequestProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -11005,6 +11096,10 @@ export type RetryOrganizationConnectionSyncErrors = {
      * ORGANIZATION_SYNC_UNAVAILABLE: Organization Synchronization Unavailable
      */
     409: OrganizationSyncUnavailableProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -11051,7 +11146,7 @@ export type GetOrganizationSsoConfigurationData = {
 
 export type GetOrganizationSsoConfigurationErrors = {
     /**
-     * INVALID_RETURN_TO: Invalid Return To; INVALID_ARGUMENT: Invalid Argument
+     * INVALID_RETURN_TO: Invalid Return To; INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
     400: GetOrganizationSsoConfigurationBadRequestProblem;
     /**
@@ -11070,6 +11165,10 @@ export type GetOrganizationSsoConfigurationErrors = {
      * ORGANIZATION_SSO_CONFLICT: Organization SSO Conflict
      */
     409: OrganizationSsoConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * ORGANIZATION_SSO_PRECONDITION_FAILED: Organization SSO Precondition Failed; SSO_SUBSCRIPTION_REQUIRED: SSO Subscription Required
      */
@@ -11120,7 +11219,7 @@ export type UpdateOrganizationSsoPolicyData = {
 
 export type UpdateOrganizationSsoPolicyErrors = {
     /**
-     * INVALID_RETURN_TO: Invalid Return To; INVALID_ARGUMENT: Invalid Argument
+     * INVALID_RETURN_TO: Invalid Return To; INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
     400: UpdateOrganizationSsoPolicyBadRequestProblem;
     /**
@@ -11139,6 +11238,10 @@ export type UpdateOrganizationSsoPolicyErrors = {
      * ORGANIZATION_SSO_CONFLICT: Organization SSO Conflict
      */
     409: OrganizationSsoConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * ORGANIZATION_SSO_PRECONDITION_FAILED: Organization SSO Precondition Failed; SSO_SUBSCRIPTION_REQUIRED: SSO Subscription Required
      */
@@ -11195,7 +11298,7 @@ export type DisableOrganizationSsoData = {
 
 export type DisableOrganizationSsoErrors = {
     /**
-     * INVALID_RETURN_TO: Invalid Return To; INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     * INVALID_RETURN_TO: Invalid Return To; INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_API_VERSION: Invalid API Version
      */
     400: DisableOrganizationSsoBadRequestProblem;
     /**
@@ -11214,6 +11317,10 @@ export type DisableOrganizationSsoErrors = {
      * ORGANIZATION_SSO_CONFLICT: Organization SSO Conflict
      */
     409: OrganizationSsoConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * ORGANIZATION_SSO_PRECONDITION_FAILED: Organization SSO Precondition Failed; SSO_SUBSCRIPTION_REQUIRED: SSO Subscription Required
      */
@@ -11264,7 +11371,7 @@ export type CreateOrganizationSsoPortalLinkData = {
 
 export type CreateOrganizationSsoPortalLinkErrors = {
     /**
-     * INVALID_RETURN_TO: Invalid Return To; INVALID_ARGUMENT: Invalid Argument
+     * INVALID_RETURN_TO: Invalid Return To; INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
     400: CreateOrganizationSsoPortalLinkBadRequestProblem;
     /**
@@ -11283,6 +11390,10 @@ export type CreateOrganizationSsoPortalLinkErrors = {
      * ORGANIZATION_SSO_CONFLICT: Organization SSO Conflict
      */
     409: OrganizationSsoConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * ORGANIZATION_SSO_PRECONDITION_FAILED: Organization SSO Precondition Failed; SSO_SUBSCRIPTION_REQUIRED: SSO Subscription Required
      */
@@ -11333,7 +11444,7 @@ export type RefreshOrganizationSsoConnectionData = {
 
 export type RefreshOrganizationSsoConnectionErrors = {
     /**
-     * INVALID_RETURN_TO: Invalid Return To; INVALID_ARGUMENT: Invalid Argument
+     * INVALID_RETURN_TO: Invalid Return To; INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
     400: RefreshOrganizationSsoConnectionBadRequestProblem;
     /**
@@ -11352,6 +11463,10 @@ export type RefreshOrganizationSsoConnectionErrors = {
      * ORGANIZATION_SSO_CONFLICT: Organization SSO Conflict
      */
     409: OrganizationSsoConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * ORGANIZATION_SSO_PRECONDITION_FAILED: Organization SSO Precondition Failed; SSO_SUBSCRIPTION_REQUIRED: SSO Subscription Required
      */
@@ -11400,9 +11515,9 @@ export type CreateAppInstallationRequestData = {
 
 export type CreateAppInstallationRequestErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument
+     * INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
-    400: InvalidArgumentProblem;
+    400: CreateAppInstallationRequestBadRequestProblem;
     /**
      * APP_INSTALLATION_ASSERTION_INVALID: Invalid Installation Client Assertion
      */
@@ -11411,6 +11526,10 @@ export type CreateAppInstallationRequestErrors = {
      * APP_INSTALLATION_ASSERTION_REPLAYED: Installation Assertion Already Used; APP_INSTALLATION_CONFIG_CHANGED: Installation App Configuration Changed
      */
     409: CreateAppInstallationRequestConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -11449,9 +11568,9 @@ export type RedeemAppInstallationDeliveryData = {
 
 export type RedeemAppInstallationDeliveryErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument
+     * INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
-    400: InvalidArgumentProblem;
+    400: RedeemAppInstallationDeliveryBadRequestProblem;
     /**
      * APP_INSTALLATION_ASSERTION_INVALID: Invalid Installation Client Assertion
      */
@@ -11460,6 +11579,10 @@ export type RedeemAppInstallationDeliveryErrors = {
      * APP_INSTALLATION_DELIVERY_UNAVAILABLE: Installation Delivery Unavailable
      */
     409: AppInstallationDeliveryUnavailableProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -12253,9 +12376,9 @@ export type GetOrganizationBillingOverviewData = {
 
 export type GetOrganizationBillingOverviewErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument
+     * INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
-    400: InvalidArgumentProblem;
+    400: GetOrganizationBillingOverviewBadRequestProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -12267,9 +12390,13 @@ export type GetOrganizationBillingOverviewErrors = {
      */
     403: GetOrganizationBillingOverviewForbiddenProblem;
     /**
-     * FAILED_PRECONDITION: Failed Precondition
+     * FAILED_PRECONDITION: Failed Precondition; ORGANIZATION_INITIALIZING: Organization Initializing
      */
-    409: FailedPreconditionProblem;
+    409: GetOrganizationBillingOverviewConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -12324,7 +12451,7 @@ export type CreateOrganizationPaymentMethodCheckoutData = {
 
 export type CreateOrganizationPaymentMethodCheckoutErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_API_VERSION: Invalid API Version
      */
     400: CreateOrganizationPaymentMethodCheckoutBadRequestProblem;
     /**
@@ -12341,6 +12468,10 @@ export type CreateOrganizationPaymentMethodCheckoutErrors = {
      * FAILED_PRECONDITION: Failed Precondition
      */
     409: FailedPreconditionProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
      */
@@ -12389,9 +12520,9 @@ export type GetOrganizationCreditData = {
 
 export type GetOrganizationCreditErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument
+     * INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
-    400: InvalidArgumentProblem;
+    400: GetOrganizationCreditBadRequestProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -12403,9 +12534,13 @@ export type GetOrganizationCreditErrors = {
      */
     403: GetOrganizationCreditForbiddenProblem;
     /**
-     * FAILED_PRECONDITION: Failed Precondition
+     * FAILED_PRECONDITION: Failed Precondition; ORGANIZATION_INITIALIZING: Organization Initializing
      */
-    409: FailedPreconditionProblem;
+    409: GetOrganizationCreditConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -12457,9 +12592,9 @@ export type ListCreditActivityData = {
 
 export type ListCreditActivityErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument
+     * INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
-    400: InvalidArgumentProblem;
+    400: ListCreditActivityBadRequestProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -12471,9 +12606,13 @@ export type ListCreditActivityErrors = {
      */
     403: ListCreditActivityForbiddenProblem;
     /**
-     * FAILED_PRECONDITION: Failed Precondition
+     * FAILED_PRECONDITION: Failed Precondition; ORGANIZATION_INITIALIZING: Organization Initializing
      */
-    409: FailedPreconditionProblem;
+    409: ListCreditActivityConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -12533,9 +12672,9 @@ export type ListInvoicesData = {
 
 export type ListInvoicesErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument
+     * INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
-    400: InvalidArgumentProblem;
+    400: ListInvoicesBadRequestProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -12550,6 +12689,10 @@ export type ListInvoicesErrors = {
      * FAILED_PRECONDITION: Failed Precondition
      */
     409: FailedPreconditionProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -12596,9 +12739,9 @@ export type GetOrganizationPaymentMethodData = {
 
 export type GetOrganizationPaymentMethodErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument
+     * INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
-    400: InvalidArgumentProblem;
+    400: GetOrganizationPaymentMethodBadRequestProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -12613,6 +12756,10 @@ export type GetOrganizationPaymentMethodErrors = {
      * FAILED_PRECONDITION: Failed Precondition
      */
     409: FailedPreconditionProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -12659,9 +12806,9 @@ export type PreviewOrganizationChangeData = {
 
 export type PreviewOrganizationChangeErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument
+     * INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
-    400: InvalidArgumentProblem;
+    400: PreviewOrganizationChangeBadRequestProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -12676,6 +12823,10 @@ export type PreviewOrganizationChangeErrors = {
      * FAILED_PRECONDITION: Failed Precondition; PROMOTION_CODE_REJECTED: Promotion Code Rejected
      */
     409: PreviewOrganizationChangeConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -12726,9 +12877,9 @@ export type PreviewProjectChangeData = {
 
 export type PreviewProjectChangeErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument
+     * INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
-    400: InvalidArgumentProblem;
+    400: PreviewProjectChangeBadRequestProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -12743,6 +12894,10 @@ export type PreviewProjectChangeErrors = {
      * FAILED_PRECONDITION: Failed Precondition; PROMOTION_CODE_REJECTED: Promotion Code Rejected
      */
     409: PreviewProjectChangeConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -12799,7 +12954,7 @@ export type ChangePlanData = {
 
 export type ChangePlanErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     * INVALID_ARGUMENT: Invalid Argument; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_API_VERSION: Invalid API Version
      */
     400: ChangePlanBadRequestProblem;
     /**
@@ -12820,6 +12975,10 @@ export type ChangePlanErrors = {
      * FAILED_PRECONDITION: Failed Precondition; IDEMPOTENCY_REQUEST_IN_PROGRESS: Idempotency Request In Progress
      */
     409: ChangePlanConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * PAYLOAD_TOO_LARGE: Payload Too Large
      */
@@ -12880,9 +13039,9 @@ export type GetEffectiveTermsData = {
 
 export type GetEffectiveTermsErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument
+     * INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
-    400: InvalidArgumentProblem;
+    400: GetEffectiveTermsBadRequestProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -12894,9 +13053,13 @@ export type GetEffectiveTermsErrors = {
      */
     403: GetEffectiveTermsForbiddenProblem;
     /**
-     * FAILED_PRECONDITION: Failed Precondition
+     * FAILED_PRECONDITION: Failed Precondition; ORGANIZATION_INITIALIZING: Organization Initializing; PROJECT_INITIALIZING: Project Initializing
      */
-    409: FailedPreconditionProblem;
+    409: GetEffectiveTermsConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -12945,9 +13108,9 @@ export type GetOrganizationTermsData = {
 
 export type GetOrganizationTermsErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument
+     * INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
-    400: InvalidArgumentProblem;
+    400: GetOrganizationTermsBadRequestProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -12959,9 +13122,13 @@ export type GetOrganizationTermsErrors = {
      */
     403: GetOrganizationTermsForbiddenProblem;
     /**
-     * FAILED_PRECONDITION: Failed Precondition
+     * FAILED_PRECONDITION: Failed Precondition; ORGANIZATION_INITIALIZING: Organization Initializing
      */
-    409: FailedPreconditionProblem;
+    409: GetOrganizationTermsConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -12977,7 +13144,7 @@ export type GetOrganizationTermsErrors = {
      */
     502: UpstreamFailureProblem;
     /**
-     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable; BILLING_ENTITLEMENTS_PENDING: Billing Entitlements Pending; BILLING_NOT_PROVISIONED: Billing Not Provisioned
+     * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable; BILLING_ENTITLEMENTS_PENDING: Billing Entitlements Pending
      *
      * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
      */
@@ -14295,9 +14462,9 @@ export type ListProjectsData = {
 
 export type ListProjectsErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument
+     * INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
-    400: InvalidArgumentProblem;
+    400: ListProjectsBadRequestProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -14308,6 +14475,10 @@ export type ListProjectsErrors = {
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
     403: ListProjectsForbiddenProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -14358,7 +14529,7 @@ export type CreateProjectData = {
 
 export type CreateProjectErrors = {
     /**
-     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_ARGUMENT: Invalid Argument
+     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
     400: CreateProjectBadRequestProblem;
     /**
@@ -14375,6 +14546,10 @@ export type CreateProjectErrors = {
      * SLUG_TAKEN: Slug Already Taken
      */
     409: SlugTakenProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * PAYLOAD_TOO_LARGE: Payload Too Large
      */
@@ -14429,9 +14604,9 @@ export type GetProjectClosureStatusData = {
 
 export type GetProjectClosureStatusErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument
+     * INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
-    400: InvalidArgumentProblem;
+    400: GetProjectClosureStatusBadRequestProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -14446,6 +14621,10 @@ export type GetProjectClosureStatusErrors = {
      * PROJECT_NOT_FOUND: Project Not Found
      */
     404: ProjectNotFoundProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -14494,9 +14673,9 @@ export type CountProjectsData = {
 
 export type CountProjectsErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument
+     * INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
-    400: InvalidArgumentProblem;
+    400: CountProjectsBadRequestProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -14507,6 +14686,10 @@ export type CountProjectsErrors = {
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
     403: CountProjectsForbiddenProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -14553,9 +14736,9 @@ export type CheckProjectSlugAvailabilityData = {
 
 export type CheckProjectSlugAvailabilityErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument
+     * INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
-    400: InvalidArgumentProblem;
+    400: CheckProjectSlugAvailabilityBadRequestProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -14566,6 +14749,10 @@ export type CheckProjectSlugAvailabilityErrors = {
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
     403: CheckProjectSlugAvailabilityForbiddenProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -15515,6 +15702,10 @@ export type GetTenDlcBrandOtpData = {
 
 export type GetTenDlcBrandOtpErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -15528,6 +15719,10 @@ export type GetTenDlcBrandOtpErrors = {
      * BRAND_NOT_FOUND: Brand Not Found
      */
     404: BrandNotFoundProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -15543,9 +15738,9 @@ export type GetTenDlcBrandOtpErrors = {
      */
     500: GetTenDlcBrandOtpInternalServerErrorProblem;
     /**
-     * SERVICE_FAILURE: Service Failure
+     * SERVICE_FAILURE: Service Failure; UPSTREAM_FAILURE: Upstream Service Failure
      */
-    502: ServiceFailureProblem;
+    502: GetTenDlcBrandOtpBadGatewayProblem;
     /**
      * SERVICE_UNAVAILABLE: Service Temporarily Unavailable
      *
@@ -15587,7 +15782,7 @@ export type TriggerTenDlcBrandOtpData = {
 
 export type TriggerTenDlcBrandOtpErrors = {
     /**
-     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_API_VERSION: Invalid API Version
      */
     400: TriggerTenDlcBrandOtpBadRequestProblem;
     /**
@@ -15609,6 +15804,10 @@ export type TriggerTenDlcBrandOtpErrors = {
      */
     409: TriggerTenDlcBrandOtpConflictProblem;
     /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
+    /**
      * PAYLOAD_TOO_LARGE: Payload Too Large
      */
     413: PayloadTooLargeProblem;
@@ -15627,9 +15826,9 @@ export type TriggerTenDlcBrandOtpErrors = {
      */
     500: TriggerTenDlcBrandOtpInternalServerErrorProblem;
     /**
-     * SERVICE_FAILURE: Service Failure
+     * SERVICE_FAILURE: Service Failure; UPSTREAM_FAILURE: Upstream Service Failure
      */
-    502: ServiceFailureProblem;
+    502: TriggerTenDlcBrandOtpBadGatewayProblem;
     /**
      * SERVICE_UNAVAILABLE: Service Temporarily Unavailable
      *
@@ -15671,7 +15870,7 @@ export type VerifyTenDlcBrandOtpData = {
 
 export type VerifyTenDlcBrandOtpErrors = {
     /**
-     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_API_VERSION: Invalid API Version
      */
     400: VerifyTenDlcBrandOtpBadRequestProblem;
     /**
@@ -15693,6 +15892,10 @@ export type VerifyTenDlcBrandOtpErrors = {
      */
     409: VerifyTenDlcBrandOtpConflictProblem;
     /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
+    /**
      * PAYLOAD_TOO_LARGE: Payload Too Large
      */
     413: PayloadTooLargeProblem;
@@ -15711,9 +15914,9 @@ export type VerifyTenDlcBrandOtpErrors = {
      */
     500: VerifyTenDlcBrandOtpInternalServerErrorProblem;
     /**
-     * SERVICE_FAILURE: Service Failure
+     * SERVICE_FAILURE: Service Failure; UPSTREAM_FAILURE: Upstream Service Failure
      */
-    502: ServiceFailureProblem;
+    502: VerifyTenDlcBrandOtpBadGatewayProblem;
     /**
      * SERVICE_UNAVAILABLE: Service Temporarily Unavailable
      *
@@ -16482,6 +16685,10 @@ export type ListProjectPlatformsData = {
 
 export type ListProjectPlatformsErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -16492,6 +16699,10 @@ export type ListProjectPlatformsErrors = {
      */
     403: ListProjectPlatformsForbiddenProblem;
     /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
+    /**
      * VALIDATION_FAILED: Request Validation Failed
      */
     422: ValidationFailedProblem;
@@ -16501,6 +16712,10 @@ export type ListProjectPlatformsErrors = {
      * INTERNAL_ERROR: Internal Server Error
      */
     500: ListProjectPlatformsInternalServerErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
     /**
      * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
      */
@@ -16539,7 +16754,7 @@ export type ConnectEmailDomainData = {
 
 export type ConnectEmailDomainErrors = {
     /**
-     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_API_VERSION: Invalid API Version
      */
     400: ConnectEmailDomainBadRequestProblem;
     /**
@@ -16560,6 +16775,10 @@ export type ConnectEmailDomainErrors = {
      * PROJECT_CLOSING: Project Is Closing; PROJECT_INITIALIZING: Project Initializing; EMAIL_DOMAIN_ALREADY_CONNECTED: Email Domain Already Connected; EMAIL_DOMAIN_CAP_EXCEEDED: Email Domain Cap Exceeded
      */
     409: ConnectEmailDomainConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
      */
@@ -16614,6 +16833,10 @@ export type GetEmailDeliveryMetricsData = {
 
 export type GetEmailDeliveryMetricsErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -16623,6 +16846,10 @@ export type GetEmailDeliveryMetricsErrors = {
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
     403: GetEmailDeliveryMetricsForbiddenProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -16672,6 +16899,10 @@ export type ListEmailRecommendationsData = {
 
 export type ListEmailRecommendationsErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -16681,6 +16912,10 @@ export type ListEmailRecommendationsErrors = {
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
     403: ListEmailRecommendationsForbiddenProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -16727,6 +16962,10 @@ export type GetEmailSendingPoliciesData = {
 
 export type GetEmailSendingPoliciesErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -16736,6 +16975,10 @@ export type GetEmailSendingPoliciesErrors = {
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
     403: GetEmailSendingPoliciesForbiddenProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -16788,6 +17031,10 @@ export type ListFilteredVerificationCodesData = {
 
 export type ListFilteredVerificationCodesErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -16797,6 +17044,10 @@ export type ListFilteredVerificationCodesErrors = {
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
     403: ListFilteredVerificationCodesForbiddenProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -16851,6 +17102,10 @@ export type CountFilteredVerificationCodesData = {
 
 export type CountFilteredVerificationCodesErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -16860,6 +17115,10 @@ export type CountFilteredVerificationCodesErrors = {
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
     403: CountFilteredVerificationCodesForbiddenProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -16910,6 +17169,10 @@ export type GetProjectImessagePlatformData = {
 
 export type GetProjectImessagePlatformErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -16923,6 +17186,10 @@ export type GetProjectImessagePlatformErrors = {
      * PROJECT_INITIALIZING: Project Initializing
      */
     409: ProjectInitializingProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -16975,6 +17242,10 @@ export type ListSharedLineAssignmentsData = {
 
 export type ListSharedLineAssignmentsErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -16984,6 +17255,10 @@ export type ListSharedLineAssignmentsErrors = {
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
     403: ListSharedLineAssignmentsForbiddenProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -17040,7 +17315,7 @@ export type CreateSharedLineAssignmentData = {
 
 export type CreateSharedLineAssignmentErrors = {
     /**
-     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_API_VERSION: Invalid API Version
      */
     400: CreateSharedLineAssignmentBadRequestProblem;
     /**
@@ -17057,6 +17332,10 @@ export type CreateSharedLineAssignmentErrors = {
      * PROJECT_INITIALIZING: Project Initializing; PROJECT_CLOSING: Project Is Closing; IMESSAGE_MODE_DEDICATED: iMessage Mode Is Dedicated; SHARED_LINE_CAP_EXCEEDED: Shared Line Cap Exceeded; ASSIGNMENT_EXISTS: Assignment Exists
      */
     409: CreateSharedLineAssignmentConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
      */
@@ -17110,6 +17389,10 @@ export type ReleaseSharedLineAssignmentData = {
 
 export type ReleaseSharedLineAssignmentErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -17123,6 +17406,10 @@ export type ReleaseSharedLineAssignmentErrors = {
      * ASSIGNMENT_NOT_FOUND: Assignment Not Found
      */
     404: AssignmentNotFoundProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -17174,6 +17461,10 @@ export type GetSharedLineAssignmentData = {
 
 export type GetSharedLineAssignmentErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -17187,6 +17478,10 @@ export type GetSharedLineAssignmentErrors = {
      * ASSIGNMENT_NOT_FOUND: Assignment Not Found
      */
     404: AssignmentNotFoundProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -17243,7 +17538,7 @@ export type ProvisionImessageDedicatedLineData = {
 
 export type ProvisionImessageDedicatedLineErrors = {
     /**
-     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_API_VERSION: Invalid API Version
      */
     400: ProvisionImessageDedicatedLineBadRequestProblem;
     /**
@@ -17264,6 +17559,10 @@ export type ProvisionImessageDedicatedLineErrors = {
      * PROMOTION_CODE_REJECTED: Promotion Code Rejected; PROJECT_CLOSING: Project Is Closing; PROJECT_INITIALIZING: Project Initializing
      */
     409: ProvisionImessageDedicatedLineConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
      */
@@ -17317,6 +17616,10 @@ export type ReleaseImessageDedicatedLineData = {
 
 export type ReleaseImessageDedicatedLineErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -17330,6 +17633,10 @@ export type ReleaseImessageDedicatedLineErrors = {
      * RESOURCE_NOT_FOUND: Resource Not Found
      */
     404: ResourceNotFoundProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -17391,6 +17698,10 @@ export type ListOperationsData = {
 
 export type ListOperationsErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -17400,6 +17711,10 @@ export type ListOperationsErrors = {
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
     403: ListOperationsForbiddenProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -17451,6 +17766,10 @@ export type GetOperationData = {
 
 export type GetOperationErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -17464,6 +17783,10 @@ export type GetOperationErrors = {
      * OPERATION_NOT_FOUND: Operation Not Found
      */
     404: OperationNotFoundProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -17515,6 +17838,10 @@ export type CancelOperationData = {
 
 export type CancelOperationErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -17532,6 +17859,10 @@ export type CancelOperationErrors = {
      * OPERATION_NOT_CANCELLABLE: Operation Not Cancellable
      */
     409: OperationNotCancellableProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -17591,6 +17922,10 @@ export type ListResourcesData = {
 
 export type ListResourcesErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -17600,6 +17935,10 @@ export type ListResourcesErrors = {
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
     403: ListResourcesForbiddenProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -17651,6 +17990,10 @@ export type ReleaseResourceData = {
 
 export type ReleaseResourceErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -17668,6 +18011,10 @@ export type ReleaseResourceErrors = {
      * WHATSAPP_SENDER_CONNECTED: WhatsApp Sender Connected; WHATSAPP_SENDER_PROVISIONING: WhatsApp Sender Provisioning
      */
     409: ReleaseResourceConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -17723,6 +18070,10 @@ export type GetResourceData = {
 
 export type GetResourceErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -17736,6 +18087,10 @@ export type GetResourceErrors = {
      * RESOURCE_NOT_FOUND: Resource Not Found
      */
     404: ResourceNotFoundProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -17793,6 +18148,10 @@ export type ListResourceFilteredVerificationCodesData = {
 
 export type ListResourceFilteredVerificationCodesErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -17806,6 +18165,10 @@ export type ListResourceFilteredVerificationCodesErrors = {
      * RESOURCE_NOT_FOUND: Resource Not Found
      */
     404: ResourceNotFoundProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -17861,6 +18224,10 @@ export type CountResourceFilteredVerificationCodesData = {
 
 export type CountResourceFilteredVerificationCodesErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -17874,6 +18241,10 @@ export type CountResourceFilteredVerificationCodesErrors = {
      * RESOURCE_NOT_FOUND: Resource Not Found
      */
     404: ResourceNotFoundProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -17933,7 +18304,7 @@ export type UnassignSmsLineCampaignData = {
 
 export type UnassignSmsLineCampaignErrors = {
     /**
-     * SMS_CAMPAIGN_INVALID_REQUEST: Invalid SMS campaign request; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     * SMS_CAMPAIGN_INVALID_REQUEST: Invalid SMS campaign request; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_API_VERSION: Invalid API Version
      */
     400: UnassignSmsLineCampaignBadRequestProblem;
     /**
@@ -17954,6 +18325,10 @@ export type UnassignSmsLineCampaignErrors = {
      * PROJECT_CLOSING: Project Is Closing; SMS_LINE_UNSUPPORTED: SMS line unsupported; SMS_CAMPAIGN_NOT_READY: Campaign not ready; SMS_CAMPAIGN_VERSION_CONFLICT: Assignment version conflict; SMS_CAMPAIGN_CAPACITY_EXCEEDED: Campaign number capacity exhausted; SMS_CAMPAIGN_RECONCILIATION_REQUIRED: Campaign reconciliation required; SMS_CAMPAIGN_MUTATION_IN_PROGRESS: Assignment mutation in progress
      */
     409: UnassignSmsLineCampaignConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
      */
@@ -18011,9 +18386,9 @@ export type GetSmsLineCampaignAssignmentData = {
 
 export type GetSmsLineCampaignAssignmentErrors = {
     /**
-     * SMS_CAMPAIGN_INVALID_REQUEST: Invalid SMS campaign request
+     * SMS_CAMPAIGN_INVALID_REQUEST: Invalid SMS campaign request; INVALID_API_VERSION: Invalid API Version
      */
-    400: SmsCampaignInvalidRequestProblem;
+    400: GetSmsLineCampaignAssignmentBadRequestProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -18032,6 +18407,10 @@ export type GetSmsLineCampaignAssignmentErrors = {
      * PROJECT_CLOSING: Project Is Closing; SMS_LINE_UNSUPPORTED: SMS line unsupported; SMS_CAMPAIGN_NOT_READY: Campaign not ready; SMS_CAMPAIGN_VERSION_CONFLICT: Assignment version conflict; SMS_CAMPAIGN_CAPACITY_EXCEEDED: Campaign number capacity exhausted; SMS_CAMPAIGN_RECONCILIATION_REQUIRED: Campaign reconciliation required; SMS_CAMPAIGN_MUTATION_IN_PROGRESS: Assignment mutation in progress
      */
     409: GetSmsLineCampaignAssignmentConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * RATE_LIMITED: Too Many Requests
      */
@@ -18087,7 +18466,7 @@ export type AssignSmsLineCampaignData = {
 
 export type AssignSmsLineCampaignErrors = {
     /**
-     * SMS_CAMPAIGN_INVALID_REQUEST: Invalid SMS campaign request; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     * SMS_CAMPAIGN_INVALID_REQUEST: Invalid SMS campaign request; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_API_VERSION: Invalid API Version
      */
     400: AssignSmsLineCampaignBadRequestProblem;
     /**
@@ -18109,9 +18488,13 @@ export type AssignSmsLineCampaignErrors = {
      */
     409: AssignSmsLineCampaignConflictProblem;
     /**
-     * IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
+     * RETIRED_API_VERSION: Retired API Version
      */
-    422: IdempotencyKeyReusedProblem;
+    410: RetiredApiVersionProblem;
+    /**
+     * IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused; VALIDATION_FAILED: Request Validation Failed
+     */
+    422: AssignSmsLineCampaignUnprocessableEntityProblem;
     /**
      * RATE_LIMITED: Too Many Requests
      */
@@ -18170,7 +18553,7 @@ export type PurchaseSmsNumberData = {
 
 export type PurchaseSmsNumberErrors = {
     /**
-     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_API_VERSION: Invalid API Version
      */
     400: PurchaseSmsNumberBadRequestProblem;
     /**
@@ -18191,6 +18574,10 @@ export type PurchaseSmsNumberErrors = {
      * PROJECT_CLOSING: Project Is Closing; PROJECT_INITIALIZING: Project Initializing
      */
     409: PurchaseSmsNumberConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
      */
@@ -18245,6 +18632,10 @@ export type ListNumberAreaCodesData = {
 
 export type ListNumberAreaCodesErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -18254,6 +18645,10 @@ export type ListNumberAreaCodesErrors = {
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
     403: ListNumberAreaCodesForbiddenProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -18304,6 +18699,10 @@ export type ListNumberCountriesData = {
 
 export type ListNumberCountriesErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -18313,6 +18712,10 @@ export type ListNumberCountriesErrors = {
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
     403: ListNumberCountriesForbiddenProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -18369,7 +18772,7 @@ export type ConnectTelegramBotData = {
 
 export type ConnectTelegramBotErrors = {
     /**
-     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_API_VERSION: Invalid API Version
      */
     400: ConnectTelegramBotBadRequestProblem;
     /**
@@ -18383,9 +18786,13 @@ export type ConnectTelegramBotErrors = {
      */
     403: ConnectTelegramBotForbiddenProblem;
     /**
-     * TELEGRAM_PROJECT_DELETED: Telegram Project Deleted; PROJECT_CLOSING: Project Is Closing; TELEGRAM_PROVISION_IN_PROGRESS: Telegram Provision In Progress
+     * TELEGRAM_BOT_ALREADY_CONNECTED: Telegram Bot Already Connected; TELEGRAM_PROJECT_DELETED: Telegram Project Deleted; PROJECT_CLOSING: Project Is Closing; TELEGRAM_PROVISION_IN_PROGRESS: Telegram Provision In Progress
      */
     409: ConnectTelegramBotConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
      */
@@ -18436,6 +18843,10 @@ export type BatchUpdateVoiceLineProfileAssignmentsData = {
 
 export type BatchUpdateVoiceLineProfileAssignmentsErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -18453,6 +18864,10 @@ export type BatchUpdateVoiceLineProfileAssignmentsErrors = {
      * PROJECT_CLOSING: Project Is Closing; VOICE_DEFAULT_PROFILE_ASSIGNMENT_FORBIDDEN: Voice Default Profile Assignment Forbidden; VOICE_PROFILE_VERSION_CONFLICT: Voice Profile Version Conflict
      */
     409: BatchUpdateVoiceLineProfileAssignmentsConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -18506,6 +18921,10 @@ export type UnassignVoiceLineProfileData = {
 
 export type UnassignVoiceLineProfileErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -18523,6 +18942,10 @@ export type UnassignVoiceLineProfileErrors = {
      * VOICE_PROFILE_VERSION_CONFLICT: Voice Profile Version Conflict
      */
     409: VoiceProfileVersionConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -18574,6 +18997,10 @@ export type GetVoiceLineProfileAssignmentData = {
 
 export type GetVoiceLineProfileAssignmentErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -18587,6 +19014,10 @@ export type GetVoiceLineProfileAssignmentErrors = {
      * RESOURCE_NOT_FOUND: Resource Not Found
      */
     404: ResourceNotFoundProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -18638,6 +19069,10 @@ export type AssignVoiceLineProfileData = {
 
 export type AssignVoiceLineProfileErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -18655,6 +19090,10 @@ export type AssignVoiceLineProfileErrors = {
      * PROJECT_CLOSING: Project Is Closing; VOICE_DEFAULT_PROFILE_ASSIGNMENT_FORBIDDEN: Voice Default Profile Assignment Forbidden; VOICE_PROFILE_VERSION_CONFLICT: Voice Profile Version Conflict
      */
     409: AssignVoiceLineProfileConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -18709,6 +19148,10 @@ export type ListVoiceProfilesData = {
 
 export type ListVoiceProfilesErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -18718,6 +19161,10 @@ export type ListVoiceProfilesErrors = {
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
     403: ListVoiceProfilesForbiddenProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -18768,6 +19215,10 @@ export type CreateVoiceProfileData = {
 
 export type CreateVoiceProfileErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -18781,6 +19232,10 @@ export type CreateVoiceProfileErrors = {
      * PROJECT_CLOSING: Project Is Closing; VOICE_DEFAULT_PROFILE_REQUIRED: Voice Default Profile Required
      */
     409: CreateVoiceProfileConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -18831,6 +19286,10 @@ export type GetDefaultVoiceProfileData = {
 
 export type GetDefaultVoiceProfileErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -18844,6 +19303,10 @@ export type GetDefaultVoiceProfileErrors = {
      * VOICE_PROFILE_NOT_FOUND: Voice Profile Not Found
      */
     404: VoiceProfileNotFoundProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -18894,6 +19357,10 @@ export type UpdateDefaultVoiceProfileData = {
 
 export type UpdateDefaultVoiceProfileErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -18911,6 +19378,10 @@ export type UpdateDefaultVoiceProfileErrors = {
      * PROJECT_CLOSING: Project Is Closing; VOICE_PROFILE_DIRECTION_CONFIGURED: Voice Profile Direction Configured; VOICE_PROFILE_VERSION_CONFLICT: Voice Profile Version Conflict; VOICE_OUTBOUND_OPERATION_PENDING: Voice Outbound Operation Pending
      */
     409: UpdateDefaultVoiceProfileConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -18961,6 +19432,10 @@ export type CreateDefaultVoiceProfileData = {
 
 export type CreateDefaultVoiceProfileErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -18974,6 +19449,10 @@ export type CreateDefaultVoiceProfileErrors = {
      * PROJECT_CLOSING: Project Is Closing; VOICE_DEFAULT_PROFILE_EXISTS: Voice Default Profile Exists
      */
     409: CreateDefaultVoiceProfileConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -19032,6 +19511,10 @@ export type DeleteVoiceProfileData = {
 
 export type DeleteVoiceProfileErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -19049,6 +19532,10 @@ export type DeleteVoiceProfileErrors = {
      * VOICE_PROFILE_IN_USE: Voice Profile In Use; VOICE_DEFAULT_PROFILE_DELETION_FORBIDDEN: Voice Default Profile Deletion Forbidden; VOICE_PROFILE_VERSION_CONFLICT: Voice Profile Version Conflict
      */
     409: DeleteVoiceProfileConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -19100,6 +19587,10 @@ export type GetVoiceProfileData = {
 
 export type GetVoiceProfileErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -19113,6 +19604,10 @@ export type GetVoiceProfileErrors = {
      * VOICE_PROFILE_NOT_FOUND: Voice Profile Not Found
      */
     404: VoiceProfileNotFoundProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -19164,6 +19659,10 @@ export type UpdateVoiceProfileData = {
 
 export type UpdateVoiceProfileErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -19181,6 +19680,10 @@ export type UpdateVoiceProfileErrors = {
      * PROJECT_CLOSING: Project Is Closing; VOICE_PROFILE_DIRECTION_CONFIGURED: Voice Profile Direction Configured; VOICE_PROFILE_VERSION_CONFLICT: Voice Profile Version Conflict; VOICE_OUTBOUND_OPERATION_PENDING: Voice Outbound Operation Pending; VOICE_DEFAULT_PROFILE_METADATA_FORBIDDEN: Voice Default Profile Metadata Forbidden
      */
     409: UpdateVoiceProfileConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -19234,6 +19737,10 @@ export type DeleteVoiceProfileInboundData = {
 
 export type DeleteVoiceProfileInboundErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -19251,6 +19758,10 @@ export type DeleteVoiceProfileInboundErrors = {
      * VOICE_PROFILE_VERSION_CONFLICT: Voice Profile Version Conflict; VOICE_OUTBOUND_OPERATION_PENDING: Voice Outbound Operation Pending
      */
     409: DeleteVoiceProfileInboundConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -19302,6 +19813,10 @@ export type UpdateVoiceProfileInboundData = {
 
 export type UpdateVoiceProfileInboundErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -19319,6 +19834,10 @@ export type UpdateVoiceProfileInboundErrors = {
      * PROJECT_CLOSING: Project Is Closing; VOICE_PROFILE_VERSION_CONFLICT: Voice Profile Version Conflict; VOICE_OUTBOUND_OPERATION_PENDING: Voice Outbound Operation Pending
      */
     409: UpdateVoiceProfileInboundConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -19370,6 +19889,10 @@ export type ReplaceVoiceProfileInboundData = {
 
 export type ReplaceVoiceProfileInboundErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -19387,6 +19910,10 @@ export type ReplaceVoiceProfileInboundErrors = {
      * PROJECT_CLOSING: Project Is Closing; VOICE_PROFILE_VERSION_CONFLICT: Voice Profile Version Conflict; VOICE_OUTBOUND_OPERATION_PENDING: Voice Outbound Operation Pending
      */
     409: ReplaceVoiceProfileInboundConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -19444,6 +19971,10 @@ export type DeleteVoiceProfileOutboundData = {
 
 export type DeleteVoiceProfileOutboundErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -19461,6 +19992,10 @@ export type DeleteVoiceProfileOutboundErrors = {
      * VOICE_PROFILE_VERSION_CONFLICT: Voice Profile Version Conflict; VOICE_OUTBOUND_NOT_CONFIGURED: Voice Outbound Not Configured
      */
     409: DeleteVoiceProfileOutboundConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -19512,6 +20047,10 @@ export type UpdateVoiceProfileOutboundAuthenticationData = {
 
 export type UpdateVoiceProfileOutboundAuthenticationErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -19529,6 +20068,10 @@ export type UpdateVoiceProfileOutboundAuthenticationErrors = {
      * PROJECT_CLOSING: Project Is Closing; VOICE_PROFILE_VERSION_CONFLICT: Voice Profile Version Conflict; VOICE_OUTBOUND_OPERATION_PENDING: Voice Outbound Operation Pending; VOICE_OUTBOUND_NOT_CONFIGURED: Voice Outbound Not Configured
      */
     409: UpdateVoiceProfileOutboundAuthenticationConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -19586,7 +20129,7 @@ export type ConfigureVoiceProfileOutboundData = {
 
 export type ConfigureVoiceProfileOutboundErrors = {
     /**
-     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_API_VERSION: Invalid API Version
      */
     400: ConfigureVoiceProfileOutboundBadRequestProblem;
     /**
@@ -19611,6 +20154,10 @@ export type ConfigureVoiceProfileOutboundErrors = {
      * PROJECT_CLOSING: Project Is Closing; PROJECT_INITIALIZING: Project Initializing; VOICE_PROFILE_VERSION_CONFLICT: Voice Profile Version Conflict; VOICE_OUTBOUND_OPERATION_PENDING: Voice Outbound Operation Pending; VOICE_OUTBOUND_CONFIGURED: Voice Outbound Already Configured
      */
     409: ConfigureVoiceProfileOutboundConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
      */
@@ -19672,7 +20219,7 @@ export type RotateVoiceProfileOutboundCredentialData = {
 
 export type RotateVoiceProfileOutboundCredentialErrors = {
     /**
-     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_API_VERSION: Invalid API Version
      */
     400: RotateVoiceProfileOutboundCredentialBadRequestProblem;
     /**
@@ -19693,6 +20240,10 @@ export type RotateVoiceProfileOutboundCredentialErrors = {
      * PROJECT_CLOSING: Project Is Closing; VOICE_PROFILE_VERSION_CONFLICT: Voice Profile Version Conflict; VOICE_OUTBOUND_OPERATION_PENDING: Voice Outbound Operation Pending; VOICE_OUTBOUND_NOT_CONFIGURED: Voice Outbound Not Configured
      */
     409: RotateVoiceProfileOutboundCredentialConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
      */
@@ -19743,6 +20294,10 @@ export type GetProjectWhatsappPlatformData = {
 
 export type GetProjectWhatsappPlatformErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -19756,6 +20311,10 @@ export type GetProjectWhatsappPlatformErrors = {
      * PROJECT_INITIALIZING: Project Initializing
      */
     409: ProjectInitializingProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -19810,7 +20369,7 @@ export type DisconnectWhatsappBusinessAccountData = {
 
 export type DisconnectWhatsappBusinessAccountErrors = {
     /**
-     * IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required
+     * IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; INVALID_API_VERSION: Invalid API Version
      */
     400: DisconnectWhatsappBusinessAccountBadRequestProblem;
     /**
@@ -19831,6 +20390,10 @@ export type DisconnectWhatsappBusinessAccountErrors = {
      * WHATSAPP_ACCOUNT_DISCONNECTING: WhatsApp Business Account Disconnecting; WHATSAPP_ACCOUNT_PROVISIONING: WhatsApp Business Account Has Provisioning Numbers
      */
     409: DisconnectWhatsappBusinessAccountConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
      */
@@ -19885,6 +20448,10 @@ export type GetWhatsappBusinessAccountData = {
 
 export type GetWhatsappBusinessAccountErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -19898,6 +20465,10 @@ export type GetWhatsappBusinessAccountErrors = {
      * WHATSAPP_WABA_NOT_CONNECTED: WhatsApp Business Account Not Connected
      */
     404: WhatsappWabaNotConnectedProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -19948,6 +20519,10 @@ export type ListWhatsappAccountPhoneNumbersData = {
 
 export type ListWhatsappAccountPhoneNumbersErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -19961,6 +20536,10 @@ export type ListWhatsappAccountPhoneNumbersErrors = {
      * WHATSAPP_WABA_NOT_CONNECTED: WhatsApp Business Account Not Connected
      */
     404: WhatsappWabaNotConnectedProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -20017,7 +20596,7 @@ export type CreateWhatsappVoipSenderData = {
 
 export type CreateWhatsappVoipSenderErrors = {
     /**
-     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_API_VERSION: Invalid API Version
      */
     400: CreateWhatsappVoipSenderBadRequestProblem;
     /**
@@ -20042,6 +20621,10 @@ export type CreateWhatsappVoipSenderErrors = {
      * PROJECT_CLOSING: Project Is Closing; PROJECT_INITIALIZING: Project Initializing; WHATSAPP_ACCOUNT_DISCONNECTING: WhatsApp Business Account Disconnecting; WHATSAPP_ACCOUNT_PROVISIONING: WhatsApp Business Account Has Provisioning Numbers; WHATSAPP_VOIP_SOURCE_ACTIVATING: WhatsApp VoIP Source Activating; WHATSAPP_SENDER_CONNECTED: WhatsApp Sender Connected; WHATSAPP_SENDER_PROVISIONING: WhatsApp Sender Provisioning; WHATSAPP_VOIP_SOURCE_RELEASING: WhatsApp VoIP Source Releasing
      */
     409: CreateWhatsappVoipSenderConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed; WHATSAPP_DISPLAY_NAME_UNAVAILABLE: WhatsApp Display Name Unavailable; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
      */
@@ -20097,6 +20680,10 @@ export type GetWhatsappBusinessVerificationCodeData = {
 
 export type GetWhatsappBusinessVerificationCodeErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -20110,6 +20697,10 @@ export type GetWhatsappBusinessVerificationCodeErrors = {
      * RESOURCE_NOT_FOUND: Resource Not Found; WHATSAPP_VERIFICATION_CODE_NOT_FOUND: WhatsApp Verification Code Not Found
      */
     404: GetWhatsappBusinessVerificationCodeNotFoundProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed; WHATSAPP_VERIFICATION_WINDOW_EXPIRED: WhatsApp Verification Window Expired
      */
@@ -20164,6 +20755,10 @@ export type ListWhatsappSharedLineAssignmentsData = {
 
 export type ListWhatsappSharedLineAssignmentsErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -20173,6 +20768,10 @@ export type ListWhatsappSharedLineAssignmentsErrors = {
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
     403: ListWhatsappSharedLineAssignmentsForbiddenProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -20229,7 +20828,7 @@ export type CreateWhatsappSharedLineAssignmentData = {
 
 export type CreateWhatsappSharedLineAssignmentErrors = {
     /**
-     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_API_VERSION: Invalid API Version
      */
     400: CreateWhatsappSharedLineAssignmentBadRequestProblem;
     /**
@@ -20246,6 +20845,10 @@ export type CreateWhatsappSharedLineAssignmentErrors = {
      * PROJECT_INITIALIZING: Project Initializing; PROJECT_CLOSING: Project Is Closing; WHATSAPP_MODE_DEDICATED: WhatsApp Mode Is Dedicated; SHARED_LINE_CAP_EXCEEDED: Shared Line Cap Exceeded; ASSIGNMENT_EXISTS: Assignment Exists
      */
     409: CreateWhatsappSharedLineAssignmentConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
      */
@@ -20299,6 +20902,10 @@ export type ReleaseWhatsappSharedLineAssignmentData = {
 
 export type ReleaseWhatsappSharedLineAssignmentErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -20312,6 +20919,10 @@ export type ReleaseWhatsappSharedLineAssignmentErrors = {
      * ASSIGNMENT_NOT_FOUND: Assignment Not Found
      */
     404: AssignmentNotFoundProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -20363,6 +20974,10 @@ export type GetWhatsappSharedLineAssignmentData = {
 
 export type GetWhatsappSharedLineAssignmentErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -20376,6 +20991,10 @@ export type GetWhatsappSharedLineAssignmentErrors = {
      * ASSIGNMENT_NOT_FOUND: Assignment Not Found
      */
     404: AssignmentNotFoundProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -20432,7 +21051,7 @@ export type ProvisionWhatsappDedicatedLineData = {
 
 export type ProvisionWhatsappDedicatedLineErrors = {
     /**
-     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_API_VERSION: Invalid API Version
      */
     400: ProvisionWhatsappDedicatedLineBadRequestProblem;
     /**
@@ -20453,6 +21072,10 @@ export type ProvisionWhatsappDedicatedLineErrors = {
      * PROMOTION_CODE_REJECTED: Promotion Code Rejected; PROJECT_CLOSING: Project Is Closing; PROJECT_INITIALIZING: Project Initializing
      */
     409: ProvisionWhatsappDedicatedLineConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
      */
@@ -20506,6 +21129,10 @@ export type ReleaseWhatsappDedicatedLineData = {
 
 export type ReleaseWhatsappDedicatedLineErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -20519,6 +21146,10 @@ export type ReleaseWhatsappDedicatedLineErrors = {
      * RESOURCE_NOT_FOUND: Resource Not Found
      */
     404: ResourceNotFoundProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -21371,7 +22002,7 @@ export type DeleteProjectData = {
 
 export type DeleteProjectErrors = {
     /**
-     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_API_VERSION: Invalid API Version
      */
     400: DeleteProjectBadRequestProblem;
     /**
@@ -21388,6 +22019,10 @@ export type DeleteProjectErrors = {
      * PROJECT_NOT_FOUND: Project Not Found
      */
     404: ProjectNotFoundProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * PAYLOAD_TOO_LARGE: Payload Too Large
      */
@@ -21436,6 +22071,10 @@ export type GetProjectData = {
 
 export type GetProjectErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -21450,9 +22089,9 @@ export type GetProjectErrors = {
      */
     404: ProjectNotFoundProblem;
     /**
-     * PROJECT_DELETED: Project Deleted
+     * PROJECT_DELETED: Project Deleted; RETIRED_API_VERSION: Retired API Version
      */
-    410: ProjectDeletedProblem;
+    410: GetProjectGoneProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -21503,7 +22142,7 @@ export type UpdateProjectData = {
 
 export type UpdateProjectErrors = {
     /**
-     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_API_VERSION: Invalid API Version
      */
     400: UpdateProjectBadRequestProblem;
     /**
@@ -21521,9 +22160,9 @@ export type UpdateProjectErrors = {
      */
     404: ProjectNotFoundProblem;
     /**
-     * PROJECT_DELETED: Project Deleted
+     * PROJECT_DELETED: Project Deleted; RETIRED_API_VERSION: Retired API Version
      */
-    410: ProjectDeletedProblem;
+    410: UpdateProjectGoneProblem;
     /**
      * PAYLOAD_TOO_LARGE: Payload Too Large
      */
@@ -21572,6 +22211,10 @@ export type GetAgentProfileData = {
 
 export type GetAgentProfileErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -21586,9 +22229,9 @@ export type GetAgentProfileErrors = {
      */
     404: ProjectNotFoundProblem;
     /**
-     * PROJECT_DELETED: Project Deleted
+     * PROJECT_DELETED: Project Deleted; RETIRED_API_VERSION: Retired API Version
      */
-    410: ProjectDeletedProblem;
+    410: GetAgentProfileGoneProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -21639,7 +22282,7 @@ export type UpdateAgentProfileData = {
 
 export type UpdateAgentProfileErrors = {
     /**
-     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_API_VERSION: Invalid API Version
      */
     400: UpdateAgentProfileBadRequestProblem;
     /**
@@ -21657,9 +22300,9 @@ export type UpdateAgentProfileErrors = {
      */
     404: ProjectNotFoundProblem;
     /**
-     * PROJECT_DELETED: Project Deleted
+     * PROJECT_DELETED: Project Deleted; RETIRED_API_VERSION: Retired API Version
      */
-    410: ProjectDeletedProblem;
+    410: UpdateAgentProfileGoneProblem;
     /**
      * PAYLOAD_TOO_LARGE: Payload Too Large
      */
@@ -21714,7 +22357,7 @@ export type ResetAgentProfileAvatarData = {
 
 export type ResetAgentProfileAvatarErrors = {
     /**
-     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_API_VERSION: Invalid API Version
      */
     400: ResetAgentProfileAvatarBadRequestProblem;
     /**
@@ -21732,9 +22375,9 @@ export type ResetAgentProfileAvatarErrors = {
      */
     404: ProjectNotFoundProblem;
     /**
-     * PROJECT_DELETED: Project Deleted
+     * PROJECT_DELETED: Project Deleted; RETIRED_API_VERSION: Retired API Version
      */
-    410: ProjectDeletedProblem;
+    410: ResetAgentProfileAvatarGoneProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
      */
@@ -21785,7 +22428,7 @@ export type CommitAgentProfileAvatarData = {
 
 export type CommitAgentProfileAvatarErrors = {
     /**
-     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_ARGUMENT: Invalid Argument
+     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
     400: CommitAgentProfileAvatarBadRequestProblem;
     /**
@@ -21803,9 +22446,9 @@ export type CommitAgentProfileAvatarErrors = {
      */
     404: ProjectNotFoundProblem;
     /**
-     * PROJECT_DELETED: Project Deleted
+     * PROJECT_DELETED: Project Deleted; RETIRED_API_VERSION: Retired API Version
      */
-    410: ProjectDeletedProblem;
+    410: CommitAgentProfileAvatarGoneProblem;
     /**
      * PAYLOAD_TOO_LARGE: Payload Too Large
      */
@@ -21854,6 +22497,10 @@ export type CreateAgentProfileAvatarUploadData = {
 
 export type CreateAgentProfileAvatarUploadErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -21868,9 +22515,9 @@ export type CreateAgentProfileAvatarUploadErrors = {
      */
     404: ProjectNotFoundProblem;
     /**
-     * PROJECT_DELETED: Project Deleted
+     * PROJECT_DELETED: Project Deleted; RETIRED_API_VERSION: Retired API Version
      */
-    410: ProjectDeletedProblem;
+    410: CreateAgentProfileAvatarUploadGoneProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -21915,9 +22562,9 @@ export type ListProjectApiKeysData = {
 
 export type ListProjectApiKeysErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument
+     * INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
-    400: InvalidArgumentProblem;
+    400: ListProjectApiKeysBadRequestProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -21933,9 +22580,9 @@ export type ListProjectApiKeysErrors = {
      */
     404: ProjectNotFoundProblem;
     /**
-     * PROJECT_DELETED: Project Deleted
+     * PROJECT_DELETED: Project Deleted; RETIRED_API_VERSION: Retired API Version
      */
-    410: ProjectDeletedProblem;
+    410: ListProjectApiKeysGoneProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -21986,7 +22633,7 @@ export type CreateProjectApiKeyData = {
 
 export type CreateProjectApiKeyErrors = {
     /**
-     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_ARGUMENT: Invalid Argument
+     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
     400: CreateProjectApiKeyBadRequestProblem;
     /**
@@ -22008,9 +22655,9 @@ export type CreateProjectApiKeyErrors = {
      */
     409: ApiKeyLimitReachedProblem;
     /**
-     * PROJECT_DELETED: Project Deleted
+     * PROJECT_DELETED: Project Deleted; RETIRED_API_VERSION: Retired API Version
      */
-    410: ProjectDeletedProblem;
+    410: CreateProjectApiKeyGoneProblem;
     /**
      * PAYLOAD_TOO_LARGE: Payload Too Large
      */
@@ -22066,7 +22713,7 @@ export type RevokeProjectApiKeyData = {
 
 export type RevokeProjectApiKeyErrors = {
     /**
-     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_ARGUMENT: Invalid Argument
+     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
     400: RevokeProjectApiKeyBadRequestProblem;
     /**
@@ -22084,9 +22731,9 @@ export type RevokeProjectApiKeyErrors = {
      */
     404: RevokeProjectApiKeyNotFoundProblem;
     /**
-     * PROJECT_DELETED: Project Deleted
+     * PROJECT_DELETED: Project Deleted; RETIRED_API_VERSION: Retired API Version
      */
-    410: ProjectDeletedProblem;
+    410: RevokeProjectApiKeyGoneProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed; IDEMPOTENCY_KEY_REUSED: Idempotency Key Reused
      */
@@ -22113,7 +22760,7 @@ export type RevokeProjectApiKeyError = RevokeProjectApiKeyErrors[keyof RevokePro
 
 export type RevokeProjectApiKeyResponses = {
     /**
-     * The revoked key. Repeating the delete returns the same revokedAt.
+     * The revoked key metadata. Repeated revocation is stable and never returns a secret.
      */
     200: ProjectApiKeyResponse;
 };
@@ -22138,7 +22785,7 @@ export type UpdateProjectApiKeyData = {
 
 export type UpdateProjectApiKeyErrors = {
     /**
-     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_ARGUMENT: Invalid Argument
+     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
     400: UpdateProjectApiKeyBadRequestProblem;
     /**
@@ -22160,9 +22807,9 @@ export type UpdateProjectApiKeyErrors = {
      */
     409: ApiKeyRevokedProblem;
     /**
-     * PROJECT_DELETED: Project Deleted
+     * PROJECT_DELETED: Project Deleted; RETIRED_API_VERSION: Retired API Version
      */
-    410: ProjectDeletedProblem;
+    410: UpdateProjectApiKeyGoneProblem;
     /**
      * PAYLOAD_TOO_LARGE: Payload Too Large
      */
@@ -22193,7 +22840,7 @@ export type UpdateProjectApiKeyError = UpdateProjectApiKeyErrors[keyof UpdatePro
 
 export type UpdateProjectApiKeyResponses = {
     /**
-     * The key with its new permission list. Sending the list it already holds returns it unchanged.
+     * The key with its new permission list. Sending the list it already holds returns it unchanged and never returns a secret.
      */
     200: ProjectApiKeyResponse;
 };
@@ -22214,9 +22861,9 @@ export type GetBillingOverviewData = {
 
 export type GetBillingOverviewErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument
+     * INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
-    400: InvalidArgumentProblem;
+    400: GetBillingOverviewBadRequestProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -22228,9 +22875,13 @@ export type GetBillingOverviewErrors = {
      */
     403: GetBillingOverviewForbiddenProblem;
     /**
-     * FAILED_PRECONDITION: Failed Precondition
+     * FAILED_PRECONDITION: Failed Precondition; PROJECT_INITIALIZING: Project Initializing
      */
-    409: FailedPreconditionProblem;
+    409: GetBillingOverviewConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -22286,9 +22937,9 @@ export type GetBillingOperationData = {
 
 export type GetBillingOperationErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument
+     * INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
-    400: InvalidArgumentProblem;
+    400: GetBillingOperationBadRequestProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -22307,6 +22958,10 @@ export type GetBillingOperationErrors = {
      * FAILED_PRECONDITION: Failed Precondition
      */
     409: FailedPreconditionProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -22356,9 +23011,9 @@ export type ListBillingPlansData = {
 
 export type ListBillingPlansErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument
+     * INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
-    400: InvalidArgumentProblem;
+    400: ListBillingPlansBadRequestProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -22373,6 +23028,10 @@ export type ListBillingPlansErrors = {
      * FAILED_PRECONDITION: Failed Precondition
      */
     409: FailedPreconditionProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -22422,9 +23081,9 @@ export type ListProjectSubscriptionsData = {
 
 export type ListProjectSubscriptionsErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument
+     * INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
-    400: InvalidArgumentProblem;
+    400: ListProjectSubscriptionsBadRequestProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -22439,6 +23098,10 @@ export type ListProjectSubscriptionsErrors = {
      * FAILED_PRECONDITION: Failed Precondition
      */
     409: FailedPreconditionProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -22654,6 +23317,10 @@ export type ListWebhookApiVersionsData = {
 
 export type ListWebhookApiVersionsErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -22663,6 +23330,10 @@ export type ListWebhookApiVersionsErrors = {
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
     403: ListWebhookApiVersionsForbiddenProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -22710,9 +23381,9 @@ export type ListWebhookDestinationsData = {
 
 export type ListWebhookDestinationsErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument
+     * INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
-    400: InvalidArgumentProblem;
+    400: ListWebhookDestinationsBadRequestProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -22723,6 +23394,10 @@ export type ListWebhookDestinationsErrors = {
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
     403: ListWebhookDestinationsForbiddenProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -22773,7 +23448,7 @@ export type CreateWebhookDestinationData = {
 
 export type CreateWebhookDestinationErrors = {
     /**
-     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_ARGUMENT: Invalid Argument
+     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
     400: CreateWebhookDestinationBadRequestProblem;
     /**
@@ -22786,6 +23461,10 @@ export type CreateWebhookDestinationErrors = {
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
     403: CreateWebhookDestinationForbiddenProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * PAYLOAD_TOO_LARGE: Payload Too Large
      */
@@ -22835,6 +23514,10 @@ export type DeleteWebhookDestinationData = {
 
 export type DeleteWebhookDestinationErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -22848,6 +23531,10 @@ export type DeleteWebhookDestinationErrors = {
      * WEBHOOK_DESTINATION_NOT_FOUND: Webhook Destination Not Found
      */
     404: WebhookDestinationNotFoundProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -22893,6 +23580,10 @@ export type GetWebhookDestinationData = {
 
 export type GetWebhookDestinationErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -22907,9 +23598,9 @@ export type GetWebhookDestinationErrors = {
      */
     404: WebhookDestinationNotFoundProblem;
     /**
-     * WEBHOOK_DESTINATION_DELETED: Webhook Destination Deleted
+     * WEBHOOK_DESTINATION_DELETED: Webhook Destination Deleted; RETIRED_API_VERSION: Retired API Version
      */
-    410: WebhookDestinationDeletedProblem;
+    410: GetWebhookDestinationGoneProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -22961,7 +23652,7 @@ export type UpdateWebhookDestinationData = {
 
 export type UpdateWebhookDestinationErrors = {
     /**
-     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_ARGUMENT: Invalid Argument
+     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
     400: UpdateWebhookDestinationBadRequestProblem;
     /**
@@ -22979,9 +23670,9 @@ export type UpdateWebhookDestinationErrors = {
      */
     404: WebhookDestinationNotFoundProblem;
     /**
-     * WEBHOOK_DESTINATION_DELETED: Webhook Destination Deleted
+     * WEBHOOK_DESTINATION_DELETED: Webhook Destination Deleted; RETIRED_API_VERSION: Retired API Version
      */
-    410: WebhookDestinationDeletedProblem;
+    410: UpdateWebhookDestinationGoneProblem;
     /**
      * PAYLOAD_TOO_LARGE: Payload Too Large
      */
@@ -23037,7 +23728,7 @@ export type RetryWebhookDeliveryData = {
 
 export type RetryWebhookDeliveryErrors = {
     /**
-     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_API_VERSION: Invalid API Version
      */
     400: RetryWebhookDeliveryBadRequestProblem;
     /**
@@ -23058,6 +23749,10 @@ export type RetryWebhookDeliveryErrors = {
      * FAILED_PRECONDITION: Failed Precondition
      */
     409: FailedPreconditionProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -23109,7 +23804,7 @@ export type RotateWebhookSigningSecretData = {
 
 export type RotateWebhookSigningSecretErrors = {
     /**
-     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_ARGUMENT: Invalid Argument
+     * IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
     400: RotateWebhookSigningSecretBadRequestProblem;
     /**
@@ -23127,9 +23822,9 @@ export type RotateWebhookSigningSecretErrors = {
      */
     404: WebhookDestinationNotFoundProblem;
     /**
-     * WEBHOOK_DESTINATION_DELETED: Webhook Destination Deleted
+     * WEBHOOK_DESTINATION_DELETED: Webhook Destination Deleted; RETIRED_API_VERSION: Retired API Version
      */
-    410: WebhookDestinationDeletedProblem;
+    410: RotateWebhookSigningSecretGoneProblem;
     /**
      * PAYLOAD_TOO_LARGE: Payload Too Large
      */
@@ -23178,6 +23873,10 @@ export type ListWebhookEgressAddressesData = {
 
 export type ListWebhookEgressAddressesErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -23188,6 +23887,10 @@ export type ListWebhookEgressAddressesErrors = {
      */
     403: ListWebhookEgressAddressesForbiddenProblem;
     /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
+    /**
      * VALIDATION_FAILED: Request Validation Failed
      */
     422: ValidationFailedProblem;
@@ -23195,6 +23898,10 @@ export type ListWebhookEgressAddressesErrors = {
      * INTERNAL_ERROR: Internal Server Error
      */
     500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
     /**
      * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
      */
@@ -23229,9 +23936,9 @@ export type ListWebhookEventTypesData = {
 
 export type ListWebhookEventTypesErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument
+     * INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
-    400: InvalidArgumentProblem;
+    400: ListWebhookEventTypesBadRequestProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -23242,6 +23949,10 @@ export type ListWebhookEventTypesErrors = {
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
     403: ListWebhookEventTypesForbiddenProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -23289,9 +24000,9 @@ export type GetWebhookEventSchemaData = {
 
 export type GetWebhookEventSchemaErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument
+     * INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
-    400: InvalidArgumentProblem;
+    400: GetWebhookEventSchemaBadRequestProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -23302,6 +24013,10 @@ export type GetWebhookEventSchemaErrors = {
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
     403: GetWebhookEventSchemaForbiddenProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */

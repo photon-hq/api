@@ -16,7 +16,7 @@ photon.projects.delete(input: DeleteProjectInput, options?: RequestOptions): Pro
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.projects.delete(input: DeleteProjectInput) -> models.Project
+photon.projects.delete(input: DeleteProjectInput, *, options: RequestOptions | None = None) -> models.Project
 ```
 </Tab>
 <Tab title="Rust">
@@ -113,9 +113,6 @@ _ = result
   },
   "billingInitialization": "pending",
   "createdAt": "2026-01-01T00:00:00.000Z",
-  "createdByAccountId": null,
-  "createdByActorId": null,
-  "createdByActorKind": null,
   "deletedAt": null,
   "name": "string",
   "organizationId": "string",
@@ -128,6 +125,10 @@ _ = result
 </ResponseExample>
 
 ## Parameters
+
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
 
 <ParamField header="Idempotency-Key" type={"string"} required>
 Identifies one logical mutation across retries.
@@ -142,6 +143,8 @@ Identifies one logical mutation across retries.
 
 **`200`** The deleted project tombstone. Project
 
+Headers: `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
 <ResponseField name="agentProfile" type={"AgentProfile"} required>
 
 </ResponseField>
@@ -151,18 +154,6 @@ Identifies one logical mutation across retries.
 </ResponseField>
 
 <ResponseField name="createdAt" type={"string (date-time)"} required>
-
-</ResponseField>
-
-<ResponseField name="createdByAccountId" type={"string | null"} required>
-
-</ResponseField>
-
-<ResponseField name="createdByActorId" type={"string | null"} required>
-
-</ResponseField>
-
-<ResponseField name="createdByActorKind" type={"ProjectCreatedByActorKind | null"} required>
 
 </ResponseField>
 

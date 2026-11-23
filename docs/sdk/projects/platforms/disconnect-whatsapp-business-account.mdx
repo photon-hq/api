@@ -16,7 +16,7 @@ photon.projects.platforms.disconnectWhatsappBusinessAccount(input: DisconnectWha
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.projects.platforms.disconnect_whatsapp_business_account(input: DisconnectWhatsappBusinessAccountInput) -> models.Operation
+photon.projects.platforms.disconnect_whatsapp_business_account(input: DisconnectWhatsappBusinessAccountInput, *, options: RequestOptions | None = None,) -> models.Operation
 ```
 </Tab>
 <Tab title="Rust">
@@ -162,6 +162,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField header="Idempotency-Key" type={"string"} required>
 Identifies one logical mutation across retries.
 </ParamField>
@@ -174,6 +178,8 @@ Identifies one logical mutation across retries.
 ## Returns
 
 **`200`** The replayed disconnect operation is terminal. Operation
+
+Headers: `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="cancellable" type={"boolean"} required>
 
@@ -233,7 +239,7 @@ Why the operation failed: the problem of its `code`, the same object the endpoin
 
 **`202`** Account disconnect accepted. Poll Location after Retry-After. Operation
 
-Headers: `Location`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+Headers: `Location`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="cancellable" type={"boolean"} required>
 

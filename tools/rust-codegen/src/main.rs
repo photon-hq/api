@@ -138,12 +138,40 @@ fn remove_unexpected_cfgs_allowance(source: &str) -> Result<String> {
     Ok(output)
 }
 
+const BACKEND_ACCESSOR: &str = "            pub fn backend(&self) -> &Arc<dyn HttpBackend> {
+                &self.backend
+            }
+";
+
+/// Spargen's `ClientCore` can read its backend but not replace it.
+/// `Client::with_request_options` (packages/rust/src/lib.rs) derives a client
+/// whose backend adds per-call headers, so give the core a setter beside the
+/// accessor.
+fn add_backend_setter(source: &str) -> Result<String> {
+    ensure!(
+        source.matches(BACKEND_ACCESSOR).count() == 1,
+        "expected one ClientCore::backend accessor in Spargen's output"
+    );
+    Ok(source.replacen(
+        BACKEND_ACCESSOR,
+        &format!(
+            "{BACKEND_ACCESSOR}            /// Replace the transport backend, keeping the base URL, configuration and credentials.
+            pub fn set_backend(&mut self, backend: Arc<dyn HttpBackend>) {{
+                self.backend = backend;
+            }}
+"
+        ),
+        1,
+    ))
+}
+
 fn generate(output: &str) -> Result<Report> {
     let report = spargen::generate(&generation_build(output));
     validate_report(&report, Outcome::Generated)?;
     // Compile each structurally equivalent model once; request models keep
     // their distinct types.
     let (source, stats) = share_models::share(&fs::read_to_string(output)?)?;
+    let source = add_backend_setter(&source)?;
     fs::write(output, remove_unexpected_cfgs_allowance(&source)?)?;
     println!(
         "shared {} of {} Rust model definitions in {} passes; kept {} request models distinct; shared {} of {} header definitions",

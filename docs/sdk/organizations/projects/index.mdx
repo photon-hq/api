@@ -47,35 +47,35 @@ photon.organizations.projects.create(input: CreateProjectInput, options?: Reques
 **[List projects](/api-client/sdk/organizations/projects/list)**
 
 ```python Python
-photon.organizations.projects.list(input: ListProjectsInput) -> models.ProjectPage
+photon.organizations.projects.list(input: ListProjectsInput, *, options: RequestOptions | None = None) -> models.ProjectPage
 ```
 `GET /v1/organizations/{organizationId}/projects`
 
 **[Check project slug availability](/api-client/sdk/organizations/projects/check-project-slug-availability)**
 
 ```python Python
-photon.organizations.projects.check_project_slug_availability(input: CheckProjectSlugAvailabilityInput) -> models.CheckProjectSlugAvailabilityResponse
+photon.organizations.projects.check_project_slug_availability(input: CheckProjectSlugAvailabilityInput, *, options: RequestOptions | None = None) -> models.CheckProjectSlugAvailabilityResponse
 ```
 `GET /v1/organizations/{organizationId}/projects/slug-availability`
 
 **[Count projects](/api-client/sdk/organizations/projects/count)**
 
 ```python Python
-photon.organizations.projects.count(input: CountProjectsInput) -> models.ProjectCount
+photon.organizations.projects.count(input: CountProjectsInput, *, options: RequestOptions | None = None) -> models.ProjectCount
 ```
 `GET /v1/organizations/{organizationId}/projects/count`
 
 **[Get project closure status](/api-client/sdk/organizations/projects/get-project-closure-status)**
 
 ```python Python
-photon.organizations.projects.get_project_closure_status(input: GetProjectClosureStatusInput) -> models.GetProjectClosureStatusResponse
+photon.organizations.projects.get_project_closure_status(input: GetProjectClosureStatusInput, *, options: RequestOptions | None = None) -> models.GetProjectClosureStatusResponse
 ```
 `GET /v1/organizations/{organizationId}/projects/closure-status`
 
 **[Create project](/api-client/sdk/organizations/projects/create)**
 
 ```python Python
-photon.organizations.projects.create(input: CreateProjectInput) -> models.Project
+photon.organizations.projects.create(input: CreateProjectInput, *, options: RequestOptions | None = None) -> models.Project
 ```
 `POST /v1/organizations/{organizationId}/projects`
 
@@ -251,18 +251,6 @@ client.Organizations.Projects.Create(ctx context.Context, params *CreateProjectP
 </ResponseField>
 
 <ResponseField name="createdAt" type={"string (date-time)"} required>
-
-</ResponseField>
-
-<ResponseField name="createdByAccountId" type={"string | null"} required>
-
-</ResponseField>
-
-<ResponseField name="createdByActorId" type={"string | null"} required>
-
-</ResponseField>
-
-<ResponseField name="createdByActorKind" type={"ProjectCreatedByActorKind | null"} required>
 
 </ResponseField>
 

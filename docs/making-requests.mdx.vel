@@ -166,6 +166,12 @@ from `pydantic.experimental.missing_sentinel`, not `None`. `MISSING` is truthy,
 so test for it with `is not MISSING`, or check the value's type, as in
 `isinstance(page.nextPageToken, str)`. `None` means the API sent `null`.
 
+Each method also takes a keyword-only `options` argument for one call, a
+`RequestOptions` dictionary from `photon_api`. Its `headers` are extra
+headers to send, as in `photon.projects.get(input, options={"headers": headers})`.
+They replace the client's value for the same header name; a header in the
+input's `headers` takes precedence over them.
+
 `Photon` is synchronous. `AsyncPhoton` has the same methods as coroutines. Close
 a client to release its connections: use `with` or `async with`, or call
 `close()`.
@@ -178,6 +184,14 @@ signature on [docs.rs](https://docs.rs/photonhq-api) gives their order. Optional
 query and header parameters go in a `<Operation>Params` builder, such as
 `ListProjectsParams`, passed as `Some(params)` or `None`.
 
+For extra headers on one call, call the method on
+`client.with_request_options(options)`, where `options` is a `RequestOptions`
+built with `RequestOptions::new().header(name, value)`. The returned client
+shares the original's connections, retry settings, and credentials. Its headers
+replace the client's value for the same name, including a supplied
+`reqwest::Client`'s default headers; a header parameter passed to the method
+takes precedence over them.
+
 Models are in `photon_ai_api::types`, with snake_case fields. A call returns
 `Result<ResponseValue<T>, Error<E>>`: `into_inner()` gives the body, and
 [Raw responses](/api-client/raw-responses) covers the rest. When an operation
@@ -187,7 +201,7 @@ as `CreateProjectResponse::Status201` and `CreateProjectResponse::Status202`.
 With the optional `blocking` feature, the crate also provides `BlockingClient`,
 a synchronous wrapper. It is built directly rather than with
 `PhotonClientBuilder`, so the builder's timeout and retry settings do not apply
-to it.
+to it, and it has no request options.
 </Tab>
 <Tab title="Go">
 Services mirror the API namespaces: `client.Organizations.Projects.List`,

@@ -188,14 +188,42 @@ test("SDK projection keeps only JSON media, notes dropped request media, and is 
 });
 
 test("binary download projection preserves bytes and response metadata", () => {
-  const content = { "application/octet-stream": { schema: { type: "string", format: "binary" } } };
-  const document: JsonObject = { paths: { "/download": { get: {
-    operationId: "download", responses: { "200": { content, headers: { "Content-Disposition": { schema: { type: "string" } } } } },
-  } } } };
-  assert.deepEqual(jsonSdkDocument(document), document);
-  assert.deepEqual(selectResponseMedia(content, "download response"), {
-    mediaType: "application/octet-stream", value: content["application/octet-stream"],
-  });
+  const schemas: JsonObject[] = [{ type: "string", format: "binary" }, {}, { $ref: "#/components/schemas/Raw" }];
+  for (const mediaType of ["application/octet-stream", "application/pdf"]) {
+    for (const schema of schemas) {
+      const content = { [mediaType]: { schema } };
+      const document: JsonObject = { paths: { "/download": { get: {
+        operationId: "download", responses: { "200": { content, headers: { "Content-Disposition": { schema: { type: "string" } } } } },
+      } } }, components: { schemas: { Raw: {} } } };
+      const original = structuredClone(document);
+      const projected = jsonSdkDocument(document);
+      assert(isObject(projected.paths));
+      assert(isObject(projected.paths["/download"]));
+      assert(isObject(projected.paths["/download"].get));
+      assert(isObject(projected.paths["/download"].get.responses));
+      assert(isObject(projected.paths["/download"].get.responses["200"]));
+      assert(isObject(projected.paths["/download"].get.responses["200"].content));
+      const projectedMediaType = mediaType === "application/pdf"
+        ? "application/octet-stream"
+        : mediaType;
+      assert.deepEqual(
+        Object.keys(projected.paths["/download"].get.responses["200"].content),
+        [projectedMediaType],
+      );
+      assert.deepEqual(
+        projected.paths["/download"].get.responses["200"].content[projectedMediaType],
+        { schema: mediaType === "application/pdf" && schema.format !== "binary"
+          ? { type: "string", format: "binary" } : schema },
+      );
+      assert.deepEqual(projected.components, original.components);
+      assert.deepEqual(projected.paths["/download"].get.responses["200"].headers, { "Content-Disposition": { schema: { type: "string" } } });
+      assert.deepEqual(document, original);
+      assert.deepEqual(jsonSdkDocument(projected), projected);
+      assert.deepEqual(selectResponseMedia(content, "download response"), {
+        mediaType, value: content[mediaType],
+      });
+    }
+  }
 });
 
 test("SDK error responses retain every JSON body while successful responses still select one", () => {

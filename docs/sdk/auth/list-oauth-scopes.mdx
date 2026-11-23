@@ -16,7 +16,7 @@ photon.auth.listOauthScopes(input?: ListOauthScopesInput, options?: RequestOptio
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.auth.list_oauth_scopes(input: ListOauthScopesInput | None = None) -> models.ListOauthScopesResponse
+photon.auth.list_oauth_scopes(input: ListOauthScopesInput | None = None, *, options: RequestOptions | None = None) -> models.ListOauthScopesResponse
 ```
 </Tab>
 <Tab title="Rust">
@@ -86,9 +86,18 @@ _ = result
 
 </ResponseExample>
 
+## Parameters
+
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
+
 ## Returns
 
 **`200`** The configurable OAuth business permissions. ListOauthScopesResponse
+
+Headers: `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="scopes" type={"array of string"} required>
 Business permissions an OAuth application can be configured with. Client creation and scope updates accept only these values. OIDC protocol scopes (openid, profile, email, offline_access) are not included.

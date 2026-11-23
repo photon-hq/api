@@ -182,9 +182,6 @@ class AuthorizedOAuthApplicationRedirectUri(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    __annotations__ = {
-        "__pydantic_extra__": dict[str, Any],
-    }
     default: bool
     """
     Whether this is the application's default redirect URI.
@@ -608,9 +605,6 @@ class CreateAppInstallationRequestResponse(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    __annotations__ = {
-        "__pydantic_extra__": dict[str, Any],
-    }
     appId: str
     appVersion: str
     createdAt: str = Field(..., examples=["2026-01-01T00:00:00.000Z"])
@@ -662,9 +656,6 @@ class CreateOrganizationSsoPortalLinkResponse(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    __annotations__ = {
-        "__pydantic_extra__": dict[str, Any],
-    }
     url: str
 
 
@@ -1358,7 +1349,7 @@ class FixedChargeQuote(BaseModel):
     )
     amount: str
     """
-    Decimal amount in the plan currency. Kept as text so sub-cent unit prices remain exact.
+    Decimal unit price in the charge currency. The billing engine can use exponent notation. Kept as text so the price stays exact.
     """
     currency: str
     currentPeriodEnd: str
@@ -1383,7 +1374,7 @@ class GetOrganizationCreditResponse(BaseModel):
     )
     balanceCents: int
     """
-    Credit left to offset the organization's next invoices, in cents: on credit notes, and in its wallet, granted to it or purchased. Zero when none is left.
+    Credit left to offset the organization's next invoices, in cents: on credit notes, and in its wallet, granted to it or purchased. Zero when none is left. An overdrawn wallet can make the balance negative.
     """
     currency: str
     """
@@ -1521,9 +1512,6 @@ class ListAuthorizedApplicationsResponseListMetadata(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    __annotations__ = {
-        "__pydantic_extra__": dict[str, Any],
-    }
     after: str | None
     """
     Cursor for the next page, or null when there is no next page.
@@ -1550,9 +1538,6 @@ class ListOauthScopesResponse(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    __annotations__ = {
-        "__pydantic_extra__": dict[str, Any],
-    }
     scopes: list[str]
     """
     Business permissions an OAuth application can be configured with. Client creation and scope updates accept only these values. OIDC protocol scopes (openid, profile, email, offline_access) are not included.
@@ -2868,9 +2853,6 @@ class ProjectClosureDomainStatus(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    __annotations__ = {
-        "__pydantic_extra__": dict[str, Any],
-    }
     blockers: list[str]
     domain: Literal["projects", "billing", "platforms", "call_registry"] | str
     ready: bool
@@ -2881,10 +2863,6 @@ class ProjectCount(BaseModel):
         extra="allow",
     )
     count: int
-
-
-class ProjectCreatedByActorKind(RootModel[Literal["account", "service_identity"] | str]):
-    root: Literal["account", "service_identity"] | str
 
 
 class ProjectCreditSubject(BaseModel):
@@ -3345,6 +3323,10 @@ class RevokeOrganizationInvitationResponse(BaseModel):
     role: Literal["member", "viewer"] | str
     status: Literal["pending", "accepted", "revoked"] | str
     updatedAt: str
+
+
+class RevokeProjectApiKeyGoneProblem(RootModel[ProjectDeletedProblem | RetiredApiVersionProblem]):
+    root: ProjectDeletedProblem | RetiredApiVersionProblem
 
 
 class RevokeServiceIdentityCredentialRequest(BaseModel):
@@ -4156,9 +4138,6 @@ class SmsLineCampaign(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    __annotations__ = {
-        "__pydantic_extra__": dict[str, Any],
-    }
     id: str
     organizationId: str
 
@@ -4496,6 +4475,24 @@ class SuppressedEmailRecipient(BaseModel):
     role: Literal["to", "cc", "bcc"] | str
 
 
+class TelegramBotAlreadyConnectedProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["TELEGRAM_BOT_ALREADY_CONNECTED"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    remediation: ProblemRemediation
+    requestId: str | MISSING = MISSING
+    resourceId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["Telegram Bot Already Connected"]
+    type: Literal["https://photon.codes/docs/problems/telegram-bot-already-connected"]
+
+
 class TelegramConfigurationFailedProblem(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -4707,6 +4704,10 @@ class UpdateAccountRequest(BaseModel):
     lastName: str | None | MISSING = MISSING
 
 
+class UpdateAgentProfileGoneProblem(RootModel[ProjectDeletedProblem | RetiredApiVersionProblem]):
+    root: ProjectDeletedProblem | RetiredApiVersionProblem
+
+
 class UpdateAgentProfileRequest(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -4811,6 +4812,10 @@ class UpdateOrganizationSsoPolicyRequest(BaseModel):
     ssoJitEnabled: bool
 
 
+class UpdateProjectApiKeyGoneProblem(RootModel[ProjectDeletedProblem | RetiredApiVersionProblem]):
+    root: ProjectDeletedProblem | RetiredApiVersionProblem
+
+
 class UpdateProjectApiKeyRequest(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -4828,6 +4833,10 @@ class UpdateProjectApiKeyRequest(BaseModel):
         ]
         | str
     ]
+
+
+class UpdateProjectGoneProblem(RootModel[ProjectDeletedProblem | RetiredApiVersionProblem]):
+    root: ProjectDeletedProblem | RetiredApiVersionProblem
 
 
 class UpdateProjectRequest(BaseModel):
@@ -5027,6 +5036,12 @@ class ValidationLocation(
     RootModel[Literal["body", "cookie", "form", "header", "json", "param", "query"] | str]
 ):
     root: Literal["body", "cookie", "form", "header", "json", "param", "query"] | str
+
+
+class VerifyTenDlcBrandOtpBadGatewayProblem(
+    RootModel[ServiceFailureProblem | UpstreamFailureProblem]
+):
+    root: ServiceFailureProblem | UpstreamFailureProblem
 
 
 class VerifyTenDlcBrandOtpGatewayTimeoutProblem(
@@ -6411,9 +6426,6 @@ class AuthorizedOAuthApplication(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    __annotations__ = {
-        "__pydantic_extra__": dict[str, Any],
-    }
     applicationType: str
     """
     OAuth application type reported by the authorization server.
@@ -6839,6 +6851,12 @@ class CommitAgentProfileAvatarGatewayTimeoutProblem(
     root: UpstreamTimeoutProblem | RequestTimeoutProblem
 
 
+class CommitAgentProfileAvatarGoneProblem(
+    RootModel[ProjectDeletedProblem | RetiredApiVersionProblem]
+):
+    root: ProjectDeletedProblem | RetiredApiVersionProblem
+
+
 class CommitOrganizationAvatarConflictProblem(
     RootModel[
         OrganizationAuthPolicyChangedProblem
@@ -6942,10 +6960,18 @@ class ConnectEmailDomainServiceUnavailableProblem(
 
 class ConnectTelegramBotConflictProblem(
     RootModel[
-        TelegramProjectDeletedProblem | ProjectClosingProblem | TelegramProvisionInProgressProblem
+        TelegramBotAlreadyConnectedProblem
+        | TelegramProjectDeletedProblem
+        | ProjectClosingProblem
+        | TelegramProvisionInProgressProblem
     ]
 ):
-    root: TelegramProjectDeletedProblem | ProjectClosingProblem | TelegramProvisionInProgressProblem
+    root: (
+        TelegramBotAlreadyConnectedProblem
+        | TelegramProjectDeletedProblem
+        | ProjectClosingProblem
+        | TelegramProvisionInProgressProblem
+    )
 
 
 class ConnectTelegramBotGatewayTimeoutProblem(
@@ -7052,6 +7078,12 @@ class CreateAgentProfileAvatarUploadGatewayTimeoutProblem(
     RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
 ):
     root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class CreateAgentProfileAvatarUploadGoneProblem(
+    RootModel[ProjectDeletedProblem | RetiredApiVersionProblem]
+):
+    root: ProjectDeletedProblem | RetiredApiVersionProblem
 
 
 class CreateAppInstallationRequestConflictProblem(
@@ -7262,6 +7294,10 @@ class CreateOrganizationSsoPortalLinkRequest(BaseModel):
     )
     intent: Literal["sso", "domain_verification"] | str = "sso"
     returnTo: str
+
+
+class CreateProjectApiKeyGoneProblem(RootModel[ProjectDeletedProblem | RetiredApiVersionProblem]):
+    root: ProjectDeletedProblem | RetiredApiVersionProblem
 
 
 class CreateProjectGatewayTimeoutProblem(RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]):
@@ -8083,6 +8119,10 @@ class GetAgentProfileGatewayTimeoutProblem(
     root: UpstreamTimeoutProblem | RequestTimeoutProblem
 
 
+class GetAgentProfileGoneProblem(RootModel[ProjectDeletedProblem | RetiredApiVersionProblem]):
+    root: ProjectDeletedProblem | RetiredApiVersionProblem
+
+
 class GetAttachmentGatewayTimeoutProblem(RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]):
     root: UpstreamTimeoutProblem | RequestTimeoutProblem
 
@@ -8091,6 +8131,12 @@ class GetBillingOperationGatewayTimeoutProblem(
     RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
 ):
     root: RequestTimeoutProblem | UpstreamTimeoutProblem
+
+
+class GetBillingOverviewConflictProblem(
+    RootModel[FailedPreconditionProblem | ProjectInitializingProblem]
+):
+    root: FailedPreconditionProblem | ProjectInitializingProblem
 
 
 class GetBillingOverviewGatewayTimeoutProblem(
@@ -8334,17 +8380,9 @@ class GetOrganizationTermsGatewayTimeoutProblem(
 
 
 class GetOrganizationTermsServiceUnavailableProblem(
-    RootModel[
-        BillingEntitlementsPendingProblem
-        | BillingNotProvisionedProblem
-        | UpstreamUnavailableProblem
-    ]
+    RootModel[BillingEntitlementsPendingProblem | UpstreamUnavailableProblem]
 ):
-    root: (
-        BillingEntitlementsPendingProblem
-        | BillingNotProvisionedProblem
-        | UpstreamUnavailableProblem
-    )
+    root: BillingEntitlementsPendingProblem | UpstreamUnavailableProblem
 
 
 class GetProjectClosureStatusGatewayTimeoutProblem(
@@ -8357,9 +8395,6 @@ class GetProjectClosureStatusResponse(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    __annotations__ = {
-        "__pydantic_extra__": dict[str, Any],
-    }
     deletionOperationId: str | None
     domains: list[ProjectClosureDomainStatus]
     organizationId: str
@@ -8369,6 +8404,10 @@ class GetProjectClosureStatusResponse(BaseModel):
 
 class GetProjectGatewayTimeoutProblem(RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]):
     root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class GetProjectGoneProblem(RootModel[ProjectDeletedProblem | RetiredApiVersionProblem]):
+    root: ProjectDeletedProblem | RetiredApiVersionProblem
 
 
 class GetProjectImessagePlatformGatewayTimeoutProblem(
@@ -8500,9 +8539,6 @@ class GetSmsLineCampaignAssignmentResponse(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    __annotations__ = {
-        "__pydantic_extra__": dict[str, Any],
-    }
     campaign: SmsLineCampaign | None
     eligibility: Literal["eligible", "blocked", "unknown"] | str
     reasonCode: str | None
@@ -8569,6 +8605,10 @@ class GetSsoSubscriptionResponse(BaseModel):
     )
 
 
+class GetTenDlcBrandOtpBadGatewayProblem(RootModel[ServiceFailureProblem | UpstreamFailureProblem]):
+    root: ServiceFailureProblem | UpstreamFailureProblem
+
+
 class GetTenDlcBrandOtpGatewayTimeoutProblem(
     RootModel[RequestTimeoutProblem | ServiceTimeoutProblem]
 ):
@@ -8601,6 +8641,12 @@ class GetWebhookDestinationGatewayTimeoutProblem(
     RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
 ):
     root: RequestTimeoutProblem | UpstreamTimeoutProblem
+
+
+class GetWebhookDestinationGoneProblem(
+    RootModel[WebhookDestinationDeletedProblem | RetiredApiVersionProblem]
+):
+    root: WebhookDestinationDeletedProblem | RetiredApiVersionProblem
 
 
 class GetWebhookEventSchemaGatewayTimeoutProblem(
@@ -9234,6 +9280,12 @@ class ListAuthorizedApplicationsInternalServerErrorProblem(
     root: InternalErrorProblem | InvalidAuthContextProblem
 
 
+class ListBillingPlansBadRequestProblem(
+    RootModel[InvalidArgumentProblem | InvalidApiVersionProblem]
+):
+    root: InvalidArgumentProblem | InvalidApiVersionProblem
+
+
 class ListBillingPlansForbiddenProblem(
     RootModel[
         ForbiddenProblem
@@ -9260,6 +9312,12 @@ class ListBillingPlansInternalServerErrorProblem(
     RootModel[InternalErrorProblem | InvalidAuthContextProblem]
 ):
     root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class ListCreditActivityBadRequestProblem(
+    RootModel[InvalidArgumentProblem | InvalidApiVersionProblem]
+):
+    root: InvalidArgumentProblem | InvalidApiVersionProblem
 
 
 class ListCreditActivityForbiddenProblem(
@@ -9344,6 +9402,10 @@ class ListFilteredVerificationCodesInternalServerErrorProblem(
     RootModel[InternalErrorProblem | InvalidAuthContextProblem]
 ):
     root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class ListInvoicesBadRequestProblem(RootModel[InvalidArgumentProblem | InvalidApiVersionProblem]):
+    root: InvalidArgumentProblem | InvalidApiVersionProblem
 
 
 class ListInvoicesForbiddenProblem(
@@ -9699,6 +9761,12 @@ class ListOrganizationsGatewayTimeoutProblem(
     root: UpstreamTimeoutProblem | RequestTimeoutProblem
 
 
+class ListProjectApiKeysBadRequestProblem(
+    RootModel[InvalidArgumentProblem | InvalidApiVersionProblem]
+):
+    root: InvalidArgumentProblem | InvalidApiVersionProblem
+
+
 class ListProjectApiKeysForbiddenProblem(
     RootModel[
         ForbiddenProblem
@@ -9713,6 +9781,10 @@ class ListProjectApiKeysForbiddenProblem(
         | OrganizationSsoRequiredProblem
         | ResourceMismatchProblem
     )
+
+
+class ListProjectApiKeysGoneProblem(RootModel[ProjectDeletedProblem | RetiredApiVersionProblem]):
+    root: ProjectDeletedProblem | RetiredApiVersionProblem
 
 
 class ListProjectPlatformsForbiddenProblem(
@@ -9744,6 +9816,12 @@ class ListProjectPlatformsResponse(BaseModel):
     platforms: list[SupportedPlatform]
 
 
+class ListProjectSubscriptionsBadRequestProblem(
+    RootModel[InvalidArgumentProblem | InvalidApiVersionProblem]
+):
+    root: InvalidArgumentProblem | InvalidApiVersionProblem
+
+
 class ListProjectSubscriptionsForbiddenProblem(
     RootModel[
         ForbiddenProblem
@@ -9770,6 +9848,10 @@ class ListProjectSubscriptionsInternalServerErrorProblem(
     RootModel[InternalErrorProblem | InvalidAuthContextProblem]
 ):
     root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class ListProjectsBadRequestProblem(RootModel[InvalidArgumentProblem | InvalidApiVersionProblem]):
+    root: InvalidArgumentProblem | InvalidApiVersionProblem
 
 
 class ListProjectsForbiddenProblem(
@@ -10128,6 +10210,12 @@ class ListWebhookApiVersionsGatewayTimeoutProblem(
     root: RequestTimeoutProblem | UpstreamTimeoutProblem
 
 
+class ListWebhookDestinationsBadRequestProblem(
+    RootModel[InvalidArgumentProblem | InvalidApiVersionProblem]
+):
+    root: InvalidArgumentProblem | InvalidApiVersionProblem
+
+
 class ListWebhookDestinationsForbiddenProblem(
     RootModel[
         ForbiddenProblem
@@ -10174,6 +10262,12 @@ class ListWebhookEgressAddressesResponse(BaseModel):
     """
     Every public IPv4 address webhook deliveries can originate from. Allow-list all of them; deliveries are spread across every address.
     """
+
+
+class ListWebhookEventTypesBadRequestProblem(
+    RootModel[InvalidArgumentProblem | InvalidApiVersionProblem]
+):
+    root: InvalidArgumentProblem | InvalidApiVersionProblem
 
 
 class ListWebhookEventTypesForbiddenProblem(
@@ -10517,9 +10611,6 @@ class OrganizationConnectionStatusMembership(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    __annotations__ = {
-        "__pydantic_extra__": dict[str, Any],
-    }
     errorCode: str | None
     retryAt: str | None
     status: Literal["pending", "syncing", "ready", "error", "blocked"] | str
@@ -10529,20 +10620,31 @@ class OrganizationConnectionStatusOrganization(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    __annotations__ = {
-        "__pydantic_extra__": dict[str, Any],
-    }
     errorCode: str | None
     status: Literal["pending", "syncing", "ready", "error", "blocked"] | str
+
+
+class OrganizationInitializingProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["ORGANIZATION_INITIALIZING"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    remediation: ProblemRemediation
+    requestId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["Organization Initializing"]
+    type: Literal["https://photon.codes/docs/problems/organization-initializing"]
 
 
 class OrganizationSsoDomain(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    __annotations__ = {
-        "__pydantic_extra__": dict[str, Any],
-    }
     domain: str
     state: Literal["verified", "pending", "failed"] | str
 
@@ -10576,6 +10678,12 @@ class PollVoteContent(BaseModel):
     metadata: ContentMetadata | MISSING = MISSING
     selectedOptions: list[PollOption]
     type: Literal["poll.vote"]
+
+
+class PreviewOrganizationChangeBadRequestProblem(
+    RootModel[InvalidArgumentProblem | InvalidApiVersionProblem]
+):
+    root: InvalidArgumentProblem | InvalidApiVersionProblem
 
 
 class PreviewOrganizationChangeConflictProblem(
@@ -10680,6 +10788,12 @@ class PreviewOrganizationInvitationResponse(BaseModel):
     status: Literal["pending", "accepted"] | str
 
 
+class PreviewProjectChangeBadRequestProblem(
+    RootModel[InvalidArgumentProblem | InvalidApiVersionProblem]
+):
+    root: InvalidArgumentProblem | InvalidApiVersionProblem
+
+
 class PreviewProjectChangeConflictProblem(
     RootModel[FailedPreconditionProblem | PromotionCodeRejectedProblem]
 ):
@@ -10756,9 +10870,6 @@ class Project(BaseModel):
         Literal["pending", "retry_required", "completed", "unknown"] | str | MISSING
     ) = MISSING
     createdAt: str = Field(..., examples=["2026-01-01T00:00:00.000Z"])
-    createdByAccountId: str | None
-    createdByActorId: str | None
-    createdByActorKind: Literal["account", "service_identity"] | str | None
     deletedAt: str | None
     name: str
     organizationId: str
@@ -10821,9 +10932,11 @@ class ProjectPlatformSettings(
 
 
 class ProvisionImessageDedicatedLineBadRequestProblem(
-    RootModel[IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+    RootModel[
+        IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem
+    ]
 ):
-    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem
 
 
 class ProvisionImessageDedicatedLineForbiddenProblem(
@@ -10875,9 +10988,11 @@ class ProvisionImessageDedicatedLineServiceUnavailableProblem(
 
 
 class ProvisionWhatsappDedicatedLineBadRequestProblem(
-    RootModel[IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+    RootModel[
+        IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem
+    ]
 ):
-    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem
 
 
 class ProvisionWhatsappDedicatedLineForbiddenProblem(
@@ -10929,9 +11044,11 @@ class ProvisionWhatsappDedicatedLineServiceUnavailableProblem(
 
 
 class PurchaseSmsNumberBadRequestProblem(
-    RootModel[IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+    RootModel[
+        IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem
+    ]
 ):
-    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem
 
 
 class PurchaseSmsNumberForbiddenProblem(
@@ -11007,6 +11124,12 @@ class ReactionContent(BaseModel):
     type: Literal["reaction"]
 
 
+class RedeemAppInstallationDeliveryBadRequestProblem(
+    RootModel[InvalidArgumentProblem | InvalidApiVersionProblem]
+):
+    root: InvalidArgumentProblem | InvalidApiVersionProblem
+
+
 class RedeemAppInstallationDeliveryGatewayTimeoutProblem(
     RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
 ):
@@ -11020,9 +11143,9 @@ class RedeemAppInstallationDeliveryResponse(
 
 
 class RefreshOrganizationSsoConnectionBadRequestProblem(
-    RootModel[InvalidReturnToProblem | InvalidArgumentProblem]
+    RootModel[InvalidReturnToProblem | InvalidArgumentProblem | InvalidApiVersionProblem]
 ):
-    root: InvalidReturnToProblem | InvalidArgumentProblem
+    root: InvalidReturnToProblem | InvalidArgumentProblem | InvalidApiVersionProblem
 
 
 class RefreshOrganizationSsoConnectionForbiddenProblem(
@@ -11439,9 +11562,11 @@ class ResetAccountProfilePictureInternalServerErrorProblem(
 
 
 class ResetAgentProfileAvatarBadRequestProblem(
-    RootModel[IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+    RootModel[
+        IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem
+    ]
 ):
-    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem
 
 
 class ResetAgentProfileAvatarForbiddenProblem(
@@ -11464,6 +11589,12 @@ class ResetAgentProfileAvatarGatewayTimeoutProblem(
     RootModel[UpstreamTimeoutProblem | RequestTimeoutProblem]
 ):
     root: UpstreamTimeoutProblem | RequestTimeoutProblem
+
+
+class ResetAgentProfileAvatarGoneProblem(
+    RootModel[ProjectDeletedProblem | RetiredApiVersionProblem]
+):
+    root: ProjectDeletedProblem | RetiredApiVersionProblem
 
 
 class Resource(BaseModel):
@@ -11504,6 +11635,12 @@ class ResourcePage(BaseModel):
     resources: list[Resource]
 
 
+class RetryOrganizationConnectionSyncBadRequestProblem(
+    RootModel[InvalidArgumentProblem | InvalidApiVersionProblem]
+):
+    root: InvalidArgumentProblem | InvalidApiVersionProblem
+
+
 class RetryOrganizationConnectionSyncForbiddenProblem(
     RootModel[ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem]
 ):
@@ -11523,9 +11660,11 @@ class RetryOrganizationConnectionSyncInternalServerErrorProblem(
 
 
 class RetryWebhookDeliveryBadRequestProblem(
-    RootModel[IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+    RootModel[
+        IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem
+    ]
 ):
-    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem
 
 
 class RetryWebhookDeliveryForbiddenProblem(
@@ -11675,9 +11814,19 @@ class RevokeOrganizationInvitationGatewayTimeoutProblem(
 
 
 class RevokeProjectApiKeyBadRequestProblem(
-    RootModel[IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem]
+    RootModel[
+        IdempotencyKeyRequiredProblem
+        | IdempotencyKeyInvalidProblem
+        | InvalidArgumentProblem
+        | InvalidApiVersionProblem
+    ]
 ):
-    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem
+    root: (
+        IdempotencyKeyRequiredProblem
+        | IdempotencyKeyInvalidProblem
+        | InvalidArgumentProblem
+        | InvalidApiVersionProblem
+    )
 
 
 class RevokeProjectApiKeyForbiddenProblem(
@@ -11791,9 +11940,11 @@ class RotateOrganizationOauthClientSecretRequest(BaseModel):
 
 
 class RotateVoiceProfileOutboundCredentialBadRequestProblem(
-    RootModel[IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+    RootModel[
+        IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem
+    ]
 ):
-    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem
 
 
 class RotateVoiceProfileOutboundCredentialConflictProblem(
@@ -11849,9 +12000,19 @@ class RotateVoiceProfileOutboundCredentialRequest(BaseModel):
 
 
 class RotateWebhookSigningSecretBadRequestProblem(
-    RootModel[IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem]
+    RootModel[
+        IdempotencyKeyRequiredProblem
+        | IdempotencyKeyInvalidProblem
+        | InvalidArgumentProblem
+        | InvalidApiVersionProblem
+    ]
 ):
-    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem
+    root: (
+        IdempotencyKeyRequiredProblem
+        | IdempotencyKeyInvalidProblem
+        | InvalidArgumentProblem
+        | InvalidApiVersionProblem
+    )
 
 
 class RotateWebhookSigningSecretForbiddenProblem(
@@ -11874,6 +12035,12 @@ class RotateWebhookSigningSecretGatewayTimeoutProblem(
     RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
 ):
     root: RequestTimeoutProblem | UpstreamTimeoutProblem
+
+
+class RotateWebhookSigningSecretGoneProblem(
+    RootModel[WebhookDestinationDeletedProblem | RetiredApiVersionProblem]
+):
+    root: WebhookDestinationDeletedProblem | RetiredApiVersionProblem
 
 
 class SelectableWebhookApiVersion(BaseModel):
@@ -12439,10 +12606,18 @@ class TransferOrganizationOwnershipGatewayTimeoutProblem(
     root: UpstreamTimeoutProblem | RequestTimeoutProblem
 
 
-class TriggerTenDlcBrandOtpBadRequestProblem(
-    RootModel[IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+class TriggerTenDlcBrandOtpBadGatewayProblem(
+    RootModel[ServiceFailureProblem | UpstreamFailureProblem]
 ):
-    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+    root: ServiceFailureProblem | UpstreamFailureProblem
+
+
+class TriggerTenDlcBrandOtpBadRequestProblem(
+    RootModel[
+        IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem
+    ]
+):
+    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem
 
 
 class TriggerTenDlcBrandOtpConflictProblem(
@@ -12493,12 +12668,14 @@ class UnassignSmsLineCampaignBadRequestProblem(
         SmsCampaignInvalidRequestProblem
         | IdempotencyKeyRequiredProblem
         | IdempotencyKeyInvalidProblem
+        | InvalidApiVersionProblem
     ]
 ):
     root: (
         SmsCampaignInvalidRequestProblem
         | IdempotencyKeyRequiredProblem
         | IdempotencyKeyInvalidProblem
+        | InvalidApiVersionProblem
     )
 
 
@@ -12699,9 +12876,11 @@ class UpdateAccountInternalServerErrorProblem(
 
 
 class UpdateAgentProfileBadRequestProblem(
-    RootModel[IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+    RootModel[
+        IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem
+    ]
 ):
-    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem
 
 
 class UpdateAgentProfileForbiddenProblem(
@@ -12902,9 +13081,9 @@ class UpdateOrganizationOauthClientInternalServerErrorProblem(
 
 
 class UpdateOrganizationSsoPolicyBadRequestProblem(
-    RootModel[InvalidReturnToProblem | InvalidArgumentProblem]
+    RootModel[InvalidReturnToProblem | InvalidArgumentProblem | InvalidApiVersionProblem]
 ):
-    root: InvalidReturnToProblem | InvalidArgumentProblem
+    root: InvalidReturnToProblem | InvalidArgumentProblem | InvalidApiVersionProblem
 
 
 class UpdateOrganizationSsoPolicyForbiddenProblem(
@@ -12926,9 +13105,19 @@ class UpdateOrganizationSsoPolicyInternalServerErrorProblem(
 
 
 class UpdateProjectApiKeyBadRequestProblem(
-    RootModel[IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem]
+    RootModel[
+        IdempotencyKeyRequiredProblem
+        | IdempotencyKeyInvalidProblem
+        | InvalidArgumentProblem
+        | InvalidApiVersionProblem
+    ]
 ):
-    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem
+    root: (
+        IdempotencyKeyRequiredProblem
+        | IdempotencyKeyInvalidProblem
+        | InvalidArgumentProblem
+        | InvalidApiVersionProblem
+    )
 
 
 class UpdateProjectApiKeyForbiddenProblem(
@@ -12952,9 +13141,11 @@ class UpdateProjectApiKeyNotFoundProblem(RootModel[ProjectNotFoundProblem | ApiK
 
 
 class UpdateProjectBadRequestProblem(
-    RootModel[IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+    RootModel[
+        IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem
+    ]
 ):
-    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem
 
 
 class UpdateProjectForbiddenProblem(
@@ -13166,9 +13357,19 @@ class UpdateVoiceProfileRequest(BaseModel):
 
 
 class UpdateWebhookDestinationBadRequestProblem(
-    RootModel[IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem]
+    RootModel[
+        IdempotencyKeyRequiredProblem
+        | IdempotencyKeyInvalidProblem
+        | InvalidArgumentProblem
+        | InvalidApiVersionProblem
+    ]
 ):
-    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem
+    root: (
+        IdempotencyKeyRequiredProblem
+        | IdempotencyKeyInvalidProblem
+        | InvalidArgumentProblem
+        | InvalidApiVersionProblem
+    )
 
 
 class UpdateWebhookDestinationForbiddenProblem(
@@ -13191,6 +13392,12 @@ class UpdateWebhookDestinationGatewayTimeoutProblem(
     RootModel[RequestTimeoutProblem | UpstreamTimeoutProblem]
 ):
     root: RequestTimeoutProblem | UpstreamTimeoutProblem
+
+
+class UpdateWebhookDestinationGoneProblem(
+    RootModel[WebhookDestinationDeletedProblem | RetiredApiVersionProblem]
+):
+    root: WebhookDestinationDeletedProblem | RetiredApiVersionProblem
 
 
 class UploadAttachmentBadRequestProblem(
@@ -13261,9 +13468,11 @@ class ValidationIssue(BaseModel):
 
 
 class VerifyTenDlcBrandOtpBadRequestProblem(
-    RootModel[IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+    RootModel[
+        IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem
+    ]
 ):
-    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem
 
 
 class VerifyTenDlcBrandOtpConflictProblem(
@@ -13629,12 +13838,14 @@ class AssignSmsLineCampaignBadRequestProblem(
         SmsCampaignInvalidRequestProblem
         | IdempotencyKeyRequiredProblem
         | IdempotencyKeyInvalidProblem
+        | InvalidApiVersionProblem
     ]
 ):
     root: (
         SmsCampaignInvalidRequestProblem
         | IdempotencyKeyRequiredProblem
         | IdempotencyKeyInvalidProblem
+        | InvalidApiVersionProblem
     )
 
 
@@ -13697,9 +13908,6 @@ class AuthorizedApplication(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    __annotations__ = {
-        "__pydantic_extra__": dict[str, Any],
-    }
     application: AuthorizedOAuthApplication
     authorizationId: str
     """
@@ -13877,9 +14085,19 @@ class CancelSsoSubscriptionForbiddenProblem(
 
 
 class ChangePlanBadRequestProblem(
-    RootModel[InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+    RootModel[
+        InvalidArgumentProblem
+        | IdempotencyKeyRequiredProblem
+        | IdempotencyKeyInvalidProblem
+        | InvalidApiVersionProblem
+    ]
 ):
-    root: InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+    root: (
+        InvalidArgumentProblem
+        | IdempotencyKeyRequiredProblem
+        | IdempotencyKeyInvalidProblem
+        | InvalidApiVersionProblem
+    )
 
 
 class ChangePlanConflictProblem(
@@ -13930,6 +14148,12 @@ class CheckOrganizationDeletionForbiddenProblem(
         | OrganizationSsoRequiredProblem
         | ResourceMismatchProblem
     )
+
+
+class CheckProjectSlugAvailabilityBadRequestProblem(
+    RootModel[InvalidArgumentProblem | InvalidApiVersionProblem]
+):
+    root: InvalidArgumentProblem | InvalidApiVersionProblem
 
 
 class CheckProjectSlugAvailabilityForbiddenProblem(
@@ -14035,9 +14259,19 @@ class CommitAccountProfilePictureInternalServerErrorProblem(
 
 
 class CommitAgentProfileAvatarBadRequestProblem(
-    RootModel[IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem]
+    RootModel[
+        IdempotencyKeyRequiredProblem
+        | IdempotencyKeyInvalidProblem
+        | InvalidArgumentProblem
+        | InvalidApiVersionProblem
+    ]
 ):
-    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem
+    root: (
+        IdempotencyKeyRequiredProblem
+        | IdempotencyKeyInvalidProblem
+        | InvalidArgumentProblem
+        | InvalidApiVersionProblem
+    )
 
 
 class CommitAgentProfileAvatarForbiddenProblem(
@@ -14079,9 +14313,11 @@ class CommitOrganizationAvatarForbiddenProblem(
 
 
 class ConfigureVoiceProfileOutboundBadRequestProblem(
-    RootModel[IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+    RootModel[
+        IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem
+    ]
 ):
-    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem
 
 
 class ConfigureVoiceProfileOutboundForbiddenProblem(
@@ -14107,9 +14343,11 @@ class ConfigureVoiceProfileOutboundInternalServerErrorProblem(
 
 
 class ConnectEmailDomainBadRequestProblem(
-    RootModel[IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+    RootModel[
+        IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem
+    ]
 ):
-    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem
 
 
 class ConnectEmailDomainConflictProblem(
@@ -14151,9 +14389,11 @@ class ConnectEmailDomainInternalServerErrorProblem(
 
 
 class ConnectTelegramBotBadRequestProblem(
-    RootModel[IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+    RootModel[
+        IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem
+    ]
 ):
-    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem
 
 
 class ConnectTelegramBotForbiddenProblem(
@@ -14220,6 +14460,10 @@ class CountMessagesInternalServerErrorProblem(
     RootModel[InternalErrorProblem | InvalidAuthContextProblem]
 ):
     root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class CountProjectsBadRequestProblem(RootModel[InvalidArgumentProblem | InvalidApiVersionProblem]):
+    root: InvalidArgumentProblem | InvalidApiVersionProblem
 
 
 class CountProjectsForbiddenProblem(
@@ -14386,6 +14630,12 @@ class CreateAgentProfileAvatarUploadForbiddenProblem(
         | OrganizationSsoRequiredProblem
         | ResourceMismatchProblem
     )
+
+
+class CreateAppInstallationRequestBadRequestProblem(
+    RootModel[InvalidArgumentProblem | InvalidApiVersionProblem]
+):
+    root: InvalidArgumentProblem | InvalidApiVersionProblem
 
 
 class CreateDefaultVoiceProfileForbiddenProblem(
@@ -14587,9 +14837,19 @@ class CreateOrganizationOauthClientInternalServerErrorProblem(
 
 
 class CreateOrganizationPaymentMethodCheckoutBadRequestProblem(
-    RootModel[InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+    RootModel[
+        InvalidArgumentProblem
+        | IdempotencyKeyRequiredProblem
+        | IdempotencyKeyInvalidProblem
+        | InvalidApiVersionProblem
+    ]
 ):
-    root: InvalidArgumentProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+    root: (
+        InvalidArgumentProblem
+        | IdempotencyKeyRequiredProblem
+        | IdempotencyKeyInvalidProblem
+        | InvalidApiVersionProblem
+    )
 
 
 class CreateOrganizationPaymentMethodCheckoutForbiddenProblem(
@@ -14615,9 +14875,9 @@ class CreateOrganizationPaymentMethodCheckoutInternalServerErrorProblem(
 
 
 class CreateOrganizationSsoPortalLinkBadRequestProblem(
-    RootModel[InvalidReturnToProblem | InvalidArgumentProblem]
+    RootModel[InvalidReturnToProblem | InvalidArgumentProblem | InvalidApiVersionProblem]
 ):
-    root: InvalidReturnToProblem | InvalidArgumentProblem
+    root: InvalidReturnToProblem | InvalidArgumentProblem | InvalidApiVersionProblem
 
 
 class CreateOrganizationSsoPortalLinkForbiddenProblem(
@@ -14633,9 +14893,19 @@ class CreateOrganizationSsoPortalLinkInternalServerErrorProblem(
 
 
 class CreateProjectApiKeyBadRequestProblem(
-    RootModel[IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem]
+    RootModel[
+        IdempotencyKeyRequiredProblem
+        | IdempotencyKeyInvalidProblem
+        | InvalidArgumentProblem
+        | InvalidApiVersionProblem
+    ]
 ):
-    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem
+    root: (
+        IdempotencyKeyRequiredProblem
+        | IdempotencyKeyInvalidProblem
+        | InvalidArgumentProblem
+        | InvalidApiVersionProblem
+    )
 
 
 class CreateProjectApiKeyForbiddenProblem(
@@ -14655,9 +14925,19 @@ class CreateProjectApiKeyForbiddenProblem(
 
 
 class CreateProjectBadRequestProblem(
-    RootModel[IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem]
+    RootModel[
+        IdempotencyKeyRequiredProblem
+        | IdempotencyKeyInvalidProblem
+        | InvalidArgumentProblem
+        | InvalidApiVersionProblem
+    ]
 ):
-    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem
+    root: (
+        IdempotencyKeyRequiredProblem
+        | IdempotencyKeyInvalidProblem
+        | InvalidArgumentProblem
+        | InvalidApiVersionProblem
+    )
 
 
 class CreateProjectForbiddenProblem(
@@ -14767,9 +15047,11 @@ class CreateServiceIdentityForbiddenProblem(
 
 
 class CreateSharedLineAssignmentBadRequestProblem(
-    RootModel[IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+    RootModel[
+        IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem
+    ]
 ):
-    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem
 
 
 class CreateSharedLineAssignmentConflictProblem(
@@ -14835,9 +15117,19 @@ class CreateVoiceProfileInternalServerErrorProblem(
 
 
 class CreateWebhookDestinationBadRequestProblem(
-    RootModel[IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem]
+    RootModel[
+        IdempotencyKeyRequiredProblem
+        | IdempotencyKeyInvalidProblem
+        | InvalidArgumentProblem
+        | InvalidApiVersionProblem
+    ]
 ):
-    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidArgumentProblem
+    root: (
+        IdempotencyKeyRequiredProblem
+        | IdempotencyKeyInvalidProblem
+        | InvalidArgumentProblem
+        | InvalidApiVersionProblem
+    )
 
 
 class CreateWebhookDestinationForbiddenProblem(
@@ -14857,9 +15149,11 @@ class CreateWebhookDestinationForbiddenProblem(
 
 
 class CreateWhatsappSharedLineAssignmentBadRequestProblem(
-    RootModel[IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+    RootModel[
+        IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem
+    ]
 ):
-    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem
 
 
 class CreateWhatsappSharedLineAssignmentForbiddenProblem(
@@ -14885,9 +15179,11 @@ class CreateWhatsappSharedLineAssignmentInternalServerErrorProblem(
 
 
 class CreateWhatsappVoipSenderBadRequestProblem(
-    RootModel[IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+    RootModel[
+        IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem
+    ]
 ):
-    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem
 
 
 class CreateWhatsappVoipSenderForbiddenProblem(
@@ -15013,9 +15309,11 @@ class DeleteOrganizationOauthClientSecretInternalServerErrorProblem(
 
 
 class DeleteProjectBadRequestProblem(
-    RootModel[IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem]
+    RootModel[
+        IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem
+    ]
 ):
-    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem
+    root: IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem
 
 
 class DeleteProjectForbiddenProblem(
@@ -15136,6 +15434,7 @@ class DisableOrganizationSsoBadRequestProblem(
         | InvalidArgumentProblem
         | IdempotencyKeyRequiredProblem
         | IdempotencyKeyInvalidProblem
+        | InvalidApiVersionProblem
     ]
 ):
     root: (
@@ -15143,6 +15442,7 @@ class DisableOrganizationSsoBadRequestProblem(
         | InvalidArgumentProblem
         | IdempotencyKeyRequiredProblem
         | IdempotencyKeyInvalidProblem
+        | InvalidApiVersionProblem
     )
 
 
@@ -15159,9 +15459,11 @@ class DisableOrganizationSsoInternalServerErrorProblem(
 
 
 class DisconnectWhatsappBusinessAccountBadRequestProblem(
-    RootModel[IdempotencyKeyInvalidProblem | IdempotencyKeyRequiredProblem]
+    RootModel[
+        IdempotencyKeyInvalidProblem | IdempotencyKeyRequiredProblem | InvalidApiVersionProblem
+    ]
 ):
-    root: IdempotencyKeyInvalidProblem | IdempotencyKeyRequiredProblem
+    root: IdempotencyKeyInvalidProblem | IdempotencyKeyRequiredProblem | InvalidApiVersionProblem
 
 
 class DisconnectWhatsappBusinessAccountForbiddenProblem(
@@ -15442,6 +15744,12 @@ class GetAttachmentInternalServerErrorProblem(
     root: InternalErrorProblem | InvalidAuthContextProblem
 
 
+class GetBillingOperationBadRequestProblem(
+    RootModel[InvalidArgumentProblem | InvalidApiVersionProblem]
+):
+    root: InvalidArgumentProblem | InvalidApiVersionProblem
+
+
 class GetBillingOperationForbiddenProblem(
     RootModel[
         ForbiddenProblem
@@ -15462,6 +15770,12 @@ class GetBillingOperationInternalServerErrorProblem(
     RootModel[InternalErrorProblem | InvalidAuthContextProblem]
 ):
     root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class GetBillingOverviewBadRequestProblem(
+    RootModel[InvalidArgumentProblem | InvalidApiVersionProblem]
+):
+    root: InvalidArgumentProblem | InvalidApiVersionProblem
 
 
 class GetBillingOverviewForbiddenProblem(
@@ -15522,6 +15836,20 @@ class GetDefaultVoiceProfileInternalServerErrorProblem(
     RootModel[InternalErrorProblem | InvalidAuthContextProblem]
 ):
     root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class GetEffectiveTermsBadRequestProblem(
+    RootModel[InvalidArgumentProblem | InvalidApiVersionProblem]
+):
+    root: InvalidArgumentProblem | InvalidApiVersionProblem
+
+
+class GetEffectiveTermsConflictProblem(
+    RootModel[
+        FailedPreconditionProblem | OrganizationInitializingProblem | ProjectInitializingProblem
+    ]
+):
+    root: FailedPreconditionProblem | OrganizationInitializingProblem | ProjectInitializingProblem
 
 
 class GetEffectiveTermsForbiddenProblem(
@@ -15666,6 +15994,18 @@ class GetOperationInternalServerErrorProblem(
     root: InternalErrorProblem | InvalidAuthContextProblem
 
 
+class GetOrganizationBillingOverviewBadRequestProblem(
+    RootModel[InvalidArgumentProblem | InvalidApiVersionProblem]
+):
+    root: InvalidArgumentProblem | InvalidApiVersionProblem
+
+
+class GetOrganizationBillingOverviewConflictProblem(
+    RootModel[FailedPreconditionProblem | OrganizationInitializingProblem]
+):
+    root: FailedPreconditionProblem | OrganizationInitializingProblem
+
+
 class GetOrganizationBillingOverviewForbiddenProblem(
     RootModel[
         ForbiddenProblem
@@ -15688,6 +16028,12 @@ class GetOrganizationBillingOverviewInternalServerErrorProblem(
     root: InternalErrorProblem | InvalidAuthContextProblem
 
 
+class GetOrganizationConnectionStatusBadRequestProblem(
+    RootModel[InvalidArgumentProblem | InvalidApiVersionProblem]
+):
+    root: InvalidArgumentProblem | InvalidApiVersionProblem
+
+
 class GetOrganizationConnectionStatusForbiddenProblem(
     RootModel[ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem]
 ):
@@ -15698,6 +16044,18 @@ class GetOrganizationConnectionStatusInternalServerErrorProblem(
     RootModel[InternalErrorProblem | InvalidAuthContextProblem]
 ):
     root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class GetOrganizationCreditBadRequestProblem(
+    RootModel[InvalidArgumentProblem | InvalidApiVersionProblem]
+):
+    root: InvalidArgumentProblem | InvalidApiVersionProblem
+
+
+class GetOrganizationCreditConflictProblem(
+    RootModel[FailedPreconditionProblem | OrganizationInitializingProblem]
+):
+    root: FailedPreconditionProblem | OrganizationInitializingProblem
 
 
 class GetOrganizationCreditForbiddenProblem(
@@ -15782,6 +16140,12 @@ class GetOrganizationOauthClientSecretInternalServerErrorProblem(
     root: InternalErrorProblem | InvalidAuthContextProblem
 
 
+class GetOrganizationPaymentMethodBadRequestProblem(
+    RootModel[InvalidArgumentProblem | InvalidApiVersionProblem]
+):
+    root: InvalidArgumentProblem | InvalidApiVersionProblem
+
+
 class GetOrganizationPaymentMethodForbiddenProblem(
     RootModel[
         ForbiddenProblem
@@ -15805,9 +16169,9 @@ class GetOrganizationPaymentMethodInternalServerErrorProblem(
 
 
 class GetOrganizationSsoConfigurationBadRequestProblem(
-    RootModel[InvalidReturnToProblem | InvalidArgumentProblem]
+    RootModel[InvalidReturnToProblem | InvalidArgumentProblem | InvalidApiVersionProblem]
 ):
-    root: InvalidReturnToProblem | InvalidArgumentProblem
+    root: InvalidReturnToProblem | InvalidArgumentProblem | InvalidApiVersionProblem
 
 
 class GetOrganizationSsoConfigurationForbiddenProblem(
@@ -15820,6 +16184,18 @@ class GetOrganizationSsoConfigurationInternalServerErrorProblem(
     RootModel[InternalErrorProblem | InvalidAuthContextProblem]
 ):
     root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class GetOrganizationTermsBadRequestProblem(
+    RootModel[InvalidArgumentProblem | InvalidApiVersionProblem]
+):
+    root: InvalidArgumentProblem | InvalidApiVersionProblem
+
+
+class GetOrganizationTermsConflictProblem(
+    RootModel[FailedPreconditionProblem | OrganizationInitializingProblem]
+):
+    root: FailedPreconditionProblem | OrganizationInitializingProblem
 
 
 class GetOrganizationTermsForbiddenProblem(
@@ -15842,6 +16218,12 @@ class GetOrganizationTermsInternalServerErrorProblem(
     RootModel[InternalErrorProblem | InvalidAuthContextProblem]
 ):
     root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class GetProjectClosureStatusBadRequestProblem(
+    RootModel[InvalidArgumentProblem | InvalidApiVersionProblem]
+):
+    root: InvalidArgumentProblem | InvalidApiVersionProblem
 
 
 class GetProjectClosureStatusForbiddenProblem(
@@ -15978,6 +16360,12 @@ class GetSharedLineAssignmentInternalServerErrorProblem(
     RootModel[InternalErrorProblem | InvalidAuthContextProblem]
 ):
     root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class GetSmsLineCampaignAssignmentBadRequestProblem(
+    RootModel[SmsCampaignInvalidRequestProblem | InvalidApiVersionProblem]
+):
+    root: SmsCampaignInvalidRequestProblem | InvalidApiVersionProblem
 
 
 class GetSmsLineCampaignAssignmentForbiddenProblem(
@@ -16141,6 +16529,12 @@ class GetWebhookDestinationForbiddenProblem(
         | OrganizationSsoRequiredProblem
         | ResourceMismatchProblem
     )
+
+
+class GetWebhookEventSchemaBadRequestProblem(
+    RootModel[InvalidArgumentProblem | InvalidApiVersionProblem]
+):
+    root: InvalidArgumentProblem | InvalidApiVersionProblem
 
 
 class GetWebhookEventSchemaForbiddenProblem(
@@ -16367,14 +16761,17 @@ class ListAuthorizedApplicationsResponse(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    __annotations__ = {
-        "__pydantic_extra__": dict[str, Any],
-    }
     authorizedApplications: list[AuthorizedApplication]
     """
     One page of applications authorized by the authenticated user.
     """
     listMetadata: ListAuthorizedApplicationsResponseListMetadata
+
+
+class ListCreditActivityConflictProblem(
+    RootModel[FailedPreconditionProblem | OrganizationInitializingProblem]
+):
+    root: FailedPreconditionProblem | OrganizationInitializingProblem
 
 
 class ListInvoicesResponse(BaseModel):
@@ -16520,6 +16917,7 @@ class OperationError(
         | SmsCampaignProviderRejectedProblem
         | SmsCampaignReconciliationRequiredProblem
         | SmsCampaignRevokedProblem
+        | TelegramBotAlreadyConnectedProblem
         | TelegramConfigurationFailedProblem
         | TelegramReleaseFailedProblem
         | WhatsappAccountDisconnectFailedProblem
@@ -16567,6 +16965,7 @@ class OperationError(
         | SmsCampaignProviderRejectedProblem
         | SmsCampaignReconciliationRequiredProblem
         | SmsCampaignRevokedProblem
+        | TelegramBotAlreadyConnectedProblem
         | TelegramConfigurationFailedProblem
         | TelegramReleaseFailedProblem
         | WhatsappAccountDisconnectFailedProblem
@@ -16604,9 +17003,6 @@ class OrganizationConnectionStatus(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    __annotations__ = {
-        "__pydantic_extra__": dict[str, Any],
-    }
     membership: OrganizationConnectionStatusMembership
     organization: OrganizationConnectionStatusOrganization
     organizationId: str
@@ -16617,9 +17013,6 @@ class OrganizationSsoConfiguration(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    __annotations__ = {
-        "__pydantic_extra__": dict[str, Any],
-    }
     connectionChangedAt: str | None
     connectionGeneration: str
     connectionState: Literal["not_configured", "configuring", "ready", "error"] | str
@@ -17107,6 +17500,12 @@ class AcceptOrganizationInvitationUnprocessableEntityProblem(
     root: ValidationFailedProblem | IdempotencyKeyReusedProblem
 
 
+class AssignSmsLineCampaignUnprocessableEntityProblem(
+    RootModel[IdempotencyKeyReusedProblem | ValidationFailedProblem]
+):
+    root: IdempotencyKeyReusedProblem | ValidationFailedProblem
+
+
 class BillingOperation(
     RootModel[PendingBillingOperation | SucceededBillingOperation | FailedBillingOperation]
 ):
@@ -17555,6 +17954,7 @@ class Operation(BaseModel):
         | SmsCampaignProviderRejectedProblem
         | SmsCampaignReconciliationRequiredProblem
         | SmsCampaignRevokedProblem
+        | TelegramBotAlreadyConnectedProblem
         | TelegramConfigurationFailedProblem
         | TelegramReleaseFailedProblem
         | WhatsappAccountDisconnectFailedProblem

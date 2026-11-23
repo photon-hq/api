@@ -16,7 +16,7 @@ photon.organizations.billing.getOrganizationTerms(input: GetOrganizationTermsInp
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.organizations.billing.get_organization_terms(input: GetOrganizationTermsInput) -> models.GetOrganizationTermsResponse
+photon.organizations.billing.get_organization_terms(input: GetOrganizationTermsInput, *, options: RequestOptions | None = None) -> models.GetOrganizationTermsResponse
 ```
 </Tab>
 <Tab title="Rust">
@@ -108,6 +108,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField path="organizationId" type={"string"} required>
 
 </ParamField>
@@ -117,6 +121,8 @@ _ = result
 
 **`200`** The organization's effective billing terms. GetOrganizationTermsResponse
 
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+
 <ResponseField name="subscription" type={"OrganizationSubscriptionTerms | null"} required>
 What one subscription is billed on now. plan is the plan as this subscription has it: its own prices when overridden, each fixed charge at the subscription's price and quantity, and entitlements resolved with overrides. The organization's own subscription, or null when it holds none.
 </ResponseField>
@@ -124,4 +130,8 @@ What one subscription is billed on now. plan is the plan as this subscription ha
 <ResponseField name="timeZone" type={"string"} required>
 The IANA time zone the payer is billed in, e.g. America/Los_Angeles. Billing periods start and end at its midnights, so read their calendar dates in it.
 </ResponseField>
+
+**`304`** Not Modified. Sent only when If-None-Match matches the ETag of an earlier 200 response for the same representation; no body. No body.
+
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 

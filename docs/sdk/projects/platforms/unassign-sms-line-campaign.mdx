@@ -16,7 +16,7 @@ photon.projects.platforms.unassignSmsLineCampaign(input: UnassignSmsLineCampaign
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.projects.platforms.unassign_sms_line_campaign(input: UnassignSmsLineCampaignInput) -> models.Operation
+photon.projects.platforms.unassign_sms_line_campaign(input: UnassignSmsLineCampaignInput, *, options: RequestOptions | None = None) -> models.Operation
 ```
 </Tab>
 <Tab title="Rust">
@@ -177,6 +177,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField header="Idempotency-Key" type={"string"} required>
 Identifies one logical mutation across retries.
 </ParamField>
@@ -198,7 +202,7 @@ Identifies one logical mutation across retries.
 
 **`200`** The original terminal operation on an authorized replay. No Retry-After is emitted. Operation
 
-Headers: `Cache-Control`, `Location`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+Headers: `Cache-Control`, `Location`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="cancellable" type={"boolean"} required>
 
@@ -258,7 +262,7 @@ Why the operation failed: the problem of its `code`, the same object the endpoin
 
 **`202`** Assignment accepted. Poll the operation Location until terminal. Operation
 
-Headers: `Cache-Control`, `Location`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+Headers: `Cache-Control`, `Location`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="cancellable" type={"boolean"} required>
 

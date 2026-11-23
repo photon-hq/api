@@ -404,392 +404,392 @@ photon.projects.platforms.unassignVoiceLineProfile(input: UnassignVoiceLineProfi
 **[List email recommendations](/api-client/sdk/projects/platforms/list-email-recommendations)**
 
 ```python Python
-photon.projects.platforms.list_email_recommendations(input: ListEmailRecommendationsInput) -> models.EmailRecommendations
+photon.projects.platforms.list_email_recommendations(input: ListEmailRecommendationsInput, *, options: RequestOptions | None = None) -> models.EmailRecommendations
 ```
 `GET /v1/projects/{id}/platforms/email/recommendations`
 
 **[List filtered verification codes](/api-client/sdk/projects/platforms/list-filtered-verification-codes)**
 
 ```python Python
-photon.projects.platforms.list_filtered_verification_codes(input: ListFilteredVerificationCodesInput) -> models.FilteredVerificationCodePage
+photon.projects.platforms.list_filtered_verification_codes(input: ListFilteredVerificationCodesInput, *, options: RequestOptions | None = None) -> models.FilteredVerificationCodePage
 ```
 `GET /v1/projects/{id}/platforms/filtered-otp`
 
 **[List number area codes](/api-client/sdk/projects/platforms/list-number-area-codes)**
 
 ```python Python
-photon.projects.platforms.list_number_area_codes(input: ListNumberAreaCodesInput) -> models.ListNumberAreaCodesResponse
+photon.projects.platforms.list_number_area_codes(input: ListNumberAreaCodesInput, *, options: RequestOptions | None = None) -> models.ListNumberAreaCodesResponse
 ```
 `GET /v1/projects/{id}/platforms/sms/numbers/area-codes`
 
 **[List number countries](/api-client/sdk/projects/platforms/list-number-countries)**
 
 ```python Python
-photon.projects.platforms.list_number_countries(input: ListNumberCountriesInput) -> models.ListNumberCountriesResponse
+photon.projects.platforms.list_number_countries(input: ListNumberCountriesInput, *, options: RequestOptions | None = None) -> models.ListNumberCountriesResponse
 ```
 `GET /v1/projects/{id}/platforms/sms/numbers/countries`
 
 **[List operations](/api-client/sdk/projects/platforms/list-operations)**
 
 ```python Python
-photon.projects.platforms.list_operations(input: ListOperationsInput) -> models.OperationPage
+photon.projects.platforms.list_operations(input: ListOperationsInput, *, options: RequestOptions | None = None) -> models.OperationPage
 ```
 `GET /v1/projects/{id}/platforms/operations`
 
 **[List project platforms](/api-client/sdk/projects/platforms/list-project-platforms)**
 
 ```python Python
-photon.projects.platforms.list_project_platforms(input: ListProjectPlatformsInput) -> models.ListProjectPlatformsResponse
+photon.projects.platforms.list_project_platforms(input: ListProjectPlatformsInput, *, options: RequestOptions | None = None) -> models.ListProjectPlatformsResponse
 ```
 `GET /v1/projects/{id}/platforms`
 
 **[List a line's filtered verification codes](/api-client/sdk/projects/platforms/list-resource-filtered-verification-codes)**
 
 ```python Python
-photon.projects.platforms.list_resource_filtered_verification_codes(input: ListResourceFilteredVerificationCodesInput) -> models.FilteredVerificationCodePage
+photon.projects.platforms.list_resource_filtered_verification_codes(input: ListResourceFilteredVerificationCodesInput, *, options: RequestOptions | None = None,) -> models.FilteredVerificationCodePage
 ```
 `GET /v1/projects/{id}/platforms/resources/{resourceId}/filtered-otp`
 
 **[List resources](/api-client/sdk/projects/platforms/list-resources)**
 
 ```python Python
-photon.projects.platforms.list_resources(input: ListResourcesInput) -> models.ResourcePage
+photon.projects.platforms.list_resources(input: ListResourcesInput, *, options: RequestOptions | None = None) -> models.ResourcePage
 ```
 `GET /v1/projects/{id}/platforms/resources`
 
 **[List Voice profiles](/api-client/sdk/projects/platforms/list-voice-profiles)**
 
 ```python Python
-photon.projects.platforms.list_voice_profiles(input: ListVoiceProfilesInput) -> models.VoiceProfilePage
+photon.projects.platforms.list_voice_profiles(input: ListVoiceProfilesInput, *, options: RequestOptions | None = None) -> models.VoiceProfilePage
 ```
 `GET /v1/projects/{id}/platforms/voice/profiles`
 
 **[List WhatsApp account phone numbers](/api-client/sdk/projects/platforms/list-whatsapp-account-phone-numbers)**
 
 ```python Python
-photon.projects.platforms.list_whatsapp_account_phone_numbers(input: ListWhatsappAccountPhoneNumbersInput) -> models.ListWhatsappAccountPhoneNumbersResponse
+photon.projects.platforms.list_whatsapp_account_phone_numbers(input: ListWhatsappAccountPhoneNumbersInput, *, options: RequestOptions | None = None) -> models.ListWhatsappAccountPhoneNumbersResponse
 ```
 `GET /v1/projects/{id}/platforms/whatsapp-business/account/phone-numbers`
 
 **[List WhatsApp shared line assignments](/api-client/sdk/projects/platforms/list-whatsapp-shared-line-assignments)**
 
 ```python Python
-photon.projects.platforms.list_whatsapp_shared_line_assignments(input: ListWhatsappSharedLineAssignmentsInput) -> models.SharedLineAssignmentPage
+photon.projects.platforms.list_whatsapp_shared_line_assignments(input: ListWhatsappSharedLineAssignmentsInput, *, options: RequestOptions | None = None,) -> models.SharedLineAssignmentPage
 ```
 `GET /v1/projects/{id}/platforms/whatsapp/assignments`
 
 **[Count filtered verification codes](/api-client/sdk/projects/platforms/count-filtered-verification-codes)**
 
 ```python Python
-photon.projects.platforms.count_filtered_verification_codes(input: CountFilteredVerificationCodesInput) -> models.FilteredVerificationCodeCount
+photon.projects.platforms.count_filtered_verification_codes(input: CountFilteredVerificationCodesInput, *, options: RequestOptions | None = None) -> models.FilteredVerificationCodeCount
 ```
 `GET /v1/projects/{id}/platforms/filtered-otp/count`
 
 **[Count a line's filtered verification codes](/api-client/sdk/projects/platforms/count-resource-filtered-verification-codes)**
 
 ```python Python
-photon.projects.platforms.count_resource_filtered_verification_codes(input: CountResourceFilteredVerificationCodesInput) -> models.FilteredVerificationCodeCount
+photon.projects.platforms.count_resource_filtered_verification_codes(input: CountResourceFilteredVerificationCodesInput, *, options: RequestOptions | None = None,) -> models.FilteredVerificationCodeCount
 ```
 `GET /v1/projects/{id}/platforms/resources/{resourceId}/filtered-otp/count`
 
 **[Get default Voice profile](/api-client/sdk/projects/platforms/get-default-voice-profile)**
 
 ```python Python
-photon.projects.platforms.get_default_voice_profile(input: GetDefaultVoiceProfileInput) -> models.VoiceProfile
+photon.projects.platforms.get_default_voice_profile(input: GetDefaultVoiceProfileInput, *, options: RequestOptions | None = None) -> models.VoiceProfile
 ```
 `GET /v1/projects/{id}/platforms/voice/profiles/default`
 
 **[Get email delivery metrics](/api-client/sdk/projects/platforms/get-email-delivery-metrics)**
 
 ```python Python
-photon.projects.platforms.get_email_delivery_metrics(input: GetEmailDeliveryMetricsInput) -> models.EmailDeliveryMetrics
+photon.projects.platforms.get_email_delivery_metrics(input: GetEmailDeliveryMetricsInput, *, options: RequestOptions | None = None) -> models.EmailDeliveryMetrics
 ```
 `GET /v1/projects/{id}/platforms/email/metrics`
 
 **[Get email sending policies](/api-client/sdk/projects/platforms/get-email-sending-policies)**
 
 ```python Python
-photon.projects.platforms.get_email_sending_policies(input: GetEmailSendingPoliciesInput) -> models.EmailSendingPolicies
+photon.projects.platforms.get_email_sending_policies(input: GetEmailSendingPoliciesInput, *, options: RequestOptions | None = None) -> models.EmailSendingPolicies
 ```
 `GET /v1/projects/{id}/platforms/email/sending-policy`
 
 **[Get project iMessage platform](/api-client/sdk/projects/platforms/get-imessage)**
 
 ```python Python
-photon.projects.platforms.get_imessage(input: GetProjectImessagePlatformInput) -> models.ProjectPlatformSettings
+photon.projects.platforms.get_imessage(input: GetProjectImessagePlatformInput, *, options: RequestOptions | None = None) -> models.ProjectPlatformSettings
 ```
 `GET /v1/projects/{id}/platforms/imessage`
 
 **[Get operation](/api-client/sdk/projects/platforms/get-operation)**
 
 ```python Python
-photon.projects.platforms.get_operation(input: GetOperationInput) -> models.GetOperationResponse
+photon.projects.platforms.get_operation(input: GetOperationInput, *, options: RequestOptions | None = None) -> models.GetOperationResponse
 ```
 `GET /v1/projects/{id}/platforms/operations/{operationId}`
 
 **[Get project WhatsApp platform](/api-client/sdk/projects/platforms/get-project-whatsapp-platform)**
 
 ```python Python
-photon.projects.platforms.get_project_whatsapp_platform(input: GetProjectWhatsappPlatformInput) -> models.ProjectPlatformSettings
+photon.projects.platforms.get_project_whatsapp_platform(input: GetProjectWhatsappPlatformInput, *, options: RequestOptions | None = None) -> models.ProjectPlatformSettings
 ```
 `GET /v1/projects/{id}/platforms/whatsapp`
 
 **[Get resource](/api-client/sdk/projects/platforms/get-resource)**
 
 ```python Python
-photon.projects.platforms.get_resource(input: GetResourceInput) -> models.Resource
+photon.projects.platforms.get_resource(input: GetResourceInput, *, options: RequestOptions | None = None) -> models.Resource
 ```
 `GET /v1/projects/{id}/platforms/resources/{resourceId}`
 
 **[Get SMS line campaign assignment](/api-client/sdk/projects/platforms/get-sms-line-campaign-assignment)**
 
 ```python Python
-photon.projects.platforms.get_sms_line_campaign_assignment(input: GetSmsLineCampaignAssignmentInput) -> models.GetSmsLineCampaignAssignmentResponse
+photon.projects.platforms.get_sms_line_campaign_assignment(input: GetSmsLineCampaignAssignmentInput, *, options: RequestOptions | None = None) -> models.GetSmsLineCampaignAssignmentResponse
 ```
 `GET /v1/projects/{id}/platforms/sms/lines/{resourceId}/campaign`
 
 **[Get Voice line profile assignment](/api-client/sdk/projects/platforms/get-voice-line-profile-assignment)**
 
 ```python Python
-photon.projects.platforms.get_voice_line_profile_assignment(input: GetVoiceLineProfileAssignmentInput) -> models.VoiceLineProfileAssignment
+photon.projects.platforms.get_voice_line_profile_assignment(input: GetVoiceLineProfileAssignmentInput, *, options: RequestOptions | None = None) -> models.VoiceLineProfileAssignment
 ```
 `GET /v1/projects/{id}/platforms/voice/lines/{resourceId}/profile`
 
 **[Get Voice profile](/api-client/sdk/projects/platforms/get-voice-profile)**
 
 ```python Python
-photon.projects.platforms.get_voice_profile(input: GetVoiceProfileInput) -> models.VoiceProfile
+photon.projects.platforms.get_voice_profile(input: GetVoiceProfileInput, *, options: RequestOptions | None = None) -> models.VoiceProfile
 ```
 `GET /v1/projects/{id}/platforms/voice/profiles/{profileId}`
 
 **[Get WhatsApp Business account](/api-client/sdk/projects/platforms/get-whatsapp-business-account)**
 
 ```python Python
-photon.projects.platforms.get_whatsapp_business_account(input: GetWhatsappBusinessAccountInput) -> models.WhatsappBusinessAccount
+photon.projects.platforms.get_whatsapp_business_account(input: GetWhatsappBusinessAccountInput, *, options: RequestOptions | None = None) -> models.WhatsappBusinessAccount
 ```
 `GET /v1/projects/{id}/platforms/whatsapp-business/account`
 
 **[Get WhatsApp Business verification code](/api-client/sdk/projects/platforms/get-whatsapp-business-verification-code)**
 
 ```python Python
-photon.projects.platforms.get_whatsapp_business_verification_code(input: GetWhatsappBusinessVerificationCodeInput) -> models.GetWhatsappBusinessVerificationCodeResponse
+photon.projects.platforms.get_whatsapp_business_verification_code(input: GetWhatsappBusinessVerificationCodeInput, *, options: RequestOptions | None = None,) -> models.GetWhatsappBusinessVerificationCodeResponse
 ```
 `GET /v1/projects/{id}/platforms/whatsapp-business/numbers/{resourceId}/verification-code`
 
 **[Get WhatsApp shared line assignment](/api-client/sdk/projects/platforms/get-whatsapp-shared-line-assignment)**
 
 ```python Python
-photon.projects.platforms.get_whatsapp_shared_line_assignment(input: GetWhatsappSharedLineAssignmentInput) -> models.SharedLineAssignment
+photon.projects.platforms.get_whatsapp_shared_line_assignment(input: GetWhatsappSharedLineAssignmentInput, *, options: RequestOptions | None = None) -> models.SharedLineAssignment
 ```
 `GET /v1/projects/{id}/platforms/whatsapp/assignments/{assignmentId}`
 
 **[Batch update Voice line assignments](/api-client/sdk/projects/platforms/batch-update-voice-line-profile-assignments)**
 
 ```python Python
-photon.projects.platforms.batch_update_voice_line_profile_assignments(input: BatchUpdateVoiceLineProfileAssignmentsInput) -> models.BatchUpdateVoiceLineProfileAssignmentsResponse
+photon.projects.platforms.batch_update_voice_line_profile_assignments(input: BatchUpdateVoiceLineProfileAssignmentsInput, *, options: RequestOptions | None = None,) -> models.BatchUpdateVoiceLineProfileAssignmentsResponse
 ```
 `POST /v1/projects/{id}/platforms/voice/lines/profile-assignments/batch`
 
 **[Cancel operation](/api-client/sdk/projects/platforms/cancel-operation)**
 
 ```python Python
-photon.projects.platforms.cancel_operation(input: CancelOperationInput) -> models.Operation
+photon.projects.platforms.cancel_operation(input: CancelOperationInput, *, options: RequestOptions | None = None) -> models.Operation
 ```
 `POST /v1/projects/{id}/platforms/operations/{operationId}/cancel`
 
 **[Connect email domain](/api-client/sdk/projects/platforms/connect-email-domain)**
 
 ```python Python
-photon.projects.platforms.connect_email_domain(input: ConnectEmailDomainInput) -> models.Operation
+photon.projects.platforms.connect_email_domain(input: ConnectEmailDomainInput, *, options: RequestOptions | None = None) -> models.Operation
 ```
 `POST /v1/projects/{id}/platforms/email/domains`
 
 **[Connect Telegram bot](/api-client/sdk/projects/platforms/connect-telegram-bot)**
 
 ```python Python
-photon.projects.platforms.connect_telegram_bot(input: ConnectTelegramBotInput) -> models.Operation
+photon.projects.platforms.connect_telegram_bot(input: ConnectTelegramBotInput, *, options: RequestOptions | None = None) -> models.Operation
 ```
 `POST /v1/projects/{id}/platforms/telegram/bots`
 
 **[Create Voice profile](/api-client/sdk/projects/platforms/create-voice-profile)**
 
 ```python Python
-photon.projects.platforms.create_voice_profile(input: CreateVoiceProfileInput) -> models.VoiceProfile
+photon.projects.platforms.create_voice_profile(input: CreateVoiceProfileInput, *, options: RequestOptions | None = None) -> models.VoiceProfile
 ```
 `POST /v1/projects/{id}/platforms/voice/profiles`
 
 **[Create WhatsApp shared line assignment](/api-client/sdk/projects/platforms/create-whatsapp-shared-line-assignment)**
 
 ```python Python
-photon.projects.platforms.create_whatsapp_shared_line_assignment(input: CreateWhatsappSharedLineAssignmentInput) -> models.SharedLineAssignment
+photon.projects.platforms.create_whatsapp_shared_line_assignment(input: CreateWhatsappSharedLineAssignmentInput, *, options: RequestOptions | None = None,) -> models.SharedLineAssignment
 ```
 `POST /v1/projects/{id}/platforms/whatsapp/assignments`
 
 **[Create WhatsApp VoIP sender](/api-client/sdk/projects/platforms/create-whatsapp-voip-sender)**
 
 ```python Python
-photon.projects.platforms.create_whatsapp_voip_sender(input: CreateWhatsappVoipSenderInput) -> models.Operation
+photon.projects.platforms.create_whatsapp_voip_sender(input: CreateWhatsappVoipSenderInput, *, options: RequestOptions | None = None) -> models.Operation
 ```
 `POST /v1/projects/{id}/platforms/whatsapp-business/account/senders`
 
 **[Provision dedicated iMessage line](/api-client/sdk/projects/platforms/provision-imessage-dedicated-line)**
 
 ```python Python
-photon.projects.platforms.provision_imessage_dedicated_line(input: ProvisionImessageDedicatedLineInput) -> models.Operation
+photon.projects.platforms.provision_imessage_dedicated_line(input: ProvisionImessageDedicatedLineInput, *, options: RequestOptions | None = None) -> models.Operation
 ```
 `POST /v1/projects/{id}/platforms/imessage/dedicated`
 
 **[Provision dedicated WhatsApp line](/api-client/sdk/projects/platforms/provision-whatsapp-dedicated-line)**
 
 ```python Python
-photon.projects.platforms.provision_whatsapp_dedicated_line(input: ProvisionWhatsappDedicatedLineInput) -> models.Operation
+photon.projects.platforms.provision_whatsapp_dedicated_line(input: ProvisionWhatsappDedicatedLineInput, *, options: RequestOptions | None = None) -> models.Operation
 ```
 `POST /v1/projects/{id}/platforms/whatsapp/dedicated`
 
 **[Purchase SMS number](/api-client/sdk/projects/platforms/purchase-sms-number)**
 
 ```python Python
-photon.projects.platforms.purchase_sms_number(input: PurchaseSmsNumberInput) -> models.Operation
+photon.projects.platforms.purchase_sms_number(input: PurchaseSmsNumberInput, *, options: RequestOptions | None = None) -> models.Operation
 ```
 `POST /v1/projects/{id}/platforms/sms/numbers`
 
 **[Rotate Voice outbound credential](/api-client/sdk/projects/platforms/rotate-voice-profile-outbound-credential)**
 
 ```python Python
-photon.projects.platforms.rotate_voice_profile_outbound_credential(input: RotateVoiceProfileOutboundCredentialInput) -> models.RotateVoiceProfileOutboundCredentialResponse
+photon.projects.platforms.rotate_voice_profile_outbound_credential(input: RotateVoiceProfileOutboundCredentialInput, *, options: RequestOptions | None = None,) -> models.RotateVoiceProfileOutboundCredentialResponse
 ```
 `POST /v1/projects/{id}/platforms/voice/profiles/{profileId}/outbound/rotate`
 
 **[Assign or replace SMS line campaign](/api-client/sdk/projects/platforms/assign-sms-line-campaign)**
 
 ```python Python
-photon.projects.platforms.assign_sms_line_campaign(input: AssignSmsLineCampaignInput) -> models.Operation
+photon.projects.platforms.assign_sms_line_campaign(input: AssignSmsLineCampaignInput, *, options: RequestOptions | None = None) -> models.Operation
 ```
 `PUT /v1/projects/{id}/platforms/sms/lines/{resourceId}/campaign`
 
 **[Assign Voice line profile](/api-client/sdk/projects/platforms/assign-voice-line-profile)**
 
 ```python Python
-photon.projects.platforms.assign_voice_line_profile(input: AssignVoiceLineProfileInput) -> models.VoiceLineProfileAssignment
+photon.projects.platforms.assign_voice_line_profile(input: AssignVoiceLineProfileInput, *, options: RequestOptions | None = None) -> models.VoiceLineProfileAssignment
 ```
 `PUT /v1/projects/{id}/platforms/voice/lines/{resourceId}/profile`
 
 **[Configure Voice outbound credential](/api-client/sdk/projects/platforms/configure-voice-profile-outbound)**
 
 ```python Python
-photon.projects.platforms.configure_voice_profile_outbound(input: ConfigureVoiceProfileOutboundInput) -> models.ConfigureVoiceProfileOutboundResponse
+photon.projects.platforms.configure_voice_profile_outbound(input: ConfigureVoiceProfileOutboundInput, *, options: RequestOptions | None = None) -> models.ConfigureVoiceProfileOutboundResponse
 ```
 `PUT /v1/projects/{id}/platforms/voice/profiles/{profileId}/outbound`
 
 **[Create default Voice profile](/api-client/sdk/projects/platforms/create-default-voice-profile)**
 
 ```python Python
-photon.projects.platforms.create_default_voice_profile(input: CreateDefaultVoiceProfileInput) -> models.VoiceProfile
+photon.projects.platforms.create_default_voice_profile(input: CreateDefaultVoiceProfileInput, *, options: RequestOptions | None = None) -> models.VoiceProfile
 ```
 `PUT /v1/projects/{id}/platforms/voice/profiles/default`
 
 **[Replace Voice inbound configuration](/api-client/sdk/projects/platforms/replace-voice-profile-inbound)**
 
 ```python Python
-photon.projects.platforms.replace_voice_profile_inbound(input: ReplaceVoiceProfileInboundInput) -> models.VoiceProfileInboundConfiguration
+photon.projects.platforms.replace_voice_profile_inbound(input: ReplaceVoiceProfileInboundInput, *, options: RequestOptions | None = None) -> models.VoiceProfileInboundConfiguration
 ```
 `PUT /v1/projects/{id}/platforms/voice/profiles/{profileId}/inbound`
 
 **[Update default Voice profile](/api-client/sdk/projects/platforms/update-default-voice-profile)**
 
 ```python Python
-photon.projects.platforms.update_default_voice_profile(input: UpdateDefaultVoiceProfileInput) -> models.VoiceProfile
+photon.projects.platforms.update_default_voice_profile(input: UpdateDefaultVoiceProfileInput, *, options: RequestOptions | None = None) -> models.VoiceProfile
 ```
 `PATCH /v1/projects/{id}/platforms/voice/profiles/default`
 
 **[Update Voice profile](/api-client/sdk/projects/platforms/update-voice-profile)**
 
 ```python Python
-photon.projects.platforms.update_voice_profile(input: UpdateVoiceProfileInput) -> models.VoiceProfile
+photon.projects.platforms.update_voice_profile(input: UpdateVoiceProfileInput, *, options: RequestOptions | None = None) -> models.VoiceProfile
 ```
 `PATCH /v1/projects/{id}/platforms/voice/profiles/{profileId}`
 
 **[Update Voice inbound configuration](/api-client/sdk/projects/platforms/update-voice-profile-inbound)**
 
 ```python Python
-photon.projects.platforms.update_voice_profile_inbound(input: UpdateVoiceProfileInboundInput) -> models.VoiceProfileInboundConfiguration
+photon.projects.platforms.update_voice_profile_inbound(input: UpdateVoiceProfileInboundInput, *, options: RequestOptions | None = None) -> models.VoiceProfileInboundConfiguration
 ```
 `PATCH /v1/projects/{id}/platforms/voice/profiles/{profileId}/inbound`
 
 **[Update Voice outbound authentication](/api-client/sdk/projects/platforms/update-voice-profile-outbound-authentication)**
 
 ```python Python
-photon.projects.platforms.update_voice_profile_outbound_authentication(input: UpdateVoiceProfileOutboundAuthenticationInput) -> models.UpdateVoiceProfileOutboundAuthenticationResponse
+photon.projects.platforms.update_voice_profile_outbound_authentication(input: UpdateVoiceProfileOutboundAuthenticationInput, *, options: RequestOptions | None = None,) -> models.UpdateVoiceProfileOutboundAuthenticationResponse
 ```
 `PATCH /v1/projects/{id}/platforms/voice/profiles/{profileId}/outbound`
 
 **[Delete Voice profile](/api-client/sdk/projects/platforms/delete-voice-profile)**
 
 ```python Python
-photon.projects.platforms.delete_voice_profile(input: DeleteVoiceProfileInput) -> None
+photon.projects.platforms.delete_voice_profile(input: DeleteVoiceProfileInput, *, options: RequestOptions | None = None) -> None
 ```
 `DELETE /v1/projects/{id}/platforms/voice/profiles/{profileId}`
 
 **[Delete Voice inbound configuration](/api-client/sdk/projects/platforms/delete-voice-profile-inbound)**
 
 ```python Python
-photon.projects.platforms.delete_voice_profile_inbound(input: DeleteVoiceProfileInboundInput) -> models.VoiceProfileInboundConfiguration
+photon.projects.platforms.delete_voice_profile_inbound(input: DeleteVoiceProfileInboundInput, *, options: RequestOptions | None = None) -> models.VoiceProfileInboundConfiguration
 ```
 `DELETE /v1/projects/{id}/platforms/voice/profiles/{profileId}/inbound`
 
 **[Revoke Voice outbound credential](/api-client/sdk/projects/platforms/delete-voice-profile-outbound)**
 
 ```python Python
-photon.projects.platforms.delete_voice_profile_outbound(input: DeleteVoiceProfileOutboundInput) -> models.DeleteVoiceProfileOutboundResponse
+photon.projects.platforms.delete_voice_profile_outbound(input: DeleteVoiceProfileOutboundInput, *, options: RequestOptions | None = None) -> models.DeleteVoiceProfileOutboundResponse
 ```
 `DELETE /v1/projects/{id}/platforms/voice/profiles/{profileId}/outbound`
 
 **[Disconnect WhatsApp Business account](/api-client/sdk/projects/platforms/disconnect-whatsapp-business-account)**
 
 ```python Python
-photon.projects.platforms.disconnect_whatsapp_business_account(input: DisconnectWhatsappBusinessAccountInput) -> models.Operation
+photon.projects.platforms.disconnect_whatsapp_business_account(input: DisconnectWhatsappBusinessAccountInput, *, options: RequestOptions | None = None,) -> models.Operation
 ```
 `DELETE /v1/projects/{id}/platforms/whatsapp-business/account`
 
 **[Release dedicated iMessage line](/api-client/sdk/projects/platforms/release-imessage-dedicated-line)**
 
 ```python Python
-photon.projects.platforms.release_imessage_dedicated_line(input: ReleaseImessageDedicatedLineInput) -> models.Operation
+photon.projects.platforms.release_imessage_dedicated_line(input: ReleaseImessageDedicatedLineInput, *, options: RequestOptions | None = None) -> models.Operation
 ```
 `DELETE /v1/projects/{id}/platforms/imessage/dedicated/{resourceId}`
 
 **[Release resource](/api-client/sdk/projects/platforms/release-resource)**
 
 ```python Python
-photon.projects.platforms.release_resource(input: ReleaseResourceInput) -> models.Operation
+photon.projects.platforms.release_resource(input: ReleaseResourceInput, *, options: RequestOptions | None = None) -> models.Operation
 ```
 `DELETE /v1/projects/{id}/platforms/resources/{resourceId}`
 
 **[Release dedicated WhatsApp line](/api-client/sdk/projects/platforms/release-whatsapp-dedicated-line)**
 
 ```python Python
-photon.projects.platforms.release_whatsapp_dedicated_line(input: ReleaseWhatsappDedicatedLineInput) -> models.Operation
+photon.projects.platforms.release_whatsapp_dedicated_line(input: ReleaseWhatsappDedicatedLineInput, *, options: RequestOptions | None = None) -> models.Operation
 ```
 `DELETE /v1/projects/{id}/platforms/whatsapp/dedicated/{resourceId}`
 
 **[Release WhatsApp shared line assignment](/api-client/sdk/projects/platforms/release-whatsapp-shared-line-assignment)**
 
 ```python Python
-photon.projects.platforms.release_whatsapp_shared_line_assignment(input: ReleaseWhatsappSharedLineAssignmentInput) -> models.SharedLineAssignment
+photon.projects.platforms.release_whatsapp_shared_line_assignment(input: ReleaseWhatsappSharedLineAssignmentInput, *, options: RequestOptions | None = None,) -> models.SharedLineAssignment
 ```
 `DELETE /v1/projects/{id}/platforms/whatsapp/assignments/{assignmentId}`
 
 **[Unassign SMS line campaign](/api-client/sdk/projects/platforms/unassign-sms-line-campaign)**
 
 ```python Python
-photon.projects.platforms.unassign_sms_line_campaign(input: UnassignSmsLineCampaignInput) -> models.Operation
+photon.projects.platforms.unassign_sms_line_campaign(input: UnassignSmsLineCampaignInput, *, options: RequestOptions | None = None) -> models.Operation
 ```
 `DELETE /v1/projects/{id}/platforms/sms/lines/{resourceId}/campaign`
 
 **[Unassign Voice line profile](/api-client/sdk/projects/platforms/unassign-voice-line-profile)**
 
 ```python Python
-photon.projects.platforms.unassign_voice_line_profile(input: UnassignVoiceLineProfileInput) -> None
+photon.projects.platforms.unassign_voice_line_profile(input: UnassignVoiceLineProfileInput, *, options: RequestOptions | None = None) -> None
 ```
 `DELETE /v1/projects/{id}/platforms/voice/lines/{resourceId}/profile`
 

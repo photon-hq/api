@@ -16,12 +16,12 @@ photon.account.createProfilePictureUpload(input: CreateAccountProfilePictureUplo
 </Tab>
 <Tab title="Python">
 ```python Python
-photon.account.create_profile_picture_upload(input: CreateAccountProfilePictureUploadInput) -> models.ProfilePictureUpload
+photon.account.create_profile_picture_upload(input: CreateAccountProfilePictureUploadInput, *, options: RequestOptions | None = None,) -> models.ProfilePictureUpload
 ```
 </Tab>
 <Tab title="Rust">
 ```rust Rust
-client.create_account_profile_picture_upload(params: Option<CreateAccountProfilePictureUploadParams>, body: &types::ProfilePictureUploadRequest).await -> Result<ResponseValue<types::ProfilePictureUpload>, Error<CreateAccountProfilePictureUploadError>>
+client.create_account_profile_picture_upload(body: &types::ProfilePictureUploadRequest).await -> Result<ResponseValue<types::ProfilePictureUpload>, Error<CreateAccountProfilePictureUploadError>>
 ```
 </Tab>
 <Tab title="Go">
@@ -70,7 +70,6 @@ let client = PhotonClientBuilder::new()
     .build()?;
 let result = client
     .create_account_profile_picture_upload(
-        None,
         &serde_json::from_value(serde_json::json!({
             "contentType": "image/jpeg",
         }))?,
