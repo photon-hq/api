@@ -46,7 +46,7 @@ const result = await photon.projects.platforms.createWhatsappSharedLineAssignmen
     idempotencyKey: "idempotencyKey",
   },
   body: {
-    handle: "handle",
+    handle: "+969310843830781",
   },
 });
 ```
@@ -67,7 +67,7 @@ result = photon.projects.platforms.create_whatsapp_shared_line_assignment(
             "Idempotency-Key": "idempotencyKey",
         },
         "body": {
-            "handle": "handle",
+            "handle": "+969310843830781",
         },
     })
 )
@@ -85,7 +85,7 @@ let result = client
         "idempotencyKey".to_owned(),
         "id".to_owned(),
         &serde_json::from_value(serde_json::json!({
-            "handle": "handle",
+            "handle": "+969310843830781",
         }))?,
     )
     .await
@@ -106,7 +106,7 @@ ctx := context.Background()
 client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
 var body photonapi.CreateWhatsappSharedLineAssignmentRequest
 if err := json.Unmarshal([]byte(`{
-	"handle": "handle"
+	"handle": "+969310843830781"
 }`), &body); err != nil {
 	return err
 }

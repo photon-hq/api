@@ -40,13 +40,13 @@ const photon = new Photon({
 });
 const result = await photon.auth.disableOrganizationSso({
   path: {
-    orgId: "orgId",
+    orgId: "pho_org_0majnkkjmkjj0j9ym5hyk9kjhn",
   },
   headers: {
     idempotencyKey: "idempotencyKey",
   },
   body: {
-    expectedVersion: "expectedVersion",
+    expectedVersion: "0",
   },
 });
 ```
@@ -61,13 +61,13 @@ photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN
 result = photon.auth.disable_organization_sso(
     DisableOrganizationSsoInput.model_validate({
         "path": {
-            "orgId": "orgId",
+            "orgId": "pho_org_0majnkkjmkjj0j9ym5hyk9kjhn",
         },
         "headers": {
             "Idempotency-Key": "idempotencyKey",
         },
         "body": {
-            "expectedVersion": "expectedVersion",
+            "expectedVersion": "0",
         },
     })
 )
@@ -83,9 +83,9 @@ let client = PhotonClientBuilder::new()
 let result = client
     .disable_organization_sso(
         "idempotencyKey".to_owned(),
-        "orgId".to_owned(),
+        "pho_org_0majnkkjmkjj0j9ym5hyk9kjhn".to_owned(),
         &serde_json::from_value(serde_json::json!({
-            "expectedVersion": "expectedVersion",
+            "expectedVersion": "0",
         }))?,
     )
     .await
@@ -106,13 +106,13 @@ ctx := context.Background()
 client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
 var body photonapi.DisableOrganizationSsoRequest
 if err := json.Unmarshal([]byte(`{
-	"expectedVersion": "expectedVersion"
+	"expectedVersion": "0"
 }`), &body); err != nil {
 	return err
 }
 result, err := client.Auth.DisableOrganizationSso(ctx, &photonapi.DisableOrganizationSsoParams{
 	IdempotencyKey: "idempotencyKey",
-	OrgID: "orgId",
+	OrgID: "pho_org_0majnkkjmkjj0j9ym5hyk9kjhn",
 	Body: body,
 })
 if err != nil {

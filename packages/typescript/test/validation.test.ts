@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import * as z from "zod";
-import { narrowed, openEnum, openNumberEnum, unknownMember } from "../src/validation.js";
+import { loosen, narrowed, openEnum, openNumberEnum, unknownMember } from "../src/validation.js";
 
 test("open enums accept known and later values of the same JSON type", () => {
   const status = openEnum(["active", "paused"]);
@@ -47,4 +47,56 @@ test("a narrowed union is typed as the union and each constraint, as types.gen.t
   const partial = { platform: "sms" };
   const sent = narrowed(user, z.looseObject({ platform: z.literal("sms") }));
   assert.deepEqual(sent.parse(partial) as unknown, { platform: "UNKNOWN", raw: partial });
+});
+
+test("a value that fails its schema is read as far as the schema allows", () => {
+  const sms = z.looseObject({ platform: z.literal("sms"), handle: z.string() });
+  const user = z.union([sms, unknownMember("platform", z.looseObject({ platform: z.string(), id: z.string() }))]);
+  const project = z.looseObject({
+    projectId: z.string(),
+    createdByAccountId: z.string().nullable(),
+    owner: user,
+    members: z.array(user),
+    labels: z.object({}).catchall(z.string()),
+  });
+  const fax = { platform: "fax", id: "u2" };
+  const value = {
+    projectId: "prj_1",
+    owner: { platform: "sms" },
+    members: [{ platform: "sms", handle: "+1" }, fax, { platform: "fax" }, 7],
+    labels: { color: "red", size: 3 },
+    futureField: true,
+  };
+  assert.equal(project.safeParse(value).success, false);
+  assert.deepEqual(loosen(project, value), {
+    projectId: "prj_1",
+    // A known member that fails is read as that member, not as the fallback.
+    owner: { platform: "sms" },
+    // Members that match are parsed as usual, the fallback's wrapping included.
+    members: [{ platform: "sms", handle: "+1" }, { platform: "UNKNOWN", raw: fax }, { platform: "UNKNOWN", raw: { platform: "fax" } }, 7],
+    labels: { color: "red", size: 3 },
+    futureField: true,
+  });
+  assert.equal("createdByAccountId" in (loosen(project, value) as object), false);
+});
+
+test("a value that matches is parsed as usual, and one that matches nothing is kept", () => {
+  const sms = z.looseObject({ platform: z.literal("sms"), status: z.string() });
+  const user = z.union([sms, unknownMember("platform", z.looseObject({ platform: z.string() }))]);
+  const accepted = narrowed(user, z.looseObject({ status: z.literal("accepted") }));
+  assert.deepEqual(loosen(accepted, { platform: "sms", status: "sent" }), { platform: "sms", status: "sent" });
+  assert.deepEqual(loosen(user, { platform: "fax" }), { platform: "UNKNOWN", raw: { platform: "fax" } });
+  for (const scalar of [1, null, true]) assert.equal(loosen(z.string().optional(), scalar), scalar);
+  assert.deepEqual(loosen(z.array(z.number()), "not an array"), "not an array");
+  const lazy: z.ZodType<{ child?: unknown; name: string }> = z.lazy(() => z.looseObject({ name: z.string(), child: lazy.optional() }));
+  assert.deepEqual(loosen(lazy, { name: "a", child: { name: 1 } }), { name: "a", child: { name: 1 } });
+});
+
+test("reading a failed object keeps members named like built-in properties as data", () => {
+  const value = JSON.parse('{"__proto__": {"polluted": true}, "toString": 1, "constructor": "x", "name": 2}') as object;
+  const result = loosen(z.looseObject({ name: z.string() }), value) as Record<string, unknown>;
+  assert.deepEqual(Object.keys(result), ["__proto__", "toString", "constructor", "name"]);
+  assert.equal(Object.getPrototypeOf(result), Object.prototype);
+  assert.equal(({} as Record<string, unknown>).polluted, undefined);
+  assert.equal(result.toString, 1);
 });

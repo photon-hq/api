@@ -40,7 +40,7 @@ const photon = new Photon({
 });
 const result = await photon.organizations.previewOrganizationInvitation({
   body: {
-    token: "token",
+    token: "AAZp----0__9_03Ja-g-zaa0a-9B-9-_A_____A_z-8",
   },
 });
 ```
@@ -55,7 +55,7 @@ photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN
 result = photon.organizations.preview_organization_invitation(
     PreviewOrganizationInvitationInput.model_validate({
         "body": {
-            "token": "token",
+            "token": "AAZp----0__9_03Ja-g-zaa0a-9B-9-_A_____A_z-8",
         },
     })
 )
@@ -71,7 +71,7 @@ let client = PhotonClientBuilder::new()
 let result = client
     .preview_organization_invitation(
         &serde_json::from_value(serde_json::json!({
-            "token": "token",
+            "token": "AAZp----0__9_03Ja-g-zaa0a-9B-9-_A_____A_z-8",
         }))?,
     )
     .await
@@ -92,7 +92,7 @@ ctx := context.Background()
 client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
 var body photonapi.PreviewOrganizationInvitationRequest
 if err := json.Unmarshal([]byte(`{
-	"token": "token"
+	"token": "AAZp----0__9_03Ja-g-zaa0a-9B-9-_A_____A_z-8"
 }`), &body); err != nil {
 	return err
 }

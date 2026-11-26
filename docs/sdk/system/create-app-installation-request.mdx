@@ -38,7 +38,7 @@ import { Photon } from "@photon-ai/api";
 const photon = new Photon();
 const result = await photon.system.createAppInstallationRequest({
   body: {
-    appId: "appId",
+    appId: "pho_app_0nhkvtvaana9hnap0jt0sjppv0",
     clientAssertion: "clientAssertion",
     redirectUri: "redirectUri",
     state: "state",
@@ -54,7 +54,7 @@ photon = Photon()
 result = photon.system.create_app_installation_request(
     CreateAppInstallationRequestInput.model_validate({
         "body": {
-            "appId": "appId",
+            "appId": "pho_app_0nhkvtvaana9hnap0jt0sjppv0",
             "clientAssertion": "clientAssertion",
             "redirectUri": "redirectUri",
             "state": "state",
@@ -70,7 +70,7 @@ let client = PhotonClientBuilder::new().build()?;
 let result = client
     .create_app_installation_request(
         &serde_json::from_value(serde_json::json!({
-            "appId": "appId",
+            "appId": "pho_app_0nhkvtvaana9hnap0jt0sjppv0",
             "clientAssertion": "clientAssertion",
             "redirectUri": "redirectUri",
             "state": "state",
@@ -93,7 +93,7 @@ ctx := context.Background()
 client := photonapi.NewClient()
 var body photonapi.CreateAppInstallationRequestRequest
 if err := json.Unmarshal([]byte(`{
-	"appId": "appId",
+	"appId": "pho_app_0nhkvtvaana9hnap0jt0sjppv0",
 	"clientAssertion": "clientAssertion",
 	"redirectUri": "redirectUri",
 	"state": "state"

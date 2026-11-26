@@ -40,7 +40,7 @@ const photon = new Photon({
 });
 const result = await photon.auth.refreshOrganizationSsoConnection({
   path: {
-    orgId: "orgId",
+    orgId: "pho_org_0majnkkjmkjj0j9ym5hyk9kjhn",
   },
 });
 ```
@@ -55,7 +55,7 @@ photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN
 result = photon.auth.refresh_organization_sso_connection(
     RefreshOrganizationSsoConnectionInput.model_validate({
         "path": {
-            "orgId": "orgId",
+            "orgId": "pho_org_0majnkkjmkjj0j9ym5hyk9kjhn",
         },
     })
 )
@@ -69,7 +69,7 @@ let client = PhotonClientBuilder::new()
     .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
     .build()?;
 let result = client
-    .refresh_organization_sso_connection("orgId".to_owned())
+    .refresh_organization_sso_connection("pho_org_0majnkkjmkjj0j9ym5hyk9kjhn".to_owned())
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
@@ -86,7 +86,7 @@ import (
 ctx := context.Background()
 client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
 result, err := client.Auth.RefreshOrganizationSsoConnection(ctx, &photonapi.RefreshOrganizationSsoConnectionParams{
-	OrgID: "orgId",
+	OrgID: "pho_org_0majnkkjmkjj0j9ym5hyk9kjhn",
 })
 if err != nil {
 	return err

@@ -43,7 +43,7 @@ const result = await photon.organizations.createOrganizationOauthClient({
     organizationId: "organizationId",
   },
   headers: {
-    "idempotency-key": "idempotency-key",
+    "idempotency-key": "00000000-0000-4000-8000-000000000000",
   },
   body: {
     name: "name",
@@ -71,7 +71,7 @@ result = photon.organizations.create_organization_oauth_client(
             "organizationId": "organizationId",
         },
         "headers": {
-            "idempotency-key": "idempotency-key",
+            "idempotency-key": "00000000-0000-4000-8000-000000000000",
         },
         "body": {
             "name": "name",
@@ -97,7 +97,7 @@ let client = PhotonClientBuilder::new()
 let result = client
     .create_organization_oauth_client(
         "organizationId".to_owned(),
-        "idempotency-key".to_owned(),
+        "00000000-0000-4000-8000-000000000000".to_owned(),
         &serde_json::from_value(serde_json::json!({
             "name": "name",
             "redirectUris": [
@@ -140,7 +140,7 @@ if err := json.Unmarshal([]byte(`{
 }
 result, err := client.Organizations.CreateOrganizationOauthClient(ctx, &photonapi.CreateOrganizationOauthClientParams{
 	OrganizationID: "organizationId",
-	IdempotencyKey: "idempotency-key",
+	IdempotencyKey: "00000000-0000-4000-8000-000000000000",
 	Body: body,
 })
 if err != nil {

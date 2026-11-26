@@ -21,7 +21,7 @@ photon.projects.upload_attachment(input: UploadAttachmentInput, *, options: Requ
 </Tab>
 <Tab title="Rust">
 ```rust Rust
-client.upload_attachment(id: String, content_length: String, content_type: String, idempotency_key: String, body: &bytes::Bytes).await -> Result<ResponseValue<UploadAttachmentResponse>, Error<UploadAttachmentError>>
+client.upload_attachment(id: String, idempotency_key: String, file: &UploadFile).await -> Result<ResponseValue<UploadAttachmentResponse>, Error<UploadAttachmentError>>
 ```
 </Tab>
 <Tab title="Go">
@@ -40,41 +40,37 @@ const photon = new Photon({
 });
 const result = await photon.projects.uploadAttachment({
   path: {
-    id: "id",
+    id: "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
   },
   headers: {
-    "content-length": "18",
-    "content-type": "text/plain",
     "idempotency-key": "idempotency-key",
   },
-  body: new Blob(["Hello from Photon."], { type: "text/plain" }),
+  body: new File(["Hello from Photon."], "hello.txt", { type: "text/plain" }),
 });
 ```
 
 ```python Python
 import os
 
-from photon_api import Photon
+from photon_api import Photon, UploadFile
 from photon_api.rpc_generated import UploadAttachmentInput
 
 photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN']}"})
 result = photon.projects.upload_attachment(
     UploadAttachmentInput.model_validate({
         "path": {
-            "id": "id",
+            "id": "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
         },
         "headers": {
-            "content-length": "18",
-            "content-type": "text/plain",
             "idempotency-key": "idempotency-key",
         },
-        "body": b"Hello from Photon.",
+        "body": UploadFile(data=b"Hello from Photon.", content_type="text/plain", filename="hello.txt"),
     })
 )
 ```
 
 ```rust Rust
-use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};
+use photon_ai_api::{Credential, PhotonClientBuilder, SecretString, UploadFile};
 
 let token = std::env::var("PHOTON_API_TOKEN")?;
 let client = PhotonClientBuilder::new()
@@ -82,11 +78,9 @@ let client = PhotonClientBuilder::new()
     .build()?;
 let result = client
     .upload_attachment(
-        "id".to_owned(),
-        "18".to_owned(),
-        "text/plain".to_owned(),
+        "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw".to_owned(),
         "idempotency-key".to_owned(),
-        &"Hello from Photon.".into(),
+        &UploadFile::new("Hello from Photon.", "text/plain").filename("hello.txt"),
     )
     .await
     .map_err(|error| format!("{error:?}"))?
@@ -97,7 +91,6 @@ let result = client
 import (
 	"context"
 	"os"
-	"strings"
 
 	photonapi "github.com/photon-hq/api/packages/go"
 )
@@ -105,11 +98,9 @@ import (
 ctx := context.Background()
 client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
 result, err := client.Projects.UploadAttachment(ctx, &photonapi.UploadAttachmentParams{
-	ID: "id",
-	ContentLength: 18,
-	ContentType: "text/plain",
+	ID: "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
 	IdempotencyKey: "idempotency-key",
-	Body: strings.NewReader("Hello from Photon."),
+	Body: &photonapi.UploadFile{Data: []byte("Hello from Photon."), ContentType: "text/plain", Filename: "hello.txt"},
 })
 if err != nil {
 	return err

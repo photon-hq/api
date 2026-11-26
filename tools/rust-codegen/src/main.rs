@@ -1,11 +1,13 @@
 use std::{
     env, fs,
-    path::{Path, PathBuf},
+    path::PathBuf,
+    time::{SystemTime, UNIX_EPOCH},
 };
 
 use anyhow::{Context, Result, bail, ensure};
 use spargen::{Build, CargoIntegration, Code, Diagnostic, Outcome, Report, Severity, Spec};
 
+mod file_upload;
 mod share_models;
 
 const SPEC_PATH: &str = "openapi/sdk.json";
@@ -75,42 +77,67 @@ fn validate_report(report: &Report, expected: Outcome) -> Result<()> {
     Ok(())
 }
 
-struct TemporaryOutput(PathBuf);
+/// A directory this run creates under the system temporary directory and
+/// removes when dropped. The name carries the process id and the time, and
+/// `fs::create_dir` fails on any existing entry, symlinks included, so the
+/// directory is new and belongs to this run.
+struct Scratch(PathBuf);
 
-impl TemporaryOutput {
-    fn new() -> Self {
-        Self(env::temp_dir().join(format!(
-            "photon-rust-codegen-{}-generated.rs",
+impl Scratch {
+    fn new() -> Result<Self> {
+        let nanos = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
+        let directory = env::temp_dir().join(format!(
+            "photon-rust-codegen-{}-{nanos}",
             std::process::id()
-        )))
-    }
-
-    fn path(&self) -> &Path {
-        &self.0
+        ));
+        fs::create_dir(&directory)
+            .with_context(|| format!("failed to create {}", directory.display()))?;
+        Ok(Self(directory))
     }
 }
 
-impl Drop for TemporaryOutput {
+impl Drop for Scratch {
     fn drop(&mut self) {
-        let _ = fs::remove_file(&self.0);
+        let _ = fs::remove_dir_all(&self.0);
     }
 }
 
-fn check_generated_output() -> Result<Report> {
-    let temporary = TemporaryOutput::new();
-    let temporary_path = temporary
-        .path()
-        .to_str()
-        .context("temporary Rust output path is not valid UTF-8")?;
-    let report = generate(temporary_path)?;
+/// A scratch directory holding the `openapi/sdk.json` Spargen reads: the SDK
+/// input with each file upload's Content-Type header parameter restored
+/// (`file_upload::restore_content_type`). Spargen runs from this directory, so
+/// the spec path it records in the generated header stays `openapi/sdk.json`,
+/// and writes its output there too.
+struct SpargenInput {
+    scratch: Scratch,
+    uploads: Vec<String>,
+}
 
-    let committed = fs::read(OUTPUT_PATH).context("failed to read committed Rust client")?;
-    let generated = fs::read(temporary.path()).context("failed to read generated Rust client")?;
-    ensure!(
-        committed == generated,
-        "{OUTPUT_PATH} is out of date; run `npm run generate:rust`"
-    );
-    Ok(report)
+impl SpargenInput {
+    fn prepare() -> Result<Self> {
+        let mut document: serde_json::Value = serde_json::from_str(
+            &fs::read_to_string(SPEC_PATH).context("failed to read the SDK input")?,
+        )
+        .context("the SDK input is not JSON")?;
+        let uploads = file_upload::restore_content_type(&mut document)?;
+        let input = Self {
+            scratch: Scratch::new()?,
+            uploads,
+        };
+        let spec = input.scratch.0.join(SPEC_PATH);
+        fs::create_dir(spec.parent().context("the spec path has a directory")?)?;
+        fs::write(&spec, serde_json::to_vec(&document)?)
+            .context("failed to write Spargen's input")?;
+        Ok(input)
+    }
+
+    /// Run `spargen` from the scratch directory, then return to the current one.
+    fn run<T>(&self, spargen: impl FnOnce() -> T) -> Result<T> {
+        let previous = env::current_dir()?;
+        env::set_current_dir(&self.scratch.0).context("failed to enter Spargen's input")?;
+        let result = spargen();
+        env::set_current_dir(previous)?;
+        Ok(result)
+    }
 }
 
 /// Spargen suppresses `unexpected_cfgs` because it cannot know whether the crate
@@ -165,14 +192,22 @@ fn add_backend_setter(source: &str) -> Result<String> {
     ))
 }
 
-fn generate(output: &str) -> Result<Report> {
-    let report = spargen::generate(&generation_build(output));
+/// Generate the Rust client and post-process it in the scratch directory, and
+/// return its source. Nothing is written to the committed client here, so a
+/// step that fails leaves it unchanged.
+fn generate() -> Result<(Report, String)> {
+    let input = SpargenInput::prepare()?;
+    let output = input.scratch.0.join("generated.rs");
+    let output_path = output
+        .to_str()
+        .context("the scratch Rust output path is not valid UTF-8")?;
+    let report = input.run(|| spargen::generate(&generation_build(output_path)))?;
     validate_report(&report, Outcome::Generated)?;
     // Compile each structurally equivalent model once; request models keep
     // their distinct types.
-    let (source, stats) = share_models::share(&fs::read_to_string(output)?)?;
-    let source = add_backend_setter(&source)?;
-    fs::write(output, remove_unexpected_cfgs_allowance(&source)?)?;
+    let (source, stats) = share_models::share(&fs::read_to_string(&output)?)?;
+    let source = file_upload::rewrite(&source, &input.uploads)?;
+    let source = remove_unexpected_cfgs_allowance(&add_backend_setter(&source)?)?;
     println!(
         "shared {} of {} Rust model definitions in {} passes; kept {} request models distinct; shared {} of {} header definitions",
         stats.shared,
@@ -182,7 +217,7 @@ fn generate(output: &str) -> Result<Report> {
         stats.shared_headers,
         stats.headers
     );
-    Ok(report)
+    Ok((report, source))
 }
 
 fn main() -> Result<()> {
@@ -193,11 +228,16 @@ fn main() -> Result<()> {
     };
 
     env::set_current_dir(repository_root()).context("failed to enter repository root")?;
-    let report = if check_only {
-        check_generated_output()?
+    let (report, source) = generate()?;
+    if check_only {
+        let committed = fs::read(OUTPUT_PATH).context("failed to read committed Rust client")?;
+        ensure!(
+            committed == source.as_bytes(),
+            "{OUTPUT_PATH} is out of date; run `npm run generate:rust`"
+        );
     } else {
-        generate(OUTPUT_PATH)?
-    };
+        fs::write(OUTPUT_PATH, source).context("failed to write the Rust client")?;
+    }
 
     let validation_warnings = report
         .diagnostics
@@ -408,7 +448,8 @@ mod tests {
     #[test]
     fn support_audit_has_no_unapproved_diagnostics_or_omissions() {
         env::set_current_dir(repository_root()).unwrap();
-        let report = spargen::check(&generation_spec());
+        let input = SpargenInput::prepare().unwrap();
+        let report = input.run(|| spargen::check(&generation_spec())).unwrap();
         validate_report(&report, Outcome::Clean).unwrap();
     }
 

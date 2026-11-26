@@ -40,8 +40,8 @@ const photon = new Photon({
 });
 const result = await photon.projects.getWebhookEventSchema({
   path: {
-    projectId: "projectId",
-    eventType: "eventType",
+    projectId: "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
+    eventType: "example.com",
   },
   query: {
     apiVersion: "2026-01-01",
@@ -59,8 +59,8 @@ photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN
 result = photon.projects.get_webhook_event_schema(
     GetWebhookEventSchemaInput.model_validate({
         "path": {
-            "projectId": "projectId",
-            "eventType": "eventType",
+            "projectId": "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
+            "eventType": "example.com",
         },
         "query": {
             "apiVersion": "2026-01-01",
@@ -78,8 +78,8 @@ let client = PhotonClientBuilder::new()
     .build()?;
 let result = client
     .get_webhook_event_schema(
-        "projectId".to_owned(),
-        "eventType".to_owned(),
+        "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw".to_owned(),
+        "example.com".to_owned(),
         serde_json::from_value(serde_json::json!("2026-01-01"))?,
     )
     .await
@@ -98,8 +98,8 @@ import (
 ctx := context.Background()
 client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
 result, err := client.Projects.GetWebhookEventSchema(ctx, &photonapi.GetWebhookEventSchemaParams{
-	ProjectID: "projectId",
-	EventType: "eventType",
+	ProjectID: "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
+	EventType: "example.com",
 	APIVersion: "2026-01-01",
 })
 if err != nil {

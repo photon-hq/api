@@ -4,7 +4,8 @@
 // `typescript`/`ts`, `python`/`py`, `rust`/`rs` or `go` is a complete program: it
 // must type-check (TypeScript `tsc --strict`, Python pyright) or compile (Rust, Go),
 // then run to completion against a local mock of the API and send at least
-// one request, and only requests the mock knows. Blocks in other languages
+// one request, and only requests the mock serves, each valid against the
+// contract. Blocks in other languages
 // (`sh`, `json`, ...) are not checked; put `{/* docs-check: skip */}` on the
 // line before a block's opening fence to leave out an intentional fragment.
 // The generated SDK reference (docs/sdk) is not read here: its signatures are
@@ -23,11 +24,18 @@
 // every request to the mock, Python examples with the client's base URL set
 // to it, Rust examples with `.base_url(...)` added before `.build()`, and Go
 // examples with a `WithBaseURL` option appended after the author's own options.
+// TypeScript and Python clients also validate responses strictly, as in the
+// packages' own tests, so a mock answer that drifts from the contract fails.
 // Usage: node tools/openapi/check-docs-examples.mjs typescript|python|rust|go
-// TypeScript needs `npm ci` and `npm run build:typescript` first (it uses the
+// Every language needs `npm ci` and `npm run build:tools` first: the mock
+// generates and validates its bodies with tools/openapi/src/contract-values.ts.
+// TypeScript also needs `npm run build:typescript` (it uses the
 // repository's node_modules); Python needs the package
 // installed in the active interpreter (pip install -e packages/python) and
 // pyright from tools/python-codegen/requirements-dev.txt.
+// `node tools/openapi/check-docs-examples.mjs delivery <contract.json>...`
+// checks the receiver examples' delivery against each contract's
+// SmsMessageReceivedEvent schema.
 import assert from "node:assert/strict";
 import { execFileSync, spawn } from "node:child_process";
 import { createHmac, randomBytes } from "node:crypto";
@@ -99,61 +107,48 @@ export function collectExamples(docs, language) {
   });
 }
 
-// The mock API: the few routes the guide's examples call, answered with
-// contract-valid bodies. Any other request is recorded as unexpected.
-export const ENVIRONMENT = {
-  PHOTON_API_KEY: "pho_ask_docs_example",
-  PHOTON_PROJECT_API_KEY: "pho_sk_docs_example",
-  PHOTON_ACCESS_TOKEN: "docs_example_access_token",
-  PHOTON_ORGANIZATION_ID: "org_docs_example",
-  PHOTON_PROJECT_ID: "proj_docs_example",
-  // A fresh synthetic signing secret per run, for the webhook receiver examples.
-  PHOTON_WEBHOOK_SECRET: `whsec_${randomBytes(32).toString("base64")}`,
-};
+// The mock API: the operations the guide's examples call, answered from the
+// contract of the tree under test (config/sdk.json schemaPath). Every body is
+// generated from the operation's response schema; the few values only the
+// guide knows (the page-2 token, the created project's name and slug, the
+// receiver's message) are applied on top, and the result is validated against
+// that schema. Every request is first validated against the operation's
+// security, parameters, headers and body. A request or body that does not
+// match fails the run, as does any request the mock does not serve.
+const tools = join(root, "tools/openapi/dist");
+assert.ok(existsSync(join(tools, "contract-values.js")), "run npm run build:tools first");
+const { childPointer, contractValues, describeIssues, refPointer } = await import(pathToFileURL(join(tools, "contract-values.js")).href);
+const { contractPath } = await import(pathToFileURL(join(tools, "shared.js")).href);
+
+/** The contract of the tree under test. */
+export function readContract() {
+  return JSON.parse(readFileSync(join(root, contractPath(root)), "utf8"));
+}
+
+// A fresh synthetic signing secret per run, for the webhook receiver examples.
+const WEBHOOK_SECRET = `whsec_${randomBytes(32).toString("base64")}`;
 const REQUEST_ID = "req_docs_example";
 const TIMESTAMP = "2026-01-01T00:00:00.000Z";
+/** The environment variable that holds the example credential of each security scheme. */
+const CREDENTIALS = { accountServiceKey: "PHOTON_API_KEY", projectApiKey: "PHOTON_PROJECT_API_KEY", oauth2: "PHOTON_ACCESS_TOKEN" };
+const PAGE_2 = "page_2";
 
-function project(projectId, name, slug) {
-  return {
-    agentProfile: { avatarUrl: "https://example.com/avatar.png", firstName: "Ada", lastName: null },
-    createdAt: TIMESTAMP,
-    createdByAccountId: null,
-    createdByActorId: null,
-    createdByActorKind: null,
-    deletedAt: null,
-    name,
-    organizationId: ENVIRONMENT.PHOTON_ORGANIZATION_ID,
-    projectId,
-    slug,
-    updatedAt: TIMESTAMP,
-  };
-}
-
-function problem(status, code, title, slug) {
-  return { status, body: { type: `https://photon.codes/docs/problems/${slug}`, code, title, status, requestId: REQUEST_ID }, problem: true };
-}
-
-// The receiver examples' project, message and destination: contract-valid
-// bodies for getMessage, markMessageRead and createWebhookDestination.
+// The receiver examples' delivery: a message.received event, written by hand
+// until the tree carries the event schemas. CI validates it against
+// SmsMessageReceivedEvent (check-docs-examples.mjs delivery <contract>...).
 const WEBHOOK_PROJECT_ID = "pho_prj_00000000000000000000000001";
-const space = {
-  details: {}, id: "pho_spc_00000000000000000000000001", kind: "direct", metadata: {},
-  participantIds: ["pho_usr_00000000000000000000000001", "pho_usr_00000000000000000000000002"], platform: "sms", projectId: WEBHOOK_PROJECT_ID,
-};
-const user = (id, handle, kind) => ({ details: {}, handle, id, kind, metadata: {}, platform: "sms", projectId: WEBHOOK_PROJECT_ID });
 const RECEIVED_MESSAGE = {
-  id: "pho_msg_00000000000000000000000001", projectId: WEBHOOK_PROJECT_ID, platform: "sms", space,
-  sentBy: user("pho_usr_00000000000000000000000002", "+14155550124", "user"),
+  id: "pho_msg_00000000000000000000000001", projectId: WEBHOOK_PROJECT_ID, platform: "sms",
+  space: {
+    details: {}, id: "pho_spc_00000000000000000000000001", kind: "direct", metadata: {},
+    participantIds: ["pho_usr_00000000000000000000000001", "pho_usr_00000000000000000000000002"], platform: "sms", projectId: WEBHOOK_PROJECT_ID,
+  },
+  sentBy: { details: {}, handle: "+14155550124", id: "pho_usr_00000000000000000000000002", kind: "user", metadata: {}, platform: "sms", projectId: WEBHOOK_PROJECT_ID },
   content: { format: "plain", text: "Is my order on its way?", type: "text" }, metadata: {},
   createdAt: TIMESTAMP, updatedAt: TIMESTAMP, status: "received", timestamps: { receivedAt: TIMESTAMP },
 };
-const READ_MESSAGE = {
-  id: "pho_msg_00000000000000000000000002", projectId: WEBHOOK_PROJECT_ID, platform: "sms", space,
-  sentBy: user("pho_usr_00000000000000000000000001", "+14155550123", "agent"),
-  content: { type: "message.read" }, metadata: {}, parentMessageId: RECEIVED_MESSAGE.id,
-  createdAt: TIMESTAMP, updatedAt: TIMESTAMP, status: "dispatched", timestamps: { dispatchedAt: TIMESTAMP },
-};
 const EVENT_ID = "pho_evt_00000000000000000000000001";
+const DELIVERY_SCHEMA = "#/components/schemas/SmsMessageReceivedEvent";
 
 /**
  * The deliveries a receiver example is handed: a `message.received` event
@@ -166,13 +161,21 @@ export function webhookDeliveries(now = Math.floor(Date.now() / 1000)) {
     data: { projectId: WEBHOOK_PROJECT_ID, object: RECEIVED_MESSAGE },
   };
   const body = JSON.stringify(event);
-  const key = Buffer.from(ENVIRONMENT.PHOTON_WEBHOOK_SECRET.slice("whsec_".length), "base64");
+  const key = Buffer.from(WEBHOOK_SECRET.slice("whsec_".length), "base64");
   const signature = createHmac("sha256", key).update(`${EVENT_ID}.${now}.${body}`).digest("base64");
   const headers = { "content-type": "application/json", "webhook-id": EVENT_ID, "webhook-timestamp": String(now), "webhook-signature": `v1,${signature}` };
   return [
     { body, headers, accept: true },
     { body: body.replace("Is my order", "Was my order"), headers, accept: false },
   ];
+}
+
+/** Throw unless the valid delivery's event matches the contract's SmsMessageReceivedEvent. */
+export function checkDelivery(document) {
+  const values = contractValues(document);
+  assert.ok(values.node(DELIVERY_SCHEMA), "The contract has no SmsMessageReceivedEvent schema");
+  const issues = values.issues(DELIVERY_SCHEMA, JSON.parse(webhookDeliveries()[0].body));
+  assert.equal(issues.length, 0, `The receiver examples' delivery does not match SmsMessageReceivedEvent: ${describeIssues(issues)}`);
 }
 
 /** A receiver example, in any language: it defines a handler instead of sending requests itself. */
@@ -183,94 +186,218 @@ const RECEIVER_REQUESTS = [
   `POST /v1/projects/${WEBHOOK_PROJECT_ID}/messages/${RECEIVED_MESSAGE.id}/read read-${EVENT_ID}`,
 ];
 
-/** Answer one request: `{ status, body }`, or `{ unexpected }` for a request the mock does not serve. */
-export function answer({ method, url, headers, body }) {
-  const { pathname, searchParams } = new URL(url, "http://mock");
-  const token = /^Bearer (.+)$/.exec(headers.authorization ?? "")?.[1];
-  const tokens = [ENVIRONMENT.PHOTON_API_KEY, ENVIRONMENT.PHOTON_PROJECT_API_KEY, ENVIRONMENT.PHOTON_ACCESS_TOKEN];
-  if (!tokens.includes(token)) return problem(401, "NOT_AUTHENTICATED", "Not Authenticated", "not-authenticated");
-  const organization = `/v1/organizations/${ENVIRONMENT.PHOTON_ORGANIZATION_ID}/projects`;
-  // Which example credential each route accepts, as its security requirement does.
-  const accountCredential = token === ENVIRONMENT.PHOTON_API_KEY;
-  if (method === "GET" && pathname === "/v1/account" && token !== ENVIRONMENT.PHOTON_PROJECT_API_KEY) {
-    return {
-      status: 200,
-      body: {
-        accountId: "acct_docs_example", createdAt: TIMESTAMP, deletedAt: null, email: "ada@example.com", firstName: "Ada",
-        lastName: "Lovelace", phoneNumber: null, phoneVerifiedAt: null, pictureUrl: "https://example.com/ada.png", updatedAt: TIMESTAMP,
-      },
-    };
-  }
-  if (method === "GET" && pathname === `${organization}/count` && accountCredential) return { status: 200, body: { count: 2 } };
-  if (method === "GET" && pathname === organization && accountCredential) {
-    const pageSize = searchParams.get("pageSize");
-    if (pageSize !== null && !(Number.isInteger(Number(pageSize)) && Number(pageSize) >= 1 && Number(pageSize) <= 100)) {
-      return problem(400, "INVALID_ARGUMENT", "Invalid Argument", "invalid-argument");
-    }
-    const pageToken = searchParams.get("pageToken");
-    if (pageToken === null) return { status: 200, body: { projects: [project("proj_docs_example", "Support", "support")], nextPageToken: "page_2" } };
-    if (pageToken === "page_2") return { status: 200, body: { projects: [project("proj_docs_example_2", "Sales", "sales")] } };
-    return problem(400, "INVALID_ARGUMENT", "Invalid Argument", "invalid-argument");
-  }
-  if (method === "POST" && pathname === organization && accountCredential) {
-    if (!headers["idempotency-key"]) return problem(400, "IDEMPOTENCY_KEY_REQUIRED", "Idempotency Key Required", "idempotency-key-required");
-    const input = JSON.parse(body || "{}");
-    if (typeof input.name !== "string" || typeof input.slug !== "string") return { unexpected: "createProject without name and slug" };
-    return { status: 201, body: project("proj_docs_example_3", input.name, input.slug) };
-  }
-  const projectPath = /^\/v1\/projects\/([^/]+)$/.exec(pathname);
-  if (method === "GET" && projectPath && token !== ENVIRONMENT.PHOTON_ACCESS_TOKEN) {
-    return decodeURIComponent(projectPath[1]) === ENVIRONMENT.PHOTON_PROJECT_ID
-      ? { status: 200, body: project(ENVIRONMENT.PHOTON_PROJECT_ID, "Support", "support") }
-      : problem(404, "PROJECT_NOT_FOUND", "Project Not Found", "project-not-found");
-  }
-  const destinations = /^\/v1\/projects\/([^/]+)\/webhooks\/destinations$/.exec(pathname);
-  if (method === "POST" && destinations && token !== ENVIRONMENT.PHOTON_ACCESS_TOKEN) {
-    if (!headers["idempotency-key"]) return problem(400, "IDEMPOTENCY_KEY_REQUIRED", "Idempotency Key Required", "idempotency-key-required");
-    const input = JSON.parse(body || "{}");
-    if (![input.name, input.url, input.apiVersion].every((value) => typeof value === "string") || input.enabledEvents === undefined) {
-      return { unexpected: "createWebhookDestination without name, url, apiVersion and enabledEvents" };
-    }
-    const destination = {
-      apiVersion: input.apiVersion, createdAt: TIMESTAMP, deletedAt: null, description: input.description ?? null,
-      destinationId: "pho_whd_00000000000000000000000001", enabledEvents: input.enabledEvents, name: input.name,
-      projectId: WEBHOOK_PROJECT_ID, status: "enabled", updatedAt: TIMESTAMP, url: input.url,
-    };
-    return { status: 201, body: { destination, signingSecret: ENVIRONMENT.PHOTON_WEBHOOK_SECRET } };
-  }
-  // The receiver examples read and mark the message their delivery names, in its project.
-  const message = /^\/v1\/projects\/([^/]+)\/messages\/([^/]+)(\/read)?$/.exec(pathname);
-  if (message && token !== ENVIRONMENT.PHOTON_ACCESS_TOKEN
-    && decodeURIComponent(message[1]) === WEBHOOK_PROJECT_ID && decodeURIComponent(message[2]) === RECEIVED_MESSAGE.id) {
-    if (method === "GET" && !message[3]) return { status: 200, body: RECEIVED_MESSAGE };
-    if (method === "POST" && message[3]) {
-      if (!headers["idempotency-key"]) return problem(400, "IDEMPOTENCY_KEY_REQUIRED", "Idempotency Key Required", "idempotency-key-required");
-      return { status: 202, body: READ_MESSAGE };
-    }
-  }
-  return { unexpected: `${method} ${pathname}` };
+const otherOrganization = (params, environment) => params.organizationId !== environment.PHOTON_ORGANIZATION_ID
+  && { unexpected: `organization ${params.organizationId}` };
+const otherMessage = (params) => (params.id !== WEBHOOK_PROJECT_ID || params.messageId !== RECEIVED_MESSAGE.id)
+  && { unexpected: `message ${params.messageId} in project ${params.id}` };
+
+/**
+ * The operations the guide's examples call, and what only the guide knows
+ * about each: which resources exist, and the values it reads back. A handler
+ * answers `[status, overlay, problem code]`, or `{ unexpected }` for a resource
+ * the guide does not use; the body itself comes from the operation's response schema.
+ */
+const GUIDE_OPERATIONS = {
+  getAccount: () => [200],
+  countProjects: ({ params }, environment) => otherOrganization(params, environment) || [200],
+  listProjects: ({ params, query }, environment) => {
+    const pageToken = query.get("pageToken");
+    if (pageToken === null) return otherOrganization(params, environment) || [200, { nextPageToken: PAGE_2 }];
+    return otherOrganization(params, environment) || (pageToken === PAGE_2 ? [200] : [400, {}, "INVALID_ARGUMENT"]);
+  },
+  createProject: ({ params, input }, environment) => otherOrganization(params, environment) || [201, { name: input.name, slug: input.slug }],
+  getProject: ({ params }, environment) => (params.projectId === environment.PHOTON_PROJECT_ID
+    ? [200, { projectId: params.projectId }] : [404, {}, "PROJECT_NOT_FOUND"]),
+  createWebhookDestination: () => [201],
+  getMessage: ({ params }) => otherMessage(params) || [200, { id: params.messageId, projectId: params.id }],
+  markMessageRead: ({ params }) => otherMessage(params) || [202],
+};
+
+/** A path, query or header value as the type its schema names. */
+function parameterValue(schema, text) {
+  const types = [schema?.type].flat();
+  if ((types.includes("integer") || types.includes("number")) && /^-?\d+(\.\d+)?$/.test(text)) return Number(text);
+  if (types.includes("boolean") && (text === "true" || text === "false")) return text === "true";
+  return text;
 }
 
+/** The mock API for one contract: the environment its examples run with, `answer`, and the check every body passes. */
+export function createMock(document) {
+  const values = contractValues(document);
+  const resolved = (pointer) => {
+    const node = values.node(pointer);
+    return typeof node?.$ref === "string" ? resolved(refPointer(node.$ref)) : { pointer, node };
+  };
+  const operations = new Map();
+  for (const [template, item] of Object.entries(document.paths ?? {})) {
+    for (const [method, operation] of Object.entries(item)) {
+      if (!Object.hasOwn(GUIDE_OPERATIONS, operation?.operationId ?? "")) continue;
+      const at = childPointer("#/paths", template, method);
+      // Operation parameters replace path-item parameters of the same name and location.
+      const parameters = new Map();
+      for (const owner of [childPointer("#/paths", template), at]) {
+        for (const index of (values.node(childPointer(owner, "parameters")) ?? []).keys()) {
+          const { pointer, node } = resolved(childPointer(owner, "parameters", index));
+          parameters.set(`${node.in} ${node.name}`, { in: node.in, name: node.name, required: node.required === true, schema: childPointer(pointer, "schema") });
+        }
+      }
+      const responses = new Map();
+      for (const status of Object.keys(operation.responses)) {
+        const { pointer, node } = resolved(childPointer(at, "responses", status));
+        const media = Object.keys(node.content ?? {})[0];
+        if (media) responses.set(Number(status), { media, schema: childPointer(pointer, "content", media, "schema") });
+      }
+      const body = operation.requestBody && resolved(childPointer(at, "requestBody"));
+      operations.set(operation.operationId, {
+        id: operation.operationId,
+        method: method.toUpperCase(),
+        path: new RegExp(`^${template.replace(/[.*+?^$()|[\]\\]/g, "\\$&").replace(/\{[^}]+\}/g, "([^/]+)")}$`),
+        names: [...template.matchAll(/\{([^}]+)\}/g)].map((name) => name[1]),
+        schemes: new Set((operation.security ?? document.security ?? []).flatMap((requirement) => Object.keys(requirement))),
+        parameters: [...parameters.values()],
+        body: body && {
+          required: body.node.required === true,
+          media: Object.keys(body.node.content ?? {}),
+          schema: childPointer(body.pointer, "content", "application/json", "schema"),
+        },
+        responses,
+      });
+    }
+  }
+  for (const id of Object.keys(GUIDE_OPERATIONS)) assert.ok(operations.has(id), `The contract has no ${id} operation`);
+
+  // Each ID the guide reads from the environment: one value every path parameter of that name accepts.
+  const identifier = (parameter, readable) => {
+    const schemas = [...operations.values()].flatMap(({ parameters }) => parameters)
+      .filter((candidate) => candidate.in === "path" && candidate.name === parameter).map(({ schema }) => schema);
+    return values.sample(schemas[0], { key: parameter, name: readable, also: schemas.slice(1) });
+  };
+  const environment = {
+    PHOTON_API_KEY: "pho_ask_docs_example",
+    PHOTON_PROJECT_API_KEY: "pho_sk_docs_example",
+    PHOTON_ACCESS_TOKEN: "docs_example_access_token",
+    PHOTON_ORGANIZATION_ID: identifier("organizationId", "org_docs_example"),
+    PHOTON_PROJECT_ID: identifier("projectId", "proj_docs_example"),
+    PHOTON_WEBHOOK_SECRET: WEBHOOK_SECRET,
+  };
+
+  /** Why a request does not match its operation's parameters and body; empty when it matches. */
+  function requestIssues(operation, { params, query, headers, input }) {
+    const found = [];
+    const check = (where, schema, value) => {
+      for (const issue of values.issues(schema, value)) found.push(`${where}${issue.pointer} ${issue.message}`);
+    };
+    for (const parameter of operation.parameters) {
+      if (parameter.in === "query" && query.getAll(parameter.name).length > 1) {
+        found.push(`query ${parameter.name} is repeated`);
+        continue;
+      }
+      const text = { path: params[parameter.name], query: query.get(parameter.name) ?? undefined, header: headers[parameter.name.toLowerCase()] }[parameter.in];
+      if (text === undefined) {
+        if (parameter.required) found.push(`${parameter.in} ${parameter.name} is required`);
+      } else {
+        check(`${parameter.in} ${parameter.name}`, parameter.schema, parameterValue(resolved(parameter.schema).node, text));
+      }
+    }
+    for (const name of query.keys()) {
+      if (!operation.parameters.some((parameter) => parameter.in === "query" && parameter.name === name)) found.push(`query ${name} is not a parameter`);
+    }
+    if (input === undefined && operation.body?.required) found.push("the body is required");
+    if (input !== undefined && !operation.body) found.push("the operation takes no body");
+    if (input !== undefined && operation.body) {
+      const media = (headers["content-type"] ?? "").split(";")[0].trim().toLowerCase();
+      if (operation.body.media.includes(media)) check("body", operation.body.schema, input);
+      else found.push(`header Content-Type ${media || "is missing and"} is not one of ${operation.body.media.join(", ")}`);
+    }
+    return found;
+  }
+
+  /** Throw, naming the operation, status and JSON pointer, when `body` does not match the response schema. */
+  function checkResponse(id, status, body) {
+    const response = operations.get(id)?.responses.get(status);
+    assert.ok(response, `${id} declares no ${status} response body`);
+    const issues = values.issues(response.schema, body);
+    if (issues.length) throw new Error(`${id} ${status}: the mock's body does not match the contract: ${describeIssues(issues)}`);
+  }
+
+  /** The branch of a problem schema, through `$ref`s and unions, whose `code` is `code`. */
+  function problem(pointer, code) {
+    const { pointer: at, node } = resolved(pointer);
+    if (node?.properties?.code?.const === code) return at;
+    for (const keyword of ["oneOf", "anyOf"]) {
+      for (const index of (node?.[keyword] ?? []).keys()) {
+        const found = problem(childPointer(at, keyword, index), code);
+        if (found) return found;
+      }
+    }
+    return undefined;
+  }
+
+  function respond(operation, status, overlay = {}, code = undefined) {
+    const response = operation.responses.get(status);
+    assert.ok(response, `${operation.id} declares no ${status} response body`);
+    const source = code === undefined ? response.schema : problem(response.schema, code);
+    assert.ok(source, `${operation.id} ${status} has no ${code} problem`);
+    const sample = values.sample(source, { key: `${operation.id} ${status}`, name: operation.id, items: 1 });
+    const body = Object.keys(overlay).length === 0 ? sample : { ...sample, ...overlay };
+    checkResponse(operation.id, status, body);
+    return { status, body, media: response.media };
+  }
+
+  /** Answer one request: `{ status, body, media }`, or `{ unexpected }` for a request the mock does not serve. */
+  function answer({ method, url, headers, body }) {
+    const { pathname, searchParams } = new URL(url, "http://mock");
+    const operation = [...operations.values()].find((candidate) => candidate.method === method && candidate.path.test(pathname));
+    if (!operation) return { unexpected: `${method} ${pathname}` };
+    const values = operation.path.exec(pathname).slice(1);
+    const params = Object.fromEntries(operation.names.map((name, index) => [name, decodeURIComponent(values[index])]));
+    const token = /^Bearer (.+)$/.exec(headers.authorization ?? "")?.[1];
+    const scheme = Object.keys(CREDENTIALS).find((name) => environment[CREDENTIALS[name]] === token);
+    if (!scheme) return { ...respond(operation, 401, {}, "NOT_AUTHENTICATED"), rejected: `${operation.id} without a credential it accepts` };
+    if (!operation.schemes.has(scheme)) return { unexpected: `${operation.id} with the ${scheme} credential` };
+    let input;
+    try {
+      input = body ? JSON.parse(body) : undefined;
+    } catch {
+      return { unexpected: `${operation.id} request: the body is not JSON` };
+    }
+    const issues = requestIssues(operation, { params, query: searchParams, headers, input });
+    if (issues.length) return { unexpected: `${operation.id} request: ${issues.join("; ")}` };
+    const result = GUIDE_OPERATIONS[operation.id]({ params, query: searchParams, input }, environment);
+    return Array.isArray(result) ? respond(operation, ...result) : { unexpected: `${operation.id}: ${result.unexpected}` };
+  }
+
+  return { environment, answer, checkResponse };
+}
+
+const mock = createMock(readContract());
+export const { environment: ENVIRONMENT, answer, checkResponse } = mock;
+
 async function startMock() {
-  const state = { requests: 0, unexpected: [], served: [] };
+  const state = { requests: 0, unexpected: [], rejected: [], served: [] };
   const server = createServer((request, response) => {
     const chunks = [];
     request.on("data", (chunk) => chunks.push(chunk));
     request.on("end", () => {
       state.requests += 1;
-      const result = answer({ method: request.method, url: request.url, headers: request.headers, body: Buffer.concat(chunks).toString("utf8") });
+      let result;
+      try {
+        result = answer({ method: request.method, url: request.url, headers: request.headers, body: Buffer.concat(chunks).toString("utf8") });
+      } catch (error) {
+        result = { unexpected: error.message };
+      }
+      if (result.rejected) state.rejected.push(result.rejected);
       if (result.unexpected) {
         state.unexpected.push(result.unexpected);
-        Object.assign(result, problem(418, "DOCS_CHECK", "Unexpected request", "docs-check"));
+        result = {
+          status: 418, media: "application/problem+json",
+          body: { type: "https://photon.codes/docs/problems/docs-check", code: "DOCS_CHECK", title: "Unexpected request", status: 418, detail: result.unexpected },
+        };
       } else {
         state.served.push(`${request.method} ${new URL(request.url, "http://mock").pathname} ${request.headers["idempotency-key"] ?? ""}`.trim());
       }
       const text = JSON.stringify(result.body);
-      response.writeHead(result.status, {
-        "content-type": result.problem ? "application/problem+json" : "application/json",
-        "content-length": Buffer.byteLength(text),
-        "x-request-id": REQUEST_ID,
-      });
+      response.writeHead(result.status, { "content-type": result.media, "content-length": Buffer.byteLength(text), "x-request-id": REQUEST_ID });
       response.end(text);
     });
   });
@@ -297,7 +424,7 @@ function runAsync(command, args, options) {
 async function runExamples(examples, mock, commandFor) {
   const failures = [];
   for (const example of examples) {
-    const before = { requests: mock.state.requests, unexpected: mock.state.unexpected.length, served: mock.state.served.length };
+    const before = { requests: mock.state.requests, unexpected: mock.state.unexpected.length, rejected: mock.state.rejected.length, served: mock.state.served.length };
     const [command, args, options] = commandFor(example);
     const { status, signal } = await runAsync(command, args, {
       ...options,
@@ -307,10 +434,15 @@ async function runExamples(examples, mock, commandFor) {
       },
     });
     const unexpected = mock.state.unexpected.slice(before.unexpected);
+    const rejected = mock.state.rejected.slice(before.rejected);
     const served = mock.state.served.slice(before.served);
+    const recorded = [
+      ...(unexpected.length ? [`requests the mock did not serve: ${unexpected.join(", ")}`] : []),
+      ...(rejected.length ? [`requests without an accepted credential: ${rejected.join(", ")}`] : []),
+    ];
     if (signal === "SIGKILL") failures.push(`${example.location}: timed out after ${EXAMPLE_TIMEOUT_MS / 1000} s`);
-    else if (status !== 0) failures.push(`${example.location}: exited with ${status ?? signal}`);
-    else if (unexpected.length) failures.push(`${example.location}: unexpected requests: ${unexpected.join(", ")}`);
+    else if (status !== 0) failures.push([`${example.location}: exited with ${status ?? signal}`, ...recorded].join("; "));
+    else if (recorded.length) failures.push(`${example.location}: ${recorded.join("; ")}`);
     else if (mock.state.requests === before.requests) failures.push(`${example.location}: sent no request`);
     else if (RECEIVER.test(example.code) && served.join("\n") !== RECEIVER_REQUESTS.join("\n")) {
       failures.push(`${example.location}: the receiver sent [${served.join(", ")}], not [${RECEIVER_REQUESTS.join(", ")}]`);
@@ -328,7 +460,9 @@ function crateVersion(name) {
 
 async function checkTypeScript(examples, work, mock) {
   mkdirSync(join(work, "examples"));
-  for (const { name, code } of examples) writeFileSync(join(work, "examples", `${name}.ts`), `${code}export {};\n`);
+  for (const { name, location, code } of examples) {
+    writeFileSync(join(work, "examples", `${name}.ts`), `${strictClients(code, location)}export {};\n`);
+  }
   writeFileSync(join(work, "package.json"), JSON.stringify({ name: "docs-examples", private: true, type: "module" }));
   writeFileSync(join(work, "tsconfig.json"), JSON.stringify({
     compilerOptions: {
@@ -391,6 +525,7 @@ import photon_api
 for cls in (photon_api.Photon, photon_api.AsyncPhoton):
     def patched(self, *args, __original=cls.__init__, **kwargs):
         kwargs["base_url"] = os.environ["DOCS_CHECK_BASE_URL"]
+        kwargs["strict_response_validation"] = True
         __original(self, *args, **kwargs)
     cls.__init__ = patched
 namespace = runpy.run_path(sys.argv[1], run_name="__main__")
@@ -403,6 +538,15 @@ for delivery in json.loads(os.environ["DOCS_CHECK_DELIVERIES"]) if handle else [
         sys.exit(f"A {kind} delivery was answered {status}")
 `);
   return runExamples(examples, mock, ({ name }) => [python, ["run.py", `examples/${name}.py`], { cwd: work }]);
+}
+
+/** Make every `new Photon(...)` validate responses strictly: `strictResponseValidation: true` leads its options. */
+export function strictClients(code, location) {
+  assert.ok(!code.includes("strictResponseValidation"), `${location}: set strictResponseValidation only through the check, which makes every client strict`);
+  return code.replace(/new Photon\(\s*([{)])?/g, (_, next) => {
+    assert.ok(next, `${location}: pass new Photon an object literal or nothing, so the check can make it strict`);
+    return next === "{" ? "new Photon({ strictResponseValidation: true," : "new Photon({ strictResponseValidation: true })";
+  });
 }
 
 /** Add `.base_url(<mock>)` before the `.build()` that ends each `PhotonClientBuilder::new()` chain. */
@@ -597,7 +741,19 @@ export async function checkDocsExamples(language, { docs = join(root, "docs") } 
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
-  const language = process.argv[2];
-  const count = await checkDocsExamples(language);
-  console.log(`${count} ${language} documentation examples compile and run against the mock API.`);
+  const [command, ...contracts] = process.argv.slice(2);
+  if (command === "delivery") {
+    assert.ok(contracts.length > 0, "Usage: check-docs-examples.mjs delivery <contract.json>...");
+    for (const contract of contracts) {
+      try {
+        checkDelivery(JSON.parse(readFileSync(resolve(contract), "utf8")));
+      } catch (error) {
+        throw new Error(`${contract}: ${error.message}`, { cause: error });
+      }
+    }
+    console.log(`The receiver examples' delivery matches SmsMessageReceivedEvent in ${contracts.join(", ")}.`);
+  } else {
+    const count = await checkDocsExamples(command);
+    console.log(`${count} ${command} documentation examples compile and run against the mock API.`);
+  }
 }

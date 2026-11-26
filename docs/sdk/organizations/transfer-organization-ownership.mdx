@@ -46,7 +46,7 @@ const result = await photon.organizations.transferOrganizationOwnership({
     idempotencyKey: "idempotencyKey",
   },
   body: {
-    expectedVersion: "expectedVersion",
+    expectedVersion: "1000909099092909490",
     newOwnerAccountId: "newOwnerAccountId",
   },
 });
@@ -68,7 +68,7 @@ result = photon.organizations.transfer_organization_ownership(
             "Idempotency-Key": "idempotencyKey",
         },
         "body": {
-            "expectedVersion": "expectedVersion",
+            "expectedVersion": "1000909099092909490",
             "newOwnerAccountId": "newOwnerAccountId",
         },
     })
@@ -87,7 +87,7 @@ let result = client
         "idempotencyKey".to_owned(),
         "organizationId".to_owned(),
         &serde_json::from_value(serde_json::json!({
-            "expectedVersion": "expectedVersion",
+            "expectedVersion": "1000909099092909490",
             "newOwnerAccountId": "newOwnerAccountId",
         }))?,
     )
@@ -109,7 +109,7 @@ ctx := context.Background()
 client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
 var body photonapi.TransferOrganizationOwnershipRequest
 if err := json.Unmarshal([]byte(`{
-	"expectedVersion": "expectedVersion",
+	"expectedVersion": "1000909099092909490",
 	"newOwnerAccountId": "newOwnerAccountId"
 }`), &body); err != nil {
 	return err

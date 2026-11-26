@@ -46,7 +46,7 @@ const result = await photon.organizations.billing.previewProjectChange({
   body: {
     category: "category",
     fixedCharge: {
-      fixedChargeCode: "fixedChargeCode",
+      fixedChargeCode: "n",
       increment: -10000,
     },
   },
@@ -69,7 +69,7 @@ result = photon.organizations.billing.preview_project_change(
         "body": {
             "category": "category",
             "fixedCharge": {
-                "fixedChargeCode": "fixedChargeCode",
+                "fixedChargeCode": "n",
                 "increment": -10000,
             },
         },
@@ -91,7 +91,7 @@ let result = client
         &serde_json::from_value(serde_json::json!({
             "category": "category",
             "fixedCharge": {
-                "fixedChargeCode": "fixedChargeCode",
+                "fixedChargeCode": "n",
                 "increment": -10000,
             },
         }))?,
@@ -116,7 +116,7 @@ var body photonapi.PreviewProjectChangeRequest
 if err := json.Unmarshal([]byte(`{
 	"category": "category",
 	"fixedCharge": {
-		"fixedChargeCode": "fixedChargeCode",
+		"fixedChargeCode": "n",
 		"increment": -10000
 	}
 }`), &body); err != nil {

@@ -40,7 +40,7 @@ const photon = new Photon({
 });
 const result = await photon.projects.listSpaces({
   path: {
-    id: "id",
+    id: "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
   },
 });
 ```
@@ -55,7 +55,7 @@ photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN
 result = photon.projects.list_spaces(
     ListSpacesInput.model_validate({
         "path": {
-            "id": "id",
+            "id": "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
         },
     })
 )
@@ -69,7 +69,7 @@ let client = PhotonClientBuilder::new()
     .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
     .build()?;
 let result = client
-    .list_spaces("id".to_owned(), None)
+    .list_spaces("pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw".to_owned(), None)
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
@@ -86,7 +86,7 @@ import (
 ctx := context.Background()
 client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
 result, err := client.Projects.ListSpaces(ctx, &photonapi.ListSpacesParams{
-	ID: "id",
+	ID: "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
 })
 if err != nil {
 	return err
@@ -121,6 +121,10 @@ _ = result
 </ResponseExample>
 
 ## Parameters
+
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
 
 <ParamField path="id" type={"string"} required>
 
@@ -195,7 +199,7 @@ Inclusive lower bound on updatedAt, RFC 3339. Cannot combine with createdAt boun
 
 **`200`** A page of Spaces in the requested order. SpacePage
 
-Headers: `Cache-Control`, `ETag`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+Headers: `Cache-Control`, `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="items" type={"array of PlatformSpace"} required>
 Unsupported platforms and records with unsupported data are omitted.
@@ -204,4 +208,8 @@ Unsupported platforms and records with unsupported data are omitted.
 <ResponseField name="nextPageToken" type={"string"}>
 Continue with this token, even if items is empty. Omitted when no more pages remain.
 </ResponseField>
+
+**`304`** Not Modified. Sent only when If-None-Match matches the ETag of an earlier 200 response for the same representation; no body. No body.
+
+Headers: `Cache-Control`, `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 

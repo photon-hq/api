@@ -47,7 +47,7 @@ const result = await photon.organizations.updateServiceIdentity({
     idempotencyKey: "idempotencyKey",
   },
   body: {
-    expectedVersion: "expectedVersion",
+    expectedVersion: "1499",
   },
 });
 ```
@@ -69,7 +69,7 @@ result = photon.organizations.update_service_identity(
             "Idempotency-Key": "idempotencyKey",
         },
         "body": {
-            "expectedVersion": "expectedVersion",
+            "expectedVersion": "1499",
         },
     })
 )
@@ -88,7 +88,7 @@ let result = client
         "organizationId".to_owned(),
         "serviceIdentityId".to_owned(),
         &serde_json::from_value(serde_json::json!({
-            "expectedVersion": "expectedVersion",
+            "expectedVersion": "1499",
         }))?,
     )
     .await
@@ -109,7 +109,7 @@ ctx := context.Background()
 client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
 var body photonapi.UpdateServiceIdentityRequest
 if err := json.Unmarshal([]byte(`{
-	"expectedVersion": "expectedVersion"
+	"expectedVersion": "1499"
 }`), &body); err != nil {
 	return err
 }

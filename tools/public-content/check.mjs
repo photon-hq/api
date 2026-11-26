@@ -27,7 +27,7 @@ export const internalTermHashes = new Set([
 
 const rules = [
   ["local-filesystem-path", /\/Users\/[A-Za-z0-9_.-]+\/|\/home\/(?:runner|[a-z][a-z0-9_-]*)\/|\/private\/tmp\/|[A-Z]:\\Users\\/],
-  ["credential-shaped-value", /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----|\bgh[pousr]_[A-Za-z0-9]{30,}\b|\bgithub_pat_[A-Za-z0-9_]{30,}\b|\bxox[baprs]-[A-Za-z0-9-]{20,}\b|\bAKIA[0-9A-Z]{16}\b|\bpho_(?:ask|sk)_[A-Za-z0-9_-]{20,}\b|\bnpm_[A-Za-z0-9]{36}\b|\bpypi-[A-Za-z0-9_-]{50,}\b/],
+  ["credential-shaped-value", /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----|\bgh[pousr]_[A-Za-z0-9]{30,}\b|\bgithub_pat_[A-Za-z0-9_]{30,}\b|\bxox[baprs]-[A-Za-z0-9-]{20,}\b|\bAKIA[0-9A-Z]{16}\b|\bpho_sk_[A-Za-z0-9_-]{20,}\b|\bpho_ask_(?![0-7][0-9a-hjkmnp-tv-z]{25}\b)[A-Za-z0-9_-]{20,}\b|\bnpm_[A-Za-z0-9]{36}\b|\bpypi-[A-Za-z0-9_-]{50,}\b/],
   // The @photon-hq/contracts namespace is public response metadata; depending
   // on or importing that package is not.
   ["internal-package-dependency", /(?:\b(?:from|import)\s*|\b(?:require(?:\.resolve)?|import)\s*\(\s*)["']@photon-hq\/contracts(?:\/[^"']*)?["']|["']@photon-hq\/contracts["']\s*:|(?:node_modules\/|registry\.npmjs\.org\/)@photon-hq\/contracts\b/i],

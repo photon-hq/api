@@ -55,6 +55,27 @@ export function isJsonMediaType(mediaType: string): boolean {
   );
 }
 
+export function isMultipartRelated(mediaType: string): boolean {
+  return baseMediaType(mediaType) === "multipart/related";
+}
+
+/**
+ * A request body offered only as `multipart/related` (RFC 2387) with a
+ * raw-bytes schema is a file upload. The SDKs take the file (its bytes, media
+ * type and optional name) and build the body themselves: a JSON root part that
+ * describes the file, then the file. Any other multipart/related schema fails
+ * generation instead of being sent as something it does not describe.
+ */
+export function isFileUpload(content: Record<string, unknown>, document: JsonObject, context: string): boolean {
+  const selected = selectRequestMedia(content, context);
+  if (!selected || !isMultipartRelated(selected.mediaType)) return false;
+  assert(
+    isObject(selected.value) && rawBytesSchema(selected.value.schema, document) !== undefined,
+    `${context}: a multipart/related file upload requires an unconstrained or binary schema`,
+  );
+  return true;
+}
+
 export function isBinaryMediaType(mediaType: string): boolean {
   return ["application/octet-stream", "application/pdf", "*/*"].includes(
     baseMediaType(mediaType),

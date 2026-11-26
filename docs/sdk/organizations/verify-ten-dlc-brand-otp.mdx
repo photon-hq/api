@@ -40,8 +40,8 @@ const photon = new Photon({
 });
 const result = await photon.organizations.verifyTenDlcBrandOtp({
   path: {
-    brandId: "brandId",
-    organization_id: "organization_id",
+    brandId: "pho_brd_2za900adtv99n9p9z9u9z00i1z",
+    organization_id: "pho_org_9agu0zz0aa009z030zm05f1a00",
   },
   headers: {
     idempotencyKey: "idempotencyKey",
@@ -62,8 +62,8 @@ photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN
 result = photon.organizations.verify_ten_dlc_brand_otp(
     VerifyTenDlcBrandOtpInput.model_validate({
         "path": {
-            "brandId": "brandId",
-            "organization_id": "organization_id",
+            "brandId": "pho_brd_2za900adtv99n9p9z9u9z00i1z",
+            "organization_id": "pho_org_9agu0zz0aa009z030zm05f1a00",
         },
         "headers": {
             "Idempotency-Key": "idempotencyKey",
@@ -85,8 +85,8 @@ let client = PhotonClientBuilder::new()
 let result = client
     .verify_ten_dlc_brand_otp(
         "idempotencyKey".to_owned(),
-        "brandId".to_owned(),
-        "organization_id".to_owned(),
+        "pho_brd_2za900adtv99n9p9z9u9z00i1z".to_owned(),
+        "pho_org_9agu0zz0aa009z030zm05f1a00".to_owned(),
         &serde_json::from_value(serde_json::json!({
             "otpPin": "otpPin",
         }))?,
@@ -115,8 +115,8 @@ if err := json.Unmarshal([]byte(`{
 }
 result, err := client.Organizations.VerifyTenDlcBrandOtp(ctx, &photonapi.VerifyTenDlcBrandOtpParams{
 	IdempotencyKey: "idempotencyKey",
-	BrandID: "brandId",
-	OrganizationID: "organization_id",
+	BrandID: "pho_brd_2za900adtv99n9p9z9u9z00i1z",
+	OrganizationID: "pho_org_9agu0zz0aa009z030zm05f1a00",
 	Body: body,
 })
 if err != nil {

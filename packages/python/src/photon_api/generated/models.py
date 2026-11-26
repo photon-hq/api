@@ -3289,15 +3289,14 @@ class RetryWebhookDeliveryRequest(BaseModel):
         extra="allow",
     )
     eventId: str
-    eventType: str
-    expectedAttemptCount: int
 
 
 class RetryWebhookDeliveryResponse(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    status: Literal["accepted"]
+    destinationId: str
+    eventId: str
 
 
 class RevokeAccountServiceKeyResponse(BaseModel):
@@ -3401,6 +3400,9 @@ class ScheduledPlanChange(BaseModel):
 
 class SelectableWebhookApiVersionStatus(RootModel[Literal["preview", "latest", "maintain"] | str]):
     root: Literal["preview", "latest", "maintain"] | str
+    """
+    Lifecycle of this date's webhook payload contract. `preview`: selectable, but the contract is not frozen yet and may still change. `latest`: the recommended date; its contract is frozen. `maintain`: still selectable and frozen, superseded by `successor`.
+    """
 
 
 class SelfServeBillingAgreement(BaseModel):
@@ -3733,14 +3735,6 @@ class ServiceUnavailableProblem(BaseModel):
     status: Literal[503]
     title: Literal["Service Temporarily Unavailable"]
     type: Literal["https://photon.codes/docs/problems/service-unavailable"]
-
-
-class SetSpaceTypingContent(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    type: Literal["space.typing.update"]
-    typing: bool
 
 
 class SetSpaceTypingRequest(BaseModel):
@@ -5674,6 +5668,22 @@ class WhatsappOutboundCapacity(
         Literal["50", "250", "1000", "2000", "10000", "100000", "UNLIMITED", "UNTIERED", "UNKNOWN"]
         | str
     )
+
+
+class WhatsappPersonalNotAvailableProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["WHATSAPP_PERSONAL_NOT_AVAILABLE"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    requestId: str | MISSING = MISSING
+    status: Literal[403]
+    title: Literal["WhatsApp Personal Not Available"]
+    type: Literal["https://photon.codes/docs/problems/whatsapp-personal-not-available"]
 
 
 class WhatsappPhoneNumberOwnership(RootModel[Literal["photon", "meta"] | str]):
@@ -7905,6 +7915,23 @@ class EmailOrganizationSendingPolicy(BaseModel):
     updatedAt: str
 
 
+class EmailOwnershipHandoffRequiredProblem(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    __annotations__ = {
+        "__pydantic_extra__": dict[str, JsonValue | None],
+    }
+    code: Literal["EMAIL_OWNERSHIP_HANDOFF_REQUIRED"]
+    detail: str | MISSING = MISSING
+    instance: str | MISSING = MISSING
+    remediation: ProblemRemediation
+    requestId: str | MISSING = MISSING
+    status: Literal[409]
+    title: Literal["Email Ownership Handoff Required"]
+    type: Literal["https://photon.codes/docs/problems/email-ownership-handoff-required"]
+
+
 class EmailRecipientSuppressedProblem(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -8224,9 +8251,6 @@ class GetMessageMetricsBackfillResponse(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    __annotations__ = {
-        "__pydantic_extra__": dict[str, Any],
-    }
     failedWrites: int
     lastVerifiedAt: str | None
     processedWrites: int
@@ -9438,6 +9462,10 @@ class ListInvoicesSubjectParam(RootModel[str | Literal["organization"]]):
     root: str | Literal["organization"]
 
 
+class ListMessagesBadRequestProblem(RootModel[InvalidPageTokenProblem | InvalidApiVersionProblem]):
+    root: InvalidPageTokenProblem | InvalidApiVersionProblem
+
+
 class ListMessagesForbiddenProblem(
     RootModel[
         ForbiddenProblem
@@ -10108,6 +10136,10 @@ class ListSharedLineAssignmentsInternalServerErrorProblem(
     root: InternalErrorProblem | InvalidAuthContextProblem
 
 
+class ListSpacesBadRequestProblem(RootModel[InvalidPageTokenProblem | InvalidApiVersionProblem]):
+    root: InvalidPageTokenProblem | InvalidApiVersionProblem
+
+
 class ListSpacesForbiddenProblem(
     RootModel[
         ForbiddenProblem
@@ -10132,6 +10164,10 @@ class ListSpacesInternalServerErrorProblem(
     RootModel[InternalErrorProblem | InvalidAuthContextProblem]
 ):
     root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class ListUsersBadRequestProblem(RootModel[InvalidPageTokenProblem | InvalidApiVersionProblem]):
+    root: InvalidPageTokenProblem | InvalidApiVersionProblem
 
 
 class ListUsersForbiddenProblem(
@@ -10346,6 +10382,10 @@ class ListWhatsappSharedLineAssignmentsInternalServerErrorProblem(
     RootModel[InternalErrorProblem | InvalidAuthContextProblem]
 ):
     root: InternalErrorProblem | InvalidAuthContextProblem
+
+
+class MarkMessageReadBadRequestProblem(RootModel[InvalidRequestProblem | InvalidApiVersionProblem]):
+    root: InvalidRequestProblem | InvalidApiVersionProblem
 
 
 class MarkMessageReadConflictProblem(
@@ -11091,6 +11131,12 @@ class PurchaseSmsNumberServiceUnavailableProblem(
         | BillingNotProvisionedProblem
         | UpstreamUnavailableProblem
     )
+
+
+class QueryMessageMetricsBadRequestProblem(
+    RootModel[InvalidArgumentProblem | InvalidApiVersionProblem]
+):
+    root: InvalidArgumentProblem | InvalidApiVersionProblem
 
 
 class QueryMessageMetricsForbiddenProblem(
@@ -12050,6 +12096,9 @@ class SelectableWebhookApiVersion(BaseModel):
     retirement: WebhookApiVersionRetirement | None
     selectable: Literal[True]
     status: Literal["preview", "latest", "maintain"] | str
+    """
+    Lifecycle of this date's webhook payload contract. `preview`: selectable, but the contract is not frozen yet and may still change. `latest`: the recommended date; its contract is frozen. `maintain`: still selectable and frozen, superseded by `successor`.
+    """
     successor: str | None
     version: str
 
@@ -12061,6 +12110,10 @@ class SendAttachmentContent(BaseModel):
     attachmentId: str
     metadata: SendAttachmentMetadata | MISSING = MISSING
     type: Literal["attachment"]
+
+
+class SendMessageBadRequestProblem(RootModel[InvalidRequestProblem | InvalidApiVersionProblem]):
+    root: InvalidRequestProblem | InvalidApiVersionProblem
 
 
 class SendMessageConflictProblem(
@@ -12154,12 +12207,8 @@ class SentMessageConstraint(BaseModel):
     status: Literal["dispatched", "accepted", "delivered", "failed"] | str
 
 
-class SetSpaceTypingConstraint(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    content: SetSpaceTypingContent
-    status: Literal["dispatched"]
+class SetSpaceTypingBadRequestProblem(RootModel[HttpErrorProblem | InvalidApiVersionProblem]):
+    root: HttpErrorProblem | InvalidApiVersionProblem
 
 
 class SetSpaceTypingForbiddenProblem(
@@ -14356,6 +14405,7 @@ class ConnectEmailDomainConflictProblem(
         | ProjectInitializingProblem
         | EmailDomainAlreadyConnectedProblem
         | EmailDomainCapExceededProblem
+        | EmailOwnershipHandoffRequiredProblem
     ]
 ):
     root: (
@@ -14363,6 +14413,7 @@ class ConnectEmailDomainConflictProblem(
         | ProjectInitializingProblem
         | EmailDomainAlreadyConnectedProblem
         | EmailDomainCapExceededProblem
+        | EmailOwnershipHandoffRequiredProblem
     )
 
 
@@ -14666,6 +14717,7 @@ class CreateOrGetSpaceBadRequestProblem(
         | InvalidRequestProblem
         | IdempotencyKeyRequiredProblem
         | IdempotencyKeyInvalidProblem
+        | InvalidApiVersionProblem
     ]
 ):
     root: (
@@ -14673,6 +14725,7 @@ class CreateOrGetSpaceBadRequestProblem(
         | InvalidRequestProblem
         | IdempotencyKeyRequiredProblem
         | IdempotencyKeyInvalidProblem
+        | InvalidApiVersionProblem
     )
 
 
@@ -14702,6 +14755,10 @@ class CreateOrGetSpaceServiceUnavailableProblem(
     RootModel[IdempotencyUnavailableProblem | UpstreamUnavailableProblem]
 ):
     root: IdempotencyUnavailableProblem | UpstreamUnavailableProblem
+
+
+class CreateOrGetUserBadRequestProblem(RootModel[HttpErrorProblem | InvalidApiVersionProblem]):
+    root: HttpErrorProblem | InvalidApiVersionProblem
 
 
 class CreateOrGetUserForbiddenProblem(
@@ -15162,6 +15219,7 @@ class CreateWhatsappSharedLineAssignmentForbiddenProblem(
         | InsufficientScopeProblem
         | OrganizationSsoRequiredProblem
         | ResourceMismatchProblem
+        | WhatsappPersonalNotAvailableProblem
     ]
 ):
     root: (
@@ -15169,6 +15227,7 @@ class CreateWhatsappSharedLineAssignmentForbiddenProblem(
         | InsufficientScopeProblem
         | OrganizationSsoRequiredProblem
         | ResourceMismatchProblem
+        | WhatsappPersonalNotAvailableProblem
     )
 
 
@@ -15940,6 +15999,12 @@ class GetMessageInternalServerErrorProblem(
     root: InternalErrorProblem | InvalidAuthContextProblem
 
 
+class GetMessageMetricsBackfillBadRequestProblem(
+    RootModel[InvalidArgumentProblem | InvalidApiVersionProblem]
+):
+    root: InvalidArgumentProblem | InvalidApiVersionProblem
+
+
 class GetMessageMetricsBackfillForbiddenProblem(
     RootModel[
         ForbiddenProblem
@@ -15954,6 +16019,12 @@ class GetMessageMetricsBackfillForbiddenProblem(
         | OrganizationSsoRequiredProblem
         | ResourceMismatchProblem
     )
+
+
+class GetMessageMetricsSqlSchemaBadRequestProblem(
+    RootModel[InvalidArgumentProblem | InvalidApiVersionProblem]
+):
+    root: InvalidArgumentProblem | InvalidApiVersionProblem
 
 
 class GetMessageMetricsSqlSchemaForbiddenProblem(
@@ -17220,6 +17291,9 @@ class SelectableWebhookEventCatalog(BaseModel):
     retirement: WebhookApiVersionRetirement | None
     selectable: Literal[True]
     status: Literal["preview", "latest", "maintain"] | str
+    """
+    Lifecycle of this date's webhook payload contract. `preview`: selectable, but the contract is not frozen yet and may still change. `latest`: the recommended date; its contract is frozen. `maintain`: still selectable and frozen, superseded by `successor`.
+    """
     successor: str | None
 
 
@@ -17237,6 +17311,14 @@ class SendMessageUpdateValue(
     ]
 ):
     root: SendMessageUpdateGroupContent | SendTextContent | SendAttachmentContent | SendVoiceContent
+
+
+class SetSpaceTypingConstraint(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    content: SpaceTypingUpdateContent
+    status: Literal["dispatched"]
 
 
 class SharedLineAssignment(BaseModel):

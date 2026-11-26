@@ -11,8 +11,9 @@ A call can fail in three ways:
 - **Transport error**: no response arrived, because of a network failure or a
   timeout.
 - **Response error**: a successful response that the client could not read as
-  the contract describes, for example a status the contract does not list or a
-  body of the wrong shape.
+  the contract describes, for example a status the contract does not list or,
+  for an operation that returns JSON, a body that is not JSON. A body of the wrong shape is not always an error: see
+  [Responses that do not match the contract](#responses-that-do-not-match-the-contract).
 
 Before an error reaches you, the client retries the requests it can retry. See
 [Retries and timeouts](/api-client/retries-and-timeouts).
@@ -28,7 +29,7 @@ and `requestId` when they are known.
 | --- | --- | --- |
 | `ApiError` | The API returns an error status. The message is the problem's `detail`, or `Photon API returned HTTP <status>`. | `status`, `headers`, `body` (the parsed JSON, or the text), `rawBody` (the body as text; for a JSON body, the parsed body serialized again), `requestId`, `attempts` |
 | `TransportError` | The request did not complete: a network failure or an attempt that exceeded `timeoutMs`, before or while the body arrived, or a call cancelled through its `signal`. | `cause`, the underlying error or the signal's abort reason; `attempts` |
-| `ResponseValidationError` | A successful response has a status the contract does not list, cannot be decoded, or does not match its schema. | `status`, `issues` (Zod issues), `requestId`, `cause` |
+| `ResponseValidationError` | A successful response has a status the contract does not list or cannot be decoded, or, with `strictResponseValidation: true`, does not match its schema. | `status`, `issues` (Zod issues), `requestId`, `cause` |
 
 `attempts` is the number of attempts the client sent for the call, counting the
 first; a call cancelled through its `signal` has none.
@@ -45,7 +46,7 @@ and `request_id` when they are known.
 | --- | --- | --- |
 | `ApiError` | The API returns an error status. The message is the problem's `detail`, or `Photon API returned HTTP <status>`. | `status`, `headers`, `body` (the parsed JSON, or `None`), `raw_body`, `request_id` |
 | `TransportError` | The request failed in `httpx`, for example a connection error or a timeout, on its last attempt. | the `httpx` error is in `__cause__` |
-| `ResponseValidationError` | A successful response has a status the contract does not list, is not empty when it should be, or does not match its model. | `status`, `raw_body`, `request_id` |
+| `ResponseValidationError` | A successful response has a status the contract does not list, is not empty when it should be, or cannot be parsed as the JSON the operation returns, or, with `strict_response_validation=True`, does not match its model. | `status`, `raw_body`, `request_id` |
 
 Building an input model with values of the wrong type raises
 `pydantic.ValidationError` before anything is sent.
@@ -90,6 +91,34 @@ Problem documents are not generated as per-operation types: read
 `APIError.Problem` and match on its `Code`.
 </Tab>
 </Tabs>
+
+## Responses that do not match the contract
+
+A successful JSON response can lack a member the contract requires, or carry a
+member of another type, when the API changes before your client does. The
+clients treat such a body this way:
+
+- **TypeScript**: returns the body. Members that match are decoded as usual, a
+  member the response leaves out is `undefined`, and a member of another type
+  keeps the value the API sent. Pass `strictResponseValidation: true` to
+  `new Photon()` to throw `ResponseValidationError` instead.
+- **Python**: for an object, returns the declared model, built without
+  validation (Pydantic's `model_construct`). Fields that match are parsed as
+  usual, a field the response leaves out is `MISSING`, and a field of another
+  type keeps the value the API sent. A body of another shape, such as `null`
+  where the model is an object, is returned as the API sent it. Pass `strict_response_validation=True` to `Photon` or
+  `AsyncPhoton` to raise `ResponseValidationError` instead.
+- **Go**: a member the response leaves out reads as its zero value, such as
+  `nil` for a pointer. A member of another JSON type returns
+  `*ResponseDecodeError`.
+- **Rust**: a nullable member the response leaves out reads as `None`. Any
+  other mismatch returns `Error::Decode`. There is no option to accept it,
+  because the models cannot hold a missing value of a non-nullable type.
+
+So in TypeScript, Python, and Go, a value the type declares as present can be
+absent at run time. Check the members your code depends on, or use the strict
+option where a mismatch must stop the call. For an operation that returns JSON,
+a body that is not JSON is an error in every client.
 
 ## Handle an API error
 

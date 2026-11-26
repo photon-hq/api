@@ -47,7 +47,7 @@ const result = await photon.organizations.subscribeSso({
   },
   body: {
     expectedAmount: "expectedAmount",
-    expectedCurrency: "expectedCurrency",
+    expectedCurrency: "exp",
     expectedCurrentPeriodEnd: "2026-01-01T00:00:00Z",
   },
 });
@@ -70,7 +70,7 @@ result = photon.organizations.subscribe_sso(
         },
         "body": {
             "expectedAmount": "expectedAmount",
-            "expectedCurrency": "expectedCurrency",
+            "expectedCurrency": "exp",
             "expectedCurrentPeriodEnd": "2026-01-01T00:00:00Z",
         },
     })
@@ -90,7 +90,7 @@ let result = client
         "organizationId".to_owned(),
         &serde_json::from_value(serde_json::json!({
             "expectedAmount": "expectedAmount",
-            "expectedCurrency": "expectedCurrency",
+            "expectedCurrency": "exp",
             "expectedCurrentPeriodEnd": "2026-01-01T00:00:00Z",
         }))?,
     )
@@ -113,7 +113,7 @@ client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")
 var body photonapi.SubscribeSsoRequest
 if err := json.Unmarshal([]byte(`{
 	"expectedAmount": "expectedAmount",
-	"expectedCurrency": "expectedCurrency",
+	"expectedCurrency": "exp",
 	"expectedCurrentPeriodEnd": "2026-01-01T00:00:00Z"
 }`), &body); err != nil {
 	return err

@@ -40,7 +40,7 @@ const photon = new Photon({
 });
 const result = await photon.projects.listWebhookEventTypes({
   path: {
-    projectId: "projectId",
+    projectId: "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
   },
   query: {
     apiVersion: "2026-01-01",
@@ -58,7 +58,7 @@ photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN
 result = photon.projects.list_webhook_event_types(
     ListWebhookEventTypesInput.model_validate({
         "path": {
-            "projectId": "projectId",
+            "projectId": "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
         },
         "query": {
             "apiVersion": "2026-01-01",
@@ -76,7 +76,7 @@ let client = PhotonClientBuilder::new()
     .build()?;
 let result = client
     .list_webhook_event_types(
-        "projectId".to_owned(),
+        "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw".to_owned(),
         serde_json::from_value(serde_json::json!("2026-01-01"))?,
     )
     .await
@@ -95,7 +95,7 @@ import (
 ctx := context.Background()
 client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
 result, err := client.Projects.ListWebhookEventTypes(ctx, &photonapi.ListWebhookEventTypesParams{
-	ProjectID: "projectId",
+	ProjectID: "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
 	APIVersion: "2026-01-01",
 })
 if err != nil {
@@ -178,7 +178,7 @@ Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [
 </ResponseField>
 
 <ResponseField name="status" type={"SelectableWebhookApiVersionStatus"} required>
-
+Lifecycle of this date's webhook payload contract. `preview`: selectable, but the contract is not frozen yet and may still change. `latest`: the recommended date; its contract is frozen. `maintain`: still selectable and frozen, superseded by `successor`.
 </ResponseField>
 
 <ResponseField name="successor" type={"string (date) | null"} required>

@@ -40,8 +40,8 @@ const photon = new Photon({
 });
 const result = await photon.projects.getSpace({
   path: {
-    id: "id",
-    spaceId: "spaceId",
+    id: "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
+    spaceId: "pho_spc_7zhamnzkrmvnnhkkpmajhkmn9m",
   },
 });
 ```
@@ -56,8 +56,8 @@ photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN
 result = photon.projects.get_space(
     GetSpaceInput.model_validate({
         "path": {
-            "id": "id",
-            "spaceId": "spaceId",
+            "id": "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
+            "spaceId": "pho_spc_7zhamnzkrmvnnhkkpmajhkmn9m",
         },
     })
 )
@@ -71,7 +71,11 @@ let client = PhotonClientBuilder::new()
     .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
     .build()?;
 let result = client
-    .get_space("id".to_owned(), "spaceId".to_owned(), None)
+    .get_space(
+        "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw".to_owned(),
+        "pho_spc_7zhamnzkrmvnnhkkpmajhkmn9m".to_owned(),
+        None,
+    )
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
@@ -88,8 +92,8 @@ import (
 ctx := context.Background()
 client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
 result, err := client.Projects.GetSpace(ctx, &photonapi.GetSpaceParams{
-	ID: "id",
-	SpaceID: "spaceId",
+	ID: "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
+	SpaceID: "pho_spc_7zhamnzkrmvnnhkkpmajhkmn9m",
 })
 if err != nil {
 	return err
@@ -121,6 +125,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField path="id" type={"string"} required>
 
 </ParamField>
@@ -138,7 +146,7 @@ _ = result
 
 **`200`** The requested Space. PlatformSpace
 
-Headers: `Cache-Control`, `ETag`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+Headers: `Cache-Control`, `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="createdAt" type={"string (date-time)"} required>
 When Photon first persisted this resource.
@@ -176,7 +184,7 @@ When Photon first persisted this resource.
 When Photon last persisted a change to this resource's public state.
 </ResponseField>
 
-**`304`** The request's If-None-Match validator matches the current representation. No body.
+**`304`** Not Modified. Sent only when If-None-Match matches the ETag of an earlier 200 response for the same representation; no body. No body.
 
-Headers: `Cache-Control`, `ETag`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+Headers: `Cache-Control`, `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 

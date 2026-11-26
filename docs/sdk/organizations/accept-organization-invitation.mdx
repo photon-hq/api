@@ -43,7 +43,7 @@ const result = await photon.organizations.acceptOrganizationInvitation({
     idempotencyKey: "idempotencyKey",
   },
   body: {
-    token: "token",
+    token: "ZZ0_Aq99z_A_-zxiZ5zSuA_zqz-_dz-_--w_e-3Mza-",
   },
 });
 ```
@@ -61,7 +61,7 @@ result = photon.organizations.accept_organization_invitation(
             "Idempotency-Key": "idempotencyKey",
         },
         "body": {
-            "token": "token",
+            "token": "ZZ0_Aq99z_A_-zxiZ5zSuA_zqz-_dz-_--w_e-3Mza-",
         },
     })
 )
@@ -78,7 +78,7 @@ let result = client
     .accept_organization_invitation(
         "idempotencyKey".to_owned(),
         &serde_json::from_value(serde_json::json!({
-            "token": "token",
+            "token": "ZZ0_Aq99z_A_-zxiZ5zSuA_zqz-_dz-_--w_e-3Mza-",
         }))?,
     )
     .await
@@ -99,7 +99,7 @@ ctx := context.Background()
 client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
 var body photonapi.AcceptOrganizationInvitationRequest
 if err := json.Unmarshal([]byte(`{
-	"token": "token"
+	"token": "ZZ0_Aq99z_A_-zxiZ5zSuA_zqz-_dz-_--w_e-3Mza-"
 }`), &body); err != nil {
 	return err
 }

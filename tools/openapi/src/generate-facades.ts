@@ -4,6 +4,7 @@ import { parseArgs } from "node:util";
 import Handlebars from "handlebars";
 import {
   isJsonMediaType,
+  isMultipartRelated,
   selectRequestMedia,
   selectResponseMedia,
   sdkRequestNote,
@@ -62,7 +63,7 @@ function typescriptModelName(component: string): string {
   return component;
 }
 
-interface ManifestParameter {
+export interface ManifestParameter {
   name: string;
   wireName: string;
   location: string;
@@ -507,9 +508,10 @@ function pythonInputClasses(operation: ManifestOperation): string {
     // An unnamed raw-bytes body (`type: string, format: binary`) is bytes, as a named one is.
     const rawBytes = isObject(bodyReference) && bodyReference.format === "binary"
       && (bodyReference.type === undefined || bodyReference.type === "string");
-    fields.push(
-      `    body: models.${bodyModel ?? (rawBytes ? "RootModel[bytes]" : "RootModel[Any]")}${operation.requestBody.required ? "" : " | None = None"}`,
-    );
+    const bodyType = operationMedia(operation).fileUpload
+      ? "UploadFile"
+      : `models.${bodyModel ?? (rawBytes ? "RootModel[bytes]" : "RootModel[Any]")}`;
+    fields.push(`    body: ${bodyType}${operation.requestBody.required ? "" : " | None = None"}`);
   }
   for (const location of ["path", "query", "header"] as const) {
     const parameters = operation.parameters.filter(
@@ -541,6 +543,7 @@ function pythonOperationConstant(operation: ManifestOperation): string {
       ? `    request_media_type=${JSON.stringify(media.request)},\n`
       : "") +
     (media.rawRequest ? "    raw_request=True,\n" : "") +
+    (media.fileUpload ? "    file_upload=True,\n" : "") +
     (media.accept.length
       ? `    accept_media_types=(${media.accept.map((value) => `${JSON.stringify(value)},`).join(" ")}),\n`
       : "") +
@@ -573,11 +576,12 @@ function pythonMethod(
       `        return (${awaitPrefix}self._raw_resource.${methodName}(input, options=options)).data\n`;
   }
   const parsedInput = required ? "input" : `(input or ${typeName}Input())`;
-  const rawRequest = operationMedia(operation).rawRequest;
+  const { rawRequest, fileUpload } = operationMedia(operation);
   return `    ${asyncPrefix}def ${methodName}(self, ${input}, *, options: RequestOptions | None = None) -> RawResponse[${outputType}]:\n` +
     pythonDocumentation(operation) +
-    `        payload = ${parsedInput}.model_dump(mode="json", by_alias=True, exclude_unset=True${rawRequest ? ', exclude={"body"}' : ""})\n` +
+    `        payload = ${parsedInput}.model_dump(mode="json", by_alias=True, exclude_unset=True${rawRequest || fileUpload ? ', exclude={"body"}' : ""})\n` +
     (rawRequest ? `        payload["body"] = ${parsedInput}.body.root if ${parsedInput}.body is not None else None\n` : "") +
+    (fileUpload ? `        payload["body"] = ${parsedInput}.body\n` : "") +
     `        return ${awaitPrefix}self._transport.request(\n` +
     `            _OP_${snakeCase(operation.operationId).toUpperCase()}, payload, options\n` +
     `        )\n`;
@@ -675,7 +679,7 @@ from ._model_base import BaseModel
 
 from .generated import models
 from .transport import AsyncTransport, OperationSpec, RawResponse, RequestOptions, SyncTransport
-`;
+${operations.some((operation) => operationMedia(operation).fileUpload) ? "from .uploads import UploadFile\n" : ""}`;
   const inputClasses = operations.map(pythonInputClasses).join("\n");
   const constants = operations.map(pythonOperationConstant).join("\n\n");
   const classes = (asynchronous: boolean) => [true, false]
@@ -710,6 +714,8 @@ export type ResponseKind = "binary" | "json" | "empty";
 export interface OperationMedia {
   request?: string;
   rawRequest?: true;
+  /** A file upload: the client builds its multipart/related body from the file (`isFileUpload` in media-types.ts). */
+  fileUpload?: true;
   /** Selected success media types, one per documented success status. */
   responses: string[];
   /** Accept header values: the selected success types, then every declared error type. */
@@ -742,7 +748,9 @@ export function operationMedia(operation: ManifestOperation): OperationMedia {
     ...(request && isJsonMediaType(request.mediaType)
       ? { request: request.mediaType }
       : {}),
-    ...(request && !isJsonMediaType(request.mediaType) ? { rawRequest: true as const } : {}),
+    ...(request && !isJsonMediaType(request.mediaType)
+      ? isMultipartRelated(request.mediaType) ? { fileUpload: true as const } : { rawRequest: true as const }
+      : {}),
     responses: success,
     accept: [...new Set([...success, ...[...new Set(errors)].sort()])],
     responseKinds: Object.fromEntries(
@@ -770,7 +778,7 @@ import type { ZodType } from "zod";
 import * as Sdk from "./generated/sdk.gen.js";
 import * as Schemas from "./schemas.js";
 
-export const operationMediaTypes: Record<string, { request?: string; rawRequest?: true; responses: string[]; accept: string[]; responseKinds: Record<string, "binary" | "json" | "empty"> }> = {{{mediaTypes}}};
+export const operationMediaTypes: Record<string, { request?: string; rawRequest?: true; fileUpload?: true; responses: string[]; accept: string[]; responseKinds: Record<string, "binary" | "json" | "empty"> }> = {{{mediaTypes}}};
 
 export interface RequestOptions {
   signal?: AbortSignal;

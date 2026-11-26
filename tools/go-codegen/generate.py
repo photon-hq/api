@@ -483,11 +483,16 @@ def emit_op(node: Node, op: dict) -> tuple[str, str]:
     body = op.get("requestBody")
     body_type = None
     raw_body = False
+    file_upload = False
     if body:
         # JSON wins when a body also has a form or protobuf encoding.
         mt, ref = next(((m, r) for m, r in body["content"].items() if m == "application/json"), next(iter(body["content"].items())))
         inline_binary = isinstance(ref, dict) and ref.get("format") == "binary"
-        if mt.startswith("multipart/") or inline_binary:
+        if mt.split(";", 1)[0].strip().lower() == "multipart/related":
+            # A file upload (isFileUpload in tools/openapi/src/media-types.ts):
+            # the client builds the body from the file.
+            file_upload, body_type = True, "*UploadFile"
+        elif mt.startswith("multipart/") or inline_binary:
             raw_body, body_type = True, "io.Reader"
         else:
             schema = {"$ref": ref} if isinstance(ref, str) else (ref or {})
@@ -600,7 +605,9 @@ def emit_op(node: Node, op: dict) -> tuple[str, str]:
             code += f"\tspec.length = params.{f['name']}\n"
         else:
             code += f'\tspec.setHeader("{wire}", params.{f["name"]})\n'
-    if body_type and raw_body:
+    if file_upload:
+        code += "\tspec.setFile(params.Body)\n"
+    elif body_type and raw_body:
         code += "\tspec.rawBody = params.Body\n"
     elif body_type:
         code += "\tspec.setJSON(params.Body)\n"

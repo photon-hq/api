@@ -122,7 +122,7 @@ if failures:
 async function checkRust() {
   mkdirSync(join(work, "src"));
   const functions = samples.map(({ source }, index) => {
-    const body = source.split("\n").filter((line) => !line.startsWith("use ")).join("\n    ")
+    const body = source.split("\n").join("\n    ")
       .replaceAll("PhotonClientBuilder::new()", "PhotonClientBuilder::new().base_url(base_url())");
     return `async fn sample_${index}() -> Result<(), Box<dyn std::error::Error>> {\n    ${body}\n    Ok(())\n}\n`;
   });

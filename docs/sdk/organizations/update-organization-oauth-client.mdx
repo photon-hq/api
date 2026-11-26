@@ -41,10 +41,10 @@ const photon = new Photon({
 const result = await photon.organizations.updateOrganizationOauthClient({
   path: {
     organizationId: "organizationId",
-    clientId: "clientId",
+    clientId: "client_0",
   },
   headers: {
-    "if-match": "if-match",
+    "if-match": "\"z-_-_-az_a-0a_0zO9Ja-9a960-0_--_9a-a9-0_-_G\"",
   },
   body: {},
 });
@@ -61,10 +61,10 @@ result = photon.organizations.update_organization_oauth_client(
     UpdateOrganizationOauthClientInput.model_validate({
         "path": {
             "organizationId": "organizationId",
-            "clientId": "clientId",
+            "clientId": "client_0",
         },
         "headers": {
-            "if-match": "if-match",
+            "if-match": "\"z-_-_-az_a-0a_0zO9Ja-9a960-0_--_9a-a9-0_-_G\"",
         },
         "body": {},
     })
@@ -81,8 +81,8 @@ let client = PhotonClientBuilder::new()
 let result = client
     .update_organization_oauth_client(
         "organizationId".to_owned(),
-        "clientId".to_owned(),
-        "if-match".to_owned(),
+        "client_0".to_owned(),
+        "\"z-_-_-az_a-0a_0zO9Ja-9a960-0_--_9a-a9-0_-_G\"".to_owned(),
         &serde_json::from_value(serde_json::json!({}))?,
     )
     .await
@@ -107,8 +107,8 @@ if err := json.Unmarshal([]byte(`{}`), &body); err != nil {
 }
 result, err := client.Organizations.UpdateOrganizationOauthClient(ctx, &photonapi.UpdateOrganizationOauthClientParams{
 	OrganizationID: "organizationId",
-	ClientID: "clientId",
-	IfMatch: "if-match",
+	ClientID: "client_0",
+	IfMatch: "\"z-_-_-az_a-0a_0zO9Ja-9a960-0_--_9a-a9-0_-_G\"",
 	Body: body,
 })
 if err != nil {

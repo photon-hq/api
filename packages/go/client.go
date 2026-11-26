@@ -187,6 +187,8 @@ type requestSpec struct {
 	header     http.Header
 	jsonBody   any
 	hasJSON    bool
+	file       *UploadFile
+	hasFile    bool
 	rawBody    io.Reader
 	length     int64
 }
@@ -228,6 +230,8 @@ func (r *requestSpec) addQuery(name string, v any) {
 }
 
 func (r *requestSpec) setJSON(body any) { r.jsonBody, r.hasJSON = body, true }
+
+func (r *requestSpec) setFile(file *UploadFile) { r.file, r.hasFile = file, true }
 
 func formatOptional(v any) (string, bool) {
 	rv := reflect.ValueOf(v)
@@ -289,10 +293,20 @@ func (c *core) do(ctx context.Context, spec *requestSpec, out any, opts []Reques
 	}
 
 	var payload []byte
+	var contentType string
 	switch {
 	case spec.hasJSON:
 		var err error
 		if payload, err = json.Marshal(spec.jsonBody); err != nil {
+			return fmt.Errorf("photonapi: %s: encode request body: %w", spec.operationID, err)
+		}
+		contentType = "application/json"
+	case spec.hasFile:
+		if spec.file == nil {
+			return fmt.Errorf("photonapi: %s: no file to upload: Body is nil", spec.operationID)
+		}
+		var err error
+		if payload, contentType, err = spec.file.encode(); err != nil {
 			return fmt.Errorf("photonapi: %s: encode request body: %w", spec.operationID, err)
 		}
 	}
@@ -300,8 +314,8 @@ func (c *core) do(ctx context.Context, spec *requestSpec, out any, opts []Reques
 	header := http.Header{}
 	header.Set("Accept", spec.accept)
 	header.Set("User-Agent", c.userAgent)
-	if spec.hasJSON {
-		header.Set("Content-Type", "application/json")
+	if contentType != "" {
+		header.Set("Content-Type", contentType)
 	}
 	for k, v := range c.headers {
 		header[k] = append([]string(nil), v...)

@@ -40,7 +40,7 @@ const photon = new Photon({
 });
 await photon.account.revokeAuthorizedApplication({
   path: {
-    applicationId: "applicationId",
+    applicationId: "connect_app_z",
   },
 });
 ```
@@ -55,7 +55,7 @@ photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN
 photon.account.revoke_authorized_application(
     RevokeAuthorizedApplicationInput.model_validate({
         "path": {
-            "applicationId": "applicationId",
+            "applicationId": "connect_app_z",
         },
     })
 )
@@ -69,7 +69,7 @@ let client = PhotonClientBuilder::new()
     .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
     .build()?;
 client
-    .revoke_authorized_application("applicationId".to_owned())
+    .revoke_authorized_application("connect_app_z".to_owned())
     .await
     .map_err(|error| format!("{error:?}"))?;
 ```
@@ -85,7 +85,7 @@ import (
 ctx := context.Background()
 client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
 err := client.Account.RevokeAuthorizedApplication(ctx, &photonapi.RevokeAuthorizedApplicationParams{
-	ApplicationID: "applicationId",
+	ApplicationID: "connect_app_z",
 })
 if err != nil {
 	return err

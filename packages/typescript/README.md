@@ -87,12 +87,26 @@ for their status (regardless of the response `Content-Type`) and checked for
 shape: types and required members, not patterns, lengths or bounds. Members the
 SDK does not know are kept, and enums are open (the known values plus any other
 string), so the client keeps working when the API adds fields or values.
+When a successful JSON body does not match its schema, for example because a
+required member is missing, the client still returns it: members that match are
+decoded as usual, a member the response leaves out is `undefined`, and a member
+of another type keeps the value the API sent, so your code can meet a value its
+type does not allow. Pass `strictResponseValidation: true` to `new Photon()` to
+throw `ResponseValidationError` instead. A JSON response whose body cannot be
+parsed throws it in either mode.
 Request and response types, and the Zod schemas, are exported from the package,
 as are the contract's types: each component schema by name and, per operation,
 `<Operation>Errors` (error bodies by status) and `<Operation>Responses`.
 
 An operation that declares an `Idempotency-Key` header takes it as
 `headers: { idempotencyKey }` in its input.
+
+A file upload, such as `photon.projects.uploadAttachment`, takes the file as
+`body`: a `File`, or a `Blob` for a file without a name, whose `type` is the
+file's media type. The client sends the `multipart/related` body the API takes
+(JSON that describes the file, then the file) and sets Content-Type and
+Content-Length. The boundary comes from the file's bytes, so a retry with the
+same idempotency key sends the same request.
 
 ## Errors
 
@@ -102,7 +116,7 @@ known.
 | Class | Thrown when | Fields |
 | --- | --- | --- |
 | `ApiError` | The API returns a non-success status. The message is the problem `detail` when present. | `status`, `headers`, `body` (parsed JSON, or text), `rawBody`, `operationId`, `requestId`, `attempts` |
-| `ResponseValidationError` | A successful response has an undocumented status, cannot be decoded, or does not match its schema. | `status`, `issues`, `operationId`, `requestId`, `cause` |
+| `ResponseValidationError` | A successful response has an undocumented status or cannot be decoded, or, with `strictResponseValidation: true`, does not match its schema. | `status`, `issues`, `operationId`, `requestId`, `cause` |
 | `TransportError` | The request could not complete: network failure, timeout, cancellation, or a response body that could not be read. | `cause` (the underlying error, or the `signal`'s abort reason), `attempts` |
 
 `attempts` is the number of attempts the client sent for the call, counting the

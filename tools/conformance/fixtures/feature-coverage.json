@@ -11,6 +11,70 @@
     }
   ],
   "paths": {
+    "/v1/fixture/projects/{projectId}": {
+      "get": {
+        "operationId": "getProject",
+        "summary": "Get a project",
+        "description": "Returns a body whose required members a service may stop sending: a client reads it without them unless it validates responses strictly.",
+        "tags": [
+          "Projects"
+        ],
+        "security": [
+          {
+            "accountServiceKey": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The project.",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/X-Request-ID"
+              },
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Project"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated.",
+            "headers": {
+              "X-Request-ID": {
+                "$ref": "#/components/headers/X-Request-ID"
+              },
+              "X-Trace-ID": {
+                "$ref": "#/components/headers/X-Trace-ID"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotAuthenticatedProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/fixture/widgets": {
       "post": {
         "operationId": "createWidget",
@@ -2897,6 +2961,67 @@
   },
   "components": {
     "schemas": {
+      "Project": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Required, nullable creator members, as the production Project had them until a service stopped sending them.",
+        "properties": {
+          "projectId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "createdAt": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "createdByAccountId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "createdByActorId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "createdByActorKind": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ProjectCreatedByActorKind"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "projectId",
+          "name",
+          "createdAt",
+          "createdByAccountId",
+          "createdByActorId",
+          "createdByActorKind"
+        ]
+      },
+      "ProjectCreatedByActorKind": {
+        "type": "string",
+        "enum": [
+          "account",
+          "service_identity"
+        ]
+      },
       "WidgetId": {
         "type": "string",
         "pattern": "^wid_[0-9a-z]{8}$",

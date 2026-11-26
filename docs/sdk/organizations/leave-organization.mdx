@@ -46,7 +46,7 @@ const result = await photon.organizations.leaveOrganization({
     idempotencyKey: "idempotencyKey",
   },
   body: {
-    expectedVersion: "expectedVersion",
+    expectedVersion: "9",
   },
 });
 ```
@@ -67,7 +67,7 @@ result = photon.organizations.leave_organization(
             "Idempotency-Key": "idempotencyKey",
         },
         "body": {
-            "expectedVersion": "expectedVersion",
+            "expectedVersion": "9",
         },
     })
 )
@@ -85,7 +85,7 @@ let result = client
         "idempotencyKey".to_owned(),
         "organizationId".to_owned(),
         &serde_json::from_value(serde_json::json!({
-            "expectedVersion": "expectedVersion",
+            "expectedVersion": "9",
         }))?,
     )
     .await
@@ -106,7 +106,7 @@ ctx := context.Background()
 client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
 var body photonapi.LeaveOrganizationRequest
 if err := json.Unmarshal([]byte(`{
-	"expectedVersion": "expectedVersion"
+	"expectedVersion": "9"
 }`), &body); err != nil {
 	return err
 }

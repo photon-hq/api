@@ -40,10 +40,10 @@ const photon = new Photon({
 });
 const result = await photon.auth.updateOrganizationSsoPolicy({
   path: {
-    orgId: "orgId",
+    orgId: "pho_org_0majnkkjmkjj0j9ym5hyk9kjhn",
   },
   body: {
-    expectedVersion: "expectedVersion",
+    expectedVersion: "0",
     ssoJitEnabled: true,
   },
 });
@@ -59,10 +59,10 @@ photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN
 result = photon.auth.update_organization_sso_policy(
     UpdateOrganizationSsoPolicyInput.model_validate({
         "path": {
-            "orgId": "orgId",
+            "orgId": "pho_org_0majnkkjmkjj0j9ym5hyk9kjhn",
         },
         "body": {
-            "expectedVersion": "expectedVersion",
+            "expectedVersion": "0",
             "ssoJitEnabled": True,
         },
     })
@@ -78,9 +78,9 @@ let client = PhotonClientBuilder::new()
     .build()?;
 let result = client
     .update_organization_sso_policy(
-        "orgId".to_owned(),
+        "pho_org_0majnkkjmkjj0j9ym5hyk9kjhn".to_owned(),
         &serde_json::from_value(serde_json::json!({
-            "expectedVersion": "expectedVersion",
+            "expectedVersion": "0",
             "ssoJitEnabled": true,
         }))?,
     )
@@ -102,13 +102,13 @@ ctx := context.Background()
 client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
 var body photonapi.UpdateOrganizationSsoPolicyRequest
 if err := json.Unmarshal([]byte(`{
-	"expectedVersion": "expectedVersion",
+	"expectedVersion": "0",
 	"ssoJitEnabled": true
 }`), &body); err != nil {
 	return err
 }
 result, err := client.Auth.UpdateOrganizationSsoPolicy(ctx, &photonapi.UpdateOrganizationSsoPolicyParams{
-	OrgID: "orgId",
+	OrgID: "pho_org_0majnkkjmkjj0j9ym5hyk9kjhn",
 	Body: body,
 })
 if err != nil {

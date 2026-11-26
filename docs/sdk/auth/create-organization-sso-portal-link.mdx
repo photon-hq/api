@@ -40,7 +40,7 @@ const photon = new Photon({
 });
 const result = await photon.auth.createOrganizationSsoPortalLink({
   path: {
-    orgId: "orgId",
+    orgId: "pho_org_0majnkkjmkjj0j9ym5hyk9kjhn",
   },
   body: {
     returnTo: "returnTo",
@@ -58,7 +58,7 @@ photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN
 result = photon.auth.create_organization_sso_portal_link(
     CreateOrganizationSsoPortalLinkInput.model_validate({
         "path": {
-            "orgId": "orgId",
+            "orgId": "pho_org_0majnkkjmkjj0j9ym5hyk9kjhn",
         },
         "body": {
             "returnTo": "returnTo",
@@ -76,7 +76,7 @@ let client = PhotonClientBuilder::new()
     .build()?;
 let result = client
     .create_organization_sso_portal_link(
-        "orgId".to_owned(),
+        "pho_org_0majnkkjmkjj0j9ym5hyk9kjhn".to_owned(),
         &serde_json::from_value(serde_json::json!({
             "returnTo": "returnTo",
         }))?,
@@ -104,7 +104,7 @@ if err := json.Unmarshal([]byte(`{
 	return err
 }
 result, err := client.Auth.CreateOrganizationSsoPortalLink(ctx, &photonapi.CreateOrganizationSsoPortalLinkParams{
-	OrgID: "orgId",
+	OrgID: "pho_org_0majnkkjmkjj0j9ym5hyk9kjhn",
 	Body: body,
 })
 if err != nil {

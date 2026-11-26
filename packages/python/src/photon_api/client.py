@@ -25,6 +25,7 @@ class Photon(SyncRoot):
         max_attempts: int = 3,
         client: httpx.Client | None = None,
         max_retry_after: float = DEFAULT_MAX_RETRY_AFTER,
+        strict_response_validation: bool = False,
     ) -> None:
         self._transport = SyncTransport(
             base_url=base_url,
@@ -33,6 +34,7 @@ class Photon(SyncRoot):
             max_attempts=max_attempts,
             client=client,
             max_retry_after=max_retry_after,
+            strict_response_validation=strict_response_validation,
         )
         super().__init__(self._transport)
         self.raw = SyncRawRoot(self._transport)
@@ -57,6 +59,7 @@ class AsyncPhoton(AsyncRoot):
         max_attempts: int = 3,
         client: httpx.AsyncClient | None = None,
         max_retry_after: float = DEFAULT_MAX_RETRY_AFTER,
+        strict_response_validation: bool = False,
     ) -> None:
         self._transport = AsyncTransport(
             base_url=base_url,
@@ -65,6 +68,7 @@ class AsyncPhoton(AsyncRoot):
             max_attempts=max_attempts,
             client=client,
             max_retry_after=max_retry_after,
+            strict_response_validation=strict_response_validation,
         )
         super().__init__(self._transport)
         self.raw = AsyncRawRoot(self._transport)

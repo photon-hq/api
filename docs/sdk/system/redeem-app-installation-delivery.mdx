@@ -38,9 +38,9 @@ import { Photon } from "@photon-ai/api";
 const photon = new Photon();
 const result = await photon.system.redeemAppInstallationDelivery({
   body: {
-    appId: "appId",
+    appId: "pho_app_0hammkmmkmqnpptkmhktkjmnj0",
     clientAssertion: "clientAssertion",
-    code: "code",
+    code: "ZZ0l_----9A8a8OzZz_ZAa_y19zZ-0Z__9_-nZd__Z_",
   },
 });
 ```
@@ -53,9 +53,9 @@ photon = Photon()
 result = photon.system.redeem_app_installation_delivery(
     RedeemAppInstallationDeliveryInput.model_validate({
         "body": {
-            "appId": "appId",
+            "appId": "pho_app_0hammkmmkmqnpptkmhktkjmnj0",
             "clientAssertion": "clientAssertion",
-            "code": "code",
+            "code": "ZZ0l_----9A8a8OzZz_ZAa_y19zZ-0Z__9_-nZd__Z_",
         },
     })
 )
@@ -68,9 +68,9 @@ let client = PhotonClientBuilder::new().build()?;
 let result = client
     .redeem_app_installation_delivery(
         &serde_json::from_value(serde_json::json!({
-            "appId": "appId",
+            "appId": "pho_app_0hammkmmkmqnpptkmhktkjmnj0",
             "clientAssertion": "clientAssertion",
-            "code": "code",
+            "code": "ZZ0l_----9A8a8OzZz_ZAa_y19zZ-0Z__9_-nZd__Z_",
         }))?,
     )
     .await
@@ -90,9 +90,9 @@ ctx := context.Background()
 client := photonapi.NewClient()
 var body photonapi.RedeemAppInstallationDeliveryRequest
 if err := json.Unmarshal([]byte(`{
-	"appId": "appId",
+	"appId": "pho_app_0hammkmmkmqnpptkmhktkjmnj0",
 	"clientAssertion": "clientAssertion",
-	"code": "code"
+	"code": "ZZ0l_----9A8a8OzZz_ZAa_y19zZ-0Z__9_-nZd__Z_"
 }`), &body); err != nil {
 	return err
 }

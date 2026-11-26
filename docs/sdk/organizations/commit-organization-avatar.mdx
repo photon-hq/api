@@ -47,7 +47,7 @@ const result = await photon.organizations.commitOrganizationAvatar({
   },
   body: {
     uploadId: "uploadId",
-    expectedVersion: "expectedVersion",
+    expectedVersion: "4270979990900959809",
   },
 });
 ```
@@ -69,7 +69,7 @@ result = photon.organizations.commit_organization_avatar(
         },
         "body": {
             "uploadId": "uploadId",
-            "expectedVersion": "expectedVersion",
+            "expectedVersion": "4270979990900959809",
         },
     })
 )
@@ -88,7 +88,7 @@ let result = client
         "organizationId".to_owned(),
         &serde_json::from_value(serde_json::json!({
             "uploadId": "uploadId",
-            "expectedVersion": "expectedVersion",
+            "expectedVersion": "4270979990900959809",
         }))?,
     )
     .await
@@ -110,7 +110,7 @@ client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")
 var body photonapi.CommitOrganizationAvatarRequest
 if err := json.Unmarshal([]byte(`{
 	"uploadId": "uploadId",
-	"expectedVersion": "expectedVersion"
+	"expectedVersion": "4270979990900959809"
 }`), &body); err != nil {
 	return err
 }

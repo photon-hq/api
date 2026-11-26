@@ -3,7 +3,7 @@ import type { ZodType } from "zod";
 import * as Sdk from "./generated/sdk.gen.js";
 import * as Schemas from "./schemas.js";
 
-export const operationMediaTypes: Record<string, { request?: string; rawRequest?: true; responses: string[]; accept: string[]; responseKinds: Record<string, "binary" | "json" | "empty"> }> = {
+export const operationMediaTypes: Record<string, { request?: string; rawRequest?: true; fileUpload?: true; responses: string[]; accept: string[]; responseKinds: Record<string, "binary" | "json" | "empty"> }> = {
   "acceptOrganizationInvitation": {
     "request": "application/json",
     "responses": [
@@ -2359,7 +2359,7 @@ export const operationMediaTypes: Record<string, { request?: string; rawRequest?
     }
   },
   "uploadAttachment": {
-    "rawRequest": true,
+    "fileUpload": true,
     "responses": [
       "application/json"
     ],
@@ -4623,7 +4623,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
         /**
          * Retry webhook delivery
          *
-         * Requests an immediate attempt of the selected delivery if it is still the waiting head for its destination and event type. expectedAttemptCount is the failed-attempt counter recorded on the delivery and fences stale requests. This overrides the current backoff, including Retry-After, once. It preserves event identity and the retry budget. Delivered, active, disabled and dead-lettered deliveries cannot be retried. A 202 acknowledges the wake-up, not successful delivery. Supply an Idempotency-Key and retain it when retrying an ambiguous failure.
+         * Requests an immediate attempt of the selected delivery if it is still the waiting head for its destination and event type. This overrides the current backoff, including Retry-After, once. It preserves event identity and the retry budget. Delivered, active, disabled and dead-lettered deliveries cannot be retried. A 202 acknowledges the wake-up, not successful delivery. Supply an Idempotency-Key and retain it when retrying an ambiguous failure.
          */
         retryWebhookDelivery: (input: Schemas.RetryWebhookDeliveryInput, options?: RequestOptions) => invokers.data<Schemas.RetryWebhookDeliveryInput, Schemas.RetryWebhookDeliveryOutput>(
             "retryWebhookDelivery",
@@ -6957,7 +6957,7 @@ export function createRpcNamespaces(invokers: RpcInvokers) {
         /**
          * Retry webhook delivery
          *
-         * Requests an immediate attempt of the selected delivery if it is still the waiting head for its destination and event type. expectedAttemptCount is the failed-attempt counter recorded on the delivery and fences stale requests. This overrides the current backoff, including Retry-After, once. It preserves event identity and the retry budget. Delivered, active, disabled and dead-lettered deliveries cannot be retried. A 202 acknowledges the wake-up, not successful delivery. Supply an Idempotency-Key and retain it when retrying an ambiguous failure.
+         * Requests an immediate attempt of the selected delivery if it is still the waiting head for its destination and event type. This overrides the current backoff, including Retry-After, once. It preserves event identity and the retry budget. Delivered, active, disabled and dead-lettered deliveries cannot be retried. A 202 acknowledges the wake-up, not successful delivery. Supply an Idempotency-Key and retain it when retrying an ambiguous failure.
          */
         retryWebhookDelivery: (input: Schemas.RetryWebhookDeliveryInput, options?: RequestOptions) => invokers.raw<Schemas.RetryWebhookDeliveryInput, Schemas.RetryWebhookDeliveryOutput>(
             "retryWebhookDelivery",

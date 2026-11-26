@@ -226,6 +226,40 @@ func TestSyntheticRoundTrip(t *testing.T) {
         with self.assertRaises(SystemExit):
             mapper.go_type(obj({"a": {"type": "string"}}))
 
+    def test_file_uploads_take_an_upload_file(self):
+        # A multipart/related body is a file upload: Body is the file and the
+        # client builds the body. Another raw body stays a reader, and a
+        # declared content-length header still sets the request's length.
+        key = {"location": "header", "name": "idempotency-key", "wireName": "idempotency-key", "required": True, "schema": {"type": "string"}}
+        length = {"location": "header", "name": "content-length", "wireName": "content-length", "required": True, "schema": {"type": "string"}}
+
+        def upload(content: dict, parameters: list) -> tuple[str, str]:
+            op = {
+                "operationId": "uploadThing", "rpcMethod": "upload", "namespace": ["things"],
+                "httpMethod": "POST", "path": "/v1/things", "safe": False, "idempotencyKeyRequired": True,
+                "parameters": parameters, "requestBody": {"required": True, "content": content},
+                "responses": {"204": {}},
+            }
+            with mock.patch.object(generate, "mapper", generate.Mapper()):
+                return generate.emit_op(generate.Node(("things",)), op)
+
+        for media_type in ("multipart/related", "Multipart/Related; type=application/json"):
+            with self.subTest(media_type=media_type):
+                structure, code = upload({media_type: "#/components/schemas/ThingUpload"}, [key])
+                self.assertIn("\t// Body is the request body.\n\tBody *UploadFile\n}", structure)
+                self.assertIn("\tspec.setFile(params.Body)\n", code)
+                self.assertNotIn("rawBody", code)
+        structure, code = upload({"application/octet-stream": {"type": "string", "format": "binary"}}, [length, key])
+        self.assertIn("\t// Body is the request body.\n\tBody io.Reader\n}", structure)
+        self.assertIn("\tContentLength int64\n", structure)
+        self.assertIn("\tspec.length = params.ContentLength\n", code)
+        self.assertIn("\tspec.rawBody = params.Body\n", code)
+        self.assertNotIn("setFile", code)
+
+    def test_upload_file_is_reserved_for_the_runtime(self):
+        self.assertIn("UploadFile", generate.HANDWRITTEN)
+        self.assertEqual(generate.type_name("UploadFile"), "UploadFileModel")
+
 
 if __name__ == "__main__":
     unittest.main()

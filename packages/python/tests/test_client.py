@@ -105,6 +105,7 @@ def test_sync_transport_selects_success_model_by_status() -> None:
         timeout=5,
         max_attempts=1,
         client=client,
+        strict_response_validation=True,
     )
 
     response = transport.request(multi_success_operation(), {})
@@ -128,6 +129,7 @@ def test_async_transport_selects_success_model_by_status() -> None:
             timeout=5,
             max_attempts=1,
             client=client,
+            strict_response_validation=True,
         )
 
         response = await transport.request(multi_success_operation(), {})
@@ -170,6 +172,7 @@ def test_async_transport_handles_bodyless_and_invalid_success_responses() -> Non
             timeout=5,
             max_attempts=1,
             client=client,
+            strict_response_validation=True,
         )
         operation = multi_success_operation(
             {
@@ -221,6 +224,7 @@ def test_success_range_and_empty_responses_are_supported() -> None:
         timeout=5,
         max_attempts=1,
         client=range_client,
+        strict_response_validation=True,
     )
     range_operation = multi_success_operation(
         {
@@ -243,6 +247,7 @@ def test_success_range_and_empty_responses_are_supported() -> None:
         timeout=5,
         max_attempts=1,
         client=empty_client,
+        strict_response_validation=True,
     )
     empty_response = empty_transport.request(multi_success_operation({"204": None}), {})
     assert empty_response.data is None
@@ -262,6 +267,7 @@ def test_undocumented_or_invalid_success_response_raises_validation_error() -> N
             timeout=5,
             max_attempts=1,
             client=client,
+            strict_response_validation=True,
         )
 
         with pytest.raises(ResponseValidationError) as error:

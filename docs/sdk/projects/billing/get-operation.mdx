@@ -41,7 +41,7 @@ const photon = new Photon({
 const result = await photon.projects.billing.getOperation({
   path: {
     projectId: "projectId",
-    operationId: "operationId",
+    operationId: "pho_bop_",
   },
 });
 ```
@@ -57,7 +57,7 @@ result = photon.projects.billing.get_operation(
     GetBillingOperationInput.model_validate({
         "path": {
             "projectId": "projectId",
-            "operationId": "operationId",
+            "operationId": "pho_bop_",
         },
     })
 )
@@ -71,7 +71,7 @@ let client = PhotonClientBuilder::new()
     .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
     .build()?;
 let result = client
-    .get_billing_operation("projectId".to_owned(), "operationId".to_owned())
+    .get_billing_operation("projectId".to_owned(), "pho_bop_".to_owned())
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
@@ -89,7 +89,7 @@ ctx := context.Background()
 client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
 result, err := client.Projects.Billing.GetOperation(ctx, &photonapi.GetBillingOperationParams{
 	ProjectID: "projectId",
-	OperationID: "operationId",
+	OperationID: "pho_bop_",
 })
 if err != nil {
 	return err

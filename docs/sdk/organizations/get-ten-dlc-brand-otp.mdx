@@ -40,8 +40,8 @@ const photon = new Photon({
 });
 const result = await photon.organizations.getTenDlcBrandOtp({
   path: {
-    brandId: "brandId",
-    organization_id: "organization_id",
+    brandId: "pho_brd_2za900adtv99n9p9z9u9z00i1z",
+    organization_id: "pho_org_9agu0zz0aa009z030zm05f1a00",
   },
 });
 ```
@@ -56,8 +56,8 @@ photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN
 result = photon.organizations.get_ten_dlc_brand_otp(
     GetTenDlcBrandOtpInput.model_validate({
         "path": {
-            "brandId": "brandId",
-            "organization_id": "organization_id",
+            "brandId": "pho_brd_2za900adtv99n9p9z9u9z00i1z",
+            "organization_id": "pho_org_9agu0zz0aa009z030zm05f1a00",
         },
     })
 )
@@ -71,7 +71,10 @@ let client = PhotonClientBuilder::new()
     .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
     .build()?;
 let result = client
-    .get_ten_dlc_brand_otp("brandId".to_owned(), "organization_id".to_owned())
+    .get_ten_dlc_brand_otp(
+        "pho_brd_2za900adtv99n9p9z9u9z00i1z".to_owned(),
+        "pho_org_9agu0zz0aa009z030zm05f1a00".to_owned(),
+    )
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
@@ -88,8 +91,8 @@ import (
 ctx := context.Background()
 client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
 result, err := client.Organizations.GetTenDlcBrandOtp(ctx, &photonapi.GetTenDlcBrandOtpParams{
-	BrandID: "brandId",
-	OrganizationID: "organization_id",
+	BrandID: "pho_brd_2za900adtv99n9p9z9u9z00i1z",
+	OrganizationID: "pho_org_9agu0zz0aa009z030zm05f1a00",
 })
 if err != nil {
 	return err

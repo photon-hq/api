@@ -14,6 +14,7 @@ rust-version = "1.88"
 # Generator-only dependencies stay exact.
 anyhow = "=1.0.104"
 bytes = "1.12.1"
+hmac-sha256 = "1.1.15"
 httpdate = "1.0.3"
 rand = "0.10.2"
 reqwest = { version = "0.13.4", default-features = false, features = ["json", "query", "rustls"] }

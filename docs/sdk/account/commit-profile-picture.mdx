@@ -43,7 +43,7 @@ const result = await photon.account.commitProfilePicture({
     idempotencyKey: "idempotencyKey",
   },
   body: {
-    uploadId: "uploadId",
+    uploadId: "pho_upl_997d09a0zz90uh98ln9zzo9z99",
   },
 });
 ```
@@ -61,7 +61,7 @@ result = photon.account.commit_profile_picture(
             "Idempotency-Key": "idempotencyKey",
         },
         "body": {
-            "uploadId": "uploadId",
+            "uploadId": "pho_upl_997d09a0zz90uh98ln9zzo9z99",
         },
     })
 )
@@ -78,7 +78,7 @@ let result = client
     .commit_account_profile_picture(
         "idempotencyKey".to_owned(),
         &serde_json::from_value(serde_json::json!({
-            "uploadId": "uploadId",
+            "uploadId": "pho_upl_997d09a0zz90uh98ln9zzo9z99",
         }))?,
     )
     .await
@@ -99,7 +99,7 @@ ctx := context.Background()
 client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
 var body photonapi.CommitAccountProfilePictureRequest
 if err := json.Unmarshal([]byte(`{
-	"uploadId": "uploadId"
+	"uploadId": "pho_upl_997d09a0zz90uh98ln9zzo9z99"
 }`), &body); err != nil {
 	return err
 }

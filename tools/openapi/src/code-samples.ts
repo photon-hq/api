@@ -3,12 +3,16 @@
 // every operation, the format Mintlify renders beside each endpoint. Method
 // names come from the generated SDKs themselves, so a sample always calls the
 // method the released package has. Arguments are the operation's required
-// inputs only, each set to a placeholder: its own name for strings, or a value
-// the schema allows (const, first enum value, minimum, a fixed date).
+// inputs only, each set to a value its schema accepts: the contract's example
+// where it has one, else a value generated from the schema
+// (contract-values.ts). Every input is validated against its schema, and a
+// mismatch fails the generation.
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
-import type { ManifestOperation, RpcManifest } from "./generate-facades.js";
+import { childPointer, contractValues, refPointer, type ContractValues } from "./contract-values.js";
+import type { ManifestOperation, ManifestParameter, RpcManifest } from "./generate-facades.js";
+import { isFileUpload, isMultipartRelated } from "./media-types.js";
 import {
   assert,
   isObject,
@@ -22,11 +26,11 @@ import {
 } from "./shared.js";
 
 export const MINTLIFY_CONTRACT_PATH = "openapi/openapi.mintlify.json";
-const BINARY_SAMPLE = "Hello from Photon.";
-// The media type of BINARY_SAMPLE, sent as its Content-Type.
-const BINARY_MEDIA_TYPE = "text/plain";
+// The file a sample with a raw request body or a file upload sends.
+const FILE_SAMPLE = "Hello from Photon.";
+const FILE_MEDIA_TYPE = "text/plain";
+const FILE_NAME = "hello.txt";
 const TOKEN_TS = "process.env.PHOTON_API_TOKEN";
-const DATE_TIME = "2026-01-01T00:00:00Z";
 
 export interface CodeSample {
   lang: "typescript" | "python" | "rust" | "go";
@@ -95,7 +99,7 @@ export function rustMethods(source: string): Map<string, RustMethod> {
       .filter(Boolean)
       .map((part) => {
         const separator = part.indexOf(":");
-        return { name: part.slice(0, separator).trim(), type: part.slice(separator + 1).trim() };
+        return { name: part.slice(0, separator).trim(), type: part.slice(separator + 1).trim().replace(/\bcrate::/g, "") };
       });
     const returns = match[3]!.replace(/\s+/g, " ").replace(/support::/g, "").replace(/<\s/g, "<").replace(/,?\s*>/g, ">");
     methods.set(match[1]!, { arguments: argumentsList, returns });
@@ -126,7 +130,7 @@ export interface GoMethod {
   /** The params struct type name, e.g. `SendMessageParams`; absent when the method takes only ctx. */
   params?: string | undefined;
   fields: GoField[];
-  /** The body field's Go type (`SendMessageRequest`, or `io.Reader` for a binary body). */
+  /** The body field's Go type (`SendMessageRequest`, `io.Reader` for a binary body, or `*UploadFile` for a file upload). */
   bodyType?: string | undefined;
   /** The declared return, e.g. `(*SentMessage, error)` or `error`. */
   returns: string;
@@ -182,69 +186,164 @@ export function goMethods(source: string): Map<string, GoMethod> {
   return methods;
 }
 
-function resolveSchema(document: JsonObject, schema: JsonValue | undefined): JsonValue | undefined {
-  let current = schema;
-  for (let depth = 0; isObject(current) && typeof current.$ref === "string" && depth < 32; depth += 1) {
-    const name = decodeURIComponent(current.$ref.replace("#/components/schemas/", ""));
-    const schemas = (document.components as JsonObject | undefined)?.schemas as JsonObject | undefined;
-    current = schemas?.[name];
+interface Contract {
+  values: ContractValues;
+  /** The JSON pointer of each operation, by operation ID. */
+  operations: Map<string, string>;
+}
+const contracts = new WeakMap<JsonObject, Contract>();
+
+/** The values of `document` and where its operations are, read once per document. */
+function contractOf(document: JsonObject): Contract {
+  let contract = contracts.get(document);
+  if (!contract) {
+    const operations = new Map<string, string>();
+    for (const [path, item] of Object.entries(document.paths as JsonObject)) {
+      if (!isObject(item)) continue;
+      for (const [method, operation] of Object.entries(item)) {
+        if (isObject(operation) && typeof operation.operationId === "string") operations.set(operation.operationId, childPointer("#/paths", path, method));
+      }
+    }
+    contract = { values: contractValues(document), operations };
+    contracts.set(document, contract);
   }
-  return current;
+  return contract;
 }
 
-/** A placeholder the schema accepts, built from required members only. */
-export function placeholder(document: JsonObject, raw: JsonValue | undefined, name: string, depth = 0): JsonValue {
-  const schema = resolveSchema(document, raw);
-  if (!isObject(schema) || depth > 8) return name;
-  if ("const" in schema) return schema.const as JsonValue;
-  if (Array.isArray(schema.enum) && schema.enum.length > 0) return schema.enum.find((value) => value !== null) ?? schema.enum[0]!;
-  for (const keyword of ["oneOf", "anyOf"] as const) {
-    const branches = schema[keyword];
-    if (Array.isArray(branches) && branches.length > 0) {
-      const branch = branches.find((candidate) => {
-        const resolved = resolveSchema(document, candidate);
-        return !(isObject(resolved) && resolved.type === "null");
-      }) ?? branches[0];
-      return placeholder(document, branch, name, depth + 1);
+interface ContractParameter {
+  pointer: string;
+  location: string;
+  name: string;
+  required: boolean;
+}
+
+/**
+ * An operation's parameters in the contract, operation parameters first since
+ * they replace path-item parameters of the same name and location, and the
+ * pointer of its Request Body Object.
+ */
+function contractOperation(document: JsonObject, operation: ManifestOperation): { parameters: ContractParameter[]; requestBody?: string } {
+  const { values, operations } = contractOf(document);
+  const at = operations.get(operation.operationId);
+  assert(at, `Operation ${operation.operationId} not in the contract`);
+  const resolved = (pointer: string): string => {
+    const node = values.node(pointer);
+    return isObject(node) && typeof node.$ref === "string" ? resolved(refPointer(node.$ref)) : pointer;
+  };
+  const parameters: ContractParameter[] = [];
+  for (const owner of [at, at.slice(0, at.lastIndexOf("/"))]) {
+    const list = values.node(childPointer(owner, "parameters"));
+    for (const index of Array.isArray(list) ? list.keys() : []) {
+      const pointer = resolved(childPointer(owner, "parameters", index));
+      const parameter = values.node(pointer);
+      if (!(isObject(parameter) && typeof parameter.in === "string" && typeof parameter.name === "string")) continue;
+      const found = { pointer, location: parameter.in, name: parameter.name, required: parameter.required === true };
+      if (!parameters.some((other) => sameParameter(other, found.location, found.name))) parameters.push(found);
     }
   }
-  if (Array.isArray(schema.allOf)) {
-    const merged: JsonObject = {};
-    for (const part of schema.allOf) {
-      const value = placeholder(document, part, name, depth + 1);
-      if (isObject(value)) Object.assign(merged, value);
-      else return value;
-    }
-    return merged;
+  const requestBody = values.node(childPointer(at, "requestBody")) === undefined ? undefined : resolved(childPointer(at, "requestBody"));
+  return { parameters, ...(requestBody ? { requestBody } : {}) };
+}
+
+/** Header names are case-insensitive. */
+function sameParameter(parameter: ContractParameter, location: string, name: string): boolean {
+  return parameter.location === location && (location === "header" ? parameter.name.toLowerCase() === name.toLowerCase() : parameter.name === name);
+}
+
+/** The JSON pointer of the Schema Object of an operation's parameter, or of its JSON body. */
+function inputSchema(document: JsonObject, operation: ManifestOperation, input: ManifestParameter | "body"): string {
+  const { parameters, requestBody } = contractOperation(document, operation);
+  if (input === "body") {
+    assert(requestBody, `${operation.operationId}: no request body in the contract`);
+    return childPointer(requestBody, "content", "application/json", "schema");
   }
-  const type = Array.isArray(schema.type) ? schema.type.find((value) => value !== "null") : schema.type;
-  switch (type) {
-    case "object": {
-      const result: JsonObject = {};
-      const properties = isObject(schema.properties) ? schema.properties : {};
-      for (const property of Array.isArray(schema.required) ? schema.required : []) {
-        if (typeof property === "string") result[property] = placeholder(document, properties[property], property, depth + 1);
-      }
-      return result;
-    }
-    case "array":
-      return typeof schema.minItems === "number" && schema.minItems > 0
-        ? [placeholder(document, schema.items, name, depth + 1)]
-        : [];
-    case "integer":
-    case "number":
-      return typeof schema.minimum === "number" ? schema.minimum : typeof schema.exclusiveMinimum === "number" ? schema.exclusiveMinimum + 1 : 1;
-    case "boolean":
-      return true;
-    case "string":
-      if (schema.format === "date-time") return DATE_TIME;
-      if (schema.format === "date") return DATE_TIME.slice(0, 10);
-      if (schema.format === "uri" || schema.format === "url") return "https://example.com";
-      if (schema.format === "email") return "user@example.com";
-      return name;
-    default:
-      return name;
+  const parameter = parameters.find((candidate) => sameParameter(candidate, input.location, input.wireName));
+  assert(parameter, `${operation.operationId}: no ${input.location} parameter ${input.wireName} in the contract`);
+  return childPointer(parameter.pointer, "schema");
+}
+
+/**
+ * A value the schema of an operation's parameter or JSON body accepts: the
+ * first example on the parameter or media type that the schema accepts, since
+ * OpenAPI lets it override the schema's, else the schema's example, else one
+ * generated from the schema. Values are seeded by the schema, so a project ID
+ * is the same on every page that takes one.
+ */
+function inputValue(document: JsonObject, operation: ManifestOperation, input: ManifestParameter | "body"): JsonValue {
+  const { values } = contractOf(document);
+  const schema = inputSchema(document, operation, input);
+  const name = input === "body" ? "body" : input.name;
+  const owner = values.node(schema.slice(0, schema.lastIndexOf("/")));
+  const declared = isObject(owner)
+    ? [
+        ...("example" in owner ? [owner.example] : []),
+        ...Object.values(isObject(owner.examples) ? owner.examples : {}).map((entry) => {
+          const example = isObject(entry) && typeof entry.$ref === "string" ? values.node(refPointer(entry.$ref)) : entry;
+          return isObject(example) ? example.value : undefined;
+        }),
+      ]
+    : [];
+  const example = declared.find((value) => value !== undefined && values.issues(schema, value).length === 0);
+  if (example !== undefined) return structuredClone(example);
+  try {
+    return values.sample(schema, { key: JSON.stringify(values.node(schema)), name });
+  } catch (error) {
+    throw new Error(`${operation.operationId}: no sample for ${name} (${schema}): ${(error as Error).message}`);
   }
+}
+
+/** The raw body a sample sends, in a media type the operation declares. */
+function rawBody(operation: ManifestOperation, declared: string[]): { mediaType: string; value: string } {
+  const mediaType = declared.find((type) => [FILE_MEDIA_TYPE, "application/octet-stream", "*/*"].includes(type));
+  assert(mediaType, `${operation.operationId}: no sample body for ${declared.join(", ")}`);
+  return { mediaType: mediaType === "*/*" ? FILE_MEDIA_TYPE : mediaType, value: FILE_SAMPLE };
+}
+
+// A media type without parameters (RFC 6838 section 4.2).
+const mediaTypeName = /^[A-Za-z0-9][\w!#$&^.+-]{0,126}\/[A-Za-z0-9][\w!#$&^.+-]{0,126}$/;
+
+/**
+ * Throw, naming each input and JSON pointer, when a sample's inputs do not
+ * match the operation in the contract. A file upload's file is checked
+ * itself, since its SDK builds the multipart/related body from it.
+ */
+function checkInputs(document: JsonObject, operation: ManifestOperation, inputs: Inputs): void {
+  const { values } = contractOf(document);
+  const { parameters, requestBody } = contractOperation(document, operation);
+  const issues: string[] = [];
+  const groups: Record<string, JsonObject> = { path: inputs.groups.path, query: inputs.groups.query, header: inputs.groups.headers };
+  for (const parameter of parameters) {
+    // A file upload's SDK sets the Content-Type and Content-Length of the multipart/related body it builds.
+    if (inputs.body?.upload && parameter.location === "header" && ["content-type", "content-length"].includes(parameter.name.toLowerCase())) continue;
+    const group = groups[parameter.location] ?? {};
+    const sent = Object.keys(group).find((name) => sameParameter(parameter, parameter.location, name));
+    const where = `${parameter.location} ${parameter.name}`;
+    if (sent === undefined) {
+      if (parameter.required) issues.push(`${where} is required and missing`);
+      continue;
+    }
+    for (const issue of values.issues(childPointer(parameter.pointer, "schema"), group[sent])) issues.push(`${where}${issue.pointer} ${issue.message}`);
+  }
+  const declared = requestBody === undefined ? undefined : values.node(requestBody);
+  const content = isObject(declared) && isObject(declared.content) ? Object.keys(declared.content) : [];
+  if (!inputs.body) {
+    if (isObject(declared) && declared.required === true) issues.push("body is required and missing");
+  } else if (inputs.body.upload) {
+    if (!content.some(isMultipartRelated)) issues.push(`body is a file upload, and the contract's body is ${content.join(", ") || "none"}`);
+    if (Buffer.byteLength(inputs.body.value) === 0) issues.push("body file has no bytes");
+    if (!mediaTypeName.test(inputs.body.mediaType)) issues.push(`body file media type ${inputs.body.mediaType} is not type/subtype`);
+  } else if (inputs.body.binary) {
+    const essence = inputs.body.mediaType.split(";")[0]!.trim();
+    const media = [essence, "*/*"].find((type) => content.includes(type));
+    const schema = media === undefined ? undefined : childPointer(requestBody!, "content", media, "schema");
+    if (schema === undefined) issues.push(`body media type ${essence} is not one of ${content.join(", ") || "none"}`);
+    else if (values.node(schema) !== undefined) {
+      for (const issue of values.issues(schema, inputs.body.value)) issues.push(`body${issue.pointer} ${issue.message}`);
+    }
+  } else {
+    for (const issue of values.issues(inputSchema(document, operation, "body"), inputs.body.value)) issues.push(`body${issue.pointer} ${issue.message}`);
+  }
+  assert(issues.length === 0, `${operation.operationId}: the sample's inputs do not match the contract: ${issues.join("; ")}`);
 }
 
 const identifier = /^[A-Za-z_$][\w$]*$/;
@@ -296,19 +395,32 @@ interface Inputs {
   groups: Record<"path" | "query" | "headers", JsonObject>;
   /** Header names as the TypeScript input names them. */
   typescriptHeaders: JsonObject;
-  body?: { binary: boolean; value: JsonValue };
+  /** A raw body or, for a file upload (`isFileUpload` in media-types.ts), the file its SDK sends as a multipart/related body. */
+  body?: { binary: false; upload: false; value: JsonValue } | { binary: true; upload: boolean; mediaType: string; value: string };
 }
 
 function operationInputs(document: JsonObject, operation: ManifestOperation): Inputs {
   const groups: Inputs["groups"] = { path: {}, query: {}, headers: {} };
   const typescriptHeaders: JsonObject = {};
+  let body: Inputs["body"];
+  if (operation.requestBody?.required) {
+    const { content } = operation.requestBody;
+    const declared = Object.keys(content);
+    const media = Object.fromEntries(Object.entries(content).map(([type, schema]) => [type, { schema: typeof schema === "string" ? { $ref: schema } : schema }]));
+    body = declared.includes("application/json")
+      ? { binary: false, upload: false, value: inputValue(document, operation, "body") }
+      : isFileUpload(media, document, `${operation.operationId} request`)
+        ? { binary: true, upload: true, mediaType: FILE_MEDIA_TYPE, value: FILE_SAMPLE }
+        : { binary: true, upload: false, ...rawBody(operation, declared) };
+  }
   for (const parameter of operation.parameters) {
     if (!parameter.required) continue;
-    const value = parameter.location === "header" && /^content-length$/i.test(parameter.wireName)
-      ? String(Buffer.byteLength(BINARY_SAMPLE))
-      : parameter.location === "header" && /^content-type$/i.test(parameter.wireName)
-        ? BINARY_MEDIA_TYPE
-        : placeholder(document, parameter.schema as JsonValue, parameter.name);
+    const isHeader = (name: string): boolean => parameter.location === "header" && parameter.wireName.toLowerCase() === name;
+    const value = body?.binary && isHeader("content-length")
+      ? String(Buffer.byteLength(body.value))
+      : body?.binary && isHeader("content-type")
+        ? body.mediaType
+        : inputValue(document, operation, parameter);
     if (parameter.location === "header") {
       groups.headers[parameter.wireName] = value;
       typescriptHeaders[parameter.name] = value;
@@ -316,12 +428,9 @@ function operationInputs(document: JsonObject, operation: ManifestOperation): In
       groups[parameter.location][parameter.wireName] = value;
     }
   }
-  const body = operation.requestBody;
-  if (!body?.required) return { groups, typescriptHeaders };
-  const [mediaType, schema] = Object.entries(body.content).find(([type]) => type === "application/json") ?? Object.entries(body.content)[0]!;
-  if (mediaType !== "application/json") return { groups, typescriptHeaders, body: { binary: true, value: BINARY_SAMPLE } };
-  const resolved = typeof schema === "string" ? { $ref: schema } : schema as JsonValue;
-  return { groups, typescriptHeaders, body: { binary: false, value: placeholder(document, resolved, "body") } };
+  const inputs: Inputs = { groups, typescriptHeaders, ...(body ? { body } : {}) };
+  checkInputs(document, operation, inputs);
+  return inputs;
 }
 
 function hasResult(operation: ManifestOperation): boolean {
@@ -350,7 +459,9 @@ export function typescriptSample(document: JsonObject, operation: ManifestOperat
   if (Object.keys(inputs.typescriptHeaders).length) input.headers = inputs.typescriptHeaders;
   let argument = Object.keys(input).length || inputs.body ? typescriptLiteral(input, "") : "";
   if (inputs.body) {
-    const body = inputs.body.binary ? `new Blob([${JSON.stringify(inputs.body.value)}], { type: ${JSON.stringify(BINARY_MEDIA_TYPE)} })` : typescriptLiteral(inputs.body.value, "  ");
+    const body = inputs.body.upload
+      ? `new File([${JSON.stringify(inputs.body.value)}], ${JSON.stringify(FILE_NAME)}, { type: ${JSON.stringify(inputs.body.mediaType)} })`
+      : inputs.body.binary ? `new Blob([${JSON.stringify(inputs.body.value)}], { type: ${JSON.stringify(inputs.body.mediaType)} })` : typescriptLiteral(inputs.body.value, "  ");
     argument = argument === "{}" ? `{\n  body: ${body},\n}` : `${argument.slice(0, -1)}  body: ${body},\n}`;
   }
   const client = scheme
@@ -373,12 +484,13 @@ export function pythonSample(document: JsonObject, operation: ManifestOperation,
   for (const group of ["path", "query", "headers"] as const) if (Object.keys(inputs.groups[group]).length) input[group] = inputs.groups[group];
   let literal = Object.keys(input).length || inputs.body ? pythonLiteral(input, "    ") : "";
   if (inputs.body) {
-    const body = inputs.body.binary ? `b${JSON.stringify(inputs.body.value)}` : pythonLiteral(inputs.body.value, "        ");
+    const body = inputs.body.upload
+      ? `UploadFile(data=b${JSON.stringify(inputs.body.value)}, content_type=${JSON.stringify(inputs.body.mediaType)}, filename=${JSON.stringify(FILE_NAME)})`
+      : inputs.body.binary ? `b${JSON.stringify(inputs.body.value)}` : pythonLiteral(inputs.body.value, "        ");
     literal = literal === "{}" ? `{\n        "body": ${body},\n    }` : `${literal.slice(0, -5)}        "body": ${body},\n    }`;
   }
-  const lines = scheme
-    ? ["import os", "", "from photon_api import Photon"]
-    : ["from photon_api import Photon"];
+  const imports = inputs.body?.upload ? "from photon_api import Photon, UploadFile" : "from photon_api import Photon";
+  const lines = scheme ? ["import os", "", imports] : [imports];
   if (literal) lines.push(`from photon_api.rpc_generated import ${typeName}`);
   lines.push("");
   lines.push(scheme ? 'photon = Photon(headers={"Authorization": f"Bearer {os.environ[\'PHOTON_API_TOKEN\']}"})' : "photon = Photon()");
@@ -388,6 +500,10 @@ export function pythonSample(document: JsonObject, operation: ManifestOperation,
 }
 
 function rustArgument(document: JsonObject, operation: ManifestOperation, inputs: Inputs, argument: RustArgument): string {
+  if (/\bUploadFile\b/.test(argument.type)) {
+    assert(inputs.body?.upload, `${operation.operationId}: Rust takes a file the contract does not upload`);
+    return `&UploadFile::new(${JSON.stringify(inputs.body.value)}, ${JSON.stringify(inputs.body.mediaType)}).filename(${JSON.stringify(FILE_NAME)})`;
+  }
   if (argument.name === "body") {
     assert(inputs.body, `${operation.operationId}: Rust takes a body the contract does not require`);
     if (inputs.body.binary) return `&${JSON.stringify(inputs.body.value)}.into()`;
@@ -397,7 +513,7 @@ function rustArgument(document: JsonObject, operation: ManifestOperation, inputs
   const parameter = operation.parameters.find((candidate) => snakeCase(candidate.name) === argument.name || snakeCase(candidate.wireName) === argument.name);
   assert(parameter, `${operation.operationId}: no contract parameter for Rust argument ${argument.name}`);
   const groups = { path: inputs.groups.path, query: inputs.groups.query, header: inputs.groups.headers } as Record<string, JsonObject>;
-  const value = groups[parameter.location]?.[parameter.wireName] ?? placeholder(document, parameter.schema as JsonValue, parameter.name);
+  const value = groups[parameter.location]?.[parameter.wireName] ?? inputValue(document, operation, parameter);
   if (argument.type === "String") return `${JSON.stringify(typeof value === "string" ? value : JSON.stringify(value))}.to_owned()`;
   if (/^f(32|64)$/.test(argument.type) && typeof value === "number") return Number.isInteger(value) ? `${value}.0` : String(value);
   if (/^(i|u)(8|16|32|64)$|^bool$/.test(argument.type)) return JSON.stringify(value);
@@ -411,16 +527,17 @@ export function rustSample(document: JsonObject, operation: ManifestOperation, s
   const call = argumentsText.some((text) => text.includes("\n")) || argumentsText.join(", ").length > 60
     ? `(\n        ${argumentsText.join(",\n        ")},\n    )`
     : `(${argumentsText.join(", ")})`;
+  const upload = inputs.body?.upload ? ", UploadFile" : "";
   const lines = scheme
     ? [
-        "use photon_ai_api::{Credential, PhotonClientBuilder, SecretString};",
+        `use photon_ai_api::{Credential, PhotonClientBuilder, SecretString${upload}};`,
         "",
         'let token = std::env::var("PHOTON_API_TOKEN")?;',
         "let client = PhotonClientBuilder::new()",
         `    .credential(${JSON.stringify(scheme)}, Credential::Bearer(SecretString::from(token)))`,
         "    .build()?;",
       ]
-    : ["use photon_ai_api::PhotonClientBuilder;", "", "let client = PhotonClientBuilder::new().build()?;"];
+    : [upload ? `use photon_ai_api::{PhotonClientBuilder${upload}};` : "use photon_ai_api::PhotonClientBuilder;", "", "let client = PhotonClientBuilder::new().build()?;"];
   const request = [
     "client",
     `    .${snakeCase(operation.operationId)}${call}`,
@@ -444,7 +561,7 @@ export function goSample(document: JsonObject, operation: ManifestOperation, met
     "context",
     ...(jsonBody ? ["encoding/json"] : []),
     ...(scheme ? ["os"] : []),
-    ...(inputs.body?.binary ? ["strings"] : []),
+    ...(inputs.body?.binary && !inputs.body.upload ? ["strings"] : []),
   ].sort();
   const lines = [
     "import (",
@@ -469,7 +586,9 @@ export function goSample(document: JsonObject, operation: ManifestOperation, met
   }
   if (inputs.body) {
     assert(method.bodyType, `${operation.operationId}: Go takes no body the contract requires`);
-    if (inputs.body.binary) {
+    if (inputs.body.upload) {
+      sets.push(`\tBody: &photonapi.UploadFile{Data: []byte(${JSON.stringify(inputs.body.value)}), ContentType: ${JSON.stringify(inputs.body.mediaType)}, Filename: ${JSON.stringify(FILE_NAME)}},`);
+    } else if (inputs.body.binary) {
       sets.push(`\tBody: strings.NewReader(${JSON.stringify(inputs.body.value)}),`);
     } else {
       const literal = JSON.stringify(inputs.body.value, null, "\t");
@@ -505,6 +624,7 @@ export function withCodeSamples(document: JsonObject, manifest: RpcManifest, sou
   const rust = rustSignatures(sources.rustClient);
   const go = goMethods(sources.goClient);
   const operations = new Map(manifest.operations.map((operation) => [operation.operationId, operation]));
+  const failures: string[] = [];
   for (const item of Object.values(result.paths as JsonObject)) {
     if (!isObject(item)) continue;
     for (const operation of Object.values(item)) {
@@ -517,15 +637,22 @@ export function withCodeSamples(document: JsonObject, manifest: RpcManifest, sou
       assert(pythonPath, `Python client has no method for ${operation.operationId}`);
       assert(rustSignature, `Rust client has no method for ${operation.operationId}`);
       assert(goMethod, `Go client has no method for ${operation.operationId}`);
-      const samples: CodeSample[] = [
-        { lang: "typescript", label: "TypeScript", source: typescriptSample(document, manifestOperation) },
-        { lang: "python", label: "Python", source: pythonSample(document, manifestOperation, pythonPath) },
-        { lang: "rust", label: "Rust", source: rustSample(document, manifestOperation, rustSignature) },
-        { lang: "go", label: "Go", source: goSample(document, manifestOperation, goMethod) },
-      ];
+      let samples: CodeSample[];
+      try {
+        samples = [
+          { lang: "typescript", label: "TypeScript", source: typescriptSample(document, manifestOperation) },
+          { lang: "python", label: "Python", source: pythonSample(document, manifestOperation, pythonPath) },
+          { lang: "rust", label: "Rust", source: rustSample(document, manifestOperation, rustSignature) },
+          { lang: "go", label: "Go", source: goSample(document, manifestOperation, goMethod) },
+        ];
+      } catch (error) {
+        failures.push((error as Error).message);
+        continue;
+      }
       operation["x-codeSamples"] = samples as unknown as JsonValue;
     }
   }
+  assert(failures.length === 0, `Code samples the contract rejects, in ${failures.length} of ${operations.size} operations:\n${failures.join("\n")}`);
   return result;
 }
 
@@ -542,7 +669,7 @@ async function main(): Promise<void> {
   };
   const output = withCodeSamples(document, manifest, sources);
   await writeAtomic(resolve(root, MINTLIFY_CONTRACT_PATH), `${JSON.stringify(output, null, 2)}\n`);
-  console.log(`Wrote ${MINTLIFY_CONTRACT_PATH} with code samples for ${manifest.operations.length} operations`);
+  console.log(`Wrote ${MINTLIFY_CONTRACT_PATH} with code samples for ${manifest.operations.length} operations, each with inputs the contract accepts`);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {

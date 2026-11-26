@@ -1167,15 +1167,9 @@ export const GetMessageOutputSchemas: OutputSchemas<GetMessageOutput> = /* @__PU
 
 export const GetMessageMetricsBackfillInputSchema = /* @__PURE__ */ (() => z.strictObject({
     path: GeneratedZod.zGetMessageMetricsBackfillPath.strict(),
-    headers: z.strictObject({
-        "x-photon-version": GeneratedZod.zGetMessageMetricsBackfillHeaders.shape["x-photon-version"],
-    }).optional(),
 }))();
 export type GetMessageMetricsBackfillInput = {
     path: NonNullable<WireTypes.GetMessageMetricsBackfillData["path"]>;
-    headers?: {
-        "x-photon-version"?: NonNullable<WireTypes.GetMessageMetricsBackfillData["headers"]>["x-photon-version"];
-    };
 };
 
 export const GetMessageMetricsBackfillOutputSchema = GeneratedZod.zGetMessageMetricsBackfillResponse;
@@ -1186,15 +1180,9 @@ export const GetMessageMetricsBackfillOutputSchemas: OutputSchemas<GetMessageMet
 
 export const GetMessageMetricsSqlSchemaInputSchema = /* @__PURE__ */ (() => z.strictObject({
     path: GeneratedZod.zGetMessageMetricsSqlSchemaPath.strict(),
-    headers: z.strictObject({
-        "x-photon-version": GeneratedZod.zGetMessageMetricsSqlSchemaHeaders.shape["x-photon-version"],
-    }).optional(),
 }))();
 export type GetMessageMetricsSqlSchemaInput = {
     path: NonNullable<WireTypes.GetMessageMetricsSqlSchemaData["path"]>;
-    headers?: {
-        "x-photon-version"?: NonNullable<WireTypes.GetMessageMetricsSqlSchemaData["headers"]>["x-photon-version"];
-    };
 };
 
 export const GetMessageMetricsSqlSchemaOutputSchema = GeneratedZod.zGetMessageMetricsSqlSchemaResponse;
@@ -2247,16 +2235,10 @@ export const PurchaseSmsNumberOutputSchemas: OutputSchemas<PurchaseSmsNumberOutp
 export const QueryMessageMetricsInputSchema = /* @__PURE__ */ (() => z.strictObject({
     body: GeneratedZod.zQueryMessageMetricsBody,
     path: GeneratedZod.zQueryMessageMetricsPath.strict(),
-    headers: z.strictObject({
-        "x-photon-version": GeneratedZod.zQueryMessageMetricsHeaders.shape["x-photon-version"],
-    }).optional(),
 }))();
 export type QueryMessageMetricsInput = {
     body: WireTypes.QueryMessageMetricsData["body"];
     path: NonNullable<WireTypes.QueryMessageMetricsData["path"]>;
-    headers?: {
-        "x-photon-version"?: NonNullable<WireTypes.QueryMessageMetricsData["headers"]>["x-photon-version"];
-    };
 };
 
 export const QueryMessageMetricsOutputSchema = GeneratedZod.zQueryMessageMetricsResponse;
@@ -3080,8 +3062,6 @@ export const UploadAttachmentInputSchema = /* @__PURE__ */ (() => z.strictObject
     body: GeneratedZod.zUploadAttachmentBody,
     path: GeneratedZod.zUploadAttachmentPath.strict(),
     headers: z.strictObject({
-        "content-length": GeneratedZod.zUploadAttachmentHeaders.shape["content-length"],
-        "content-type": GeneratedZod.zUploadAttachmentHeaders.shape["content-type"],
         "idempotency-key": GeneratedZod.zUploadAttachmentHeaders.shape["idempotency-key"],
     }),
 }))();
@@ -3089,8 +3069,6 @@ export type UploadAttachmentInput = {
     body: WireTypes.UploadAttachmentData["body"];
     path: NonNullable<WireTypes.UploadAttachmentData["path"]>;
     headers: {
-        "content-length": NonNullable<WireTypes.UploadAttachmentData["headers"]>["content-length"];
-        "content-type": NonNullable<WireTypes.UploadAttachmentData["headers"]>["content-type"];
         "idempotency-key": NonNullable<WireTypes.UploadAttachmentData["headers"]>["idempotency-key"];
     };
 };

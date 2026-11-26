@@ -1112,7 +1112,11 @@ export const uploadAttachment = <ThrowOnError extends boolean = false>(options: 
     bodySerializer: null,
     responseValidator: async (data) => await zUploadAttachmentResult.parseAsync(data),
     url: '/v1/projects/{id}/attachments',
-    ...options
+    ...options,
+    headers: {
+        'Content-Type': 'multipart/related',
+        ...options.headers
+    }
 });
 
 /**
@@ -2361,7 +2365,7 @@ export const updateWebhookDestination = <ThrowOnError extends boolean = false>(o
 /**
  * Retry webhook delivery
  *
- * Requests an immediate attempt of the selected delivery if it is still the waiting head for its destination and event type. expectedAttemptCount is the failed-attempt counter recorded on the delivery and fences stale requests. This overrides the current backoff, including Retry-After, once. It preserves event identity and the retry budget. Delivered, active, disabled and dead-lettered deliveries cannot be retried. A 202 acknowledges the wake-up, not successful delivery. Supply an Idempotency-Key and retain it when retrying an ambiguous failure.
+ * Requests an immediate attempt of the selected delivery if it is still the waiting head for its destination and event type. This overrides the current backoff, including Retry-After, once. It preserves event identity and the retry budget. Delivered, active, disabled and dead-lettered deliveries cannot be retried. A 202 acknowledges the wake-up, not successful delivery. Supply an Idempotency-Key and retain it when retrying an ambiguous failure.
  */
 export const retryWebhookDelivery = <ThrowOnError extends boolean = false>(options: Options<RetryWebhookDeliveryData, ThrowOnError>): RequestResult<RetryWebhookDeliveryResponses, RetryWebhookDeliveryErrors, ThrowOnError> => options.client.post<RetryWebhookDeliveryResponses, RetryWebhookDeliveryErrors, ThrowOnError>({
     responseValidator: async (data) => await zRetryWebhookDeliveryResult.parseAsync(data),

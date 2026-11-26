@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import email.utils
 import inspect
+import json
 import math
 import random
 import time
@@ -15,7 +16,9 @@ from urllib.parse import quote
 import httpx
 from pydantic import TypeAdapter, ValidationError
 
+from ._model_base import loosen
 from .errors import ApiError, ResponseValidationError, TransportError
+from .uploads import multipart_related
 
 T = TypeVar("T")
 HeaderMap = Mapping[str, str]
@@ -48,6 +51,7 @@ class OperationSpec:
     success_responses: Mapping[str, TypeAdapter[Any] | type[bytes] | None]
     request_media_type: str | None = None
     raw_request: bool = False
+    file_upload: bool = False
     accept_media_types: tuple[str, ...] = ()
 
 
@@ -116,6 +120,7 @@ def _retryable(operation: OperationSpec, headers: Mapping[str, str]) -> bool:
 def _response_data(
     response: httpx.Response,
     operation: OperationSpec,
+    strict_response_validation: bool,
 ) -> Any:
     request_id = response.headers.get("x-request-id")
     status_key = str(response.status_code)
@@ -171,13 +176,27 @@ def _response_data(
     try:
         return output_adapter.validate_json(response.content)
     except ValidationError as error:
-        raise ResponseValidationError(
-            f"Invalid response for {operation.operation_id}",
-            status=response.status_code,
-            raw_body=response.text,
-            operation_id=operation.operation_id,
-            request_id=request_id,
-        ) from error
+        failure = error
+    if not strict_response_validation:
+        try:
+            body = json.loads(response.content)
+        except ValueError:
+            pass
+        else:
+            # TypeAdapter keeps the type it adapts as `_type` in every Pydantic
+            # release the package supports.
+            return loosen(output_adapter._type, body)
+    raise ResponseValidationError(
+        f"Invalid response for {operation.operation_id}",
+        status=response.status_code,
+        raw_body=response.text,
+        operation_id=operation.operation_id,
+        request_id=request_id,
+    ) from failure
+
+
+def _raw_body(operation: OperationSpec) -> bool:
+    return operation.raw_request or operation.file_upload
 
 
 def _request_parts(
@@ -196,6 +215,8 @@ def _request_parts(
     headers.update({str(key): str(value) for key, value in declared_headers.items()})
     if operation.request_media_type:
         headers["Content-Type"] = operation.request_media_type
+    if operation.file_upload:
+        body, headers["Content-Type"] = multipart_related(body)
     if operation.accept_media_types:
         headers["Accept"] = ", ".join(operation.accept_media_types)
     return path, query, body, dict(headers)
@@ -211,12 +232,14 @@ class SyncTransport:
         max_attempts: int,
         client: httpx.Client | None = None,
         max_retry_after: float = DEFAULT_MAX_RETRY_AFTER,
+        strict_response_validation: bool = False,
     ) -> None:
         self._base_url = base_url.rstrip("/")
         self._headers = headers
         self._timeout = timeout
         self._max_attempts = max(1, min(3, max_attempts))
         self._max_retry_after = max_retry_after
+        self._strict_response_validation = strict_response_validation
         self._owns_client = client is None
         self._client = client or httpx.Client(timeout=timeout)
 
@@ -250,7 +273,7 @@ class SyncTransport:
                     operation.method,
                     f"{self._base_url}{path}",
                     params=query,
-                    **({"content": body} if operation.raw_request else {"json": body}),
+                    **({"content": body} if _raw_body(operation) else {"json": body}),
                     headers=headers,
                     timeout=self._timeout,
                 )
@@ -262,7 +285,7 @@ class SyncTransport:
                 if delay is not None:
                     time.sleep(delay)
                     continue
-                data = _response_data(response, operation)
+                data = _response_data(response, operation, self._strict_response_validation)
                 return RawResponse(
                     data=data,
                     status=response.status_code,
@@ -291,12 +314,14 @@ class AsyncTransport:
         max_attempts: int,
         client: httpx.AsyncClient | None = None,
         max_retry_after: float = DEFAULT_MAX_RETRY_AFTER,
+        strict_response_validation: bool = False,
     ) -> None:
         self._base_url = base_url.rstrip("/")
         self._headers = headers
         self._timeout = timeout
         self._max_attempts = max(1, min(3, max_attempts))
         self._max_retry_after = max_retry_after
+        self._strict_response_validation = strict_response_validation
         self._owns_client = client is None
         self._client = client or httpx.AsyncClient(timeout=timeout)
 
@@ -330,7 +355,7 @@ class AsyncTransport:
                     operation.method,
                     f"{self._base_url}{path}",
                     params=query,
-                    **({"content": body} if operation.raw_request else {"json": body}),
+                    **({"content": body} if _raw_body(operation) else {"json": body}),
                     headers=headers,
                     timeout=self._timeout,
                 )
@@ -342,7 +367,7 @@ class AsyncTransport:
                 if delay is not None:
                     await asyncio.sleep(delay)
                     continue
-                data = _response_data(response, operation)
+                data = _response_data(response, operation, self._strict_response_validation)
                 return RawResponse(
                     data=data,
                     status=response.status_code,

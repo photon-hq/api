@@ -73,6 +73,12 @@ in your application's own authentication flow, then supply the current token.
   a trailing underscore, so `ListVoiceProfilesParams::default().default_(...)`
   sets the `default` parameter.
 - Models live in `photon_ai_api::types`.
+- A file upload, such as `upload_attachment`, takes `&UploadFile`, built with
+  `UploadFile::new(data, content_type)` and an optional `.filename(name)`. The
+  method sends the `multipart/related` body the API takes (JSON that describes
+  the file, then the file) and sets Content-Type and Content-Length; the
+  boundary comes from the file's bytes, so a retry with the same
+  `Idempotency-Key` sends the same request.
 - A successful call returns `ResponseValue<T>`: `inner()` / `into_inner()` give
   the body, `status()` and `headers()` the response metadata. Operations with
   several success statuses return status-tagged variants.
@@ -86,7 +92,11 @@ in your application's own authentication flow, then supply the current token.
   set by the operation still take precedence. `BlockingClient` has no request
   options.
 
-Serde checks required fields, primitive types, unions and constants. Constraints
+Serde checks required fields, primitive types, unions and constants, and a
+response that fails these checks returns `Error::Decode`. A nullable field the
+response leaves out reads as `None`. The client has no option to accept other
+mismatches, because its models cannot hold a missing value of a non-nullable
+type. Constraints
 such as string patterns, numeric ranges and collection sizes are validated by
 the server. The device-token method sends JSON; its equivalent form-encoded
 representation is not exposed.

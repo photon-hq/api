@@ -1,5 +1,5 @@
 {
-  "sourceSha256": "66fb362981d0aea36804a8bdfe1488eff6367c787434e1673c27d551e6b94b76",
+  "sourceSha256": "5fec6b886edff589de1755e6959a2e6a7535ce3b2b3c264b274ca3367b279e32",
   "operationCount": 192,
   "operations": [
     {
@@ -1148,6 +1148,9 @@
         "403": {
           "application/problem+json": "#/components/schemas/ConnectEmailDomainForbiddenProblem"
         },
+        "404": {
+          "application/problem+json": "#/components/schemas/ProjectNotFoundProblem"
+        },
         "409": {
           "application/problem+json": "#/components/schemas/ConnectEmailDomainConflictProblem"
         },
@@ -1505,11 +1508,17 @@
         "200": {
           "application/json": "#/components/schemas/CountMessagesResponse"
         },
+        "400": {
+          "application/problem+json": "#/components/schemas/InvalidApiVersionProblem"
+        },
         "401": {
           "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
         },
         "403": {
           "application/problem+json": "#/components/schemas/CountMessagesForbiddenProblem"
+        },
+        "410": {
+          "application/problem+json": "#/components/schemas/RetiredApiVersionProblem"
         },
         "422": {
           "application/problem+json": "#/components/schemas/ValidationFailedProblem"
@@ -1875,11 +1884,17 @@
         "200": {
           "application/json": "#/components/schemas/SpaceCount"
         },
+        "400": {
+          "application/problem+json": "#/components/schemas/InvalidApiVersionProblem"
+        },
         "401": {
           "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
         },
         "403": {
           "application/problem+json": "#/components/schemas/CountSpacesForbiddenProblem"
+        },
+        "410": {
+          "application/problem+json": "#/components/schemas/RetiredApiVersionProblem"
         },
         "422": {
           "application/problem+json": "#/components/schemas/ValidationFailedProblem"
@@ -2030,11 +2045,17 @@
         "200": {
           "application/json": "#/components/schemas/UserCount"
         },
+        "400": {
+          "application/problem+json": "#/components/schemas/InvalidApiVersionProblem"
+        },
         "401": {
           "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
         },
         "403": {
           "application/problem+json": "#/components/schemas/CountUsersForbiddenProblem"
+        },
+        "410": {
+          "application/problem+json": "#/components/schemas/RetiredApiVersionProblem"
         },
         "422": {
           "application/problem+json": "#/components/schemas/ValidationFailedProblem"
@@ -2869,6 +2890,9 @@
         "409": {
           "application/problem+json": "#/components/schemas/SpaceAmbiguousProblem"
         },
+        "410": {
+          "application/problem+json": "#/components/schemas/RetiredApiVersionProblem"
+        },
         "413": {
           "application/problem+json": "#/components/schemas/PayloadTooLargeProblem"
         },
@@ -2927,7 +2951,7 @@
           "application/json": "#/components/schemas/PlatformUser"
         },
         "400": {
-          "application/problem+json": "#/components/schemas/HttpErrorProblem"
+          "application/problem+json": "#/components/schemas/CreateOrGetUserBadRequestProblem"
         },
         "401": {
           "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
@@ -2937,6 +2961,9 @@
         },
         "409": {
           "application/problem+json": "#/components/schemas/UserIdentityConflictProblem"
+        },
+        "410": {
+          "application/problem+json": "#/components/schemas/RetiredApiVersionProblem"
         },
         "413": {
           "application/problem+json": "#/components/schemas/PayloadTooLargeProblem"
@@ -4818,6 +4845,9 @@
         "200": {
           "application/json": "#/components/schemas/Attachment"
         },
+        "400": {
+          "application/problem+json": "#/components/schemas/InvalidApiVersionProblem"
+        },
         "401": {
           "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
         },
@@ -4829,6 +4859,9 @@
         },
         "409": {
           "application/problem+json": "#/components/schemas/AttachmentNotReadyProblem"
+        },
+        "410": {
+          "application/problem+json": "#/components/schemas/RetiredApiVersionProblem"
         },
         "422": {
           "application/problem+json": "#/components/schemas/ValidationFailedProblem"
@@ -5207,6 +5240,9 @@
         "403": {
           "application/problem+json": "#/components/schemas/GetEmailDeliveryMetricsForbiddenProblem"
         },
+        "404": {
+          "application/problem+json": "#/components/schemas/ProjectNotFoundProblem"
+        },
         "410": {
           "application/problem+json": "#/components/schemas/RetiredApiVersionProblem"
         },
@@ -5263,6 +5299,9 @@
         },
         "403": {
           "application/problem+json": "#/components/schemas/GetEmailSendingPoliciesForbiddenProblem"
+        },
+        "404": {
+          "application/problem+json": "#/components/schemas/ProjectNotFoundProblem"
         },
         "410": {
           "application/problem+json": "#/components/schemas/RetiredApiVersionProblem"
@@ -5333,6 +5372,9 @@
           "application/json": "#/components/schemas/PlatformMessage"
         },
         "304": {},
+        "400": {
+          "application/problem+json": "#/components/schemas/InvalidApiVersionProblem"
+        },
         "401": {
           "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
         },
@@ -5341,6 +5383,9 @@
         },
         "404": {
           "application/problem+json": "#/components/schemas/MessageNotFoundProblem"
+        },
+        "410": {
+          "application/problem+json": "#/components/schemas/RetiredApiVersionProblem"
         },
         "422": {
           "application/problem+json": "#/components/schemas/ValidationFailedProblem"
@@ -5381,17 +5426,6 @@
             "pattern": "^pho_prj_[0-7][0-9a-hjkmnp-tv-z]{25}$",
             "type": "string"
           }
-        },
-        {
-          "name": "x-photon-version",
-          "wireName": "x-photon-version",
-          "location": "header",
-          "required": false,
-          "schema": {
-            "format": "date",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$",
-            "type": "string"
-          }
         }
       ],
       "responses": {
@@ -5399,7 +5433,7 @@
           "application/json": "#/components/schemas/GetMessageMetricsBackfillResponse"
         },
         "400": {
-          "application/problem+json": "#/components/schemas/InvalidArgumentProblem"
+          "application/problem+json": "#/components/schemas/GetMessageMetricsBackfillBadRequestProblem"
         },
         "401": {
           "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
@@ -5407,8 +5441,14 @@
         "403": {
           "application/problem+json": "#/components/schemas/GetMessageMetricsBackfillForbiddenProblem"
         },
+        "410": {
+          "application/problem+json": "#/components/schemas/RetiredApiVersionProblem"
+        },
         "500": {
           "application/problem+json": "#/components/schemas/InternalErrorProblem"
+        },
+        "502": {
+          "application/problem+json": "#/components/schemas/UpstreamFailureProblem"
         },
         "503": {
           "application/problem+json": "#/components/schemas/UpstreamUnavailableProblem"
@@ -5437,17 +5477,6 @@
             "pattern": "^pho_prj_[0-7][0-9a-hjkmnp-tv-z]{25}$",
             "type": "string"
           }
-        },
-        {
-          "name": "x-photon-version",
-          "wireName": "x-photon-version",
-          "location": "header",
-          "required": false,
-          "schema": {
-            "format": "date",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$",
-            "type": "string"
-          }
         }
       ],
       "responses": {
@@ -5455,7 +5484,7 @@
           "application/json": "#/components/schemas/GetMessageMetricsSqlSchemaResponse"
         },
         "400": {
-          "application/problem+json": "#/components/schemas/InvalidArgumentProblem"
+          "application/problem+json": "#/components/schemas/GetMessageMetricsSqlSchemaBadRequestProblem"
         },
         "401": {
           "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
@@ -5463,8 +5492,14 @@
         "403": {
           "application/problem+json": "#/components/schemas/GetMessageMetricsSqlSchemaForbiddenProblem"
         },
+        "410": {
+          "application/problem+json": "#/components/schemas/RetiredApiVersionProblem"
+        },
         "500": {
           "application/problem+json": "#/components/schemas/InternalErrorProblem"
+        },
+        "502": {
+          "application/problem+json": "#/components/schemas/UpstreamFailureProblem"
         },
         "503": {
           "application/problem+json": "#/components/schemas/UpstreamUnavailableProblem"
@@ -6694,6 +6729,9 @@
           "application/json": "#/components/schemas/PlatformSpace"
         },
         "304": {},
+        "400": {
+          "application/problem+json": "#/components/schemas/InvalidApiVersionProblem"
+        },
         "401": {
           "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
         },
@@ -6702,6 +6740,9 @@
         },
         "404": {
           "application/problem+json": "#/components/schemas/SpaceNotFoundProblem"
+        },
+        "410": {
+          "application/problem+json": "#/components/schemas/RetiredApiVersionProblem"
         },
         "422": {
           "application/problem+json": "#/components/schemas/GetSpaceUnprocessableEntityProblem"
@@ -6898,6 +6939,9 @@
           "application/json": "#/components/schemas/PlatformUser"
         },
         "304": {},
+        "400": {
+          "application/problem+json": "#/components/schemas/InvalidApiVersionProblem"
+        },
         "401": {
           "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
         },
@@ -6909,6 +6953,9 @@
         },
         "409": {
           "application/problem+json": "#/components/schemas/UserIdentityConflictProblem"
+        },
+        "410": {
+          "application/problem+json": "#/components/schemas/RetiredApiVersionProblem"
         },
         "422": {
           "application/problem+json": "#/components/schemas/GetUserUnprocessableEntityProblem"
@@ -7672,11 +7719,17 @@
         "200": {
           "application/json": "#/components/schemas/AttachmentPage"
         },
+        "400": {
+          "application/problem+json": "#/components/schemas/InvalidApiVersionProblem"
+        },
         "401": {
           "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
         },
         "403": {
           "application/problem+json": "#/components/schemas/ListAttachmentsForbiddenProblem"
+        },
+        "410": {
+          "application/problem+json": "#/components/schemas/RetiredApiVersionProblem"
         },
         "422": {
           "application/problem+json": "#/components/schemas/ValidationFailedProblem"
@@ -7973,6 +8026,9 @@
         },
         "403": {
           "application/problem+json": "#/components/schemas/ListEmailRecommendationsForbiddenProblem"
+        },
+        "404": {
+          "application/problem+json": "#/components/schemas/ProjectNotFoundProblem"
         },
         "410": {
           "application/problem+json": "#/components/schemas/RetiredApiVersionProblem"
@@ -8371,13 +8427,16 @@
           "application/json": "#/components/schemas/MessagePage"
         },
         "400": {
-          "application/problem+json": "#/components/schemas/InvalidPageTokenProblem"
+          "application/problem+json": "#/components/schemas/ListMessagesBadRequestProblem"
         },
         "401": {
           "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
         },
         "403": {
           "application/problem+json": "#/components/schemas/ListMessagesForbiddenProblem"
+        },
+        "410": {
+          "application/problem+json": "#/components/schemas/RetiredApiVersionProblem"
         },
         "422": {
           "application/problem+json": "#/components/schemas/ValidationFailedProblem"
@@ -9897,13 +9956,16 @@
           "application/json": "#/components/schemas/SpacePage"
         },
         "400": {
-          "application/problem+json": "#/components/schemas/InvalidPageTokenProblem"
+          "application/problem+json": "#/components/schemas/ListSpacesBadRequestProblem"
         },
         "401": {
           "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
         },
         "403": {
           "application/problem+json": "#/components/schemas/ListSpacesForbiddenProblem"
+        },
+        "410": {
+          "application/problem+json": "#/components/schemas/RetiredApiVersionProblem"
         },
         "422": {
           "application/problem+json": "#/components/schemas/ValidationFailedProblem"
@@ -10096,13 +10158,16 @@
           "application/json": "#/components/schemas/UserPage"
         },
         "400": {
-          "application/problem+json": "#/components/schemas/InvalidPageTokenProblem"
+          "application/problem+json": "#/components/schemas/ListUsersBadRequestProblem"
         },
         "401": {
           "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
         },
         "403": {
           "application/problem+json": "#/components/schemas/ListUsersForbiddenProblem"
+        },
+        "410": {
+          "application/problem+json": "#/components/schemas/RetiredApiVersionProblem"
         },
         "422": {
           "application/problem+json": "#/components/schemas/ValidationFailedProblem"
@@ -10673,7 +10738,7 @@
           "application/json": "#/components/schemas/MarkMessageReadResponse"
         },
         "400": {
-          "application/problem+json": "#/components/schemas/InvalidRequestProblem"
+          "application/problem+json": "#/components/schemas/MarkMessageReadBadRequestProblem"
         },
         "401": {
           "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
@@ -10686,6 +10751,9 @@
         },
         "409": {
           "application/problem+json": "#/components/schemas/MarkMessageReadConflictProblem"
+        },
+        "410": {
+          "application/problem+json": "#/components/schemas/RetiredApiVersionProblem"
         },
         "413": {
           "application/problem+json": "#/components/schemas/PayloadTooLargeProblem"
@@ -11180,17 +11248,6 @@
             "pattern": "^pho_prj_[0-7][0-9a-hjkmnp-tv-z]{25}$",
             "type": "string"
           }
-        },
-        {
-          "name": "x-photon-version",
-          "wireName": "x-photon-version",
-          "location": "header",
-          "required": false,
-          "schema": {
-            "format": "date",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$",
-            "type": "string"
-          }
         }
       ],
       "responses": {
@@ -11198,13 +11255,16 @@
           "application/json": "#/components/schemas/QueryMessageMetricsResponse"
         },
         "400": {
-          "application/problem+json": "#/components/schemas/InvalidArgumentProblem"
+          "application/problem+json": "#/components/schemas/QueryMessageMetricsBadRequestProblem"
         },
         "401": {
           "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
         },
         "403": {
           "application/problem+json": "#/components/schemas/QueryMessageMetricsForbiddenProblem"
+        },
+        "410": {
+          "application/problem+json": "#/components/schemas/RetiredApiVersionProblem"
         },
         "422": {
           "application/problem+json": "#/components/schemas/QueryMessageMetricsUnprocessableEntityProblem"
@@ -12339,7 +12399,7 @@
         }
       },
       "summary": "Retry webhook delivery",
-      "description": "Requests an immediate attempt of the selected delivery if it is still the waiting head for its destination and event type. expectedAttemptCount is the failed-attempt counter recorded on the delivery and fences stale requests. This overrides the current backoff, including Retry-After, once. It preserves event identity and the retry budget. Delivered, active, disabled and dead-lettered deliveries cannot be retried. A 202 acknowledges the wake-up, not successful delivery. Supply an Idempotency-Key and retain it when retrying an ambiguous failure.",
+      "description": "Requests an immediate attempt of the selected delivery if it is still the waiting head for its destination and event type. This overrides the current backoff, including Retry-After, once. It preserves event identity and the retry budget. Delivered, active, disabled and dead-lettered deliveries cannot be retried. A 202 acknowledges the wake-up, not successful delivery. Supply an Idempotency-Key and retain it when retrying an ambiguous failure.",
       "requestBody": {
         "required": true,
         "content": {
@@ -13048,7 +13108,7 @@
           "application/json": "#/components/schemas/SentMessage"
         },
         "400": {
-          "application/problem+json": "#/components/schemas/InvalidRequestProblem"
+          "application/problem+json": "#/components/schemas/SendMessageBadRequestProblem"
         },
         "401": {
           "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
@@ -13064,6 +13124,9 @@
         },
         "409": {
           "application/problem+json": "#/components/schemas/SendMessageConflictProblem"
+        },
+        "410": {
+          "application/problem+json": "#/components/schemas/RetiredApiVersionProblem"
         },
         "413": {
           "application/problem+json": "#/components/schemas/PayloadTooLargeProblem"
@@ -13130,7 +13193,7 @@
           "application/json": "#/components/schemas/SetSpaceTypingResponse"
         },
         "400": {
-          "application/problem+json": "#/components/schemas/HttpErrorProblem"
+          "application/problem+json": "#/components/schemas/SetSpaceTypingBadRequestProblem"
         },
         "401": {
           "application/problem+json": "#/components/schemas/NotAuthenticatedProblem"
@@ -13140,6 +13203,9 @@
         },
         "404": {
           "application/problem+json": "#/components/schemas/SetSpaceTypingNotFoundProblem"
+        },
+        "410": {
+          "application/problem+json": "#/components/schemas/RetiredApiVersionProblem"
         },
         "413": {
           "application/problem+json": "#/components/schemas/PayloadTooLargeProblem"
@@ -14839,26 +14905,6 @@
           "required": true,
           "schema": {
             "pattern": "^pho_prj_[0-7][0-9a-hjkmnp-tv-z]{25}$",
-            "type": "string"
-          }
-        },
-        {
-          "name": "content-length",
-          "wireName": "content-length",
-          "location": "header",
-          "required": true,
-          "schema": {
-            "pattern": "^[1-9][0-9]*$",
-            "type": "string"
-          }
-        },
-        {
-          "name": "content-type",
-          "wireName": "content-type",
-          "location": "header",
-          "required": true,
-          "schema": {
-            "maxLength": 512,
             "type": "string"
           }
         },

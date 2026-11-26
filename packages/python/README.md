@@ -78,6 +78,12 @@ asyncio.run(main())
   as in `photon.projects.agent_profile.get`. Each method takes one input model from
   `photon_api.rpc_generated` (for example `CountProjectsInput`) with
   `path`, `query`, `body` and header members as the operation declares.
+- A file upload, such as `photon.projects.upload_attachment`, takes an
+  `UploadFile(data=..., content_type=..., filename=...)` from `photon_api`
+  as its `body` (`filename` is optional). The client sends the
+  `multipart/related` body the API takes (JSON that describes the file, then the
+  file) and sets Content-Type and Content-Length; the boundary comes from the
+  file's bytes, so a retry with the same idempotency key sends the same request.
 - Every method also takes a keyword-only `options`, a `RequestOptions`
   dictionary, for one call: its `headers` replace the client's value for the
   same header names, and a header member of the input still takes precedence.
@@ -92,7 +98,17 @@ Request inputs and responses are Pydantic models typed by the contract.
 Building an input model checks types and required fields and raises
 `pydantic.ValidationError` if they do not match; limits such as patterns,
 lengths and ranges are checked by the API. Successful responses are parsed into
-the model declared for their status. Fields the SDK does not know are kept, and
+the model declared for their status. When a successful JSON object does not
+match that model, for example because a required field is missing, the client
+still returns the model, built without validation (Pydantic's `model_construct`):
+fields that match are parsed as usual, a field the response leaves out is
+`MISSING`, and a field of another type keeps the value the API sent. A body of
+another shape, such as `null` or a list where the model is an object, is
+returned as sent. Either way your code can meet a value its type does not
+allow. Pass
+`strict_response_validation=True` to `Photon` or `AsyncPhoton` to raise
+`ResponseValidationError` instead. A JSON response whose body cannot be parsed
+raises it in either mode. Fields the SDK does not know are kept, and
 enums are open (`Literal["a", "b"] | str`), so the client keeps working when the
 API adds fields or values. Dates and date-times are strings, as sent.
 
@@ -116,7 +132,7 @@ when known.
 | Class | Raised when | Attributes |
 | --- | --- | --- |
 | `ApiError` | The API returns a non-success status. The message is the problem `detail` when present. | `status`, `headers`, `body` (parsed JSON, or `None`), `raw_body`, `operation_id`, `request_id` |
-| `ResponseValidationError` | A successful response has an undocumented status, is not empty when it should be, or does not match its model. | `status`, `raw_body`, `operation_id`, `request_id` |
+| `ResponseValidationError` | A successful response has an undocumented status, is not empty when it should be, or cannot be parsed as the JSON the operation returns, or, with `strict_response_validation=True`, does not match its model. | `status`, `raw_body`, `operation_id`, `request_id` |
 | `TransportError` | The request failed at the HTTP layer (connection error, timeout) on the last attempt. | `operation_id`; the `httpx` error is in `__cause__` |
 
 ```python

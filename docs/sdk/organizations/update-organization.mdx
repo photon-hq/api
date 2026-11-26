@@ -47,7 +47,7 @@ const result = await photon.organizations.updateOrganization({
   },
   body: {
     name: "name",
-    expectedVersion: "expectedVersion",
+    expectedVersion: "1",
   },
 });
 ```
@@ -69,7 +69,7 @@ result = photon.organizations.update_organization(
         },
         "body": {
             "name": "name",
-            "expectedVersion": "expectedVersion",
+            "expectedVersion": "1",
         },
     })
 )
@@ -88,7 +88,7 @@ let result = client
         "organizationId".to_owned(),
         &serde_json::from_value(serde_json::json!({
             "name": "name",
-            "expectedVersion": "expectedVersion",
+            "expectedVersion": "1",
         }))?,
     )
     .await
@@ -110,7 +110,7 @@ client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")
 var body photonapi.UpdateOrganizationRequest
 if err := json.Unmarshal([]byte(`{
 	"name": "name",
-	"expectedVersion": "expectedVersion"
+	"expectedVersion": "1"
 }`), &body); err != nil {
 	return err
 }

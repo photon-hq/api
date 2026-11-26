@@ -46,9 +46,9 @@ const result = await photon.projects.createProjectApiKey({
     idempotencyKey: "idempotencyKey",
   },
   body: {
-    name: "name",
+    name: "Example key",
     permissions: [
-      "calls:read",
+      "project:read",
     ],
   },
 });
@@ -70,9 +70,9 @@ result = photon.projects.create_project_api_key(
             "Idempotency-Key": "idempotencyKey",
         },
         "body": {
-            "name": "name",
+            "name": "Example key",
             "permissions": [
-                "calls:read",
+                "project:read",
             ],
         },
     })
@@ -91,9 +91,9 @@ let result = client
         "idempotencyKey".to_owned(),
         "projectId".to_owned(),
         &serde_json::from_value(serde_json::json!({
-            "name": "name",
+            "name": "Example key",
             "permissions": [
-                "calls:read",
+                "project:read",
             ],
         }))?,
     )
@@ -115,9 +115,9 @@ ctx := context.Background()
 client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
 var body photonapi.CreateProjectApiKeyRequest
 if err := json.Unmarshal([]byte(`{
-	"name": "name",
+	"name": "Example key",
 	"permissions": [
-		"calls:read"
+		"project:read"
 	]
 }`), &body); err != nil {
 	return err

@@ -47,7 +47,7 @@ const result = await photon.organizations.removeOrganizationMember({
     idempotencyKey: "idempotencyKey",
   },
   body: {
-    expectedVersion: "expectedVersion",
+    expectedVersion: "2",
   },
 });
 ```
@@ -69,7 +69,7 @@ result = photon.organizations.remove_organization_member(
             "Idempotency-Key": "idempotencyKey",
         },
         "body": {
-            "expectedVersion": "expectedVersion",
+            "expectedVersion": "2",
         },
     })
 )
@@ -88,7 +88,7 @@ let result = client
         "organizationId".to_owned(),
         "memberAccountId".to_owned(),
         &serde_json::from_value(serde_json::json!({
-            "expectedVersion": "expectedVersion",
+            "expectedVersion": "2",
         }))?,
     )
     .await
@@ -109,7 +109,7 @@ ctx := context.Background()
 client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
 var body photonapi.RemoveOrganizationMemberRequest
 if err := json.Unmarshal([]byte(`{
-	"expectedVersion": "expectedVersion"
+	"expectedVersion": "2"
 }`), &body); err != nil {
 	return err
 }

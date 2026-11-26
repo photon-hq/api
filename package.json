@@ -52,6 +52,8 @@
   "devDependencies": {
     "@redocly/cli": "2.72.1",
     "@types/node": "26.6.6",
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
     "esbuild": "0.28.2",
     "handlebars": "4.7.10",
     "json-canonicalize": "3.0.1",

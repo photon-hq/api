@@ -41,7 +41,7 @@ const photon = new Photon({
 const result = await photon.organizations.getOrganizationOauthClient({
   path: {
     organizationId: "organizationId",
-    clientId: "clientId",
+    clientId: "client_0",
   },
 });
 ```
@@ -57,7 +57,7 @@ result = photon.organizations.get_organization_oauth_client(
     GetOrganizationOauthClientInput.model_validate({
         "path": {
             "organizationId": "organizationId",
-            "clientId": "clientId",
+            "clientId": "client_0",
         },
     })
 )
@@ -71,7 +71,7 @@ let client = PhotonClientBuilder::new()
     .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
     .build()?;
 let result = client
-    .get_organization_oauth_client("organizationId".to_owned(), "clientId".to_owned())
+    .get_organization_oauth_client("organizationId".to_owned(), "client_0".to_owned())
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
@@ -89,7 +89,7 @@ ctx := context.Background()
 client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
 result, err := client.Organizations.GetOrganizationOauthClient(ctx, &photonapi.GetOrganizationOauthClientParams{
 	OrganizationID: "organizationId",
-	ClientID: "clientId",
+	ClientID: "client_0",
 })
 if err != nil {
 	return err

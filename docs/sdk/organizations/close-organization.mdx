@@ -46,7 +46,7 @@ await photon.organizations.closeOrganization({
     idempotencyKey: "idempotencyKey",
   },
   body: {
-    expectedVersion: "expectedVersion",
+    expectedVersion: "799090090405909",
   },
 });
 ```
@@ -67,7 +67,7 @@ photon.organizations.close_organization(
             "Idempotency-Key": "idempotencyKey",
         },
         "body": {
-            "expectedVersion": "expectedVersion",
+            "expectedVersion": "799090090405909",
         },
     })
 )
@@ -85,7 +85,7 @@ client
         "idempotencyKey".to_owned(),
         "organizationId".to_owned(),
         &serde_json::from_value(serde_json::json!({
-            "expectedVersion": "expectedVersion",
+            "expectedVersion": "799090090405909",
         }))?,
     )
     .await
@@ -105,7 +105,7 @@ ctx := context.Background()
 client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
 var body photonapi.CloseOrganizationRequest
 if err := json.Unmarshal([]byte(`{
-	"expectedVersion": "expectedVersion"
+	"expectedVersion": "799090090405909"
 }`), &body); err != nil {
 	return err
 }

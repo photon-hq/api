@@ -137,8 +137,7 @@ members the endpoint declares:
 - `headers`: header parameters, under the contract's names. Where the contract
   spells the header `Idempotency-Key`, write it `idempotencyKey`; other header
   names are written as the contract spells them, such as
-  `"idempotency-key"`, `"content-type"`, and `"content-length"` for
-  `uploadAttachment`.
+  `"idempotency-key"` for `uploadAttachment`.
 - `body`: the request body.
 
 Other names are the contract's own, which are camelCase. A method resolves to the response
@@ -359,6 +358,28 @@ func main() {
 }
 ```
 </CodeGroup>
+
+## Upload a file
+
+`uploadAttachment` takes the file itself. The client sends it as a
+`multipart/related` body, JSON that describes the file and then the file's
+bytes, and sets the request's `Content-Type` and `Content-Length`. The body's
+boundary comes from the file's bytes, so a retry with the same idempotency key
+sends the same request.
+
+- **TypeScript**: `body` is a `File`, or a `Blob` for a file without a name.
+  Its `type` is the file's media type and must be set; the method throws a
+  `TypeError` otherwise.
+- **Python**: `body` is an `UploadFile` from `photon_api`, with the
+  file's `data` (bytes), `content_type`, and an optional `filename`. The method
+  raises `ValueError` when `content_type` contains a line break.
+- **Rust**: the method takes a `&UploadFile`, built with
+  `UploadFile::new(data, content_type)` and an optional `.filename(name)`.
+- **Go**: `Body` is a `*photonapi.UploadFile` with `Data`, `ContentType`, and an
+  optional `Filename`.
+
+The Upload attachment page of the SDK reference shows a complete call in each
+language.
 
 ## Change the base URL
 

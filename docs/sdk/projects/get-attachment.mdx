@@ -40,8 +40,8 @@ const photon = new Photon({
 });
 const result = await photon.projects.getAttachment({
   path: {
-    attachmentId: "attachmentId",
-    id: "id",
+    attachmentId: "pho_att_2kjzvmmhanzm9knmja0npk9pjm",
+    id: "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
   },
 });
 ```
@@ -56,8 +56,8 @@ photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN
 result = photon.projects.get_attachment(
     GetAttachmentInput.model_validate({
         "path": {
-            "attachmentId": "attachmentId",
-            "id": "id",
+            "attachmentId": "pho_att_2kjzvmmhanzm9knmja0npk9pjm",
+            "id": "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
         },
     })
 )
@@ -71,7 +71,10 @@ let client = PhotonClientBuilder::new()
     .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
     .build()?;
 let result = client
-    .get_attachment("attachmentId".to_owned(), "id".to_owned())
+    .get_attachment(
+        "pho_att_2kjzvmmhanzm9knmja0npk9pjm".to_owned(),
+        "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw".to_owned(),
+    )
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
@@ -88,8 +91,8 @@ import (
 ctx := context.Background()
 client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
 result, err := client.Projects.GetAttachment(ctx, &photonapi.GetAttachmentParams{
-	AttachmentID: "attachmentId",
-	ID: "id",
+	AttachmentID: "pho_att_2kjzvmmhanzm9knmja0npk9pjm",
+	ID: "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
 })
 if err != nil {
 	return err
@@ -117,6 +120,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField path="attachmentId" type={"string"} required>
 
 </ParamField>
@@ -129,6 +136,8 @@ _ = result
 ## Returns
 
 **`200`** The Attachment resource. Attachment
+
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="contentType" type={"string"} required>
 
@@ -161,4 +170,8 @@ _ = result
 <ResponseField name="updatedAt" type={"string (date-time)"} required>
 
 </ResponseField>
+
+**`304`** Not Modified. Sent only when If-None-Match matches the ETag of an earlier 200 response for the same representation; no body. No body.
+
+Headers: `ETag`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 

@@ -44,7 +44,7 @@ const result = await photon.organizations.billing.previewOrganizationChange({
   },
   body: {
     fixedCharge: {
-      fixedChargeCode: "fixedChargeCode",
+      fixedChargeCode: "a_d0509090_99z_c_k_g9ata00_0_df__z090f0_1x5dj0__c_a00__6aca__a30",
       increment: -10000,
     },
   },
@@ -65,7 +65,7 @@ result = photon.organizations.billing.preview_organization_change(
         },
         "body": {
             "fixedCharge": {
-                "fixedChargeCode": "fixedChargeCode",
+                "fixedChargeCode": "a_d0509090_99z_c_k_g9ata00_0_df__z090f0_1x5dj0__c_a00__6aca__a30",
                 "increment": -10000,
             },
         },
@@ -85,7 +85,7 @@ let result = client
         "organizationId".to_owned(),
         &serde_json::from_value(serde_json::json!({
             "fixedCharge": {
-                "fixedChargeCode": "fixedChargeCode",
+                "fixedChargeCode": "a_d0509090_99z_c_k_g9ata00_0_df__z090f0_1x5dj0__c_a00__6aca__a30",
                 "increment": -10000,
             },
         }))?,
@@ -109,7 +109,7 @@ client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")
 var body photonapi.PreviewOrganizationChangeRequest
 if err := json.Unmarshal([]byte(`{
 	"fixedCharge": {
-		"fixedChargeCode": "fixedChargeCode",
+		"fixedChargeCode": "a_d0509090_99z_c_k_g9ata00_0_df__z090f0_1x5dj0__c_a00__6aca__a30",
 		"increment": -10000
 	}
 }`), &body); err != nil {

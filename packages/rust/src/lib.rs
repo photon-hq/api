@@ -2,6 +2,7 @@
 
 mod client;
 mod config_generated;
+mod upload;
 mod webhooks;
 #[allow(unused_parens)]
 mod generated {
@@ -24,4 +25,5 @@ pub use client::{
     DEFAULT_BASE_URL, DEFAULT_MAXIMUM_RETRY_AFTER, PhotonClientBuilder, RequestOptions,
 };
 pub use generated::*;
+pub use upload::UploadFile;
 pub use webhooks::{InvalidWebhookSecret, WebhookSecret, WebhookVerificationError, verify_webhook};

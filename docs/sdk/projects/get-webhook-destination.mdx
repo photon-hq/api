@@ -40,8 +40,8 @@ const photon = new Photon({
 });
 const result = await photon.projects.getWebhookDestination({
   path: {
-    destinationId: "destinationId",
-    projectId: "projectId",
+    destinationId: "pho_whd_7tmjkkt0tzkzpakk9vh80kmmjb",
+    projectId: "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
   },
 });
 ```
@@ -56,8 +56,8 @@ photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN
 result = photon.projects.get_webhook_destination(
     GetWebhookDestinationInput.model_validate({
         "path": {
-            "destinationId": "destinationId",
-            "projectId": "projectId",
+            "destinationId": "pho_whd_7tmjkkt0tzkzpakk9vh80kmmjb",
+            "projectId": "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
         },
     })
 )
@@ -71,7 +71,10 @@ let client = PhotonClientBuilder::new()
     .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
     .build()?;
 let result = client
-    .get_webhook_destination("destinationId".to_owned(), "projectId".to_owned())
+    .get_webhook_destination(
+        "pho_whd_7tmjkkt0tzkzpakk9vh80kmmjb".to_owned(),
+        "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw".to_owned(),
+    )
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
@@ -88,8 +91,8 @@ import (
 ctx := context.Background()
 client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
 result, err := client.Projects.GetWebhookDestination(ctx, &photonapi.GetWebhookDestinationParams{
-	DestinationID: "destinationId",
-	ProjectID: "projectId",
+	DestinationID: "pho_whd_7tmjkkt0tzkzpakk9vh80kmmjb",
+	ProjectID: "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
 })
 if err != nil {
 	return err

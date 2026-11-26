@@ -672,14 +672,14 @@ client.get_message(id: String, message_id: String, params: Option<GetMessagePara
 **[Get metrics backfill status](/api-client/sdk/projects/get-message-metrics-backfill)**
 
 ```rust Rust
-client.get_message_metrics_backfill(project_id: String, params: Option<GetMessageMetricsBackfillParams>).await -> Result<ResponseValue<types::GetMessageMetricsBackfillResponse>, Error<GetMessageMetricsBackfillError>>
+client.get_message_metrics_backfill(project_id: String).await -> Result<ResponseValue<types::GetMessageMetricsBackfillResponse>, Error<GetMessageMetricsBackfillError>>
 ```
 `GET /v1/projects/{projectId}/metrics/backfill`
 
 **[Get metrics SQL schema](/api-client/sdk/projects/get-message-metrics-sql-schema)**
 
 ```rust Rust
-client.get_message_metrics_sql_schema(project_id: String, params: Option<GetMessageMetricsSqlSchemaParams>).await -> Result<ResponseValue<types::GetMessageMetricsSqlSchemaResponse>, Error<GetMessageMetricsSqlSchemaError>>
+client.get_message_metrics_sql_schema(project_id: String).await -> Result<ResponseValue<types::GetMessageMetricsSqlSchemaResponse>, Error<GetMessageMetricsSqlSchemaError>>
 ```
 `GET /v1/projects/{projectId}/metrics/query`
 
@@ -749,7 +749,7 @@ client.mark_message_read(id: String, message_id: String, idempotency_key: String
 **[Query metrics](/api-client/sdk/projects/query-message-metrics)**
 
 ```rust Rust
-client.query_message_metrics(project_id: String, params: Option<QueryMessageMetricsParams>, body: &types::ClickHouseSqlQueryRequest).await -> Result<ResponseValue<types::QueryMessageMetricsResponse>, Error<QueryMessageMetricsError>>
+client.query_message_metrics(project_id: String, body: &types::ClickHouseSqlQueryRequest).await -> Result<ResponseValue<types::QueryMessageMetricsResponse>, Error<QueryMessageMetricsError>>
 ```
 `POST /v1/projects/{projectId}/metrics/query`
 
@@ -784,7 +784,7 @@ client.set_space_typing(id: String, space_id: String, body: &types::SetSpaceTypi
 **[Upload attachment](/api-client/sdk/projects/upload-attachment)**
 
 ```rust Rust
-client.upload_attachment(id: String, content_length: String, content_type: String, idempotency_key: String, body: &bytes::Bytes).await -> Result<ResponseValue<UploadAttachmentResponse>, Error<UploadAttachmentError>>
+client.upload_attachment(id: String, idempotency_key: String, file: &UploadFile).await -> Result<ResponseValue<UploadAttachmentResponse>, Error<UploadAttachmentError>>
 ```
 `POST /v1/projects/{id}/attachments`
 
@@ -1247,7 +1247,7 @@ Every public IPv4 address webhook deliveries can originate from. Allow-list all 
 </ResponseField>
 
 <ResponseField name="status" type={"SelectableWebhookApiVersionStatus"} required>
-
+Lifecycle of this date's webhook payload contract. `preview`: selectable, but the contract is not frozen yet and may still change. `latest`: the recommended date; its contract is frozen. `maintain`: still selectable and frozen, superseded by `successor`.
 </ResponseField>
 
 <ResponseField name="successor" type={"string (date) | null"} required>
@@ -1800,7 +1800,11 @@ When Photon last persisted a change to this resource's public state.
 
 
 
-<ResponseField name="status" type={"\"accepted\""} required>
+<ResponseField name="destinationId" type={"string"} required>
+
+</ResponseField>
+
+<ResponseField name="eventId" type={"string"} required>
 
 </ResponseField>
 
@@ -1903,7 +1907,7 @@ When Photon last persisted a change to this resource's public state.
 
 </ResponseField>
 
-<ResponseField name="content" type={"SetSpaceTypingContent"} required>
+<ResponseField name="content" type={"SpaceTypingUpdateContent"} required>
 
 </ResponseField>
 

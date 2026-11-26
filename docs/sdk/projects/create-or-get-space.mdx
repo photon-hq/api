@@ -40,7 +40,7 @@ const photon = new Photon({
 });
 const result = await photon.projects.createOrGetSpace({
   path: {
-    id: "id",
+    id: "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
   },
   headers: {
     "idempotency-key": "idempotency-key",
@@ -62,7 +62,7 @@ photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN
 result = photon.projects.create_or_get_space(
     CreateOrGetSpaceInput.model_validate({
         "path": {
-            "id": "id",
+            "id": "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
         },
         "headers": {
             "idempotency-key": "idempotency-key",
@@ -84,7 +84,7 @@ let client = PhotonClientBuilder::new()
     .build()?;
 let result = client
     .create_or_get_space(
-        "id".to_owned(),
+        "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw".to_owned(),
         "idempotency-key".to_owned(),
         &serde_json::from_value(serde_json::json!({
             "participantIds": [],
@@ -115,7 +115,7 @@ if err := json.Unmarshal([]byte(`{
 	return err
 }
 result, err := client.Projects.CreateOrGetSpace(ctx, &photonapi.CreateOrGetSpaceParams{
-	ID: "id",
+	ID: "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
 	IdempotencyKey: "idempotency-key",
 	Body: body,
 })
@@ -166,6 +166,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField path="id" type={"string"} required>
 
 </ParamField>
@@ -190,7 +194,7 @@ Canonical Photon User IDs from this project and platform. iMessage uses the firs
 
 **`200`** The Space already existed and is returned in its authoritative stored state. PlatformSpace
 
-Headers: `Cache-Control`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+Headers: `Cache-Control`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="createdAt" type={"string (date-time)"} required>
 When Photon first persisted this resource.
@@ -230,7 +234,7 @@ When Photon last persisted a change to this resource's public state.
 
 **`201`** The Space was created. PlatformSpace
 
-Headers: `Cache-Control`, `Location`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+Headers: `Cache-Control`, `Location`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="createdAt" type={"string (date-time)"} required>
 When Photon first persisted this resource.

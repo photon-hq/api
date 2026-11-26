@@ -1293,7 +1293,7 @@ export type ConfirmedRecipient = {
 
 export type ConnectEmailDomainBadRequestProblem = IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem;
 
-export type ConnectEmailDomainConflictProblem = ProjectClosingProblem | ProjectInitializingProblem | EmailDomainAlreadyConnectedProblem | EmailDomainCapExceededProblem;
+export type ConnectEmailDomainConflictProblem = ProjectClosingProblem | ProjectInitializingProblem | EmailDomainAlreadyConnectedProblem | EmailDomainCapExceededProblem | EmailOwnershipHandoffRequiredProblem;
 
 export type ConnectEmailDomainForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -1469,7 +1469,7 @@ export type CreateDefaultVoiceProfileRequest = {
     protocol: 'sip';
 };
 
-export type CreateOrGetSpaceBadRequestProblem = HttpErrorProblem | InvalidRequestProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem;
+export type CreateOrGetSpaceBadRequestProblem = HttpErrorProblem | InvalidRequestProblem | IdempotencyKeyRequiredProblem | IdempotencyKeyInvalidProblem | InvalidApiVersionProblem;
 
 export type CreateOrGetSpaceForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -1488,6 +1488,8 @@ export type CreateOrGetSpaceRequest = {
 export type CreateOrGetSpaceServiceUnavailableProblem = IdempotencyUnavailableProblem | UpstreamUnavailableProblem;
 
 export type CreateOrGetSpaceUnprocessableEntityProblem = SpaceRequiresOwnedAgentProblem | IdempotencyKeyReusedProblem | OperationUnavailableProblem | ValidationFailedProblem;
+
+export type CreateOrGetUserBadRequestProblem = HttpErrorProblem | InvalidApiVersionProblem;
 
 export type CreateOrGetUserForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -1842,7 +1844,7 @@ export type CreateWhatsappSharedLineAssignmentBadRequestProblem = IdempotencyKey
 
 export type CreateWhatsappSharedLineAssignmentConflictProblem = ProjectInitializingProblem | ProjectClosingProblem | WhatsappModeDedicatedProblem | SharedLineCapExceededProblem | AssignmentExistsProblem;
 
-export type CreateWhatsappSharedLineAssignmentForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
+export type CreateWhatsappSharedLineAssignmentForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem | WhatsappPersonalNotAvailableProblem;
 
 export type CreateWhatsappSharedLineAssignmentGatewayTimeoutProblem = RequestTimeoutProblem | UpstreamTimeoutProblem;
 
@@ -2867,6 +2869,18 @@ export type EmailOrganizationSendingPolicy = {
     updatedAt: string;
 };
 
+export type EmailOwnershipHandoffRequiredProblem = {
+    code: 'EMAIL_OWNERSHIP_HANDOFF_REQUIRED';
+    detail?: string;
+    instance?: string;
+    remediation: ProblemRemediation;
+    requestId?: string;
+    status: 409;
+    title: 'Email Ownership Handoff Required';
+    type: 'https://photon.codes/docs/problems/email-ownership-handoff-required';
+    [key: string]: JsonValue | 'EMAIL_OWNERSHIP_HANDOFF_REQUIRED' | string | ProblemRemediation | 409 | 'Email Ownership Handoff Required' | 'https://photon.codes/docs/problems/email-ownership-handoff-required' | undefined;
+};
+
 export type EmailRecipientRole = 'to' | 'cc' | 'bcc' | (string & {});
 
 export type EmailRecipientSuppressedProblem = {
@@ -3549,6 +3563,8 @@ export type GetMessageGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTi
 
 export type GetMessageInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
+export type GetMessageMetricsBackfillBadRequestProblem = InvalidArgumentProblem | InvalidApiVersionProblem;
+
 export type GetMessageMetricsBackfillForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type GetMessageMetricsBackfillResponse = {
@@ -3557,8 +3573,9 @@ export type GetMessageMetricsBackfillResponse = {
     processedWrites: number;
     state: MessageMetricsBackfillState;
     version: string;
-    [key: string]: unknown;
 };
+
+export type GetMessageMetricsSqlSchemaBadRequestProblem = InvalidArgumentProblem | InvalidApiVersionProblem;
 
 export type GetMessageMetricsSqlSchemaForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -4587,6 +4604,8 @@ export type ListInvoicesSubjectParam = ListInvoicesSubjectParamOrganization | st
 
 export type ListInvoicesSubjectParamOrganization = 'organization';
 
+export type ListMessagesBadRequestProblem = InvalidPageTokenProblem | InvalidApiVersionProblem;
+
 export type ListMessagesForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type ListMessagesGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
@@ -4845,11 +4864,15 @@ export type ListSharedLineAssignmentsGatewayTimeoutProblem = RequestTimeoutProbl
 
 export type ListSharedLineAssignmentsInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
+export type ListSpacesBadRequestProblem = InvalidPageTokenProblem | InvalidApiVersionProblem;
+
 export type ListSpacesForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type ListSpacesGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
 
 export type ListSpacesInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
+
+export type ListUsersBadRequestProblem = InvalidPageTokenProblem | InvalidApiVersionProblem;
 
 export type ListUsersForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
@@ -4916,6 +4939,8 @@ export type ListWhatsappSharedLineAssignmentsGatewayTimeoutProblem = RequestTime
 export type ListWhatsappSharedLineAssignmentsInternalServerErrorProblem = InternalErrorProblem | InvalidAuthContextProblem;
 
 export type ManagerId = string;
+
+export type MarkMessageReadBadRequestProblem = InvalidRequestProblem | InvalidApiVersionProblem;
 
 export type MarkMessageReadConflictProblem = SenderNotSendableProblem | SpaceNotSendableProblem | MessageNotReadableProblem;
 
@@ -6565,6 +6590,8 @@ export type QueryConcurrencyLimitProblem = {
     [key: string]: JsonValue | 'QUERY_CONCURRENCY_LIMIT' | string | never | 429 | 'Query Concurrency Limit' | 'https://photon.codes/docs/problems/query-concurrency-limit' | undefined;
 };
 
+export type QueryMessageMetricsBadRequestProblem = InvalidArgumentProblem | InvalidApiVersionProblem;
+
 export type QueryMessageMetricsForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
 
 export type QueryMessageMetricsGatewayTimeoutProblem = UpstreamTimeoutProblem | RequestTimeoutProblem;
@@ -7098,12 +7125,11 @@ export type RetryWebhookDeliveryForbiddenProblem = ForbiddenProblem | Insufficie
 
 export type RetryWebhookDeliveryRequest = {
     eventId: string;
-    eventType: string;
-    expectedAttemptCount: number;
 };
 
 export type RetryWebhookDeliveryResponse = {
-    status: 'accepted';
+    destinationId: string;
+    eventId: string;
 };
 
 export type RevokeAccountServiceKeyBadRequestProblem = InvalidArgumentProblem | IdempotencyKeyInvalidProblem | IdempotencyKeyRequiredProblem | InvalidApiVersionProblem;
@@ -7277,6 +7303,9 @@ export type SelectableWebhookApiVersion = {
     version: string;
 };
 
+/**
+ * Lifecycle of this date's webhook payload contract. `preview`: selectable, but the contract is not frozen yet and may still change. `latest`: the recommended date; its contract is frozen. `maintain`: still selectable and frozen, superseded by `successor`.
+ */
 export type SelectableWebhookApiVersionStatus = 'preview' | 'latest' | 'maintain' | (string & {});
 
 export type SelectableWebhookEventCatalog = {
@@ -7333,6 +7362,8 @@ export type SendGroupContent = {
     parts: Array<SendContentPart>;
     type: 'group';
 };
+
+export type SendMessageBadRequestProblem = InvalidRequestProblem | InvalidApiVersionProblem;
 
 export type SendMessageConflictProblem = AttachmentNotReadyProblem | SenderNotSendableProblem | SmsCampaignNotEligibleProblem | EmailAdmissionEndedProblem | SpaceNotSendableProblem;
 
@@ -7605,15 +7636,12 @@ export type ServiceUnavailableProblem = {
     [key: string]: JsonValue | 'SERVICE_UNAVAILABLE' | string | never | 503 | 'Service Temporarily Unavailable' | 'https://photon.codes/docs/problems/service-unavailable' | undefined;
 };
 
+export type SetSpaceTypingBadRequestProblem = HttpErrorProblem | InvalidApiVersionProblem;
+
 export type SetSpaceTypingConstraint = {
-    content: SetSpaceTypingContent;
+    content: SpaceTypingUpdateContent;
     status: 'dispatched';
     [key: string]: unknown;
-};
-
-export type SetSpaceTypingContent = {
-    type: 'space.typing.update';
-    typing: boolean;
 };
 
 export type SetSpaceTypingForbiddenProblem = ForbiddenProblem | InsufficientScopeProblem | OrganizationSsoRequiredProblem | ResourceMismatchProblem;
@@ -9826,6 +9854,18 @@ export type WhatsappNumberLookupFailedProblem = {
 };
 
 export type WhatsappOutboundCapacity = '50' | '250' | '1000' | '2000' | '10000' | '100000' | 'UNLIMITED' | 'UNTIERED' | 'UNKNOWN' | (string & {});
+
+export type WhatsappPersonalNotAvailableProblem = {
+    code: 'WHATSAPP_PERSONAL_NOT_AVAILABLE';
+    detail?: string;
+    instance?: string;
+    remediation?: never;
+    requestId?: string;
+    status: 403;
+    title: 'WhatsApp Personal Not Available';
+    type: 'https://photon.codes/docs/problems/whatsapp-personal-not-available';
+    [key: string]: JsonValue | 'WHATSAPP_PERSONAL_NOT_AVAILABLE' | string | never | 403 | 'WhatsApp Personal Not Available' | 'https://photon.codes/docs/problems/whatsapp-personal-not-available' | undefined;
+};
 
 export type WhatsappPhoneNumberOwnership = 'photon' | 'meta' | (string & {});
 
@@ -15984,6 +16024,10 @@ export type ListAttachmentsData = {
 
 export type ListAttachmentsErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -15993,6 +16037,10 @@ export type ListAttachmentsErrors = {
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
     403: ListAttachmentsForbiddenProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -16034,8 +16082,6 @@ export type UploadAttachmentData = {
      */
     body: Blob | File;
     headers: {
-        'content-length': string;
-        'content-type': string;
         /**
          * Reuse the same key and request for retries.
          */
@@ -16122,6 +16168,10 @@ export type GetAttachmentData = {
 
 export type GetAttachmentErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -16139,6 +16189,10 @@ export type GetAttachmentErrors = {
      * ATTACHMENT_NOT_READY: Attachment Not Ready
      */
     409: AttachmentNotReadyProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -16306,9 +16360,9 @@ export type ListMessagesData = {
 
 export type ListMessagesErrors = {
     /**
-     * INVALID_PAGE_TOKEN: Invalid Page Token
+     * INVALID_PAGE_TOKEN: Invalid Page Token; INVALID_API_VERSION: Invalid API Version
      */
-    400: InvalidPageTokenProblem;
+    400: ListMessagesBadRequestProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -16319,6 +16373,10 @@ export type ListMessagesErrors = {
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
     403: ListMessagesForbiddenProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -16368,9 +16426,9 @@ export type SendMessageData = {
 
 export type SendMessageErrors = {
     /**
-     * INVALID_REQUEST: Invalid Request
+     * INVALID_REQUEST: Invalid Request; INVALID_API_VERSION: Invalid API Version
      */
-    400: InvalidRequestProblem;
+    400: SendMessageBadRequestProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -16393,6 +16451,10 @@ export type SendMessageErrors = {
      * ATTACHMENT_NOT_READY: Attachment Not Ready; SENDER_NOT_SENDABLE: Sender Not Sendable; SMS_CAMPAIGN_NOT_ELIGIBLE: SMS Campaign Not Eligible; EMAIL_ADMISSION_ENDED: Email Admission Ended; SPACE_NOT_SENDABLE: Space Not Sendable
      */
     409: SendMessageConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * PAYLOAD_TOO_LARGE: Payload Too Large
      */
@@ -16492,6 +16554,10 @@ export type CountMessagesData = {
 
 export type CountMessagesErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -16501,6 +16567,10 @@ export type CountMessagesErrors = {
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
     403: CountMessagesForbiddenProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -16551,6 +16621,10 @@ export type GetMessageData = {
 
 export type GetMessageErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -16564,6 +16638,10 @@ export type GetMessageErrors = {
      * MESSAGE_NOT_FOUND: Message Not Found
      */
     404: MessageNotFoundProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -16614,9 +16692,9 @@ export type MarkMessageReadData = {
 
 export type MarkMessageReadErrors = {
     /**
-     * INVALID_REQUEST: Invalid Request
+     * INVALID_REQUEST: Invalid Request; INVALID_API_VERSION: Invalid API Version
      */
-    400: InvalidRequestProblem;
+    400: MarkMessageReadBadRequestProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -16635,6 +16713,10 @@ export type MarkMessageReadErrors = {
      * SENDER_NOT_SENDABLE: Sender Not Sendable; SPACE_NOT_SENDABLE: Space Not Sendable; MESSAGE_NOT_READABLE: Message Not Readable
      */
     409: MarkMessageReadConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * PAYLOAD_TOO_LARGE: Payload Too Large
      */
@@ -16772,7 +16854,11 @@ export type ConnectEmailDomainErrors = {
      */
     403: ConnectEmailDomainForbiddenProblem;
     /**
-     * PROJECT_CLOSING: Project Is Closing; PROJECT_INITIALIZING: Project Initializing; EMAIL_DOMAIN_ALREADY_CONNECTED: Email Domain Already Connected; EMAIL_DOMAIN_CAP_EXCEEDED: Email Domain Cap Exceeded
+     * PROJECT_NOT_FOUND: Project Not Found
+     */
+    404: ProjectNotFoundProblem;
+    /**
+     * PROJECT_CLOSING: Project Is Closing; PROJECT_INITIALIZING: Project Initializing; EMAIL_DOMAIN_ALREADY_CONNECTED: Email Domain Already Connected; EMAIL_DOMAIN_CAP_EXCEEDED: Email Domain Cap Exceeded; EMAIL_OWNERSHIP_HANDOFF_REQUIRED: Email Ownership Handoff Required
      */
     409: ConnectEmailDomainConflictProblem;
     /**
@@ -16847,6 +16933,10 @@ export type GetEmailDeliveryMetricsErrors = {
      */
     403: GetEmailDeliveryMetricsForbiddenProblem;
     /**
+     * PROJECT_NOT_FOUND: Project Not Found
+     */
+    404: ProjectNotFoundProblem;
+    /**
      * RETIRED_API_VERSION: Retired API Version
      */
     410: RetiredApiVersionProblem;
@@ -16913,6 +17003,10 @@ export type ListEmailRecommendationsErrors = {
      */
     403: ListEmailRecommendationsForbiddenProblem;
     /**
+     * PROJECT_NOT_FOUND: Project Not Found
+     */
+    404: ProjectNotFoundProblem;
+    /**
      * RETIRED_API_VERSION: Retired API Version
      */
     410: RetiredApiVersionProblem;
@@ -16975,6 +17069,10 @@ export type GetEmailSendingPoliciesErrors = {
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
     403: GetEmailSendingPoliciesForbiddenProblem;
+    /**
+     * PROJECT_NOT_FOUND: Project Not Found
+     */
+    404: ProjectNotFoundProblem;
     /**
      * RETIRED_API_VERSION: Retired API Version
      */
@@ -20836,7 +20934,7 @@ export type CreateWhatsappSharedLineAssignmentErrors = {
      */
     401: NotAuthenticatedProblem;
     /**
-     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch
+     * FORBIDDEN: Forbidden; RESOURCE_MISMATCH: Resource Mismatch; WHATSAPP_PERSONAL_NOT_AVAILABLE: WhatsApp Personal Not Available
      *
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
@@ -21269,9 +21367,9 @@ export type ListSpacesData = {
 
 export type ListSpacesErrors = {
     /**
-     * INVALID_PAGE_TOKEN: Invalid Page Token
+     * INVALID_PAGE_TOKEN: Invalid Page Token; INVALID_API_VERSION: Invalid API Version
      */
-    400: InvalidPageTokenProblem;
+    400: ListSpacesBadRequestProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -21282,6 +21380,10 @@ export type ListSpacesErrors = {
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
     403: ListSpacesForbiddenProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -21334,7 +21436,7 @@ export type CreateOrGetSpaceData = {
 
 export type CreateOrGetSpaceErrors = {
     /**
-     * HTTP_ERROR: Request Failed; INVALID_REQUEST: Invalid Request; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid
+     * HTTP_ERROR: Request Failed; INVALID_REQUEST: Invalid Request; IDEMPOTENCY_KEY_REQUIRED: Idempotency Key Required; IDEMPOTENCY_KEY_INVALID: Idempotency Key Invalid; INVALID_API_VERSION: Invalid API Version
      */
     400: CreateOrGetSpaceBadRequestProblem;
     /**
@@ -21355,6 +21457,10 @@ export type CreateOrGetSpaceErrors = {
      * SPACE_AMBIGUOUS: Multiple Matching Spaces
      */
     409: SpaceAmbiguousProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * PAYLOAD_TOO_LARGE: Payload Too Large
      */
@@ -21460,6 +21566,10 @@ export type CountSpacesData = {
 
 export type CountSpacesErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -21469,6 +21579,10 @@ export type CountSpacesErrors = {
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
     403: CountSpacesForbiddenProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -21519,6 +21633,10 @@ export type GetSpaceData = {
 
 export type GetSpaceErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -21532,6 +21650,10 @@ export type GetSpaceErrors = {
      * SPACE_NOT_FOUND: Space Not Found
      */
     404: SpaceNotFoundProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * OPERATION_UNAVAILABLE: Operation Unavailable; VALIDATION_FAILED: Request Validation Failed
      */
@@ -21579,9 +21701,9 @@ export type SetSpaceTypingData = {
 
 export type SetSpaceTypingErrors = {
     /**
-     * HTTP_ERROR: Request Failed
+     * HTTP_ERROR: Request Failed; INVALID_API_VERSION: Invalid API Version
      */
-    400: HttpErrorProblem;
+    400: SetSpaceTypingBadRequestProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -21596,6 +21718,10 @@ export type SetSpaceTypingErrors = {
      * SPACE_NOT_FOUND: Space Not Found; USER_NOT_FOUND: User Not Found
      */
     404: SetSpaceTypingNotFoundProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * PAYLOAD_TOO_LARGE: Payload Too Large
      */
@@ -21703,9 +21829,9 @@ export type ListUsersData = {
 
 export type ListUsersErrors = {
     /**
-     * INVALID_PAGE_TOKEN: Invalid Page Token
+     * INVALID_PAGE_TOKEN: Invalid Page Token; INVALID_API_VERSION: Invalid API Version
      */
-    400: InvalidPageTokenProblem;
+    400: ListUsersBadRequestProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -21716,6 +21842,10 @@ export type ListUsersErrors = {
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
     403: ListUsersForbiddenProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -21762,9 +21892,9 @@ export type CreateOrGetUserData = {
 
 export type CreateOrGetUserErrors = {
     /**
-     * HTTP_ERROR: Request Failed
+     * HTTP_ERROR: Request Failed; INVALID_API_VERSION: Invalid API Version
      */
-    400: HttpErrorProblem;
+    400: CreateOrGetUserBadRequestProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -21779,6 +21909,10 @@ export type CreateOrGetUserErrors = {
      * USER_IDENTITY_CONFLICT: User Identity Conflict
      */
     409: UserIdentityConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * PAYLOAD_TOO_LARGE: Payload Too Large
      */
@@ -21874,6 +22008,10 @@ export type CountUsersData = {
 
 export type CountUsersErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -21883,6 +22021,10 @@ export type CountUsersErrors = {
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
     403: CountUsersForbiddenProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * VALIDATION_FAILED: Request Validation Failed
      */
@@ -21933,6 +22075,10 @@ export type GetUserData = {
 
 export type GetUserErrors = {
     /**
+     * INVALID_API_VERSION: Invalid API Version
+     */
+    400: InvalidApiVersionProblem;
+    /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
     401: NotAuthenticatedProblem;
@@ -21950,6 +22096,10 @@ export type GetUserErrors = {
      * USER_IDENTITY_CONFLICT: User Identity Conflict
      */
     409: UserIdentityConflictProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * OPERATION_UNAVAILABLE: Operation Unavailable; VALIDATION_FAILED: Request Validation Failed
      */
@@ -23139,12 +23289,6 @@ export type ListProjectSubscriptionsResult = ListProjectSubscriptionsResponses[k
 
 export type GetMessageMetricsBackfillData = {
     body?: never;
-    headers?: {
-        /**
-         * API schema date. Defaults to the latest served version; resolves to the latest served date on or before this value.
-         */
-        'x-photon-version'?: string;
-    };
     path: {
         projectId: string;
     };
@@ -23154,9 +23298,9 @@ export type GetMessageMetricsBackfillData = {
 
 export type GetMessageMetricsBackfillErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument
+     * INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
-    400: InvalidArgumentProblem;
+    400: GetMessageMetricsBackfillBadRequestProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -23168,9 +23312,17 @@ export type GetMessageMetricsBackfillErrors = {
      */
     403: GetMessageMetricsBackfillForbiddenProblem;
     /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
+    /**
      * INTERNAL_ERROR: Internal Server Error
      */
     500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
     /**
      * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
      */
@@ -23190,12 +23342,6 @@ export type GetMessageMetricsBackfillResult = GetMessageMetricsBackfillResponses
 
 export type GetMessageMetricsSqlSchemaData = {
     body?: never;
-    headers?: {
-        /**
-         * API schema date. Defaults to the latest served version; resolves to the latest served date on or before this value.
-         */
-        'x-photon-version'?: string;
-    };
     path: {
         projectId: string;
     };
@@ -23205,9 +23351,9 @@ export type GetMessageMetricsSqlSchemaData = {
 
 export type GetMessageMetricsSqlSchemaErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument
+     * INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
-    400: InvalidArgumentProblem;
+    400: GetMessageMetricsSqlSchemaBadRequestProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -23219,9 +23365,17 @@ export type GetMessageMetricsSqlSchemaErrors = {
      */
     403: GetMessageMetricsSqlSchemaForbiddenProblem;
     /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
+    /**
      * INTERNAL_ERROR: Internal Server Error
      */
     500: InternalErrorProblem;
+    /**
+     * UPSTREAM_FAILURE: Upstream Service Failure
+     */
+    502: UpstreamFailureProblem;
     /**
      * UPSTREAM_UNAVAILABLE: Upstream Service Unavailable
      */
@@ -23241,12 +23395,6 @@ export type GetMessageMetricsSqlSchemaResult = GetMessageMetricsSqlSchemaRespons
 
 export type QueryMessageMetricsData = {
     body: ClickHouseSqlQueryRequest;
-    headers?: {
-        /**
-         * API schema date. Defaults to the latest served version; resolves to the latest served date on or before this value.
-         */
-        'x-photon-version'?: string;
-    };
     path: {
         projectId: string;
     };
@@ -23256,9 +23404,9 @@ export type QueryMessageMetricsData = {
 
 export type QueryMessageMetricsErrors = {
     /**
-     * INVALID_ARGUMENT: Invalid Argument
+     * INVALID_ARGUMENT: Invalid Argument; INVALID_API_VERSION: Invalid API Version
      */
-    400: InvalidArgumentProblem;
+    400: QueryMessageMetricsBadRequestProblem;
     /**
      * NOT_AUTHENTICATED: Not Authenticated
      */
@@ -23269,6 +23417,10 @@ export type QueryMessageMetricsErrors = {
      * FORBIDDEN: Forbidden; INSUFFICIENT_SCOPE: Insufficient Scope; ORGANIZATION_SSO_REQUIRED: Organization SSO Required
      */
     403: QueryMessageMetricsForbiddenProblem;
+    /**
+     * RETIRED_API_VERSION: Retired API Version
+     */
+    410: RetiredApiVersionProblem;
     /**
      * QUERY_RESOURCE_LIMIT: Query Resource Limit; VALIDATION_FAILED: Request Validation Failed
      */
@@ -23779,7 +23931,7 @@ export type RetryWebhookDeliveryError = RetryWebhookDeliveryErrors[keyof RetryWe
 
 export type RetryWebhookDeliveryResponses = {
     /**
-     * The waiting delivery was made eligible for an immediate attempt.
+     * The waiting delivery was made eligible for an immediate attempt. The body echoes its eventId and destinationId.
      */
     202: RetryWebhookDeliveryResponse;
 };

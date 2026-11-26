@@ -6,6 +6,7 @@ import {
   ResponseValidationError,
   TransportError,
 } from "./errors.js";
+import { loosen } from "./validation.js";
 import {
   attemptsMade,
   createPhotonFetch,
@@ -22,6 +23,7 @@ import {
   type RequestOptions,
   type SdkFunction,
 } from "./rpc.generated.js";
+import { multipartRelated } from "./uploads.js";
 
 export interface PhotonOptions {
   baseUrl?: string;
@@ -29,6 +31,14 @@ export interface PhotonOptions {
   headers?: HeaderProvider;
   timeoutMs?: number;
   retry?: RetryOptions | false;
+  /**
+   * Reject a successful response whose body does not match this SDK's schema
+   * with a `ResponseValidationError`. By default such a response is returned,
+   * read as far as the schema allows: a member the response leaves out is
+   * `undefined` and a member of another type keeps the API's value, whatever
+   * the type says.
+   */
+  strictResponseValidation?: boolean;
 }
 
 interface HeyApiResult {
@@ -46,7 +56,10 @@ export class Photon {
 
   readonly #client: Client;
 
+  readonly #strictResponseValidation: boolean;
+
   constructor(options: PhotonOptions = {}) {
+    this.#strictResponseValidation = options.strictResponseValidation ?? false;
     this.#client = createClient({
       baseUrl: options.baseUrl ?? DEFAULT_BASE_URL,
       fetch: createPhotonFetch(options),
@@ -114,12 +127,17 @@ export class Photon {
     if (media?.accept.length) headers.set("Accept", media.accept.join(", "));
     const sdkInput = { ...data };
     delete sdkInput.headers;
+    if (media?.fileUpload) {
+      const upload = await multipartRelated(sdkInput.body);
+      headers.set("Content-Type", upload.contentType);
+      sdkInput.body = upload.body;
+    }
 
     // The SDK function returns a failed decode as `error` with its response
     // (throwOnError is off), so validation failures are handled below.
     const result = (await sdkFunction({
       ...sdkInput,
-      ...(media?.rawRequest ? { bodySerializer: null } : {}),
+      ...(media?.rawRequest || media?.fileUpload ? { bodySerializer: null } : {}),
       client: this.#client,
       headers: Object.fromEntries(headers),
       signal: requestOptions?.signal,
@@ -232,7 +250,14 @@ export class Photon {
         if (!outputSchema) {
           throw new Error(`No response schema for status ${documented}`);
         }
-        result.data = await outputSchema.parseAsync(decoded);
+        const parsed = await outputSchema.safeParseAsync(decoded);
+        if (parsed.success) {
+          result.data = parsed.data;
+        } else if (this.#strictResponseValidation) {
+          throw parsed.error;
+        } else {
+          result.data = loosen(outputSchema, decoded);
+        }
       } catch (error) {
         throw new ResponseValidationError(
           operationId,

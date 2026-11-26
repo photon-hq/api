@@ -6,6 +6,7 @@ from .errors import (
     TransportError,
 )
 from .transport import RawResponse, RequestOptions
+from .uploads import UploadFile
 from .webhooks import WebhookVerificationError, verify_webhook
 
 __all__ = [
@@ -17,6 +18,7 @@ __all__ = [
     "RequestOptions",
     "ResponseValidationError",
     "TransportError",
+    "UploadFile",
     "WebhookVerificationError",
     "verify_webhook",
 ]

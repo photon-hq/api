@@ -5,7 +5,6 @@ package photonapi
 import (
 	"context"
 	"fmt"
-	"io"
 )
 
 // AcceptOrganizationInvitationParams holds the parameters of AcceptOrganizationInvitation.
@@ -774,16 +773,12 @@ type GetMessageParams struct {
 type GetMessageMetricsBackfillParams struct {
 	// ProjectID is the path parameter projectId.
 	ProjectID string
-	// XPhotonVersion is the header parameter x-photon-version.
-	XPhotonVersion *string
 }
 
 // GetMessageMetricsSqlSchemaParams holds the parameters of GetMessageMetricsSqlSchema.
 type GetMessageMetricsSqlSchemaParams struct {
 	// ProjectID is the path parameter projectId.
 	ProjectID string
-	// XPhotonVersion is the header parameter x-photon-version.
-	XPhotonVersion *string
 }
 
 // GetProjectParams holds the parameters of Get.
@@ -1008,8 +1003,6 @@ type MarkMessageReadParams struct {
 type QueryMessageMetricsParams struct {
 	// ProjectID is the path parameter projectId.
 	ProjectID string
-	// XPhotonVersion is the header parameter x-photon-version.
-	XPhotonVersion *string
 	// Body is the request body.
 	Body ClickHouseSqlQueryRequest
 }
@@ -1106,14 +1099,10 @@ type UpdateWebhookDestinationParams struct {
 type UploadAttachmentParams struct {
 	// ID is the path parameter id.
 	ID string
-	// ContentLength is the header parameter content-length.
-	ContentLength int64
-	// ContentType is the header parameter content-type.
-	ContentType string
 	// IdempotencyKey is the header parameter idempotency-key. Generated when empty.
 	IdempotencyKey string
 	// Body is the request body.
-	Body io.Reader
+	Body *UploadFile
 }
 
 // AssignSmsLineCampaignParams holds the parameters of AssignSmsLineCampaign.
@@ -3327,7 +3316,6 @@ func (s *ProjectsService) GetMessageMetricsBackfill(ctx context.Context, params 
 	spec := newSpec("getMessageMetricsBackfill", "GET", "/v1/projects/{projectId}/metrics/backfill")
 	spec.safe = true
 	spec.setPath("projectId", params.ProjectID)
-	spec.setHeader("x-photon-version", params.XPhotonVersion)
 	var out GetMessageMetricsBackfillResponse
 	if err := s.c.do(ctx, spec, &out, opts); err != nil {
 		return nil, err
@@ -3345,7 +3333,6 @@ func (s *ProjectsService) GetMessageMetricsSqlSchema(ctx context.Context, params
 	spec := newSpec("getMessageMetricsSqlSchema", "GET", "/v1/projects/{projectId}/metrics/query")
 	spec.safe = true
 	spec.setPath("projectId", params.ProjectID)
-	spec.setHeader("x-photon-version", params.XPhotonVersion)
 	var out GetMessageMetricsSqlSchemaResponse
 	if err := s.c.do(ctx, spec, &out, opts); err != nil {
 		return nil, err
@@ -3683,7 +3670,6 @@ func (s *ProjectsService) QueryMessageMetrics(ctx context.Context, params *Query
 	}
 	spec := newSpec("queryMessageMetrics", "POST", "/v1/projects/{projectId}/metrics/query")
 	spec.setPath("projectId", params.ProjectID)
-	spec.setHeader("x-photon-version", params.XPhotonVersion)
 	spec.setJSON(params.Body)
 	var out QueryMessageMetricsResponse
 	if err := s.c.do(ctx, spec, &out, opts); err != nil {
@@ -3694,7 +3680,7 @@ func (s *ProjectsService) QueryMessageMetrics(ctx context.Context, params *Query
 
 // Retry webhook delivery
 //
-// Requests an immediate attempt of the selected delivery if it is still the waiting head for its destination and event type. expectedAttemptCount is the failed-attempt counter recorded on the delivery and fences stale requests. This overrides the current backoff, including Retry-After, once. It preserves event identity and the retry budget. Delivered, active, disabled and dead-lettered deliveries cannot be retried. A 202 acknowledges the wake-up, not successful delivery. Supply an Idempotency-Key and retain it when retrying an ambiguous failure.
+// Requests an immediate attempt of the selected delivery if it is still the waiting head for its destination and event type. This overrides the current backoff, including Retry-After, once. It preserves event identity and the retry budget. Delivered, active, disabled and dead-lettered deliveries cannot be retried. A 202 acknowledges the wake-up, not successful delivery. Supply an Idempotency-Key and retain it when retrying an ambiguous failure.
 func (s *ProjectsService) RetryWebhookDelivery(ctx context.Context, params *RetryWebhookDeliveryParams, opts ...RequestOption) (*RetryWebhookDeliveryResponse, error) {
 	if params == nil {
 		params = &RetryWebhookDeliveryParams{}
@@ -3857,10 +3843,8 @@ func (s *ProjectsService) UploadAttachment(ctx context.Context, params *UploadAt
 	spec := newSpec("uploadAttachment", "POST", "/v1/projects/{id}/attachments")
 	spec.idempotent = true
 	spec.setPath("id", params.ID)
-	spec.length = params.ContentLength
-	spec.setHeader("content-type", params.ContentType)
 	spec.setHeader("idempotency-key", params.IdempotencyKey)
-	spec.rawBody = params.Body
+	spec.setFile(params.Body)
 	var out Attachment
 	if err := s.c.do(ctx, spec, &out, opts); err != nil {
 		return nil, err

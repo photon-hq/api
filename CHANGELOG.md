@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.9.0 (2026-11-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* update the public API from production (breaking)
+* **sdk:** return responses that fail their schema unless validation is strict (ENG-6502)
+* **sdk:** build the multipart/related upload body in every SDK (ENG-6349)
+
+### Features
+
+* **sdk:** return responses that fail their schema unless validation is strict (ENG-6502)
+* update the public API from production (breaking)
+
+
+### Bug Fixes
+
+* **sdk:** build the multipart/related upload body in every SDK (ENG-6349)
+
+
+### Documentation
+
+* **openapi:** give the SDK code samples values the contract accepts (ENG-6424)
+
 ## 0.8.0 (2026-11-23)
 
 

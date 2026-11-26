@@ -46,7 +46,7 @@ const result = await photon.organizations.removeOrganizationAvatar({
     idempotencyKey: "idempotencyKey",
   },
   body: {
-    expectedVersion: "expectedVersion",
+    expectedVersion: "990009047000099",
   },
 });
 ```
@@ -67,7 +67,7 @@ result = photon.organizations.remove_organization_avatar(
             "Idempotency-Key": "idempotencyKey",
         },
         "body": {
-            "expectedVersion": "expectedVersion",
+            "expectedVersion": "990009047000099",
         },
     })
 )
@@ -85,7 +85,7 @@ let result = client
         "idempotencyKey".to_owned(),
         "organizationId".to_owned(),
         &serde_json::from_value(serde_json::json!({
-            "expectedVersion": "expectedVersion",
+            "expectedVersion": "990009047000099",
         }))?,
     )
     .await
@@ -106,7 +106,7 @@ ctx := context.Background()
 client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
 var body photonapi.RemoveOrganizationAvatarRequest
 if err := json.Unmarshal([]byte(`{
-	"expectedVersion": "expectedVersion"
+	"expectedVersion": "990009047000099"
 }`), &body); err != nil {
 	return err
 }

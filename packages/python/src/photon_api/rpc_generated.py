@@ -9,6 +9,7 @@ from pydantic.experimental.missing_sentinel import MISSING
 from ._model_base import BaseModel
 from .generated import models
 from .transport import AsyncTransport, OperationSpec, RawResponse, RequestOptions, SyncTransport
+from .uploads import UploadFile
 
 
 class AcceptOrganizationInvitationHeader(BaseModel):
@@ -1158,17 +1159,10 @@ class GetMessageMetricsBackfillPath(BaseModel):
     project_id: str = Field(alias="projectId")
 
 
-class GetMessageMetricsBackfillHeader(BaseModel):
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    x_photon_version: str | MISSING = Field(default=MISSING, alias="x-photon-version")
-
-
 class GetMessageMetricsBackfillInput(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
     path: GetMessageMetricsBackfillPath
-    headers: GetMessageMetricsBackfillHeader | None = None
 
 
 class GetMessageMetricsSqlSchemaPath(BaseModel):
@@ -1177,17 +1171,10 @@ class GetMessageMetricsSqlSchemaPath(BaseModel):
     project_id: str = Field(alias="projectId")
 
 
-class GetMessageMetricsSqlSchemaHeader(BaseModel):
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    x_photon_version: str | MISSING = Field(default=MISSING, alias="x-photon-version")
-
-
 class GetMessageMetricsSqlSchemaInput(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
     path: GetMessageMetricsSqlSchemaPath
-    headers: GetMessageMetricsSqlSchemaHeader | None = None
 
 
 class GetOperationPath(BaseModel):
@@ -2360,18 +2347,11 @@ class QueryMessageMetricsPath(BaseModel):
     project_id: str = Field(alias="projectId")
 
 
-class QueryMessageMetricsHeader(BaseModel):
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    x_photon_version: str | MISSING = Field(default=MISSING, alias="x-photon-version")
-
-
 class QueryMessageMetricsInput(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
     body: models.ClickHouseSqlQueryRequest
     path: QueryMessageMetricsPath
-    headers: QueryMessageMetricsHeader | None = None
 
 
 class RedeemAppInstallationDeliveryInput(BaseModel):
@@ -3168,15 +3148,13 @@ class UploadAttachmentPath(BaseModel):
 class UploadAttachmentHeader(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
-    content_length: str = Field(alias="content-length")
-    content_type: str = Field(alias="content-type")
     idempotency_key: str = Field(alias="idempotency-key")
 
 
 class UploadAttachmentInput(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
-    body: models.RootModel[bytes]
+    body: UploadFile
     path: UploadAttachmentPath
     headers: UploadAttachmentHeader
 
@@ -6132,7 +6110,7 @@ _OP_UPLOAD_ATTACHMENT = OperationSpec(
     path="/v1/projects/{id}/attachments",
     safe=False,
     idempotency_key_required=True,
-    raw_request=True,
+    file_upload=True,
     accept_media_types=(
         "application/json",
         "application/problem+json",
@@ -7409,7 +7387,7 @@ class SyncRawProjectsResource:
     def retry_webhook_delivery(
         self, input: RetryWebhookDeliveryInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.RetryWebhookDeliveryResponse]:
-        "Retry webhook delivery\n\nRequests an immediate attempt of the selected delivery if it is still the waiting head for its destination and event type. expectedAttemptCount is the failed-attempt counter recorded on the delivery and fences stale requests. This overrides the current backoff, including Retry-After, once. It preserves event identity and the retry budget. Delivered, active, disabled and dead-lettered deliveries cannot be retried. A 202 acknowledges the wake-up, not successful delivery. Supply an Idempotency-Key and retain it when retrying an ambiguous failure."
+        "Retry webhook delivery\n\nRequests an immediate attempt of the selected delivery if it is still the waiting head for its destination and event type. This overrides the current backoff, including Retry-After, once. It preserves event identity and the retry budget. Delivered, active, disabled and dead-lettered deliveries cannot be retried. A 202 acknowledges the wake-up, not successful delivery. Supply an Idempotency-Key and retain it when retrying an ambiguous failure."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return self._transport.request(_OP_RETRY_WEBHOOK_DELIVERY, payload, options)
 
@@ -7467,7 +7445,7 @@ class SyncRawProjectsResource:
     ) -> RawResponse[models.Attachment]:
         "Upload attachment\n\nUploads a file and returns its Attachment once ready to download."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True, exclude={"body"})
-        payload["body"] = input.body.root if input.body is not None else None
+        payload["body"] = input.body
         return self._transport.request(_OP_UPLOAD_ATTACHMENT, payload, options)
 
 
@@ -8771,7 +8749,7 @@ class SyncProjectsResource:
     def retry_webhook_delivery(
         self, input: RetryWebhookDeliveryInput, *, options: RequestOptions | None = None
     ) -> models.RetryWebhookDeliveryResponse:
-        "Retry webhook delivery\n\nRequests an immediate attempt of the selected delivery if it is still the waiting head for its destination and event type. expectedAttemptCount is the failed-attempt counter recorded on the delivery and fences stale requests. This overrides the current backoff, including Retry-After, once. It preserves event identity and the retry budget. Delivered, active, disabled and dead-lettered deliveries cannot be retried. A 202 acknowledges the wake-up, not successful delivery. Supply an Idempotency-Key and retain it when retrying an ambiguous failure."
+        "Retry webhook delivery\n\nRequests an immediate attempt of the selected delivery if it is still the waiting head for its destination and event type. This overrides the current backoff, including Retry-After, once. It preserves event identity and the retry budget. Delivered, active, disabled and dead-lettered deliveries cannot be retried. A 202 acknowledges the wake-up, not successful delivery. Supply an Idempotency-Key and retain it when retrying an ambiguous failure."
         return (self._raw_resource.retry_webhook_delivery(input, options=options)).data
 
     def revoke_project_api_key(
@@ -10276,7 +10254,7 @@ class AsyncRawProjectsResource:
     async def retry_webhook_delivery(
         self, input: RetryWebhookDeliveryInput, *, options: RequestOptions | None = None
     ) -> RawResponse[models.RetryWebhookDeliveryResponse]:
-        "Retry webhook delivery\n\nRequests an immediate attempt of the selected delivery if it is still the waiting head for its destination and event type. expectedAttemptCount is the failed-attempt counter recorded on the delivery and fences stale requests. This overrides the current backoff, including Retry-After, once. It preserves event identity and the retry budget. Delivered, active, disabled and dead-lettered deliveries cannot be retried. A 202 acknowledges the wake-up, not successful delivery. Supply an Idempotency-Key and retain it when retrying an ambiguous failure."
+        "Retry webhook delivery\n\nRequests an immediate attempt of the selected delivery if it is still the waiting head for its destination and event type. This overrides the current backoff, including Retry-After, once. It preserves event identity and the retry budget. Delivered, active, disabled and dead-lettered deliveries cannot be retried. A 202 acknowledges the wake-up, not successful delivery. Supply an Idempotency-Key and retain it when retrying an ambiguous failure."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True)
         return await self._transport.request(_OP_RETRY_WEBHOOK_DELIVERY, payload, options)
 
@@ -10334,7 +10312,7 @@ class AsyncRawProjectsResource:
     ) -> RawResponse[models.Attachment]:
         "Upload attachment\n\nUploads a file and returns its Attachment once ready to download."
         payload = input.model_dump(mode="json", by_alias=True, exclude_unset=True, exclude={"body"})
-        payload["body"] = input.body.root if input.body is not None else None
+        payload["body"] = input.body
         return await self._transport.request(_OP_UPLOAD_ATTACHMENT, payload, options)
 
 
@@ -11724,7 +11702,7 @@ class AsyncProjectsResource:
     async def retry_webhook_delivery(
         self, input: RetryWebhookDeliveryInput, *, options: RequestOptions | None = None
     ) -> models.RetryWebhookDeliveryResponse:
-        "Retry webhook delivery\n\nRequests an immediate attempt of the selected delivery if it is still the waiting head for its destination and event type. expectedAttemptCount is the failed-attempt counter recorded on the delivery and fences stale requests. This overrides the current backoff, including Retry-After, once. It preserves event identity and the retry budget. Delivered, active, disabled and dead-lettered deliveries cannot be retried. A 202 acknowledges the wake-up, not successful delivery. Supply an Idempotency-Key and retain it when retrying an ambiguous failure."
+        "Retry webhook delivery\n\nRequests an immediate attempt of the selected delivery if it is still the waiting head for its destination and event type. This overrides the current backoff, including Retry-After, once. It preserves event identity and the retry budget. Delivered, active, disabled and dead-lettered deliveries cannot be retried. A 202 acknowledges the wake-up, not successful delivery. Supply an Idempotency-Key and retain it when retrying an ambiguous failure."
         return (await self._raw_resource.retry_webhook_delivery(input, options=options)).data
 
     async def revoke_project_api_key(

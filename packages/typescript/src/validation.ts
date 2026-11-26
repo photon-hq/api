@@ -87,3 +87,92 @@ export function narrowed<O, I, C extends readonly z.ZodType[]>(
   // The constraints checked the value, so a known member's output also has their types.
   return checked.pipe(union as z.ZodType<O, unknown>) as unknown as Narrowed<O, I, C>;
 }
+
+type Def = z.core.$ZodTypes["_zod"]["def"];
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
+/** The definition a union member's value is read with: what optional, lazy and piped schemas wrap. */
+function base(schema: z.core.$ZodType): Def {
+  const def = (schema as z.core.$ZodTypes)._zod.def;
+  switch (def.type) {
+    case "optional":
+    case "nullable":
+      return base(def.innerType);
+    case "lazy":
+      return base(def.getter());
+    case "pipe":
+      return base(def.in);
+    default:
+      return def;
+  }
+}
+
+/**
+ * The member of a union that a value matching none of them is read as: for
+ * an object, the first member whose constant members (the discriminator) all
+ * take the value's, else the first object member without constants (an open
+ * union's fallback); for an array, the first array member.
+ */
+function unionMember(options: readonly z.core.$ZodType[], value: unknown): z.core.$ZodType | undefined {
+  if (Array.isArray(value)) return options.find((option) => base(option).type === "array");
+  if (!isRecord(value)) return undefined;
+  let fallback: z.core.$ZodType | undefined;
+  for (const option of options) {
+    const def = base(option);
+    if (def.type !== "object") continue;
+    const constants = Object.entries(def.shape).flatMap(([key, member]) => {
+      const memberDef = (member as z.core.$ZodTypes)._zod.def;
+      return memberDef.type === "literal" ? [[key, memberDef.values] as const] : [];
+    });
+    if (constants.length === 0) fallback ??= option;
+    else if (constants.every(([key, values]) => (values as readonly unknown[]).includes(value[key]))) return option;
+  }
+  return fallback;
+}
+
+/**
+ * A successful response whose body does not match its schema, read as far as
+ * the schema allows instead of rejected (the client's default; the
+ * `strictResponseValidation` option rejects it). Every part that matches its
+ * schema is parsed as usual, an open union's fallback member included; an
+ * object keeps the members it has, each read the same way, and leaves out
+ * the ones the response lacks; any other value that does not match is kept as
+ * the API sent it.
+ */
+export function loosen(schema: z.core.$ZodType, value: unknown): unknown {
+  const parsed = (schema as z.ZodType).safeParse(value);
+  if (parsed.success) return parsed.data;
+  const def = (schema as z.core.$ZodTypes)._zod.def;
+  switch (def.type) {
+    case "optional":
+    case "nullable":
+      return loosen(def.innerType, value);
+    case "lazy":
+      return loosen(def.getter(), value);
+    case "pipe": {
+      // A transform, such as the fallback member's wrapping, applies to what
+      // its input read; a narrowed union is read as the union.
+      if ((def.out as z.core.$ZodTypes)._zod.def.type !== "transform") return loosen(def.out, value);
+      const input = loosen(def.in, value);
+      const output = (def.out as z.ZodType).safeParse(input);
+      return output.success ? output.data : input;
+    }
+    case "object": {
+      if (!isRecord(value)) return value;
+      return Object.fromEntries(Object.entries(value).map(([key, member]) => {
+        const schemaOfMember = Object.hasOwn(def.shape, key) ? def.shape[key] : def.catchall;
+        return [key, schemaOfMember ? loosen(schemaOfMember, member) : member];
+      }));
+    }
+    case "array":
+      return Array.isArray(value) ? value.map((item) => loosen(def.element, item)) : value;
+    case "union": {
+      const member = unionMember(def.options, value);
+      return member ? loosen(member, value) : value;
+    }
+    default:
+      return value;
+  }
+}

@@ -40,7 +40,7 @@ const photon = new Photon({
 });
 const result = await photon.projects.createWebhookDestination({
   path: {
-    projectId: "projectId",
+    projectId: "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
   },
   headers: {
     idempotencyKey: "idempotencyKey",
@@ -64,7 +64,7 @@ photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN
 result = photon.projects.create_webhook_destination(
     CreateWebhookDestinationInput.model_validate({
         "path": {
-            "projectId": "projectId",
+            "projectId": "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
         },
         "headers": {
             "Idempotency-Key": "idempotencyKey",
@@ -89,7 +89,7 @@ let client = PhotonClientBuilder::new()
 let result = client
     .create_webhook_destination(
         "idempotencyKey".to_owned(),
-        "projectId".to_owned(),
+        "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw".to_owned(),
         &serde_json::from_value(serde_json::json!({
             "apiVersion": "2026-01-01",
             "enabledEvents": [],
@@ -124,7 +124,7 @@ if err := json.Unmarshal([]byte(`{
 }
 result, err := client.Projects.CreateWebhookDestination(ctx, &photonapi.CreateWebhookDestinationParams{
 	IdempotencyKey: "idempotencyKey",
-	ProjectID: "projectId",
+	ProjectID: "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
 	Body: body,
 })
 if err != nil {

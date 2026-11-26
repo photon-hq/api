@@ -40,7 +40,7 @@ const photon = new Photon({
 });
 const result = await photon.account.revokeAccountServiceKey({
   path: {
-    serviceKeyId: "serviceKeyId",
+    serviceKeyId: "pho_ask_3jmkhj9mjza5hzsaztkpvmvtya",
   },
   headers: {
     idempotencyKey: "idempotencyKey",
@@ -58,7 +58,7 @@ photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN
 result = photon.account.revoke_account_service_key(
     RevokeAccountServiceKeyInput.model_validate({
         "path": {
-            "serviceKeyId": "serviceKeyId",
+            "serviceKeyId": "pho_ask_3jmkhj9mjza5hzsaztkpvmvtya",
         },
         "headers": {
             "Idempotency-Key": "idempotencyKey",
@@ -75,7 +75,10 @@ let client = PhotonClientBuilder::new()
     .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
     .build()?;
 let result = client
-    .revoke_account_service_key("idempotencyKey".to_owned(), "serviceKeyId".to_owned())
+    .revoke_account_service_key(
+        "idempotencyKey".to_owned(),
+        "pho_ask_3jmkhj9mjza5hzsaztkpvmvtya".to_owned(),
+    )
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
@@ -93,7 +96,7 @@ ctx := context.Background()
 client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
 result, err := client.Account.RevokeAccountServiceKey(ctx, &photonapi.RevokeAccountServiceKeyParams{
 	IdempotencyKey: "idempotencyKey",
-	ServiceKeyID: "serviceKeyId",
+	ServiceKeyID: "pho_ask_3jmkhj9mjza5hzsaztkpvmvtya",
 })
 if err != nil {
 	return err

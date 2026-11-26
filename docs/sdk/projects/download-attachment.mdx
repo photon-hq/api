@@ -40,8 +40,8 @@ const photon = new Photon({
 });
 const result = await photon.projects.downloadAttachment({
   path: {
-    attachmentId: "attachmentId",
-    id: "id",
+    attachmentId: "pho_att_2kjzvmmhanzm9knmja0npk9pjm",
+    id: "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
   },
 });
 ```
@@ -56,8 +56,8 @@ photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN
 result = photon.projects.download_attachment(
     DownloadAttachmentInput.model_validate({
         "path": {
-            "attachmentId": "attachmentId",
-            "id": "id",
+            "attachmentId": "pho_att_2kjzvmmhanzm9knmja0npk9pjm",
+            "id": "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
         },
     })
 )
@@ -71,7 +71,10 @@ let client = PhotonClientBuilder::new()
     .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
     .build()?;
 let result = client
-    .download_attachment("attachmentId".to_owned(), "id".to_owned())
+    .download_attachment(
+        "pho_att_2kjzvmmhanzm9knmja0npk9pjm".to_owned(),
+        "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw".to_owned(),
+    )
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
@@ -88,8 +91,8 @@ import (
 ctx := context.Background()
 client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
 result, err := client.Projects.DownloadAttachment(ctx, &photonapi.DownloadAttachmentParams{
-	AttachmentID: "attachmentId",
-	ID: "id",
+	AttachmentID: "pho_att_2kjzvmmhanzm9knmja0npk9pjm",
+	ID: "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
 })
 if err != nil {
 	return err

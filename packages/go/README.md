@@ -62,17 +62,25 @@ current token.
 - **Response metadata**: pass `photonapi.WithResponseInfo(&info)` to receive
   the status, headers and request ID. Downloads return a `*BinaryResponse`
   whose `Body` the caller closes.
+- **Uploads**: a file upload such as `client.Projects.UploadAttachment`
+  takes `Body: &photonapi.UploadFile{Data: data, ContentType: "text/plain", Filename: "hello.txt"}`
+  (`Filename` is optional). The client sends a `multipart/related` body, a
+  JSON part that describes the file and then the file, sets Content-Type and
+  Content-Length, and sends the same bytes again on a retry.
 - **Forward compatibility**: enums are plain string types (unknown values
   pass through), unknown response members are ignored, and unions are
   `Union` values that keep the raw JSON; branch on `Kind()` and decode with
   `As<Member>()`. Timestamps are `Timestamp` (UTC, millisecond precision).
+  A member the response leaves out reads as its zero value (`nil` for a
+  pointer), even when the contract requires it.
 
 ## Errors
 
 Methods return `*APIError` for a documented error status (with the HTTP
 status, the problem body as `Problem`, the request ID and a capped raw body),
-`*TransportError` for connection failures, and `*ResponseDecodeError` when a
-response body does not match its model.
+`*TransportError` for connection failures, and `*ResponseDecodeError` when the
+body of a JSON response cannot be parsed or a member has a JSON type its model
+cannot hold.
 
 ## Retries and timeouts
 

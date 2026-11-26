@@ -40,11 +40,11 @@ const photon = new Photon({
 });
 const result = await photon.projects.setSpaceTyping({
   path: {
-    id: "id",
-    spaceId: "spaceId",
+    id: "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
+    spaceId: "pho_spc_7zhamnzkrmvnnhkkpmajhkmn9m",
   },
   body: {
-    senderId: "senderId",
+    senderId: "pho_usr_7njmkjh9wkknpvjvjtm9rjmk0m",
     typing: true,
   },
 });
@@ -60,11 +60,11 @@ photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN
 result = photon.projects.set_space_typing(
     SetSpaceTypingInput.model_validate({
         "path": {
-            "id": "id",
-            "spaceId": "spaceId",
+            "id": "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
+            "spaceId": "pho_spc_7zhamnzkrmvnnhkkpmajhkmn9m",
         },
         "body": {
-            "senderId": "senderId",
+            "senderId": "pho_usr_7njmkjh9wkknpvjvjtm9rjmk0m",
             "typing": True,
         },
     })
@@ -80,10 +80,10 @@ let client = PhotonClientBuilder::new()
     .build()?;
 let result = client
     .set_space_typing(
-        "id".to_owned(),
-        "spaceId".to_owned(),
+        "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw".to_owned(),
+        "pho_spc_7zhamnzkrmvnnhkkpmajhkmn9m".to_owned(),
         &serde_json::from_value(serde_json::json!({
-            "senderId": "senderId",
+            "senderId": "pho_usr_7njmkjh9wkknpvjvjtm9rjmk0m",
             "typing": true,
         }))?,
     )
@@ -105,14 +105,14 @@ ctx := context.Background()
 client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
 var body photonapi.SetSpaceTypingRequest
 if err := json.Unmarshal([]byte(`{
-	"senderId": "senderId",
+	"senderId": "pho_usr_7njmkjh9wkknpvjvjtm9rjmk0m",
 	"typing": true
 }`), &body); err != nil {
 	return err
 }
 result, err := client.Projects.SetSpaceTyping(ctx, &photonapi.SetSpaceTypingParams{
-	ID: "id",
-	SpaceID: "spaceId",
+	ID: "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
+	SpaceID: "pho_spc_7zhamnzkrmvnnhkkpmajhkmn9m",
 	Body: body,
 })
 if err != nil {
@@ -171,6 +171,10 @@ _ = result
 
 ## Parameters
 
+<ParamField header="Photon-Version" type={"PhotonVersion"}>
+Selects the API contract date. Without it, the request is served as 2026-07-01.
+</ParamField>
+
 <ParamField path="id" type={"string"} required>
 
 </ParamField>
@@ -195,7 +199,7 @@ True starts or refreshes typing; false stops it.
 
 **`202`** The typing Message was dispatched. SetSpaceTypingResponse
 
-Headers: `Cache-Control`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
+Headers: `Cache-Control`, `Photon-Version`. The raw response carries these headers; see [Raw responses](/api-client/raw-responses).
 
 <ResponseField name="acceptance" type={"object"} required>
 
@@ -205,7 +209,7 @@ Headers: `Cache-Control`. The raw response carries these headers; see [Raw respo
 
 </ResponseField>
 
-<ResponseField name="content" type={"SetSpaceTypingContent"} required>
+<ResponseField name="content" type={"SpaceTypingUpdateContent"} required>
 
 </ResponseField>
 

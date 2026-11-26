@@ -40,7 +40,7 @@ const photon = new Photon({
 });
 const result = await photon.projects.listWebhookApiVersions({
   path: {
-    projectId: "projectId",
+    projectId: "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
   },
 });
 ```
@@ -55,7 +55,7 @@ photon = Photon(headers={"Authorization": f"Bearer {os.environ['PHOTON_API_TOKEN
 result = photon.projects.list_webhook_api_versions(
     ListWebhookApiVersionsInput.model_validate({
         "path": {
-            "projectId": "projectId",
+            "projectId": "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
         },
     })
 )
@@ -69,7 +69,7 @@ let client = PhotonClientBuilder::new()
     .credential("accountServiceKey", Credential::Bearer(SecretString::from(token)))
     .build()?;
 let result = client
-    .list_webhook_api_versions("projectId".to_owned())
+    .list_webhook_api_versions("pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw".to_owned())
     .await
     .map_err(|error| format!("{error:?}"))?
     .into_inner();
@@ -86,7 +86,7 @@ import (
 ctx := context.Background()
 client := photonapi.NewClient(photonapi.WithAPIKey(os.Getenv("PHOTON_API_TOKEN")))
 result, err := client.Projects.ListWebhookApiVersions(ctx, &photonapi.ListWebhookApiVersionsParams{
-	ProjectID: "projectId",
+	ProjectID: "pho_prj_70jqmkvtz0mnhnjnn58nhmn8kw",
 })
 if err != nil {
 	return err

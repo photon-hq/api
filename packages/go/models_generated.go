@@ -5124,13 +5124,12 @@ const (
 )
 
 type RetryWebhookDeliveryRequest struct {
-	EventID              string `json:"eventId"`
-	EventType            string `json:"eventType"`
-	ExpectedAttemptCount int64  `json:"expectedAttemptCount"`
+	EventID string `json:"eventId"`
 }
 
 type RetryWebhookDeliveryResponse struct {
-	Status string `json:"status"`
+	DestinationID string `json:"destinationId"`
+	EventID       string `json:"eventId"`
 }
 
 type RevokeAccountServiceKeyResponse struct {
@@ -5224,6 +5223,7 @@ type SelectableWebhookApiVersion struct {
 	Version    string                            `json:"version"`
 }
 
+// Lifecycle of this date's webhook payload contract. `preview`: selectable, but the contract is not frozen yet and may still change. `latest`: the recommended date; its contract is frozen. `maintain`: still selectable and frozen, superseded by `successor`.
 type SelectableWebhookApiVersionStatus string
 
 const (
@@ -5643,13 +5643,8 @@ const (
 )
 
 type SetSpaceTypingConstraint struct {
-	Content SetSpaceTypingContent `json:"content"`
-	Status  string                `json:"status"`
-}
-
-type SetSpaceTypingContent struct {
-	Type   string `json:"type"`
-	Typing bool   `json:"typing"`
+	Content SpaceTypingUpdateContent `json:"content"`
+	Status  string                   `json:"status"`
 }
 
 type SetSpaceTypingRequest struct {

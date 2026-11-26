@@ -428,8 +428,22 @@ test("Python resources are snake_case while TypeScript keeps camelCase", () => {
 
 test("Python types an unnamed binary request body as bytes", () => {
   const upload = operation("upload", { "204": {} });
-  upload.requestBody = { required: true, content: { "multipart/related": { type: "string", format: "binary" } } };
+  upload.requestBody = { required: true, content: { "application/x-protobuf": { type: "string", format: "binary" } } };
   assert.match(renderPython({ operations: [upload] }), /body: models\.RootModel\[bytes\]\n/);
   upload.requestBody = { required: true, content: { "application/json": { type: "object" } } };
   assert.match(renderPython({ operations: [upload] }), /body: models\.RootModel\[Any\]\n/);
+});
+
+test("a multipart/related request body is a file upload the client builds from the file", () => {
+  const upload = operation("upload", { "204": {} });
+  upload.requestBody = { required: true, content: { "multipart/related": { type: "string", format: "binary" } } };
+  assert.deepEqual(operationMedia(upload), { fileUpload: true, responses: [], accept: [], responseKinds: { "204": "empty" } });
+  const python = renderPython({ operations: [upload] });
+  assert.match(python, /^from \.uploads import UploadFile$/m);
+  assert.match(python, /    body: UploadFile\n/);
+  assert.match(python, /    file_upload=True,\n/);
+  assert.doesNotMatch(python, /raw_request=True/);
+  assert.match(python, /        payload\["body"\] = input\.body\n/);
+  assert.doesNotMatch(renderPython({ operations: [operation("plain", { "204": {} })] }), /uploads/);
+  assert.match(renderTypeScript({ operations: [upload] }), /"upload": \{\n    "fileUpload": true,/);
 });
